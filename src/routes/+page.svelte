@@ -4,6 +4,8 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { appStore } from '$lib/stores/app.js';
+	import { modalStore } from '$lib/stores/modal.js';
+	import { sortStore } from '$lib/stores/sort.js';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
@@ -45,11 +47,13 @@
 			// Read search query from URL when browser navigation occurs
 			filtersStore.readFromURL($page.url.searchParams);
 			appStore.readFromURL($page.url.searchParams);
+			sortStore.readFromURL($page.url.searchParams);
 		});
 
 		// Update URL with current filter state on initial load
 		filtersStore.writeToURL();
 		appStore.writeToURL();
+		sortStore.writeToURL();
 
 		return () => {
 			unsubscribePage();
@@ -61,8 +65,7 @@
 
 	// Handle game card/row clicks for detail modal
 	function handleGameClick(game: Game): void {
-		// TODO: Implement modal functionality
-		console.log('Game clicked:', game.title);
+		modalStore.openViewModal(game);
 	}
 </script>
 

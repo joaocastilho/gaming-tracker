@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { sortStore } from '../stores/sort.js';
 	import type { Game } from '../types/game.js';
 
 	interface Props {
@@ -8,9 +9,15 @@
 
 	let { games, onRowClick }: Props = $props();
 
-	// Sorting state
-	let sortColumn = $state<string>('');
-	let sortDirection = $state<'asc' | 'desc'>('asc');
+	// Sorting state from store
+	let sortState = $state(sortStore.state);
+
+	$effect(() => {
+		const unsubscribe = sortStore.subscribe((state) => {
+			sortState = state;
+		});
+		return unsubscribe;
+	});
 
 	// Format date for display
 	function formatDate(dateString: string): string {
@@ -39,28 +46,24 @@
 
 	// Sort function
 	function handleSort(column: string) {
-		if (sortColumn === column) {
-			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-		} else {
-			sortColumn = column;
-			sortDirection = 'asc';
-		}
+		sortStore.toggleSort(column);
+		sortStore.writeToURL();
 	}
 
 	// Get sort indicator
 	function getSortIndicator(column: string): string {
-		if (sortColumn !== column) return '↕';
-		return sortDirection === 'asc' ? '↑' : '↓';
+		if (sortState.sortBy !== column) return '↕';
+		return sortState.sortDirection === 'asc' ? '↑' : '↓';
 	}
 
 	// Get sorted games
 	let sortedGames = $derived(
 		[...games].sort((a, b) => {
-			if (!sortColumn) return 0;
+			if (!sortState.sortBy) return 0;
 
 			let aValue: string | number | null, bValue: string | number | null;
 
-			switch (sortColumn) {
+			switch (sortState.sortBy) {
 				case 'title':
 					aValue = a.title.toLowerCase();
 					bValue = b.title.toLowerCase();
@@ -101,8 +104,8 @@
 					return 0;
 			}
 
-			if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-			if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+			if (aValue < bValue) return sortState.sortDirection === 'asc' ? -1 : 1;
+			if (aValue > bValue) return sortState.sortDirection === 'asc' ? 1 : -1;
 			return 0;
 		})
 	);
@@ -129,6 +132,14 @@
 	<table class="game-table w-full border-collapse">
 		<thead>
 			<tr class="border-border border-b">
+				<th class="p-3 text-left">
+					<button
+						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						onclick={() => handleSort('title')}
+					>
+						Cover {getSortIndicator('title')}
+					</button>
+				</th>
 				<th class="p-3 text-left">
 					<button
 						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
@@ -174,6 +185,14 @@
 						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
 						onclick={() => handleSort('score')}
 					>
+						Ratings {getSortIndicator('score')}
+					</button>
+				</th>
+				<th class="p-3 text-left">
+					<button
+						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						onclick={() => handleSort('score')}
+					>
 						Score {getSortIndicator('score')}
 					</button>
 				</th>
@@ -201,28 +220,31 @@
 					class="border-border hover:bg-muted/50 table-row cursor-pointer border-b transition-colors"
 					onclick={() => handleRowClick(game)}
 				>
+					<!-- Cover Column -->
 					<td class="p-3">
-						<div class="flex items-center gap-3">
-							<!-- Thumbnail -->
-							<img
-								src="/{game.coverImage}"
-								alt="{game.title} cover"
-								class="h-15 w-10 rounded border object-cover"
-								onerror={(e) => {
-									const img = e.target as HTMLImageElement;
-									img.style.display = 'none';
-								}}
-							/>
-							<!-- Title -->
-							<span class="text-sm font-medium">{game.title}</span>
-						</div>
+						<img
+							src="/{game.coverImage}"
+							alt="{game.title} cover"
+							class="h-12 w-8 rounded border object-cover"
+							onerror={(e) => {
+								const img = e.target as HTMLImageElement;
+								img.style.display = 'none';
+							}}
+						/>
 					</td>
+					<!-- Title Column -->
+					<td class="p-3">
+						<span class="text-sm font-medium">{game.title}</span>
+					</td>
+					<!-- Year Column -->
 					<td class="text-muted-foreground p-3 text-sm">{game.year}</td>
+					<!-- Platform Column -->
 					<td class="p-3">
 						<span class="inline-flex rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white">
 							{game.platform}
 						</span>
 					</td>
+					<!-- Genre Column -->
 					<td class="p-3">
 						<span
 							class="inline-flex rounded bg-purple-600 px-2 py-1 text-xs font-medium text-white"
@@ -230,6 +252,7 @@
 							{game.genre}
 						</span>
 					</td>
+					<!-- Tier Column -->
 					<td class="p-3">
 						{#if game.status === 'Completed' && game.tier}
 							<span
@@ -241,18 +264,27 @@
 							<span class="text-muted-foreground text-sm">-</span>
 						{/if}
 					</td>
+					<!-- Ratings Column -->
 					<td class="p-3">
 						{#if game.status === 'Completed'}
-							<div class="flex items-center gap-1 text-xs">
+							<div class="flex flex-col gap-1 text-xs">
 								<span>👁️ {game.ratingPresentation || 0}/10</span>
 								<span>✏️ {game.ratingStory || 0}/10</span>
 								<span>🎮 {game.ratingGameplay || 0}/10</span>
 							</div>
-							<div class="text-sm font-semibold">🏆 {calculateScore(game) || 0}/20</div>
 						{:else}
 							<span class="text-muted-foreground text-sm">-</span>
 						{/if}
 					</td>
+					<!-- Score Column -->
+					<td class="p-3">
+						{#if game.status === 'Completed'}
+							<span class="text-sm font-semibold">🏆 {calculateScore(game) || 0}/20</span>
+						{:else}
+							<span class="text-muted-foreground text-sm">-</span>
+						{/if}
+					</td>
+					<!-- Hours Column -->
 					<td class="p-3 text-sm">
 						{#if game.status === 'Completed' && game.hoursPlayed}
 							<span>⏱️ {game.hoursPlayed}</span>
@@ -260,6 +292,7 @@
 							<span class="text-muted-foreground">-</span>
 						{/if}
 					</td>
+					<!-- Finished Column -->
 					<td class="p-3 text-sm">
 						{#if game.status === 'Completed' && game.finishedDate}
 							<span>✓ {formatDate(game.finishedDate)}</span>
