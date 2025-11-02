@@ -2,7 +2,7 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { modalStore } from '$lib/stores/modal.js';
 	import type { Game } from '$lib/types/game.js';
-	import { Download, Trophy } from 'lucide-svelte';
+	import { Trophy } from 'lucide-svelte';
 
 	// Get completed games with tiers from the store
 	let tierGames = $state<Game[]>([]);
@@ -49,47 +49,6 @@
 	function handleGameClick(game: Game): void {
 		modalStore.openViewModal(game);
 	}
-
-	// Export tier list as image
-	async function exportTierList(): Promise<void> {
-		try {
-			// Import html2canvas dynamically
-			const html2canvas = (await import('html2canvas')).default;
-
-			const tierListElement = document.getElementById('tier-list-content');
-			if (!tierListElement) {
-				console.error('Tier list element not found');
-				return;
-			}
-
-			// Configure html2canvas options for better quality
-			const canvas = await html2canvas(tierListElement, {
-				backgroundColor: '#0f1419', // Dark background
-				scale: 2, // Higher resolution
-				useCORS: true,
-				allowTaint: true,
-				width: tierListElement.scrollWidth,
-				height: tierListElement.scrollHeight
-			});
-
-			// Convert to blob and download
-			canvas.toBlob((blob: Blob | null) => {
-				if (blob) {
-					const url = URL.createObjectURL(blob);
-					const link = document.createElement('a');
-					link.href = url;
-					link.download = `gaming-tier-list-${new Date().toISOString().split('T')[0]}.png`;
-					document.body.appendChild(link);
-					link.click();
-					document.body.removeChild(link);
-					URL.revokeObjectURL(url);
-				}
-			}, 'image/png');
-		} catch (error) {
-			console.error('Failed to export tier list:', error);
-			// Fallback: could show an error message to user
-		}
-	}
 </script>
 
 <svelte:head>
@@ -104,26 +63,18 @@
 			<p>Complete some games and assign tiers to see the tier list!</p>
 		</div>
 	{:else}
-		<!-- Header with export button -->
-		<div class="mb-6 flex items-center justify-between">
+		<!-- Header -->
+		<div class="mb-6">
 			<div>
 				<h1 class="mb-2 text-2xl font-bold text-white dark:text-gray-900">Gaming Tier List</h1>
 				<p class="text-gray-400 dark:text-gray-600">
 					{tierGames.length} game{tierGames.length !== 1 ? 's' : ''} organized by personal rating
 				</p>
 			</div>
-			<button
-				onclick={exportTierList}
-				class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-				title="Export tier list as image"
-			>
-				<Download size={16} />
-				Export Image
-			</button>
 		</div>
 
-		<!-- Tier List Content (for export) -->
-		<div id="tier-list-content" class="tier-list-content rounded-lg bg-gray-900 p-6 dark:bg-white">
+		<!-- Tier List Content -->
+		<div class="tier-list-content rounded-lg bg-gray-900 p-6 dark:bg-white">
 			{#each Object.entries(tierConfig) as [tierKey, tierInfo] (tierKey)}
 				{@const gamesInTier = gamesByTier[tierKey] || []}
 				{#if gamesInTier.length > 0}

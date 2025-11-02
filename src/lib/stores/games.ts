@@ -126,34 +126,6 @@ function createGamesStore() {
 			return Math.round(((presentation + story + gameplay) / 3) * 2);
 		},
 
-		// Export games as downloadable JSON
-		exportGames(games: Game[]): void {
-			try {
-				const exportData = {
-					games,
-					meta: {
-						lastUpdated: new Date().toISOString(),
-						version: '1.0'
-					}
-				};
-
-				const jsonString = JSON.stringify(exportData, null, 2);
-				const blob = new Blob([jsonString], { type: 'application/json' });
-				const url = URL.createObjectURL(blob);
-
-				const link = document.createElement('a');
-				link.href = url;
-				link.download = `games-${new Date().toISOString().split('T')[0]}.json`;
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-
-				URL.revokeObjectURL(url);
-			} catch (err) {
-				console.error('Failed to export games:', err);
-				error = 'Failed to export games data';
-			}
-		},
 
 		// Get games by status
 		getGamesByStatus(status: 'Planned' | 'Completed'): Game[] {

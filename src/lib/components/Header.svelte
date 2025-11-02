@@ -4,7 +4,6 @@
 	import { filtersStore } from '../stores/filters.js';
 	import { modalStore } from '../stores/modal.js';
 	import ThemeToggle from './ThemeToggle.svelte';
-	import type { Game } from '../types/game.js';
 
 	// Subscribe to theme changes (value used for reactive updates)
 	$effect(() => {
@@ -45,18 +44,6 @@
 	function handleAddGame() {
 		modalStore.openAddModal();
 	}
-
-	// Export games handler
-	function handleExportGames() {
-		// Get current games and export them
-		let currentGames: Game[] = [];
-		const unsubscribe = gamesStore.subscribe((games) => {
-			currentGames = games;
-		});
-		unsubscribe();
-
-		gamesStore.exportGames(currentGames);
-	}
 </script>
 
 <header class="header">
@@ -79,7 +66,7 @@
 		</button>
 	</div>
 
-	<!-- Right section: Game Count and Action Buttons -->
+	<!-- Right section: Game Count and Theme Toggle -->
 	<div class="header-right">
 		<div class="game-count" aria-live="polite" aria-atomic="true">
 			<span class="count-number">{gameCounts.total}</span>
@@ -88,18 +75,6 @@
 				{isFiltered ? 'found' : 'tracked'}
 			</span>
 		</div>
-
-		<!-- Export Button -->
-		<button
-			type="button"
-			class="export-btn"
-			onclick={handleExportGames}
-			aria-label="Export games data"
-			title="Export games as JSON"
-		>
-			<span class="export-icon" aria-hidden="true">⬇️</span>
-			<span class="export-text">Export</span>
-		</button>
 
 		<ThemeToggle />
 	</div>
@@ -251,61 +226,6 @@
 		white-space: nowrap;
 	}
 
-	/* Export Button */
-	.export-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 8px 14px;
-		border: 1px solid #2a2f3a;
-		border-radius: 6px;
-		background-color: rgba(42, 47, 58, 0.4);
-		color: #8b92a8;
-		font-size: 0.85rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		text-decoration: none;
-	}
-
-	.export-btn:hover {
-		background-color: rgba(42, 47, 58, 0.7);
-		color: #ffffff;
-		border-color: #10b981;
-		transform: translateY(-1px);
-	}
-
-	.export-btn:focus {
-		outline: 2px solid #10b981;
-		outline-offset: 2px;
-	}
-
-	.export-btn:active {
-		transform: translateY(0);
-	}
-
-	.export-icon {
-		font-size: 14px;
-		line-height: 1;
-	}
-
-	.export-text {
-		white-space: nowrap;
-	}
-
-	/* Light mode export button */
-	:global(.light) .export-btn {
-		background-color: rgba(243, 244, 246, 0.6);
-		border-color: #d1d5db;
-		color: #6b7280;
-	}
-
-	:global(.light) .export-btn:hover {
-		background-color: rgba(243, 244, 246, 0.8);
-		color: #1a1a1a;
-		border-color: #10b981;
-	}
-
 	/* Responsive design */
 	@media (max-width: 768px) {
 		.header {
@@ -338,16 +258,6 @@
 
 		.count-number {
 			font-size: 1rem;
-		}
-
-		.export-text {
-			display: none;
-		}
-
-		.export-btn {
-			padding: 8px;
-			min-width: 36px;
-			justify-content: center;
 		}
 	}
 
