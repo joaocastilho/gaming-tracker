@@ -1,4 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
+import { replaceState } from '$app/navigation';
 import type { Game } from '../types/game.js';
 
 // TypeScript interfaces for filter state
@@ -238,74 +239,81 @@ function createFiltersStore() {
 		writeToURL() {
 			if (typeof window === 'undefined') return;
 
-			const currentQuery = get(searchQuery);
-			const currentPlatforms = get(selectedPlatforms);
-			const currentGenres = get(selectedGenres);
-			const currentTiers = get(selectedTiers);
-			const currentRanges = get(ratingRanges);
-			const url = new URL(window.location.href);
+			try {
+				const currentQuery = get(searchQuery);
+				const currentPlatforms = get(selectedPlatforms);
+				const currentGenres = get(selectedGenres);
+				const currentTiers = get(selectedTiers);
+				const currentRanges = get(ratingRanges);
+				const url = new URL(window.location.href);
 
-			// Handle search query
-			if (currentQuery.trim()) {
-				url.searchParams.set('search', currentQuery.trim());
-			} else {
-				url.searchParams.delete('search');
+				// Handle search query
+				if (currentQuery.trim()) {
+					url.searchParams.set('search', currentQuery.trim());
+				} else {
+					url.searchParams.delete('search');
+				}
+
+				// Handle platforms (comma-separated)
+				if (currentPlatforms.length > 0) {
+					url.searchParams.set('platforms', currentPlatforms.join(','));
+				} else {
+					url.searchParams.delete('platforms');
+				}
+
+				// Handle genres (comma-separated)
+				if (currentGenres.length > 0) {
+					url.searchParams.set('genres', currentGenres.join(','));
+				} else {
+					url.searchParams.delete('genres');
+				}
+
+				// Handle tiers (comma-separated)
+				if (currentTiers.length > 0) {
+					url.searchParams.set('tiers', currentTiers.join(','));
+				} else {
+					url.searchParams.delete('tiers');
+				}
+
+				// Handle rating ranges (range format: "min,max")
+				const [pMin, pMax] = currentRanges.presentation;
+				const [sMin, sMax] = currentRanges.story;
+				const [gMin, gMax] = currentRanges.gameplay;
+				const [tMin, tMax] = currentRanges.total;
+
+				// Only add rating parameters if they differ from defaults
+				if (pMin > 0 || pMax < 10) {
+					url.searchParams.set('ratingPresentation', `${pMin},${pMax}`);
+				} else {
+					url.searchParams.delete('ratingPresentation');
+				}
+
+				if (sMin > 0 || sMax < 10) {
+					url.searchParams.set('ratingStory', `${sMin},${sMax}`);
+				} else {
+					url.searchParams.delete('ratingStory');
+				}
+
+				if (gMin > 0 || gMax < 10) {
+					url.searchParams.set('ratingGameplay', `${gMin},${gMax}`);
+				} else {
+					url.searchParams.delete('ratingGameplay');
+				}
+
+				if (tMin > 0 || tMax < 20) {
+					url.searchParams.set('ratingTotal', `${tMin},${tMax}`);
+				} else {
+					url.searchParams.delete('ratingTotal');
+				}
+
+				// Use replaceState to avoid adding to browser history
+				replaceState(url.toString(), {});
+			} catch (error) {
+				// Silently ignore router initialization errors
+				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
+					console.warn('Failed to update URL:', error);
+				}
 			}
-
-			// Handle platforms (comma-separated)
-			if (currentPlatforms.length > 0) {
-				url.searchParams.set('platforms', currentPlatforms.join(','));
-			} else {
-				url.searchParams.delete('platforms');
-			}
-
-			// Handle genres (comma-separated)
-			if (currentGenres.length > 0) {
-				url.searchParams.set('genres', currentGenres.join(','));
-			} else {
-				url.searchParams.delete('genres');
-			}
-
-			// Handle tiers (comma-separated)
-			if (currentTiers.length > 0) {
-				url.searchParams.set('tiers', currentTiers.join(','));
-			} else {
-				url.searchParams.delete('tiers');
-			}
-
-			// Handle rating ranges (range format: "min,max")
-			const [pMin, pMax] = currentRanges.presentation;
-			const [sMin, sMax] = currentRanges.story;
-			const [gMin, gMax] = currentRanges.gameplay;
-			const [tMin, tMax] = currentRanges.total;
-
-			// Only add rating parameters if they differ from defaults
-			if (pMin > 0 || pMax < 10) {
-				url.searchParams.set('ratingPresentation', `${pMin},${pMax}`);
-			} else {
-				url.searchParams.delete('ratingPresentation');
-			}
-
-			if (sMin > 0 || sMax < 10) {
-				url.searchParams.set('ratingStory', `${sMin},${sMax}`);
-			} else {
-				url.searchParams.delete('ratingStory');
-			}
-
-			if (gMin > 0 || gMax < 10) {
-				url.searchParams.set('ratingGameplay', `${gMin},${gMax}`);
-			} else {
-				url.searchParams.delete('ratingGameplay');
-			}
-
-			if (tMin > 0 || tMax < 20) {
-				url.searchParams.set('ratingTotal', `${tMin},${tMax}`);
-			} else {
-				url.searchParams.delete('ratingTotal');
-			}
-
-			// Use replaceState to avoid adding to browser history
-			window.history.replaceState({}, '', url.toString());
 		},
 
 		addPlatform(platform: string) {

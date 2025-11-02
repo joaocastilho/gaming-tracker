@@ -26,18 +26,20 @@
 	// Get current view mode
 	let currentViewMode = $state<'gallery' | 'table'>('gallery');
 
-	$effect(() => {
-		const unsubscribe = filteredGamesStore.subscribe((data) => {
-			filteredData = data;
-		});
-		return unsubscribe;
+	// Get current active tab
+	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
+
+	// Subscribe to stores
+	filteredGamesStore.subscribe((data) => {
+		filteredData = data;
 	});
 
-	$effect(() => {
-		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
-			currentViewMode = viewMode;
-		});
-		return unsubscribe;
+	appStore.viewMode.subscribe((viewMode) => {
+		currentViewMode = viewMode;
+	});
+
+	appStore.activeTab.subscribe((activeTab) => {
+		currentActiveTab = activeTab;
 	});
 
 	// Handle browser back/forward navigation
@@ -50,18 +52,35 @@
 			sortStore.readFromURL($page.url.searchParams);
 		});
 
-		// Update URL with current filter state on initial load
-		filtersStore.writeToURL();
-		appStore.writeToURL();
-		sortStore.writeToURL();
+		// Update URL with current filter state on initial load (defer to ensure router is ready)
+		const updateURLs = () => {
+			try {
+				filtersStore.writeToURL();
+				appStore.writeToURL();
+				sortStore.writeToURL();
+			} catch (error) {
+				// If router still not ready, try again later
+				if (error instanceof Error && error.message.includes('router is initialized')) {
+					setTimeout(updateURLs, 10);
+				}
+			}
+		};
+
+		// Use requestAnimationFrame for better timing, fallback to setTimeout
+		if (typeof requestAnimationFrame !== 'undefined') {
+			requestAnimationFrame(updateURLs);
+		} else {
+			setTimeout(updateURLs, 10);
+		}
 
 		return () => {
 			unsubscribePage();
 		};
 	});
 
-	// Show filtered games (both planned and completed)
-	let displayGames = $derived(filteredData.filteredGames);
+	// Show filtered games based on active tab (computed in template)
+
+
 
 	// Handle game card/row clicks for detail modal
 	function handleGameClick(game: Game): void {
@@ -74,38 +93,149 @@
 </svelte:head>
 
 <div class="main-content" id="main-content">
-	{#if displayGames.length === 0}
-		<div class="empty-state">
-			{#if filteredData.totalCount === 0}
-				<h2>No games found</h2>
-				<p>Add your first game to get started!</p>
-			{:else}
-				<h2>No games match your search</h2>
-				<p>Try adjusting your search terms or filters.</p>
-			{/if}
-		</div>
-	{:else}
-		<div class="game-count-info">
-			<span class="count-text">
-				Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
-			</span>
-			<span class="breakdown-text">
-				({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
-			</span>
-		</div>
-
-		{#if currentViewMode === 'gallery'}
-			<!-- Gallery View -->
-			<div
-				class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
-			>
-				{#each displayGames as game (game.id)}
-					<GameCard {game} />
-				{/each}
+	{#if currentActiveTab === 'completed'}
+		{@const filteredGames = filteredData.filteredGames.filter((game: Game) => game.status === 'Completed')}
+		{#if filteredGames.length === 0}
+			<div class="empty-state">
+				{#if filteredData.totalCount === 0}
+					<h2>No games found</h2>
+					<p>Add your first game to get started!</p>
+				{:else}
+					<h2>No games match your search</h2>
+					<p>Try adjusting your search terms or filters.</p>
+				{/if}
 			</div>
 		{:else}
-			<!-- Table View -->
-			<GameTable games={displayGames} onRowClick={handleGameClick} />
+			<div class="game-count-info">
+				<span class="count-text">
+					Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
+				</span>
+				<span class="breakdown-text">
+					({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
+				</span>
+			</div>
+
+			{#if currentViewMode === 'gallery'}
+				<!-- Gallery View -->
+				<div
+					class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+				>
+					{#each filteredGames as game (game.id)}
+						<GameCard {game} />
+					{/each}
+				</div>
+			{:else}
+				<!-- Table View -->
+				<GameTable games={filteredGames} onRowClick={handleGameClick} />
+			{/if}
+		{/if}
+	{:else if currentActiveTab === 'planned'}
+		{@const filteredGames = filteredData.filteredGames.filter((game: Game) => game.status === 'Planned')}
+		{#if filteredGames.length === 0}
+			<div class="empty-state">
+				{#if filteredData.totalCount === 0}
+					<h2>No games found</h2>
+					<p>Add your first game to get started!</p>
+				{:else}
+					<h2>No games match your search</h2>
+					<p>Try adjusting your search terms or filters.</p>
+				{/if}
+			</div>
+		{:else}
+			<div class="game-count-info">
+				<span class="count-text">
+					Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
+				</span>
+				<span class="breakdown-text">
+					({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
+				</span>
+			</div>
+
+			{#if currentViewMode === 'gallery'}
+				<!-- Gallery View -->
+				<div
+					class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+				>
+					{#each filteredGames as game (game.id)}
+						<GameCard {game} />
+					{/each}
+				</div>
+			{:else}
+				<!-- Table View -->
+				<GameTable games={filteredGames} onRowClick={handleGameClick} />
+			{/if}
+		{/if}
+	{:else if currentActiveTab === 'tierlist'}
+		{@const filteredGames = filteredData.filteredGames.filter((game: Game) => game.status === 'Completed' && game.tier)}
+		{#if filteredGames.length === 0}
+			<div class="empty-state">
+				{#if filteredData.totalCount === 0}
+					<h2>No games found</h2>
+					<p>Add your first game to get started!</p>
+				{:else}
+					<h2>No games match your search</h2>
+					<p>Try adjusting your search terms or filters.</p>
+				{/if}
+			</div>
+		{:else}
+			<div class="game-count-info">
+				<span class="count-text">
+					Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
+				</span>
+				<span class="breakdown-text">
+					({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
+				</span>
+			</div>
+
+			{#if currentViewMode === 'gallery'}
+				<!-- Gallery View -->
+				<div
+					class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+				>
+					{#each filteredGames as game (game.id)}
+						<GameCard {game} />
+					{/each}
+				</div>
+			{:else}
+				<!-- Table View -->
+				<GameTable games={filteredGames} onRowClick={handleGameClick} />
+			{/if}
+		{/if}
+	{:else}
+		{@const filteredGames = filteredData.filteredGames}
+		{#if filteredGames.length === 0}
+			<div class="empty-state">
+				{#if filteredData.totalCount === 0}
+					<h2>No games found</h2>
+					<p>Add your first game to get started!</p>
+				{:else}
+					<h2>No games match your search</h2>
+					<p>Try adjusting your search terms or filters.</p>
+				{/if}
+			</div>
+		{:else}
+			<div class="game-count-info">
+				<span class="count-text">
+					Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
+				</span>
+				<span class="breakdown-text">
+					({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
+				</span>
+			</div>
+
+			{#if currentViewMode === 'gallery'}
+				<!-- Gallery View -->
+				<div
+					class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+				>
+					{#each filteredGames as game (game.id)}
+						<GameCard {game} />
+					{/each}
+				</div>
+			{:else}
+				<!-- Table View -->
+				<GameTable games={filteredGames} onRowClick={handleGameClick} />
+			{/if}
 		{/if}
 	{/if}
 </div>

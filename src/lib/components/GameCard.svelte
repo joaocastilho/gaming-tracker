@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { modalStore } from '../stores/modal.js';
 	import type { Game } from '../types/game.js';
 
@@ -9,10 +8,9 @@
 
 	let { game }: Props = $props();
 
-	// Lazy loading state
+	// Image loading state
 	let isImageLoaded = $state(false);
 	let hasImageError = $state(false);
-	let imgElement: HTMLImageElement | undefined;
 
 	// Calculate total score for completed games
 	let totalScore = $derived(
@@ -150,42 +148,23 @@
 		hasImageError = true;
 	}
 
-	// Setup Intersection Observer for lazy loading
-	onMount(() => {
-		if (!imgElement) return;
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						const img = entry.target as HTMLImageElement;
-						img.src = img.dataset.src || '';
-						observer.unobserve(img);
-					}
-				});
-			},
-			{
-				rootMargin: '50px'
-			}
-		);
-
-		observer.observe(imgElement);
-
-		return () => {
-			observer.disconnect();
-		};
-	});
+	// Handle keyboard interaction for accessibility
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			modalStore.openViewModal(game);
+		}
+	}
 </script>
 
-<article class="game-card" onclick={() => modalStore.openViewModal(game)}>
+<button class="game-card" onclick={() => modalStore.openViewModal(game)} onkeydown={handleKeyDown} aria-label="View details for {game.title}">
 	<!-- Cover Image Container -->
 	<div class="cover-container">
 		{#if !isImageLoaded && !hasImageError}
 			<div class="image-placeholder"></div>
 		{/if}
 		<img
-			bind:this={imgElement}
-			data-src="/{game.coverImage}"
+			src="/{game.coverImage}"
 			alt="{game.title} cover"
 			class="cover-image"
 			class:loaded={isImageLoaded}
@@ -263,7 +242,7 @@
 			</div>
 		{/if}
 	</div>
-</article>
+</button>
 
 <style>
 	.game-card {
@@ -290,9 +269,12 @@
 		cursor: pointer;
 	}
 
-	.game-card:hover {
+	.game-card:hover,
+	.game-card:focus {
 		transform: translateY(-4px);
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+		outline: 2px solid #60a5fa;
+		outline-offset: 2px;
 	}
 
 	/* Light mode */

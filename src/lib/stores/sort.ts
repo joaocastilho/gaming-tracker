@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { replaceState } from '$app/navigation';
 
 /**
  * Sort Store - Manages table sorting state
@@ -84,19 +85,26 @@ function createSortStore() {
 		writeToURL() {
 			if (typeof window === 'undefined') return;
 
-			const currentState = this.state;
-			const url = new URL(window.location.href);
+			try {
+				const currentState = this.state;
+				const url = new URL(window.location.href);
 
-			if (currentState.sortBy) {
-				url.searchParams.set('sortBy', currentState.sortBy);
-				url.searchParams.set('sortDir', currentState.sortDirection);
-			} else {
-				url.searchParams.delete('sortBy');
-				url.searchParams.delete('sortDir');
+				if (currentState.sortBy) {
+					url.searchParams.set('sortBy', currentState.sortBy);
+					url.searchParams.set('sortDir', currentState.sortDirection);
+				} else {
+					url.searchParams.delete('sortBy');
+					url.searchParams.delete('sortDir');
+				}
+
+				// Use replaceState to avoid adding to browser history
+				replaceState(url.toString(), {});
+			} catch (error) {
+				// Silently ignore router initialization errors
+				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
+					console.warn('Failed to update URL:', error);
+				}
 			}
-
-			// Use replaceState to avoid adding to browser history
-			window.history.replaceState({}, '', url.toString());
 		},
 
 		// Reset to default state

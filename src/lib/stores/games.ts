@@ -65,19 +65,19 @@ function createGamesStore() {
 							// Then validate the transformed data
 							return GameSchema.parse(transformedGame);
 						} catch (validationError) {
-							console.warn(`Invalid game data at index ${index}:`, validationError);
+							console.error(`Invalid game data at index ${index} (${game.title}):`, validationError);
 
 							// Log detailed validation info for debugging
 							const zodError = validationError as ZodError;
-							zodError.issues.forEach(() => {
-								// Additional validation details can be logged here if needed
-							});
+							console.error('Validation issues:', zodError.issues);
 
 							// Skip invalid games but don't fail the entire load
 							return null;
 						}
 					})
 					.filter(Boolean) as Game[];
+
+
 
 				set(validatedGames);
 

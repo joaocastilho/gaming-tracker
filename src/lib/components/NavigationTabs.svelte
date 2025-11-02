@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { appStore } from '../stores/app.js';
 	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
@@ -72,8 +73,8 @@
 			appStore.activeTab.set(tab.id);
 
 			// Navigate to the route (if not already on it)
-			if (typeof window !== 'undefined') {
-				window.history.pushState({}, '', tab.route);
+			if (typeof window !== 'undefined' && window.location && window.history) {
+				goto(tab.route, { replaceState: true });
 			}
 		}
 	}

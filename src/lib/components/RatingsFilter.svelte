@@ -48,7 +48,7 @@
 	let isOpen = $state(false);
 	let dropdownElement: HTMLDivElement | undefined;
 
-	// Current rating ranges from store
+	// Current rating ranges from store (reactive)
 	let ratingRanges = $state({
 		presentation: [0, 10],
 		story: [0, 10],
@@ -56,11 +56,15 @@
 		total: [0, 20]
 	});
 
-	// Subscribe to rating ranges from store
+	// Subscribe to store changes with error handling and proper cleanup
 	$effect(() => {
 		const unsubscribe = filtersStore.ratingRanges.subscribe((ranges) => {
-			ratingRanges = ranges;
+			// Only update if ranges are actually different to prevent unnecessary re-renders
+			if (JSON.stringify(ranges) !== JSON.stringify(ratingRanges)) {
+				ratingRanges = ranges;
+			}
 		});
+
 		return unsubscribe;
 	});
 

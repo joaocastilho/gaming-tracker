@@ -12,8 +12,33 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 
 	// Transform finishedDate: Convert simple date strings to ISO datetime format
 	if (transformed.finishedDate && !isValidISODateTime(String(transformed.finishedDate))) {
-		// Add time component if missing
-		transformed.finishedDate = `${transformed.finishedDate}T00:00:00.000Z`;
+		// Convert DD/MM/YYYY to YYYY-MM-DDTHH:mm:ss.sssZ
+		const dateStr = String(transformed.finishedDate);
+		const dateMatch = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+		if (dateMatch) {
+			const [, day, month, year] = dateMatch;
+			transformed.finishedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00.000Z`;
+		}
+	}
+
+	// Transform hoursPlayed: Convert numbers to "Xh Ym" format
+	if (transformed.hoursPlayed && typeof transformed.hoursPlayed === 'number') {
+		const hours = Math.floor(transformed.hoursPlayed);
+		const minutes = Math.round((transformed.hoursPlayed - hours) * 60);
+		transformed.hoursPlayed = `${hours}h ${minutes}m`;
+	}
+
+	// Transform tier: Extract just the letter from "X - Description" format
+	if (transformed.tier && typeof transformed.tier === 'string') {
+		const tierMatch = transformed.tier.match(/^([SABCDE])\s*-\s*.+$/);
+		if (tierMatch) {
+			transformed.tier = tierMatch[1];
+		}
+	}
+
+	// Ensure coOp field exists with default value
+	if (!transformed.coOp) {
+		transformed.coOp = 'No';
 	}
 
 	return transformed;

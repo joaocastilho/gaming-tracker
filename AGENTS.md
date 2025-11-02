@@ -27,7 +27,7 @@
 
 ## Executive Summary & Mandatory Rules
 
-### The Three Non-Negotiable Rules
+### The Non-Negotiable Rules
 
 **RULE #1: ALWAYS Ask Before Coding (When Unclear)**
 
@@ -40,6 +40,13 @@ You MUST work in small steps and verify each step completes successfully before 
 **RULE #3: NEVER Skip the Pre-Commit Workflow**
 
 The 8-step Pre-Commit Workflow (see below) is MANDATORY before EVERY commit, subtask completion, or status report. You must complete ALL 8 steps, in order, with zero shortcuts.
+
+**RULE #4: NEVER Change files under the /static folder**
+
+Files under the /static folder are inputs that cannot be changed. The code needs to be able to work with these files as they are.
+
+**RULE #5: ALWAYS respect the Core Technology Stack defined in the /docs/project.md**
+The /docs/project.md defines the Technology Stack and project Constrains that needs to be followed.
 
 ### Enforcement Mechanism
 
@@ -450,6 +457,56 @@ bun test
 
 ---
 
+#### ✓ Step 7.5: Live Site Verification (MANDATORY IF SUPPORTED)
+
+**⚠️ MANDATORY FOR TOOLS WITH BROWSER/RUNTIME CAPABILITIES**
+
+**PURPOSE**: Beyond unit tests and linting, the actual website must be verified to run without console errors, build failures, or runtime issues. Errors caught by type checkers and linters may not reveal runtime problems that only appear when the application is running.
+
+**PREREQUISITE**: Your tool must have the capability to:
+- Start a development server
+- Launch a browser or headless browser instance
+- Navigate to pages
+- Capture console output (logs, errors, warnings)
+- Capture HTTP responses
+- Take screenshots or verify visual rendering
+
+**If your tool does NOT have these capabilities, skip to Step 8.**
+
+**ACTIONS**:
+
+- [ ] Start the development server (e.g., `bun run dev` or equivalent)
+- [ ] Launch a browser or browser automation instance
+- [ ] Navigate to all pages and user flows affected by your changes
+- [ ] Monitor console output and capture all messages
+- [ ] Monitor network requests and capture any failed requests
+- [ ] Verify visual rendering is correct (no layout shifts, missing elements, or broken styling)
+- [ ] Interact with all modified UI components to verify functionality
+- [ ] Document any console output (errors, warnings, or network issues)
+
+**VERIFICATION QUESTIONS**:
+
+- Are there ANY JavaScript console errors?
+- Are there ANY unhandled promise rejections?
+- Are there ANY failed HTTP requests (4xx or 5xx status codes)?
+- Are there ANY network timeouts or connection errors?
+- Does the site render correctly without visual artifacts or layout shifts?
+- Do all interactive elements respond to user input as expected?
+- Are there any console warnings that indicate potential issues?
+- Are there any missing or broken assets?
+
+**FAILURE CONSEQUENCE**: If ANY of the following are found, STOP immediately. Do not proceed to Step 8:
+- JavaScript errors in the console
+- Unhandled promise rejections
+- Failed HTTP requests (4xx/5xx)
+- Broken visual rendering
+- Non-functional interactive elements
+- Network timeouts or connection errors
+
+Fix all runtime issues and restart from Step 7.5.
+
+---
+
 #### ✓ Step 8: Final Verification & Commit Message Generation
 
 **🔴 YOU CANNOT PROCEED PAST THIS POINT WITHOUT COMPLETING STEPS 1-7**
@@ -467,6 +524,7 @@ Before generating a commit message, you MUST state this exact confirmation (copy
 > - ✓ Step 5: All unnecessary comments removed
 > - ✓ Step 6: Prettier formatting applied
 > - ✓ Step 7: All tests passing
+> - ✓ Step 7.5: Live site verification completed (no console errors, no network failures, visual rendering correct)
 >
 > **The code is ready for commit.**
 

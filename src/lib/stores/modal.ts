@@ -1,4 +1,5 @@
 import { writable, get } from 'svelte/store';
+import { replaceState } from '$app/navigation';
 import type { Game } from '../types/game.js';
 import { gamesStore } from './games.js';
 
@@ -352,17 +353,24 @@ function createModalStore() {
 		writeToURL() {
 			if (typeof window === 'undefined') return;
 
-			const state = get(modalState);
-			const url = new URL(window.location.href);
+			try {
+				const state = get(modalState);
+				const url = new URL(window.location.href);
 
-			if (state.isOpen && state.activeGame) {
-				url.searchParams.set('game', state.activeGame.id);
-			} else {
-				url.searchParams.delete('game');
+				if (state.isOpen && state.activeGame) {
+					url.searchParams.set('game', state.activeGame.id);
+				} else {
+					url.searchParams.delete('game');
+				}
+
+				// Use replaceState to avoid adding to browser history
+				replaceState(url.toString(), {});
+			} catch (error) {
+				// Silently ignore router initialization errors
+				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
+					console.warn('Failed to update URL:', error);
+				}
 			}
-
-			// Use replaceState to avoid adding to browser history
-			window.history.replaceState({}, '', url.toString());
 		},
 
 		// Handle escape key to close modal

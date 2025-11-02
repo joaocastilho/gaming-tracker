@@ -15,30 +15,22 @@
 
 	let { children } = $props();
 
-	let filterOptions = $state({
+	let filterOptions = {
 		platforms: [] as string[],
 		genres: [] as string[],
 		tiers: [] as string[]
-	});
-	let initialized = $state(false);
+	};
+	let initialized = false;
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
+	let currentViewMode = 'gallery';
 
 	// Subscribe to games store and extract filter options
-	$effect(() => {
-		const unsubscribe = gamesStore.subscribe((games) => {
-			filterOptions = extractFilterOptions(games);
-		});
-		return unsubscribe;
+	gamesStore.subscribe((games) => {
+		filterOptions = extractFilterOptions(games);
 	});
 
-	// Subscribe to app store for view mode
-	let currentViewMode = $state('gallery');
-
-	$effect(() => {
-		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
-			currentViewMode = viewMode;
-		});
-		return unsubscribe;
+	appStore.viewMode.subscribe((viewMode) => {
+		currentViewMode = viewMode;
 	});
 
 	// Initialize app from URL parameters
@@ -61,7 +53,7 @@
 	});
 
 	// Handle URL updates for all filters (debounced)
-	let currentFilterState = $state({
+	let currentFilterState = {
 		searchQuery: '',
 		selectedPlatforms: [] as string[],
 		selectedGenres: [] as string[],
@@ -72,13 +64,11 @@
 			gameplay: [0, 10] as [number, number],
 			total: [0, 20] as [number, number]
 		}
-	});
+	};
 
-	$effect(() => {
-		const unsubscribe = filtersStore.filterState.subscribe((filters) => {
-			currentFilterState = filters;
-		});
-		return unsubscribe;
+	// Direct subscription to filter state
+	filtersStore.filterState.subscribe((filters) => {
+		currentFilterState = filters;
 	});
 
 	// Debounced URL update for all filter changes
@@ -143,30 +133,21 @@
 	}
 
 	// Filter state
-	let selectedPlatforms = $state<string[]>([]);
-	let selectedGenres = $state<string[]>([]);
-	let selectedTiers = $state<string[]>([]);
+	let selectedPlatforms: string[] = [];
+	let selectedGenres: string[] = [];
+	let selectedTiers: string[] = [];
 
-	// Subscribe to filter stores
-	$effect(() => {
-		const unsubscribe = filtersStore.selectedPlatforms.subscribe((platforms) => {
-			selectedPlatforms = platforms;
-		});
-		return unsubscribe;
+	// Direct subscriptions to filter stores
+	filtersStore.selectedPlatforms.subscribe((platforms) => {
+		selectedPlatforms = platforms;
 	});
 
-	$effect(() => {
-		const unsubscribe = filtersStore.selectedGenres.subscribe((genres) => {
-			selectedGenres = genres;
-		});
-		return unsubscribe;
+	filtersStore.selectedGenres.subscribe((genres) => {
+		selectedGenres = genres;
 	});
 
-	$effect(() => {
-		const unsubscribe = filtersStore.selectedTiers.subscribe((tiers) => {
-			selectedTiers = tiers;
-		});
-		return unsubscribe;
+	filtersStore.selectedTiers.subscribe((tiers) => {
+		selectedTiers = tiers;
 	});
 
 	// Reset all filters

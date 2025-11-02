@@ -1,4 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
+import { replaceState } from '$app/navigation';
 import type { FiltersStore } from './filters.js';
 
 // TypeScript interfaces for app state
@@ -117,32 +118,39 @@ function createAppStore() {
 		writeToURL() {
 			if (typeof window === 'undefined') return;
 
-			const currentViewMode = get(viewMode);
-			const currentTheme = get(theme);
-			const currentActiveTab = get(activeTab);
-			const url = new URL(window.location.href);
+			try {
+				const currentViewMode = get(viewMode);
+				const currentTheme = get(theme);
+				const currentActiveTab = get(activeTab);
+				const url = new URL(window.location.href);
 
-			// Only update if different from defaults to keep URLs clean
-			if (currentViewMode !== 'gallery') {
-				url.searchParams.set('view', currentViewMode);
-			} else {
-				url.searchParams.delete('view');
+				// Only update if different from defaults to keep URLs clean
+				if (currentViewMode !== 'gallery') {
+					url.searchParams.set('view', currentViewMode);
+				} else {
+					url.searchParams.delete('view');
+				}
+
+				if (currentTheme !== 'dark') {
+					url.searchParams.set('theme', currentTheme);
+				} else {
+					url.searchParams.delete('theme');
+				}
+
+				if (currentActiveTab !== 'all') {
+					url.searchParams.set('tab', currentActiveTab);
+				} else {
+					url.searchParams.delete('tab');
+				}
+
+				// Use replaceState to avoid adding to browser history
+				replaceState(url.toString(), {});
+			} catch (error) {
+				// Silently ignore router initialization errors
+				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
+					console.warn('Failed to update URL:', error);
+				}
 			}
-
-			if (currentTheme !== 'dark') {
-				url.searchParams.set('theme', currentTheme);
-			} else {
-				url.searchParams.delete('theme');
-			}
-
-			if (currentActiveTab !== 'all') {
-				url.searchParams.set('tab', currentActiveTab);
-			} else {
-				url.searchParams.delete('tab');
-			}
-
-			// Use replaceState to avoid adding to browser history
-			window.history.replaceState({}, '', url.toString());
 		},
 
 		// Enhanced writeToURL with filter support

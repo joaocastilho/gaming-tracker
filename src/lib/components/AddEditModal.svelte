@@ -86,6 +86,14 @@
 		}
 	}
 
+	// Handle overlay keyboard interaction for accessibility
+	function handleOverlayKeydown(event: KeyboardEvent): void {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			closeModal();
+		}
+	}
+
 	// Handle status change
 	function handleStatusChange(status: 'Planned' | 'Completed') {
 		updateField('status', status);
@@ -170,6 +178,12 @@
 	<div
 		class="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
 		onclick={closeModal}
+		onkeydown={(e) => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				closeModal();
+			}
+		}}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
@@ -178,7 +192,6 @@
 		<!-- Modal Content -->
 		<div
 			class="modal-content bg-background border-border max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border shadow-2xl"
-			onclick={(e) => e.stopPropagation()}
 			role="document"
 		>
 			<!-- Header -->

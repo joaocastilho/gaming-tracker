@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { modalStore } from '../stores/modal.js';
 	import { Eye, PenTool, Gamepad2, Trophy, X } from 'lucide-svelte';
 
@@ -15,8 +16,8 @@
 		return unsubscribe;
 	});
 
-	let modalElement: HTMLDivElement;
-	let coverImage: HTMLImageElement;
+	let modalElement = $state<HTMLDivElement>();
+	let coverImage = $state<HTMLImageElement>();
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
@@ -26,6 +27,14 @@
 
 	function handleOverlayClick(event: MouseEvent) {
 		if (event.target === modalElement) {
+			modalStore.closeModal();
+		}
+	}
+
+	// Handle overlay keyboard interaction for accessibility
+	function handleOverlayKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
 			modalStore.closeModal();
 		}
 	}
@@ -84,11 +93,15 @@
 	}
 
 	onMount(() => {
-		document.addEventListener('keydown', handleKeydown);
+		if (browser) {
+			document.addEventListener('keydown', handleKeydown);
+		}
 	});
 
 	onDestroy(() => {
-		document.removeEventListener('keydown', handleKeydown);
+		if (browser) {
+			document.removeEventListener('keydown', handleKeydown);
+		}
 	});
 </script>
 
@@ -97,8 +110,10 @@
 	<div
 		bind:this={modalElement}
 		class="bg-opacity-80 fixed inset-0 z-50 flex items-center justify-center bg-black p-4"
-		on:click={handleOverlayClick}
+		onclick={handleOverlayClick}
+		onkeydown={handleOverlayKeydown}
 		role="dialog"
+		tabindex="-1"
 		aria-modal="true"
 		aria-labelledby="modal-title"
 	>
@@ -108,7 +123,7 @@
 		>
 			<!-- Close Button -->
 			<button
-				on:click={() => modalStore.closeModal()}
+				onclick={() => modalStore.closeModal()}
 				class="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 				aria-label="Close modal"
 			>
