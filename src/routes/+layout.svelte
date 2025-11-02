@@ -6,22 +6,16 @@
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
+	import { appStore } from '$lib/stores/app.js';
 	import type { Game } from '$lib/types/game.js';
 
 	let { children } = $props();
 
-	let searchQuery = $state('');
+	let allGames = $state<Game[]>([]);
 	let initialized = $state(false);
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
-	let allGames = $state<Game[]>([]);
 
-	$effect(() => {
-		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
-			searchQuery = value;
-		});
-		return unsubscribe;
-	});
-
+	// Subscribe to games store
 	$effect(() => {
 		const unsubscribe = gamesStore.subscribe((games) => {
 			allGames = games;
@@ -29,57 +23,89 @@
 		return unsubscribe;
 	});
 
-	function filterGames(games: Game[], query: string): Game[] {
-		if (!query.trim()) return games;
-		const lowerQuery = query.toLowerCase();
-		return games.filter((game) => game.title.toLowerCase().includes(lowerQuery));
-	}
-
-	let filteredGames = $derived(filterGames(allGames, searchQuery));
-
-	let filteredCounts = $derived({
-		total: filteredGames.length,
-		completed: filteredGames.filter((g) => g.status === 'Completed').length,
-		planned: filteredGames.filter((g) => g.status === 'Planned').length
+	// Get game counts from games store (not filtered)
+	let gameCounts = $derived({
+		total: allGames.length,
+		completed: allGames.filter((g) => g.status === 'Completed').length,
+		planned: allGames.filter((g) => g.status === 'Planned').length
 	});
 
-	// Initialize search from URL parameters on page load
+	// Subscribe to app store for theme and view mode
+	let currentTheme = $state('dark');
+	let currentViewMode = $state('gallery');
+
+	$effect(() => {
+		const unsubscribe = appStore.theme.subscribe((theme) => {
+			currentTheme = theme;
+		});
+		return unsubscribe;
+	});
+
+	$effect(() => {
+		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
+			currentViewMode = viewMode;
+		});
+		return unsubscribe;
+	});
+
+	// Initialize app from URL parameters
 	$effect(() => {
 		if (!initialized) {
-			const searchParam = $page.url.searchParams.get('search');
-			if (searchParam) {
-				filtersStore.searchQuery.set(searchParam);
+			appStore.readFromURL($page.url.searchParams);
+
+			// Set up URL parameter handling
+			const searchParams = $page.url.searchParams;
+			const search = searchParams.get('search');
+			if (search) {
+				filtersStore.searchQuery.set(search);
 			}
+
 			initialized = true;
 		}
 	});
 
-	// Update URL when search query changes (debounced)
+	// Handle URL updates for search (debounced)
 	$effect(() => {
 		if (initialized) {
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 			urlUpdateTimeout = setTimeout(() => {
-				const currentUrl = new URL($page.url);
-				if (searchQuery) {
-					currentUrl.searchParams.set('search', searchQuery);
-				} else {
-					currentUrl.searchParams.delete('search');
-				}
-				goto(currentUrl.toString(), { replaceState: true });
+				appStore.writeToURL();
 			}, 300);
 		}
 	});
 
-	// Sync URL changes (back/forward navigation) to filters store
+	// Handle browser back/forward navigation
+	let currentSearchQuery = $state('');
+
+	$effect(() => {
+		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
+			currentSearchQuery = value;
+		});
+		return unsubscribe;
+	});
+
 	$effect(() => {
 		const searchParam = $page.url.searchParams.get('search') || '';
-		if (initialized && searchParam !== searchQuery) {
-			filtersStore.searchQuery.set(searchParam);
+		if (initialized && searchParam !== currentSearchQuery) {
+			filtersStore.readFromURL($page.url.searchParams);
 		}
 	});
 
 	async function navigateTo(path: string) {
 		await goto(path, { replaceState: true });
+	}
+
+	function handleThemeToggle() {
+		appStore.toggleTheme();
+	}
+
+	function handleViewModeToggle() {
+		appStore.toggleViewMode();
+	}
+
+	// Get theme emoji
+	function getThemeEmoji(theme: string): string {
+		return theme === 'dark' ? '☀️' : '🌙';
 	}
 </script>
 
@@ -102,9 +128,13 @@
 				</button>
 			</div>
 			<div class="flex items-center gap-4">
-				<span class="text-muted-foreground text-sm">{filteredCounts.total} games tracked</span>
-				<button class="hover:bg-accent rounded-md p-2 transition-colors" title="Toggle theme">
-					<span class="text-lg">☀️</span>
+				<span class="text-muted-foreground text-sm">{gameCounts.total} games tracked</span>
+				<button
+					class="hover:bg-accent rounded-md p-2 transition-colors"
+					title="Toggle theme"
+					onclick={handleThemeToggle}
+				>
+					<span class="text-lg">{getThemeEmoji(currentTheme)}</span>
 				</button>
 			</div>
 		</div>
@@ -118,19 +148,19 @@
 					onclick={() => navigateTo('/')}
 					class="text-foreground border-accent hover:border-accent/50 border-b-2 pb-3 text-sm font-medium transition-all"
 				>
-					Games ({filteredCounts.total})
+					Games ({gameCounts.total})
 				</button>
 				<button
 					onclick={() => navigateTo('/completed')}
 					class="text-muted-foreground hover:text-foreground hover:border-accent/50 border-b-2 border-transparent pb-3 text-sm font-medium transition-all"
 				>
-					Finished ({filteredCounts.completed})
+					Finished ({gameCounts.completed})
 				</button>
 				<button
 					onclick={() => navigateTo('/planned')}
 					class="text-muted-foreground hover:text-foreground hover:border-accent/50 border-b-2 border-transparent pb-3 text-sm font-medium transition-all"
 				>
-					Planned ({filteredCounts.planned})
+					Planned ({gameCounts.planned})
 				</button>
 				<button
 					onclick={() => navigateTo('/tierlist')}
@@ -177,12 +207,31 @@
 				</button>
 
 				<div class="ml-auto flex items-center gap-2">
-					<button class="bg-accent text-accent-foreground rounded-md p-2" title="Gallery view">
+					<button
+						class="rounded-md p-2 transition-colors"
+						class:bg-accent={currentViewMode === 'gallery'}
+						class:text-accent-foreground={currentViewMode === 'gallery'}
+						class:bg-surface={currentViewMode !== 'gallery'}
+						class:border-border={currentViewMode !== 'gallery'}
+						class:hover:bg-accent={currentViewMode !== 'gallery'}
+						class:hover:text-accent-foreground={currentViewMode !== 'gallery'}
+						class:border={currentViewMode !== 'gallery'}
+						title="Gallery view"
+						onclick={handleViewModeToggle}
+					>
 						⊞
 					</button>
 					<button
-						class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border p-2 transition-colors"
+						class="rounded-md p-2 transition-colors"
+						class:bg-accent={currentViewMode === 'table'}
+						class:text-accent-foreground={currentViewMode === 'table'}
+						class:bg-surface={currentViewMode !== 'table'}
+						class:border-border={currentViewMode !== 'table'}
+						class:hover:bg-accent={currentViewMode !== 'table'}
+						class:hover:text-accent-foreground={currentViewMode !== 'table'}
+						class:border={currentViewMode !== 'table'}
 						title="Table view"
+						onclick={handleViewModeToggle}
 					>
 						☰
 					</button>

@@ -14,7 +14,7 @@
 
 	// Toggle theme function
 	function toggleTheme() {
-		appStore.theme.toggle();
+		appStore.toggleTheme();
 	}
 </script>
 

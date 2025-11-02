@@ -14,19 +14,14 @@
 	let imgElement: HTMLImageElement | undefined;
 
 	// Calculate total score for completed games
-	let totalScore = $derived(() => {
-		if (
-			game.status === 'Completed' &&
+	let totalScore = $derived(
+		game.status === 'Completed' &&
 			game.ratingPresentation !== null &&
 			game.ratingStory !== null &&
 			game.ratingGameplay !== null
-		) {
-			return Math.round(
-				((game.ratingPresentation + game.ratingStory + game.ratingGameplay) / 3) * 2
-			);
-		}
-		return null;
-	});
+			? Math.round(((game.ratingPresentation + game.ratingStory + game.ratingGameplay) / 3) * 2)
+			: null
+	);
 
 	// Badge color mappings
 	const platformColors: Record<string, string> = {

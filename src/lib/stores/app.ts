@@ -1,130 +1,140 @@
-import { writable } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 
-/**
- * App Store - Manages global application state including theme, view mode, and active tab
- *
- * Features:
- * - theme: 'dark' | 'light' (persisted to localStorage)
- * - viewMode: 'gallery' | 'table' (persisted to localStorage)
- * - activeTab: 'all' | 'completed' | 'planned' | 'tierlist' (URL-based state)
- */
-
-type Theme = 'dark' | 'light';
-type ViewMode = 'gallery' | 'table';
-type ActiveTab = 'all' | 'completed' | 'planned' | 'tierlist';
+// TypeScript interfaces for app state
+export interface AppState {
+	viewMode: 'gallery' | 'table';
+	theme: 'dark' | 'light';
+	activeTab: 'all' | 'completed' | 'planned' | 'tierlist';
+}
 
 function createAppStore() {
-	// Initialize stores with defaults
-	const themeStore = writable<Theme>('dark');
-	const viewModeStore = writable<ViewMode>('gallery');
-	const activeTabStore = writable<ActiveTab>('all');
+	const viewMode = writable<'gallery' | 'table'>('gallery');
+	const theme = writable<'dark' | 'light'>('dark');
+	const activeTab = writable<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 
-	// Theme persistence
-	const THEME_KEY = 'gaming-tracker-theme';
-
-	// Load theme from localStorage on initialization
+	// Initialize from localStorage
 	if (typeof window !== 'undefined') {
-		const savedTheme = localStorage.getItem(THEME_KEY) as Theme;
-		if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
-			themeStore.set(savedTheme);
-		}
-	}
+		viewMode.subscribe((mode) => {
+			localStorage.setItem('gaming-tracker-view-mode', mode);
+		});
 
-	// Apply theme to document and persist changes
-	themeStore.subscribe((theme) => {
-		if (typeof window !== 'undefined') {
-			// Apply theme class to document
+		theme.subscribe((t) => {
+			localStorage.setItem('gaming-tracker-theme', t);
+			// Apply theme to document
 			document.documentElement.classList.remove('light', 'dark');
-			document.documentElement.classList.add(theme);
+			document.documentElement.classList.add(t);
+		});
 
-			// Persist to localStorage
-			localStorage.setItem(THEME_KEY, theme);
+		// Load from localStorage on initialization
+		const savedViewMode = localStorage.getItem('gaming-tracker-view-mode') as
+			| 'gallery'
+			| 'table'
+			| null;
+		if (savedViewMode) {
+			viewMode.set(savedViewMode);
 		}
-	});
 
-	// View mode persistence
-	const VIEW_MODE_KEY = 'gaming-tracker-view-mode';
-
-	// Load view mode from localStorage on initialization
-	if (typeof window !== 'undefined') {
-		const savedViewMode = localStorage.getItem(VIEW_MODE_KEY) as ViewMode;
-		if (savedViewMode && (savedViewMode === 'gallery' || savedViewMode === 'table')) {
-			viewModeStore.set(savedViewMode);
+		const savedTheme = localStorage.getItem('gaming-tracker-theme') as 'dark' | 'light' | null;
+		if (savedTheme) {
+			theme.set(savedTheme);
 		}
 	}
 
-	// Persist view mode changes
-	viewModeStore.subscribe((viewMode) => {
-		if (typeof window !== 'undefined') {
-			localStorage.setItem(VIEW_MODE_KEY, viewMode);
-		}
-	});
+	// Derived store for combined app state
+	const appState = derived(
+		[viewMode, theme, activeTab],
+		([$viewMode, $theme, $activeTab]): AppState => ({
+			viewMode: $viewMode,
+			theme: $theme,
+			activeTab: $activeTab
+		})
+	);
 
 	return {
-		// Theme store
-		theme: {
-			subscribe: themeStore.subscribe,
-			set: themeStore.set,
-			update: themeStore.update,
-			toggle: () => themeStore.update((current) => (current === 'dark' ? 'light' : 'dark')),
-			get: () => {
-				let current: Theme = 'dark';
-				themeStore.subscribe((value) => (current = value))();
-				return current;
+		// Individual state stores
+		viewMode,
+		theme,
+		activeTab,
+
+		// Combined state
+		appState,
+
+		// Action methods
+		toggleViewMode() {
+			viewMode.update((mode) => (mode === 'gallery' ? 'table' : 'gallery'));
+		},
+
+		setViewMode(mode: 'gallery' | 'table') {
+			viewMode.set(mode);
+		},
+
+		toggleTheme() {
+			theme.update((t) => (t === 'dark' ? 'light' : 'dark'));
+		},
+
+		setTheme(newTheme: 'dark' | 'light') {
+			theme.set(newTheme);
+		},
+
+		setActiveTab(tab: 'all' | 'completed' | 'planned' | 'tierlist') {
+			activeTab.set(tab);
+		},
+
+		// URL parameter management
+		readFromURL(searchParams: URLSearchParams) {
+			const view = searchParams.get('view');
+			const themeParam = searchParams.get('theme');
+			const tab = searchParams.get('tab');
+
+			if (view && (view === 'gallery' || view === 'table')) {
+				viewMode.set(view);
+			}
+
+			if (themeParam && (themeParam === 'dark' || themeParam === 'light')) {
+				theme.set(themeParam);
+			}
+
+			if (
+				tab &&
+				(tab === 'all' || tab === 'completed' || tab === 'planned' || tab === 'tierlist')
+			) {
+				activeTab.set(tab);
 			}
 		},
 
-		// View mode store
-		viewMode: {
-			subscribe: viewModeStore.subscribe,
-			set: viewModeStore.set,
-			update: viewModeStore.update,
-			get: () => {
-				let current: ViewMode = 'gallery';
-				viewModeStore.subscribe((value) => (current = value))();
-				return current;
+		writeToURL() {
+			if (typeof window === 'undefined') return;
+
+			const currentViewMode = get(viewMode);
+			const currentTheme = get(theme);
+			const currentActiveTab = get(activeTab);
+			const url = new URL(window.location.href);
+
+			// Only update if different from defaults to keep URLs clean
+			if (currentViewMode !== 'gallery') {
+				url.searchParams.set('view', currentViewMode);
+			} else {
+				url.searchParams.delete('view');
 			}
-		},
 
-		// Active tab store
-		activeTab: {
-			subscribe: activeTabStore.subscribe,
-			set: activeTabStore.set,
-			update: activeTabStore.update,
-			get: () => {
-				let current: ActiveTab = 'all';
-				activeTabStore.subscribe((value) => (current = value))();
-				return current;
+			if (currentTheme !== 'dark') {
+				url.searchParams.set('theme', currentTheme);
+			} else {
+				url.searchParams.delete('theme');
 			}
-		},
 
-		// Combined state getter
-		getState() {
-			let theme: Theme = 'dark';
-			let viewMode: ViewMode = 'gallery';
-			let activeTab: ActiveTab = 'all';
+			if (currentActiveTab !== 'all') {
+				url.searchParams.set('tab', currentActiveTab);
+			} else {
+				url.searchParams.delete('tab');
+			}
 
-			themeStore.subscribe((value) => (theme = value))();
-			viewModeStore.subscribe((value) => (viewMode = value))();
-			activeTabStore.subscribe((value) => (activeTab = value))();
-
-			return { theme, viewMode, activeTab };
-		},
-
-		// Reset all state to defaults
-		reset() {
-			themeStore.set('dark');
-			viewModeStore.set('gallery');
-			activeTabStore.set('all');
+			// Use replaceState to avoid adding to browser history
+			window.history.replaceState({}, '', url.toString());
 		}
 	};
 }
 
-// Create and export the app store instance
 export const appStore = createAppStore();
 
-// Export types for store values
-export type { Theme, ViewMode, ActiveTab };
-
-// Export type for store instance
 export type AppStore = ReturnType<typeof createAppStore>;

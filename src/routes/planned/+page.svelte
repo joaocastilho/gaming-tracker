@@ -3,8 +3,12 @@
 	import { page } from '$app/stores';
 	import { gamesStore } from '$lib/stores/games.js';
 	import { filtersStore } from '$lib/stores/filters.js';
+	import { appStore } from '$lib/stores/app.js';
+
 	import type { FilteredGameData } from '$lib/stores/filters.js';
+	import type { Game } from '$lib/types/game.js';
 	import GameCard from '$lib/components/GameCard.svelte';
+	import GameTable from '$lib/components/GameTable.svelte';
 
 	// Create filtered games store combining games and filters
 	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
@@ -17,8 +21,8 @@
 		plannedCount: 0
 	});
 
-	// Get current search query for display
-	let searchQuery = $state('');
+	// Get current view mode
+	let currentViewMode = $state<'gallery' | 'table'>('gallery');
 
 	$effect(() => {
 		const unsubscribe = filteredGamesStore.subscribe((data) => {
@@ -28,8 +32,8 @@
 	});
 
 	$effect(() => {
-		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
-			searchQuery = value;
+		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
+			currentViewMode = viewMode;
 		});
 		return unsubscribe;
 	});
@@ -40,20 +44,28 @@
 		const unsubscribePage = page.subscribe(($page) => {
 			// Read search query from URL when browser navigation occurs
 			filtersStore.readFromURL($page.url.searchParams);
+			appStore.readFromURL($page.url.searchParams);
 		});
 
 		// Update URL with current filter state on initial load
 		filtersStore.writeToURL();
+		appStore.writeToURL();
 
 		return () => {
 			unsubscribePage();
 		};
 	});
 
-	// Show filtered planned games only
+	// Filter to show only planned games
 	let displayGames = $derived(
 		filteredData.filteredGames.filter((game) => game.status === 'Planned')
 	);
+
+	// Handle game card/row clicks for detail modal
+	function handleGameClick(game: Game): void {
+		// TODO: Implement modal functionality
+		console.log('Game clicked:', game.title);
+	}
 </script>
 
 <svelte:head>
@@ -63,31 +75,37 @@
 <div class="main-content" id="main-content">
 	{#if displayGames.length === 0}
 		<div class="empty-state">
-			<h2>No planned games found</h2>
-			<p>
-				{#if searchQuery}
-					No planned games match your search "{searchQuery}". Try adjusting your search terms.
-				{:else}
-					Plan some games to see them here!
-				{/if}
-			</p>
+			{#if filteredData.plannedCount === 0}
+				<h2>No planned games yet</h2>
+				<p>Add some games to your wishlist to see them here!</p>
+			{:else}
+				<h2>No planned games match your search</h2>
+				<p>Try adjusting your search terms or filters.</p>
+			{/if}
 		</div>
 	{:else}
 		<div class="game-count-info">
 			<span class="count-text">
-				Showing {filteredData.plannedCount} planned game{filteredData.plannedCount !== 1 ? 's' : ''}
-				{#if searchQuery}
-					matching "{searchQuery}"
-				{/if}
+				Showing {displayGames.length} planned game{displayGames.length !== 1 ? 's' : ''}
+			</span>
+			<span class="breakdown-text">
+				From {filteredData.plannedCount} total planned
 			</span>
 		</div>
-		<div
-			class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
-		>
-			{#each displayGames as game (game.id)}
-				<GameCard {game} />
-			{/each}
-		</div>
+
+		{#if currentViewMode === 'gallery'}
+			<!-- Gallery View -->
+			<div
+				class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+			>
+				{#each displayGames as game (game.id)}
+					<GameCard {game} />
+				{/each}
+			</div>
+		{:else}
+			<!-- Table View -->
+			<GameTable games={displayGames} onRowClick={handleGameClick} />
+		{/if}
 	{/if}
 </div>
 
@@ -125,6 +143,12 @@
 		color: #8b92a8;
 	}
 
+	.breakdown-text {
+		font-size: 0.8rem;
+		color: #6b7280;
+		margin-left: 0.5rem;
+	}
+
 	/* Light mode */
 	:global(.light) .empty-state {
 		color: #6b7280;
@@ -132,5 +156,9 @@
 
 	:global(.light) .count-text {
 		color: #6b7280;
+	}
+
+	:global(.light) .breakdown-text {
+		color: #9ca3af;
 	}
 </style>

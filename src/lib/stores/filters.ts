@@ -15,6 +15,13 @@ export interface FilterState {
 	};
 }
 
+// TypeScript interfaces for app state
+export interface AppState {
+	viewMode: 'gallery' | 'table';
+	theme: 'dark' | 'light';
+	activeTab: 'all' | 'completed' | 'planned' | 'tierlist';
+}
+
 export interface FilteredGameData {
 	filteredGames: Game[];
 	totalCount: number;
@@ -165,7 +172,7 @@ function createFiltersStore() {
 
 		// URL Parameter Management
 		readFromURL(searchParams: URLSearchParams) {
-			const query = searchParams.get('q');
+			const query = searchParams.get('search');
 			if (query !== null) {
 				searchQuery.set(query);
 			}
@@ -178,9 +185,9 @@ function createFiltersStore() {
 			const url = new URL(window.location.href);
 
 			if (currentQuery.trim()) {
-				url.searchParams.set('q', currentQuery.trim());
+				url.searchParams.set('search', currentQuery.trim());
 			} else {
-				url.searchParams.delete('q');
+				url.searchParams.delete('search');
 			}
 
 			// Use replaceState to avoid adding to browser history

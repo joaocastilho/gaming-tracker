@@ -3,9 +3,12 @@
 	import { page } from '$app/stores';
 	import { gamesStore } from '$lib/stores/games.js';
 	import { filtersStore } from '$lib/stores/filters.js';
+	import { appStore } from '$lib/stores/app.js';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
+	import type { Game } from '$lib/types/game.js';
 	import GameCard from '$lib/components/GameCard.svelte';
+	import GameTable from '$lib/components/GameTable.svelte';
 
 	// Create filtered games store combining games and filters
 	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
@@ -18,6 +21,9 @@
 		plannedCount: 0
 	});
 
+	// Get current view mode
+	let currentViewMode = $state<'gallery' | 'table'>('gallery');
+
 	$effect(() => {
 		const unsubscribe = filteredGamesStore.subscribe((data) => {
 			filteredData = data;
@@ -25,11 +31,9 @@
 		return unsubscribe;
 	});
 
-	// Get current search query for display
-	let searchQuery = $state('');
 	$effect(() => {
-		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
-			searchQuery = value;
+		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
+			currentViewMode = viewMode;
 		});
 		return unsubscribe;
 	});
@@ -40,10 +44,12 @@
 		const unsubscribePage = page.subscribe(($page) => {
 			// Read search query from URL when browser navigation occurs
 			filtersStore.readFromURL($page.url.searchParams);
+			appStore.readFromURL($page.url.searchParams);
 		});
 
 		// Update URL with current filter state on initial load
 		filtersStore.writeToURL();
+		appStore.writeToURL();
 
 		return () => {
 			unsubscribePage();
@@ -52,6 +58,12 @@
 
 	// Show filtered games (both planned and completed)
 	let displayGames = $derived(filteredData.filteredGames);
+
+	// Handle game card/row clicks for detail modal
+	function handleGameClick(game: Game): void {
+		// TODO: Implement modal functionality
+		console.log('Game clicked:', game.title);
+	}
 </script>
 
 <svelte:head>
@@ -61,39 +73,37 @@
 <div class="main-content" id="main-content">
 	{#if displayGames.length === 0}
 		<div class="empty-state">
-			{#if searchQuery || filteredData.totalCount === 0}
+			{#if filteredData.totalCount === 0}
 				<h2>No games found</h2>
-				<p>
-					{#if searchQuery}
-						No games match your search "{searchQuery}". Try adjusting your search terms.
-					{:else}
-						Add your first game to get started!
-					{/if}
-				</p>
-			{:else}
-				<h2>No games yet</h2>
 				<p>Add your first game to get started!</p>
+			{:else}
+				<h2>No games match your search</h2>
+				<p>Try adjusting your search terms or filters.</p>
 			{/if}
 		</div>
 	{:else}
 		<div class="game-count-info">
 			<span class="count-text">
 				Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
-				{#if searchQuery}
-					matching "{searchQuery}"
-				{/if}
 			</span>
 			<span class="breakdown-text">
 				({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
 			</span>
 		</div>
-		<div
-			class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
-		>
-			{#each displayGames as game (game.id)}
-				<GameCard {game} />
-			{/each}
-		</div>
+
+		{#if currentViewMode === 'gallery'}
+			<!-- Gallery View -->
+			<div
+				class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+			>
+				{#each displayGames as game (game.id)}
+					<GameCard {game} />
+				{/each}
+			</div>
+		{:else}
+			<!-- Table View -->
+			<GameTable games={displayGames} onRowClick={handleGameClick} />
+		{/if}
 	{/if}
 </div>
 
