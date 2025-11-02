@@ -17,6 +17,7 @@ A single-user, client-side web application for tracking and rating video games w
 - **Runtime**: Bun 1.3.x (Windows)
 - **Deployment**: Static site (GitHub Pages/Netlify via @sveltejs/adapter-static)
 - **Data**: Local JSON file (no database, no backend)
+- **Environment**: Windows (using Git Bash for all terminal commands)
 
 ### Critical Constraints ⚠️
 

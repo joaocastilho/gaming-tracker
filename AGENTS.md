@@ -16,7 +16,7 @@
 1. [Executive Summary & Mandatory Rules](#executive-summary--mandatory-rules)
 2. [Guiding Principles & Behavior](#guiding-principles--behavior)
 3. [Code Generation Rules](#code-generation-rules)
-4. [✋ MANDATORY: Pre-Commit Workflow (8-STEP CHECKLIST)](#-mandatory-pre-commit-workflow-8-step-checklist)
+4. [✋ MANDATORY: Pre-Commit Workflow (10-STEP CHECKLIST)](#-mandatory-pre-commit-workflow-10-step-checklist)
 5. [Conventional Commit Message Generation](#conventional-commit-message-generation)
 6. [Context7 MCP Instructions](#context7-mcp-instructions)
 7. [GitHub MCP Instructions](#github-mcp-instructions)
@@ -29,38 +29,73 @@
 
 ### The Non-Negotiable Rules
 
-**RULE #1: ALWAYS Ask Before Coding (When Unclear)**
+### RULE #1: CLARIFY AMBIGUITY BEFORE CODING
 
-If requirements are ambiguous, you MUST ask clarifying questions BEFORE writing any code. No exceptions.
+* **Trigger:** You detect ambiguity in the user's request. Ambiguity includes, but is not limited to:
+    * Conflicting requirements (e.g., two rules contradict).
+    * Missing specifications (e.g., "add a button" without defining its behavior or style).
+    * Undefined technical choices (e.g., "add a store" without defining its structure).
+* **Action:** You MUST halt all code generation for the ambiguous task.
+* **Response:** You MUST ask the user clarifying questions to resolve the ambiguity.
+* **Constraint:** Do not make assumptions or proceed with implementation until the user provides clarification.
 
-**RULE #2: ALWAYS Work Iteratively with Verification**
+---
 
-You MUST work in small steps and verify each step completes successfully before moving to the next. Do not make sweeping changes.
+### RULE #2: IMPLEMENT AND VERIFY INCREMENTALLY
 
-**RULE #3: NEVER Skip the Pre-Commit Workflow**
+* **Action:** Decompose all tasks into the smallest logical, sequential sub-steps (e.g., create a new type, then create a store using that type, then update a component to use the store).
+* **Workflow:**
+    1.  Implement **one** sub-step.
+    2.  Run verification commands (e.g., `bun run check`, `bun run lint`) to confirm the sub-step introduced no new errors.
+    3.  Only after verification, proceed to the next sub-step.
+* **Constraint:** Do not chain multiple unverified changes together. Do not make "sweeping changes" that modify multiple, unrelated files in a single step.
 
-The 8-step Pre-Commit Workflow (see below) is MANDATORY before EVERY commit, subtask completion, or status report. You must complete ALL 8 steps, in order, with zero shortcuts.
+---
 
-**RULE #4: NEVER Change files under the /static folder**
+### RULE #3: EXECUTE PRE-COMMIT WORKFLOW
 
-Files under the /static folder are inputs that cannot be changed. The code needs to be able to work with these files as they are.
+* **Trigger:** You are about to report a task as complete, generate a commit message, or ask the user for approval to proceed.
+* **Action:** You MUST halt and execute the full **[✋ MANDATORY: Pre-Commit Workflow (8-STEP CHECKLIST)](#-mandatory-pre-commit-workflow-8-step-checklist)** section from this document.
+* **Constraint:** All 8 steps MUST be executed in the specified sequential order. No steps may be skipped. You MUST report the pass/fail status of each step to the user.
 
-**RULE #5: ALWAYS respect the Core Technology Stack defined in the /docs/project.md**
-The /docs/project.md defines the Technology Stack and project Constrains that needs to be followed.
+---
 
-**RULE #6: ALWAYS delete unecessary files that were created to support an action**
+### RULE #4: TREAT `/static` FOLDER AS IMMUTABLE
 
-Files created to help you do some action like a text file or an md file with a todo list need to be deleted after no longer useful and NEVER be commited.
+* **Scope:** All files and sub-directories within the `/static/` directory (e.g., `static/games.json`, all images in `static/covers/`).
+* **Allowed Operation:** **Read-only**.
+* **Prohibited Operations:** **Write, modify, or delete.**
+* **Rationale:** These files are the project's static data source. Your code MUST be written to consume this data as-is.
+
+---
+
+### RULE #5: ADHERE TO `project.md` AS THE SINGLE SOURCE OF TRUTH
+
+* **Primary Source:** The file `docs/project.md` contains all project specifications and constraints.
+* **Action:** Before starting any task, you MUST consult this file to determine the correct:
+    * **Technology Stack:** (e.g., Svelte 5 Runes, TypeScript, Shadcn-Svelte).
+    * **Architectural Constraints:** (e.g., No backend, static data, client-side only).
+    * **Data Schemas:** (e.g., the `Game` interface).
+* **Constraint:** Any implementation that deviates from `docs/project.md` is invalid and will be rejected.
+
+---
+
+### RULE #6: DELETE ALL TEMPORARY FILES
+
+* **Scope:** Any temporary "scratchpad" files you create for your own processing (e.g., `temp_notes.md`, `todo.txt`, `debug.json`).
+* **Action:** You MUST delete all such temporary files from the file system immediately after they are no longer needed for your internal processing.
+* **Constraint:** Temporary files MUST NOT be included in the git staging area and MUST NOT be part of any commit.
+* **Exception:** Do not delete any files that are part of the project's defined structure (e.g., any file inside `src/`, `docs/`, etc.).
 
 ### Enforcement Mechanism
 
 **Before you do ANY of the following, you MUST complete the entire Pre-Commit Workflow:**
 
 - [ ] Report a task as complete
+- [ ] Claim all requirements are met
 - [ ] Say "ready to commit"
 - [ ] Generate a commit message
 - [ ] Ask for approval to commit
-- [ ] Claim all requirements are met
 - [ ] Mark task or subtask as complete
 - [ ] Ask the user if you can move to the next subtask
 
@@ -231,7 +266,7 @@ All file system operations should be done assuming a bash shell.
 
 ---
 
-## ✋ MANDATORY: Pre-Commit Workflow (8-STEP CHECKLIST)
+## ✋ MANDATORY: Pre-Commit Workflow (10-STEP CHECKLIST)
 
 **🔴 CRITICAL - DO NOT SKIP ANY STEPS**
 
@@ -461,7 +496,7 @@ bun test
 
 ---
 
-#### ✓ Step 7.5: Live Site Verification (MANDATORY IF SUPPORTED)
+#### ✓ Step 8: Live Site Verification
 
 **⚠️ MANDATORY FOR TOOLS WITH BROWSER/RUNTIME CAPABILITIES**
 
@@ -476,7 +511,7 @@ bun test
 - Capture HTTP responses
 - Take screenshots or verify visual rendering
 
-**If your tool does NOT have these capabilities, skip to Step 8.**
+**If your tool does NOT have these capabilities, ask the user to validate the changes in their browser**
 
 **ACTIONS**:
 
@@ -509,17 +544,17 @@ bun test
 - Non-functional interactive elements
 - Network timeouts or connection errors
 
-Fix all runtime issues and restart from Step 7.5.
+Fix all runtime issues and restart from Step 8.
 
 ---
 
-#### ✓ Step 8: Final Verification & Commit Message Generation
+#### ✓ Step 9: Final Verification
 
-**🔴 YOU CANNOT PROCEED PAST THIS POINT WITHOUT COMPLETING STEPS 1-7**
+**🔴 YOU CANNOT PROCEED PAST THIS POINT WITHOUT COMPLETING STEPS 1-8**
 
 **REQUIRED CONFIRMATION STATEMENT**:
 
-Before generating a commit message, you MUST state this exact confirmation (copy-paste, no paraphrasing):
+Before generating a commit message, you MUST write a summary of all changes made and state this exact confirmation (copy-paste, no paraphrasing):
 
 > I have successfully completed the entire pre-commit workflow:
 >
@@ -530,17 +565,19 @@ Before generating a commit message, you MUST state this exact confirmation (copy
 > - ✓ Step 5: All unnecessary comments removed
 > - ✓ Step 6: Prettier formatting applied
 > - ✓ Step 7: All tests passing
-> - ✓ Step 7.5: Live site verification completed (no console errors, no network failures, visual rendering correct)
+> - ✓ Step 8: Live site verification completed (no console errors, no network failures, visual rendering correct)
 >
 > **The code is ready for commit.**
 
-**ONLY AFTER** providing this exact confirmation:
+**ONLY AFTER** providing this exact confirmation you can proceed to Step 10.
+
+### ✓ Step 10: Commit changed files
 
 1. Stage all changed files
 2. Generate a Conventional Commit message (see section below)
-3. Prompt the user to review and approve the commit message
-4. Ask: "Shall I proceed with this commit?"
-5. After succesful commit you can mark the task as completed
+3. Ask the user to review and approve the commit message.
+4. **Mark Task Complete:** **ONLY** after the user approves the commit, mark the task as completed.
+5. **Proceed:** **ONLY** after marking the task complete, ask if you can proceed to the next task.
 
 **CRITICAL**: Do not attempt to commit without the user's explicit approval.
 
