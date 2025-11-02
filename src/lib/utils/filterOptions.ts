@@ -1,114 +1,183 @@
+// Filter utilities for color coding and options
+
 import type { Game } from '../types/game.js';
 
-/**
- * Extracts unique filter options from games data
- */
-export function extractFilterOptions(games: Game[]) {
-	const platforms = new Set<string>();
-	const genres = new Set<string>();
-	const tiers = new Set<string>();
+// Platform color mapping
+export const getPlatformColor = (platform: string): string => {
+	const platformColors: Record<string, string> = {
+		// Console platforms
+		'PlayStation 5': 'bg-blue-600 text-white',
+		'PlayStation 4': 'bg-blue-500 text-white',
+		'PlayStation 3': 'bg-blue-400 text-white',
+		'PlayStation 2': 'bg-blue-300 text-black',
+		'PlayStation Vita': 'bg-purple-500 text-white',
+		'PSP': 'bg-purple-400 text-white',
 
-	games.forEach((game) => {
-		// Add platform
+		'Xbox Series X/S': 'bg-green-600 text-white',
+		'Xbox One': 'bg-green-500 text-white',
+		'Xbox 360': 'bg-green-400 text-white',
+		'Xbox': 'bg-green-300 text-black',
+
+		'Nintendo Switch': 'bg-red-600 text-white',
+		'Nintendo 3DS': 'bg-red-500 text-white',
+		'Nintendo DS': 'bg-red-400 text-white',
+		'Wii U': 'bg-red-300 text-black',
+		'Wii': 'bg-red-300 text-black',
+		'GameCube': 'bg-red-200 text-black',
+		'N64': 'bg-red-100 text-black',
+
+		// PC platforms
+		'PC': 'bg-gray-700 text-white',
+		'Steam Deck': 'bg-teal-600 text-white',
+
+		// Mobile platforms
+		'iOS': 'bg-gray-500 text-white',
+		'Android': 'bg-green-500 text-white',
+
+		// Retro/Classic
+		'Sega Genesis': 'bg-indigo-500 text-white',
+		'Sega Saturn': 'bg-indigo-400 text-white',
+		'Sega Dreamcast': 'bg-indigo-300 text-black',
+		'Atari 2600': 'bg-orange-500 text-white',
+		'Arcade': 'bg-yellow-500 text-black',
+
+		// Fallback
+		'Web': 'bg-purple-600 text-white'
+	};
+
+	return platformColors[platform] || 'bg-gray-600 text-white';
+};
+
+// Genre color mapping
+export const getGenreColor = (genre: string): string => {
+	const genreColors: Record<string, string> = {
+		// Action genres
+		'Action': 'bg-red-600 text-white',
+		'Action-Adventure': 'bg-red-500 text-white',
+		'Adventure': 'bg-orange-500 text-white',
+		'Platformer': 'bg-orange-400 text-white',
+		'Shooter': 'bg-red-700 text-white',
+		'Fighting': 'bg-red-800 text-white',
+
+		// RPG genres
+		'RPG': 'bg-purple-600 text-white',
+		'JRPG': 'bg-purple-500 text-white',
+		'Action RPG': 'bg-purple-400 text-white',
+		'MMORPG': 'bg-purple-700 text-white',
+		'Strategy RPG': 'bg-purple-300 text-black',
+
+		// Strategy genres
+		'Strategy': 'bg-blue-600 text-white',
+		'RTS': 'bg-blue-500 text-white',
+		'TBS': 'bg-blue-400 text-white',
+		'4X': 'bg-blue-300 text-black',
+
+		// Simulation genres
+		'Simulation': 'bg-green-600 text-white',
+		'Life Sim': 'bg-green-500 text-white',
+		'Builder': 'bg-green-400 text-white',
+		'Tycoon': 'bg-green-300 text-black',
+
+		// Sports genres
+		'Sports': 'bg-emerald-600 text-white',
+		'Racing': 'bg-emerald-500 text-white',
+		'Football': 'bg-emerald-400 text-white',
+		'Basketball': 'bg-emerald-300 text-black',
+
+		// Puzzle genres
+		'Puzzle': 'bg-yellow-600 text-white',
+		'Match-3': 'bg-yellow-500 text-black',
+		'Logic': 'bg-yellow-400 text-black',
+		'Brain Training': 'bg-yellow-300 text-black',
+
+		// Indie/Other
+		'Indie': 'bg-pink-500 text-white',
+		'Metroidvania': 'bg-pink-400 text-white',
+		'Horror': 'bg-gray-800 text-white',
+		'Educational': 'bg-cyan-500 text-white',
+		'Casual': 'bg-cyan-400 text-white',
+		'Music': 'bg-cyan-300 text-black',
+
+		// Fallback
+		'Unknown': 'bg-gray-600 text-white'
+	};
+
+	return genreColors[genre] || 'bg-gray-600 text-white';
+};
+
+// Tier color mapping
+export const getTierColor = (tier: string): string => {
+	const tierColors: Record<string, string> = {
+		'S': 'bg-emerald-600 text-white',     // S - Exceptional
+		'A': 'bg-green-600 text-white',       // A - Excellent  
+		'B': 'bg-blue-600 text-white',        // B - Good
+		'C': 'bg-yellow-600 text-black',      // C - Average
+		'D': 'bg-orange-600 text-white',      // D - Below Average
+		'E': 'bg-red-600 text-white'          // E - Poor
+	};
+
+	return tierColors[tier] || 'bg-gray-600 text-white';
+};
+
+// Get all unique platforms from games data
+export const getAllPlatforms = (games: Game[]): string[] => {
+	const platforms = new Set<string>();
+	games.forEach(game => {
 		if (game.platform) {
 			platforms.add(game.platform);
 		}
+	});
+	return Array.from(platforms).sort();
+};
 
-		// Add genre
+// Get all unique genres from games data
+export const getAllGenres = (games: Game[]): string[] => {
+	const genres = new Set<string>();
+	games.forEach(game => {
 		if (game.genre) {
 			genres.add(game.genre);
 		}
+	});
+	return Array.from(genres).sort();
+};
 
-		// Add tier (only for completed games)
+// Get all unique tiers from games data (only completed games)
+export const getAllTiers = (games: Game[]): string[] => {
+	const tiers = new Set<string>();
+	games.forEach(game => {
 		if (game.status === 'Completed' && game.tier) {
 			tiers.add(game.tier);
 		}
 	});
-
-	return {
-		platforms: Array.from(platforms).sort(),
-		genres: Array.from(genres).sort(),
-		tiers: Array.from(tiers).sort((a, b) => {
-			// Sort tiers in reverse alphabetical order (S, A, B, C, D, E)
-			return b.localeCompare(a);
-		})
-	};
-}
-
-/**
- * Color schemes for filter badges (extracted from GameCard component)
- */
-export const filterColors = {
-	platforms: {
-		PC: 'bg-[#1e3a5f] text-[#60a5fa]',
-		PS5: 'bg-[#1e293b] text-[#38bdf8]',
-		Xbox: 'bg-[#14532d] text-[#4ade80]',
-		Switch: 'bg-[#7c2d12] text-[#fb923c]',
-		PS4: 'bg-[#374151] text-[#9ca3af]',
-		PS3: 'bg-[#1f2937] text-[#d1d5db]',
-		'Xbox 360': 'bg-[#064e3b] text-[#6ee7b7]',
-		'Xbox One': 'bg-[#047857] text-[#34d399]',
-		'Steam Deck': 'bg-[#7c2d12] text-[#fb923c]',
-		Mobile: 'bg-[#be185d] text-[#f9a8d4]',
-		Default: 'bg-gray-600 text-white'
-	},
-	genres: {
-		'Action RPG': 'bg-[#2d1f3f] text-[#c084fc]',
-		'Story Adventure': 'bg-[#422006] text-[#fbbf24]',
-		'Action Adventure': 'bg-[#164e63] text-[#22d3ee]',
-		Puzzle: 'bg-[#3f1f4d] text-[#e879f9]',
-		Metroidvania: 'bg-[#4c1d95] text-[#a78bfa]',
-		RPG: 'bg-[#7c2d12] text-[#fb923c]',
-		Action: 'bg-[#dc2626] text-[#fca5a5]',
-		Adventure: 'bg-[#16a34a] text-[#86efac]',
-		Indie: 'bg-[#ca8a04] text-[#fde047]',
-		Strategy: 'bg-[#7c3aed] text-[#c4b5fd]',
-		Simulation: 'bg-[#0891b2] text-[#67e8f9]',
-		Sports: 'bg-[#be123c] text-[#f9a8d4]',
-		Racing: 'bg-[#b91c1c] text-[#fecaca]',
-		Shooter: 'bg-[#991b1b] text-[#fca5a5]',
-		Platformer: 'bg-[#c2410c] text-[#fdba74]',
-		Horror: 'bg-[#581c87] text-[#d8b4fe]',
-		'Visual Novel': 'bg-[#be185d] text-[#f9a8d4]',
-		JRPG: 'bg-[#7c2d12] text-[#fb923c]',
-		'Western RPG': 'bg-[#92400e] text-[#fed7aa]',
-		Roguelike: 'bg-[#7f1d1d] text-[#fecaca]',
-		'Survival Horror': 'bg-[#581c87] text-[#d8b4fe]',
-		'Classic RPG': 'bg-[#7c2d12] text-[#fb923c]',
-		Default: 'bg-gray-600 text-white'
-	},
-	tiers: {
-		S: 'bg-[#dc2626] text-white',
-		A: 'bg-[#f97316] text-white',
-		B: 'bg-[#eab308] text-black',
-		C: 'bg-[#22c55e] text-white',
-		D: 'bg-[#06b6d4] text-white',
-		E: 'bg-[#6b7280] text-white'
-	}
+	// Return tiers in correct order (S, A, B, C, D, E)
+	const tierOrder = ['S', 'A', 'B', 'C', 'D', 'E'];
+	return tierOrder.filter(tier => tiers.has(tier));
 };
 
-/**
- * Get color class for a specific platform
- */
-export function getPlatformColor(platform: string): string {
-	return (
-		filterColors.platforms[platform as keyof typeof filterColors.platforms] ||
-		filterColors.platforms.Default
-	);
-}
+// Validation helpers
+export const isValidPlatform = (platform: string, games: Game[]): boolean => {
+	const validPlatforms = getAllPlatforms(games);
+	return validPlatforms.includes(platform);
+};
 
-/**
- * Get color class for a specific genre
- */
-export function getGenreColor(genre: string): string {
-	return (
-		filterColors.genres[genre as keyof typeof filterColors.genres] || filterColors.genres.Default
-	);
-}
+export const isValidGenre = (genre: string, games: Game[]): boolean => {
+	const validGenres = getAllGenres(games);
+	return validGenres.includes(genre);
+};
 
-/**
- * Get color class for a specific tier
- */
-export function getTierColor(tier: string): string {
-	return filterColors.tiers[tier as keyof typeof filterColors.tiers] || 'bg-gray-500 text-white';
-}
+export const isValidTier = (tier: string, games: Game[]): boolean => {
+	const validTiers = getAllTiers(games);
+	return validTiers.includes(tier);
+};
+
+// Filter statistics
+export const getFilterStats = (games: Game[]) => {
+	return {
+		totalGames: games.length,
+		completedGames: games.filter(g => g.status === 'Completed').length,
+		plannedGames: games.filter(g => g.status === 'Planned').length,
+		uniquePlatforms: getAllPlatforms(games).length,
+		uniqueGenres: getAllGenres(games).length,
+		uniqueTiers: getAllTiers(games).length
+	};
+};
