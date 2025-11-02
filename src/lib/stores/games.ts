@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { GameSchema } from '../validation/game';
 import { transformGameData } from '../utils/dataTransformer';
 import type { Game } from '../types/game';
@@ -32,14 +32,15 @@ function createGamesStore() {
 		},
 
 		// Load games from JSON file
-		async loadGames(event?: import('@sveltejs/kit').LoadEvent): Promise<void> {
+		async loadGames(event?: import('@sveltejs/kit').LoadEvent, useLargeDataset: boolean = false): Promise<void> {
 			loading = true;
 			error = null;
 
 			try {
 				// Use event.fetch for server context, global fetch for client context
 				const fetchFn = event?.fetch ?? globalThis.fetch;
-				const response = await fetchFn('/games.json');
+				const datasetPath = useLargeDataset ? '/games-large.json' : '/games.json';
+				const response = await fetchFn(datasetPath);
 				if (!response.ok) {
 					throw new Error(`Failed to fetch games: ${response.statusText}`);
 				}
@@ -113,12 +114,8 @@ function createGamesStore() {
 
 		// Get game by ID
 		getGameById(id: string): Game | undefined {
-			let found: Game | undefined;
-			update((games) => {
-				found = games.find((game) => game.id === id);
-				return games;
-			});
-			return found;
+			const games = get({ subscribe });
+			return games.find((game) => game.id === id);
 		},
 
 		// Calculate score based on ratings (0-20 scale)
@@ -129,26 +126,18 @@ function createGamesStore() {
 
 		// Get games by status
 		getGamesByStatus(status: 'Planned' | 'Completed'): Game[] {
-			let result: Game[] = [];
-			update((games) => {
-				result = games.filter((game) => game.status === status);
-				return games;
-			});
-			return result;
+			const games = get({ subscribe });
+			return games.filter((game) => game.status === status);
 		},
 
 		// Get game counts by status
 		getGameCounts(): { total: number; planned: number; completed: number } {
-			let result = { total: 0, planned: 0, completed: 0 };
-			update((games) => {
-				result = {
-					total: games.length,
-					planned: games.filter((g) => g.status === 'Planned').length,
-					completed: games.filter((g) => g.status === 'Completed').length
-				};
-				return games;
-			});
-			return result;
+			const games = get({ subscribe });
+			return {
+				total: games.length,
+				planned: games.filter((g) => g.status === 'Planned').length,
+				completed: games.filter((g) => g.status === 'Completed').length
+			};
 		},
 
 		// Reset store state

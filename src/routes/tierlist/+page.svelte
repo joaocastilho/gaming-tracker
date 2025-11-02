@@ -95,9 +95,17 @@
 						<!-- Games in this tier -->
 						<div class="games-row flex gap-3 overflow-x-auto pb-2">
 							{#each gamesInTier as game (game.id)}
-								<div
+								<button
+									type="button"
 									class="game-card flex-shrink-0 transform cursor-pointer transition-transform hover:scale-105"
 									onclick={() => handleGameClick(game)}
+									onkeydown={(e) => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.preventDefault();
+											handleGameClick(game);
+										}
+									}}
+									aria-label="View details for {game.title}"
 								>
 									<!-- Cover -->
 									<div class="relative">
@@ -105,6 +113,7 @@
 											src="/{game.coverImage}"
 											alt="{game.title} cover"
 											class="h-30 w-20 rounded border-2 border-gray-700 object-cover dark:border-gray-300"
+											loading="lazy"
 											onerror={(e) => {
 												const img = e.target as HTMLImageElement;
 												img.style.display = 'none';
@@ -128,7 +137,7 @@
 											{game.title}
 										</p>
 									</div>
-								</div>
+								</button>
 							{/each}
 						</div>
 					</div>
@@ -214,6 +223,7 @@
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
+		line-clamp: 2;
 		overflow: hidden;
 	}
 

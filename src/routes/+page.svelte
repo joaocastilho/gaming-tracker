@@ -118,7 +118,7 @@
 			{#if currentViewMode === 'gallery'}
 				<!-- Gallery View -->
 				<div
-					class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
 				>
 					{#each filteredGames as game (game.id)}
 						<GameCard {game} />
@@ -156,7 +156,7 @@
 			{#if currentViewMode === 'gallery'}
 				<!-- Gallery View -->
 				<div
-					class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
 				>
 					{#each filteredGames as game (game.id)}
 						<GameCard {game} />
@@ -194,7 +194,7 @@
 			{#if currentViewMode === 'gallery'}
 				<!-- Gallery View -->
 				<div
-					class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
 				>
 					{#each filteredGames as game (game.id)}
 						<GameCard {game} />
@@ -230,7 +230,7 @@
 			{#if currentViewMode === 'gallery'}
 				<!-- Gallery View -->
 				<div
-					class="grid max-w-full grid-cols-2 justify-items-center gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
+					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
 				>
 					{#each filteredGames as game (game.id)}
 						<GameCard {game} />

@@ -167,7 +167,7 @@
 	<!-- Dropdown trigger button -->
 	<button
 		type="button"
-		class="filter-button {getButtonColorClasses()} rounded-md border px-3 py-1.5 text-xs font-medium transition-colors"
+		class="filter-button {getButtonColorClasses()} rounded-md border px-3 py-2 text-xs font-medium transition-colors min-h-[44px] flex items-center"
 		onclick={() => (isOpen = !isOpen)}
 		onkeydown={handleKeydown}
 		{...getAriaAttributes()}

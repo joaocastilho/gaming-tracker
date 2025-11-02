@@ -9,29 +9,39 @@
 	import Header from '$lib/components/Header.svelte';
 	import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
-	import { filtersStore } from '$lib/stores/filters.js';
-	import { gamesStore } from '$lib/stores/games.js';
-	import { appStore } from '$lib/stores/app.js';
-	import { modalStore } from '$lib/stores/modal.js';
+import { filtersStore } from '$lib/stores/filters.js';
+import { gamesStore } from '$lib/stores/games.js';
+import { appStore } from '$lib/stores/app.js';
+import { modalStore } from '$lib/stores/modal.js';
+import { derived } from 'svelte/store';
 
 	let { children } = $props();
 
+	let initialized = false;
+	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
+
+	// Reactive state
 	let filterOptions = $state({
 		platforms: [] as string[],
 		genres: [] as string[],
 		tiers: [] as string[]
 	});
-	let initialized = false;
-	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
 	let currentViewMode = $state('gallery');
 
-	// Subscribe to games store and extract filter options
-	gamesStore.subscribe((games) => {
-		filterOptions = extractFilterOptions(games);
+	// Reactive filter options derived from games store
+	$effect(() => {
+		const unsubscribe = gamesStore.subscribe((games) => {
+			filterOptions = extractFilterOptions(games);
+		});
+		return unsubscribe;
 	});
 
-	appStore.viewMode.subscribe((viewMode) => {
-		currentViewMode = viewMode;
+	// Reactive view mode from app store
+	$effect(() => {
+		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
+			currentViewMode = viewMode;
+		});
+		return unsubscribe;
 	});
 
 	// Initialize app from URL parameters
@@ -133,22 +143,28 @@
 		appStore.toggleViewMode();
 	}
 
-	// Filter state
+	// Filter state with reactive updates
 	let selectedPlatforms: string[] = $state([]);
 	let selectedGenres: string[] = $state([]);
 	let selectedTiers: string[] = $state([]);
 
-	// Direct subscriptions to filter stores
-	filtersStore.selectedPlatforms.subscribe((platforms) => {
-		selectedPlatforms = platforms;
-	});
+	// Reactive updates for filter selections (consolidated)
+	$effect(() => {
+		const unsubPlatforms = filtersStore.selectedPlatforms.subscribe((platforms) => {
+			selectedPlatforms = platforms;
+		});
+		const unsubGenres = filtersStore.selectedGenres.subscribe((genres) => {
+			selectedGenres = genres;
+		});
+		const unsubTiers = filtersStore.selectedTiers.subscribe((tiers) => {
+			selectedTiers = tiers;
+		});
 
-	filtersStore.selectedGenres.subscribe((genres) => {
-		selectedGenres = genres;
-	});
-
-	filtersStore.selectedTiers.subscribe((tiers) => {
-		selectedTiers = tiers;
+		return () => {
+			unsubPlatforms();
+			unsubGenres();
+			unsubTiers();
+		};
 	});
 
 	// Reset all filters
@@ -166,6 +182,14 @@
 </svelte:head>
 
 <div class="bg-background text-foreground min-h-screen">
+	<!-- Skip to main content link for accessibility -->
+	<a
+		href="#main-content"
+		class="skip-link"
+	>
+		Skip to main content
+	</a>
+
 	<!-- Header Component -->
 	<Header />
 
@@ -173,13 +197,13 @@
 	<NavigationTabs />
 
 	<!-- Search & Filter Section (Sticky) -->
-	<section class="bg-background border-border sticky top-[60px] z-30 border-b">
+	<section class="bg-background border-border sticky top-[56px] z-30 border-b md:top-[60px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<!-- Search Bar -->
 			<SearchBar />
 
 			<!-- Filter Controls -->
-			<div class="flex flex-wrap items-center gap-3">
+			<div class="flex flex-nowrap items-center gap-3 overflow-x-auto pb-2 md:flex-wrap md:overflow-x-visible md:pb-0">
 				<FilterDropdown
 					type="platforms"
 					label="Platforms"
@@ -200,7 +224,7 @@
 				/>
 				<RatingsFilter />
 				<button
-					class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border px-3 py-1.5 text-xs transition-colors"
+					class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border px-3 py-2 text-xs transition-colors min-h-[44px] flex items-center"
 					title="Reset all filters"
 					onclick={resetFilters}
 				>
@@ -209,7 +233,7 @@
 
 				<div class="ml-auto flex items-center gap-2">
 					<button
-						class="rounded-md p-2 transition-colors"
+						class="rounded-md p-3 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
 						class:bg-accent={currentViewMode === 'gallery'}
 						class:text-accent-foreground={currentViewMode === 'gallery'}
 						class:bg-surface={currentViewMode !== 'gallery'}
@@ -223,7 +247,7 @@
 						⊞
 					</button>
 					<button
-						class="rounded-md p-2 transition-colors"
+						class="rounded-md p-3 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
 						class:bg-accent={currentViewMode === 'table'}
 						class:text-accent-foreground={currentViewMode === 'table'}
 						class:bg-surface={currentViewMode !== 'table'}
@@ -242,7 +266,7 @@
 	</section>
 
 	<!-- Content Area (Scrollable) -->
-	<main class="px-6 pt-[calc(60px+60px)] pb-6">
+	<main class="px-6 pt-[calc(56px+50px+100px)] pb-6 md:pt-[calc(60px+50px+100px)]">
 		<div class="container mx-auto">
 			{@render children?.()}
 		</div>
@@ -256,6 +280,24 @@
 </div>
 
 <style>
+	/* Skip link for accessibility */
+	.skip-link {
+		position: absolute;
+		top: -40px;
+		left: 6px;
+		background: #000;
+		color: #fff;
+		padding: 8px;
+		text-decoration: none;
+		border-radius: 4px;
+		z-index: 1000;
+		transition: top 0.3s;
+	}
+
+	.skip-link:focus {
+		top: 6px;
+	}
+
 	/* Height calculations for fixed/sticky positioning */
 	:global(.h-15) {
 		height: 60px;

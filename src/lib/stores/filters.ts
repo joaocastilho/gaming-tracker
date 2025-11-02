@@ -1,6 +1,7 @@
 import { writable, derived, get } from 'svelte/store';
 import { replaceState } from '$app/navigation';
 import type { Game } from '../types/game.js';
+import { memoizeGameFilter } from '../utils/memoize.js';
 
 // TypeScript interfaces for filter state
 export interface FilterState {
@@ -54,8 +55,8 @@ function createFiltersStore() {
 		})
 	);
 
-	// Core filtering logic
-	function filterGames(games: Game[], filters: FilterState): Game[] {
+	// Core filtering logic (memoized for performance)
+	const filterGames = memoizeGameFilter((games: Game[], filters: FilterState): Game[] => {
 		return games.filter((game) => {
 			// Search query filter (title matching)
 			if (filters.searchQuery.trim()) {
@@ -121,7 +122,7 @@ function createFiltersStore() {
 
 			return true;
 		});
-	}
+	});
 
 	// Derived store for filtered games and counts
 	function createFilteredGamesStore(gamesStore: {

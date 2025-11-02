@@ -113,7 +113,7 @@
 <div class="filter-dropdown" bind:this={dropdownElement}>
 	<button
 		type="button"
-		class="filter-button {getButtonColorClasses()} rounded-md border px-3 py-1.5 text-xs font-medium transition-colors"
+		class="filter-button {getButtonColorClasses()} rounded-md border px-3 py-2 text-xs font-medium transition-colors min-h-[44px] flex items-center"
 		class:selected={selectedOptions.length > 0}
 		onclick={() => (isOpen = !isOpen)}
 		onkeydown={handleKeydown}

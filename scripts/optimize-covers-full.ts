@@ -162,7 +162,8 @@ async function main(): Promise<void> {
 	// Load games data
 	console.log('📂 Loading games data...');
 	const gamesData = await readFile(GAMES_JSON_PATH, 'utf-8');
-	const games: Game[] = JSON.parse(gamesData);
+	const gamesJson = JSON.parse(gamesData);
+	const games: Game[] = gamesJson.games || gamesJson;
 	console.log(`✅ Loaded ${games.length} games`);
 
 	// Get all PNG files

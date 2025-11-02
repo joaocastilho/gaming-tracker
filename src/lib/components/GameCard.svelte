@@ -174,6 +174,7 @@
 			class="cover-image"
 			class:loaded={isImageLoaded}
 			class:error={hasImageError}
+			loading="lazy"
 			onload={handleImageLoad}
 			onerror={handleImageError}
 		/>
@@ -215,19 +216,19 @@
 		{#if game.status === 'Completed' && game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null}
 			<div class="ratings-section">
 				<div class="rating-item">
-					<span class="rating-icon" aria-hidden="true">👁️</span>
+					<span class="rating-icon" aria-label="Presentation rating">👁️</span>
 					<span class="rating-score">{game.ratingPresentation}/10</span>
 				</div>
 				<div class="rating-item">
-					<span class="rating-icon" aria-hidden="true">✏️</span>
+					<span class="rating-icon" aria-label="Story rating">✏️</span>
 					<span class="rating-score">{game.ratingStory}/10</span>
 				</div>
 				<div class="rating-item">
-					<span class="rating-icon" aria-hidden="true">🎮</span>
+					<span class="rating-icon" aria-label="Gameplay rating">🎮</span>
 					<span class="rating-score">{game.ratingGameplay}/10</span>
 				</div>
 				<div class="rating-item total-score">
-					<span class="rating-icon" aria-hidden="true">🏆</span>
+					<span class="rating-icon" aria-label="Total score">🏆</span>
 					<span class="rating-score">{totalScore}/20</span>
 				</div>
 			</div>
@@ -237,11 +238,11 @@
 		{#if game.status === 'Completed' && game.hoursPlayed && game.finishedDate}
 			<div class="time-date-section">
 				<div class="time-item">
-					<span class="time-icon" aria-hidden="true">⏱️</span>
+					<span class="time-icon" aria-label="Hours played">⏱️</span>
 					<span class="time-text">{game.hoursPlayed}</span>
 				</div>
 				<div class="date-item">
-					<span class="date-icon" aria-hidden="true">✓</span>
+					<span class="date-icon" aria-label="Completion date">✓</span>
 					<span class="date-text">{formatDate(game.finishedDate)}</span>
 				</div>
 			</div>

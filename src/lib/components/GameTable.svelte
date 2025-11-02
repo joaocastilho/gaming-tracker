@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { sortStore } from '../stores/sort.js';
+	import VirtualizedTable from './VirtualizedTable.svelte';
+	import { memoizeGameSort } from '../utils/memoize.js';
 	import type { Game } from '../types/game.js';
 
 	interface Props {
@@ -8,6 +10,11 @@
 	}
 
 	let { games, onRowClick }: Props = $props();
+
+	// Use virtualization for large datasets (>100 games)
+	const USE_VIRTUALIZATION = games.length > 100;
+	const ITEM_HEIGHT = 60; // Approximate row height
+	const CONTAINER_HEIGHT = 600; // Fixed container height
 
 	// Sorting state from store
 	let sortState = $state(sortStore.state);
@@ -56,14 +63,14 @@
 		return sortState.sortDirection === 'asc' ? '↑' : '↓';
 	}
 
-	// Get sorted games
-	let sortedGames = $derived(
-		[...games].sort((a, b) => {
-			if (!sortState.sortBy) return 0;
+	// Memoized sorting function for performance
+	const sortGames = memoizeGameSort((games: Game[], sortBy: string, sortDirection: string): Game[] => {
+		return [...games].sort((a, b) => {
+			if (!sortBy) return 0;
 
 			let aValue: string | number | null, bValue: string | number | null;
 
-			switch (sortState.sortBy) {
+			switch (sortBy) {
 				case 'title':
 					aValue = a.title.toLowerCase();
 					bValue = b.title.toLowerCase();
@@ -104,10 +111,15 @@
 					return 0;
 			}
 
-			if (aValue < bValue) return sortState.sortDirection === 'asc' ? -1 : 1;
-			if (aValue > bValue) return sortState.sortDirection === 'asc' ? 1 : -1;
+			if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+			if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
 			return 0;
-		})
+		});
+	});
+
+	// Get sorted games
+	let sortedGames = $derived(
+		sortGames(games, sortState.sortBy, sortState.sortDirection)
 	);
 
 	// Tier colors
@@ -226,6 +238,7 @@
 							src="/{game.coverImage}"
 							alt="{game.title} cover"
 							class="h-12 w-8 rounded border object-cover"
+							loading="lazy"
 							onerror={(e) => {
 								const img = e.target as HTMLImageElement;
 								img.style.display = 'none';

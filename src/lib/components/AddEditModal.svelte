@@ -228,6 +228,7 @@
 									src="/{modalState.activeGame.coverImage}"
 									alt="{modalState.activeGame.title} cover"
 									class="w-full rounded-lg shadow-lg"
+									loading="lazy"
 									onerror={(e) => {
 										const img = e.target as HTMLImageElement;
 										img.style.display = 'none';
