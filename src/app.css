@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+
+/* Theme Variables - Light Mode (Default) */
+:root {
+	/* Background Colors */
+	--color-background: #f8f9fa;
+	--color-surface: #ffffff;
+	--color-border: #e5e7eb;
+
+	/* Text Colors */
+	--color-text-primary: #1a1a1a;
+	--color-text-secondary: #4b5563;
+	--color-text-tertiary: #6b7280;
+
+	/* Accent Colors */
+	--color-accent: #3b82f6;
+
+	/* Tier Colors */
+	--color-tier-s: #dc2626;
+	--color-tier-a: #f97316;
+	--color-tier-b: #eab308;
+	--color-tier-c: #22c55e;
+	--color-tier-d: #06b6d4;
+	--color-tier-e: #6b7280;
+
+	/* Platform Colors */
+	--color-platform-pc-bg: #1e3a5f;
+	--color-platform-pc-text: #60a5fa;
+	--color-platform-ps5-bg: #1e293b;
+	--color-platform-ps5-text: #38bdf8;
+	--color-platform-xbox-bg: #14532d;
+	--color-platform-xbox-text: #4ade80;
+	--color-platform-switch-bg: #7c2d12;
+	--color-platform-switch-text: #fb923c;
+
+	/* Genre Colors */
+	--color-genre-action-rpg-bg: #2d1f3f;
+	--color-genre-action-rpg-text: #c084fc;
+	--color-genre-story-adventure-bg: #422006;
+	--color-genre-story-adventure-text: #fbbf24;
+	--color-genre-action-adventure-bg: #164e63;
+	--color-genre-action-adventure-text: #22d3ee;
+	--color-genre-puzzle-bg: #3f1f4d;
+	--color-genre-puzzle-text: #e879f9;
+	--color-genre-metroidvania-bg: #4c1d95;
+	--color-genre-metroidvania-text: #a78bfa;
+}
+
+/* Dark Mode */
+[data-theme='dark'] {
+	/* Background Colors */
+	--color-background: #0f1419;
+	--color-surface: #1a1f27;
+	--color-border: #2a2f3a;
+
+	/* Text Colors */
+	--color-text-primary: #ffffff;
+	--color-text-secondary: #8b92a8;
+	--color-text-tertiary: #6b7280;
+
+	/* Accent Colors */
+	--color-accent: #3b82f6;
+
+	/* Tier Colors (same for both modes) */
+	--color-tier-s: #dc2626;
+	--color-tier-a: #f97316;
+	--color-tier-b: #eab308;
+	--color-tier-c: #22c55e;
+	--color-tier-d: #06b6d4;
+	--color-tier-e: #6b7280;
+
+	/* Platform Colors (same for both modes) */
+	--color-platform-pc-bg: #1e3a5f;
+	--color-platform-pc-text: #60a5fa;
+	--color-platform-ps5-bg: #1e293b;
+	--color-platform-ps5-text: #38bdf8;
+	--color-platform-xbox-bg: #14532d;
+	--color-platform-xbox-text: #4ade80;
+	--color-platform-switch-bg: #7c2d12;
+	--color-platform-switch-text: #fb923c;
+
+	/* Genre Colors (same for both modes) */
+	--color-genre-action-rpg-bg: #2d1f3f;
+	--color-genre-action-rpg-text: #c084fc;
+	--color-genre-story-adventure-bg: #422006;
+	--color-genre-story-adventure-text: #fbbf24;
+	--color-genre-action-adventure-bg: #164e63;
+	--color-genre-action-adventure-text: #22d3ee;
+	--color-genre-puzzle-bg: #3f1f4d;
+	--color-genre-puzzle-text: #e879f9;
+	--color-genre-metroidvania-bg: #4c1d95;
+	--color-genre-metroidvania-text: #a78bfa;
+}

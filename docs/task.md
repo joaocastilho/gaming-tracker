@@ -7,6 +7,7 @@
 **Goal**: Build a single-user, client-side web application for tracking and rating video games with visual tier list generation using SvelteKit, TypeScript, and Tailwind CSS.
 
 **Technology Stack**:
+
 - Framework: SvelteKit 1.30+ with Svelte 5 Runes + TypeScript 5.9.x
 - Styling: Tailwind CSS v4.1 + Shadcn-Svelte components
 - Runtime: Bun 1.3.x (Windows)
@@ -14,6 +15,7 @@
 - Data: Local JSON file (no backend)
 
 **Critical Constraints**:
+
 - ✅ NO BACKEND: Purely client-side, static site generation only
 - ✅ NO BROWSER STORAGE in artifacts: Cannot use localStorage/sessionStorage in Claude artifacts
 - ✅ STATIC DATA: All data from `static/games.json`, mutations via file download
@@ -25,11 +27,13 @@
 ## 📋 Task Organization
 
 ### Phase Dependencies
+
 ```
 Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Phase 4 (Advanced Views) → Phase 5 (Polish)
 ```
 
 ### Key Dependencies
+
 - **Phase 1** must complete before all others (foundation)
 - **Games Store** before any UI that displays games
 - **Filters Store** before search/filter UI
@@ -45,6 +49,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 **Goal**: Set up project structure and core data layer
 
 ### 1.1 Project Initialization
+
 - [ ] **Task 1.1.1**: Initialize SvelteKit project with TypeScript
   - **Command**: `bun create svelte@latest gaming-tracker`
   - **Select**: Skeleton project, TypeScript, ESLint, Prettier
@@ -80,6 +85,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Both tools run without errors on project files
 
 ### 1.2 Data Layer Setup
+
 - [ ] **Task 1.2.1**: Create sample games.json data
   - **File**: `static/games.json`
   - **Structure**: Games array with meta object
@@ -116,6 +122,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Data loads successfully at app startup
 
 ### 1.3 Basic Layout & Theme
+
 - [ ] **Task 1.3.1**: Create root layout
   - **File**: `src/routes/+layout.svelte`
   - **Structure**: HTML shell with theme class application
@@ -152,6 +159,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Header displays correctly with dynamic game count
 
 ### Phase 1 Validation Criteria
+
 - [ ] ✅ Project builds successfully
 - [ ] ✅ Theme toggle works and persists to localStorage
 - [ ] ✅ Games data loads from JSON
@@ -165,6 +173,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 **Goal**: Implement gallery view and navigation
 
 ### 2.1 Navigation System
+
 - [ ] **Task 2.1.1**: Create navigation tabs component
   - **File**: `src/lib/components/NavigationTabs.svelte`
   - **Features**: Games, Finished, Planned, Tier List tabs
@@ -191,6 +200,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Active tab reflects current route correctly
 
 ### 2.2 Gallery View
+
 - [ ] **Task 2.2.1**: Create game card component
   - **File**: `src/lib/components/GameCard.svelte`
   - **Features**: Cover image, title, year, platform/genre badges
@@ -229,6 +239,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Images load smoothly with placeholders
 
 ### 2.3 Search Functionality
+
 - [ ] **Task 2.3.1**: Create search bar component
   - **File**: `src/lib/components/SearchBar.svelte`
   - **Features**: Full-width input, search icon, placeholder
@@ -261,6 +272,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Counts reflect filtered results accurately
 
 ### Phase 2 Validation Criteria
+
 - [ ] ✅ All routes work and show correct games
 - [ ] ✅ Gallery displays cards in responsive grid
 - [ ] ✅ Search filters games in real-time
@@ -274,6 +286,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 **Goal**: Enable adding, editing, and completing games
 
 ### 3.1 Filter System
+
 - [ ] **Task 3.1.1**: Create filter dropdown components
   - **Files**: `src/lib/components/FilterDropdown.svelte`
   - **Features**: Multi-select checkboxes, platform/genre/tier options
@@ -303,6 +316,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Reset clears all filter selections correctly
 
 ### 3.2 Add Game Form (Phase 1)
+
 - [ ] **Task 3.2.1**: Create modal store
   - **File**: `src/lib/stores/modal.ts`
   - **Features**: isOpen, activeGame, mode (view/edit/add)
@@ -345,6 +359,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: New games appear immediately in gallery
 
 ### 3.3 Edit Game Form (Phase 2)
+
 - [ ] **Task 3.3.1**: Add edit button to game cards
   - **Features**: Visible on hover, consistent styling
   - **Mode**: Code Mode
@@ -378,6 +393,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Changes reflect immediately in UI
 
 ### 3.4 JSON Export
+
 - [ ] **Task 3.4.1**: Create export function
   - **File**: `src/lib/utils/export.ts`
   - **Features**: Generate updated JSON, blob creation
@@ -402,6 +418,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Notification appears after successful export
 
 ### Phase 3 Validation Criteria
+
 - [ ] ✅ Filters work correctly and update URL
 - [ ] ✅ Can add new games (marked as Planned)
 - [ ] ✅ Can edit existing games
@@ -416,6 +433,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 **Goal**: Add table view, detail modal, and tier list
 
 ### 4.1 Detail Modal
+
 - [ ] **Task 4.1.1**: Create detail modal component
   - **File**: `src/lib/components/DetailModal.svelte`
   - **Features**: Full-screen overlay, close handlers
@@ -452,6 +470,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Deep links open correct game in modal
 
 ### 4.2 Table View
+
 - [ ] **Task 4.2.1**: Create table component
   - **File**: `src/lib/components/GameTable.svelte`
   - **Features**: Full-width table, column structure
@@ -494,6 +513,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Table scrolls smoothly with large datasets
 
 ### 4.3 View Toggle
+
 - [ ] **Task 4.3.1**: Add gallery/table toggle buttons
   - **Location**: Filter section
   - **Features**: Grid icon (⊞) and list icon (☰)
@@ -512,6 +532,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Filters and sort persist when switching views
 
 ### 4.4 Tier List View
+
 - [ ] **Task 4.4.1**: Create tier list page
   - **File**: `src/routes/tierlist/+page.svelte`
   - **Features**: Group games by tier (S, A, B, C, D, E)
@@ -537,6 +558,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Export button works and provides user feedback
 
 ### Phase 4 Validation Criteria
+
 - [ ] ✅ Detail modal opens with correct game data
 - [ ] ✅ URL updates with `?game={id}` parameter
 - [ ] ✅ Table view shows all data correctly
@@ -552,6 +574,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 **Goal**: Optimize performance, responsiveness, and accessibility
 
 ### 5.1 Responsive Design
+
 - [ ] **Task 5.1.1**: Test and fix mobile layout
   - **Breakpoint**: < 768px
   - **Features**: Card sizing, navigation, modal layout
@@ -583,6 +606,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: All interactive elements meet size requirements
 
 ### 5.2 Performance Optimization
+
 - [ ] **Task 5.2.1**: Implement image lazy loading
   - **Features**: Load images as they enter viewport
   - **Reference**: [Lazy Loading](#lazy-loading) in docs/project.md
@@ -611,6 +635,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: App performs well with large datasets
 
 ### 5.3 Accessibility
+
 - [ ] **Task 5.3.1**: Add ARIA labels to all icons
   - **Features**: Descriptive labels for screen readers
   - **Reference**: [Screen Readers](#screen-readers) in docs/project.md
@@ -646,6 +671,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Skip links work correctly
 
 ### 5.4 Image Optimization Pipeline
+
 - [ ] **Task 5.4.1**: Create image optimization script
   - **File**: `scripts/optimize-covers.ts`
   - **Features**: Sharp-based PNG → WebP conversion
@@ -669,6 +695,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Manifest tracks all processed images
 
 ### 5.5 Final Testing
+
 - [ ] **Task 5.5.1**: Test all user flows end-to-end
   - **Flows**: Add game, complete game, filter, search, export
   - **Mode**: Code Mode
@@ -700,6 +727,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Build creates deployable static site
 
 ### Phase 5 Validation Criteria
+
 - [ ] ✅ Fully responsive on mobile, tablet, desktop
 - [ ] ✅ Gallery scrolls smoothly with 1000+ games
 - [ ] ✅ Meets WCAG AA accessibility standards
@@ -712,6 +740,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 ## 🔗 Cross-Reference Index
 
 ### Docs/Project.MD Sections
+
 - [Business Requirements (PRD)](#business-requirements-prd)
 - [Technical Specification (SRSD)](#technical-specification-srsd)
 - [User Interface Design (UXD)](#user-interface-design-uxd)
@@ -722,6 +751,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 - [State Management](#state-management)
 
 ### Component References
+
 - [Header Component](#1-header-component)
 - [Navigation Tabs](#2-navigation-tabs)
 - [Search Bar](#3-search-bar)
@@ -733,6 +763,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 - [Detail Modal](#9-detail-modal)
 
 ### Implementation References
+
 - [Project Initialization](#project-initialization)
 - [Game Data Management](#game-data-management-two-phase-input)
 - [Score Calculation](#score-calculation)
@@ -746,6 +777,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 Before completing each phase, ensure all validation criteria are met:
 
 ### Phase Completion Requirements
+
 - [ ] **Phase 1**: Foundation validation criteria met
 - [ ] **Phase 2**: Core UI validation criteria met
 - [ ] **Phase 3**: Data Management validation criteria met
@@ -753,6 +785,7 @@ Before completing each phase, ensure all validation criteria are met:
 - [ ] **Phase 5**: Polish validation criteria met
 
 ### Code Quality Requirements
+
 - [ ] TypeScript compilation: `bun run check` ✅
 - [ ] ESLint: `bun run lint` (no errors/warnings)
 - [ ] Prettier: `bun run format` (consistent formatting)
@@ -760,6 +793,7 @@ Before completing each phase, ensure all validation criteria are met:
 - [ ] Proper error handling throughout
 
 ### Documentation Requirements
+
 - [ ] Code is self-documenting (clear naming)
 - [ ] Complex logic has appropriate comments
 - [ ] TODO comments for future enhancements
@@ -780,12 +814,14 @@ Before completing each phase, ensure all validation criteria are met:
 ## 📝 Notes
 
 ### Mode Usage Guidelines
+
 - **Code Mode**: For most implementation tasks
 - **Debug Mode**: If errors arise during implementation
 - **Ask Mode**: For clarifications on requirements
 - **Architect Mode**: For design decisions and planning
 
 ### Task Execution Tips
+
 - Complete tasks sequentially within each phase
 - Validate each task before moving to the next
 - Run `bun run check` and `bun run lint` frequently
@@ -793,6 +829,7 @@ Before completing each phase, ensure all validation criteria are met:
 - Reference docs/project.md for detailed specifications
 
 ### Common Issues
+
 - **Type Errors**: Check type definitions and imports
 - **Build Failures**: Verify adapter configuration
 - **UI Issues**: Check Tailwind classes and CSS variables
