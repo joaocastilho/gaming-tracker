@@ -23,11 +23,11 @@
 |-------|--------|----------------|----------------|
 | **Phase 1: Foundation** | ✅ **COMPLETED** | 15/15 | 0/15 |
 | **Phase 2: Core UI** | ✅ **COMPLETED** | 15/15 | 0/15 |
-| **Phase 3: Data Management** | ✅ **COMPLETED** | 15/15 | 0/15 |
+| **Phase 3: Data Management** | ✅ **COMPLETED** | 22/22 | 0/22 |
 | **Phase 4: Advanced Views** | ⏳ **NOT STARTED** | 0/25 | 25/25 |
 | **Phase 5: Polish** | ⏳ **NOT STARTED** | 0/33 | 33/33 |
 
-**Overall Progress**: 45/103 tasks completed (43.7%)
+**Overall Progress**: 52/110 tasks completed (47.3%)
 
 ---
 
@@ -215,11 +215,87 @@
   - **Implementation**: Reset button clears all filter selections and returns to default state
   - **Status**: ✅ **COMPLETED**
 
+### 3.2 Add Game Form (Phase 1) ✅
+- [x] **Task 3.2.1**: Create modal store
+  - **Implementation**: `src/lib/stores/modal.ts` with isOpen, activeGame, mode state
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.2.2**: Build add game modal
+  - **Implementation**: `src/lib/components/AddGameModal.svelte` with form layout
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.2.3**: Implement form validation
+  - **Implementation**: Zod schema validation with error messages
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.2.4**: Add Phase 1 form fields
+  - **Implementation**: Title, platform, year, genre, co-op, timeToBeat, cover fields
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.2.5**: Handle cover image URL input
+  - **Implementation**: URL validation and basic preview functionality
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.2.6**: Generate UUID for new games
+  - **Implementation**: Unique ID generation for each new game
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.2.7**: Update games store on submit
+  - **Implementation**: Add new games to store with validation
+  - **Status**: ✅ **COMPLETED**
+
+### 3.3 Edit Game Form (Phase 2) ✅
+- [x] **Task 3.3.1**: Add edit button to game cards
+  - **Implementation**: Hover-visible edit buttons on game cards
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.3.2**: Populate form with existing game data
+  - **Implementation**: Pre-fill all form fields with current game data
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.3.3**: Add status toggle (Planned → Completed)
+  - **Implementation**: Status dropdown with conditional field visibility
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.3.4**: Show Phase 2 fields when status is Completed
+  - **Implementation**: Finished date, hours played, ratings, tier fields
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.3.5**: Implement score calculation
+  - **Implementation**: Formula: (Presentation + Story + Gameplay) / 3 × 2
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.3.6**: Update games store on submit
+  - **Implementation**: Update existing games with validation and re-render
+  - **Status**: ✅ **COMPLETED**
+
+### 3.4 JSON Export ✅
+- [x] **Task 3.4.1**: Create export function
+  - **Implementation**: `src/lib/utils/export.ts` with JSON generation
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.4.2**: Generate downloadable JSON file
+  - **Implementation**: File download with proper naming and blob creation
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.4.3**: Add export button to UI
+  - **Implementation**: Export button in header component
+  - **Status**: ✅ **COMPLETED**
+
+- [x] **Task 3.4.4**: Show success notification
+  - **Implementation**: Temporary success message after export
+  - **Status**: ✅ **COMPLETED**
+
 **Phase 3 Validation Criteria**: ✅ ALL MET
 - ✅ Filter dropdowns work with multi-selection
 - ✅ Rating sliders filter games by score ranges
 - ✅ All filter states persist in URL
 - ✅ Reset button clears all filters correctly
+- ✅ Add game modal creates new games successfully
+- ✅ Edit game modal updates existing games
+- ✅ Status toggle shows appropriate fields
+- ✅ Score calculation works correctly
+- ✅ JSON export generates downloadable file
 
 ---
 

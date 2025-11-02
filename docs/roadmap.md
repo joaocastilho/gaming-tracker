@@ -205,7 +205,6 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 
 - **Task 2.3.5**: Update game count based on search results
   - **Features**: Dynamic count display in header and tabs
-  - **Features**: Dynamic count display in header and tabs
 
 ---
 
@@ -467,7 +466,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 ### 5.4 Image Optimization Pipeline
 
 - **Task 5.4.1**: Create image optimization script
-  - **File**: `scripts/optimize-covers.ts`
+  - **File**: `scripts/optimize-covers-full.ts`
   - **Features**: Sharp-based PNG → WebP conversion
   - **Reference**: [Image Optimization Script](#image-optimization-script) in docs/project.md
 
@@ -541,9 +540,9 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 
 ### Code Quality Requirements
 
-- TypeScript compilation: `bun run check` (status unknown)
-- ESLint: `bun run lint` (status unknown)
-- Prettier: `bun run format` (status unknown)
+- TypeScript compilation: `bun run check`
+- ESLint: `bun run lint`
+- Prettier: `bun run format`
 - No debugging statements (console.log, debugger, etc.)
 - Proper error handling throughout
 

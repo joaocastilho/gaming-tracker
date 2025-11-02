@@ -40,11 +40,11 @@
 
 ### Always Remember
 
-- **Ask first, code second**
-- **Work in small, verifiable steps**
-- **Respect tool gating and permissions**
-- **Never bypass required approvals**
-- **Never commit without user approval**
+- **MANDATORY**: Ask for clarification before writing code if requirements are unclear
+- **MANDATORY**: Work in small, incremental steps with verification at each step
+- **MANDATORY**: Respect all tool permissions and approval requirements
+- **MANDATORY**: Never bypass security restrictions or required approvals
+- **MANDATORY**: Never commit code without explicit user approval of the commit message
 
 ---
 
