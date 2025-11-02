@@ -201,7 +201,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Validation**: Tabs display correctly with active state styling
   - **Status**: ✅ COMPLETED - NavigationTabs component with accessibility features, game counts, and proper styling
 
-- [ ] **Task 2.1.2**: Implement routing for main pages
+- [x] **Task 2.1.2**: Implement routing for main pages
   - **Files**: `src/routes/+page.svelte`, `src/routes/completed/+page.svelte`, etc.
   - **Features**: Basic route structure for each tab
   - **Reference**: [SvelteKit Routes Structure](#sveltekit-routes-structure) in docs/project.md
@@ -912,6 +912,7 @@ Before completing each phase, ensure all validation criteria are met:
 ### Overall Project Status
 
 **Current Progress**: Phase 1 Complete ✅
+
 - **Total Tasks**: 151 tasks across 5 phases
 - **Completed**: 15 tasks (Phase 1 foundation only)
 - **In Progress**: 1 task (routing system)

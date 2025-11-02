@@ -2,35 +2,33 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import type { Game } from '$lib/types/game.js';
 
-	// Get all games from the store
-	let allGames = $state<Game[]>([]);
+	// Get completed games with tiers from the store
+	let tierGames = $state<Game[]>([]);
 
 	$effect(() => {
 		const unsubscribe = gamesStore.subscribe((games) => {
-			allGames = games;
+			// Only show completed games that have tiers for tier list
+			tierGames = games.filter((game) => game.status === 'Completed' && game.tier);
 		});
 		return unsubscribe;
 	});
-
-	// Show all games (both planned and completed)
-	let displayGames = $derived(allGames);
 </script>
 
 <svelte:head>
-	<title>Gaming Tracker - All Games</title>
+	<title>Gaming Tracker - Tier List</title>
 </svelte:head>
 
 <div class="main-content" id="main-content">
-	{#if displayGames.length === 0}
+	{#if tierGames.length === 0}
 		<div class="empty-state">
-			<h2>No games yet</h2>
-			<p>Add your first game to get started!</p>
+			<h2>No tiered games yet</h2>
+			<p>Complete some games and assign tiers to see the tier list!</p>
 		</div>
 	{:else}
-		<!-- Gallery Grid - Will be implemented in Phase 2.2 -->
+		<!-- Tier List View - Will be implemented in Phase 4.4 -->
 		<div class="gallery-placeholder">
-			<p>Gallery view will be implemented next...</p>
-			<p>Games count: {displayGames.length}</p>
+			<p>Tier list visualization will be implemented in Phase 4.4...</p>
+			<p>Tiered games count: {tierGames.length}</p>
 		</div>
 	{/if}
 </div>
@@ -38,7 +36,7 @@
 <style>
 	.main-content {
 		padding: 2rem;
-		min-height: calc(100vh - 140px); /* Account for header and navigation */
+		min-height: calc(100vh - 140px);
 	}
 
 	.empty-state {

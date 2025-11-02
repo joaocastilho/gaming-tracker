@@ -2,35 +2,32 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import type { Game } from '$lib/types/game.js';
 
-	// Get all games from the store
-	let allGames = $state<Game[]>([]);
+	// Get planned games from the store
+	let plannedGames = $state<Game[]>([]);
 
 	$effect(() => {
 		const unsubscribe = gamesStore.subscribe((games) => {
-			allGames = games;
+			plannedGames = games.filter((game) => game.status === 'Planned');
 		});
 		return unsubscribe;
 	});
-
-	// Show all games (both planned and completed)
-	let displayGames = $derived(allGames);
 </script>
 
 <svelte:head>
-	<title>Gaming Tracker - All Games</title>
+	<title>Gaming Tracker - Planned Games</title>
 </svelte:head>
 
 <div class="main-content" id="main-content">
-	{#if displayGames.length === 0}
+	{#if plannedGames.length === 0}
 		<div class="empty-state">
-			<h2>No games yet</h2>
-			<p>Add your first game to get started!</p>
+			<h2>No planned games yet</h2>
+			<p>Plan some games to see them here!</p>
 		</div>
 	{:else}
 		<!-- Gallery Grid - Will be implemented in Phase 2.2 -->
 		<div class="gallery-placeholder">
-			<p>Gallery view will be implemented next...</p>
-			<p>Games count: {displayGames.length}</p>
+			<p>Planned games gallery view will be implemented next...</p>
+			<p>Planned games count: {plannedGames.length}</p>
 		</div>
 	{/if}
 </div>
@@ -38,7 +35,7 @@
 <style>
 	.main-content {
 		padding: 2rem;
-		min-height: calc(100vh - 140px); /* Account for header and navigation */
+		min-height: calc(100vh - 140px);
 	}
 
 	.empty-state {
