@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { GameStatus, TierValue, CoOpStatus } from '../types/game';
 
 export const GameSchema = z.object({
-	id: z.string().uuid(),
+	id: z.string().regex(/^[\w-]+$/),
 	title: z.string().min(1).max(200),
 	platform: z.string().min(1),
 	year: z.number().int().min(1970).max(2099),

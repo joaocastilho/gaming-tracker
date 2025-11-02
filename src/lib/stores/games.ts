@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store';
 import { GameSchema } from '../validation/game';
+import { transformGameData } from '../utils/dataTransformer';
 import type { Game } from '../types/game';
+import type { ZodError } from 'zod';
 
 /**
  * Games Store - Manages game data, loading states, and error handling
@@ -30,12 +32,14 @@ function createGamesStore() {
 		},
 
 		// Load games from JSON file
-		async loadGames(): Promise<void> {
+		async loadGames(event?: import('@sveltejs/kit').LoadEvent): Promise<void> {
 			loading = true;
 			error = null;
 
 			try {
-				const response = await fetch('/games.json');
+				// Use event.fetch for server context, global fetch for client context
+				const fetchFn = event?.fetch ?? globalThis.fetch;
+				const response = await fetchFn('/games.json');
 				if (!response.ok) {
 					throw new Error(`Failed to fetch games: ${response.statusText}`);
 				}
@@ -51,13 +55,24 @@ function createGamesStore() {
 					);
 				}
 
-				// Validate each game against the schema
+				// Transform and validate each game against the schema
 				const validatedGames: Game[] = gamesArray
 					.map((game, index) => {
 						try {
-							return GameSchema.parse(game);
+							// First transform the data to match schema requirements
+							const transformedGame = transformGameData(game);
+
+							// Then validate the transformed data
+							return GameSchema.parse(transformedGame);
 						} catch (validationError) {
 							console.warn(`Invalid game data at index ${index}:`, validationError);
+
+							// Log detailed validation info for debugging
+							const zodError = validationError as ZodError;
+							zodError.issues.forEach(() => {
+								// Additional validation details can be logged here if needed
+							});
+
 							// Skip invalid games but don't fail the entire load
 							return null;
 						}

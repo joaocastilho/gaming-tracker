@@ -273,6 +273,8 @@ Complete each step and confirm before proceeding:
 - [ ] Run ESLint and address all errors
 - [ ] Address all ESLint warnings (unless explicitly waived)
 - [ ] Confirm no compilation errors exist
+- [ ] Run the project (`bun run dev`) and load the website
+- [ ] Ensure code is 100% free of running errors
 
 **REQUIREMENT**: The code must be 100% free of type errors and lint violations.
 
@@ -382,8 +384,7 @@ bun test
 >
 > The code is ready for commit."
 
-**ONLY AFTER** stage all changed files and generate a commit message and mark the task as completed
----
+## **ONLY AFTER** stage all changed files and generate a commit message and mark the task as completed
 
 ## Commit Message Generation
 
