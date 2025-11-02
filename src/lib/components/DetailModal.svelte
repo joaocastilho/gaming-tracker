@@ -9,6 +9,8 @@
 	$effect(() => {
 		const unsubscribe = modalStore.subscribe((state) => {
 			modalState = state;
+			// Update URL when modal state changes
+			modalStore.writeToURL();
 		});
 		return unsubscribe;
 	});
@@ -16,21 +18,18 @@
 	let modalElement: HTMLDivElement;
 	let coverImage: HTMLImageElement;
 
-	// Handle escape key
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			modalStore.closeModal();
 		}
 	}
 
-	// Handle overlay click
 	function handleOverlayClick(event: MouseEvent) {
 		if (event.target === modalElement) {
 			modalStore.closeModal();
 		}
 	}
 
-	// Format date for display
 	function formatDate(dateString: string | null): string {
 		if (!dateString) return 'Not completed';
 		try {
@@ -44,7 +43,6 @@
 		}
 	}
 
-	// Get tier color
 	function getTierColor(tier: string | null): string {
 		switch (tier) {
 			case 'S':
@@ -64,7 +62,6 @@
 		}
 	}
 
-	// Get platform color
 	function getPlatformColor(platform: string): string {
 		const colors: Record<string, string> = {
 			PC: 'bg-blue-600',
@@ -75,7 +72,6 @@
 		return colors[platform] || 'bg-gray-600';
 	}
 
-	// Get genre color
 	function getGenreColor(genre: string): string {
 		const colors: Record<string, string> = {
 			RPG: 'bg-purple-600',
