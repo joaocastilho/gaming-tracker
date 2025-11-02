@@ -76,6 +76,10 @@
 **REQUIREMENT**: Agents must respect all required tool approvals.  
 **PROHIBITION**: Do not attempt to bypass or ignore permissions warnings from the Roo Code client or any other development tool.
 
+### 6. Terminal operations
+
+All file system operations should be done assuming a bash shell.
+
 ---
 
 ## Context7 MCP Instructions: Up-to-Date Knowledge
