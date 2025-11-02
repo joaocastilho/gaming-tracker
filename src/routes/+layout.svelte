@@ -1,9 +1,82 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import favicon from '$lib/assets/favicon.svg';
 	import '../app.css';
+	import SearchBar from '$lib/components/SearchBar.svelte';
+	import { filtersStore } from '$lib/stores/filters.js';
+	import { gamesStore } from '$lib/stores/games.js';
+	import type { Game } from '$lib/types/game.js';
 
 	let { children } = $props();
+
+	let searchQuery = $state('');
+	let initialized = $state(false);
+	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
+	let allGames = $state<Game[]>([]);
+
+	$effect(() => {
+		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
+			searchQuery = value;
+		});
+		return unsubscribe;
+	});
+
+	$effect(() => {
+		const unsubscribe = gamesStore.subscribe((games) => {
+			allGames = games;
+		});
+		return unsubscribe;
+	});
+
+	function filterGames(games: Game[], query: string): Game[] {
+		if (!query.trim()) return games;
+		const lowerQuery = query.toLowerCase();
+		return games.filter((game) => game.title.toLowerCase().includes(lowerQuery));
+	}
+
+	let filteredGames = $derived(filterGames(allGames, searchQuery));
+
+	let filteredCounts = $derived({
+		total: filteredGames.length,
+		completed: filteredGames.filter((g) => g.status === 'Completed').length,
+		planned: filteredGames.filter((g) => g.status === 'Planned').length
+	});
+
+	// Initialize search from URL parameters on page load
+	$effect(() => {
+		if (!initialized) {
+			const searchParam = $page.url.searchParams.get('search');
+			if (searchParam) {
+				filtersStore.searchQuery.set(searchParam);
+			}
+			initialized = true;
+		}
+	});
+
+	// Update URL when search query changes (debounced)
+	$effect(() => {
+		if (initialized) {
+			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
+			urlUpdateTimeout = setTimeout(() => {
+				const currentUrl = new URL($page.url);
+				if (searchQuery) {
+					currentUrl.searchParams.set('search', searchQuery);
+				} else {
+					currentUrl.searchParams.delete('search');
+				}
+				goto(currentUrl.toString(), { replaceState: true });
+			}, 300);
+		}
+	});
+
+	// Sync URL changes (back/forward navigation) to filters store
+	$effect(() => {
+		const searchParam = $page.url.searchParams.get('search') || '';
+		if (initialized && searchParam !== searchQuery) {
+			filtersStore.searchQuery.set(searchParam);
+		}
+	});
 
 	async function navigateTo(path: string) {
 		await goto(path, { replaceState: true });
@@ -29,7 +102,7 @@
 				</button>
 			</div>
 			<div class="flex items-center gap-4">
-				<span class="text-muted-foreground text-sm">548 games tracked</span>
+				<span class="text-muted-foreground text-sm">{filteredCounts.total} games tracked</span>
 				<button class="hover:bg-accent rounded-md p-2 transition-colors" title="Toggle theme">
 					<span class="text-lg">☀️</span>
 				</button>
@@ -45,19 +118,19 @@
 					onclick={() => navigateTo('/')}
 					class="text-foreground border-accent hover:border-accent/50 border-b-2 pb-3 text-sm font-medium transition-all"
 				>
-					Games (548)
+					Games ({filteredCounts.total})
 				</button>
 				<button
 					onclick={() => navigateTo('/completed')}
 					class="text-muted-foreground hover:text-foreground hover:border-accent/50 border-b-2 border-transparent pb-3 text-sm font-medium transition-all"
 				>
-					Finished (174)
+					Finished ({filteredCounts.completed})
 				</button>
 				<button
 					onclick={() => navigateTo('/planned')}
 					class="text-muted-foreground hover:text-foreground hover:border-accent/50 border-b-2 border-transparent pb-3 text-sm font-medium transition-all"
 				>
-					Planned (374)
+					Planned ({filteredCounts.planned})
 				</button>
 				<button
 					onclick={() => navigateTo('/tierlist')}
@@ -73,13 +146,7 @@
 	<section class="bg-background border-border sticky top-[calc(60px+50px)] z-30 border-b">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<!-- Search Bar -->
-			<div class="relative">
-				<input
-					type="text"
-					placeholder="🔍 Search games..."
-					class="bg-surface border-border placeholder:text-muted-foreground focus:ring-accent w-full rounded-lg border px-4 py-3 text-sm focus:ring-2 focus:outline-none"
-				/>
-			</div>
+			<SearchBar value={searchQuery} onChange={(value) => filtersStore.searchQuery.set(value)} />
 
 			<!-- Filter Controls -->
 			<div class="flex flex-wrap items-center gap-3">

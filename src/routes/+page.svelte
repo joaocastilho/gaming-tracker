@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { gamesStore } from '$lib/stores/games.js';
+	import { filtersStore } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
+	import GameCard from '$lib/components/GameCard.svelte';
 
 	// Get all games from the store
 	let allGames = $state<Game[]>([]);
+	let searchQuery = $state('');
 
 	$effect(() => {
 		const unsubscribe = gamesStore.subscribe((games) => {
@@ -12,8 +15,21 @@
 		return unsubscribe;
 	});
 
-	// Show all games (both planned and completed)
-	let displayGames = $derived(allGames);
+	$effect(() => {
+		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
+			searchQuery = value;
+		});
+		return unsubscribe;
+	});
+
+	function filterGames(games: Game[], query: string): Game[] {
+		if (!query.trim()) return games;
+		const lowerQuery = query.toLowerCase();
+		return games.filter((game) => game.title.toLowerCase().includes(lowerQuery));
+	}
+
+	// Show filtered games (both planned and completed)
+	let displayGames = $derived(filterGames(allGames, searchQuery));
 </script>
 
 <svelte:head>
@@ -27,18 +43,26 @@
 			<p>Add your first game to get started!</p>
 		</div>
 	{:else}
-		<!-- Gallery Grid - Will be implemented in Phase 2.2 -->
-		<div class="gallery-placeholder">
-			<p>Gallery view will be implemented next...</p>
-			<p>Games count: {displayGames.length}</p>
+		<div class="game-grid">
+			{#each displayGames as game (game.id)}
+				<GameCard {game} />
+			{/each}
 		</div>
 	{/if}
 </div>
 
 <style>
 	.main-content {
-		padding: 2rem;
+		padding: 0 1.5rem;
 		min-height: calc(100vh - 140px); /* Account for header and navigation */
+	}
+
+	.game-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 20px;
+		justify-items: center;
+		max-width: 100%;
 	}
 
 	.empty-state {
@@ -57,30 +81,27 @@
 		color: inherit;
 	}
 
-	.gallery-placeholder {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 400px;
-		text-align: center;
-		color: #8b92a8;
-		border: 2px dashed #2a2f3a;
-		border-radius: 8px;
-		padding: 2rem;
+	/* Responsive breakpoints */
+	@media (max-width: 767px) {
+		.game-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
-	.gallery-placeholder p {
-		margin: 0.5rem 0;
+	@media (min-width: 768px) and (max-width: 1199px) {
+		.game-grid {
+			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.game-grid {
+			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		}
 	}
 
 	/* Light mode */
-	:global(.light) .empty-state,
-	:global(.light) .gallery-placeholder {
+	:global(.light) .empty-state {
 		color: #6b7280;
-	}
-
-	:global(.light) .gallery-placeholder {
-		border-color: #e5e7eb;
 	}
 </style>

@@ -1,16 +1,36 @@
 <script lang="ts">
 	import { gamesStore } from '$lib/stores/games.js';
+	import { filtersStore } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
 
 	// Get planned games from the store
-	let plannedGames = $state<Game[]>([]);
+	let allGames = $state<Game[]>([]);
+	let searchQuery = $state('');
 
 	$effect(() => {
 		const unsubscribe = gamesStore.subscribe((games) => {
-			plannedGames = games.filter((game) => game.status === 'Planned');
+			allGames = games;
 		});
 		return unsubscribe;
 	});
+
+	$effect(() => {
+		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
+			searchQuery = value;
+		});
+		return unsubscribe;
+	});
+
+	function filterGames(games: Game[], query: string): Game[] {
+		if (!query.trim()) return games;
+		const lowerQuery = query.toLowerCase();
+		return games.filter((game) => game.title.toLowerCase().includes(lowerQuery));
+	}
+
+	// Get filtered planned games
+	let plannedGames = $derived(
+		filterGames(allGames, searchQuery).filter((game) => game.status === 'Planned')
+	);
 </script>
 
 <svelte:head>

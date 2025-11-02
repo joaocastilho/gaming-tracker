@@ -382,7 +382,9 @@ bun test
 >
 > The code is ready for commit."
 
-**ONLY AFTER** this confirmation should you proceed to generate a commit message or mark the task as complete.
+**ONLY AFTER** this statement:
+- generate a commit message 
+- mark the task as complete
 
 ---
 
