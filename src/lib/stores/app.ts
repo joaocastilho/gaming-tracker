@@ -1,4 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
+import type { FiltersStore } from './filters.js';
 
 // TypeScript interfaces for app state
 export interface AppState {
@@ -102,6 +103,17 @@ function createAppStore() {
 			}
 		},
 
+		// Enhanced URL parameter management with filter support
+		readFromURLWithFilters(searchParams: URLSearchParams, filtersStore: FiltersStore) {
+			// Read app parameters
+			this.readFromURL(searchParams);
+
+			// Read filter parameters
+			if (filtersStore && typeof filtersStore.readFromURL === 'function') {
+				filtersStore.readFromURL(searchParams);
+			}
+		},
+
 		writeToURL() {
 			if (typeof window === 'undefined') return;
 
@@ -131,6 +143,19 @@ function createAppStore() {
 
 			// Use replaceState to avoid adding to browser history
 			window.history.replaceState({}, '', url.toString());
+		},
+
+		// Enhanced writeToURL with filter support
+		writeToURLWithFilters(filtersStore: FiltersStore) {
+			if (typeof window === 'undefined') return;
+
+			// Write app parameters
+			this.writeToURL();
+
+			// Write filter parameters
+			if (filtersStore && typeof filtersStore.writeToURL === 'function') {
+				filtersStore.writeToURL();
+			}
 		}
 	};
 }

@@ -7,13 +7,44 @@
 ## Table of Contents
 
 1. [Guiding Principles & Behavior](#guiding-principles--behavior)
-2. [Context7 MCP Instructions](#context7-mcp-instructions)
-3. [GitHub MCP Instructions](#github-mcp-instructions)
-4. [Code Generation Rules](#code-generation-rules)
-5. [Task Completion & Pre-Commit Workflow](#task-completion--pre-commit-workflow)
-6. [Commit Message Generation](#commit-message-generation)
+2. [Code Generation Rules](#code-generation-rules)
+3. [Task Completion & Pre-Commit Workflow](#task-completion--pre-commit-workflow)
+4. [Commit Message Generation](#commit-message-generation)
+5. [Context7 MCP Instructions](#context7-mcp-instructions)
+6. [GitHub MCP Instructions](#github-mcp-instructions)
 7. [Testing Requirements](#testing-requirements)
 8. [Error Handling & Recovery](#error-handling--recovery)
+
+---
+## Summary: Quick Reference
+
+### Before Starting Any Task
+
+- [ ] Read and understand the full requirements
+- [ ] Ask clarifying questions if needed
+- [ ] Use context7 for library documentation
+
+### While Coding
+
+- [ ] Follow project-specific patterns (e.g., Svelte 5 Runes)
+- [ ] Write clean, typed code
+- [ ] Work iteratively with small changes
+- [ ] No new comments unless requested
+- [ ] Preserve existing comments
+
+### Before Committing
+
+- [ ] Complete the entire pre-commit workflow (8 steps)
+- [ ] State confirmation that workflow is complete
+- [ ] Generate proper Conventional Commit message and prompt the user for commit approval
+
+### Always Remember
+
+- **Ask first, code second**
+- **Work in small, verifiable steps**
+- **Respect tool gating and permissions**
+- **Never bypass required approvals**
+- **Never commit without user approval**
 
 ---
 
@@ -79,95 +110,6 @@
 ### 6. Terminal operations
 
 All file system operations should be done assuming a bash shell.
-
----
-
-## Context7 MCP Instructions: Up-to-Date Knowledge
-
-**PURPOSE**: The Context7 MCP is crucial for accessing the latest, version-specific documentation for external libraries. Agents must prioritize this tool to prevent hallucinations and outdated code.
-
-### Usage Instructions
-
-#### 1. For New Knowledge
-
-**WHEN**: Adding a new dependency or working with a known library (e.g., Next.js, Stripe SDK, React, etc.)  
-**ACTION**: Agents MUST invoke the context7 tool before writing implementation code.
-
-#### 2. Version Accuracy
-
-**REQUIREMENT**: Agents MUST include the library name and specific version in their prompt to context7.  
-**CORRECT**: "use context7 for React v18 hooks and Suspense API"  
-**INCORRECT**: "use context7 for React" (may fetch outdated documentation)
-
-**WHY**: This prevents fetching documentation for older, incompatible versions.
-
-#### 3. Refactoring & Upgrades
-
-**WHEN**: Refactoring existing code or upgrading a dependency.  
-**ACTION**: Use context7 to confirm:
-
-- New API surfaces
-- Deprecated features
-- Breaking changes
-- Migration paths
-
-#### 4. Agent Command Format
-
-**SYNTAX**: Include a directive in your prompt:
-
-```
-"Create a serverless function using the latest Next.js v14 App Router conventions. use context7"
-```
-
-**BEST PRACTICE**: Always specify the exact version number when known.
-
----
-
-## GitHub MCP Instructions: Repository Management
-
-**PURPOSE**: The GitHub MCP is used for tasks involving the repository's live status, such as checking issues, reviewing pull requests, and confirming Continuous Integration (CI) status.
-
-### Usage Instructions
-
-#### 1. Task Context
-
-**WHEN**: Before beginning any feature or bug fix.  
-**ACTION**: Agents MUST use the github tool to fetch the relevant Issue or Pull Request (using `pr` or `issue` tools).  
-**WHY**: This ensures work aligns with the official request and any comments or updates.
-
-**CHECKLIST**:
-
-- [ ] Read the full issue/PR description
-- [ ] Review all comments for context
-- [ ] Note any acceptance criteria
-- [ ] Check for linked issues or dependencies
-
-#### 2. Commit Message Format
-
-**REQUIREMENT**: All commit messages MUST strictly follow the Conventional Commits specification.  
-**FORMAT**: `<type>[optional scope]: <description>`  
-**EXAMPLES**:
-
-- `feat: add user login`
-- `fix(cart): correct item total calculation`
-- `chore: update eslint config`
-
-**ACTION**: Agents should verify format before proposing a commit.
-
-#### 3. Pre-Merge Status Check
-
-**WHEN**: Preparing a Pull Request.  
-**ACTION**: The agent MUST use github to confirm:
-
-- [ ] No merge conflicts exist
-- [ ] CI/CD pipeline in `.github/workflows/` is passing
-- [ ] All required status checks are green
-- [ ] No blocking review comments remain unresolved
-
-### Critical Constraint
-
-**PROHIBITION**: Agents must NOT attempt to create or merge a Pull Request or Branch without explicit human approval.  
-**SCOPE**: The github tool is strictly for reading and analyzing repository status to inform code changes.
 
 ---
 
@@ -251,15 +193,15 @@ All file system operations should be done assuming a bash shell.
 
 ---
 
-## Task Completion & Pre-Commit Workflow (MANDATORY)
+## Task or Subtask Completion & Pre-Commit Workflow (MANDATORY)
 
-**CRITICAL**: Before you finalize a task, report completion, or generate a commit message, you MUST perform the following validation and cleanup steps in this exact order.
+**CRITICAL**: Before you finalize a task or subtask, report completion, or generate a commit message, you MUST perform the following validation and cleanup steps in this exact order.
 
 ### Workflow Checklist
 
 Complete each step and confirm before proceeding:
 
-#### ✓ Step 1: Review Task
+#### ✓ Step 1: Review Task or Subtask
 
 - [ ] Review all generated and modified code
 - [ ] Verify all requirements of the given task are fully met
@@ -384,7 +326,7 @@ bun test
 >
 > The code is ready for commit."
 
-## **ONLY AFTER** stage all changed files and generate a commit message and mark the task as completed
+**ONLY AFTER**: Stage all changed files and generate a commit message and prompt the user to accept the commit
 
 ## Commit Message Generation
 
@@ -463,6 +405,95 @@ tokens instead of API keys. Users must update their integration code.
 
 Migration guide: docs/migration/auth-v2.md
 ```
+
+---
+
+## Context7 MCP Instructions: Up-to-Date Knowledge
+
+**PURPOSE**: The Context7 MCP is crucial for accessing the latest, version-specific documentation for external libraries. Agents must prioritize this tool to prevent hallucinations and outdated code.
+
+### Usage Instructions
+
+#### 1. For New Knowledge
+
+**WHEN**: Adding a new dependency or working with a known library (e.g., Next.js, Stripe SDK, React, etc.)  
+**ACTION**: Agents MUST invoke the context7 tool before writing implementation code.
+
+#### 2. Version Accuracy
+
+**REQUIREMENT**: Agents MUST include the library name and specific version in their prompt to context7.  
+**CORRECT**: "use context7 for React v18 hooks and Suspense API"  
+**INCORRECT**: "use context7 for React" (may fetch outdated documentation)
+
+**WHY**: This prevents fetching documentation for older, incompatible versions.
+
+#### 3. Refactoring & Upgrades
+
+**WHEN**: Refactoring existing code or upgrading a dependency.  
+**ACTION**: Use context7 to confirm:
+
+- New API surfaces
+- Deprecated features
+- Breaking changes
+- Migration paths
+
+#### 4. Agent Command Format
+
+**SYNTAX**: Include a directive in your prompt:
+
+```
+"Create a serverless function using the latest Next.js v14 App Router conventions. use context7"
+```
+
+**BEST PRACTICE**: Always specify the exact version number when known.
+
+---
+
+## GitHub MCP Instructions: Repository Management
+
+**PURPOSE**: The GitHub MCP is used for tasks involving the repository's live status, such as checking issues, reviewing pull requests, and confirming Continuous Integration (CI) status.
+
+### Usage Instructions
+
+#### 1. Task Context
+
+**WHEN**: Before beginning any feature or bug fix.  
+**ACTION**: Agents MUST use the github tool to fetch the relevant Issue or Pull Request (using `pr` or `issue` tools).  
+**WHY**: This ensures work aligns with the official request and any comments or updates.
+
+**CHECKLIST**:
+
+- [ ] Read the full issue/PR description
+- [ ] Review all comments for context
+- [ ] Note any acceptance criteria
+- [ ] Check for linked issues or dependencies
+
+#### 2. Commit Message Format
+
+**REQUIREMENT**: All commit messages MUST strictly follow the Conventional Commits specification.  
+**FORMAT**: `<type>[optional scope]: <description>`  
+**EXAMPLES**:
+
+- `feat: add user login`
+- `fix(cart): correct item total calculation`
+- `chore: update eslint config`
+
+**ACTION**: Agents should verify format before proposing a commit.
+
+#### 3. Pre-Merge Status Check
+
+**WHEN**: Preparing a Pull Request.  
+**ACTION**: The agent MUST use github to confirm:
+
+- [ ] No merge conflicts exist
+- [ ] CI/CD pipeline in `.github/workflows/` is passing
+- [ ] All required status checks are green
+- [ ] No blocking review comments remain unresolved
+
+### Critical Constraint
+
+**PROHIBITION**: Agents must NOT attempt to create or merge a Pull Request or Branch without explicit human approval.  
+**SCOPE**: The github tool is strictly for reading and analyzing repository status to inform code changes.
 
 ---
 
@@ -569,33 +600,3 @@ describe('calculateDiscount', () => {
 **DO NOT**: Continue making changes randomly hoping to fix the issue.
 
 ---
-
-## Summary: Quick Reference
-
-### Before Starting Any Task
-
-- [ ] Read and understand the full requirements
-- [ ] Ask clarifying questions if needed
-- [ ] Check relevant GitHub issues/PRs
-- [ ] Use context7 for library documentation
-
-### While Coding
-
-- [ ] Follow project-specific patterns (e.g., Svelte 5 Runes)
-- [ ] Write clean, typed code
-- [ ] Work iteratively with small changes
-- [ ] No new comments unless requested
-- [ ] Preserve existing comments
-
-### Before Committing
-
-- [ ] Complete the entire pre-commit workflow (8 steps)
-- [ ] State confirmation that workflow is complete
-- [ ] Generate proper Conventional Commit message
-
-### Always Remember
-
-- **Ask first, code second**
-- **Work in small, verifiable steps**
-- **Respect tool gating and permissions**
-- **Never bypass required approvals**

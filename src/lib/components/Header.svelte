@@ -2,6 +2,7 @@
 	import { appStore } from '../stores/app.js';
 	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
+	import { modalStore } from '../stores/modal.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	// Subscribe to theme changes (value used for reactive updates)
@@ -39,10 +40,9 @@
 		return unsubscribe;
 	});
 
-	// Add game handler (placeholder for future modal implementation)
+	// Add game handler - opens the add game modal
 	function handleAddGame() {
-		// TODO: Implement add game modal
-		// This will trigger the add game functionality once the modal is implemented
+		modalStore.openAddModal();
 	}
 </script>
 

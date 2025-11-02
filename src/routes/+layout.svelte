@@ -1,45 +1,36 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import favicon from '$lib/assets/favicon.svg';
 	import '../app.css';
 	import SearchBar from '$lib/components/SearchBar.svelte';
+	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
+	import RatingsFilter from '$lib/components/RatingsFilter.svelte';
+	import AddEditModal from '$lib/components/AddEditModal.svelte';
+	import Header from '$lib/components/Header.svelte';
+	import { extractFilterOptions } from '$lib/utils/filterOptions.js';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';
-	import type { Game } from '$lib/types/game.js';
 
 	let { children } = $props();
 
-	let allGames = $state<Game[]>([]);
+	let filterOptions = $state({
+		platforms: [] as string[],
+		genres: [] as string[],
+		tiers: [] as string[]
+	});
 	let initialized = $state(false);
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
 
-	// Subscribe to games store
+	// Subscribe to games store and extract filter options
 	$effect(() => {
 		const unsubscribe = gamesStore.subscribe((games) => {
-			allGames = games;
+			filterOptions = extractFilterOptions(games);
 		});
 		return unsubscribe;
 	});
 
-	// Get game counts from games store (not filtered)
-	let gameCounts = $derived({
-		total: allGames.length,
-		completed: allGames.filter((g) => g.status === 'Completed').length,
-		planned: allGames.filter((g) => g.status === 'Planned').length
-	});
-
-	// Subscribe to app store for theme and view mode
-	let currentTheme = $state('dark');
+	// Subscribe to app store for view mode
 	let currentViewMode = $state('gallery');
-
-	$effect(() => {
-		const unsubscribe = appStore.theme.subscribe((theme) => {
-			currentTheme = theme;
-		});
-		return unsubscribe;
-	});
 
 	$effect(() => {
 		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
@@ -51,157 +42,169 @@
 	// Initialize app from URL parameters
 	$effect(() => {
 		if (!initialized) {
-			appStore.readFromURL($page.url.searchParams);
-
-			// Set up URL parameter handling
-			const searchParams = $page.url.searchParams;
-			const search = searchParams.get('search');
-			if (search) {
-				filtersStore.searchQuery.set(search);
-			}
-
+			appStore.readFromURLWithFilters($page.url.searchParams, filtersStore);
 			initialized = true;
 		}
 	});
 
-	// Handle URL updates for search (debounced)
+	// Handle URL updates for all filters (debounced)
+	let currentFilterState = $state({
+		searchQuery: '',
+		selectedPlatforms: [] as string[],
+		selectedGenres: [] as string[],
+		selectedTiers: [] as string[],
+		ratingRanges: {
+			presentation: [0, 10] as [number, number],
+			story: [0, 10] as [number, number],
+			gameplay: [0, 10] as [number, number],
+			total: [0, 20] as [number, number]
+		}
+	});
+
+	$effect(() => {
+		const unsubscribe = filtersStore.filterState.subscribe((filters) => {
+			currentFilterState = filters;
+		});
+		return unsubscribe;
+	});
+
+	// Debounced URL update for all filter changes
 	$effect(() => {
 		if (initialized) {
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 			urlUpdateTimeout = setTimeout(() => {
-				appStore.writeToURL();
+				appStore.writeToURLWithFilters(filtersStore);
 			}, 300);
 		}
 	});
 
 	// Handle browser back/forward navigation
-	let currentSearchQuery = $state('');
-
 	$effect(() => {
-		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
-			currentSearchQuery = value;
-		});
-		return unsubscribe;
-	});
+		// Compare current state with previous to detect external URL changes
+		const currentURL = $page.url;
+		const searchParam = currentURL.searchParams.get('search') || '';
+		const platformsParam = currentURL.searchParams.get('platforms') || '';
+		const genresParam = currentURL.searchParams.get('genres') || '';
+		const tiersParam = currentURL.searchParams.get('tiers') || '';
+		const ratingPresentationParam = currentURL.searchParams.get('ratingPresentation') || '';
+		const ratingStoryParam = currentURL.searchParams.get('ratingStory') || '';
+		const ratingGameplayParam = currentURL.searchParams.get('ratingGameplay') || '';
+		const ratingTotalParam = currentURL.searchParams.get('ratingTotal') || '';
 
-	$effect(() => {
-		const searchParam = $page.url.searchParams.get('search') || '';
-		if (initialized && searchParam !== currentSearchQuery) {
+		// Check if URL parameters differ from current filter state
+		const urlState = {
+			searchQuery: searchParam,
+			selectedPlatforms: platformsParam ? platformsParam.split(',') : [],
+			selectedGenres: genresParam ? genresParam.split(',') : [],
+			selectedTiers: tiersParam ? tiersParam.split(',') : [],
+			ratingRanges: {
+				presentation: ratingPresentationParam
+					? (ratingPresentationParam.split(',').map(Number) as [number, number])
+					: [0, 10],
+				story: ratingStoryParam
+					? (ratingStoryParam.split(',').map(Number) as [number, number])
+					: [0, 10],
+				gameplay: ratingGameplayParam
+					? (ratingGameplayParam.split(',').map(Number) as [number, number])
+					: [0, 10],
+				total: ratingTotalParam
+					? (ratingTotalParam.split(',').map(Number) as [number, number])
+					: [0, 20]
+			}
+		};
+
+		// Simple comparison to detect changes (could be more sophisticated)
+		const urlStateString = JSON.stringify(urlState);
+		const currentStateString = JSON.stringify(currentFilterState);
+
+		if (initialized && urlStateString !== currentStateString) {
 			filtersStore.readFromURL($page.url.searchParams);
 		}
+
+		// URL parameters changed, trigger filter update
+		filtersStore.readFromURL($page.url.searchParams);
 	});
-
-	async function navigateTo(path: string) {
-		await goto(path, { replaceState: true });
-	}
-
-	function handleThemeToggle() {
-		appStore.toggleTheme();
-	}
 
 	function handleViewModeToggle() {
 		appStore.toggleViewMode();
 	}
 
-	// Get theme emoji
-	function getThemeEmoji(theme: string): string {
-		return theme === 'dark' ? '☀️' : '🌙';
+	// Filter state
+	let selectedPlatforms = $state<string[]>([]);
+	let selectedGenres = $state<string[]>([]);
+	let selectedTiers = $state<string[]>([]);
+
+	// Subscribe to filter stores
+	$effect(() => {
+		const unsubscribe = filtersStore.selectedPlatforms.subscribe((platforms) => {
+			selectedPlatforms = platforms;
+		});
+		return unsubscribe;
+	});
+
+	$effect(() => {
+		const unsubscribe = filtersStore.selectedGenres.subscribe((genres) => {
+			selectedGenres = genres;
+		});
+		return unsubscribe;
+	});
+
+	$effect(() => {
+		const unsubscribe = filtersStore.selectedTiers.subscribe((tiers) => {
+			selectedTiers = tiers;
+		});
+		return unsubscribe;
+	});
+
+	// Reset all filters
+	function resetFilters() {
+		filtersStore.resetAllFilters();
+		// Immediately update URL to reflect reset state
+		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
+		appStore.writeToURLWithFilters(filtersStore);
 	}
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Gaming Tracker</title>
 </svelte:head>
 
 <div class="bg-background text-foreground min-h-screen">
-	<!-- Header (Fixed) -->
-	<header class="bg-background border-border fixed top-0 right-0 left-0 z-50 h-15 border-b">
-		<div class="container mx-auto flex h-full items-center justify-between px-6">
-			<div class="flex items-center gap-4">
-				<h1 class="flex items-center gap-2 text-xl font-bold">🎮 Gaming Tracker</h1>
-				<button
-					class="bg-accent text-accent-foreground hover:bg-accent/90 rounded-md px-3 py-1.5 text-sm transition-colors"
-				>
-					+ Add Game
-				</button>
-			</div>
-			<div class="flex items-center gap-4">
-				<span class="text-muted-foreground text-sm">{gameCounts.total} games tracked</span>
-				<button
-					class="hover:bg-accent rounded-md p-2 transition-colors"
-					title="Toggle theme"
-					onclick={handleThemeToggle}
-				>
-					<span class="text-lg">{getThemeEmoji(currentTheme)}</span>
-				</button>
-			</div>
-		</div>
-	</header>
-
-	<!-- Navigation Tabs (Fixed) -->
-	<nav class="bg-background border-border fixed top-15 right-0 left-0 z-40 h-12.5 border-b">
-		<div class="container mx-auto h-full px-6">
-			<div class="flex h-full items-center space-x-8">
-				<button
-					onclick={() => navigateTo('/')}
-					class="text-foreground border-accent hover:border-accent/50 border-b-2 pb-3 text-sm font-medium transition-all"
-				>
-					Games ({gameCounts.total})
-				</button>
-				<button
-					onclick={() => navigateTo('/completed')}
-					class="text-muted-foreground hover:text-foreground hover:border-accent/50 border-b-2 border-transparent pb-3 text-sm font-medium transition-all"
-				>
-					Finished ({gameCounts.completed})
-				</button>
-				<button
-					onclick={() => navigateTo('/planned')}
-					class="text-muted-foreground hover:text-foreground hover:border-accent/50 border-b-2 border-transparent pb-3 text-sm font-medium transition-all"
-				>
-					Planned ({gameCounts.planned})
-				</button>
-				<button
-					onclick={() => navigateTo('/tierlist')}
-					class="text-muted-foreground hover:text-foreground hover:border-accent/50 border-b-2 border-transparent pb-3 text-sm font-medium transition-all"
-				>
-					Tier List
-				</button>
-			</div>
-		</div>
-	</nav>
+	<!-- Header Component -->
+	<Header />
 
 	<!-- Search & Filter Section (Sticky) -->
-	<section class="bg-background border-border sticky top-[calc(60px+50px)] z-30 border-b">
+	<section class="bg-background border-border sticky top-[60px] z-30 border-b">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<!-- Search Bar -->
 			<SearchBar />
 
 			<!-- Filter Controls -->
 			<div class="flex flex-wrap items-center gap-3">
+				<FilterDropdown
+					type="platforms"
+					label="Platforms"
+					options={filterOptions.platforms}
+					selectedOptions={selectedPlatforms}
+				/>
+				<FilterDropdown
+					type="genres"
+					label="Genres"
+					options={filterOptions.genres}
+					selectedOptions={selectedGenres}
+				/>
+				<FilterDropdown
+					type="tiers"
+					label="Tiers"
+					options={filterOptions.tiers}
+					selectedOptions={selectedTiers}
+				/>
+				<RatingsFilter />
 				<button
 					class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border px-3 py-1.5 text-xs transition-colors"
-				>
-					All Platforms ▼
-				</button>
-				<button
-					class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border px-3 py-1.5 text-xs transition-colors"
-				>
-					All Genres ▼
-				</button>
-				<button
-					class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border px-3 py-1.5 text-xs transition-colors"
-				>
-					All Tiers ▼
-				</button>
-				<button
-					class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border px-3 py-1.5 text-xs transition-colors"
-				>
-					📊 Ratings
-				</button>
-				<button
-					class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border px-3 py-1.5 text-xs transition-colors"
+					title="Reset all filters"
+					onclick={resetFilters}
 				>
 					↻ Reset
 				</button>
@@ -241,11 +244,14 @@
 	</section>
 
 	<!-- Content Area (Scrollable) -->
-	<main class="px-6 pt-[calc(60px+50px+100px)] pb-6">
+	<main class="px-6 pt-[calc(60px+60px)] pb-6">
 		<div class="container mx-auto">
 			{@render children?.()}
 		</div>
 	</main>
+
+	<!-- Add/Edit Game Modal -->
+	<AddEditModal />
 </div>
 
 <style>
