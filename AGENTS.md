@@ -1,58 +1,68 @@
-## AI Agent Instructions (AGENTS.MD)
+# AI Agent Instructions (AGENTS.MD)
 
-**CRITICAL**: This document provides mandatory instructions for any AI agent or assistant contributing to this project. You MUST read, understand, and adhere to these rules at all times. Failure to follow these instructions may result in rejected contributions.
+**🔴 CRITICAL - READ FIRST**: This document provides **MANDATORY, NON-NEGOTIABLE instructions** for any AI agent or assistant contributing to this project. **You MUST read, understand, and adhere to every rule at all times.** Failure to follow these instructions will result in:
+
+- ❌ Rejected contributions
+- ❌ Reverted commits
+- ❌ Task incomplete status
+- ❌ Escalation to human review
+
+**This is not optional. This is not guidance. This is law.**
 
 ---
 
 ## Table of Contents
 
-1. [Guiding Principles & Behavior](#guiding-principles--behavior)
-2. [Code Generation Rules](#code-generation-rules)
-3. [Task Completion & Pre-Commit Workflow](#task-completion--pre-commit-workflow)
-4. [Commit Message Generation](#commit-message-generation)
-5. [Context7 MCP Instructions](#context7-mcp-instructions)
-6. [GitHub MCP Instructions](#github-mcp-instructions)
-7. [Testing Requirements](#testing-requirements)
-8. [Error Handling & Recovery](#error-handling--recovery)
+1. [Executive Summary & Mandatory Rules](#executive-summary--mandatory-rules)
+2. [Guiding Principles & Behavior](#guiding-principles--behavior)
+3. [Code Generation Rules](#code-generation-rules)
+4. [✋ MANDATORY: Pre-Commit Workflow (8-STEP CHECKLIST)](#-mandatory-pre-commit-workflow-8-step-checklist)
+5. [Conventional Commit Message Generation](#conventional-commit-message-generation)
+6. [Context7 MCP Instructions](#context7-mcp-instructions)
+7. [GitHub MCP Instructions](#github-mcp-instructions)
+8. [Testing Requirements](#testing-requirements)
+9. [Error Handling & Recovery](#error-handling--recovery)
 
 ---
-## Summary: Quick Reference
 
-### Before Starting Any Task
+## Executive Summary & Mandatory Rules
 
-- [ ] Read and understand the full requirements
-- [ ] Ask clarifying questions if needed
-- [ ] Use context7 for library documentation
+### The Three Non-Negotiable Rules
 
-### While Coding
+**RULE #1: ALWAYS Ask Before Coding (When Unclear)**
 
-- [ ] Follow project-specific patterns (e.g., Svelte 5 Runes)
-- [ ] Write clean, typed code
-- [ ] Work iteratively with small changes
-- [ ] No new comments unless requested
-- [ ] Preserve existing comments
+If requirements are ambiguous, you MUST ask clarifying questions BEFORE writing any code. No exceptions.
 
-### Before Committing
+**RULE #2: ALWAYS Work Iteratively with Verification**
 
-- [ ] Complete the entire pre-commit workflow (8 steps)
-- [ ] State confirmation that workflow is complete
-- [ ] Generate proper Conventional Commit message and prompt the user for commit approval
+You MUST work in small steps and verify each step completes successfully before moving to the next. Do not make sweeping changes.
 
-### Always Remember
+**RULE #3: NEVER Skip the Pre-Commit Workflow**
 
-- **MANDATORY**: Ask for clarification before writing code if requirements are unclear
-- **MANDATORY**: Work in small, incremental steps with verification at each step
-- **MANDATORY**: Respect all tool permissions and approval requirements
-- **MANDATORY**: Never bypass security restrictions or required approvals
-- **MANDATORY**: Never commit code without explicit user approval of the commit message
+The 8-step Pre-Commit Workflow (see below) is MANDATORY before EVERY commit, subtask completion, or status report. You must complete ALL 8 steps, in order, with zero shortcuts.
+
+### Enforcement Mechanism
+
+**Before you do ANY of the following, you MUST complete the entire Pre-Commit Workflow:**
+
+- [ ] Report a task as complete
+- [ ] Say "ready to commit"
+- [ ] Generate a commit message
+- [ ] Ask for approval to commit
+- [ ] Claim all requirements are met
+- [ ] Mark task or subtask as complete
+- [ ] Ask the user if you can move to the next subtask
+
+**If you attempt any of the above without completing the workflow, your response is invalid and must be restarted.**
 
 ---
 
 ## Guiding Principles & Behavior
 
-### 1. Ask First, Code Second
+### 1. Ask First, Code Second (MANDATORY)
 
-**WHEN**: If a task is ambiguous, requirements are unclear, or you are unsure about the best implementation.  
+**WHEN**: If a task is ambiguous, requirements are unclear, or you are unsure about the best implementation.
+
 **ACTION**: You MUST ask clarifying questions before writing any code. Do not make assumptions about:
 
 - User intent or desired outcomes
@@ -63,9 +73,12 @@
 
 **EXAMPLE**: "I understand you want to add user authentication. Should I implement OAuth 2.0, JWT tokens, or session-based auth? What providers do you want to support?"
 
-### 2. Best Practices
+**VIOLATION**: Writing code first and asking questions later is a critical failure.
 
-**REQUIREMENT**: Always apply expert-level best practices for the tech stack used and modern web development.  
+### 2. Best Practices (MANDATORY)
+
+**REQUIREMENT**: Always apply expert-level best practices for the tech stack used and modern web development.
+
 **INCLUDES**:
 
 - Writing clean, modular, and performant code
@@ -76,9 +89,12 @@
 - Using TypeScript types effectively (avoid `any` unless absolutely necessary)
 - Implementing proper security practices (input validation, sanitization, etc.)
 
-### 3. Work Iteratively
+**VERIFICATION**: Before every commit, ask yourself: "Does this code represent best practices for this tech stack?"
 
-**REQUIREMENT**: Agents must work in small, verifiable steps.  
+### 3. Work Iteratively (MANDATORY)
+
+**REQUIREMENT**: Agents must work in small, verifiable steps.
+
 **PROCESS**:
 
 1. Make a focused change (single feature or bug fix)
@@ -87,9 +103,9 @@
 4. Fix issues before proceeding to the next change
 5. Repeat
 
-**DO NOT**: Make sweeping changes across multiple files without verification steps.
+**VIOLATION**: Making sweeping changes across multiple files without verification stops you from proceeding.
 
-### 4. Confirm Major Changes
+### 4. Confirm Major Changes (MANDATORY)
 
 **TRIGGER**: Any task involving:
 
@@ -99,15 +115,19 @@
 - Dependency upgrades (major versions)
 - Architecture refactoring
 
-**ACTION**: The agent must pause and ask the user for explicit confirmation before applying changes.  
+**ACTION**: The agent must pause and ask the user for explicit confirmation before applying changes.
+
 **FORMAT**: "This change will modify [X files/systems]. Here's what will change: [brief summary]. Shall I proceed?"
 
-### 5. Tool Gating
+**VIOLATION**: Proceeding without confirmation is a failure.
 
-**REQUIREMENT**: Agents must respect all required tool approvals.  
-**PROHIBITION**: Do not attempt to bypass or ignore permissions warnings from the Roo Code client or any other development tool.
+### 5. Tool Gating (MANDATORY)
 
-### 6. Terminal operations
+**REQUIREMENT**: Agents must respect all required tool approvals.
+
+**PROHIBITION**: Do not attempt to bypass or ignore permissions warnings from the Roo Code client or any other development tool. If a tool requires approval, request it explicitly.
+
+### 6. Terminal Operations
 
 All file system operations should be done assuming a bash shell.
 
@@ -117,9 +137,10 @@ All file system operations should be done assuming a bash shell.
 
 **SCOPE**: These rules apply while you are actively writing or modifying code.
 
-### 1. No New Comments
+### 1. No New Comments (UNLESS REQUESTED)
 
-**RULE**: Do not generate new comments (e.g., `// This function does...`) unless you are explicitly and specifically instructed to add them.  
+**RULE**: Do not generate new comments (e.g., `// This function does...`) unless you are explicitly and specifically instructed to add them.
+
 **RATIONALE**: Code should be self-documenting through clear naming and structure.
 
 **EXCEPTIONS**: You may add comments for:
@@ -129,14 +150,15 @@ All file system operations should be done assuming a bash shell.
 - TODO markers when explicitly requested
 - Temporary debugging notes (must be removed before commit)
 
-### 2. Preserve Existing Comments
+### 2. Preserve Existing Comments (MANDATORY)
 
-**RULE**: Do not remove existing comments during the development process unless explicitly instructed to.  
-**NOTE**: A separate cleanup step for unnecessary comments applies before task completion (see Pre-Commit Workflow).
+**RULE**: Do not remove existing comments during the development process unless explicitly instructed to.
+
+**NOTE**: Comment cleanup is part of the Pre-Commit Workflow Step 4.
 
 ### 3. Svelte 5 Runes (PROJECT-SPECIFIC)
 
-**REQUIREMENT**: All Svelte components MUST use Runes syntax.
+**REQUIREMENT**: All Svelte components MUST use Runes syntax exclusively.
 
 **CORRECT PATTERNS**:
 
@@ -157,21 +179,22 @@ All file system operations should be done assuming a bash shell.
 
 ```svelte
 <script>
-	let count = 0; // ❌ Not reactive in Svelte 5
+	let count = 0; // ❌ NOT REACTIVE IN SVELTE 5
 	$: doubled = count * 2; // ❌ Use $derived instead
-	onMount(() => {}); // ❌ Use $effect instead (when appropriate)
+	onMount(() => {}); // ❌ Use $effect instead
 </script>
 ```
 
-**WHY**: This project uses Svelte 5, and older patterns will not work correctly.
+**VIOLATION**: Using old Svelte patterns will be detected during linting and will fail Step 5 of the Pre-Commit Workflow.
 
-### 4. TypeScript Strictness
+### 4. TypeScript Strictness (MANDATORY)
 
-**REQUIREMENT**: All TypeScript code must satisfy strict mode.  
+**REQUIREMENT**: All TypeScript code must satisfy strict mode.
+
 **PROHIBITED**:
 
-- Using `any` type without explicit justification
-- Using `@ts-ignore` or `@ts-expect-error` without explanation
+- Using `any` type without explicit justification in a comment
+- Using `@ts-ignore` or `@ts-expect-error` without explanation in a comment
 - Loose type casting with `as` without validation
 
 **PREFERRED**:
@@ -179,6 +202,8 @@ All file system operations should be done assuming a bash shell.
 - Explicit type definitions
 - Type guards for runtime checks
 - Proper generic constraints
+
+**VERIFICATION**: The TypeScript compiler (`bun run check`) will fail if strictness is violated. This will fail Step 2 of the Pre-Commit Workflow.
 
 ### 5. Import Organization
 
@@ -191,62 +216,145 @@ All file system operations should be done assuming a bash shell.
 
 **USE**: Blank lines to separate groups.
 
+**VERIFICATION**: ESLint will validate this. Violations will fail Step 5 of the Pre-Commit Workflow.
+
 ---
 
-## Task or Subtask Completion & Pre-Commit Workflow (MANDATORY)
+## ✋ MANDATORY: Pre-Commit Workflow (8-STEP CHECKLIST)
 
-**CRITICAL**: Before you finalize a task or subtask, report completion, or generate a commit message, you MUST perform the following validation and cleanup steps in this exact order.
+**🔴 CRITICAL - DO NOT SKIP ANY STEPS**
 
-### Workflow Checklist
+This workflow MUST be completed in full before:
 
-Complete each step and confirm before proceeding:
+- Reporting a task complete
+- Generating a commit message
+- Asking for commit approval
+- Ask user for moving to the next subtask
 
-#### ✓ Step 1: Review Task or Subtask
+### Workflow Execution
 
-- [ ] Review all generated and modified code
-- [ ] Verify all requirements of the given task are fully met
-- [ ] Confirm edge cases are handled
-- [ ] Verify no functionality was accidentally broken
+#### ✓ Step 1: Review Task Requirements
 
-#### ✓ Step 2: Address Errors
+**ACTIONS**:
 
-- [ ] Run TypeScript compiler (`bun run check`)
+- [ ] Re-read the original task or subtask description
+- [ ] Verify ALL requirements are implemented
+- [ ] Check for edge cases that should be handled
+- [ ] Confirm no functionality was accidentally broken
+- [ ] Verify your changes align with the project's architecture
+
+**VERIFICATION QUESTIONS**:
+
+- Are all acceptance criteria met?
+- Did I introduce any regressions?
+- Is the implementation complete or partial?
+
+**FAILURE CONSEQUENCE**: If any requirement is not met, STOP. Do not proceed to Step 2. Implement missing requirements first, then restart the workflow.
+
+---
+
+#### ✓ Step 2: TypeScript Type Checking
+
+**COMMAND**:
+
+```bash
+bun run check
+# or
+bunx tsc --noEmit
+```
+
+**ACTIONS**:
+
+- [ ] Run the TypeScript compiler
+- [ ] Fix ALL type errors without exception
 - [ ] Ensure code is 100% free of type errors
-- [ ] Run ESLint and address all errors
-- [ ] Address all ESLint warnings (unless explicitly waived)
-- [ ] Confirm no compilation errors exist
-- [ ] Run the project (`bun run dev`) and load the website
-- [ ] Ensure code is 100% free of running errors
+- [ ] Do not use `@ts-ignore` or `@ts-expect-error` as shortcuts
 
-**REQUIREMENT**: The code must be 100% free of type errors and lint violations.
+**VERIFICATION QUESTIONS**:
 
-#### ✓ Step 3: Remove Debugging
+- Are there ANY TypeScript errors remaining?
+- Are all types properly defined?
+- Are generics properly constrained?
+
+**FAILURE CONSEQUENCE**: If ANY type errors remain, STOP. Do not proceed to Step 3. Fix all type errors, then restart from Step 2.
+
+---
+
+#### ✓ Step 3: Linting Validation
+
+**COMMANDS**:
+
+```bash
+bun run lint
+# or
+bunx eslint . --fix
+```
+
+**ACTIONS**:
+
+- [ ] Run ESLint
+- [ ] Fix all reported errors
+- [ ] Address all warnings (unless explicitly waived by the user)
+- [ ] Re-run to confirm all issues are resolved
+- [ ] Do not disable ESLint rules without justification
+
+**VERIFICATION QUESTIONS**:
+
+- Are there ANY ESLint errors remaining?
+- Are there ANY ESLint warnings remaining (unless waived)?
+- Does the output show "0 errors, 0 warnings"?
+
+**FAILURE CONSEQUENCE**: If ANY errors or warnings remain (unless waived), STOP. Do not proceed to Step 4. Fix all linting issues, then restart from Step 3.
+
+---
+
+#### ✓ Step 4: Debugging Cleanup (MANDATORY)
+
+**ACTIONS**:
 
 - [ ] Search for and remove ALL `console.log()` statements
+- [ ] Search for and remove ALL `console.error()`, `console.warn()` (unless production-necessary)
 - [ ] Search for and remove ALL `$inspect()` statements (Svelte)
 - [ ] Remove any `debugger;` statements
-- [ ] Remove any temporary test code or comments
+- [ ] Remove any temporary test code
+- [ ] Remove any TODO or FIXME comments (unless explicitly requested)
 
 **COMMAND SUGGESTIONS**:
 
 ```bash
 # Search for debugging statements
-grep -r "console.log" src/
-grep -r "$inspect" src/
+grep -r "console\.log\|console\.error\|console\.warn" src/
+grep -r "\$inspect" src/
 grep -r "debugger;" src/
+grep -rn "TODO\|FIXME" src/ | grep -v "required" | grep -v "critical"
 ```
 
-#### ✓ Step 4: Comment Cleanup
+**VERIFICATION QUESTIONS**:
 
-- [ ] Remove any unnecessary or trivial comments
-- [ ] Remove comments like `// end of function`, `// constructor`, etc.
+- Are there ANY console statements remaining?
+- Are there ANY $inspect statements remaining?
+- Are there ANY debugger statements remaining?
+- Are there any temporary comments remaining?
+
+**FAILURE CONSEQUENCE**: If any debugging code remains, STOP. Do not proceed to Step 5. Remove all debugging code, then restart from Step 4.
+
+---
+
+#### ✓ Step 5: Comment Cleanup
+
+**ACTIONS**:
+
+- [ ] Review all comments in modified files
+- [ ] Remove trivial or obvious comments (e.g., `// end of function`, `// loop through array`)
+- [ ] Remove comments like `// constructor`, `// increment counter`, etc.
 - [ ] **RETAIN** comments that explain:
-  - Complex logic or algorithms
+  - Complex logic or non-obvious algorithms
   - Business rules not self-evident from code
   - Non-obvious workarounds or fixes
   - Important architectural decisions
+  - Performance optimizations with reasoning
 
-**EXAMPLE OF WHAT TO REMOVE**:
+**EXAMPLES OF WHAT TO REMOVE**:
 
 ```typescript
 // ❌ Remove trivial comments
@@ -261,7 +369,7 @@ function calculateTotal(items) {
 }
 ```
 
-**EXAMPLE OF WHAT TO KEEP**:
+**EXAMPLES OF WHAT TO KEEP**:
 
 ```typescript
 // ✓ Keep explanatory comments
@@ -269,26 +377,26 @@ function calculateTotal(items) {
 	// Using reduce for better performance with large datasets
 	// Based on profiling results showing 30% improvement over loops
 	return items.reduce((sum, item) => {
-		// Apply bulk discount only for orders over 100 units
-		// per business rule BR-2024-03
+		// Apply bulk discount only for orders over 100 units per business rule BR-2024-03
 		const discount = items.length > 100 ? 0.1 : 0;
 		return sum + item.price * (1 - discount);
 	}, 0);
 }
 ```
 
-#### ✓ Step 5: Run ESLint
+**VERIFICATION QUESTIONS**:
 
-```bash
-bun run lint
-# or
-bunx eslint . --fix
-```
+- Do all remaining comments explain "why" rather than "what"?
+- Would the code still be clear without these comments?
+- Are there any comments that just repeat the code?
 
-- [ ] Fix all reported issues
-- [ ] Re-run to confirm all issues resolved
+**FAILURE CONSEQUENCE**: If unnecessary comments remain, STOP. Do not proceed to Step 6. Remove unnecessary comments, then restart from Step 5.
 
-#### ✓ Step 6: Run Prettier
+---
+
+#### ✓ Step 6: Code Formatting
+
+**COMMAND**:
 
 ```bash
 bun run format
@@ -296,43 +404,89 @@ bun run format
 bunx prettier --write .
 ```
 
-- [ ] Ensure consistent code formatting
-- [ ] Verify no unexpected formatting changes
+**ACTIONS**:
 
-#### ✓ Step 7: Run Tests
+- [ ] Run Prettier to ensure consistent formatting
+- [ ] Review formatting changes to confirm they're correct
+- [ ] Do not manually override Prettier's decisions
+- [ ] Verify no unexpected formatting changes occurred
+
+**VERIFICATION QUESTIONS**:
+
+- Does Prettier report any files changed?
+- Are the formatting changes appropriate?
+- Is the code now consistently formatted?
+
+**FAILURE CONSEQUENCE**: If formatting is inconsistent, STOP. Do not proceed to Step 7. Re-run Prettier and resolve any conflicts, then restart from Step 6.
+
+---
+
+#### ✓ Step 7: Test Execution
+
+**COMMAND**:
 
 ```bash
 bun test
-# or appropriate test command
+# or appropriate test runner
 ```
 
-- [ ] Confirm all tests pass
-- [ ] If tests fail, debug and fix before proceeding
-- [ ] Verify no tests were accidentally disabled
+**ACTIONS**:
 
-#### ✓ Step 8: Final Confirmation and Generate Commit message
+- [ ] Run the full test suite
+- [ ] Confirm ALL tests pass
+- [ ] If tests fail, debug using error messages
+- [ ] Verify no tests were accidentally disabled or skipped
+- [ ] Write new tests for new functionality if required
+- [ ] Verify test coverage has not decreased
 
-**REQUIRED STATEMENT**: Before proceeding, you must state:
+**VERIFICATION QUESTIONS**:
 
-> "I have successfully completed the entire pre-commit workflow:
+- Do ALL tests pass with a green checkmark?
+- Are there any skipped tests (`.skip`, `.only`, etc.)?
+- Has test coverage decreased compared to before?
+- Are there any flaky or intermittent failures?
+
+**FAILURE CONSEQUENCE**: If ANY tests fail, STOP immediately. Do not proceed to Step 8. Debug and fix the failing tests, then restart from Step 7.
+
+---
+
+#### ✓ Step 8: Final Verification & Commit Message Generation
+
+**🔴 YOU CANNOT PROCEED PAST THIS POINT WITHOUT COMPLETING STEPS 1-7**
+
+**REQUIRED CONFIRMATION STATEMENT**:
+
+Before generating a commit message, you MUST state this exact confirmation (copy-paste, no paraphrasing):
+
+> I have successfully completed the entire pre-commit workflow:
 >
-> - ✓ Task requirements verified
-> - ✓ All TypeScript and ESLint errors addressed
-> - ✓ Debugging statements removed
-> - ✓ Comments cleaned up
-> - ✓ ESLint run and issues fixed
-> - ✓ Prettier run for formatting
-> - ✓ All tests passing
+> - ✓ Step 1: Task requirements verified and met
+> - ✓ Step 2: TypeScript compiler passing (0 errors)
+> - ✓ Step 3: ESLint passing (0 errors, 0 warnings)
+> - ✓ Step 4: All debugging code removed
+> - ✓ Step 5: All unnecessary comments removed
+> - ✓ Step 6: Prettier formatting applied
+> - ✓ Step 7: All tests passing
 >
-> The code is ready for commit."
+> **The code is ready for commit.**
 
-**ONLY AFTER**: Stage all changed files and generate a commit message and prompt the user to accept the commit
+**ONLY AFTER** providing this exact confirmation:
 
-## Commit Message Generation
+1. Stage all changed files
+2. Generate a Conventional Commit message (see section below)
+3. Prompt the user to review and approve the commit message
+4. Ask: "Shall I proceed with this commit?"
+5. After succesful commit you can mark the task as completed
+
+**CRITICAL**: Do not attempt to commit without the user's explicit approval.
+
+---
+
+## Conventional Commit Message Generation
 
 **SPECIFICATION**: When asked to generate a commit message, you MUST follow the Conventional Commits v1.0.0 specification (https://www.conventionalcommits.org/en/v1.0.0/).
 
-**CONTENT**: The commit message and body needs to explain the most important changes being commited not just the last one.
+**CONTENT**: The commit message and body MUST explain the most important changes being committed, not just the last one.
 
 ### Format
 
@@ -410,26 +564,32 @@ Migration guide: docs/migration/auth-v2.md
 
 ## Context7 MCP Instructions: Up-to-Date Knowledge
 
-**PURPOSE**: The Context7 MCP is crucial for accessing the latest, version-specific documentation for external libraries. Agents must prioritize this tool to prevent hallucinations and outdated code.
+**PURPOSE**: The Context7 MCP is crucial for accessing the latest, version-specific documentation for external libraries. Agents MUST prioritize this tool to prevent hallucinations and outdated code.
 
 ### Usage Instructions
 
-#### 1. For New Knowledge
+#### 1. For New Knowledge (MANDATORY)
 
-**WHEN**: Adding a new dependency or working with a known library (e.g., Next.js, Stripe SDK, React, etc.)  
+**WHEN**: Adding a new dependency or working with a known library (e.g., Next.js, Stripe SDK, React, etc.)
+
 **ACTION**: Agents MUST invoke the context7 tool before writing implementation code.
 
-#### 2. Version Accuracy
+**VIOLATION**: Writing code without consulting context7 for external libraries may result in outdated or incorrect implementations.
 
-**REQUIREMENT**: Agents MUST include the library name and specific version in their prompt to context7.  
-**CORRECT**: "use context7 for React v18 hooks and Suspense API"  
+#### 2. Version Accuracy (MANDATORY)
+
+**REQUIREMENT**: Agents MUST include the library name and specific version in their prompt to context7.
+
+**CORRECT**: "use context7 for React v18 hooks and Suspense API"
+
 **INCORRECT**: "use context7 for React" (may fetch outdated documentation)
 
 **WHY**: This prevents fetching documentation for older, incompatible versions.
 
 #### 3. Refactoring & Upgrades
 
-**WHEN**: Refactoring existing code or upgrading a dependency.  
+**WHEN**: Refactoring existing code or upgrading a dependency.
+
 **ACTION**: Use context7 to confirm:
 
 - New API surfaces
@@ -455,10 +615,12 @@ Migration guide: docs/migration/auth-v2.md
 
 ### Usage Instructions
 
-#### 1. Task Context
+#### 1. Task Context (MANDATORY)
 
-**WHEN**: Before beginning any feature or bug fix.  
-**ACTION**: Agents MUST use the github tool to fetch the relevant Issue or Pull Request (using `pr` or `issue` tools).  
+**WHEN**: Before beginning any feature or bug fix.
+
+**ACTION**: Agents MUST use the github tool to fetch the relevant Issue or Pull Request (using `pr` or `issue` tools).
+
 **WHY**: This ensures work aligns with the official request and any comments or updates.
 
 **CHECKLIST**:
@@ -468,10 +630,12 @@ Migration guide: docs/migration/auth-v2.md
 - [ ] Note any acceptance criteria
 - [ ] Check for linked issues or dependencies
 
-#### 2. Commit Message Format
+#### 2. Commit Message Format (MANDATORY)
 
-**REQUIREMENT**: All commit messages MUST strictly follow the Conventional Commits specification.  
-**FORMAT**: `<type>[optional scope]: <description>`  
+**REQUIREMENT**: All commit messages MUST strictly follow the Conventional Commits specification.
+
+**FORMAT**: `<type>[optional scope]: <description>`
+
 **EXAMPLES**:
 
 - `feat: add user login`
@@ -480,9 +644,10 @@ Migration guide: docs/migration/auth-v2.md
 
 **ACTION**: Agents should verify format before proposing a commit.
 
-#### 3. Pre-Merge Status Check
+#### 3. Pre-Merge Status Check (MANDATORY)
 
-**WHEN**: Preparing a Pull Request.  
+**WHEN**: Preparing a Pull Request.
+
 **ACTION**: The agent MUST use github to confirm:
 
 - [ ] No merge conflicts exist
@@ -492,14 +657,15 @@ Migration guide: docs/migration/auth-v2.md
 
 ### Critical Constraint
 
-**PROHIBITION**: Agents must NOT attempt to create or merge a Pull Request or Branch without explicit human approval.  
+**PROHIBITION**: Agents must NOT attempt to create or merge a Pull Request or Branch without explicit human approval.
+
 **SCOPE**: The github tool is strictly for reading and analyzing repository status to inform code changes.
 
 ---
 
 ## Testing Requirements
 
-**PRINCIPLE**: All code changes must be accompanied by appropriate tests unless explicitly waived by the user.
+**PRINCIPLE**: All code changes MUST be accompanied by appropriate tests unless explicitly waived by the user.
 
 ### Testing Checklist
 
@@ -600,3 +766,31 @@ describe('calculateDiscount', () => {
 **DO NOT**: Continue making changes randomly hoping to fix the issue.
 
 ---
+
+## Appendix: Quick Reference Checklist
+
+### Before Starting a Task
+
+- [ ] Have I read all requirements clearly?
+- [ ] Are there any ambiguities I need to clarify?
+- [ ] Should I ask questions before coding?
+
+### While Coding
+
+- [ ] Am I following project-specific patterns?
+- [ ] Am I writing clean, typed code?
+- [ ] Am I working iteratively with verification?
+- [ ] Am I adding new comments unnecessarily?
+- [ ] Am I preserving existing comments?
+
+### Before Claiming Work is Done
+
+- [ ] Have I completed ALL 8 steps of the Pre-Commit Workflow?
+- [ ] Can I provide the exact confirmation statement?
+- [ ] Have I generated a valid Conventional Commit message?
+- [ ] Have I asked for explicit user approval?
+
+---
+
+**Last Updated**: 2 November 2025  
+**Status**: MANDATORY - All agents must comply

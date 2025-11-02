@@ -62,9 +62,9 @@
 	);
 
 	// Handle game card/row clicks for detail modal
-	function handleGameClick(game: Game): void {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	function handleGameClick(_game: Game): void {
 		// TODO: Implement modal functionality
-		console.log('Game clicked:', game.title);
 	}
 </script>
 

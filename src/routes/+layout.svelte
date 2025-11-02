@@ -7,7 +7,7 @@
 	import AddEditModal from '$lib/components/AddEditModal.svelte';
 	import DetailModal from '$lib/components/DetailModal.svelte';
 	import Header from '$lib/components/Header.svelte';
-	import { extractFilterOptions } from '$lib/utils/filterOptions.js';
+	import { extractFilterOptions } from '$lib/utils/filterOptions';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';

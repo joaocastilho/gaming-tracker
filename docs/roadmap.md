@@ -174,7 +174,6 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Features**: Tier colors (S-A-B-C-D-E), conditional display
   - **Reference**: [Tier Structure](#tier-structure) in docs/project.md
 
-
 - **Task 2.2.5**: Show rating icons and scores
   - **Features**: Icons (👁️ ✏️ 🎮 🏆) with score values
   - **Reference**: [Metrics Row](#metrics-row) in docs/project.md
@@ -366,7 +365,6 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Location**: Filter section
   - **Features**: Grid icon (⊞) and list icon (☰)
   - **Reference**: [View Toggle](#view-toggle) in docs/project.md
-
 
 - **Task 4.3.2**: Store preference in localStorage
   - **Features**: Persist view mode choice
@@ -585,5 +583,5 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 
 ---
 
-**Generated**: 2025-11-02 
+**Generated**: 2025-11-02
 **Last Updated**: Task breakdown created for Gaming Tracker project implementation

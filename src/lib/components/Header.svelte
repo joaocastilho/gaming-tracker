@@ -54,7 +54,7 @@
 			currentGames = games;
 		});
 		unsubscribe();
-		
+
 		gamesStore.exportGames(currentGames);
 	}
 </script>
