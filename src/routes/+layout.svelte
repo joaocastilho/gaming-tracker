@@ -7,6 +7,7 @@
 	import AddEditModal from '$lib/components/AddEditModal.svelte';
 	import DetailModal from '$lib/components/DetailModal.svelte';
 	import Header from '$lib/components/Header.svelte';
+	import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
@@ -167,6 +168,9 @@
 <div class="bg-background text-foreground min-h-screen">
 	<!-- Header Component -->
 	<Header />
+
+	<!-- Navigation Tabs -->
+	<NavigationTabs />
 
 	<!-- Search & Filter Section (Sticky) -->
 	<section class="bg-background border-border sticky top-[60px] z-30 border-b">

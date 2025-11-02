@@ -157,7 +157,12 @@
 	}
 </script>
 
-<button class="game-card" onclick={() => modalStore.openViewModal(game)} onkeydown={handleKeyDown} aria-label="View details for {game.title}">
+<button
+	class="game-card"
+	onclick={() => modalStore.openViewModal(game)}
+	onkeydown={handleKeyDown}
+	aria-label="View details for {game.title}"
+>
 	<!-- Cover Image Container -->
 	<div class="cover-container">
 		{#if !isImageLoaded && !hasImageError}

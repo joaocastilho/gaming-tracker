@@ -48,6 +48,10 @@ Files under the /static folder are inputs that cannot be changed. The code needs
 **RULE #5: ALWAYS respect the Core Technology Stack defined in the /docs/project.md**
 The /docs/project.md defines the Technology Stack and project Constrains that needs to be followed.
 
+**RULE #6: ALWAYS delete unecessary files that were created to support an action**
+
+Files created to help you do some action like a text file or an md file with a todo list need to be deleted after no longer useful and NEVER be commited.
+
 ### Enforcement Mechanism
 
 **Before you do ANY of the following, you MUST complete the entire Pre-Commit Workflow:**
@@ -464,6 +468,7 @@ bun test
 **PURPOSE**: Beyond unit tests and linting, the actual website must be verified to run without console errors, build failures, or runtime issues. Errors caught by type checkers and linters may not reveal runtime problems that only appear when the application is running.
 
 **PREREQUISITE**: Your tool must have the capability to:
+
 - Start a development server
 - Launch a browser or headless browser instance
 - Navigate to pages
@@ -496,6 +501,7 @@ bun test
 - Are there any missing or broken assets?
 
 **FAILURE CONSEQUENCE**: If ANY of the following are found, STOP immediately. Do not proceed to Step 8:
+
 - JavaScript errors in the console
 - Unhandled promise rejections
 - Failed HTTP requests (4xx/5xx)

@@ -80,8 +80,6 @@
 
 	// Show filtered games based on active tab (computed in template)
 
-
-
 	// Handle game card/row clicks for detail modal
 	function handleGameClick(game: Game): void {
 		modalStore.openViewModal(game);
@@ -94,7 +92,9 @@
 
 <div class="main-content" id="main-content">
 	{#if currentActiveTab === 'completed'}
-		{@const filteredGames = filteredData.filteredGames.filter((game: Game) => game.status === 'Completed')}
+		{@const filteredGames = filteredData.filteredGames.filter(
+			(game: Game) => game.status === 'Completed'
+		)}
 		{#if filteredGames.length === 0}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}
@@ -130,7 +130,9 @@
 			{/if}
 		{/if}
 	{:else if currentActiveTab === 'planned'}
-		{@const filteredGames = filteredData.filteredGames.filter((game: Game) => game.status === 'Planned')}
+		{@const filteredGames = filteredData.filteredGames.filter(
+			(game: Game) => game.status === 'Planned'
+		)}
 		{#if filteredGames.length === 0}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}
@@ -166,7 +168,9 @@
 			{/if}
 		{/if}
 	{:else if currentActiveTab === 'tierlist'}
-		{@const filteredGames = filteredData.filteredGames.filter((game: Game) => game.status === 'Completed' && game.tier)}
+		{@const filteredGames = filteredData.filteredGames.filter(
+			(game: Game) => game.status === 'Completed' && game.tier
+		)}
 		{#if filteredGames.length === 0}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}

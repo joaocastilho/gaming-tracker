@@ -65,7 +65,10 @@ function createGamesStore() {
 							// Then validate the transformed data
 							return GameSchema.parse(transformedGame);
 						} catch (validationError) {
-							console.error(`Invalid game data at index ${index} (${game.title}):`, validationError);
+							console.error(
+								`Invalid game data at index ${index} (${game.title}):`,
+								validationError
+							);
 
 							// Log detailed validation info for debugging
 							const zodError = validationError as ZodError;
@@ -76,8 +79,6 @@ function createGamesStore() {
 						}
 					})
 					.filter(Boolean) as Game[];
-
-
 
 				set(validatedGames);
 
