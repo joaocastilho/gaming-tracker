@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { appStore } from '../stores/app.js';
 	import { gamesStore } from '../stores/games.js';
+	import { filtersStore } from '../stores/filters.js';
+	import type { FilteredGameData } from '../stores/filters.js';
 
 	// Type definitions
 	type TabId = 'all' | 'completed' | 'planned' | 'tierlist';
@@ -14,8 +16,11 @@
 
 	let activeTab = $state<TabId>('all');
 
-	// Game counts from games store
+	// Game counts - using filtered counts when search is active
 	let gameCounts = $state({ total: 0, planned: 0, completed: 0 });
+
+	// Create filtered games store
+	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
 
 	$effect(() => {
 		const unsubscribe = appStore.activeTab.subscribe((value) => {
@@ -25,11 +30,11 @@
 	});
 
 	$effect(() => {
-		const unsubscribe = gamesStore.subscribe((games) => {
+		const unsubscribe = filteredGamesStore.subscribe((data: FilteredGameData) => {
 			gameCounts = {
-				total: games.length,
-				planned: games.filter((g) => g.status === 'Planned').length,
-				completed: games.filter((g) => g.status === 'Completed').length
+				total: data.totalCount,
+				planned: data.plannedCount,
+				completed: data.completedCount
 			};
 		});
 		return unsubscribe;

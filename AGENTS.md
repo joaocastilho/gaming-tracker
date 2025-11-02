@@ -366,7 +366,7 @@ bun test
 - [ ] If tests fail, debug and fix before proceeding
 - [ ] Verify no tests were accidentally disabled
 
-#### ✓ Step 8: Final Confirmation
+#### ✓ Step 8: Final Confirmation and Generate Commit message
 
 **REQUIRED STATEMENT**: Before proceeding, you must state:
 
@@ -382,10 +382,7 @@ bun test
 >
 > The code is ready for commit."
 
-**ONLY AFTER** this statement:
-- generate a commit message 
-- mark the task as complete
-
+**ONLY AFTER** stage all changed files and generate a commit message and mark the task as completed
 ---
 
 ## Commit Message Generation

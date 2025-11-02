@@ -146,7 +146,7 @@
 	<section class="bg-background border-border sticky top-[calc(60px+50px)] z-30 border-b">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<!-- Search Bar -->
-			<SearchBar value={searchQuery} onChange={(value) => filtersStore.searchQuery.set(value)} />
+			<SearchBar />
 
 			<!-- Filter Controls -->
 			<div class="flex flex-wrap items-center gap-3">

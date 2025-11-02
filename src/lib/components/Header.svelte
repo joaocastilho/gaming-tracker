@@ -1,6 +1,7 @@
 <script>
 	import { appStore } from '../stores/app.js';
 	import { gamesStore } from '../stores/games.js';
+	import { filtersStore } from '../stores/filters.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	// Subscribe to theme changes (value used for reactive updates)
@@ -11,17 +12,29 @@
 		return unsubscribe;
 	});
 
-	// Game count data
+	// Game count data - using filtered counts when search is active
 	let gameCounts = $state({ total: 0, planned: 0, completed: 0 });
+	let isFiltered = $state(false);
 
-	// Subscribe to games store to get counts
+	// Create filtered games store
+	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
+
+	// Subscribe to filtered games store to get counts
 	$effect(() => {
-		const unsubscribe = gamesStore.subscribe((games) => {
+		const unsubscribe = filteredGamesStore.subscribe((data) => {
 			gameCounts = {
-				total: games.length,
-				planned: games.filter((g) => g.status === 'Planned').length,
-				completed: games.filter((g) => g.status === 'Completed').length
+				total: data.totalCount,
+				planned: data.plannedCount,
+				completed: data.completedCount
 			};
+		});
+		return unsubscribe;
+	});
+
+	// Check if any filters are active
+	$effect(() => {
+		const unsubscribe = filtersStore.filterState.subscribe(() => {
+			isFiltered = filtersStore.hasActiveFilters();
 		});
 		return unsubscribe;
 	});
@@ -57,7 +70,10 @@
 	<div class="header-right">
 		<div class="game-count" aria-live="polite" aria-atomic="true">
 			<span class="count-number">{gameCounts.total}</span>
-			<span class="count-label">games tracked</span>
+			<span class="count-label">
+				{gameCounts.total === 1 ? 'game' : 'games'}
+				{isFiltered ? 'found' : 'tracked'}
+			</span>
 		</div>
 
 		<ThemeToggle />

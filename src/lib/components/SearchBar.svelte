@@ -1,13 +1,17 @@
 <script lang="ts">
-	interface Props {
-		value: string;
-		onChange: (value: string) => void;
-	}
-
-	let { value, onChange }: Props = $props();
+	import { filtersStore } from '$lib/stores/filters';
 
 	let inputElement: HTMLInputElement | undefined;
 	let debounceTimeout: ReturnType<typeof setTimeout> | undefined;
+	let searchQuery = $state('');
+
+	// Subscribe to search query changes
+	$effect(() => {
+		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
+			searchQuery = value;
+		});
+		return unsubscribe;
+	});
 
 	// Handle input change with debouncing
 	function handleInput(event: Event) {
@@ -19,7 +23,8 @@
 		}
 
 		debounceTimeout = setTimeout(() => {
-			onChange(newValue);
+			filtersStore.searchQuery.set(newValue);
+			filtersStore.writeToURL();
 		}, 300);
 	}
 
@@ -29,7 +34,8 @@
 			inputElement.value = '';
 			inputElement.focus();
 		}
-		onChange('');
+		filtersStore.searchQuery.set('');
+		filtersStore.writeToURL();
 		if (debounceTimeout) {
 			clearTimeout(debounceTimeout);
 		}
@@ -49,8 +55,7 @@
 		<input
 			bind:this={inputElement}
 			type="text"
-			placeholder="🔍 Search games..."
-			{value}
+			placeholder="Search games..."
 			oninput={handleInput}
 			onkeydown={handleKeydown}
 			class="search-input"
@@ -58,7 +63,7 @@
 			autocomplete="off"
 			spellcheck="false"
 		/>
-		{#if value}
+		{#if searchQuery}
 			<button type="button" class="clear-button" onclick={clearSearch} aria-label="Clear search">
 				<span aria-hidden="true">×</span>
 			</button>
