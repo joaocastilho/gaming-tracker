@@ -5,11 +5,13 @@
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 	import RatingsFilter from '$lib/components/RatingsFilter.svelte';
 	import AddEditModal from '$lib/components/AddEditModal.svelte';
+	import DetailModal from '$lib/components/DetailModal.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions.js';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';
+	import { modalStore } from '$lib/stores/modal.js';
 
 	let { children } = $props();
 
@@ -43,6 +45,17 @@
 	$effect(() => {
 		if (!initialized) {
 			appStore.readFromURLWithFilters($page.url.searchParams, filtersStore);
+			// Handle game parameter for detail modal
+			const gameId = $page.url.searchParams.get('game');
+			if (gameId) {
+				// Find the game and open modal (will be handled by modal store)
+				setTimeout(() => {
+					const game = gamesStore.getGameById(gameId);
+					if (game) {
+						modalStore.openViewModal(game);
+					}
+				}, 100); // Small delay to ensure games are loaded
+			}
 			initialized = true;
 		}
 	});
@@ -252,6 +265,9 @@
 
 	<!-- Add/Edit Game Modal -->
 	<AddEditModal />
+
+	<!-- Detail Modal -->
+	<DetailModal />
 </div>
 
 <style>

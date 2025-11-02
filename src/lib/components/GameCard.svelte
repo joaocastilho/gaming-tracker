@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { modalStore } from '../stores/modal.js';
 	import type { Game } from '../types/game.js';
 
 	interface Props {
@@ -176,7 +177,7 @@
 	});
 </script>
 
-<article class="game-card">
+<article class="game-card" onclick={() => modalStore.openViewModal(game)}>
 	<!-- Cover Image Container -->
 	<div class="cover-container">
 		{#if !isImageLoaded && !hasImageError}
