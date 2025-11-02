@@ -15,14 +15,14 @@
 
 	let { children } = $props();
 
-	let filterOptions = {
+	let filterOptions = $state({
 		platforms: [] as string[],
 		genres: [] as string[],
 		tiers: [] as string[]
-	};
+	});
 	let initialized = false;
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
-	let currentViewMode = 'gallery';
+	let currentViewMode = $state('gallery');
 
 	// Subscribe to games store and extract filter options
 	gamesStore.subscribe((games) => {
@@ -133,9 +133,9 @@
 	}
 
 	// Filter state
-	let selectedPlatforms: string[] = [];
-	let selectedGenres: string[] = [];
-	let selectedTiers: string[] = [];
+	let selectedPlatforms: string[] = $state([]);
+	let selectedGenres: string[] = $state([]);
+	let selectedTiers: string[] = $state([]);
 
 	// Direct subscriptions to filter stores
 	filtersStore.selectedPlatforms.subscribe((platforms) => {
