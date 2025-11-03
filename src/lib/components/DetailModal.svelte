@@ -200,7 +200,7 @@
 					<!-- Title -->
 					<h1
 						id="modal-title"
-						class="mb-4 text-3xl font-bold text-gray-900 lg:text-4xl dark:text-white"
+						class="mb-4 text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white truncate"
 					>
 						{modalState.activeGame.title}
 					</h1>
