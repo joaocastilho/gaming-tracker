@@ -141,15 +141,15 @@
 		<!-- Ratings Section (always present) -->
 		<div class="ratings-section">
 			<div class="rating-item">
-				<Presentation class="rating-icon" aria-label="Presentation rating" size={20} />
+				<Presentation class="rating-icon text-cyan-500" aria-label="Presentation rating" size={20} />
 				<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
 			</div>
 			<div class="rating-item">
-				<NotebookPen class="rating-icon" aria-label="Story rating" size={20} />
+				<NotebookPen class="rating-icon text-orange-500" aria-label="Story rating" size={20} />
 				<span class="rating-score">{game.ratingStory ?? '-'}</span>
 			</div>
 			<div class="rating-item">
-				<Gamepad2 class="rating-icon" aria-label="Gameplay rating" size={20} />
+				<Gamepad2 class="rating-icon text-pink-500" aria-label="Gameplay rating" size={20} />
 				<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
 			</div>
 		</div>
