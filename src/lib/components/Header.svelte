@@ -66,16 +66,8 @@
 		</button>
 	</div>
 
-	<!-- Right section: Game Count and Theme Toggle -->
+	<!-- Right section: Theme Toggle -->
 	<div class="header-right">
-		<div class="game-count" aria-live="polite" aria-atomic="true">
-			<span class="count-number">{gameCounts.total}</span>
-			<span class="count-label">
-				{gameCounts.total === 1 ? 'game' : 'games'}
-				{isFiltered ? 'found' : 'tracked'}
-			</span>
-		</div>
-
 		<ThemeToggle />
 	</div>
 </header>
@@ -198,32 +190,7 @@
 		gap: 20px;
 	}
 
-	/* Game Count */
-	.game-count {
-		display: flex;
-		align-items: baseline;
-		gap: 4px;
-		color: #8b92a8;
-		font-size: 0.9rem;
-	}
 
-	:global(.light) .game-count {
-		color: #6b7280;
-	}
-
-	.count-number {
-		font-size: 1.1rem;
-		font-weight: 600;
-		color: #ffffff;
-	}
-
-	:global(.light) .count-number {
-		color: #1a1a1a;
-	}
-
-	.count-label {
-		white-space: nowrap;
-	}
 
 	/* Responsive design */
 	@media (max-width: 768px) {
@@ -250,14 +217,6 @@
 			min-width: 36px;
 			justify-content: center;
 		}
-
-		.game-count {
-			font-size: 0.8rem;
-		}
-
-		.count-number {
-			font-size: 1rem;
-		}
 	}
 
 	@media (max-width: 480px) {
@@ -277,14 +236,6 @@
 
 		.add-icon {
 			font-size: 14px;
-		}
-
-		.game-count {
-			font-size: 0.75rem;
-		}
-
-		.count-number {
-			font-size: 0.9rem;
 		}
 	}
 
