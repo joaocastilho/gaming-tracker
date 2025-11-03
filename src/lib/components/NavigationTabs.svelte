@@ -113,6 +113,7 @@
 		display: flex;
 		justify-content: center;
 		width: 100%;
+		height: 50px;
 		background-color: #0a0d11;
 		border-bottom: 1px solid #2a2f3a;
 		padding: 0 24px;
@@ -230,6 +231,7 @@
 	@media (max-width: 768px) {
 		.navigation-tabs {
 			padding: 0 16px;
+			height: 48px; /* Slightly smaller on mobile */
 			top: 56px; /* Adjust for smaller header */
 		}
 

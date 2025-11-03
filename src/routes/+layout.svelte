@@ -198,7 +198,7 @@
 	<NavigationTabs />
 
 	<!-- Search & Filter Section (Sticky) -->
-	<section class="filter-section sticky top-[110px] z-30 border-b md:top-[110px]">
+	<section class="filter-section sticky top-[104px] z-30 border-b md:top-[110px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<!-- Search Bar -->
 			<SearchBar />
