@@ -1,0 +1,44 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: '1' # you can pin a specific version like '1.3.1' if needed
+
+      - name: Install dependencies (bun)
+        run: bun install
+
+      - name: Build (bun)
+        # Adjust the script name if your package.json uses something else (e.g. "build")
+        run: bun run build
+
+      - name: Create 404 fallback for SPA routing
+        run: |
+          BUILD_DIR=""
+          if [ -d "build" ]; then BUILD_DIR=build
+          elif [ -d "dist" ]; then BUILD_DIR=dist
+          else
+            echo "No build output directory found (expected 'build' or 'dist')" && exit 1
+          fi
+          cp "${BUILD_DIR}/index.html" "${BUILD_DIR}/404.html"
+        shell: bash
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Change this to ./dist if your bundler outputs to dist/
+          publish_dir: ./build
