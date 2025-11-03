@@ -399,6 +399,10 @@
 		font-size: 0.9rem;
 	}
 
+	.total-score .rating-icon {
+		font-size: 1.25rem;
+	}
+
 	:global(.light) .total-score {
 		color: #1a1a1a;
 	}
