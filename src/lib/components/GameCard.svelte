@@ -112,25 +112,24 @@
 			<h3 class="game-title">{titleParts().mainTitle}</h3>
 		</div>
 
-		<!-- Subtitle (if exists) or Platform/Genre left, Year right -->
+		<!-- Second line: Subtitle (if exists) or Platform/Genre left, Year right -->
 		{#if titleParts().subtitle}
 			<div class="subtitle-section">
 				<span class="game-subtitle">{titleParts().subtitle}</span>
 			</div>
-		{/if}
-
-		<!-- Platform/Genre left, Year right -->
-		<div class="platform-genre-year-section">
-			<div class="badges-section">
-				<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
-					{game.platform}
-				</span>
-				<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
-					{game.genre}
-				</span>
+		{:else}
+			<div class="platform-genre-year-section">
+				<div class="badges-section">
+					<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
+						{game.platform}
+					</span>
+					<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
+						{game.genre}
+					</span>
+				</div>
+				<span class="game-year">{game.year}</span>
 			</div>
-			<span class="game-year">{game.year}</span>
-		</div>
+		{/if}
 
 		<!-- Ratings Section (always present) -->
 		<div class="ratings-section">
@@ -315,9 +314,10 @@
 	}
 
 	.game-subtitle {
-		font-size: 0.8rem;
+		font-size: 0.7rem;
 		color: #8b92a8;
 		font-style: italic;
+		font-weight: 500;
 	}
 
 	:global(.light) .game-subtitle {
