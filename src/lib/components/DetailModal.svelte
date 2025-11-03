@@ -2,10 +2,13 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { modalStore } from '../stores/modal.js';
-	import { TIER_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
-	import { Eye, PenTool, Gamepad2, Trophy, X } from 'lucide-svelte';
+	import { gamesStore } from '../stores/games.js';
+	import type { Game } from '../types/game.js';
+	import { TIER_COLORS, PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
+	import { Presentation, NotebookPen, Gamepad2, Trophy, X, ChevronLeft, ChevronRight } from 'lucide-svelte';
 
 	let modalState = $state(modalStore.getState());
+	let allGames = $state<Game[]>([]);
 
 	// Subscribe to modal store changes
 	$effect(() => {
@@ -17,12 +20,49 @@
 		return unsubscribe;
 	});
 
+	// Subscribe to games store for navigation
+	$effect(() => {
+		const unsubscribe = gamesStore.subscribe((games) => {
+			allGames = games;
+		});
+		return unsubscribe;
+	});
+
 	let modalElement = $state<HTMLDivElement>();
 	let coverImage = $state<HTMLImageElement>();
+
+	// Get current game index for navigation
+	let currentGameIndex = $derived(() => {
+		if (!modalState.activeGame) return -1;
+		return allGames.findIndex(game => game.id === modalState.activeGame?.id);
+	});
+
+	// Navigation functions
+	function navigateToPrevious() {
+		const index = currentGameIndex();
+		if (index > 0) {
+			const prevGame = allGames[index - 1];
+			modalStore.openViewModal(prevGame);
+		}
+	}
+
+	function navigateToNext() {
+		const index = currentGameIndex();
+		if (index < allGames.length - 1) {
+			const nextGame = allGames[index + 1];
+			modalStore.openViewModal(nextGame);
+		}
+	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			modalStore.closeModal();
+		} else if (event.key === 'ArrowLeft') {
+			event.preventDefault();
+			navigateToPrevious();
+		} else if (event.key === 'ArrowRight') {
+			event.preventDefault();
+			navigateToNext();
 		}
 	}
 
@@ -60,24 +100,11 @@
 	}
 
 	function getPlatformColor(platform: string): string {
-		const colors: Record<string, string> = {
-			PC: 'bg-blue-600',
-			PS5: 'bg-cyan-600',
-			Xbox: 'bg-green-600',
-			Switch: 'bg-orange-600'
-		};
-		return colors[platform] || 'bg-gray-600';
+		return PLATFORM_COLORS[platform] || 'bg-gray-600 text-white';
 	}
 
 	function getGenreColor(genre: string): string {
-		const colors: Record<string, string> = {
-			RPG: 'bg-purple-600',
-			Action: 'bg-red-600',
-			Adventure: 'bg-amber-600',
-			Puzzle: 'bg-fuchsia-600',
-			Metroidvania: 'bg-violet-600'
-		};
-		return colors[genre] || 'bg-gray-600';
+		return GENRE_COLORS[genre] || 'bg-gray-600 text-white';
 	}
 
 	onMount(() => {
@@ -97,7 +124,7 @@
 	<!-- Modal Overlay -->
 	<div
 		bind:this={modalElement}
-		class="bg-opacity-80 fixed inset-0 z-50 flex items-center justify-center bg-black p-4"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
 		onclick={handleOverlayClick}
 		onkeydown={handleOverlayKeydown}
 		role="dialog"
@@ -105,6 +132,28 @@
 		aria-modal="true"
 		aria-labelledby="modal-title"
 	>
+		<!-- Previous Button -->
+		{#if currentGameIndex() > 0}
+			<button
+				onclick={navigateToPrevious}
+				class="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
+				aria-label="Previous game"
+			>
+				<ChevronLeft size={24} />
+			</button>
+		{/if}
+
+		<!-- Next Button -->
+		{#if currentGameIndex() < allGames.length - 1}
+			<button
+				onclick={navigateToNext}
+				class="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
+				aria-label="Next game"
+			>
+				<ChevronRight size={24} />
+			</button>
+		{/if}
+
 		<!-- Modal Content -->
 		<div
 			class="relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-2xl dark:bg-gray-900"
@@ -129,17 +178,6 @@
 						loading="lazy"
 					/>
 
-					<!-- Tier Badge -->
-					{#if modalState.activeGame.tier}
-						<div
-							class="absolute top-4 left-4 rounded-md px-3 py-1 text-sm font-semibold text-white {getTierColor(
-								modalState.activeGame.tier
-							)}"
-						>
-							{getTierDisplayName(modalState.activeGame.tier)}
-						</div>
-					{/if}
-
 					<!-- Co-op Badge -->
 					{#if modalState.activeGame.coOp === 'Yes'}
 						<div
@@ -161,7 +199,7 @@
 					</h1>
 
 					<!-- Meta Badges -->
-					<div class="mb-6 flex flex-wrap gap-2">
+					<div class="mb-4 flex flex-wrap gap-2">
 						<span
 							class="rounded-md px-3 py-1 text-sm font-medium text-white {getPlatformColor(
 								modalState.activeGame.platform
@@ -182,6 +220,16 @@
 							</span>
 						{/if}
 					</div>
+
+					<!-- Tier Level -->
+					{#if modalState.activeGame.tier}
+						<div class="mb-6">
+							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Tier Level</div>
+							<span class="inline-block rounded-md px-3 py-1 text-sm font-semibold text-white {getTierColor(modalState.activeGame.tier)}">
+								{getTierDisplayName(modalState.activeGame.tier)}
+							</span>
+						</div>
+					{/if}
 
 					<!-- Detail Grid -->
 					<div class="mb-8 grid grid-cols-2 gap-4">
@@ -219,7 +267,7 @@
 							<!-- Presentation Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<Eye size={20} class="flex-shrink-0 text-blue-500" />
+									<Presentation size={20} class="flex-shrink-0 text-blue-500" />
 									<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
 										>Presentation</span
 									>
@@ -238,7 +286,7 @@
 							<!-- Story Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<PenTool size={20} class="flex-shrink-0 text-green-500" />
+									<NotebookPen size={20} class="flex-shrink-0 text-green-500" />
 									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Story</span>
 								</div>
 								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
