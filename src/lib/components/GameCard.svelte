@@ -107,17 +107,19 @@
 
 	<!-- Game Info -->
 	<div class="game-info">
-		<!-- Title (main title) -->
+		<!-- Title with subtitle (if exists) -->
 		<div class="title-section">
-			<h3 class="game-title">{titleParts().mainTitle}</h3>
+			<h3 class="game-title">
+				{titleParts().mainTitle}
+				{#if titleParts().subtitle}
+					<br>
+					<span class="game-subtitle">{titleParts().subtitle}</span>
+				{/if}
+			</h3>
 		</div>
 
-		<!-- Second line: Subtitle (if exists) or Platform/Genre left, Year right -->
-		{#if titleParts().subtitle}
-			<div class="subtitle-section">
-				<span class="game-subtitle">{titleParts().subtitle}</span>
-			</div>
-		{:else}
+		<!-- Second line: Platform/Genre left, Year right (only when no subtitle) -->
+		{#if !titleParts().subtitle}
 			<div class="platform-genre-year-section">
 				<div class="badges-section">
 					<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
@@ -307,21 +309,10 @@
 		width: 100%;
 	}
 
-	/* Subtitle Section */
-	.subtitle-section {
-		margin-bottom: 2px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		min-height: 1.2rem; /* Consistent line height */
-	}
-
 	.game-subtitle {
 		font-size: 0.85rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
-		margin: 0;
 		line-height: 1.2;
 	}
 
