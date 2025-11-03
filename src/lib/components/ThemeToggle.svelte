@@ -83,6 +83,7 @@
 		transition: all 0.2s ease;
 		position: relative;
 		overflow: hidden;
+		outline: none;
 
 		/* Dark mode colors */
 		background-color: rgba(42, 47, 58, 0.6);

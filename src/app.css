@@ -9,8 +9,8 @@ html {
 :root {
 	/* Background Colors */
 	--color-background: #fef7ff;
-	--color-surface: #fff9fe;
-	--color-border: #f8f0ff;
+	--color-surface: #fef9ff;
+	--color-border: #f5f0ff;
 
 	/* Text Colors */
 	--color-text-primary: #1a1a1a;
