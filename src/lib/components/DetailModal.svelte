@@ -200,7 +200,7 @@
 
 		<!-- Modal Content -->
 		<div
-			class="relative h-[600px] w-full max-w-4xl overflow-hidden rounded-md bg-white shadow-2xl dark:bg-gray-900"
+			class="relative h-[600px] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-2xl dark:bg-gray-900"
 		>
 			<!-- Close Button -->
 			<button
@@ -218,7 +218,7 @@
 						bind:this={coverImage}
 						src="/{modalState.activeGame.coverImage}"
 						alt="{modalState.activeGame.title} cover"
-						class="w-full h-full object-cover border border-black"
+						class="w-full h-full object-cover"
 						style="width: 400px; height: 600px;"
 						loading="lazy"
 					/>
