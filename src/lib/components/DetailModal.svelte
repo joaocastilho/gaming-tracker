@@ -165,43 +165,39 @@
 </script>
 
 {#if modalState.isOpen && modalState.activeGame && modalState.mode === 'view'}
-	<!-- Modal Overlay -->
-	<div
-		bind:this={modalElement}
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[1px] p-1"
-		onclick={handleOverlayClick}
-		onkeydown={handleOverlayKeydown}
-		role="dialog"
-		tabindex="-1"
-		aria-modal="true"
-		aria-labelledby="modal-title"
-	>
-		<!-- Previous Button -->
-		{#if currentGameIndex() > 0}
-			<button
-				onclick={navigateToPrevious}
-				class="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-16 w-16 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
-				aria-label="Previous game"
-			>
-				<ChevronLeft size={32} />
-			</button>
-		{/if}
-
-		<!-- Next Button -->
-		{#if currentGameIndex() < allGames.length - 1}
-			<button
-				onclick={navigateToNext}
-				class="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-16 w-16 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
-				aria-label="Next game"
-			>
-				<ChevronRight size={32} />
-			</button>
-		{/if}
-
-		<!-- Modal Content -->
+		<!-- Modal Overlay -->
 		<div
-			class="relative h-[600px] w-full max-w-4xl rounded-xl bg-white shadow-2xl dark:bg-gray-900"
+			bind:this={modalElement}
+			class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[1px] p-1"
+			onclick={handleOverlayClick}
+			onkeydown={handleOverlayKeydown}
+			role="dialog"
+			tabindex="-1"
+			aria-modal="true"
+			aria-labelledby="modal-title"
 		>
+			<!-- Previous Button -->
+			{#if currentGameIndex() > 0}
+				<button
+					onclick={navigateToPrevious}
+					class="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-16 w-16 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
+					aria-label="Previous game"
+				>
+					<ChevronLeft size={32} />
+				</button>
+			{/if}
+
+			<!-- Next Button -->
+			{#if currentGameIndex() < allGames.length - 1}
+				<button
+					onclick={navigateToNext}
+					class="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-16 w-16 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
+					aria-label="Next game"
+				>
+					<ChevronRight size={32} />
+				</button>
+			{/if}
+
 			<!-- Close Button -->
 			<button
 				onclick={() => modalStore.closeModal()}
@@ -210,6 +206,11 @@
 			>
 				<X size={20} class="text-gray-600 dark:text-gray-300" />
 			</button>
+
+			<!-- Modal Content -->
+			<div
+				class="relative h-[600px] w-full max-w-4xl rounded-xl bg-white shadow-2xl dark:bg-gray-900"
+			>
 
 			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
 				<!-- Cover Section -->

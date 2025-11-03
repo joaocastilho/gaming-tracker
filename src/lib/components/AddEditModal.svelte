@@ -175,25 +175,20 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if modalState.isOpen}
-	<!-- Modal Overlay -->
-	<div
-		class="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
-		onclick={closeModal}
-		onkeydown={(e) => {
-			if (e.key === 'Escape') {
-				e.preventDefault();
-				closeModal();
-			}
-		}}
-		role="dialog"
-		tabindex="-1"
-		aria-modal="true"
-		aria-labelledby="modal-title"
-	>
-		<!-- Modal Content -->
+		<!-- Modal Overlay -->
 		<div
-			class="modal-content bg-background max-h-[90vh] w-full max-w-4xl rounded-2xl shadow-2xl"
-			role="document"
+			class="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+			onclick={closeModal}
+			onkeydown={(e) => {
+				if (e.key === 'Escape') {
+					e.preventDefault();
+					closeModal();
+				}
+			}}
+			role="dialog"
+			tabindex="-1"
+			aria-modal="true"
+			aria-labelledby="modal-title"
 		>
 			<!-- Close Button -->
 			<button
@@ -204,8 +199,13 @@
 				<X size={20} class="text-gray-600 dark:text-gray-300" />
 			</button>
 
-			<!-- Content -->
-			<div class="modal-body max-h-[90vh] overflow-y-auto p-6">
+			<!-- Modal Content -->
+			<div
+				class="bg-background max-h-[90vh] w-full max-w-4xl rounded-2xl shadow-2xl"
+				role="document"
+			>
+				<!-- Content -->
+				<div class="modal-body max-h-[90vh] overflow-y-auto p-6">
 				{#if modalState.mode === 'view' && modalState.activeGame}
 					<!-- View Mode Content -->
 					<div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
