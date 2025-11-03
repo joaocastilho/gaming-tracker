@@ -363,12 +363,12 @@
 	.rating-item {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		gap: 2px;
+		gap: 3px;
 		font-size: 0.75rem;
 		color: #8b92a8;
 		min-width: 0;
 		flex: 1;
+		justify-content: flex-start;
 	}
 
 	:global(.light) .rating-item {
@@ -376,14 +376,13 @@
 	}
 
 	.rating-icon {
-		font-size: 0.8rem;
+		font-size: 1rem;
 		flex-shrink: 0;
 	}
 
 	.rating-score {
 		font-weight: 700;
 		font-size: 0.8rem;
-		margin-left: auto;
 	}
 
 	.total-score {
@@ -401,7 +400,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		font-size: 0.75rem;
+		font-size: 0.8rem;
 		color: #8b92a8;
 	}
 
@@ -418,7 +417,7 @@
 
 	.time-icon,
 	.date-icon {
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 	}
 
 	.time-text,
