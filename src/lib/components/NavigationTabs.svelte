@@ -136,7 +136,7 @@
 		justify-content: center;
 		width: 100%;
 		height: 52px;
-		background-color: #0f1419;
+		background-color: #0a0d11;
 		padding: 0 24px;
 		border-bottom: 1px solid rgba(42, 47, 58, 0.5);
 
@@ -151,7 +151,7 @@
 
 	/* Light mode overrides */
 	:global(.light) .navigation-tabs {
-		background-color: #ffffff;
+		background-color: #f0f9ff;
 		border-bottom: 1px solid rgba(229, 231, 235, 0.8);
 	}
 

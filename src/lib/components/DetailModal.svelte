@@ -180,7 +180,7 @@
 		{#if currentGameIndex() > 0}
 			<button
 				onclick={navigateToPrevious}
-				class="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
+				class="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
 				aria-label="Previous game"
 			>
 				<ChevronLeft size={24} />
@@ -191,7 +191,7 @@
 		{#if currentGameIndex() < allGames.length - 1}
 			<button
 				onclick={navigateToNext}
-				class="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
+				class="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
 				aria-label="Next game"
 			>
 				<ChevronRight size={24} />

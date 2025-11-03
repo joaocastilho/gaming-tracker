@@ -47,7 +47,7 @@
 </script>
 
 <header class="header">
-	<!-- Left section: Logo and Add Game Button -->
+	<!-- Left section: Logo -->
 	<div class="header-left">
 		<div class="logo">
 			<picture class="logo-image">
@@ -55,17 +55,6 @@
 				<img src="/logo.png" alt="Gaming Tracker Logo" />
 			</picture>
 		</div>
-
-		<button
-			type="button"
-			class="add-game-btn"
-			onclick={handleAddGame}
-			aria-label="Add new game"
-			title="Add new game"
-		>
-			<span class="add-icon" aria-hidden="true">+</span>
-			<span class="add-text">Add Game</span>
-		</button>
 	</div>
 
 	<!-- Right section: Theme Toggle -->
@@ -127,58 +116,7 @@
 		object-fit: contain;
 	}
 
-	/* Add Game Button */
-	.add-game-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 8px 14px;
-		border: none;
-		border-radius: 6px;
-		background-color: rgba(42, 47, 58, 0.4);
-		color: #8b92a8;
-		font-size: 0.85rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		text-decoration: none;
-	}
 
-	.add-game-btn:hover {
-		background-color: rgba(42, 47, 58, 0.7);
-		color: #ffffff;
-		transform: translateY(-1px);
-	}
-
-	.add-game-btn:focus {
-		outline: 2px solid #3b82f6;
-		outline-offset: 2px;
-	}
-
-	.add-game-btn:active {
-		transform: translateY(0);
-	}
-
-	.add-icon {
-		font-size: 16px;
-		font-weight: 600;
-		line-height: 1;
-	}
-
-	.add-text {
-		white-space: nowrap;
-	}
-
-	/* Light mode add button */
-	:global(.light) .add-game-btn {
-		background-color: rgba(243, 244, 246, 0.6);
-		color: #6b7280;
-	}
-
-	:global(.light) .add-game-btn:hover {
-		background-color: rgba(243, 244, 246, 0.8);
-		color: #1a1a1a;
-	}
 
 	/* Right section */
 	.header-right {
@@ -200,18 +138,6 @@
 		.header-right {
 			gap: 12px;
 		}
-
-
-
-		.add-text {
-			display: none;
-		}
-
-		.add-game-btn {
-			padding: 8px;
-			min-width: 36px;
-			justify-content: center;
-		}
 	}
 
 	@media (max-width: 480px) {
@@ -223,25 +149,10 @@
 		.header-right {
 			gap: 8px;
 		}
-
-		.add-game-btn {
-			padding: 6px;
-			min-width: 32px;
-		}
-
-		.add-icon {
-			font-size: 14px;
-		}
 	}
 
 	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
-		.add-game-btn {
-			transition: none;
-		}
-
-		.add-game-btn:hover {
-			transform: none;
-		}
+		/* No transitions to remove since Add Game button is removed */
 	}
 </style>
