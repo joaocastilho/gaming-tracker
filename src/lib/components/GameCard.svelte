@@ -120,15 +120,21 @@
 
 		<!-- Platform/Genre left, Year right (always shown) -->
 		<div class="platform-genre-year-section">
-			<div class="badges-section">
+			<div class="first-line">
 				<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
 					{game.platform}
 				</span>
+				<span class="game-year">{game.year}</span>
+			</div>
+			<div class="second-line">
 				<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
 					{game.genre}
 				</span>
+				<div class="total-score">
+					<span class="rating-icon" aria-label="Total score" title="Total score">🏆</span>
+					<span class="rating-score">{totalScore ?? '-'}</span>
+				</div>
 			</div>
-			<span class="game-year">{game.year}</span>
 		</div>
 
 		<!-- Ratings Section (always present) -->
@@ -142,12 +148,8 @@
 				<span class="rating-score">{game.ratingStory ?? '-'}</span>
 			</div>
 			<div class="rating-item">
-				<span class="rating-icon" aria-label="Gameplay rating" title="Gameplay">🎮</span>
+				<span class="rating-icon" aria-label="Gameplay rating" title="Gameplay">�</span>
 				<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
-			</div>
-			<div class="rating-item total-score">
-				<span class="rating-icon" aria-label="Total score" title="Total score">🏆</span>
-				<span class="rating-score">{totalScore ?? '-'}</span>
 			</div>
 		</div>
 
@@ -321,9 +323,15 @@
 	/* Platform/Genre/Year Section */
 	.platform-genre-year-section {
 		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.first-line,
+	.second-line {
+		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: 8px;
 	}
 
 	.game-year {
