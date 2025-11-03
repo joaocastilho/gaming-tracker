@@ -115,7 +115,6 @@
 		width: 100%;
 		height: 50px;
 		background-color: #0a0d11;
-		border-bottom: 1px solid #2a2f3a;
 		padding: 0 24px;
 
 		/* Positioning */
@@ -130,7 +129,6 @@
 	/* Light mode overrides */
 	:global(.light) .navigation-tabs {
 		background-color: #ffffff;
-		border-bottom: 1px solid #e5e7eb;
 	}
 
 	.tabs-list {

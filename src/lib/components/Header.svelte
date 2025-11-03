@@ -92,7 +92,6 @@
 
 		/* Dark mode colors */
 		background-color: #0a0d11;
-		border-bottom: 1px solid #2a2f3a;
 		color: #ffffff;
 
 		/* Typography */
@@ -107,7 +106,6 @@
 	/* Light mode overrides */
 	:global(.light) .header {
 		background-color: #ffffff;
-		border-bottom: 1px solid #e5e7eb;
 		color: #1a1a1a;
 	}
 
