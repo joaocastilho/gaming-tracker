@@ -175,8 +175,9 @@
 	/* Cover Container */
 	.cover-container {
 		position: relative;
-		width: 100%;
-		height: 260px;
+		width: 260px;
+		height: 400px;
+		margin: 0 auto;
 	}
 
 	/* Image Placeholder */
