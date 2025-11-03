@@ -50,7 +50,7 @@
 		},
 		{
 			id: 'completed',
-			label: 'Finished',
+			label: 'Completed',
 			route: '/completed',
 			count: gameCounts.completed
 		},
