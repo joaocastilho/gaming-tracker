@@ -148,7 +148,7 @@
 		/* Layout */
 		display: flex;
 		flex-direction: column;
-		width: 100%;
+		width: 260px;
 		border-radius: 12px;
 		overflow: hidden;
 
