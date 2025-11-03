@@ -8,9 +8,9 @@ html {
 /* Theme Variables - Light Mode (Default) - Pastel Theme */
 :root {
 	/* Background Colors */
-	--color-background: #fef7ff;
-	--color-surface: #fef9ff;
-	--color-border: #f5f0ff;
+	--color-background: #f0f9ff;
+	--color-surface: #f0fdf4;
+	--color-border: #dcfce7;
 
 	/* Text Colors */
 	--color-text-primary: #1a1a1a;

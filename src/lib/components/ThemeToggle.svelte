@@ -108,8 +108,7 @@
 	}
 
 	.theme-toggle:focus {
-		outline: 2px solid #3b82f6;
-		outline-offset: 2px;
+		outline: none;
 	}
 
 	.theme-toggle:active {
