@@ -176,7 +176,7 @@
 	.cover-container {
 		position: relative;
 		width: 100%;
-		aspect-ratio: 2 / 3;
+		height: 260px;
 	}
 
 	/* Image Placeholder */
