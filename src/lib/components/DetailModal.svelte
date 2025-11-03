@@ -180,7 +180,8 @@
 						bind:this={coverImage}
 						src="/{modalState.activeGame.coverImage}"
 						alt="{modalState.activeGame.title} cover"
-						class="h-64 w-full rounded-l-lg object-cover lg:h-full"
+						class="w-full h-full rounded-l-lg object-cover"
+						style="width: 400px; height: 600px;"
 						loading="lazy"
 					/>
 
@@ -261,15 +262,15 @@
 							</div>
 						{/if}
 						<div>
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Platform</div>
+							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Finished Date</div>
 							<div class="font-semibold text-gray-900 dark:text-white">
-								{modalState.activeGame.platform}
+								{formatDate(modalState.activeGame.finishedDate)}
 							</div>
 						</div>
 						<div>
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Genre</div>
+							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Co-op</div>
 							<div class="font-semibold text-gray-900 dark:text-white">
-								{modalState.activeGame.genre}
+								{modalState.activeGame.coOp === 'Yes' ? 'Yes' : 'No'}
 							</div>
 						</div>
 					</div>
