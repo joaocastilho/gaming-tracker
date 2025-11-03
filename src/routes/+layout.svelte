@@ -198,7 +198,7 @@
 	<NavigationTabs />
 
 	<!-- Search & Filter Section (Sticky) -->
-	<section class="filter-section sticky top-[56px] z-30 border-b md:top-[60px]">
+	<section class="filter-section sticky top-[110px] z-30 border-b md:top-[110px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<!-- Search Bar -->
 			<SearchBar />
@@ -250,7 +250,7 @@
 	</section>
 
 	<!-- Content Area (Scrollable) -->
-	<main style="background-color: var(--color-background);" class="px-6 pt-[calc(56px+50px+100px)] pb-6 md:pt-[calc(60px+50px+100px)]">
+	<main style="background-color: var(--color-background);" class="px-6 pt-[210px] pb-6 md:pt-[210px]">
 		<div class="container mx-auto">
 			{@render children?.()}
 		</div>

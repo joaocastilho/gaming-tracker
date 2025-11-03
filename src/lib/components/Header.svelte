@@ -99,8 +99,9 @@
 		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
 
 		/* Positioning */
-		position: relative;
-		z-index: 10;
+		position: sticky;
+		top: 0;
+		z-index: 40;
 	}
 
 	/* Light mode overrides */

@@ -120,7 +120,7 @@
 		/* Positioning */
 		position: sticky;
 		top: 60px; /* Height of header */
-		z-index: 20;
+		z-index: 30;
 
 		/* Typography */
 		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
