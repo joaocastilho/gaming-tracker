@@ -250,7 +250,7 @@
 	</section>
 
 	<!-- Content Area (Scrollable) -->
-	<main style="background-color: var(--color-background);" class="px-6 pt-[180px] pb-6 md:pt-[180px]">
+	<main style="background-color: var(--color-background);" class="px-6 pt-[160px] pb-6 md:pt-[160px]">
 		<div class="container mx-auto">
 			{@render children?.()}
 		</div>
