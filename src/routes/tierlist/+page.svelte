@@ -39,7 +39,7 @@
 	const tierConfig = {
 		S: { name: 'S - Masterpiece', color: 'bg-red-500', textColor: 'text-white' },
 		A: { name: 'A - Amazing', color: 'bg-orange-500', textColor: 'text-white' },
-		B: { name: 'B - Great', color: 'bg-yellow-500', textColor: 'text-black' },
+		B: { name: 'B - Great', color: 'bg-yellow-500', textColor: 'text-white' },
 		C: { name: 'C - Good', color: 'bg-green-500', textColor: 'text-white' },
 		D: { name: 'D - Decent', color: 'bg-cyan-500', textColor: 'text-white' },
 		E: { name: 'E - Bad', color: 'bg-gray-500', textColor: 'text-white' }
@@ -63,41 +63,29 @@
 			<p>Complete some games and assign tiers to see the tier list!</p>
 		</div>
 	{:else}
-		<!-- Header -->
-		<div class="mb-6">
-			<div>
-				<h1 class="mb-2 text-2xl font-bold text-white dark:text-gray-900">Gaming Tier List</h1>
-				<p class="text-gray-400 dark:text-gray-600">
-					{tierGames.length} game{tierGames.length !== 1 ? 's' : ''} organized by personal rating
-				</p>
-			</div>
-		</div>
-
 		<!-- Tier List Content -->
-		<div class="tier-list-content rounded-lg bg-gray-900 p-6 dark:bg-white">
+		<div class="tier-list-content p-6">
 			{#each Object.entries(tierConfig) as [tierKey, tierInfo] (tierKey)}
 				{@const gamesInTier = gamesByTier[tierKey] || []}
 				{#if gamesInTier.length > 0}
 					<!-- Tier Row -->
 					<div class="tier-row mb-6">
 						<!-- Tier Header -->
-						<div class="tier-header mb-3 flex items-center gap-3">
-							<div
-								class="tier-badge {tierInfo.color} {tierInfo.textColor} min-w-0 rounded px-3 py-1 text-sm font-semibold"
-							>
+						<div class="tier-header mb-2 md:mb-3 {tierInfo.color} {tierInfo.textColor} rounded px-3 py-2 flex items-center justify-between">
+							<span class="text-base font-semibold">
 								{tierInfo.name}
-							</div>
-							<span class="text-sm text-gray-400 dark:text-gray-600">
+							</span>
+							<span class="text-base opacity-90">
 								{gamesInTier.length} game{gamesInTier.length !== 1 ? 's' : ''}
 							</span>
 						</div>
 
 						<!-- Games in this tier -->
-						<div class="games-row flex gap-3 overflow-x-auto pb-2">
+						<div class="games-row flex flex-wrap gap-3 justify-center">
 							{#each gamesInTier as game (game.id)}
 								<button
 									type="button"
-									class="game-card flex-shrink-0 transform cursor-pointer transition-transform hover:scale-105"
+									class="game-card flex-shrink-0 transform cursor-pointer transition-transform hover:scale-105 rounded-none"
 									onclick={() => handleGameClick(game)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -112,27 +100,19 @@
 										<img
 											src="/{game.coverImage}"
 											alt="{game.title} cover"
-											class="h-30 w-20 rounded border-2 border-gray-700 object-cover dark:border-gray-300"
+											class="w-full h-full rounded-none border border-black object-cover dark:border-gray-300"
 											loading="lazy"
 											onerror={(e) => {
 												const img = e.target as HTMLImageElement;
 												img.style.display = 'none';
 											}}
 										/>
-										<!-- Score badge -->
-										{#if game.score}
-											<div
-												class="absolute -top-2 -right-2 min-w-0 rounded bg-gray-800 px-1 py-0.5 text-xs font-semibold text-white dark:bg-gray-200 dark:text-gray-900"
-											>
-												{game.score}
-											</div>
-										{/if}
 									</div>
 
 									<!-- Title -->
 									<div class="mt-2 text-center">
 										<p
-											class="line-clamp-2 max-w-0 text-xs leading-tight font-medium text-gray-300 dark:text-gray-700"
+											class="line-clamp-2 text-sm leading-tight font-medium text-gray-300 dark:text-gray-700"
 										>
 											{game.title}
 										</p>
@@ -187,11 +167,6 @@
 		align-items: center;
 	}
 
-	.tier-badge {
-		font-weight: 600;
-		letter-spacing: 0.025em;
-	}
-
 	.games-row {
 		scrollbar-width: thin;
 		scrollbar-color: #4a5568 #2d3748;
@@ -216,7 +191,17 @@
 	}
 
 	.game-card {
-		max-width: 80px;
+		max-width: 182px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		border-radius: 0;
+	}
+
+	.game-card .relative {
+		width: 182px;
+		height: 280px;
+		margin: 0 auto;
 	}
 
 	.line-clamp-2 {
@@ -259,7 +244,12 @@
 		}
 
 		.game-card {
-			max-width: 70px;
+			max-width: 140px;
+		}
+
+		.game-card .relative {
+			width: 140px;
+			height: 215px; /* Maintain aspect ratio: 140/182 * 280 ≈ 215 */
 		}
 
 		.games-row {

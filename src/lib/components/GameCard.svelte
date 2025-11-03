@@ -174,7 +174,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 260px;
-		border-radius: 12px;
+		border-radius: 6px;
 		overflow: hidden;
 		margin-top: 16px;
 
@@ -421,8 +421,8 @@
 	.time-date-section {
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
-		font-size: 0.9rem;
+		align-items: flex-end;
+		font-size: 0.8rem;
 		color: #8b92a8;
 	}
 
@@ -437,11 +437,11 @@
 	}
 
 	.time-icon {
-		font-size: 1rem;
+		font-size: 0.8rem;
 	}
 
 	.date-icon {
-		font-size: 0.9rem;
+		font-size: 0.7rem;
 	}
 
 	.time-text,

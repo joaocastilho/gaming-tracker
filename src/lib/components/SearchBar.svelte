@@ -52,7 +52,7 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			if (inputElement) {
-				inputElement.focus();
+				inputElement.select();
 			}
 		}
 	}

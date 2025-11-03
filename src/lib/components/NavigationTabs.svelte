@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { appStore } from '../stores/app.js';
 	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
@@ -39,6 +40,27 @@
 			};
 		});
 		return unsubscribe;
+	});
+
+	// Set active tab based on current URL path
+	$effect(() => {
+		const currentPath = $page.url.pathname;
+		let newActiveTab: TabId = 'all';
+
+		if (currentPath === '/completed') {
+			newActiveTab = 'completed';
+		} else if (currentPath === '/planned') {
+			newActiveTab = 'planned';
+		} else if (currentPath === '/tierlist') {
+			newActiveTab = 'tierlist';
+		} else {
+			newActiveTab = 'all';
+		}
+
+		// Only update if different to avoid unnecessary store updates
+		if (newActiveTab !== activeTab) {
+			appStore.activeTab.set(newActiveTab);
+		}
 	});
 
 	const tabs = $derived<Tab[]>([
