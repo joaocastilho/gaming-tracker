@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { modalStore } from '$lib/stores/modal.js';
 	import type { Game } from '$lib/types/game.js';
+	import { X } from 'lucide-svelte';
 
 	// Subscribe to modal state
 	let modalState = $state({
@@ -194,30 +195,17 @@
 			class="modal-content bg-background border-border max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border shadow-2xl"
 			role="document"
 		>
-			<!-- Header -->
-			<div class="modal-header border-border flex items-center justify-between border-b p-6">
-				<h2 id="modal-title" class="text-2xl font-bold">
-					{#if modalState.mode === 'add'}
-						Add New Game
-					{:else if modalState.mode === 'edit' && modalState.activeGame}
-						Edit Game
-					{:else if modalState.activeGame}
-						{modalState.activeGame.title}
-					{:else}
-						Game Details
-					{/if}
-				</h2>
-				<button
-					class="close-button text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-2 transition-colors"
-					onclick={closeModal}
-					aria-label="Close modal"
-				>
-					<span class="text-xl">✕</span>
-				</button>
-			</div>
+			<!-- Close Button -->
+			<button
+				class="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+				onclick={closeModal}
+				aria-label="Close modal"
+			>
+				<X size={20} class="text-gray-600 dark:text-gray-300" />
+			</button>
 
 			<!-- Content -->
-			<div class="modal-body max-h-[calc(90vh-120px)] overflow-y-auto p-6">
+			<div class="modal-body max-h-[90vh] overflow-y-auto p-6">
 				{#if modalState.mode === 'view' && modalState.activeGame}
 					<!-- View Mode Content -->
 					<div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
