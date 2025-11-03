@@ -5,12 +5,12 @@ html {
 	font-size: 110%; /* 10% larger than default */
 }
 
-/* Theme Variables - Light Mode (Default) */
+/* Theme Variables - Light Mode (Default) - Pastel Theme */
 :root {
 	/* Background Colors */
-	--color-background: #f8f9fa;
-	--color-surface: #ffffff;
-	--color-border: #e5e7eb;
+	--color-background: #fef7ff;
+	--color-surface: #fdf9ff;
+	--color-border: #f3e8ff;
 
 	/* Text Colors */
 	--color-text-primary: #1a1a1a;
