@@ -201,9 +201,7 @@
 			gap: 12px;
 		}
 
-		.logo-text {
-			display: none;
-		}
+
 
 		.add-text {
 			display: none;

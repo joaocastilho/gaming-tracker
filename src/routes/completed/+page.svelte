@@ -129,34 +129,8 @@
 		color: inherit;
 	}
 
-	.game-count-info {
-		margin-bottom: 1rem;
-		padding: 0 0.5rem;
-		text-align: center;
-	}
-
-	.count-text {
-		font-size: 0.9rem;
-		font-weight: 500;
-		color: #8b92a8;
-	}
-
-	.breakdown-text {
-		font-size: 0.8rem;
-		color: #6b7280;
-		margin-left: 0.5rem;
-	}
-
 	/* Light mode */
 	:global(.light) .empty-state {
 		color: #6b7280;
-	}
-
-	:global(.light) .count-text {
-		color: #6b7280;
-	}
-
-	:global(.light) .breakdown-text {
-		color: #9ca3af;
 	}
 </style>
