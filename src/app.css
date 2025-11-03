@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* Global font size increase for better readability */
+html {
+	font-size: 110%; /* 10% larger than default */
+}
+
 /* Theme Variables - Light Mode (Default) */
 :root {
 	/* Background Colors */
