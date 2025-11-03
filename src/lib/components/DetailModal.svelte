@@ -108,9 +108,11 @@
 	}
 
 	function getRatingBarColor(rating: number): string {
-		if (rating >= 7) return 'bg-gradient-to-r from-green-500 to-green-600';
-		if (rating >= 5) return 'bg-gradient-to-r from-yellow-500 to-yellow-600';
-		return 'bg-gradient-to-r from-red-500 to-red-600';
+		if (rating >= 8) return 'bg-gradient-to-r from-[#388E3C] to-[#4CAF50]'; // Deep Green
+		if (rating >= 6) return 'bg-gradient-to-r from-[#A4D454] to-[#8BC34A]'; // Yellow-Green
+		if (rating >= 5) return 'bg-gradient-to-r from-[#FFC107] to-[#FFEB3B]'; // Yellow/Amber
+		if (rating >= 3) return 'bg-gradient-to-r from-[#FF832B] to-[#FF9800]'; // Orange-Red
+		return 'bg-gradient-to-r from-[#D32F2F] to-[#F44336]'; // Deep Red
 	}
 
 	onMount(() => {
