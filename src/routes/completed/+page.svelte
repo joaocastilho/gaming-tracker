@@ -90,17 +90,8 @@
 				<p>Try adjusting your search terms or filters.</p>
 			{/if}
 		</div>
-	{:else}
-		<div class="game-count-info">
-			<span class="count-text">
-				Showing {displayGames.length} completed game{displayGames.length !== 1 ? 's' : ''}
-			</span>
-			<span class="breakdown-text">
-				From {filteredData.completedCount} total completed
-			</span>
-		</div>
-
-		{#if currentViewMode === 'gallery'}
+		{:else}
+			{#if currentViewMode === 'gallery'}
 			<!-- Gallery View -->
 			<div
 				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"

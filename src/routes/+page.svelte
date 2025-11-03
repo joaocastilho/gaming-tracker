@@ -111,15 +111,6 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="game-count-info">
-				<span class="count-text">
-					Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
-				</span>
-				<span class="breakdown-text">
-					({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
-				</span>
-			</div>
-
 			{#if currentViewMode === 'gallery'}
 				<!-- Gallery View -->
 				<div
@@ -146,15 +137,6 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="game-count-info">
-				<span class="count-text">
-					Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
-				</span>
-				<span class="breakdown-text">
-					({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
-				</span>
-			</div>
-
 			{#if currentViewMode === 'gallery'}
 				<!-- Gallery View -->
 				<div
@@ -181,15 +163,6 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="game-count-info">
-				<span class="count-text">
-					Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
-				</span>
-				<span class="breakdown-text">
-					({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
-				</span>
-			</div>
-
 			{#if currentViewMode === 'gallery'}
 				<!-- Gallery View -->
 				<div
@@ -216,15 +189,6 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="game-count-info">
-				<span class="count-text">
-					Showing {filteredData.totalCount} game{filteredData.totalCount !== 1 ? 's' : ''}
-				</span>
-				<span class="breakdown-text">
-					({filteredData.completedCount} completed, {filteredData.plannedCount} planned)
-				</span>
-			</div>
-
 			{#if currentViewMode === 'gallery'}
 				<!-- Gallery View -->
 				<div
