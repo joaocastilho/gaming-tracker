@@ -23,6 +23,21 @@
 			: null
 	);
 
+	// Extract parenthetical content from title for subtitle display
+	let titleParts = $derived(() => {
+		const match = game.title.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+		if (match) {
+			return {
+				mainTitle: match[1].trim(),
+				subtitle: `(${match[2]})`
+			};
+		}
+		return {
+			mainTitle: game.title,
+			subtitle: null
+		};
+	});
+
 
 
 	// Format date for display
@@ -92,10 +107,17 @@
 
 	<!-- Game Info -->
 	<div class="game-info">
-		<!-- Title (always just title) -->
+		<!-- Title (main title) -->
 		<div class="title-section">
-			<h3 class="game-title">{game.title}</h3>
+			<h3 class="game-title">{titleParts().mainTitle}</h3>
 		</div>
+
+		<!-- Subtitle (if exists) or Platform/Genre left, Year right -->
+		{#if titleParts().subtitle}
+			<div class="subtitle-section">
+				<span class="game-subtitle">{titleParts().subtitle}</span>
+			</div>
+		{/if}
 
 		<!-- Platform/Genre left, Year right -->
 		<div class="platform-genre-year-section">
@@ -284,6 +306,22 @@
 		overflow: hidden;
 		text-align: center;
 		width: 100%;
+	}
+
+	/* Subtitle Section */
+	.subtitle-section {
+		margin-bottom: 4px;
+		text-align: center;
+	}
+
+	.game-subtitle {
+		font-size: 0.8rem;
+		color: #8b92a8;
+		font-style: italic;
+	}
+
+	:global(.light) .game-subtitle {
+		color: #6b7280;
 	}
 
 	/* Platform/Genre/Year Section */
