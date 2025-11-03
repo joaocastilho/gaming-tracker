@@ -348,7 +348,7 @@
 	.genre-badge {
 		padding: 4px 8px;
 		border-radius: 4px;
-		font-size: 0.7rem;
+		font-size: 0.8rem;
 		font-weight: 500;
 		white-space: nowrap;
 	}
