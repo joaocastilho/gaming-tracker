@@ -120,8 +120,6 @@ function createAppStore() {
 
 			try {
 				const currentViewMode = get(viewMode);
-				const currentTheme = get(theme);
-				const currentActiveTab = get(activeTab);
 				const url = new URL(window.location.href);
 
 				// Only update if different from defaults to keep URLs clean
@@ -131,17 +129,9 @@ function createAppStore() {
 					url.searchParams.delete('view');
 				}
 
-				if (currentTheme !== 'dark') {
-					url.searchParams.set('theme', currentTheme);
-				} else {
-					url.searchParams.delete('theme');
-				}
-
-				if (currentActiveTab !== 'all') {
-					url.searchParams.set('tab', currentActiveTab);
-				} else {
-					url.searchParams.delete('tab');
-				}
+				// Remove theme and tab parameters - theme is stored in localStorage, tab is indicated by route
+				url.searchParams.delete('theme');
+				url.searchParams.delete('tab');
 
 				// Use replaceState to avoid adding to browser history
 				replaceState(url.toString(), {});

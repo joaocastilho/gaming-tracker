@@ -183,14 +183,6 @@
 </svelte:head>
 
 <div class="bg-background text-foreground min-h-screen">
-	<!-- Skip to main content link for accessibility -->
-	<a
-		href="#main-content"
-		class="skip-link"
-	>
-		Skip to main content
-	</a>
-
 	<!-- Header Component -->
 	<Header />
 
@@ -264,24 +256,6 @@
 </div>
 
 <style>
-	/* Skip link for accessibility */
-	.skip-link {
-		position: absolute;
-		top: -40px;
-		left: 6px;
-		background: #000;
-		color: #fff;
-		padding: 8px;
-		text-decoration: none;
-		border-radius: 4px;
-		z-index: 1000;
-		transition: top 0.3s;
-	}
-
-	.skip-link:focus {
-		top: 6px;
-	}
-
 	/* Height calculations for fixed/sticky positioning */
 	:global(.h-15) {
 		height: 60px;
