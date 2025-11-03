@@ -145,7 +145,7 @@
 				<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
 			</div>
 			<div class="rating-item">
-				<NotebookPen class="rating-icon text-orange-500" aria-label="Story rating" size={20} />
+				<NotebookPen class="rating-icon text-amber-600" aria-label="Story rating" size={20} />
 				<span class="rating-score">{game.ratingStory ?? '-'}</span>
 			</div>
 			<div class="rating-item">

@@ -302,7 +302,7 @@
 							<!-- Story Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<NotebookPen size={20} class="flex-shrink-0 text-orange-500" />
+									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
 									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Story</span>
 								</div>
 								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
@@ -370,7 +370,7 @@
 							<!-- Placeholder Story Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<NotebookPen size={20} class="flex-shrink-0 text-orange-500" />
+									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
 									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Story</span>
 								</div>
 								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
