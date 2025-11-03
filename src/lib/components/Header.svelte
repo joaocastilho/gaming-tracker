@@ -136,7 +136,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 8px 14px;
-		border: 1px solid #2a2f3a;
+		border: none;
 		border-radius: 6px;
 		background-color: rgba(42, 47, 58, 0.4);
 		color: #8b92a8;
@@ -150,7 +150,6 @@
 	.add-game-btn:hover {
 		background-color: rgba(42, 47, 58, 0.7);
 		color: #ffffff;
-		border-color: #3b82f6;
 		transform: translateY(-1px);
 	}
 
@@ -176,14 +175,12 @@
 	/* Light mode add button */
 	:global(.light) .add-game-btn {
 		background-color: rgba(243, 244, 246, 0.6);
-		border-color: #d1d5db;
 		color: #6b7280;
 	}
 
 	:global(.light) .add-game-btn:hover {
 		background-color: rgba(243, 244, 246, 0.8);
 		color: #1a1a1a;
-		border-color: #3b82f6;
 	}
 
 	/* Right section */
