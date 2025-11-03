@@ -93,11 +93,14 @@
 		position: sticky;
 		top: 0;
 		z-index: 40;
+
+		/* Remove border */
+		border: none;
 	}
 
 	/* Light mode overrides */
 	:global(.light) .header {
-		background-color: #ffffff;
+		background-color: #f0f9ff;
 		color: #1a1a1a;
 	}
 
