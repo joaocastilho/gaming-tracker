@@ -50,8 +50,10 @@
 	<!-- Left section: Logo and Add Game Button -->
 	<div class="header-left">
 		<div class="logo">
-			<span class="logo-emoji" aria-hidden="true">🎮</span>
-			<h1 class="logo-text">Gaming Tracker</h1>
+			<picture class="logo-image">
+				<source srcset="/logo.webp" type="image/webp" />
+				<img src="/logo.png" alt="Gaming Tracker Logo" />
+			</picture>
 		</div>
 
 		<button
@@ -118,16 +120,11 @@
 		gap: 8px;
 	}
 
-	.logo-emoji {
-		font-size: 24px;
-		line-height: 1;
-	}
-
-	.logo-text {
-		font-size: 18px;
-		font-weight: 600;
-		margin: 0;
-		line-height: 1;
+	.logo-image {
+		height: 56px;
+		width: auto;
+		max-width: 180px;
+		object-fit: contain;
 	}
 
 	/* Add Game Button */
