@@ -1,4 +1,5 @@
 <script lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { gamesStore } from '$lib/stores/games.js';

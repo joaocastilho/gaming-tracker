@@ -92,57 +92,54 @@
 
 	<!-- Game Info -->
 	<div class="game-info">
-		<!-- Title and Year -->
+		<!-- Title (always just title) -->
 		<div class="title-section">
 			<h3 class="game-title">{game.title}</h3>
+		</div>
+
+		<!-- Platform/Genre left, Year right -->
+		<div class="platform-genre-year-section">
+			<div class="badges-section">
+				<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
+					{game.platform}
+				</span>
+				<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
+					{game.genre}
+				</span>
+			</div>
 			<span class="game-year">{game.year}</span>
 		</div>
 
-		<!-- Platform and Genre Badges -->
-		<div class="badges-section">
-			<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
-				{game.platform}
-			</span>
-			<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
-				{game.genre}
-			</span>
+		<!-- Ratings Section (always present) -->
+		<div class="ratings-section">
+			<div class="rating-item">
+				<span class="rating-icon" aria-label="Presentation rating">👁️</span>
+				<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
+			</div>
+			<div class="rating-item">
+				<span class="rating-icon" aria-label="Story rating">✏️</span>
+				<span class="rating-score">{game.ratingStory ?? '-'}</span>
+			</div>
+			<div class="rating-item">
+				<span class="rating-icon" aria-label="Gameplay rating">🎮</span>
+				<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
+			</div>
+			<div class="rating-item total-score">
+				<span class="rating-icon" aria-label="Total score">🏆</span>
+				<span class="rating-score">{totalScore ?? '-'}</span>
+			</div>
 		</div>
 
-		<!-- Ratings Section (Completed games only) -->
-		{#if game.status === 'Completed' && game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null}
-			<div class="ratings-section">
-				<div class="rating-item">
-					<span class="rating-icon" aria-label="Presentation rating">👁️</span>
-					<span class="rating-score">{game.ratingPresentation}/10</span>
-				</div>
-				<div class="rating-item">
-					<span class="rating-icon" aria-label="Story rating">✏️</span>
-					<span class="rating-score">{game.ratingStory}/10</span>
-				</div>
-				<div class="rating-item">
-					<span class="rating-icon" aria-label="Gameplay rating">🎮</span>
-					<span class="rating-score">{game.ratingGameplay}/10</span>
-				</div>
-				<div class="rating-item total-score">
-					<span class="rating-icon" aria-label="Total score">🏆</span>
-					<span class="rating-score">{totalScore}/20</span>
-				</div>
+		<!-- Time/Date Section (always present) -->
+		<div class="time-date-section">
+			<div class="time-item">
+				<span class="time-icon" aria-label="Time">⏱️</span>
+				<span class="time-text">{game.status === 'Completed' ? (game.hoursPlayed ?? 'N/A') : (game.timeToBeat ?? 'N/A')}</span>
 			</div>
-		{/if}
-
-		<!-- Time/Date Section (Completed games only) -->
-		{#if game.status === 'Completed' && game.hoursPlayed && game.finishedDate}
-			<div class="time-date-section">
-				<div class="time-item">
-					<span class="time-icon" aria-label="Hours played">⏱️</span>
-					<span class="time-text">{game.hoursPlayed}</span>
-				</div>
-				<div class="date-item">
-					<span class="date-icon" aria-label="Completion date">✓</span>
-					<span class="date-text">{formatDate(game.finishedDate)}</span>
-				</div>
+			<div class="date-item">
+				<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span>
 			</div>
-		{/if}
+		</div>
 	</div>
 </button>
 
@@ -266,10 +263,7 @@
 
 	/* Title Section */
 	.title-section {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		gap: 8px;
+		margin-bottom: 4px;
 	}
 
 	.game-title {
@@ -277,9 +271,15 @@
 		font-weight: 600;
 		margin: 0;
 		line-height: 1.2;
-		flex: 1;
-		min-width: 0;
 		word-wrap: break-word;
+	}
+
+	/* Platform/Genre/Year Section */
+	.platform-genre-year-section {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 8px;
 	}
 
 	.game-year {
@@ -333,12 +333,14 @@
 	}
 
 	.rating-score {
-		font-weight: 500;
+		font-weight: 700;
+		font-size: 0.8rem;
 	}
 
 	.total-score {
-		font-weight: 600;
+		font-weight: 700;
 		color: #ffffff;
+		font-size: 0.8rem;
 	}
 
 	:global(.light) .total-score {
@@ -405,6 +407,12 @@
 
 		.game-title {
 			font-size: 0.85rem;
+		}
+
+		.platform-genre-year-section {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
 		}
 
 		.badges-section {
