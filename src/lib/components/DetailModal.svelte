@@ -168,7 +168,7 @@
 	<!-- Modal Overlay -->
 	<div
 		bind:this={modalElement}
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-[2px] p-1"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[1px] p-1"
 		onclick={handleOverlayClick}
 		onkeydown={handleOverlayKeydown}
 		role="dialog"
@@ -200,7 +200,7 @@
 
 		<!-- Modal Content -->
 		<div
-			class="relative h-[600px] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-2xl dark:bg-gray-900"
+			class="relative h-[600px] w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-900"
 		>
 			<!-- Close Button -->
 			<button
