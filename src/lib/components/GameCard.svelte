@@ -118,20 +118,18 @@
 			</h3>
 		</div>
 
-		<!-- Second line: Platform/Genre left, Year right (only when no subtitle) -->
-		{#if !titleParts().subtitle}
-			<div class="platform-genre-year-section">
-				<div class="badges-section">
-					<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
-						{game.platform}
-					</span>
-					<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
-						{game.genre}
-					</span>
-				</div>
-				<span class="game-year">{game.year}</span>
+		<!-- Platform/Genre left, Year right (always shown) -->
+		<div class="platform-genre-year-section">
+			<div class="badges-section">
+				<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
+					{game.platform}
+				</span>
+				<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
+					{game.genre}
+				</span>
 			</div>
-		{/if}
+			<span class="game-year">{game.year}</span>
+		</div>
 
 		<!-- Ratings Section (always present) -->
 		<div class="ratings-section">
