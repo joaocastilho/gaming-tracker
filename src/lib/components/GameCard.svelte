@@ -158,6 +158,7 @@
 				<span class="time-text">{game.status === 'Completed' ? (game.hoursPlayed ?? 'N/A') : (game.timeToBeat ?? 'N/A')}</span>
 			</div>
 			<div class="date-item">
+				<span class="date-icon" aria-label="Date">📅</span>
 				<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span>
 			</div>
 		</div>
@@ -415,7 +416,10 @@
 		gap: 4px;
 	}
 
-	.time-icon,
+	.time-icon {
+		font-size: 1rem;
+	}
+
 	.date-icon {
 		font-size: 0.9rem;
 	}
