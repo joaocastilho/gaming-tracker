@@ -13,6 +13,13 @@
 		return unsubscribe;
 	});
 
+	// Focus search input on mount and when Escape is pressed
+	$effect(() => {
+		if (inputElement) {
+			inputElement.focus();
+		}
+	});
+
 	// Handle input change with debouncing
 	function handleInput(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -44,7 +51,9 @@
 	// Handle keyboard events
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
-			clearSearch();
+			if (inputElement) {
+				inputElement.focus();
+			}
 		}
 	}
 </script>
