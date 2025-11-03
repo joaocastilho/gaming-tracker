@@ -234,7 +234,20 @@
 				</div>
 
 				<!-- Info Section -->
-				<div class="max-h-[60vh] overflow-y-auto pt-6 pb-6 pl-6 pr-6 lg:pt-8 lg:pb-8 lg:pl-8 lg:pr-8">
+				<div class="max-h-[60vh] overflow-y-auto pt-4 pb-6 pl-6 pr-6 lg:pt-6 lg:pb-8 lg:pl-8 lg:pr-8">
+					<!-- Title -->
+					<h1
+						id="modal-title"
+						class="text-3xl font-bold text-gray-900 dark:text-white flex flex-col justify-center"
+						style="height: 65px; margin-bottom: 15px;"
+					>
+						{titleParts().mainTitle}
+						{#if titleParts().subtitle}
+							<br>
+							<span class="font-semibold text-gray-700 dark:text-gray-300" style="font-size: 1.2rem; line-height: 1.2;">{titleParts().subtitle}</span>
+						{/if}
+					</h1>
+
 					<!-- Meta Badges -->
 					<div class="mb-6 flex items-center justify-between">
 						<div class="flex flex-wrap gap-2">
