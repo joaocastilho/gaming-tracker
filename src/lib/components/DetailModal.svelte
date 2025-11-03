@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { modalStore } from '../stores/modal.js';
+	import { TIER_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
 	import { Eye, PenTool, Gamepad2, Trophy, X } from 'lucide-svelte';
 
 	let modalState = $state(modalStore.getState());
@@ -53,22 +54,9 @@
 	}
 
 	function getTierColor(tier: string | null): string {
-		switch (tier) {
-			case 'S':
-				return 'bg-red-500';
-			case 'A':
-				return 'bg-orange-500';
-			case 'B':
-				return 'bg-yellow-500';
-			case 'C':
-				return 'bg-green-500';
-			case 'D':
-				return 'bg-cyan-500';
-			case 'E':
-				return 'bg-gray-500';
-			default:
-				return 'bg-gray-400';
-		}
+		if (!tier) return 'bg-gray-400';
+		const fullName = getTierDisplayName(tier);
+		return TIER_COLORS[fullName] || 'bg-gray-400';
 	}
 
 	function getPlatformColor(platform: string): string {
@@ -148,7 +136,7 @@
 								modalState.activeGame.tier
 							)}"
 						>
-							{modalState.activeGame.tier}
+							{getTierDisplayName(modalState.activeGame.tier)}
 						</div>
 					{/if}
 

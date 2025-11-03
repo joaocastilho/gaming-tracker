@@ -14,6 +14,7 @@
 
 	/* Accent Colors */
 	--color-accent: #3b82f6;
+	--color-accent-foreground: #ffffff;
 
 	/* Tier Colors */
 	--color-tier-s: #dc2626;
@@ -24,8 +25,8 @@
 	--color-tier-e: #6b7280;
 
 	/* Platform Colors */
-	--color-platform-pc-bg: #1e3a5f;
-	--color-platform-pc-text: #60a5fa;
+	--color-platform-pc-bg: #4c1d95;
+	--color-platform-pc-text: #a78bfa;
 	--color-platform-ps5-bg: #1e293b;
 	--color-platform-ps5-text: #38bdf8;
 	--color-platform-xbox-bg: #14532d;
@@ -47,7 +48,7 @@
 }
 
 /* Dark Mode */
-[data-theme='dark'] {
+.dark {
 	/* Background Colors */
 	--color-background: #0f1419;
 	--color-surface: #1a1f27;
@@ -70,8 +71,8 @@
 	--color-tier-e: #6b7280;
 
 	/* Platform Colors (same for both modes) */
-	--color-platform-pc-bg: #1e3a5f;
-	--color-platform-pc-text: #60a5fa;
+	--color-platform-pc-bg: #4c1d95;
+	--color-platform-pc-text: #a78bfa;
 	--color-platform-ps5-bg: #1e293b;
 	--color-platform-ps5-text: #38bdf8;
 	--color-platform-xbox-bg: #14532d;
@@ -90,4 +91,9 @@
 	--color-genre-puzzle-text: #e879f9;
 	--color-genre-metroidvania-bg: #4c1d95;
 	--color-genre-metroidvania-text: #a78bfa;
+}
+
+/* Filter section table toggle button colors for theme support */
+.filter-section .view-toggle-button {
+	color: #ffffff !important; /* White text on accent background */
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions.js';
+	import { getTierDisplayName } from '$lib/utils/colorConstants.js';
 
 	interface Props {
 		type: 'platforms' | 'genres' | 'tiers';
@@ -62,7 +63,8 @@
 		if (selectedOptions.length === 0) {
 			return `All ${label}`;
 		} else if (selectedOptions.length === 1) {
-			return `${selectedOptions[0]}`;
+			const option = selectedOptions[0];
+			return type === 'tiers' ? getTierDisplayName(option) : option;
 		} else {
 			return `${selectedOptions.length} ${label}`;
 		}
@@ -83,9 +85,9 @@
 	// Get button color classes
 	function getButtonColorClasses(): string {
 		if (selectedOptions.length === 0) {
-			return 'bg-surface border-border hover:bg-accent hover:text-accent-foreground';
+			return 'bg-surface hover:bg-accent hover:text-accent-foreground';
 		} else {
-			return 'bg-accent text-accent-foreground border-accent';
+			return 'bg-accent text-accent-foreground';
 		}
 	}
 
@@ -113,7 +115,7 @@
 <div class="filter-dropdown" bind:this={dropdownElement}>
 	<button
 		type="button"
-		class="filter-button {getButtonColorClasses()} rounded-md border px-3 py-2 text-xs font-medium transition-colors min-h-[44px] flex items-center"
+		class="filter-button {getButtonColorClasses()} rounded-md px-3 py-2 text-xs font-medium transition-colors min-h-[44px] flex items-center"
 		class:selected={selectedOptions.length > 0}
 		onclick={() => (isOpen = !isOpen)}
 		onkeydown={handleKeydown}
@@ -124,7 +126,7 @@
 	</button>
 
 	{#if isOpen}
-		<div class="dropdown-panel bg-background border-border rounded-md border shadow-lg">
+		<div class="dropdown-panel rounded-md border shadow-lg">
 			<!-- Header -->
 			<div class="dropdown-header border-border border-b px-3 py-2">
 				<div class="flex items-center justify-between">
@@ -158,10 +160,7 @@
 						<span
 							class="option-badge {getOptionColor(option)} rounded px-2 py-1 text-xs font-medium"
 						>
-							{option}
-						</span>
-						<span class="option-text text-foreground text-sm">
-							{option}
+							{type === 'tiers' ? getTierDisplayName(option) : option}
 						</span>
 					</label>
 				{/each}
@@ -189,6 +188,7 @@
 		align-items: center;
 		gap: 4px;
 		white-space: nowrap;
+		color: var(--color-text-primary);
 	}
 
 	.filter-button.selected {
@@ -211,6 +211,8 @@
 		min-width: 220px;
 		z-index: 50;
 		animation: fadeIn 0.15s ease-out;
+		background-color: var(--color-background);
+		border-color: var(--color-border);
 	}
 
 	@keyframes fadeIn {
@@ -225,20 +227,20 @@
 	}
 
 	.dropdown-header {
-		background-color: rgba(0, 0, 0, 0.05);
-	}
-
-	:global(.light) .dropdown-header {
-		background-color: rgba(0, 0, 0, 0.02);
+		background-color: var(--color-surface);
+		border-color: var(--color-border);
+		color: var(--color-text-primary);
 	}
 
 	.dropdown-options {
 		min-height: 100px;
+		background-color: var(--color-background);
 	}
 
 	.option-item {
 		cursor: pointer;
 		user-select: none;
+		color: var(--color-text-primary);
 	}
 
 	.option-item:hover {
@@ -266,11 +268,7 @@
 	}
 
 	.empty-state {
-		color: #8b92a8;
-	}
-
-	:global(.light) .empty-state {
-		color: #6b7280;
+		color: var(--color-text-secondary);
 	}
 
 	/* Focus states */

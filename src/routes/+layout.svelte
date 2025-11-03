@@ -9,11 +9,12 @@
 	import Header from '$lib/components/Header.svelte';
 	import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
-import { filtersStore } from '$lib/stores/filters.js';
-import { gamesStore } from '$lib/stores/games.js';
-import { appStore } from '$lib/stores/app.js';
-import { modalStore } from '$lib/stores/modal.js';
-import { derived } from 'svelte/store';
+	import { filtersStore } from '$lib/stores/filters.js';
+	import { gamesStore } from '$lib/stores/games.js';
+	import { appStore } from '$lib/stores/app.js';
+	import { modalStore } from '$lib/stores/modal.js';
+	import { derived } from 'svelte/store';
+	import { Grid3X3, List } from 'lucide-svelte';
 
 	let { children } = $props();
 
@@ -197,7 +198,7 @@ import { derived } from 'svelte/store';
 	<NavigationTabs />
 
 	<!-- Search & Filter Section (Sticky) -->
-	<section class="bg-background border-border sticky top-[56px] z-30 border-b md:top-[60px]">
+	<section class="filter-section sticky top-[56px] z-30 border-b md:top-[60px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<!-- Search Bar -->
 			<SearchBar />
@@ -224,41 +225,24 @@ import { derived } from 'svelte/store';
 				/>
 				<RatingsFilter />
 				<button
-					class="bg-surface border-border hover:bg-accent hover:text-accent-foreground rounded-md border px-3 py-2 text-xs transition-colors min-h-[44px] flex items-center"
+					class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground rounded-md px-3 py-2 text-xs transition-colors min-h-[44px] flex items-center"
 					title="Reset all filters"
 					onclick={resetFilters}
 				>
 					↻ Reset
 				</button>
 
-				<div class="ml-auto flex items-center gap-2">
+				<div class="ml-auto flex items-center">
 					<button
-						class="rounded-md p-3 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-						class:bg-accent={currentViewMode === 'gallery'}
-						class:text-accent-foreground={currentViewMode === 'gallery'}
-						class:bg-surface={currentViewMode !== 'gallery'}
-						class:border-border={currentViewMode !== 'gallery'}
-						class:hover:bg-accent={currentViewMode !== 'gallery'}
-						class:hover:text-accent-foreground={currentViewMode !== 'gallery'}
-						class:border={currentViewMode !== 'gallery'}
-						title="Gallery view"
+						class="view-toggle-button rounded-md p-3 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800"
+						title={currentViewMode === 'gallery' ? 'Switch to table view' : 'Switch to gallery view'}
 						onclick={handleViewModeToggle}
 					>
-						⊞
-					</button>
-					<button
-						class="rounded-md p-3 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-						class:bg-accent={currentViewMode === 'table'}
-						class:text-accent-foreground={currentViewMode === 'table'}
-						class:bg-surface={currentViewMode !== 'table'}
-						class:border-border={currentViewMode !== 'table'}
-						class:hover:bg-accent={currentViewMode !== 'table'}
-						class:hover:text-accent-foreground={currentViewMode !== 'table'}
-						class:border={currentViewMode !== 'table'}
-						title="Table view"
-						onclick={handleViewModeToggle}
-					>
-						☰
+						{#if currentViewMode === 'gallery'}
+							<List size={18} class="text-gray-600 dark:text-gray-400" />
+						{:else}
+							<Grid3X3 size={18} class="text-gray-600 dark:text-gray-400" />
+						{/if}
 					</button>
 				</div>
 			</div>
@@ -266,7 +250,7 @@ import { derived } from 'svelte/store';
 	</section>
 
 	<!-- Content Area (Scrollable) -->
-	<main class="px-6 pt-[calc(56px+50px+100px)] pb-6 md:pt-[calc(60px+50px+100px)]">
+	<main style="background-color: var(--color-background);" class="px-6 pt-[calc(56px+50px+100px)] pb-6 md:pt-[calc(60px+50px+100px)]">
 		<div class="container mx-auto">
 			{@render children?.()}
 		</div>
@@ -305,6 +289,19 @@ import { derived } from 'svelte/store';
 	:global(.h-12\.5) {
 		height: 50px;
 	}
+
+	/* Filter section with proper background */
+	.filter-section {
+		background-color: var(--color-background);
+		border-color: var(--color-border);
+	}
+
+	/* Reset button text color */
+	.reset-button {
+		color: var(--color-text-primary);
+	}
+
+
 
 	/* Ensure proper spacing for content area */
 	:global(.pt-\[calc\(60px\+50px\+100px\)\]) {

@@ -136,9 +136,9 @@
 	// Get button color classes
 	function getButtonColorClasses(): string {
 		if (hasNonDefaultRanges()) {
-			return 'bg-accent text-accent-foreground border-accent';
+			return 'bg-accent text-accent-foreground';
 		} else {
-			return 'bg-surface border-border hover:bg-accent hover:text-accent-foreground';
+			return 'bg-surface hover:bg-accent hover:text-accent-foreground';
 		}
 	}
 
@@ -167,7 +167,7 @@
 	<!-- Dropdown trigger button -->
 	<button
 		type="button"
-		class="filter-button {getButtonColorClasses()} rounded-md border px-3 py-2 text-xs font-medium transition-colors min-h-[44px] flex items-center"
+		class="filter-button {getButtonColorClasses()} rounded-md px-3 py-2 text-xs font-medium transition-colors min-h-[44px] flex items-center"
 		onclick={() => (isOpen = !isOpen)}
 		onkeydown={handleKeydown}
 		{...getAriaAttributes()}
@@ -182,11 +182,12 @@
 			<!-- Header -->
 			<div class="dropdown-header border-border border-b px-3 py-2">
 				<div class="flex items-center justify-between">
-					<span class="text-foreground text-sm font-medium"> Filter by ratings </span>
+					<span class="text-sm font-medium" style="color: var(--color-text-primary);"> Filter by ratings </span>
 					{#if hasNonDefaultRanges()}
 						<button
 							type="button"
-							class="text-xs text-blue-400 transition-colors hover:text-blue-300"
+							class="text-xs"
+							style="color: #3b82f6;"
 							onclick={resetAllRatings}
 						>
 							Reset all
@@ -215,7 +216,7 @@
 
 				<!-- Help text -->
 				<div class="help-text border-border mt-4 border-t pt-3">
-					<p class="text-muted-foreground text-xs">
+					<p class="text-xs" style="color: var(--color-text-secondary);">
 						💡 Filter games by presentation, story, gameplay, and total scores. Only completed games
 						with ratings are included.
 					</p>
@@ -236,6 +237,7 @@
 		align-items: center;
 		gap: 4px;
 		white-space: nowrap;
+		color: var(--color-text-primary);
 	}
 
 	.dropdown-arrow {
@@ -251,6 +253,8 @@
 		max-width: 400px;
 		z-index: 50;
 		animation: fadeIn 0.15s ease-out;
+		background-color: var(--color-background);
+		border-color: var(--color-border);
 	}
 
 	@keyframes fadeIn {
@@ -265,11 +269,9 @@
 	}
 
 	.dropdown-header {
-		background-color: rgba(0, 0, 0, 0.05);
-	}
-
-	:global(.light) .dropdown-header {
-		background-color: rgba(0, 0, 0, 0.02);
+		background-color: var(--color-surface);
+		border-color: var(--color-border);
+		color: var(--color-text-primary);
 	}
 
 	.ratings-container {

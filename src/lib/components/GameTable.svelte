@@ -2,6 +2,7 @@
 	import { sortStore } from '../stores/sort.js';
 	import VirtualizedTable from './VirtualizedTable.svelte';
 	import { memoizeGameSort } from '../utils/memoize.js';
+	import { TIER_COLORS, PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
 	import type { Game } from '../types/game.js';
 
 	interface Props {
@@ -122,16 +123,6 @@
 		sortGames(games, sortState.sortBy, sortState.sortDirection)
 	);
 
-	// Tier colors
-	const tierColors: Record<string, string> = {
-		S: 'bg-[#dc2626] text-white',
-		A: 'bg-[#f97316] text-white',
-		B: 'bg-[#eab308] text-black',
-		C: 'bg-[#22c55e] text-white',
-		D: 'bg-[#06b6d4] text-white',
-		E: 'bg-[#6b7280] text-white'
-	};
-
 	// Handle row click
 	function handleRowClick(game: Game) {
 		if (onRowClick) {
@@ -146,7 +137,8 @@
 			<tr class="border-border border-b">
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('title')}
 					>
 						Cover {getSortIndicator('title')}
@@ -154,7 +146,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('title')}
 					>
 						Title {getSortIndicator('title')}
@@ -162,7 +155,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('year')}
 					>
 						Year {getSortIndicator('year')}
@@ -170,7 +164,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('platform')}
 					>
 						Platform {getSortIndicator('platform')}
@@ -178,7 +173,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('genre')}
 					>
 						Genre {getSortIndicator('genre')}
@@ -186,7 +182,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('tier')}
 					>
 						Tier {getSortIndicator('tier')}
@@ -194,7 +191,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('score')}
 					>
 						Ratings {getSortIndicator('score')}
@@ -202,7 +200,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('score')}
 					>
 						Score {getSortIndicator('score')}
@@ -210,7 +209,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('hours')}
 					>
 						Hours {getSortIndicator('hours')}
@@ -218,7 +218,8 @@
 				</th>
 				<th class="p-3 text-left">
 					<button
-						class="sort-header text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs font-semibold tracking-wider uppercase transition-colors"
+						class="sort-header"
+						style="color: var(--color-text-secondary);"
 						onclick={() => handleSort('finished')}
 					>
 						Finished {getSortIndicator('finished')}
@@ -253,15 +254,13 @@
 					<td class="text-muted-foreground p-3 text-sm">{game.year}</td>
 					<!-- Platform Column -->
 					<td class="p-3">
-						<span class="inline-flex rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+						<span class="inline-flex rounded px-2 py-1 text-xs font-medium {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
 							{game.platform}
 						</span>
 					</td>
 					<!-- Genre Column -->
 					<td class="p-3">
-						<span
-							class="inline-flex rounded bg-purple-600 px-2 py-1 text-xs font-medium text-white"
-						>
+						<span class="inline-flex rounded px-2 py-1 text-xs font-medium {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
 							{game.genre}
 						</span>
 					</td>
@@ -269,9 +268,9 @@
 					<td class="p-3">
 						{#if game.status === 'Completed' && game.tier}
 							<span
-								class="inline-flex rounded px-2 py-1 text-xs font-medium {tierColors[game.tier]}"
+								class="inline-flex rounded px-2 py-1 text-xs font-medium {TIER_COLORS[getTierDisplayName(game.tier)]}"
 							>
-								{game.tier}
+								{getTierDisplayName(game.tier)}
 							</span>
 						{:else}
 							<span class="text-muted-foreground text-sm">-</span>
@@ -340,6 +339,11 @@
 
 	.sort-header:hover {
 		color: inherit;
+	}
+
+	.table-row {
+		background-color: var(--color-surface);
+		color: var(--color-text-primary);
 	}
 
 	.table-row:hover {

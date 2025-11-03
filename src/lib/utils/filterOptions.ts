@@ -1,122 +1,21 @@
 // Filter utilities for color coding and options
 
 import type { Game } from '../types/game.js';
+import { PLATFORM_COLORS, GENRE_COLORS, TIER_COLORS } from './colorConstants.js';
 
-// Platform color mapping
+// Platform color mapping - uses centralized color constants
 export const getPlatformColor = (platform: string): string => {
-	const platformColors: Record<string, string> = {
-		// Console platforms
-		'PlayStation 5': 'bg-blue-600 text-white',
-		'PlayStation 4': 'bg-blue-500 text-white',
-		'PlayStation 3': 'bg-blue-400 text-white',
-		'PlayStation 2': 'bg-blue-300 text-black',
-		'PlayStation Vita': 'bg-purple-500 text-white',
-		PSP: 'bg-purple-400 text-white',
-
-		'Xbox Series X/S': 'bg-green-600 text-white',
-		'Xbox One': 'bg-green-500 text-white',
-		'Xbox 360': 'bg-green-400 text-white',
-		Xbox: 'bg-green-300 text-black',
-
-		'Nintendo Switch': 'bg-red-600 text-white',
-		'Nintendo 3DS': 'bg-red-500 text-white',
-		'Nintendo DS': 'bg-red-400 text-white',
-		'Wii U': 'bg-red-300 text-black',
-		Wii: 'bg-red-300 text-black',
-		GameCube: 'bg-red-200 text-black',
-		N64: 'bg-red-100 text-black',
-
-		// PC platforms
-		PC: 'bg-gray-700 text-white',
-		'Steam Deck': 'bg-teal-600 text-white',
-
-		// Mobile platforms
-		iOS: 'bg-gray-500 text-white',
-		Android: 'bg-green-500 text-white',
-
-		// Retro/Classic
-		'Sega Genesis': 'bg-indigo-500 text-white',
-		'Sega Saturn': 'bg-indigo-400 text-white',
-		'Sega Dreamcast': 'bg-indigo-300 text-black',
-		'Atari 2600': 'bg-orange-500 text-white',
-		Arcade: 'bg-yellow-500 text-black',
-
-		// Fallback
-		Web: 'bg-purple-600 text-white'
-	};
-
-	return platformColors[platform] || 'bg-gray-600 text-white';
+	return PLATFORM_COLORS[platform] || 'bg-[#6b7280] text-[#f9fafb]'; // Fallback with a colorful grey
 };
 
-// Genre color mapping
+// Genre color mapping - uses centralized color constants
 export const getGenreColor = (genre: string): string => {
-	const genreColors: Record<string, string> = {
-		// Action genres
-		Action: 'bg-red-600 text-white',
-		'Action-Adventure': 'bg-red-500 text-white',
-		Adventure: 'bg-orange-500 text-white',
-		Platformer: 'bg-orange-400 text-white',
-		Shooter: 'bg-red-700 text-white',
-		Fighting: 'bg-red-800 text-white',
-
-		// RPG genres
-		RPG: 'bg-purple-600 text-white',
-		JRPG: 'bg-purple-500 text-white',
-		'Action RPG': 'bg-purple-400 text-white',
-		MMORPG: 'bg-purple-700 text-white',
-		'Strategy RPG': 'bg-purple-300 text-black',
-
-		// Strategy genres
-		Strategy: 'bg-blue-600 text-white',
-		RTS: 'bg-blue-500 text-white',
-		TBS: 'bg-blue-400 text-white',
-		'4X': 'bg-blue-300 text-black',
-
-		// Simulation genres
-		Simulation: 'bg-green-600 text-white',
-		'Life Sim': 'bg-green-500 text-white',
-		Builder: 'bg-green-400 text-white',
-		Tycoon: 'bg-green-300 text-black',
-
-		// Sports genres
-		Sports: 'bg-emerald-600 text-white',
-		Racing: 'bg-emerald-500 text-white',
-		Football: 'bg-emerald-400 text-white',
-		Basketball: 'bg-emerald-300 text-black',
-
-		// Puzzle genres
-		Puzzle: 'bg-yellow-600 text-white',
-		'Match-3': 'bg-yellow-500 text-black',
-		Logic: 'bg-yellow-400 text-black',
-		'Brain Training': 'bg-yellow-300 text-black',
-
-		// Indie/Other
-		Indie: 'bg-pink-500 text-white',
-		Metroidvania: 'bg-pink-400 text-white',
-		Horror: 'bg-gray-800 text-white',
-		Educational: 'bg-cyan-500 text-white',
-		Casual: 'bg-cyan-400 text-white',
-		Music: 'bg-cyan-300 text-black',
-
-		// Fallback
-		Unknown: 'bg-gray-600 text-white'
-	};
-
-	return genreColors[genre] || 'bg-gray-600 text-white';
+	return GENRE_COLORS[genre] || 'bg-[#6b7280] text-[#f9fafb]'; // Fallback with a colorful grey
 };
 
-// Tier color mapping
+// Tier color mapping - uses centralized color constants
 export const getTierColor = (tier: string): string => {
-	const tierColors: Record<string, string> = {
-		S: 'bg-emerald-600 text-white', // S - Exceptional
-		A: 'bg-green-600 text-white', // A - Excellent
-		B: 'bg-blue-600 text-white', // B - Good
-		C: 'bg-yellow-600 text-black', // C - Average
-		D: 'bg-orange-600 text-white', // D - Below Average
-		E: 'bg-red-600 text-white' // E - Poor
-	};
-
-	return tierColors[tier] || 'bg-gray-600 text-white';
+	return TIER_COLORS[tier] || 'bg-gray-600 text-white';
 };
 
 // Get all unique platforms from games data
@@ -144,14 +43,33 @@ export const getAllGenres = (games: Game[]): string[] => {
 // Get all unique tiers from games data (only completed games)
 export const getAllTiers = (games: Game[]): string[] => {
 	const tiers = new Set<string>();
+
 	games.forEach((game) => {
 		if (game.status === 'Completed' && game.tier) {
 			tiers.add(game.tier);
 		}
 	});
-	// Return tiers in correct order (S, A, B, C, D, E)
-	const tierOrder = ['S', 'A', 'B', 'C', 'D', 'E'];
-	return tierOrder.filter((tier) => tiers.has(tier));
+
+	// Map single letter tiers to full names and return in correct order
+	const tierMapping: Record<string, string> = {
+		'S': 'S - Masterpiece',
+		'A': 'A - Amazing',
+		'B': 'B - Great',
+		'C': 'C - Good',
+		'D': 'D - Decent',
+		'E': 'E - Bad'
+	};
+
+	const result = Array.from(tiers)
+		.map(tier => tierMapping[tier])
+		.filter(Boolean)
+		.sort((a, b) => {
+			// Sort by tier order: S, A, B, C, D, E
+			const order = ['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad'];
+			return order.indexOf(a) - order.indexOf(b);
+		});
+
+	return result;
 };
 
 // Validation helpers

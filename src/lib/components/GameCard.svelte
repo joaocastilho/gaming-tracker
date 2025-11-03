@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { modalStore } from '../stores/modal.js';
 	import type { Game } from '../types/game.js';
+	import { PLATFORM_COLORS, GENRE_COLORS, TIER_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
 
 	interface Props {
 		game: Game;
@@ -22,113 +23,7 @@
 			: null
 	);
 
-	// Badge color mappings
-	const platformColors: Record<string, string> = {
-		PC: 'bg-[#1e3a5f] text-[#60a5fa]',
-		PS5: 'bg-[#1e293b] text-[#38bdf8]',
-		Xbox: 'bg-[#14532d] text-[#4ade80]',
-		Switch: 'bg-[#7c2d12] text-[#fb923c]'
-	};
 
-	const genreColors: Record<string, string> = {
-		'Action RPG': 'bg-[#2d1f3f] text-[#c084fc]',
-		'Story Adventure': 'bg-[#422006] text-[#fbbf24]',
-		'Action Adventure': 'bg-[#164e63] text-[#22d3ee]',
-		Puzzle: 'bg-[#3f1f4d] text-[#e879f9]',
-		Metroidvania: 'bg-[#4c1d95] text-[#a78bfa]',
-		RPG: 'bg-[#7c2d12] text-[#fb923c]',
-		Action: 'bg-[#dc2626] text-[#fca5a5]',
-		Adventure: 'bg-[#16a34a] text-[#86efac]',
-		Indie: 'bg-[#ca8a04] text-[#fde047]',
-		Strategy: 'bg-[#7c3aed] text-[#c4b5fd]',
-		Simulation: 'bg-[#0891b2] text-[#67e8f9]',
-		Sports: 'bg-[#be123c] text-[#f9a8d4]',
-		Racing: 'bg-[#b91c1c] text-[#fecaca]',
-		Shooter: 'bg-[#991b1b] text-[#fca5a5]',
-		Platformer: 'bg-[#c2410c] text-[#fdba74]',
-		Horror: 'bg-[#581c87] text-[#d8b4fe]',
-		'Visual Novel': 'bg-[#be185d] text-[#f9a8d4]',
-		JRPG: 'bg-[#7c2d12] text-[#fb923c]',
-		'Western RPG': 'bg-[#92400e] text-[#fed7aa]',
-		Roguelike: 'bg-[#7f1d1d] text-[#fecaca]',
-		'Battle Royale': 'bg-[#dc2626] text-[#fca5a5]',
-		MOBA: 'bg-[#7c2d12] text-[#fb923c]',
-		MMORPG: 'bg-[#5b21b6] text-[#c4b5fd]',
-		'Card Game': 'bg-[#15803d] text-[#86efac]',
-		Music: 'bg-[#7c3aed] text-[#c4b5fd]',
-		Party: 'bg-[#ea580c] text-[#fed7aa]',
-		'Board Game': 'bg-[#059669] text-[#a7f3d0]',
-		Trivia: 'bg-[#0891b2] text-[#67e8f9]',
-		Word: 'bg-[#7c3aed] text-[#c4b5fd]',
-		Casual: 'bg-[#16a34a] text-[#86efac]',
-		Arcade: 'bg-[#dc2626] text-[#fca5a5]',
-		Pinball: 'bg-[#b91c1c] text-[#fecaca]',
-		'Flight Simulator': 'bg-[#0891b2] text-[#67e8f9]',
-		'Space Simulator': 'bg-[#1e40af] text-[#93c5fd]',
-		'Life Simulator': 'bg-[#059669] text-[#a7f3d0]',
-		'Vehicle Simulator': 'bg-[#dc2626] text-[#fca5a5]',
-		'City Builder': 'bg-[#7c2d12] text-[#fb923c]',
-		'God Game': 'bg-[#5b21b6] text-[#c4b5fd]',
-		'Tower Defense': 'bg-[#16a34a] text-[#86efac]',
-		RTS: 'bg-[#92400e] text-[#fed7aa]',
-		'Turn-Based Strategy': 'bg-[#7c3aed] text-[#c4b5fd]',
-		'4X': 'bg-[#dc2626] text-[#fca5a5]',
-		Wargame: 'bg-[#b91c1c] text-[#fecaca]',
-		Management: 'bg-[#0891b2] text-[#67e8f9]',
-		Tycoon: 'bg-[#16a34a] text-[#86efac]',
-		Farming: 'bg-[#15803d] text-[#86efac]',
-		'Dating Sim': 'bg-[#be185d] text-[#f9a8d4]',
-		Romance: 'bg-[#dc2626] text-[#fca5a5]',
-		Comedy: 'bg-[#ea580c] text-[#fed7aa]',
-		Drama: 'bg-[#7c2d12] text-[#fb923c]',
-		Mystery: 'bg-[#581c87] text-[#d8b4fe]',
-		Thriller: 'bg-[#7f1d1d] text-[#fecaca]',
-		'Sci-Fi': 'bg-[#1e40af] text-[#93c5fd]',
-		Fantasy: 'bg-[#7c3aed] text-[#c4b5fd]',
-		Historical: 'bg-[#92400e] text-[#fed7aa]',
-		'Alternate History': 'bg-[#b91c1c] text-[#fecaca]',
-		Cyberpunk: 'bg-[#0891b2] text-[#67e8f9]',
-		'Post-Apocalyptic': 'bg-[#dc2626] text-[#fca5a5]',
-		Steampunk: 'bg-[#7c2d12] text-[#fb923c]',
-		Medieval: 'bg-[#16a34a] text-[#86efac]',
-		Modern: 'bg-[#059669] text-[#a7f3d0]',
-		Future: 'bg-[#1e40af] text-[#93c5fd]',
-		Space: 'bg-[#581c87] text-[#d8b4fe]',
-		Underwater: 'bg-[#0891b2] text-[#67e8f9]',
-		'Wild West': 'bg-[#92400e] text-[#fed7aa]',
-		Superhero: 'bg-[#dc2626] text-[#fca5a5]',
-		Anime: 'bg-[#be185d] text-[#f9a8d4]',
-		Cartoon: 'bg-[#ea580c] text-[#fed7aa]',
-		Realistic: 'bg-[#059669] text-[#a7f3d0]',
-		Stylized: 'bg-[#7c3aed] text-[#c4b5fd]',
-		'Pixel Art': 'bg-[#16a34a] text-[#86efac]',
-		'3D': 'bg-[#0891b2] text-[#67e8f9]',
-		'2.5D': 'bg-[#7c2d12] text-[#fb923c]',
-		Isometric: 'bg-[#5b21b6] text-[#c4b5fd]',
-		'Top-Down': 'bg-[#15803d] text-[#86efac]',
-		'Side-Scroll': 'bg-[#dc2626] text-[#fca5a5]',
-		'First-Person': 'bg-[#b91c1c] text-[#fecaca]',
-		'Third-Person': 'bg-[#ea580c] text-[#fed7aa]',
-		VR: 'bg-[#0891b2] text-[#67e8f9]',
-		'Co-op': 'bg-[#16a34a] text-[#86efac]',
-		Multiplayer: 'bg-[#7c2d12] text-[#fb923c]',
-		'Single Player': 'bg-[#059669] text-[#a7f3d0]',
-		Online: 'bg-[#1e40af] text-[#93c5fd]',
-		Local: 'bg-[#92400e] text-[#fed7aa]',
-		Competitive: 'bg-[#dc2626] text-[#fca5a5]',
-		Cooperative: 'bg-[#15803d] text-[#86efac]',
-		PvP: 'bg-[#b91c1c] text-[#fecaca]',
-		PvE: 'bg-[#16a34a] text-[#86efac]'
-	};
-
-	const tierColors: Record<string, string> = {
-		S: 'bg-[#dc2626] text-white',
-		A: 'bg-[#f97316] text-white',
-		B: 'bg-[#eab308] text-black',
-		C: 'bg-[#22c55e] text-white',
-		D: 'bg-[#06b6d4] text-white',
-		E: 'bg-[#6b7280] text-white'
-	};
 
 	// Format date for display
 	function formatDate(dateString: string): string {
@@ -159,6 +54,7 @@
 
 <button
 	class="game-card"
+	style="background-color: var(--color-surface); color: var(--color-text-primary);"
 	onclick={() => modalStore.openViewModal(game)}
 	onkeydown={handleKeyDown}
 	aria-label="View details for {game.title}"
@@ -188,8 +84,8 @@
 		{/if}
 
 		{#if game.status === 'Completed' && game.tier}
-			<div class="tier-badge {tierColors[game.tier]}">
-				{game.tier}
+			<div class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}">
+				{getTierDisplayName(game.tier)}
 			</div>
 		{/if}
 	</div>
@@ -204,10 +100,10 @@
 
 		<!-- Platform and Genre Badges -->
 		<div class="badges-section">
-			<span class="platform-badge {platformColors[game.platform] || 'bg-gray-600 text-white'}">
+			<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
 				{game.platform}
 			</span>
-			<span class="genre-badge {genreColors[game.genre] || 'bg-gray-600 text-white'}">
+			<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
 				{game.genre}
 			</span>
 		</div>
@@ -259,10 +155,6 @@
 		border-radius: 12px;
 		overflow: hidden;
 
-		/* Dark mode colors */
-		background-color: #1a1f27;
-		color: #ffffff;
-
 		/* Shadow */
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 
@@ -281,12 +173,6 @@
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 		outline: 2px solid #60a5fa;
 		outline-offset: 2px;
-	}
-
-	/* Light mode */
-	:global(.light) .game-card {
-		background-color: #ffffff;
-		color: #1a1a1a;
 	}
 
 	/* Cover Container */

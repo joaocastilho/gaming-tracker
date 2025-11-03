@@ -1,10 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-	darkMode: ['class'],
+	darkMode: 'class',
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
 		extend: {
 			colors: {
+				// Theme-aware colors that use CSS variables
+				background: 'var(--color-background)',
+				surface: 'var(--color-surface)',
+				border: 'var(--color-border)',
+				foreground: 'var(--color-text-primary)',
+				'accent': 'var(--color-accent)',
+				'accent-foreground': '#ffffff',
+				'muted-foreground': 'var(--color-text-secondary)',
+
 				// Dark Mode Colors
 				dark: {
 					bg: '#0f1419',
@@ -23,8 +32,7 @@ export default {
 					'text-secondary': '#4b5563',
 					'text-tertiary': '#6b7280'
 				},
-				// Custom accent color
-				accent: '#3b82f6',
+				// Custom accent color (already defined above as CSS variable)
 				// Tier Colors for Game Ratings
 				tier: {
 					s: '#dc2626', // S - Masterpiece

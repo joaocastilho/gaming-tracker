@@ -177,7 +177,7 @@
 	.slider-label {
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: var(--foreground);
+		color: var(--color-text-primary);
 	}
 
 	.reset-button {
@@ -306,18 +306,18 @@
 		justify-content: space-between;
 		align-items: center;
 		font-size: 0.875rem;
-		color: var(--muted-foreground);
+		color: var(--color-text-secondary);
 	}
 
 	.value-display {
-		background-color: var(--surface);
+		background-color: var(--color-surface);
 		padding: 2px 6px;
 		border-radius: 4px;
 		font-weight: 500;
-		color: var(--foreground);
+		color: var(--color-text-primary);
 		min-width: 24px;
 		text-align: center;
-		border: 1px solid var(--border);
+		border: 1px solid var(--color-border);
 	}
 
 	.range-indicator {
