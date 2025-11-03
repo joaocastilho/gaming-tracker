@@ -310,14 +310,19 @@
 	/* Subtitle Section */
 	.subtitle-section {
 		margin-bottom: 4px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		text-align: center;
+		min-height: 1.2rem; /* Consistent line height */
 	}
 
 	.game-subtitle {
-		font-size: 0.7rem;
-		color: #8b92a8;
-		font-style: italic;
-		font-weight: 500;
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+		margin: 0;
+		line-height: 1.2;
 	}
 
 	:global(.light) .game-subtitle {
