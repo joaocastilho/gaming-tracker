@@ -30,6 +30,42 @@
 
 	let modalElement = $state<HTMLDivElement>();
 	let coverImage = $state<HTMLImageElement>();
+	let titleElement = $state<HTMLHeadingElement>();
+
+	// Extract parenthetical content from title for subtitle display
+	let titleParts = $derived(() => {
+		if (!modalState.activeGame?.title) return { mainTitle: '', subtitle: null };
+		const match = modalState.activeGame.title.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+		if (match) {
+			return {
+				mainTitle: match[1].trim(),
+				subtitle: `(${match[2]})`
+			};
+		}
+		return {
+			mainTitle: modalState.activeGame.title,
+			subtitle: null
+		};
+	});
+
+	// Dynamic font size for title based on length
+	let titleFontSize = $derived(() => {
+		if (!modalState.activeGame?.title) return 'text-2xl lg:text-3xl';
+		const length = modalState.activeGame.title.length;
+		if (length > 50) return 'text-base lg:text-lg';
+		if (length > 35) return 'text-lg lg:text-xl';
+		if (length > 20) return 'text-xl lg:text-2xl';
+		return 'text-2xl lg:text-3xl';
+	});
+
+	// Dynamic font size for subtitle based on title size
+	let subtitleFontSize = $derived(() => {
+		if (!modalState.activeGame?.title) return '1.2rem';
+		const length = modalState.activeGame.title.length;
+		if (length > 50) return '0.8rem'; // Smaller for very long titles
+		if (length > 30) return '1.0rem'; // Smaller for medium titles
+		return '1.2rem'; // Smaller for short titles
+	});
 
 	// Get current game index for navigation
 	let currentGameIndex = $derived(() => {
@@ -164,7 +200,7 @@
 
 		<!-- Modal Content -->
 		<div
-			class="relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-2xl dark:bg-gray-900"
+			class="relative h-[600px] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-2xl dark:bg-gray-900"
 		>
 			<!-- Close Button -->
 			<button
@@ -177,12 +213,12 @@
 
 			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
 				<!-- Cover Section -->
-				<div class="relative">
+				<div class="relative rounded-l-lg overflow-hidden">
 					<img
 						bind:this={coverImage}
 						src="/{modalState.activeGame.coverImage}"
 						alt="{modalState.activeGame.title} cover"
-						class="w-full h-full rounded-l-lg object-cover"
+						class="w-full h-full object-cover"
 						style="width: 400px; height: 600px;"
 						loading="lazy"
 					/>
@@ -198,13 +234,18 @@
 				</div>
 
 				<!-- Info Section -->
-				<div class="max-h-[60vh] overflow-y-auto p-6 lg:max-h-none lg:p-8">
+				<div class="max-h-[60vh] overflow-y-auto pt-4 pb-6 pl-6 pr-6 lg:pt-6 lg:pb-8 lg:pl-8 lg:pr-8">
 					<!-- Title -->
 					<h1
 						id="modal-title"
-						class="mb-4 text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white truncate"
+						class="text-3xl font-bold text-gray-900 dark:text-white flex flex-col justify-center"
+						style="height: 65px; margin-bottom: 15px;"
 					>
-						{modalState.activeGame.title}
+						{titleParts().mainTitle}
+						{#if titleParts().subtitle}
+							<br>
+							<span class="font-semibold text-gray-700 dark:text-gray-300" style="font-size: 1.2rem; line-height: 1.2;">{titleParts().subtitle}</span>
+						{/if}
 					</h1>
 
 					<!-- Meta Badges -->
@@ -401,7 +442,7 @@
 								<div class="flex items-center justify-center gap-2">
 									<Trophy size={24} class="text-gray-400" />
 									<span class="text-lg font-bold text-gray-900 dark:text-white">
-										Complete the game to see your score
+										Game to be completed
 									</span>
 								</div>
 							</div>
@@ -412,3 +453,6 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+</style>

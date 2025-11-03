@@ -39,6 +39,22 @@
 		};
 	});
 
+	// Dynamic font size calculation for title
+	let titleFontSize = $derived(() => {
+		const title = titleParts().mainTitle;
+		const baseSize = 0.95; // Base font size in rem
+		const minSize = 0.6; // Minimum font size in rem
+		const maxLength = 25; // Length at which we start reducing font size
+
+		if (title.length <= maxLength) {
+			return baseSize;
+		}
+
+		// Calculate reduction factor based on length
+		const reduction = Math.min((title.length - maxLength) * 0.02, baseSize - minSize);
+		return Math.max(baseSize - reduction, minSize);
+	});
+
 
 
 	// Format date for display
@@ -110,10 +126,9 @@
 	<div class="game-info">
 		<!-- Title with subtitle (if exists) -->
 		<div class="title-section">
-			<h3 class="game-title">
+			<h3 class="game-title" style="font-size: {titleFontSize()}rem;">
 				{titleParts().mainTitle}
 				{#if titleParts().subtitle}
-					<br>
 					<span class="game-subtitle">{titleParts().subtitle}</span>
 				{/if}
 			</h3>
@@ -289,7 +304,7 @@
 	/* Title Section */
 	.title-section {
 		margin-bottom: 2px;
-		min-height: 2.4rem; /* 2 lines at 1.2 line-height */
+		min-height: 1.2rem; /* Single line at 1.2 line-height */
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -297,15 +312,13 @@
 	}
 
 	.game-title {
-		font-size: 0.95rem;
 		font-weight: 600;
 		margin: 0;
 		line-height: 1.2;
 		word-wrap: break-word;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
 		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		text-align: center;
 		width: 100%;
 	}
@@ -451,10 +464,6 @@
 
 	/* Responsive Design */
 	@media (max-width: 768px) {
-		.game-title {
-			font-size: 0.9rem;
-		}
-
 		.game-year {
 			font-size: 0.75rem;
 		}
@@ -478,11 +487,7 @@
 		}
 
 		.title-section {
-			min-height: 2.04rem; /* Adjusted for smaller font size */
-		}
-
-		.game-title {
-			font-size: 0.85rem;
+			min-height: 1.0rem; /* Adjusted for smaller screens */
 		}
 
 		.platform-genre-year-section {
