@@ -310,7 +310,7 @@
 	.game-subtitle {
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: var(--color-text-primary);
+		color: #8b92a8;
 		line-height: 1.2;
 	}
 
