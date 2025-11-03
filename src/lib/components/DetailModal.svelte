@@ -208,37 +208,36 @@
 					</h1>
 
 					<!-- Meta Badges -->
-					<div class="mb-4 flex flex-wrap gap-2">
-						<span
-							class="rounded-md px-3 py-1 text-sm font-medium text-white {getPlatformColor(
-								modalState.activeGame.platform
-							)}"
-						>
-							{modalState.activeGame.platform}
-						</span>
-						<span
-							class="rounded-md px-3 py-1 text-sm font-medium text-white {getGenreColor(
-								modalState.activeGame.genre
-							)}"
-						>
-							{modalState.activeGame.genre}
-						</span>
-						{#if modalState.activeGame.coOp === 'Yes'}
-							<span class="rounded-md bg-blue-600 px-3 py-1 text-sm font-medium text-white">
-								Co-op
+					<div class="mb-6 flex items-center justify-between">
+						<div class="flex flex-wrap gap-2">
+							<span
+								class="rounded-md px-3 py-1 text-sm font-medium text-white {getPlatformColor(
+									modalState.activeGame.platform
+								)}"
+							>
+								{modalState.activeGame.platform}
+							</span>
+							<span
+								class="rounded-md px-3 py-1 text-sm font-medium text-white {getGenreColor(
+									modalState.activeGame.genre
+								)}"
+							>
+								{modalState.activeGame.genre}
+							</span>
+							{#if modalState.activeGame.coOp === 'Yes'}
+								<span class="rounded-md bg-blue-600 px-3 py-1 text-sm font-medium text-white">
+									Co-op
+								</span>
+							{/if}
+						</div>
+
+						<!-- Tier Level -->
+						{#if modalState.activeGame.tier}
+							<span class="rounded-md px-3 py-1 text-sm font-semibold text-white {getTierColor(modalState.activeGame.tier)}">
+								{getTierDisplayName(modalState.activeGame.tier)}
 							</span>
 						{/if}
 					</div>
-
-					<!-- Tier Level -->
-					{#if modalState.activeGame.tier}
-						<div class="mb-6">
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Tier Level</div>
-							<span class="inline-block rounded-md px-3 py-1 text-sm font-semibold text-white {getTierColor(modalState.activeGame.tier)}">
-								{getTierDisplayName(modalState.activeGame.tier)}
-							</span>
-						</div>
-					{/if}
 
 					<!-- Detail Grid -->
 					<div class="mb-8 grid grid-cols-2 gap-4">
