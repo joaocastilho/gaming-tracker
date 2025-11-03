@@ -327,7 +327,7 @@
 	}
 
 	.game-year {
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 		color: #8b92a8;
 		flex-shrink: 0;
 		white-space: nowrap;
@@ -364,7 +364,7 @@
 		display: flex;
 		align-items: center;
 		gap: 3px;
-		font-size: 0.75rem;
+		font-size: 0.85rem;
 		color: #8b92a8;
 		min-width: 0;
 		flex: 1;
@@ -382,13 +382,13 @@
 
 	.rating-score {
 		font-weight: 700;
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 	}
 
 	.total-score {
 		font-weight: 700;
 		color: #ffffff;
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 	}
 
 	:global(.light) .total-score {
@@ -400,7 +400,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 		color: #8b92a8;
 	}
 
