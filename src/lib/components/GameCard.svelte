@@ -2,6 +2,7 @@
 	import { modalStore } from '../stores/modal.js';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, TIER_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
+	import { Presentation, NotebookPen, Award, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
@@ -131,7 +132,7 @@
 					{game.genre}
 				</span>
 				<div class="total-score">
-					<span class="rating-icon" aria-label="Total score" title="Total score">🏆</span>
+					<span class="rating-icon" aria-label="Total score">🏆</span>
 					<span class="rating-score">{totalScore ?? '-'}</span>
 				</div>
 			</div>
@@ -140,15 +141,15 @@
 		<!-- Ratings Section (always present) -->
 		<div class="ratings-section">
 			<div class="rating-item">
-				<span class="rating-icon" aria-label="Presentation rating" title="Presentation">👁️</span>
+				<Presentation class="rating-icon" aria-label="Presentation rating" size={20} />
 				<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
 			</div>
 			<div class="rating-item">
-				<span class="rating-icon" aria-label="Story rating" title="Story">✏️</span>
+				<NotebookPen class="rating-icon" aria-label="Story rating" size={20} />
 				<span class="rating-score">{game.ratingStory ?? '-'}</span>
 			</div>
 			<div class="rating-item">
-				<span class="rating-icon" aria-label="Gameplay rating" title="Gameplay">�</span>
+				<Gamepad2 class="rating-icon" aria-label="Gameplay rating" size={20} />
 				<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
 			</div>
 		</div>
@@ -156,11 +157,11 @@
 		<!-- Time/Date Section (always present) -->
 		<div class="time-date-section">
 			<div class="time-item">
-				<span class="time-icon" aria-label="Time" title="Time played / Time to beat">⏱️</span>
+				<Timer class="time-icon" aria-label="Time played / Time to beat" size={20} />
 				<span class="time-text">{game.status === 'Completed' ? (game.hoursPlayed ?? 'N/A') : (game.timeToBeat ?? 'N/A')}</span>
 			</div>
 			<div class="date-item">
-				<span class="date-icon" aria-label="Date" title="Completion date">📅</span>
+				<CalendarDays class="date-icon" aria-label="Completion date" size={20} />
 				<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span>
 			</div>
 		</div>
@@ -282,7 +283,7 @@
 		padding: 12px;
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
+		gap: 12px;
 	}
 
 	/* Title Section */
@@ -366,17 +367,19 @@
 		display: flex;
 		gap: 8px;
 		flex-wrap: wrap;
+		margin-top: 5px;
+		margin-bottom: 5px;
 	}
 
 	.rating-item {
 		display: flex;
 		align-items: center;
-		gap: 3px;
+		gap: 8px;
 		font-size: 0.85rem;
 		color: #8b92a8;
 		min-width: 0;
 		flex: 1;
-		justify-content: flex-start;
+		justify-content: center;
 	}
 
 	:global(.light) .rating-item {
@@ -384,23 +387,30 @@
 	}
 
 	.rating-icon {
-		font-size: 1rem;
+		font-size: 1.25rem;
 		flex-shrink: 0;
 	}
 
 	.rating-score {
 		font-weight: 700;
-		font-size: 0.9rem;
+		font-size: 1rem;
 	}
 
 	.total-score {
+		display: flex;
+		align-items: center;
 		font-weight: 700;
 		color: #ffffff;
 		font-size: 0.9rem;
+		gap: 4px;
 	}
 
 	.total-score .rating-icon {
-		font-size: 1.25rem;
+		font-size: 1.1rem;
+	}
+
+	.total-score .rating-score {
+		font-size: 1.2rem;
 	}
 
 	:global(.light) .total-score {
@@ -411,7 +421,7 @@
 	.time-date-section {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		font-size: 0.9rem;
 		color: #8b92a8;
 	}
@@ -423,8 +433,7 @@
 	.time-item,
 	.date-item {
 		display: flex;
-		align-items: center;
-		gap: 4px;
+		gap: 6px;
 	}
 
 	.time-icon {

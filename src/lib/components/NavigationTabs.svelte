@@ -113,9 +113,10 @@
 		display: flex;
 		justify-content: center;
 		width: 100%;
-		height: 50px;
-		background-color: #0a0d11;
+		height: 52px;
+		background-color: #0f1419;
 		padding: 0 24px;
+		border-bottom: 1px solid rgba(42, 47, 58, 0.5);
 
 		/* Positioning */
 		position: sticky;
@@ -129,6 +130,7 @@
 	/* Light mode overrides */
 	:global(.light) .navigation-tabs {
 		background-color: #ffffff;
+		border-bottom: 1px solid rgba(229, 231, 235, 0.8);
 	}
 
 	.tabs-list {
@@ -154,16 +156,16 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		padding: 14px 20px;
+		padding: 12px 16px;
 		border: none;
 		background: none;
 		cursor: pointer;
 
 		/* Typography */
-		font-size: 0.95rem;
+		font-size: 0.9rem;
 		font-weight: 500;
-		line-height: 1;
-		color: #6b7280;
+		line-height: 1.2;
+		color: #94a3b8;
 		text-decoration: none;
 
 		/* Border for active state */
@@ -171,41 +173,33 @@
 		transition: all 0.2s ease;
 
 		/* Minimum touch target size */
-		min-height: 44px;
-		min-width: 80px;
+		min-height: 40px;
+		min-width: 70px;
 	}
 
 	.tab-button:hover {
-		color: #8b92a8;
-		background-color: rgba(42, 47, 58, 0.3);
+		color: #cbd5e1;
+		background-color: rgba(255, 255, 255, 0.05);
 	}
 
 	.tab-button:focus {
-		outline: 2px solid #3b82f6;
-		outline-offset: -2px;
-		border-radius: 2px;
+		outline: none;
 	}
 
 	/* Active tab styling */
 	.tab-button.active {
 		color: #ffffff;
 		border-bottom-color: #3b82f6;
+		font-weight: 600;
 	}
 
 	/* Light mode active tab */
 	:global(.light) .tab-button.active {
-		color: #1a1a1a;
+		color: #1e293b;
 	}
 
 	.tab-button.active:hover {
-		color: #ffffff;
-		background-color: rgba(59, 130, 246, 0.1);
-	}
-
-	/* Light mode active tab hover */
-	:global(.light) .tab-button.active:hover {
-		color: #1a1a1a;
-		background-color: rgba(59, 130, 246, 0.1);
+		background-color: rgba(59, 130, 246, 0.08);
 	}
 
 	/* Tab content */
@@ -215,14 +209,34 @@
 	}
 
 	.tab-count {
-		/* Subtle count styling */
-		color: #8b92a8;
-		font-size: 0.85rem;
-		font-weight: 400;
+		/* Modern count styling with background */
+		background: rgba(71, 85, 105, 0.6);
+		color: #cbd5e1;
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 2px 6px;
+		border-radius: 10px;
+		min-width: 18px;
+		text-align: center;
+		letter-spacing: 0.025em;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.tab-button.active .tab-count {
-		color: inherit; /* Inherit active tab color */
+		background: rgba(255, 255, 255, 0.2);
+		color: #ffffff;
+		font-weight: 700;
+	}
+
+	/* Light mode count styling */
+	:global(.light) .tab-count {
+		background: rgba(148, 163, 184, 0.4);
+		color: #64748b;
+	}
+
+	:global(.light) .tab-button.active .tab-count {
+		background: rgba(59, 130, 246, 0.2);
+		color: #1e40af;
 	}
 
 	/* Responsive design */
