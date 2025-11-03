@@ -1,0 +1,5650 @@
+{
+  "generatedAt": "2025-11-02T23:06:57.869Z",
+  "totalImages": 564,
+  "optimizedImages": 564,
+  "totalSizeBefore": 498193307,
+  "totalSizeAfter": 45783206,
+  "totalTimeMs": 73144,
+  "results": [
+    {
+      "originalFilename": "1000xresist.png",
+      "gameId": "1000xresist",
+      "gameTitle": "1000xRESIST",
+      "status": "success",
+      "originalSize": 758741,
+      "optimizedSize": 71122,
+      "sizeReduction": 90.62631385413468,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "13-sentinels-aegis-rim.png",
+      "gameId": "13-sentinels-aegis-rim",
+      "gameTitle": "13 Sentinels: Aegis Rim",
+      "status": "success",
+      "originalSize": 783359,
+      "optimizedSize": 92498,
+      "sizeReduction": 88.19213157696535,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "20-minutes-till-dawn.png",
+      "gameId": "20-minutes-till-dawn",
+      "gameTitle": "20 Minutes Till Dawn",
+      "status": "success",
+      "originalSize": 131822,
+      "optimizedSize": 37016,
+      "sizeReduction": 71.91970991185083,
+      "processingTime": 68
+    },
+    {
+      "originalFilename": "a-hat-in-time.png",
+      "gameId": "a-hat-in-time",
+      "gameTitle": "A Hat in Time (Unlimited Edition)",
+      "status": "success",
+      "originalSize": 859726,
+      "optimizedSize": 104000,
+      "sizeReduction": 87.90312262278913,
+      "processingTime": 121
+    },
+    {
+      "originalFilename": "a-highland-song.png",
+      "gameId": "a-highland-song",
+      "gameTitle": "A Highland Song",
+      "status": "success",
+      "originalSize": 466065,
+      "optimizedSize": 39182,
+      "sizeReduction": 91.59301814124639,
+      "processingTime": 74
+    },
+    {
+      "originalFilename": "a-plague-tale-innocence.png",
+      "gameId": "a-plague-tale-innocence",
+      "gameTitle": "A Plague Tale: Innocence",
+      "status": "success",
+      "originalSize": 580702,
+      "optimizedSize": 52774,
+      "sizeReduction": 90.91203405533302,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "a-plague-tale-requiem.png",
+      "gameId": "a-plague-tale-requiem",
+      "gameTitle": "A Plague Tale: Requiem",
+      "status": "success",
+      "originalSize": 724280,
+      "optimizedSize": 61044,
+      "sizeReduction": 91.57176782459823,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "a-short-hike.png",
+      "gameId": "a-short-hike",
+      "gameTitle": "A Short Hike",
+      "status": "success",
+      "originalSize": 883628,
+      "optimizedSize": 85240,
+      "sizeReduction": 90.35340663718216,
+      "processingTime": 115
+    },
+    {
+      "originalFilename": "a-way-out.png",
+      "gameId": "a-way-out",
+      "gameTitle": "A Way Out",
+      "status": "success",
+      "originalSize": 665663,
+      "optimizedSize": 57216,
+      "sizeReduction": 91.40465971520123,
+      "processingTime": 98
+    },
+    {
+      "originalFilename": "abzu.png",
+      "gameId": "abzu",
+      "gameTitle": "ABZÛ",
+      "status": "success",
+      "originalSize": 391479,
+      "optimizedSize": 31502,
+      "sizeReduction": 91.9530804972936,
+      "processingTime": 69
+    },
+    {
+      "originalFilename": "ace-combat-04-shattered-skies.png",
+      "gameId": "ace-combat-04-shattered-skies",
+      "gameTitle": "Ace Combat 04: Shattered Skies",
+      "status": "success",
+      "originalSize": 487174,
+      "optimizedSize": 41920,
+      "sizeReduction": 91.39527150463694,
+      "processingTime": 82
+    },
+    {
+      "originalFilename": "ace-combat-5-the-unsung-war.png",
+      "gameId": "ace-combat-5-the-unsung-war",
+      "gameTitle": "Ace Combat 5: The Unsung War",
+      "status": "success",
+      "originalSize": 641841,
+      "optimizedSize": 62866,
+      "sizeReduction": 90.2053623872579,
+      "processingTime": 105
+    },
+    {
+      "originalFilename": "ace-combat-6-fires-of-liberation.png",
+      "gameId": "ace-combat-6-fires-of-liberation",
+      "gameTitle": "Ace Combat 6: Fires of Liberation",
+      "status": "success",
+      "originalSize": 900774,
+      "optimizedSize": 93128,
+      "sizeReduction": 89.6613356957461,
+      "processingTime": 631
+    },
+    {
+      "originalFilename": "ace-combat-7-skies-unknown.png",
+      "gameId": "ace-combat-7-skies-unknown",
+      "gameTitle": "Ace Combat 7: Skies Unknown",
+      "status": "success",
+      "originalSize": 658172,
+      "optimizedSize": 46196,
+      "sizeReduction": 92.98116601739363,
+      "processingTime": 88
+    },
+    {
+      "originalFilename": "ace-combat-zero-the-belkan-war.png",
+      "gameId": "ace-combat-zero-the-belkan-war",
+      "gameTitle": "Ace Combat Zero: The Belkan War",
+      "status": "success",
+      "originalSize": 860325,
+      "optimizedSize": 95744,
+      "sizeReduction": 88.87118240199925,
+      "processingTime": 119
+    },
+    {
+      "originalFilename": "afterimage.png",
+      "gameId": "afterimage",
+      "gameTitle": "Afterimage",
+      "status": "success",
+      "originalSize": 735660,
+      "optimizedSize": 72428,
+      "sizeReduction": 90.15469102574559,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "ai-the-somnium-files.png",
+      "gameId": "ai-the-somnium-files",
+      "gameTitle": "AI: The Somnium Files",
+      "status": "success",
+      "originalSize": 931252,
+      "optimizedSize": 151126,
+      "sizeReduction": 83.77173955062646,
+      "processingTime": 146
+    },
+    {
+      "originalFilename": "alan-wake-2.png",
+      "gameId": "alan-wake-2",
+      "gameTitle": "Alan Wake 2",
+      "status": "success",
+      "originalSize": 927666,
+      "optimizedSize": 114856,
+      "sizeReduction": 87.61881970450571,
+      "processingTime": 143
+    },
+    {
+      "originalFilename": "alan-wake.png",
+      "gameId": "alan-wake",
+      "gameTitle": "Alan Wake (Remastered)",
+      "status": "success",
+      "originalSize": 326571,
+      "optimizedSize": 19548,
+      "sizeReduction": 94.01416537292043,
+      "processingTime": 58
+    },
+    {
+      "originalFilename": "alpha-protocol.png",
+      "gameId": "alpha-protocol",
+      "gameTitle": "Alpha Protocol",
+      "status": "success",
+      "originalSize": 628464,
+      "optimizedSize": 81404,
+      "sizeReduction": 87.04714987652436,
+      "processingTime": 105
+    },
+    {
+      "originalFilename": "american-arcadia.png",
+      "gameId": "american-arcadia",
+      "gameTitle": "American Arcadia",
+      "status": "success",
+      "originalSize": 195593,
+      "optimizedSize": 58480,
+      "sizeReduction": 70.10117949006354,
+      "processingTime": 89
+    },
+    {
+      "originalFilename": "amnesia-the-dark-descent.png",
+      "gameId": "amnesia-the-dark-descent",
+      "gameTitle": "Amnesia: The Dark Descent",
+      "status": "success",
+      "originalSize": 2997787,
+      "optimizedSize": 58404,
+      "sizeReduction": 98.05176285039597,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "animal-well.png",
+      "gameId": "animal-well",
+      "gameTitle": "Animal Well",
+      "status": "success",
+      "originalSize": 729598,
+      "optimizedSize": 65396,
+      "sizeReduction": 91.0367078857124,
+      "processingTime": 94
+    },
+    {
+      "originalFilename": "antichamber.png",
+      "gameId": "antichamber",
+      "gameTitle": "Antichamber",
+      "status": "success",
+      "originalSize": 144074,
+      "optimizedSize": 20940,
+      "sizeReduction": 85.46580229604231,
+      "processingTime": 54
+    },
+    {
+      "originalFilename": "aragami.png",
+      "gameId": "aragami",
+      "gameTitle": "Aragami",
+      "status": "success",
+      "originalSize": 422243,
+      "optimizedSize": 62422,
+      "sizeReduction": 85.21656960565362,
+      "processingTime": 83
+    },
+    {
+      "originalFilename": "arise-a-simple-story.png",
+      "gameId": "arise-a-simple-story",
+      "gameTitle": "Arise: A Simple Story",
+      "status": "success",
+      "originalSize": 489678,
+      "optimizedSize": 30210,
+      "sizeReduction": 93.83063972651415,
+      "processingTime": 88
+    },
+    {
+      "originalFilename": "assassins-creed-brotherhood.png",
+      "gameId": "assassins-creed-brotherhood",
+      "gameTitle": "Assassin's Creed: Brotherhood",
+      "status": "success",
+      "originalSize": 694790,
+      "optimizedSize": 79154,
+      "sizeReduction": 88.60749291152722,
+      "processingTime": 117
+    },
+    {
+      "originalFilename": "assassins-creed-ii.png",
+      "gameId": "assassins-creed-ii",
+      "gameTitle": "Assassin's Creed II (Deluxe Edition)",
+      "status": "success",
+      "originalSize": 675312,
+      "optimizedSize": 71814,
+      "sizeReduction": 89.36580425047977,
+      "processingTime": 638
+    },
+    {
+      "originalFilename": "assassins-creed-iv-black-flag.png",
+      "gameId": "assassins-creed-iv-black-flag",
+      "gameTitle": "Assassin's Creed IV: Black Flag",
+      "status": "success",
+      "originalSize": 794518,
+      "optimizedSize": 83114,
+      "sizeReduction": 89.53906645286828,
+      "processingTime": 124
+    },
+    {
+      "originalFilename": "assassins-creed-origins.png",
+      "gameId": "assassins-creed-origins",
+      "gameTitle": "Assassin's Creed: Origins",
+      "status": "success",
+      "originalSize": 864400,
+      "optimizedSize": 103008,
+      "sizeReduction": 88.08329477093937,
+      "processingTime": 127
+    },
+    {
+      "originalFilename": "assassins-creed-revelations.png",
+      "gameId": "assassins-creed-revelations",
+      "gameTitle": "Assassin's Creed: Revelations",
+      "status": "success",
+      "originalSize": 796432,
+      "optimizedSize": 87152,
+      "sizeReduction": 89.05719509010186,
+      "processingTime": 521
+    },
+    {
+      "originalFilename": "assassins-creed-syndicate.png",
+      "gameId": "assassins-creed-syndicate",
+      "gameTitle": "Assassin's Creed: Syndicate",
+      "status": "success",
+      "originalSize": 873453,
+      "optimizedSize": 85706,
+      "sizeReduction": 90.18768039035872,
+      "processingTime": 121
+    },
+    {
+      "originalFilename": "baba-is-you.png",
+      "gameId": "baba-is-you",
+      "gameTitle": "Baba Is You",
+      "status": "success",
+      "originalSize": 334179,
+      "optimizedSize": 14508,
+      "sizeReduction": 95.65861409603835,
+      "processingTime": 48
+    },
+    {
+      "originalFilename": "bad-end-theater.png",
+      "gameId": "bad-end-theater",
+      "gameTitle": "BAD END THEATER",
+      "status": "success",
+      "originalSize": 199386,
+      "optimizedSize": 78660,
+      "sizeReduction": 60.548885077186966,
+      "processingTime": 107
+    },
+    {
+      "originalFilename": "baldurs-gate-ii.png",
+      "gameId": "baldurs-gate-ii",
+      "gameTitle": "Baldur's Gate II (Enhanced Edition)",
+      "status": "success",
+      "originalSize": 798412,
+      "optimizedSize": 111098,
+      "sizeReduction": 86.08512898102734,
+      "processingTime": 131
+    },
+    {
+      "originalFilename": "baldurs-gate-iii.png",
+      "gameId": "baldurs-gate-iii",
+      "gameTitle": "Baldur's Gate III",
+      "status": "success",
+      "originalSize": 882579,
+      "optimizedSize": 100162,
+      "sizeReduction": 88.65121422558208,
+      "processingTime": 119
+    },
+    {
+      "originalFilename": "bastion.png",
+      "gameId": "bastion",
+      "gameTitle": "Bastion",
+      "status": "success",
+      "originalSize": 661261,
+      "optimizedSize": 72954,
+      "sizeReduction": 88.96744250757266,
+      "processingTime": 100
+    },
+    {
+      "originalFilename": "batman-arkham-asylum.png",
+      "gameId": "batman-arkham-asylum",
+      "gameTitle": "Batman: Arkham Asylum (GOTY)",
+      "status": "success",
+      "originalSize": 979713,
+      "optimizedSize": 110276,
+      "sizeReduction": 88.7440505535805,
+      "processingTime": 133
+    },
+    {
+      "originalFilename": "batman-arkham-city.png",
+      "gameId": "batman-arkham-city",
+      "gameTitle": "Batman: Arkham City (GOTY)",
+      "status": "success",
+      "originalSize": 4472560,
+      "optimizedSize": 42504,
+      "sizeReduction": 99.04967177634285,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "batman-arkham-knight.png",
+      "gameId": "batman-arkham-knight",
+      "gameTitle": "Batman: Arkham Knight",
+      "status": "success",
+      "originalSize": 780688,
+      "optimizedSize": 103234,
+      "sizeReduction": 86.77653556862664,
+      "processingTime": 140
+    },
+    {
+      "originalFilename": "batman-arkham-origins.png",
+      "gameId": "batman-arkham-origins",
+      "gameTitle": "Batman: Arkham Origins",
+      "status": "success",
+      "originalSize": 772032,
+      "optimizedSize": 71446,
+      "sizeReduction": 90.74572038464727,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "battlefield-3.png",
+      "gameId": "battlefield-3",
+      "gameTitle": "Battlefield 3",
+      "status": "success",
+      "originalSize": 825373,
+      "optimizedSize": 97596,
+      "sizeReduction": 88.17552791283457,
+      "processingTime": 124
+    },
+    {
+      "originalFilename": "battlefield-bad-company-2.png",
+      "gameId": "battlefield-bad-company-2",
+      "gameTitle": "Battlefield: Bad Company 2",
+      "status": "success",
+      "originalSize": 976414,
+      "optimizedSize": 124330,
+      "sizeReduction": 87.2666717191683,
+      "processingTime": 137
+    },
+    {
+      "originalFilename": "bayonetta.png",
+      "gameId": "bayonetta",
+      "gameTitle": "Bayonetta",
+      "status": "success",
+      "originalSize": 1065812,
+      "optimizedSize": 155068,
+      "sizeReduction": 85.45071738730657,
+      "processingTime": 159
+    },
+    {
+      "originalFilename": "before-i-forget.png",
+      "gameId": "before-i-forget",
+      "gameTitle": "Before I Forget",
+      "status": "success",
+      "originalSize": 310104,
+      "optimizedSize": 30112,
+      "sizeReduction": 90.2897092588293,
+      "processingTime": 67
+    },
+    {
+      "originalFilename": "before-your-eyes.png",
+      "gameId": "before-your-eyes",
+      "gameTitle": "Before Your Eyes",
+      "status": "success",
+      "originalSize": 547513,
+      "optimizedSize": 48916,
+      "sizeReduction": 91.06578291291714,
+      "processingTime": 79
+    },
+    {
+      "originalFilename": "beholder.png",
+      "gameId": "beholder",
+      "gameTitle": "Beholder",
+      "status": "success",
+      "originalSize": 1559518,
+      "optimizedSize": 41358,
+      "sizeReduction": 97.34802676211496,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "bendy-and-the-dark-revival.png",
+      "gameId": "bendy-and-the-dark-revival",
+      "gameTitle": "Bendy and the Dark Revival",
+      "status": "success",
+      "originalSize": 839185,
+      "optimizedSize": 57908,
+      "sizeReduction": 93.09949534369656,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "beyond-good-evil.png",
+      "gameId": "beyond-good-evil",
+      "gameTitle": "Beyond Good & Evil (20th Anniversary Edition)",
+      "status": "success",
+      "originalSize": 676150,
+      "optimizedSize": 65530,
+      "sizeReduction": 90.30836352880279,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "beyond-two-souls.png",
+      "gameId": "beyond-two-souls",
+      "gameTitle": "Beyond: Two Souls",
+      "status": "success",
+      "originalSize": 181403,
+      "optimizedSize": 42776,
+      "sizeReduction": 76.41935359393173,
+      "processingTime": 85
+    },
+    {
+      "originalFilename": "binary-domain.png",
+      "gameId": "binary-domain",
+      "gameTitle": "Binary Domain",
+      "status": "success",
+      "originalSize": 950569,
+      "optimizedSize": 111688,
+      "sizeReduction": 88.25040580957301,
+      "processingTime": 138
+    },
+    {
+      "originalFilename": "biomorph.png",
+      "gameId": "biomorph",
+      "gameTitle": "BIOMORPH",
+      "status": "success",
+      "originalSize": 275003,
+      "optimizedSize": 25410,
+      "sizeReduction": 90.76010079890038,
+      "processingTime": 65
+    },
+    {
+      "originalFilename": "bioshock-2.png",
+      "gameId": "bioshock-2",
+      "gameTitle": "BioShock 2",
+      "status": "success",
+      "originalSize": 919193,
+      "optimizedSize": 108660,
+      "sizeReduction": 88.17876115244567,
+      "processingTime": 147
+    },
+    {
+      "originalFilename": "bioshock-infinite.png",
+      "gameId": "bioshock-infinite",
+      "gameTitle": "BioShock Infinite",
+      "status": "success",
+      "originalSize": 852283,
+      "optimizedSize": 70922,
+      "sizeReduction": 91.6785856341145,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "bioshock.png",
+      "gameId": "bioshock",
+      "gameTitle": "BioShock",
+      "status": "success",
+      "originalSize": 760765,
+      "optimizedSize": 80030,
+      "sizeReduction": 89.48032572476389,
+      "processingTime": 110
+    },
+    {
+      "originalFilename": "black-mesa.png",
+      "gameId": "black-mesa",
+      "gameTitle": "Black Mesa (Definitive Edition)",
+      "status": "success",
+      "originalSize": 1191573,
+      "optimizedSize": 163094,
+      "sizeReduction": 86.31271436999664,
+      "processingTime": 726
+    },
+    {
+      "originalFilename": "blasphemous-2.png",
+      "gameId": "blasphemous-2",
+      "gameTitle": "Blasphemous 2",
+      "status": "success",
+      "originalSize": 375519,
+      "optimizedSize": 56724,
+      "sizeReduction": 84.89450600369089,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "blasphemous.png",
+      "gameId": "blasphemous",
+      "gameTitle": "Blasphemous",
+      "status": "success",
+      "originalSize": 901437,
+      "optimizedSize": 92792,
+      "sizeReduction": 89.70621352351856,
+      "processingTime": 126
+    },
+    {
+      "originalFilename": "bloodborne.png",
+      "gameId": "bloodborne",
+      "gameTitle": "Bloodborne",
+      "status": "success",
+      "originalSize": 810170,
+      "optimizedSize": 113352,
+      "sizeReduction": 86.0088623375341,
+      "processingTime": 144
+    },
+    {
+      "originalFilename": "blue-prince.png",
+      "gameId": "blue-prince",
+      "gameTitle": "Blue Prince",
+      "status": "success",
+      "originalSize": 594324,
+      "optimizedSize": 97664,
+      "sizeReduction": 83.56721249688722,
+      "processingTime": 136
+    },
+    {
+      "originalFilename": "borderlands-2.png",
+      "gameId": "borderlands-2",
+      "gameTitle": "Borderlands 2",
+      "status": "success",
+      "originalSize": 1095905,
+      "optimizedSize": 155770,
+      "sizeReduction": 85.7861767215224,
+      "processingTime": 148
+    },
+    {
+      "originalFilename": "braid.png",
+      "gameId": "braid",
+      "gameTitle": "Braid (Anniversary Edition)",
+      "status": "success",
+      "originalSize": 573584,
+      "optimizedSize": 52790,
+      "sizeReduction": 90.79646573126168,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "bramble-the-mountain-king.png",
+      "gameId": "bramble-the-mountain-king",
+      "gameTitle": "Bramble: The Mountain King",
+      "status": "success",
+      "originalSize": 536339,
+      "optimizedSize": 76946,
+      "sizeReduction": 85.65347662579079,
+      "processingTime": 107
+    },
+    {
+      "originalFilename": "broforce.png",
+      "gameId": "broforce",
+      "gameTitle": "Broforce",
+      "status": "success",
+      "originalSize": 920072,
+      "optimizedSize": 108994,
+      "sizeReduction": 88.15375318453337,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "brothers-a-tale-of-two-sons.png",
+      "gameId": "brothers-a-tale-of-two-sons",
+      "gameTitle": "Brothers: A Tale of Two Sons",
+      "status": "success",
+      "originalSize": 596051,
+      "optimizedSize": 50540,
+      "sizeReduction": 91.52085979219899,
+      "processingTime": 89
+    },
+    {
+      "originalFilename": "bulletstorm.png",
+      "gameId": "bulletstorm",
+      "gameTitle": "Bulletstorm (Complete Edition)",
+      "status": "success",
+      "originalSize": 1176914,
+      "optimizedSize": 143078,
+      "sizeReduction": 87.84295199139444,
+      "processingTime": 632
+    },
+    {
+      "originalFilename": "bully.png",
+      "gameId": "bully",
+      "gameTitle": "Bully (Scholarship Edition)",
+      "status": "success",
+      "originalSize": 524897,
+      "optimizedSize": 79852,
+      "sizeReduction": 84.78711061408238,
+      "processingTime": 109
+    },
+    {
+      "originalFilename": "call-of-duty-black-ops-ii.png",
+      "gameId": "call-of-duty-black-ops-ii",
+      "gameTitle": "Call of Duty: Black Ops II",
+      "status": "success",
+      "originalSize": 574149,
+      "optimizedSize": 82690,
+      "sizeReduction": 85.5978152012805,
+      "processingTime": 118
+    },
+    {
+      "originalFilename": "call-of-duty-black-ops.png",
+      "gameId": "call-of-duty-black-ops",
+      "gameTitle": "Call of Duty: Black Ops",
+      "status": "success",
+      "originalSize": 678211,
+      "optimizedSize": 59316,
+      "sizeReduction": 91.25404925605748,
+      "processingTime": 588
+    },
+    {
+      "originalFilename": "call-of-duty-infinite-warfare.png",
+      "gameId": "call-of-duty-infinite-warfare",
+      "gameTitle": "Call of Duty: Infinite Warfare",
+      "status": "success",
+      "originalSize": 18872969,
+      "optimizedSize": 61574,
+      "sizeReduction": 99.67374502655095,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "call-of-duty-modern-warfare-2.png",
+      "gameId": "call-of-duty-modern-warfare-2",
+      "gameTitle": "Call of Duty: Modern Warfare 2 (Remastered)",
+      "status": "success",
+      "originalSize": 750633,
+      "optimizedSize": 86938,
+      "sizeReduction": 88.41804183935426,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "call-of-duty-modern-warfare.png",
+      "gameId": "call-of-duty-modern-warfare",
+      "gameTitle": "Call of Duty Modern Warfare",
+      "status": "success",
+      "originalSize": 487339,
+      "optimizedSize": 54280,
+      "sizeReduction": 88.86196261739775,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "call-of-duty-world-at-war.png",
+      "gameId": "call-of-duty-world-at-war",
+      "gameTitle": "Call of Duty: World at War",
+      "status": "success",
+      "originalSize": 843287,
+      "optimizedSize": 100054,
+      "sizeReduction": 88.13523746956848,
+      "processingTime": 128
+    },
+    {
+      "originalFilename": "call-of-juarez-gunslinger.png",
+      "gameId": "call-of-juarez-gunslinger",
+      "gameTitle": "Call of Juarez Gunslinger",
+      "status": "success",
+      "originalSize": 837969,
+      "optimizedSize": 115952,
+      "sizeReduction": 86.16273394361843,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "call-of-the-sea.png",
+      "gameId": "call-of-the-sea",
+      "gameTitle": "Call of the Sea",
+      "status": "success",
+      "originalSize": 514423,
+      "optimizedSize": 44066,
+      "sizeReduction": 91.43389778450808,
+      "processingTime": 77
+    },
+    {
+      "originalFilename": "carrion.png",
+      "gameId": "carrion",
+      "gameTitle": "CARRION",
+      "status": "success",
+      "originalSize": 422231,
+      "optimizedSize": 109178,
+      "sizeReduction": 74.14259019351967,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "cave-story.png",
+      "gameId": "cave-story",
+      "gameTitle": "Cave Story+",
+      "status": "success",
+      "originalSize": 573281,
+      "optimizedSize": 73144,
+      "sizeReduction": 87.24116096643705,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "celeste.png",
+      "gameId": "celeste",
+      "gameTitle": "Celeste",
+      "status": "success",
+      "originalSize": 769332,
+      "optimizedSize": 66362,
+      "sizeReduction": 91.3740751717074,
+      "processingTime": 105
+    },
+    {
+      "originalFilename": "chained-echoes.png",
+      "gameId": "chained-echoes",
+      "gameTitle": "Chained Echoes",
+      "status": "success",
+      "originalSize": 882994,
+      "optimizedSize": 108890,
+      "sizeReduction": 87.66809287492327,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "chants-of-sennaar.png",
+      "gameId": "chants-of-sennaar",
+      "gameTitle": "Chants of Sennaar",
+      "status": "success",
+      "originalSize": 500887,
+      "optimizedSize": 49838,
+      "sizeReduction": 90.05005120915496,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "child-of-light.png",
+      "gameId": "child-of-light",
+      "gameTitle": "Child of Light",
+      "status": "success",
+      "originalSize": 817447,
+      "optimizedSize": 103916,
+      "sizeReduction": 87.28773853228405,
+      "processingTime": 132
+    },
+    {
+      "originalFilename": "chrono-trigger.png",
+      "gameId": "chrono-trigger",
+      "gameTitle": "Chrono Trigger",
+      "status": "success",
+      "originalSize": 1137971,
+      "optimizedSize": 193110,
+      "sizeReduction": 83.0303232683434,
+      "processingTime": 170
+    },
+    {
+      "originalFilename": "citizen-sleeper.png",
+      "gameId": "citizen-sleeper",
+      "gameTitle": "Citizen Sleeper",
+      "status": "success",
+      "originalSize": 740221,
+      "optimizedSize": 113534,
+      "sizeReduction": 84.66214819628192,
+      "processingTime": 123
+    },
+    {
+      "originalFilename": "clair-obscur-expedition-33.png",
+      "gameId": "clair-obscur-expedition-33",
+      "gameTitle": "Clair Obscur: Expedition 33",
+      "status": "success",
+      "originalSize": 907543,
+      "optimizedSize": 102210,
+      "sizeReduction": 88.73772372218176,
+      "processingTime": 127
+    },
+    {
+      "originalFilename": "company-of-heroes-2.png",
+      "gameId": "company-of-heroes-2",
+      "gameTitle": "Company of Heroes 2",
+      "status": "success",
+      "originalSize": 610969,
+      "optimizedSize": 99196,
+      "sizeReduction": 83.76415170000442,
+      "processingTime": 121
+    },
+    {
+      "originalFilename": "condemned-criminal-origins.png",
+      "gameId": "condemned-criminal-origins",
+      "gameTitle": "Condemned Criminal Origins",
+      "status": "success",
+      "originalSize": 664224,
+      "optimizedSize": 83496,
+      "sizeReduction": 87.42954184130654,
+      "processingTime": 109
+    },
+    {
+      "originalFilename": "control.png",
+      "gameId": "control",
+      "gameTitle": "Control",
+      "status": "success",
+      "originalSize": 616673,
+      "optimizedSize": 71788,
+      "sizeReduction": 88.35882226074435,
+      "processingTime": 96
+    },
+    {
+      "originalFilename": "cultic.png",
+      "gameId": "cultic",
+      "gameTitle": "CULTIC",
+      "status": "success",
+      "originalSize": 702716,
+      "optimizedSize": 57364,
+      "sizeReduction": 91.83681601102009,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "cuphead.png",
+      "gameId": "cuphead",
+      "gameTitle": "Cuphead",
+      "status": "success",
+      "originalSize": 574142,
+      "optimizedSize": 64808,
+      "sizeReduction": 88.7122001177409,
+      "processingTime": 80
+    },
+    {
+      "originalFilename": "cyberpunk-2077-phantom-liberty-dlc.png",
+      "gameId": "cyberpunk-2077-phantom-liberty-dlc",
+      "gameTitle": "Cyberpunk 2077: Phantom Liberty [DLC]",
+      "status": "success",
+      "originalSize": 31896,
+      "optimizedSize": 42096,
+      "sizeReduction": -31.978931527464262,
+      "processingTime": 80
+    },
+    {
+      "originalFilename": "dandara-trials-of-fear-edition.png",
+      "gameId": "dandara-trials-of-fear-edition",
+      "gameTitle": "Dandara: Trials of Fear Edition",
+      "status": "success",
+      "originalSize": 603974,
+      "optimizedSize": 66270,
+      "sizeReduction": 89.02767337666853,
+      "processingTime": 92
+    },
+    {
+      "originalFilename": "danganronpa-1-trigger-happy-havoc.png",
+      "gameId": "danganronpa-1-trigger-happy-havoc",
+      "gameTitle": "Danganronpa 1: Trigger Happy Havoc",
+      "status": "success",
+      "originalSize": 1106158,
+      "optimizedSize": 127860,
+      "sizeReduction": 88.44107261349644,
+      "processingTime": 138
+    },
+    {
+      "originalFilename": "danganronpa-2-goodbye-despair.png",
+      "gameId": "danganronpa-2-goodbye-despair",
+      "gameTitle": "Danganronpa 2: Goodbye Despair",
+      "status": "success",
+      "originalSize": 948573,
+      "optimizedSize": 142414,
+      "sizeReduction": 84.98650077537522,
+      "processingTime": 147
+    },
+    {
+      "originalFilename": "danganronpa-v3-killing-harmony.png",
+      "gameId": "danganronpa-v3-killing-harmony",
+      "gameTitle": "Danganronpa V3: Killing Harmony",
+      "status": "success",
+      "originalSize": 710913,
+      "optimizedSize": 69354,
+      "sizeReduction": 90.24437589409675,
+      "processingTime": 104
+    },
+    {
+      "originalFilename": "dark-souls-iii.png",
+      "gameId": "dark-souls-iii",
+      "gameTitle": "Dark Souls III",
+      "status": "success",
+      "originalSize": 1146582,
+      "optimizedSize": 84376,
+      "sizeReduction": 92.64108454519608,
+      "processingTime": 118
+    },
+    {
+      "originalFilename": "darkwood.png",
+      "gameId": "darkwood",
+      "gameTitle": "Darkwood",
+      "status": "success",
+      "originalSize": 248298,
+      "optimizedSize": 34866,
+      "sizeReduction": 85.95800207814803,
+      "processingTime": 70
+    },
+    {
+      "originalFilename": "darq.png",
+      "gameId": "darq",
+      "gameTitle": "Darq (Complete Edition)",
+      "status": "success",
+      "originalSize": 741322,
+      "optimizedSize": 51128,
+      "sizeReduction": 93.1031319723413,
+      "processingTime": 586
+    },
+    {
+      "originalFilename": "day-of-the-tentacle.png",
+      "gameId": "day-of-the-tentacle",
+      "gameTitle": "Day of the Tentacle (Remastered)",
+      "status": "success",
+      "originalSize": 993678,
+      "optimizedSize": 152932,
+      "sizeReduction": 84.60950126701003,
+      "processingTime": 166
+    },
+    {
+      "originalFilename": "days-gone.png",
+      "gameId": "days-gone",
+      "gameTitle": "Days Gone",
+      "status": "success",
+      "originalSize": 207638,
+      "optimizedSize": 23436,
+      "sizeReduction": 88.71304867124515,
+      "processingTime": 57
+    },
+    {
+      "originalFilename": "dead-cells-medley-of-pain.png",
+      "gameId": "dead-cells-medley-of-pain",
+      "gameTitle": "Dead Cells: Medley of Pain",
+      "status": "success",
+      "originalSize": 625835,
+      "optimizedSize": 67472,
+      "sizeReduction": 89.21888357154842,
+      "processingTime": 92
+    },
+    {
+      "originalFilename": "dead-space-2.png",
+      "gameId": "dead-space-2",
+      "gameTitle": "Dead Space 2",
+      "status": "success",
+      "originalSize": 505321,
+      "optimizedSize": 55962,
+      "sizeReduction": 88.92545530464794,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "dead-space-3.png",
+      "gameId": "dead-space-3",
+      "gameTitle": "Dead Space 3",
+      "status": "success",
+      "originalSize": 843677,
+      "optimizedSize": 106874,
+      "sizeReduction": 87.33235586604826,
+      "processingTime": 128
+    },
+    {
+      "originalFilename": "dead-space.png",
+      "gameId": "dead-space",
+      "gameTitle": "Dead Space (Remake)",
+      "status": "success",
+      "originalSize": 616485,
+      "optimizedSize": 54534,
+      "sizeReduction": 91.1540426774374,
+      "processingTime": 106
+    },
+    {
+      "originalFilename": "deadly-premonition.png",
+      "gameId": "deadly-premonition",
+      "gameTitle": "Deadly Premonition (Director's Cut)",
+      "status": "success",
+      "originalSize": 1112434,
+      "optimizedSize": 59824,
+      "sizeReduction": 94.6222427577726,
+      "processingTime": 104
+    },
+    {
+      "originalFilename": "death-stranding.png",
+      "gameId": "death-stranding",
+      "gameTitle": "Death Stranding",
+      "status": "success",
+      "originalSize": 641038,
+      "optimizedSize": 53556,
+      "sizeReduction": 91.64542507620453,
+      "processingTime": 87
+    },
+    {
+      "originalFilename": "deaths-door.png",
+      "gameId": "deaths-door",
+      "gameTitle": "Death's Door",
+      "status": "success",
+      "originalSize": 172651,
+      "optimizedSize": 82728,
+      "sizeReduction": 52.08368326855911,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "deaths-gambit-afterlife.png",
+      "gameId": "deaths-gambit-afterlife",
+      "gameTitle": "Death's Gambit: Afterlife",
+      "status": "success",
+      "originalSize": 1115566,
+      "optimizedSize": 79718,
+      "sizeReduction": 92.85403104791648,
+      "processingTime": 616
+    },
+    {
+      "originalFilename": "deathspank.png",
+      "gameId": "deathspank",
+      "gameTitle": "DeathSpank",
+      "status": "success",
+      "originalSize": 873123,
+      "optimizedSize": 83096,
+      "sizeReduction": 90.48289874393413,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "detective-grimoire.png",
+      "gameId": "detective-grimoire",
+      "gameTitle": "Detective Grimoire",
+      "status": "success",
+      "originalSize": 542179,
+      "optimizedSize": 47570,
+      "sizeReduction": 91.22614487097435,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "detroit-become-human.png",
+      "gameId": "detroit-become-human",
+      "gameTitle": "Detroit: Become Human",
+      "status": "success",
+      "originalSize": 401826,
+      "optimizedSize": 64348,
+      "sizeReduction": 83.98610343780642,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "deus-ex-human-revolution.png",
+      "gameId": "deus-ex-human-revolution",
+      "gameTitle": "Deus Ex: Human Revolution (Director’s Cut)",
+      "status": "success",
+      "originalSize": 773301,
+      "optimizedSize": 78594,
+      "sizeReduction": 89.83655782159857,
+      "processingTime": 509
+    },
+    {
+      "originalFilename": "deus-ex-mankind-divided.png",
+      "gameId": "deus-ex-mankind-divided",
+      "gameTitle": "Deus Ex: Mankind Divided",
+      "status": "success",
+      "originalSize": 695680,
+      "optimizedSize": 63940,
+      "sizeReduction": 90.80899264029438,
+      "processingTime": 104
+    },
+    {
+      "originalFilename": "deus-ex.png",
+      "gameId": "deus-ex",
+      "gameTitle": "Deus Ex (GOTY)",
+      "status": "success",
+      "originalSize": 726729,
+      "optimizedSize": 39690,
+      "sizeReduction": 94.53854187737107,
+      "processingTime": 484
+    },
+    {
+      "originalFilename": "devil-may-cry-3-dantes-awakening.png",
+      "gameId": "devil-may-cry-3-dantes-awakening",
+      "gameTitle": "Devil May Cry 3: Dante's Awakening (Special Edition)",
+      "status": "success",
+      "originalSize": 658512,
+      "optimizedSize": 68636,
+      "sizeReduction": 89.57710717496417,
+      "processingTime": 101
+    },
+    {
+      "originalFilename": "devil-may-cry-5.png",
+      "gameId": "devil-may-cry-5",
+      "gameTitle": "Devil May Cry 5",
+      "status": "success",
+      "originalSize": 2630132,
+      "optimizedSize": 120452,
+      "sizeReduction": 95.42030590099661,
+      "processingTime": 146
+    },
+    {
+      "originalFilename": "disco-elysium-the-final-cut.png",
+      "gameId": "disco-elysium-the-final-cut",
+      "gameTitle": "Disco Elysium: The Final Cut",
+      "status": "success",
+      "originalSize": 901876,
+      "optimizedSize": 121392,
+      "sizeReduction": 86.54005650444185,
+      "processingTime": 133
+    },
+    {
+      "originalFilename": "dishonored-2.png",
+      "gameId": "dishonored-2",
+      "gameTitle": "Dishonored 2",
+      "status": "success",
+      "originalSize": 590577,
+      "optimizedSize": 63202,
+      "sizeReduction": 89.29826254662812,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "dishonored.png",
+      "gameId": "dishonored",
+      "gameTitle": "Dishonored (Definitive Edition)",
+      "status": "success",
+      "originalSize": 510927,
+      "optimizedSize": 36672,
+      "sizeReduction": 92.82245800280666,
+      "processingTime": 76
+    },
+    {
+      "originalFilename": "divinity-original-sin-2.png",
+      "gameId": "divinity-original-sin-2",
+      "gameTitle": "Divinity: Original Sin 2",
+      "status": "success",
+      "originalSize": 894213,
+      "optimizedSize": 112288,
+      "sizeReduction": 87.44281284213045,
+      "processingTime": 135
+    },
+    {
+      "originalFilename": "dont-escape-4-days-to-survive.png",
+      "gameId": "dont-escape-4-days-to-survive",
+      "gameTitle": "Don't Escape: 4 Days to Survive",
+      "status": "success",
+      "originalSize": 312291,
+      "optimizedSize": 34770,
+      "sizeReduction": 88.86615368358358,
+      "processingTime": 76
+    },
+    {
+      "originalFilename": "donut-county.png",
+      "gameId": "donut-county",
+      "gameTitle": "Donut County",
+      "status": "success",
+      "originalSize": 258232,
+      "optimizedSize": 21312,
+      "sizeReduction": 91.7469562254097,
+      "processingTime": 51
+    },
+    {
+      "originalFilename": "doom-eternal.png",
+      "gameId": "doom-eternal",
+      "gameTitle": "DOOM Eternal",
+      "status": "success",
+      "originalSize": 255334,
+      "optimizedSize": 90672,
+      "sizeReduction": 64.48886556431968,
+      "processingTime": 106
+    },
+    {
+      "originalFilename": "doom.png",
+      "gameId": "doom",
+      "gameTitle": "DOOM",
+      "status": "success",
+      "originalSize": 509354,
+      "optimizedSize": 103660,
+      "sizeReduction": 79.6487315305269,
+      "processingTime": 117
+    },
+    {
+      "originalFilename": "dragon-age-origins.png",
+      "gameId": "dragon-age-origins",
+      "gameTitle": "Dragon Age: Origins (Ultimate Edition)",
+      "status": "success",
+      "originalSize": 582463,
+      "optimizedSize": 63888,
+      "sizeReduction": 89.03140628675126,
+      "processingTime": 88
+    },
+    {
+      "originalFilename": "dragon-quest-v-hand-of-the-heavenly-bride.png",
+      "gameId": "dragon-quest-v-hand-of-the-heavenly-bride",
+      "gameTitle": "Dragon Quest V: Hand of the Heavenly Bride",
+      "status": "success",
+      "originalSize": 1228044,
+      "optimizedSize": 203952,
+      "sizeReduction": 83.39212601502878,
+      "processingTime": 180
+    },
+    {
+      "originalFilename": "dragon-quest-viii-journey-of-the-cursed-king.png",
+      "gameId": "dragon-quest-viii-journey-of-the-cursed-king",
+      "gameTitle": "Dragon Quest VIII: Journey of the Cursed King",
+      "status": "success",
+      "originalSize": 1199228,
+      "optimizedSize": 227804,
+      "sizeReduction": 81.00411264580212,
+      "processingTime": 171
+    },
+    {
+      "originalFilename": "dragon-quest-xi-s-echoes-of-an-elusive-age.png",
+      "gameId": "dragon-quest-xi-s-echoes-of-an-elusive-age",
+      "gameTitle": "Dragon Quest XI S: Echoes of an Elusive Age (Definitive Edition)",
+      "status": "success",
+      "originalSize": 1204574,
+      "optimizedSize": 205442,
+      "sizeReduction": 82.94484191091622,
+      "processingTime": 192
+    },
+    {
+      "originalFilename": "dragons-dogma-dark-arisen.png",
+      "gameId": "dragons-dogma-dark-arisen",
+      "gameTitle": "Dragon's Dogma: Dark Arisen",
+      "status": "success",
+      "originalSize": 946101,
+      "optimizedSize": 130520,
+      "sizeReduction": 86.2044327191283,
+      "processingTime": 132
+    },
+    {
+      "originalFilename": "dredge.png",
+      "gameId": "dredge",
+      "gameTitle": "DREDGE",
+      "status": "success",
+      "originalSize": 749689,
+      "optimizedSize": 108554,
+      "sizeReduction": 85.5201290134976,
+      "processingTime": 126
+    },
+    {
+      "originalFilename": "dust-an-elysian-tail.png",
+      "gameId": "dust-an-elysian-tail",
+      "gameTitle": "Dust: An Elysian Tail",
+      "status": "success",
+      "originalSize": 471375,
+      "optimizedSize": 43422,
+      "sizeReduction": 90.78822593476531,
+      "processingTime": 80
+    },
+    {
+      "originalFilename": "el-paso-elsewhere.png",
+      "gameId": "el-paso-elsewhere",
+      "gameTitle": "El Paso, Elsewhere",
+      "status": "success",
+      "originalSize": 56980,
+      "optimizedSize": 48394,
+      "sizeReduction": 15.068445068445069,
+      "processingTime": 72
+    },
+    {
+      "originalFilename": "elden-ring.png",
+      "gameId": "elden-ring",
+      "gameTitle": "Elden Ring",
+      "status": "success",
+      "originalSize": 8387270,
+      "optimizedSize": 66710,
+      "sizeReduction": 99.20462796595316,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "en-garde.png",
+      "gameId": "en-garde",
+      "gameTitle": "En Garde!",
+      "status": "success",
+      "originalSize": 345780,
+      "optimizedSize": 90574,
+      "sizeReduction": 73.8058881369657,
+      "processingTime": 109
+    },
+    {
+      "originalFilename": "ender-lilies-quietus-of-the-knights.png",
+      "gameId": "ender-lilies-quietus-of-the-knights",
+      "gameTitle": "ENDER LILIES: Quietus of the Knights",
+      "status": "success",
+      "originalSize": 942997,
+      "optimizedSize": 87472,
+      "sizeReduction": 90.72404260034762,
+      "processingTime": 623
+    },
+    {
+      "originalFilename": "endling-extinction-is-forever.png",
+      "gameId": "endling-extinction-is-forever",
+      "gameTitle": "Endling: Extinction is Forever",
+      "status": "success",
+      "originalSize": 648708,
+      "optimizedSize": 64288,
+      "sizeReduction": 90.08984011296299,
+      "processingTime": 94
+    },
+    {
+      "originalFilename": "enslaved-odyssey-to-the-west.png",
+      "gameId": "enslaved-odyssey-to-the-west",
+      "gameTitle": "Enslaved: Odyssey to the West (Premium Edition)",
+      "status": "success",
+      "originalSize": 1016385,
+      "optimizedSize": 128662,
+      "sizeReduction": 87.34121420524703,
+      "processingTime": 153
+    },
+    {
+      "originalFilename": "enter-the-gungeon.png",
+      "gameId": "enter-the-gungeon",
+      "gameTitle": "Enter the Gungeon",
+      "status": "success",
+      "originalSize": 904942,
+      "optimizedSize": 91560,
+      "sizeReduction": 89.88222449615554,
+      "processingTime": 118
+    },
+    {
+      "originalFilename": "everhood.png",
+      "gameId": "everhood",
+      "gameTitle": "Everhood",
+      "status": "success",
+      "originalSize": 417464,
+      "optimizedSize": 43768,
+      "sizeReduction": 89.51574267481746,
+      "processingTime": 75
+    },
+    {
+      "originalFilename": "fable-ii.png",
+      "gameId": "fable-ii",
+      "gameTitle": "Fable II (GOTY)",
+      "status": "success",
+      "originalSize": 934600,
+      "optimizedSize": 98124,
+      "sizeReduction": 89.50096297881447,
+      "processingTime": 136
+    },
+    {
+      "originalFilename": "fable.png",
+      "gameId": "fable",
+      "gameTitle": "Fable (Anniversary)",
+      "status": "success",
+      "originalSize": 639974,
+      "optimizedSize": 52094,
+      "sizeReduction": 91.8599818117611,
+      "processingTime": 95
+    },
+    {
+      "originalFilename": "faith-the-unholy-trinity.png",
+      "gameId": "faith-the-unholy-trinity",
+      "gameTitle": "FAITH: The Unholy Trinity",
+      "status": "success",
+      "originalSize": 690332,
+      "optimizedSize": 57670,
+      "sizeReduction": 91.64604856793542,
+      "processingTime": 96
+    },
+    {
+      "originalFilename": "fallout-3.png",
+      "gameId": "fallout-3",
+      "gameTitle": "Fallout 3 (GOTY)",
+      "status": "success",
+      "originalSize": 741527,
+      "optimizedSize": 73466,
+      "sizeReduction": 90.09260620314568,
+      "processingTime": 107
+    },
+    {
+      "originalFilename": "fallout-new-vegas.png",
+      "gameId": "fallout-new-vegas",
+      "gameTitle": "Fallout: New Vegas",
+      "status": "success",
+      "originalSize": 699518,
+      "optimizedSize": 52404,
+      "sizeReduction": 92.50855589134233,
+      "processingTime": 89
+    },
+    {
+      "originalFilename": "far-changing-tides.png",
+      "gameId": "far-changing-tides",
+      "gameTitle": "FAR: Changing Tides",
+      "status": "success",
+      "originalSize": 192970,
+      "optimizedSize": 72246,
+      "sizeReduction": 62.561019847644715,
+      "processingTime": 106
+    },
+    {
+      "originalFilename": "far-cry-2.png",
+      "gameId": "far-cry-2",
+      "gameTitle": "Far Cry 2",
+      "status": "success",
+      "originalSize": 990213,
+      "optimizedSize": 140612,
+      "sizeReduction": 85.7998228663934,
+      "processingTime": 146
+    },
+    {
+      "originalFilename": "far-cry-3-blood-dragon-dlc.png",
+      "gameId": "far-cry-3-blood-dragon-dlc",
+      "gameTitle": "Far Cry 3: Blood Dragon [DLC]",
+      "status": "success",
+      "originalSize": 1131650,
+      "optimizedSize": 174354,
+      "sizeReduction": 84.59293951310033,
+      "processingTime": 162
+    },
+    {
+      "originalFilename": "far-cry-3.png",
+      "gameId": "far-cry-3",
+      "gameTitle": "Far Cry 3",
+      "status": "success",
+      "originalSize": 1073107,
+      "optimizedSize": 163318,
+      "sizeReduction": 84.78082800689958,
+      "processingTime": 167
+    },
+    {
+      "originalFilename": "far-cry-4.png",
+      "gameId": "far-cry-4",
+      "gameTitle": "Far Cry 4",
+      "status": "success",
+      "originalSize": 1021135,
+      "optimizedSize": 141480,
+      "sizeReduction": 86.14482903827604,
+      "processingTime": 160
+    },
+    {
+      "originalFilename": "far-cry-5.png",
+      "gameId": "far-cry-5",
+      "gameTitle": "Far Cry 5",
+      "status": "success",
+      "originalSize": 996129,
+      "optimizedSize": 140916,
+      "sizeReduction": 85.85363943826553,
+      "processingTime": 144
+    },
+    {
+      "originalFilename": "far-lone-sails.png",
+      "gameId": "far-lone-sails",
+      "gameTitle": "FAR: Lone Sails",
+      "status": "success",
+      "originalSize": 414586,
+      "optimizedSize": 29376,
+      "sizeReduction": 92.91437723415649,
+      "processingTime": 72
+    },
+    {
+      "originalFilename": "fear.png",
+      "gameId": "fear",
+      "gameTitle": "F.E.A.R. (Platinum Collection)",
+      "status": "success",
+      "originalSize": 779163,
+      "optimizedSize": 93222,
+      "sizeReduction": 88.03562284143369,
+      "processingTime": 127
+    },
+    {
+      "originalFilename": "fez.png",
+      "gameId": "fez",
+      "gameTitle": "FEZ",
+      "status": "success",
+      "originalSize": 958772,
+      "optimizedSize": 73796,
+      "sizeReduction": 92.30307101166909,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "final-fantasy-tactics-the-ivalice-chronicles.png",
+      "gameId": "final-fantasy-tactics-the-ivalice-chronicles",
+      "gameTitle": "Final Fantasy Tactics: The Ivalice Chronicles",
+      "status": "success",
+      "originalSize": 1221252,
+      "optimizedSize": 199554,
+      "sizeReduction": 83.65988346385512,
+      "processingTime": 187
+    },
+    {
+      "originalFilename": "final-fantasy-xx2.png",
+      "gameId": "final-fantasy-xx2",
+      "gameTitle": "FINAL FANTASY X/X-2 (HD Remaster)",
+      "status": "success",
+      "originalSize": 766010,
+      "optimizedSize": 69822,
+      "sizeReduction": 90.88497539196617,
+      "processingTime": 109
+    },
+    {
+      "originalFilename": "fire-emblem-three-houses.png",
+      "gameId": "fire-emblem-three-houses",
+      "gameTitle": "Fire Emblem: Three Houses",
+      "status": "success",
+      "originalSize": 830649,
+      "optimizedSize": 99848,
+      "sizeReduction": 87.97951962862773,
+      "processingTime": 119
+    },
+    {
+      "originalFilename": "firewatch.png",
+      "gameId": "firewatch",
+      "gameTitle": "Firewatch",
+      "status": "success",
+      "originalSize": 564182,
+      "optimizedSize": 44326,
+      "sizeReduction": 92.14331545494184,
+      "processingTime": 78
+    },
+    {
+      "originalFilename": "florence.png",
+      "gameId": "florence",
+      "gameTitle": "Florence",
+      "status": "success",
+      "originalSize": 706732,
+      "optimizedSize": 27806,
+      "sizeReduction": 96.06555243005836,
+      "processingTime": 54
+    },
+    {
+      "originalFilename": "flower.png",
+      "gameId": "flower",
+      "gameTitle": "Flower",
+      "status": "success",
+      "originalSize": 315499,
+      "optimizedSize": 28388,
+      "sizeReduction": 91.0021901812684,
+      "processingTime": 62
+    },
+    {
+      "originalFilename": "four-last-things.png",
+      "gameId": "four-last-things",
+      "gameTitle": "Four Last Things",
+      "status": "success",
+      "originalSize": 1035209,
+      "optimizedSize": 158994,
+      "sizeReduction": 84.64136227563709,
+      "processingTime": 175
+    },
+    {
+      "originalFilename": "fran-bow.png",
+      "gameId": "fran-bow",
+      "gameTitle": "Fran Bow",
+      "status": "success",
+      "originalSize": 419238,
+      "optimizedSize": 32360,
+      "sizeReduction": 92.28123404844027,
+      "processingTime": 68
+    },
+    {
+      "originalFilename": "frostpunk.png",
+      "gameId": "frostpunk",
+      "gameTitle": "Frostpunk",
+      "status": "success",
+      "originalSize": 1015048,
+      "optimizedSize": 144524,
+      "sizeReduction": 85.7618555969767,
+      "processingTime": 154
+    },
+    {
+      "originalFilename": "furi.png",
+      "gameId": "furi",
+      "gameTitle": "Furi",
+      "status": "success",
+      "originalSize": 869030,
+      "optimizedSize": 77782,
+      "sizeReduction": 91.04956100479845,
+      "processingTime": 586
+    },
+    {
+      "originalFilename": "gears-of-war-2.png",
+      "gameId": "gears-of-war-2",
+      "gameTitle": "Gears of War 2",
+      "status": "success",
+      "originalSize": 965485,
+      "optimizedSize": 129476,
+      "sizeReduction": 86.58953790064061,
+      "processingTime": 139
+    },
+    {
+      "originalFilename": "gears-of-war-3.png",
+      "gameId": "gears-of-war-3",
+      "gameTitle": "Gears of War 3",
+      "status": "success",
+      "originalSize": 967541,
+      "optimizedSize": 125820,
+      "sizeReduction": 86.99589991535242,
+      "processingTime": 143
+    },
+    {
+      "originalFilename": "gears-of-war-reloaded.png",
+      "gameId": "gears-of-war-reloaded",
+      "gameTitle": "Gears of War: Reloaded",
+      "status": "success",
+      "originalSize": 994845,
+      "optimizedSize": 141922,
+      "sizeReduction": 85.73426011087155,
+      "processingTime": 142
+    },
+    {
+      "originalFilename": "gemini-rue.png",
+      "gameId": "gemini-rue",
+      "gameTitle": "Gemini Rue",
+      "status": "success",
+      "originalSize": 2693538,
+      "optimizedSize": 42262,
+      "sizeReduction": 98.43098556619584,
+      "processingTime": 603
+    },
+    {
+      "originalFilename": "ghost-of-a-tale.png",
+      "gameId": "ghost-of-a-tale",
+      "gameTitle": "Ghost of a Tale",
+      "status": "success",
+      "originalSize": 657757,
+      "optimizedSize": 57526,
+      "sizeReduction": 91.25421698286753,
+      "processingTime": 100
+    },
+    {
+      "originalFilename": "ghost-of-tsushima.png",
+      "gameId": "ghost-of-tsushima",
+      "gameTitle": "Ghost of Tsushima (Director’s Cut)",
+      "status": "success",
+      "originalSize": 766406,
+      "optimizedSize": 83528,
+      "sizeReduction": 89.10133793315815,
+      "processingTime": 130
+    },
+    {
+      "originalFilename": "ghost-recon-breakpoint.png",
+      "gameId": "ghost-recon-breakpoint",
+      "gameTitle": "Ghost Recon Breakpoint",
+      "status": "success",
+      "originalSize": 1114318,
+      "optimizedSize": 168596,
+      "sizeReduction": 84.87002812482612,
+      "processingTime": 161
+    },
+    {
+      "originalFilename": "ghost-recon-wildlands.png",
+      "gameId": "ghost-recon-wildlands",
+      "gameTitle": "Ghost Recon Wildlands",
+      "status": "success",
+      "originalSize": 840978,
+      "optimizedSize": 95996,
+      "sizeReduction": 88.58519485646474,
+      "processingTime": 118
+    },
+    {
+      "originalFilename": "ghost-trick-phantom-detective.png",
+      "gameId": "ghost-trick-phantom-detective",
+      "gameTitle": "Ghost Trick: Phantom Detective",
+      "status": "success",
+      "originalSize": 355171,
+      "optimizedSize": 46964,
+      "sizeReduction": 86.7770735786424,
+      "processingTime": 78
+    },
+    {
+      "originalFilename": "ghostrunner-2.png",
+      "gameId": "ghostrunner-2",
+      "gameTitle": "Ghostrunner 2",
+      "status": "success",
+      "originalSize": 436280,
+      "optimizedSize": 61934,
+      "sizeReduction": 85.80407078023288,
+      "processingTime": 87
+    },
+    {
+      "originalFilename": "ghostrunner.png",
+      "gameId": "ghostrunner",
+      "gameTitle": "Ghostrunner",
+      "status": "success",
+      "originalSize": 826838,
+      "optimizedSize": 66660,
+      "sizeReduction": 91.93796124512903,
+      "processingTime": 96
+    },
+    {
+      "originalFilename": "god-of-war-i.png",
+      "gameId": "god-of-war-i",
+      "gameTitle": "God of War I (HD)",
+      "status": "success",
+      "originalSize": 840674,
+      "optimizedSize": 79680,
+      "sizeReduction": 90.52189076859759,
+      "processingTime": 544
+    },
+    {
+      "originalFilename": "god-of-war-ii.png",
+      "gameId": "god-of-war-ii",
+      "gameTitle": "God of War II (HD)",
+      "status": "success",
+      "originalSize": 840674,
+      "optimizedSize": 79680,
+      "sizeReduction": 90.52189076859759,
+      "processingTime": 533
+    },
+    {
+      "originalFilename": "god-of-war-iii.png",
+      "gameId": "god-of-war-iii",
+      "gameTitle": "God of War III",
+      "status": "success",
+      "originalSize": 2791296,
+      "optimizedSize": 185820,
+      "sizeReduction": 93.34287728710964,
+      "processingTime": 195
+    },
+    {
+      "originalFilename": "god-of-war-ragnarok.png",
+      "gameId": "god-of-war-ragnarok",
+      "gameTitle": "God of War Ragnarök",
+      "status": "success",
+      "originalSize": 904583,
+      "optimizedSize": 104030,
+      "sizeReduction": 88.49967333014219,
+      "processingTime": 155
+    },
+    {
+      "originalFilename": "god-of-war.png",
+      "gameId": "god-of-war",
+      "gameTitle": "God of War",
+      "status": "success",
+      "originalSize": 736116,
+      "optimizedSize": 69446,
+      "sizeReduction": 90.56588907183108,
+      "processingTime": 101
+    },
+    {
+      "originalFilename": "gone-home.png",
+      "gameId": "gone-home",
+      "gameTitle": "Gone Home",
+      "status": "success",
+      "originalSize": 218933,
+      "optimizedSize": 39980,
+      "sizeReduction": 81.73870544869891,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "gorogoa.png",
+      "gameId": "gorogoa",
+      "gameTitle": "Gorogoa",
+      "status": "success",
+      "originalSize": 12204736,
+      "optimizedSize": 32022,
+      "sizeReduction": 99.73762644271864,
+      "processingTime": 70
+    },
+    {
+      "originalFilename": "grand-theft-auto-v.png",
+      "gameId": "grand-theft-auto-v",
+      "gameTitle": "Grand Theft Auto V",
+      "status": "success",
+      "originalSize": 822320,
+      "optimizedSize": 124992,
+      "sizeReduction": 84.80007782858254,
+      "processingTime": 140
+    },
+    {
+      "originalFilename": "gravity-circuit.png",
+      "gameId": "gravity-circuit",
+      "gameTitle": "Gravity Circuit",
+      "status": "success",
+      "originalSize": 1038569,
+      "optimizedSize": 156342,
+      "sizeReduction": 84.94640221304508,
+      "processingTime": 147
+    },
+    {
+      "originalFilename": "green-hell.png",
+      "gameId": "green-hell",
+      "gameTitle": "Green Hell",
+      "status": "success",
+      "originalSize": 588311,
+      "optimizedSize": 126074,
+      "sizeReduction": 78.57017801808908,
+      "processingTime": 156
+    },
+    {
+      "originalFilename": "grim-fandango.png",
+      "gameId": "grim-fandango",
+      "gameTitle": "Grim Fandango (Remastered)",
+      "status": "success",
+      "originalSize": 745022,
+      "optimizedSize": 61112,
+      "sizeReduction": 91.79728920756702,
+      "processingTime": 97
+    },
+    {
+      "originalFilename": "grime.png",
+      "gameId": "grime",
+      "gameTitle": "GRIME (Definitive Edition)",
+      "status": "success",
+      "originalSize": 300451,
+      "optimizedSize": 87260,
+      "sizeReduction": 70.9569946513741,
+      "processingTime": 129
+    },
+    {
+      "originalFilename": "gris.png",
+      "gameId": "gris",
+      "gameTitle": "GRIS",
+      "status": "success",
+      "originalSize": 721339,
+      "optimizedSize": 87366,
+      "sizeReduction": 87.88835762380795,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "grounded.png",
+      "gameId": "grounded",
+      "gameTitle": "Grounded",
+      "status": "success",
+      "originalSize": 185716,
+      "optimizedSize": 79468,
+      "sizeReduction": 57.20993344676818,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "gunpoint.png",
+      "gameId": "gunpoint",
+      "gameTitle": "Gunpoint",
+      "status": "success",
+      "originalSize": 135805,
+      "optimizedSize": 19774,
+      "sizeReduction": 85.43941681086852,
+      "processingTime": 62
+    },
+    {
+      "originalFilename": "guns-gore-and-cannoli-2.png",
+      "gameId": "guns-gore-and-cannoli-2",
+      "gameTitle": "Guns, Gore and Cannoli 2",
+      "status": "success",
+      "originalSize": 1061250,
+      "optimizedSize": 101888,
+      "sizeReduction": 90.39924617196702,
+      "processingTime": 129
+    },
+    {
+      "originalFilename": "guns-gore-cannoli.png",
+      "gameId": "guns-gore-cannoli",
+      "gameTitle": "Guns, Gore & Cannoli",
+      "status": "success",
+      "originalSize": 1035227,
+      "optimizedSize": 123300,
+      "sizeReduction": 88.08956876124753,
+      "processingTime": 137
+    },
+    {
+      "originalFilename": "hades.png",
+      "gameId": "hades",
+      "gameTitle": "Hades",
+      "status": "success",
+      "originalSize": 580710,
+      "optimizedSize": 83910,
+      "sizeReduction": 85.55044686676655,
+      "processingTime": 104
+    },
+    {
+      "originalFilename": "halflife-2.png",
+      "gameId": "halflife-2",
+      "gameTitle": "Half-Life 2",
+      "status": "success",
+      "originalSize": 728327,
+      "optimizedSize": 48630,
+      "sizeReduction": 93.32305406774705,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "halo-2.png",
+      "gameId": "halo-2",
+      "gameTitle": "Halo 2 (The Master Chief Collection)",
+      "status": "success",
+      "originalSize": 814104,
+      "optimizedSize": 75648,
+      "sizeReduction": 90.70782111376433,
+      "processingTime": 112
+    },
+    {
+      "originalFilename": "halo-3.png",
+      "gameId": "halo-3",
+      "gameTitle": "Halo 3 (The Master Chief Collection)",
+      "status": "success",
+      "originalSize": 435811,
+      "optimizedSize": 39150,
+      "sizeReduction": 91.01674808575278,
+      "processingTime": 74
+    },
+    {
+      "originalFilename": "halo-combat-evolved.png",
+      "gameId": "halo-combat-evolved",
+      "gameTitle": "Halo: Combat Evolved (The Master Chief Collection)",
+      "status": "success",
+      "originalSize": 856471,
+      "optimizedSize": 101534,
+      "sizeReduction": 88.14507438080216,
+      "processingTime": 127
+    },
+    {
+      "originalFilename": "halo-reach.png",
+      "gameId": "halo-reach",
+      "gameTitle": "Halo: Reach (The Master Chief Collection)",
+      "status": "success",
+      "originalSize": 529849,
+      "optimizedSize": 55396,
+      "sizeReduction": 89.54494582418765,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "haunting-ground.png",
+      "gameId": "haunting-ground",
+      "gameTitle": "Haunting Ground",
+      "status": "success",
+      "originalSize": 933437,
+      "optimizedSize": 93262,
+      "sizeReduction": 90.00875259926487,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "heavy-rain.png",
+      "gameId": "heavy-rain",
+      "gameTitle": "Heavy Rain",
+      "status": "success",
+      "originalSize": 394339,
+      "optimizedSize": 38784,
+      "sizeReduction": 90.16480743725577,
+      "processingTime": 79
+    },
+    {
+      "originalFilename": "hellblade-senuas-sacrifice.png",
+      "gameId": "hellblade-senuas-sacrifice",
+      "gameTitle": "Hellblade: Senua's Sacrifice",
+      "status": "success",
+      "originalSize": 576369,
+      "optimizedSize": 68920,
+      "sizeReduction": 88.04238257088774,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "hello-charlotte.png",
+      "gameId": "hello-charlotte",
+      "gameTitle": "Hello Charlotte",
+      "status": "success",
+      "originalSize": 648959,
+      "optimizedSize": 76722,
+      "sizeReduction": 88.17768148681195,
+      "processingTime": 107
+    },
+    {
+      "originalFilename": "her-story.png",
+      "gameId": "her-story",
+      "gameTitle": "Her Story",
+      "status": "success",
+      "originalSize": 203612,
+      "optimizedSize": 18340,
+      "sizeReduction": 90.99267233758324,
+      "processingTime": 51
+    },
+    {
+      "originalFilename": "high-on-life.png",
+      "gameId": "high-on-life",
+      "gameTitle": "High on Life",
+      "status": "success",
+      "originalSize": 840077,
+      "optimizedSize": 83680,
+      "sizeReduction": 90.03900832899842,
+      "processingTime": 112
+    },
+    {
+      "originalFilename": "hitman-world-of-assassination.png",
+      "gameId": "hitman-world-of-assassination",
+      "gameTitle": "Hitman: World of Assassination",
+      "status": "success",
+      "originalSize": 302725,
+      "optimizedSize": 18036,
+      "sizeReduction": 94.04211743331406,
+      "processingTime": 56
+    },
+    {
+      "originalFilename": "hob.png",
+      "gameId": "hob",
+      "gameTitle": "Hob",
+      "status": "success",
+      "originalSize": 703282,
+      "optimizedSize": 56650,
+      "sizeReduction": 91.94490972326889,
+      "processingTime": 107
+    },
+    {
+      "originalFilename": "hollow-knight.png",
+      "gameId": "hollow-knight",
+      "gameTitle": "Hollow Knight",
+      "status": "success",
+      "originalSize": 779904,
+      "optimizedSize": 79106,
+      "sizeReduction": 89.85695675365173,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "homefront.png",
+      "gameId": "homefront",
+      "gameTitle": "Homefront",
+      "status": "success",
+      "originalSize": 186402,
+      "optimizedSize": 74352,
+      "sizeReduction": 60.11201596549394,
+      "processingTime": 106
+    },
+    {
+      "originalFilename": "homeworld-2.png",
+      "gameId": "homeworld-2",
+      "gameTitle": "Homeworld 2 (Remastered Collection)",
+      "status": "success",
+      "originalSize": 756880,
+      "optimizedSize": 70580,
+      "sizeReduction": 90.67487580594018,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "homeworld-deserts-of-kharak.png",
+      "gameId": "homeworld-deserts-of-kharak",
+      "gameTitle": "Homeworld: Deserts of Kharak",
+      "status": "success",
+      "originalSize": 501440,
+      "optimizedSize": 52400,
+      "sizeReduction": 89.55009572431398,
+      "processingTime": 84
+    },
+    {
+      "originalFilename": "homeworld.png",
+      "gameId": "homeworld",
+      "gameTitle": "Homeworld (Remastered Collection)",
+      "status": "success",
+      "originalSize": 804695,
+      "optimizedSize": 55844,
+      "sizeReduction": 93.06022778816819,
+      "processingTime": 96
+    },
+    {
+      "originalFilename": "horizon-forbidden-west.png",
+      "gameId": "horizon-forbidden-west",
+      "gameTitle": "Horizon Forbidden West (Complete Edition)",
+      "status": "success",
+      "originalSize": 1078780,
+      "optimizedSize": 147894,
+      "sizeReduction": 86.29062459444928,
+      "processingTime": 147
+    },
+    {
+      "originalFilename": "horizon-zero-dawn.png",
+      "gameId": "horizon-zero-dawn",
+      "gameTitle": "Horizon Zero Dawn (Complete Edition)",
+      "status": "success",
+      "originalSize": 1258038,
+      "optimizedSize": 210208,
+      "sizeReduction": 83.29080679597914,
+      "processingTime": 187
+    },
+    {
+      "originalFilename": "hotline-miami-2-wrong-number.png",
+      "gameId": "hotline-miami-2-wrong-number",
+      "gameTitle": "Hotline Miami 2: Wrong Number",
+      "status": "success",
+      "originalSize": 1131244,
+      "optimizedSize": 191812,
+      "sizeReduction": 83.04415316235931,
+      "processingTime": 161
+    },
+    {
+      "originalFilename": "hotline-miami.png",
+      "gameId": "hotline-miami",
+      "gameTitle": "Hotline Miami",
+      "status": "success",
+      "originalSize": 2625973,
+      "optimizedSize": 63096,
+      "sizeReduction": 97.59723348259864,
+      "processingTime": 83
+    },
+    {
+      "originalFilename": "hue.png",
+      "gameId": "hue",
+      "gameTitle": "Hue",
+      "status": "success",
+      "originalSize": 477832,
+      "optimizedSize": 78084,
+      "sizeReduction": 83.6586917577726,
+      "processingTime": 118
+    },
+    {
+      "originalFilename": "hyper-light-drifter.png",
+      "gameId": "hyper-light-drifter",
+      "gameTitle": "Hyper Light Drifter",
+      "status": "success",
+      "originalSize": 349119,
+      "optimizedSize": 43292,
+      "sizeReduction": 87.5996436745064,
+      "processingTime": 66
+    },
+    {
+      "originalFilename": "ico.png",
+      "gameId": "ico",
+      "gameTitle": "ICO",
+      "status": "success",
+      "originalSize": 1008057,
+      "optimizedSize": 126366,
+      "sizeReduction": 87.46439933456143,
+      "processingTime": 155
+    },
+    {
+      "originalFilename": "iconoclasts.png",
+      "gameId": "iconoclasts",
+      "gameTitle": "Iconoclasts",
+      "status": "success",
+      "originalSize": 613976,
+      "optimizedSize": 105934,
+      "sizeReduction": 82.74623112304063,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "immortality.png",
+      "gameId": "immortality",
+      "gameTitle": "IMMORTALITY",
+      "status": "success",
+      "originalSize": 912236,
+      "optimizedSize": 106594,
+      "sizeReduction": 88.31508513147914,
+      "processingTime": 134
+    },
+    {
+      "originalFilename": "in-stars-and-time.png",
+      "gameId": "in-stars-and-time",
+      "gameTitle": "In Stars And Time",
+      "status": "success",
+      "originalSize": 284320,
+      "optimizedSize": 43734,
+      "sizeReduction": 84.61803601575689,
+      "processingTime": 78
+    },
+    {
+      "originalFilename": "infamous-2.png",
+      "gameId": "infamous-2",
+      "gameTitle": "inFamous 2",
+      "status": "success",
+      "originalSize": 771225,
+      "optimizedSize": 88416,
+      "sizeReduction": 88.53564134980064,
+      "processingTime": 111
+    },
+    {
+      "originalFilename": "infamous.png",
+      "gameId": "infamous",
+      "gameTitle": "inFamous",
+      "status": "success",
+      "originalSize": 774973,
+      "optimizedSize": 95890,
+      "sizeReduction": 87.62666570319224,
+      "processingTime": 126
+    },
+    {
+      "originalFilename": "infra.png",
+      "gameId": "infra",
+      "gameTitle": "INFRA (Complete Edition)",
+      "status": "success",
+      "originalSize": 641795,
+      "optimizedSize": 31158,
+      "sizeReduction": 95.1451787564565,
+      "processingTime": 78
+    },
+    {
+      "originalFilename": "inmost.png",
+      "gameId": "inmost",
+      "gameTitle": "INMOST",
+      "status": "success",
+      "originalSize": 539043,
+      "optimizedSize": 32380,
+      "sizeReduction": 93.99305806772372,
+      "processingTime": 74
+    },
+    {
+      "originalFilename": "inscryption.png",
+      "gameId": "inscryption",
+      "gameTitle": "Inscryption",
+      "status": "success",
+      "originalSize": 111740,
+      "optimizedSize": 48936,
+      "sizeReduction": 56.20547700017898,
+      "processingTime": 85
+    },
+    {
+      "originalFilename": "inside.png",
+      "gameId": "inside",
+      "gameTitle": "INSIDE",
+      "status": "success",
+      "originalSize": 150963,
+      "optimizedSize": 8942,
+      "sizeReduction": 94.07669428932918,
+      "processingTime": 43
+    },
+    {
+      "originalFilename": "it-takes-two.png",
+      "gameId": "it-takes-two",
+      "gameTitle": "It Takes Two",
+      "status": "success",
+      "originalSize": 767017,
+      "optimizedSize": 84932,
+      "sizeReduction": 88.92697293541082,
+      "processingTime": 107
+    },
+    {
+      "originalFilename": "jak-3.png",
+      "gameId": "jak-3",
+      "gameTitle": "Jak 3 (HD)",
+      "status": "success",
+      "originalSize": 822804,
+      "optimizedSize": 85314,
+      "sizeReduction": 89.6313095220733,
+      "processingTime": 111
+    },
+    {
+      "originalFilename": "jak-and-daxter-the-precursor-legacy.png",
+      "gameId": "jak-and-daxter-the-precursor-legacy",
+      "gameTitle": "Jak and Daxter: The Precursor Legacy (HD)",
+      "status": "success",
+      "originalSize": 2495692,
+      "optimizedSize": 111284,
+      "sizeReduction": 95.54095617568194,
+      "processingTime": 166
+    },
+    {
+      "originalFilename": "jak-ii.png",
+      "gameId": "jak-ii",
+      "gameTitle": "Jak II (HD)",
+      "status": "success",
+      "originalSize": 930132,
+      "optimizedSize": 106328,
+      "sizeReduction": 88.56850425531,
+      "processingTime": 135
+    },
+    {
+      "originalFilename": "jotun.png",
+      "gameId": "jotun",
+      "gameTitle": "Jotun (Valhalla Edition)",
+      "status": "success",
+      "originalSize": 421932,
+      "optimizedSize": 36636,
+      "sizeReduction": 91.31708426950314,
+      "processingTime": 74
+    },
+    {
+      "originalFilename": "journey.png",
+      "gameId": "journey",
+      "gameTitle": "Journey",
+      "status": "success",
+      "originalSize": 477593,
+      "optimizedSize": 15622,
+      "sizeReduction": 96.72901403496283,
+      "processingTime": 59
+    },
+    {
+      "originalFilename": "judgment.png",
+      "gameId": "judgment",
+      "gameTitle": "Judgment",
+      "status": "success",
+      "originalSize": 752092,
+      "optimizedSize": 88364,
+      "sizeReduction": 88.25090547433027,
+      "processingTime": 117
+    },
+    {
+      "originalFilename": "jusant.png",
+      "gameId": "jusant",
+      "gameTitle": "Jusant",
+      "status": "success",
+      "originalSize": 366347,
+      "optimizedSize": 59346,
+      "sizeReduction": 83.80060434506082,
+      "processingTime": 89
+    },
+    {
+      "originalFilename": "just-cause-2.png",
+      "gameId": "just-cause-2",
+      "gameTitle": "Just Cause 2",
+      "status": "success",
+      "originalSize": 698066,
+      "optimizedSize": 86540,
+      "sizeReduction": 87.60289141714394,
+      "processingTime": 111
+    },
+    {
+      "originalFilename": "just-cause-3.png",
+      "gameId": "just-cause-3",
+      "gameTitle": "Just Cause 3 (XL Edition)",
+      "status": "success",
+      "originalSize": 1082204,
+      "optimizedSize": 158028,
+      "sizeReduction": 85.39757753621313,
+      "processingTime": 165
+    },
+    {
+      "originalFilename": "katana-hero.png",
+      "gameId": "katana-hero",
+      "gameTitle": "Katana HERO",
+      "status": "success",
+      "originalSize": 375459,
+      "optimizedSize": 117754,
+      "sizeReduction": 68.63732125212074,
+      "processingTime": 166
+    },
+    {
+      "originalFilename": "katana-zero.png",
+      "gameId": "katana-zero",
+      "gameTitle": "Katana ZERO",
+      "status": "success",
+      "originalSize": 828776,
+      "optimizedSize": 110612,
+      "sizeReduction": 86.65357104935471,
+      "processingTime": 115
+    },
+    {
+      "originalFilename": "kaze-and-the-wild-masks.png",
+      "gameId": "kaze-and-the-wild-masks",
+      "gameTitle": "Kaze and the Wild Masks",
+      "status": "success",
+      "originalSize": 777421,
+      "optimizedSize": 94586,
+      "sizeReduction": 87.8333618464127,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "kena-bridge-of-spirits.png",
+      "gameId": "kena-bridge-of-spirits",
+      "gameTitle": "Kena: Bridge of Spirits",
+      "status": "success",
+      "originalSize": 702703,
+      "optimizedSize": 71588,
+      "sizeReduction": 89.81248123318102,
+      "processingTime": 110
+    },
+    {
+      "originalFilename": "kentucky-route-zero.png",
+      "gameId": "kentucky-route-zero",
+      "gameTitle": "Kentucky Route Zero",
+      "status": "success",
+      "originalSize": 752125,
+      "optimizedSize": 41374,
+      "sizeReduction": 94.49905268406182,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "kid-icarus-uprising.png",
+      "gameId": "kid-icarus-uprising",
+      "gameTitle": "Kid Icarus: Uprising",
+      "status": "success",
+      "originalSize": 824570,
+      "optimizedSize": 97186,
+      "sizeReduction": 88.21373564403264,
+      "processingTime": 114
+    },
+    {
+      "originalFilename": "kill-knight.png",
+      "gameId": "kill-knight",
+      "gameTitle": "KILL KNIGHT",
+      "status": "success",
+      "originalSize": 915881,
+      "optimizedSize": 98256,
+      "sizeReduction": 89.27196873829679,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "killer-frequency.png",
+      "gameId": "killer-frequency",
+      "gameTitle": "Killer Frequency",
+      "status": "success",
+      "originalSize": 677736,
+      "optimizedSize": 63256,
+      "sizeReduction": 90.66657223461642,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "killer7.png",
+      "gameId": "killer7",
+      "gameTitle": "killer7",
+      "status": "success",
+      "originalSize": 249429,
+      "optimizedSize": 44388,
+      "sizeReduction": 82.20415428839469,
+      "processingTime": 66
+    },
+    {
+      "originalFilename": "killzone-2.png",
+      "gameId": "killzone-2",
+      "gameTitle": "Killzone 2",
+      "status": "success",
+      "originalSize": 93965,
+      "optimizedSize": 40964,
+      "sizeReduction": 56.40504443143723,
+      "processingTime": 75
+    },
+    {
+      "originalFilename": "killzone-3.png",
+      "gameId": "killzone-3",
+      "gameTitle": "Killzone 3",
+      "status": "success",
+      "originalSize": 917436,
+      "optimizedSize": 113958,
+      "sizeReduction": 87.57864308791022,
+      "processingTime": 137
+    },
+    {
+      "originalFilename": "kingdom-come-deliverance-ii.png",
+      "gameId": "kingdom-come-deliverance-ii",
+      "gameTitle": "Kingdom Come: Deliverance II",
+      "status": "success",
+      "originalSize": 644810,
+      "optimizedSize": 67778,
+      "sizeReduction": 89.48868658984817,
+      "processingTime": 105
+    },
+    {
+      "originalFilename": "kingdom-come-deliverance.png",
+      "gameId": "kingdom-come-deliverance",
+      "gameTitle": "Kingdom Come: Deliverance",
+      "status": "success",
+      "originalSize": 1016470,
+      "optimizedSize": 134634,
+      "sizeReduction": 86.7547492793688,
+      "processingTime": 156
+    },
+    {
+      "originalFilename": "kingdom-hearts-ii.png",
+      "gameId": "kingdom-hearts-ii",
+      "gameTitle": "Kingdom Hearts II (Final Mix)",
+      "status": "success",
+      "originalSize": 984262,
+      "optimizedSize": 129622,
+      "sizeReduction": 86.83053902314629,
+      "processingTime": 131
+    },
+    {
+      "originalFilename": "kingdom-hearts.png",
+      "gameId": "kingdom-hearts",
+      "gameTitle": "Kingdom Hearts (Final Mix)",
+      "status": "success",
+      "originalSize": 776758,
+      "optimizedSize": 103662,
+      "sizeReduction": 86.65453075475244,
+      "processingTime": 115
+    },
+    {
+      "originalFilename": "la-noire.png",
+      "gameId": "la-noire",
+      "gameTitle": "L.A. Noire (Complete Edition)",
+      "status": "success",
+      "originalSize": 786266,
+      "optimizedSize": 98820,
+      "sizeReduction": 87.43173429857072,
+      "processingTime": 122
+    },
+    {
+      "originalFilename": "lacuna-a-scifi-noir-adventure.png",
+      "gameId": "lacuna-a-scifi-noir-adventure",
+      "gameTitle": "Lacuna: A Sci-Fi Noir Adventure",
+      "status": "success",
+      "originalSize": 936380,
+      "optimizedSize": 90844,
+      "sizeReduction": 90.298383135052,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "last-day-of-june.png",
+      "gameId": "last-day-of-june",
+      "gameTitle": "Last Day of June",
+      "status": "success",
+      "originalSize": 509224,
+      "optimizedSize": 37730,
+      "sizeReduction": 92.59068700611127,
+      "processingTime": 79
+    },
+    {
+      "originalFilename": "legacy-of-kain-defiance.png",
+      "gameId": "legacy-of-kain-defiance",
+      "gameTitle": "Legacy of Kain: Defiance",
+      "status": "success",
+      "originalSize": 850421,
+      "optimizedSize": 101658,
+      "sizeReduction": 88.04615596275256,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "legacy-of-kain-soul-reaver-2.png",
+      "gameId": "legacy-of-kain-soul-reaver-2",
+      "gameTitle": "Legacy of Kain: Soul Reaver 2 (Remastered)",
+      "status": "success",
+      "originalSize": 1011652,
+      "optimizedSize": 144432,
+      "sizeReduction": 85.72315381178508,
+      "processingTime": 151
+    },
+    {
+      "originalFilename": "legacy-of-kain-soul-reaver.png",
+      "gameId": "legacy-of-kain-soul-reaver",
+      "gameTitle": "Legacy of Kain: Soul Reaver (Remastered)",
+      "status": "success",
+      "originalSize": 872030,
+      "optimizedSize": 92100,
+      "sizeReduction": 89.4384367510292,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "library-of-ruina.png",
+      "gameId": "library-of-ruina",
+      "gameTitle": "Library of Ruina",
+      "status": "success",
+      "originalSize": 768703,
+      "optimizedSize": 82874,
+      "sizeReduction": 89.21898314433533,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "limbo.png",
+      "gameId": "limbo",
+      "gameTitle": "LIMBO",
+      "status": "success",
+      "originalSize": 6117219,
+      "optimizedSize": 9692,
+      "sizeReduction": 99.84156199083276,
+      "processingTime": 50
+    },
+    {
+      "originalFilename": "lisa-the-painful.png",
+      "gameId": "lisa-the-painful",
+      "gameTitle": "LISA: The Painful",
+      "status": "success",
+      "originalSize": 629626,
+      "optimizedSize": 39170,
+      "sizeReduction": 93.77884648982095,
+      "processingTime": 595
+    },
+    {
+      "originalFilename": "little-misfortune.png",
+      "gameId": "little-misfortune",
+      "gameTitle": "Little Misfortune",
+      "status": "success",
+      "originalSize": 907327,
+      "optimizedSize": 107528,
+      "sizeReduction": 88.14892535987576,
+      "processingTime": 132
+    },
+    {
+      "originalFilename": "little-nightmares-ii.png",
+      "gameId": "little-nightmares-ii",
+      "gameTitle": "Little Nightmares II",
+      "status": "success",
+      "originalSize": 710002,
+      "optimizedSize": 52324,
+      "sizeReduction": 92.63044329452593,
+      "processingTime": 92
+    },
+    {
+      "originalFilename": "little-nightmares.png",
+      "gameId": "little-nightmares",
+      "gameTitle": "Little Nightmares",
+      "status": "success",
+      "originalSize": 598161,
+      "optimizedSize": 50194,
+      "sizeReduction": 91.60861373442935,
+      "processingTime": 88
+    },
+    {
+      "originalFilename": "lorelei-and-the-laser-eyes.png",
+      "gameId": "lorelei-and-the-laser-eyes",
+      "gameTitle": "Lorelei and the Laser Eyes",
+      "status": "success",
+      "originalSize": 93736,
+      "optimizedSize": 40210,
+      "sizeReduction": 57.10292737048732,
+      "processingTime": 84
+    },
+    {
+      "originalFilename": "lost-ember.png",
+      "gameId": "lost-ember",
+      "gameTitle": "Lost Ember",
+      "status": "success",
+      "originalSize": 727914,
+      "optimizedSize": 66720,
+      "sizeReduction": 90.83408204815404,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "lost-in-random.png",
+      "gameId": "lost-in-random",
+      "gameTitle": "Lost In Random",
+      "status": "success",
+      "originalSize": 883990,
+      "optimizedSize": 88814,
+      "sizeReduction": 89.95305376757655,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "lost-judgment.png",
+      "gameId": "lost-judgment",
+      "gameTitle": "Lost Judgment",
+      "status": "success",
+      "originalSize": 676421,
+      "optimizedSize": 57136,
+      "sizeReduction": 91.55318950771783,
+      "processingTime": 97
+    },
+    {
+      "originalFilename": "machinarium.png",
+      "gameId": "machinarium",
+      "gameTitle": "Machinarium",
+      "status": "success",
+      "originalSize": 830729,
+      "optimizedSize": 91900,
+      "sizeReduction": 88.9374272476343,
+      "processingTime": 119
+    },
+    {
+      "originalFilename": "madison.png",
+      "gameId": "madison",
+      "gameTitle": "MADiSON",
+      "status": "success",
+      "originalSize": 538818,
+      "optimizedSize": 35100,
+      "sizeReduction": 93.48574101087937,
+      "processingTime": 76
+    },
+    {
+      "originalFilename": "mafia-ii.png",
+      "gameId": "mafia-ii",
+      "gameTitle": "Mafia II",
+      "status": "success",
+      "originalSize": 444759,
+      "optimizedSize": 95346,
+      "sizeReduction": 78.56232251623913,
+      "processingTime": 134
+    },
+    {
+      "originalFilename": "mafia-iii.png",
+      "gameId": "mafia-iii",
+      "gameTitle": "Mafia III (Definitive Edition)",
+      "status": "success",
+      "originalSize": 1094155,
+      "optimizedSize": 166044,
+      "sizeReduction": 84.8244535737624,
+      "processingTime": 169
+    },
+    {
+      "originalFilename": "mafia.png",
+      "gameId": "mafia",
+      "gameTitle": "Mafia",
+      "status": "success",
+      "originalSize": 184645,
+      "optimizedSize": 32522,
+      "sizeReduction": 82.38674212678383,
+      "processingTime": 55
+    },
+    {
+      "originalFilename": "maniac-mansion.png",
+      "gameId": "maniac-mansion",
+      "gameTitle": "Maniac Mansion (Deluxe)",
+      "status": "success",
+      "originalSize": 713355,
+      "optimizedSize": 72902,
+      "sizeReduction": 89.78040386623772,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "manifold-garden.png",
+      "gameId": "manifold-garden",
+      "gameTitle": "Manifold Garden",
+      "status": "success",
+      "originalSize": 771968,
+      "optimizedSize": 104486,
+      "sizeReduction": 86.46498300447686,
+      "processingTime": 114
+    },
+    {
+      "originalFilename": "mark-of-the-ninja.png",
+      "gameId": "mark-of-the-ninja",
+      "gameTitle": "Mark of the Ninja (Remastered)",
+      "status": "success",
+      "originalSize": 1018150,
+      "optimizedSize": 99828,
+      "sizeReduction": 90.19515788439817,
+      "processingTime": 130
+    },
+    {
+      "originalFilename": "marvels-guardians-of-the-galaxy.png",
+      "gameId": "marvels-guardians-of-the-galaxy",
+      "gameTitle": "Marvel's Guardians of the Galaxy",
+      "status": "success",
+      "originalSize": 871242,
+      "optimizedSize": 107908,
+      "sizeReduction": 87.61446303093744,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "marvels-spiderman-miles-morales.png",
+      "gameId": "marvels-spiderman-miles-morales",
+      "gameTitle": "Marvel's Spider-Man: Miles Morales",
+      "status": "success",
+      "originalSize": 424432,
+      "optimizedSize": 44938,
+      "sizeReduction": 89.4122026614393,
+      "processingTime": 77
+    },
+    {
+      "originalFilename": "marvels-spiderman.png",
+      "gameId": "marvels-spiderman",
+      "gameTitle": "Marvel’s  Spider-Man (Remastered)",
+      "status": "success",
+      "originalSize": 429256,
+      "optimizedSize": 50046,
+      "sizeReduction": 88.34122295320275,
+      "processingTime": 73
+    },
+    {
+      "originalFilename": "mass-effect-2.png",
+      "gameId": "mass-effect-2",
+      "gameTitle": "Mass Effect 2 (Legendary Edition)",
+      "status": "success",
+      "originalSize": 727823,
+      "optimizedSize": 70432,
+      "sizeReduction": 90.32292191920288,
+      "processingTime": 127
+    },
+    {
+      "originalFilename": "mass-effect-3.png",
+      "gameId": "mass-effect-3",
+      "gameTitle": "Mass Effect 3 (Legendary Edition)",
+      "status": "success",
+      "originalSize": 824200,
+      "optimizedSize": 88412,
+      "sizeReduction": 89.27299199223489,
+      "processingTime": 128
+    },
+    {
+      "originalFilename": "mass-effect.png",
+      "gameId": "mass-effect",
+      "gameTitle": "Mass Effect (Legendary Edition)",
+      "status": "success",
+      "originalSize": 942655,
+      "optimizedSize": 131050,
+      "sizeReduction": 86.09777702340729,
+      "processingTime": 141
+    },
+    {
+      "originalFilename": "max-payne-2-the-fall-of-max-payne.png",
+      "gameId": "max-payne-2-the-fall-of-max-payne",
+      "gameTitle": "Max Payne 2: The Fall of Max Payne",
+      "status": "success",
+      "originalSize": 164190,
+      "optimizedSize": 29142,
+      "sizeReduction": 82.25105061209574,
+      "processingTime": 58
+    },
+    {
+      "originalFilename": "max-payne-3.png",
+      "gameId": "max-payne-3",
+      "gameTitle": "Max Payne 3 (Complete Edition)",
+      "status": "success",
+      "originalSize": 157699,
+      "optimizedSize": 25760,
+      "sizeReduction": 83.66508348182296,
+      "processingTime": 53
+    },
+    {
+      "originalFilename": "max-payne.png",
+      "gameId": "max-payne",
+      "gameTitle": "Max Payne",
+      "status": "success",
+      "originalSize": 46698,
+      "optimizedSize": 18884,
+      "sizeReduction": 59.56143732065613,
+      "processingTime": 44
+    },
+    {
+      "originalFilename": "mega-man-2.png",
+      "gameId": "mega-man-2",
+      "gameTitle": "Mega Man 2 (Legacy Collection)",
+      "status": "success",
+      "originalSize": 385594,
+      "optimizedSize": 178660,
+      "sizeReduction": 53.66629148793809,
+      "processingTime": 177
+    },
+    {
+      "originalFilename": "mega-man-3.png",
+      "gameId": "mega-man-3",
+      "gameTitle": "Mega Man 3 (Legacy Collection)",
+      "status": "success",
+      "originalSize": 1017683,
+      "optimizedSize": 119348,
+      "sizeReduction": 88.27257603792144,
+      "processingTime": 139
+    },
+    {
+      "originalFilename": "mega-man-x.png",
+      "gameId": "mega-man-x",
+      "gameTitle": "Mega Man X (Legacy Collection)",
+      "status": "success",
+      "originalSize": 982789,
+      "optimizedSize": 141842,
+      "sizeReduction": 85.56740053053097,
+      "processingTime": 139
+    },
+    {
+      "originalFilename": "mega-man-x4.png",
+      "gameId": "mega-man-x4",
+      "gameTitle": "Mega Man X4 (Legacy Collection)",
+      "status": "success",
+      "originalSize": 888151,
+      "optimizedSize": 107666,
+      "sizeReduction": 87.87751181949916,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "mega-man-zero-3.png",
+      "gameId": "mega-man-zero-3",
+      "gameTitle": "Mega Man Zero 3 (Legacy Collection)",
+      "status": "success",
+      "originalSize": 756969,
+      "optimizedSize": 87586,
+      "sizeReduction": 88.42938085971817,
+      "processingTime": 110
+    },
+    {
+      "originalFilename": "metal-gear-rising-revengeance.png",
+      "gameId": "metal-gear-rising-revengeance",
+      "gameTitle": "Metal Gear Rising: Revengeance",
+      "status": "success",
+      "originalSize": 927296,
+      "optimizedSize": 97746,
+      "sizeReduction": 89.45902926357927,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "metal-gear-solid-2-sons-of-liberty.png",
+      "gameId": "metal-gear-solid-2-sons-of-liberty",
+      "gameTitle": "Metal Gear Solid 2: Sons of Liberty",
+      "status": "success",
+      "originalSize": 648387,
+      "optimizedSize": 87004,
+      "sizeReduction": 86.58147063405033,
+      "processingTime": 110
+    },
+    {
+      "originalFilename": "metal-gear-solid-3-snake-eater.png",
+      "gameId": "metal-gear-solid-3-snake-eater",
+      "gameTitle": "Metal Gear Solid 3 Δ: Snake Eater",
+      "status": "success",
+      "originalSize": 838047,
+      "optimizedSize": 119884,
+      "sizeReduction": 85.6948357311702,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "metal-gear-solid-4-guns-of-the-patriots.png",
+      "gameId": "metal-gear-solid-4-guns-of-the-patriots",
+      "gameTitle": "Metal Gear Solid 4: Guns of the Patriots",
+      "status": "success",
+      "originalSize": 961093,
+      "optimizedSize": 120866,
+      "sizeReduction": 87.42410984160742,
+      "processingTime": 141
+    },
+    {
+      "originalFilename": "metal-gear-solid-v-the-phantom-pain.png",
+      "gameId": "metal-gear-solid-v-the-phantom-pain",
+      "gameTitle": "Metal Gear Solid V: The Phantom Pain",
+      "status": "success",
+      "originalSize": 541064,
+      "optimizedSize": 64956,
+      "sizeReduction": 87.99476586873271,
+      "processingTime": 91
+    },
+    {
+      "originalFilename": "metal-gear-solid.png",
+      "gameId": "metal-gear-solid",
+      "gameTitle": "Metal Gear Solid",
+      "status": "success",
+      "originalSize": 502111,
+      "optimizedSize": 67048,
+      "sizeReduction": 86.64677730621317,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "metro-2033.png",
+      "gameId": "metro-2033",
+      "gameTitle": "Metro 2033 (Redux)",
+      "status": "success",
+      "originalSize": 842566,
+      "optimizedSize": 95300,
+      "sizeReduction": 88.68931335942823,
+      "processingTime": 121
+    },
+    {
+      "originalFilename": "metro-exodus.png",
+      "gameId": "metro-exodus",
+      "gameTitle": "Metro: Exodus (Enhanced Edition)",
+      "status": "success",
+      "originalSize": 832635,
+      "optimizedSize": 134064,
+      "sizeReduction": 83.89882721720802,
+      "processingTime": 151
+    },
+    {
+      "originalFilename": "metro-last-light.png",
+      "gameId": "metro-last-light",
+      "gameTitle": "Metro: Last Light (Redux)",
+      "status": "success",
+      "originalSize": 812987,
+      "optimizedSize": 110858,
+      "sizeReduction": 86.36411160326057,
+      "processingTime": 138
+    },
+    {
+      "originalFilename": "metroid-prime.png",
+      "gameId": "metroid-prime",
+      "gameTitle": "Metroid Prime (Remastered)",
+      "status": "success",
+      "originalSize": 673543,
+      "optimizedSize": 58582,
+      "sizeReduction": 91.30241127886416,
+      "processingTime": 95
+    },
+    {
+      "originalFilename": "mirrors-edge.png",
+      "gameId": "mirrors-edge",
+      "gameTitle": "Mirror's Edge",
+      "status": "success",
+      "originalSize": 512487,
+      "optimizedSize": 36810,
+      "sizeReduction": 92.81737878229106,
+      "processingTime": 72
+    },
+    {
+      "originalFilename": "monkey-island-2-lechucks-revenge.png",
+      "gameId": "monkey-island-2-lechucks-revenge",
+      "gameTitle": "Monkey Island 2: LeChuck's Revenge (Special Edition)",
+      "status": "success",
+      "originalSize": 962832,
+      "optimizedSize": 112944,
+      "sizeReduction": 88.26960466623461,
+      "processingTime": 129
+    },
+    {
+      "originalFilename": "monument-valley-ii.png",
+      "gameId": "monument-valley-ii",
+      "gameTitle": "Monument Valley II (Panoramic Edition)",
+      "status": "success",
+      "originalSize": 98150,
+      "optimizedSize": 28304,
+      "sizeReduction": 71.16250636780438,
+      "processingTime": 61
+    },
+    {
+      "originalFilename": "monument-valley.png",
+      "gameId": "monument-valley",
+      "gameTitle": "Monument Valley (Panoramic Edition)",
+      "status": "success",
+      "originalSize": 263412,
+      "optimizedSize": 23846,
+      "sizeReduction": 90.9472613244651,
+      "processingTime": 60
+    },
+    {
+      "originalFilename": "moonscars.png",
+      "gameId": "moonscars",
+      "gameTitle": "Moonscars",
+      "status": "success",
+      "originalSize": 334105,
+      "optimizedSize": 63324,
+      "sizeReduction": 81.04667694287724,
+      "processingTime": 114
+    },
+    {
+      "originalFilename": "mother-3.png",
+      "gameId": "mother-3",
+      "gameTitle": "Mother 3",
+      "status": "success",
+      "originalSize": 104431,
+      "optimizedSize": 13222,
+      "sizeReduction": 87.33900853194932,
+      "processingTime": 39
+    },
+    {
+      "originalFilename": "mouthwashing.png",
+      "gameId": "mouthwashing",
+      "gameTitle": "Mouthwashing",
+      "status": "success",
+      "originalSize": 1009377,
+      "optimizedSize": 167788,
+      "sizeReduction": 83.37707318474664,
+      "processingTime": 157
+    },
+    {
+      "originalFilename": "murdered-soul-suspect.png",
+      "gameId": "murdered-soul-suspect",
+      "gameTitle": "Murdered: Soul Suspect",
+      "status": "success",
+      "originalSize": 791100,
+      "optimizedSize": 75502,
+      "sizeReduction": 90.45607382126154,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "my-friend-pedro.png",
+      "gameId": "my-friend-pedro",
+      "gameTitle": "My Friend Pedro",
+      "status": "success",
+      "originalSize": 567817,
+      "optimizedSize": 81560,
+      "sizeReduction": 85.63621730240553,
+      "processingTime": 578
+    },
+    {
+      "originalFilename": "neo-the-world-ends-with-you.png",
+      "gameId": "neo-the-world-ends-with-you",
+      "gameTitle": "NEO: The World Ends with You",
+      "status": "success",
+      "originalSize": 854210,
+      "optimizedSize": 147862,
+      "sizeReduction": 82.69020498472273,
+      "processingTime": 622
+    },
+    {
+      "originalFilename": "nierautomata.png",
+      "gameId": "nierautomata",
+      "gameTitle": "NieR:Automata",
+      "status": "success",
+      "originalSize": 742054,
+      "optimizedSize": 81630,
+      "sizeReduction": 88.99945287000676,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "night-in-the-woods.png",
+      "gameId": "night-in-the-woods",
+      "gameTitle": "Night in the Woods",
+      "status": "success",
+      "originalSize": 873327,
+      "optimizedSize": 70830,
+      "sizeReduction": 91.8896358408706,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "nine-sols.png",
+      "gameId": "nine-sols",
+      "gameTitle": "Nine Sols",
+      "status": "success",
+      "originalSize": 448948,
+      "optimizedSize": 87276,
+      "sizeReduction": 80.55988666838921,
+      "processingTime": 105
+    },
+    {
+      "originalFilename": "ninja-gaiden-black.png",
+      "gameId": "ninja-gaiden-black",
+      "gameTitle": "Ninja Gaiden Black",
+      "status": "success",
+      "originalSize": 571236,
+      "optimizedSize": 69512,
+      "sizeReduction": 87.83129914781281,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "ninja-gaiden-ii.png",
+      "gameId": "ninja-gaiden-ii",
+      "gameTitle": "Ninja Gaiden II",
+      "status": "success",
+      "originalSize": 756926,
+      "optimizedSize": 51110,
+      "sizeReduction": 93.24768867762504,
+      "processingTime": 92
+    },
+    {
+      "originalFilename": "nioh-2.png",
+      "gameId": "nioh-2",
+      "gameTitle": "Nioh 2 (Complete Edition)",
+      "status": "success",
+      "originalSize": 756316,
+      "optimizedSize": 75416,
+      "sizeReduction": 90.0285066030601,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "nioh.png",
+      "gameId": "nioh",
+      "gameTitle": "Nioh",
+      "status": "success",
+      "originalSize": 922322,
+      "optimizedSize": 109870,
+      "sizeReduction": 88.08767436968867,
+      "processingTime": 127
+    },
+    {
+      "originalFilename": "no-more-heroes.png",
+      "gameId": "no-more-heroes",
+      "gameTitle": "No More Heroes",
+      "status": "success",
+      "originalSize": 318111,
+      "optimizedSize": 94222,
+      "sizeReduction": 70.38077903624836,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "noita.png",
+      "gameId": "noita",
+      "gameTitle": "Noita",
+      "status": "success",
+      "originalSize": 335136,
+      "optimizedSize": 38124,
+      "sizeReduction": 88.62431967917502,
+      "processingTime": 72
+    },
+    {
+      "originalFilename": "norco.png",
+      "gameId": "norco",
+      "gameTitle": "NORCO",
+      "status": "success",
+      "originalSize": 1917186,
+      "optimizedSize": 31482,
+      "sizeReduction": 98.35790580569648,
+      "processingTime": 81
+    },
+    {
+      "originalFilename": "not-a-hero.png",
+      "gameId": "not-a-hero",
+      "gameTitle": "NOT A HERO",
+      "status": "success",
+      "originalSize": 171849,
+      "optimizedSize": 29308,
+      "sizeReduction": 82.94549284546316,
+      "processingTime": 57
+    },
+    {
+      "originalFilename": "oblivion-override.png",
+      "gameId": "oblivion-override",
+      "gameTitle": "Oblivion Override",
+      "status": "success",
+      "originalSize": 189654,
+      "optimizedSize": 80554,
+      "sizeReduction": 57.525810159553714,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "okami-hd.png",
+      "gameId": "okami-hd",
+      "gameTitle": "Okami HD",
+      "status": "success",
+      "originalSize": 1076722,
+      "optimizedSize": 147936,
+      "sizeReduction": 86.26052035715811,
+      "processingTime": 154
+    },
+    {
+      "originalFilename": "omno.png",
+      "gameId": "omno",
+      "gameTitle": "Omno",
+      "status": "success",
+      "originalSize": 162066,
+      "optimizedSize": 50664,
+      "sizeReduction": 68.73866202658176,
+      "processingTime": 81
+    },
+    {
+      "originalFilename": "omori.png",
+      "gameId": "omori",
+      "gameTitle": "OMORI",
+      "status": "success",
+      "originalSize": 501891,
+      "optimizedSize": 33272,
+      "sizeReduction": 93.37067211804954,
+      "processingTime": 71
+    },
+    {
+      "originalFilename": "oneshot.png",
+      "gameId": "oneshot",
+      "gameTitle": "OneShot",
+      "status": "success",
+      "originalSize": 5205982,
+      "optimizedSize": 49374,
+      "sizeReduction": 99.05159103508232,
+      "processingTime": 101
+    },
+    {
+      "originalFilename": "ori-and-the-blind-forest.png",
+      "gameId": "ori-and-the-blind-forest",
+      "gameTitle": "Ori and the Blind Forest (Definitive Edition)",
+      "status": "success",
+      "originalSize": 830452,
+      "optimizedSize": 80176,
+      "sizeReduction": 90.34549859594534,
+      "processingTime": 111
+    },
+    {
+      "originalFilename": "ori-and-the-will-of-the-wisps.png",
+      "gameId": "ori-and-the-will-of-the-wisps",
+      "gameTitle": "Ori and the Will of the Wisps",
+      "status": "success",
+      "originalSize": 707244,
+      "optimizedSize": 61942,
+      "sizeReduction": 91.24177794367996,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "outer-wilds.png",
+      "gameId": "outer-wilds",
+      "gameTitle": "Outer Wilds",
+      "status": "success",
+      "originalSize": 485409,
+      "optimizedSize": 62890,
+      "sizeReduction": 87.04391554338712,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "outlast-2.png",
+      "gameId": "outlast-2",
+      "gameTitle": "Outlast 2",
+      "status": "success",
+      "originalSize": 880350,
+      "optimizedSize": 90770,
+      "sizeReduction": 89.68932810813881,
+      "processingTime": 174
+    },
+    {
+      "originalFilename": "outlast.png",
+      "gameId": "outlast",
+      "gameTitle": "Outlast",
+      "status": "success",
+      "originalSize": 441770,
+      "optimizedSize": 30998,
+      "sizeReduction": 92.98322656586006,
+      "processingTime": 79
+    },
+    {
+      "originalFilename": "oxenfree.png",
+      "gameId": "oxenfree",
+      "gameTitle": "Oxenfree",
+      "status": "success",
+      "originalSize": 188267,
+      "optimizedSize": 23218,
+      "sizeReduction": 87.6675147529838,
+      "processingTime": 66
+    },
+    {
+      "originalFilename": "papers-please.png",
+      "gameId": "papers-please",
+      "gameTitle": "Papers, Please",
+      "status": "success",
+      "originalSize": 62192,
+      "optimizedSize": 13894,
+      "sizeReduction": 77.65950604579366,
+      "processingTime": 43
+    },
+    {
+      "originalFilename": "pathologic-2.png",
+      "gameId": "pathologic-2",
+      "gameTitle": "Pathologic 2",
+      "status": "success",
+      "originalSize": 557010,
+      "optimizedSize": 53506,
+      "sizeReduction": 90.39406832911438,
+      "processingTime": 84
+    },
+    {
+      "originalFilename": "pentiment.png",
+      "gameId": "pentiment",
+      "gameTitle": "Pentiment",
+      "status": "success",
+      "originalSize": 535580,
+      "optimizedSize": 54100,
+      "sizeReduction": 89.89880129952574,
+      "processingTime": 88
+    },
+    {
+      "originalFilename": "persona-3-reload.png",
+      "gameId": "persona-3-reload",
+      "gameTitle": "Persona 3 Reload",
+      "status": "success",
+      "originalSize": 256292,
+      "optimizedSize": 52796,
+      "sizeReduction": 79.40005930735255,
+      "processingTime": 71
+    },
+    {
+      "originalFilename": "persona-4-golden.png",
+      "gameId": "persona-4-golden",
+      "gameTitle": "Persona 4 Golden",
+      "status": "success",
+      "originalSize": 194691,
+      "optimizedSize": 50218,
+      "sizeReduction": 74.20630640348038,
+      "processingTime": 71
+    },
+    {
+      "originalFilename": "persona-5-royal.png",
+      "gameId": "persona-5-royal",
+      "gameTitle": "Persona 5 Royal",
+      "status": "success",
+      "originalSize": 165690,
+      "optimizedSize": 52554,
+      "sizeReduction": 68.2817309433279,
+      "processingTime": 69
+    },
+    {
+      "originalFilename": "pillars-of-eternity-ii-deadfire.png",
+      "gameId": "pillars-of-eternity-ii-deadfire",
+      "gameTitle": "Pillars of Eternity II: Deadfire",
+      "status": "success",
+      "originalSize": 869765,
+      "optimizedSize": 105130,
+      "sizeReduction": 87.91282702799032,
+      "processingTime": 134
+    },
+    {
+      "originalFilename": "planescape-torment.png",
+      "gameId": "planescape-torment",
+      "gameTitle": "Planescape: Torment (Enhanced Edition)",
+      "status": "success",
+      "originalSize": 808818,
+      "optimizedSize": 97732,
+      "sizeReduction": 87.91668830317822,
+      "processingTime": 117
+    },
+    {
+      "originalFilename": "pony-island.png",
+      "gameId": "pony-island",
+      "gameTitle": "Pony Island",
+      "status": "success",
+      "originalSize": 175738,
+      "optimizedSize": 14384,
+      "sizeReduction": 91.81508837018744,
+      "processingTime": 49
+    },
+    {
+      "originalFilename": "portal-2.png",
+      "gameId": "portal-2",
+      "gameTitle": "Portal 2",
+      "status": "success",
+      "originalSize": 236882,
+      "optimizedSize": 43442,
+      "sizeReduction": 81.6609113398232,
+      "processingTime": 85
+    },
+    {
+      "originalFilename": "portal-reloaded.png",
+      "gameId": "portal-reloaded",
+      "gameTitle": "Portal Reloaded",
+      "status": "success",
+      "originalSize": 52230,
+      "optimizedSize": 18406,
+      "sizeReduction": 64.75971663794753,
+      "processingTime": 43
+    },
+    {
+      "originalFilename": "portal-stories-mel.png",
+      "gameId": "portal-stories-mel",
+      "gameTitle": "Portal Stories: Mel",
+      "status": "success",
+      "originalSize": 273467,
+      "optimizedSize": 57720,
+      "sizeReduction": 78.89324854552835,
+      "processingTime": 94
+    },
+    {
+      "originalFilename": "portal.png",
+      "gameId": "portal",
+      "gameTitle": "Portal",
+      "status": "success",
+      "originalSize": 180578,
+      "optimizedSize": 32728,
+      "sizeReduction": 81.87597603251781,
+      "processingTime": 75
+    },
+    {
+      "originalFilename": "post-void.png",
+      "gameId": "post-void",
+      "gameTitle": "Post Void",
+      "status": "success",
+      "originalSize": 389992,
+      "optimizedSize": 38786,
+      "sizeReduction": 90.05466778805719,
+      "processingTime": 69
+    },
+    {
+      "originalFilename": "prey.png",
+      "gameId": "prey",
+      "gameTitle": "Prey",
+      "status": "success",
+      "originalSize": 680424,
+      "optimizedSize": 63976,
+      "sizeReduction": 90.59762736176266,
+      "processingTime": 107
+    },
+    {
+      "originalFilename": "primordia.png",
+      "gameId": "primordia",
+      "gameTitle": "Primordia",
+      "status": "success",
+      "originalSize": 608339,
+      "optimizedSize": 52460,
+      "sizeReduction": 91.37651868448349,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "prince-of-persia-the-lost-crown.png",
+      "gameId": "prince-of-persia-the-lost-crown",
+      "gameTitle": "Prince of Persia: The Lost Crown",
+      "status": "success",
+      "originalSize": 830227,
+      "optimizedSize": 85940,
+      "sizeReduction": 89.64861417419573,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "prototype.png",
+      "gameId": "prototype",
+      "gameTitle": "Prototype",
+      "status": "success",
+      "originalSize": 671313,
+      "optimizedSize": 95738,
+      "sizeReduction": 85.73869417097538,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "pseudoregalia.png",
+      "gameId": "pseudoregalia",
+      "gameTitle": "Pseudoregalia",
+      "status": "success",
+      "originalSize": 722066,
+      "optimizedSize": 71522,
+      "sizeReduction": 90.09481127763944,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "psychonauts-2.png",
+      "gameId": "psychonauts-2",
+      "gameTitle": "Psychonauts 2",
+      "status": "success",
+      "originalSize": 669935,
+      "optimizedSize": 69092,
+      "sizeReduction": 89.68676065588453,
+      "processingTime": 100
+    },
+    {
+      "originalFilename": "psychonauts.png",
+      "gameId": "psychonauts",
+      "gameTitle": "Psychonauts",
+      "status": "success",
+      "originalSize": 600463,
+      "optimizedSize": 78382,
+      "sizeReduction": 86.94640635642828,
+      "processingTime": 100
+    },
+    {
+      "originalFilename": "quantum-break.png",
+      "gameId": "quantum-break",
+      "gameTitle": "Quantum Break",
+      "status": "success",
+      "originalSize": 578856,
+      "optimizedSize": 65020,
+      "sizeReduction": 88.7675000345509,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "rage.png",
+      "gameId": "rage",
+      "gameTitle": "RAGE",
+      "status": "success",
+      "originalSize": 304948,
+      "optimizedSize": 128544,
+      "sizeReduction": 57.84723952936238,
+      "processingTime": 139
+    },
+    {
+      "originalFilename": "rain-world-downpour.png",
+      "gameId": "rain-world-downpour",
+      "gameTitle": "Rain World: Downpour",
+      "status": "success",
+      "originalSize": 145845,
+      "optimizedSize": 52132,
+      "sizeReduction": 64.25520244094758,
+      "processingTime": 96
+    },
+    {
+      "originalFilename": "ratchet-clank-2-going-commando.png",
+      "gameId": "ratchet-clank-2-going-commando",
+      "gameTitle": "Ratchet & Clank 2: Going Commando (HD Collection)",
+      "status": "success",
+      "originalSize": 859834,
+      "optimizedSize": 111762,
+      "sizeReduction": 87.00190967093648,
+      "processingTime": 127
+    },
+    {
+      "originalFilename": "ratchet-clank-future-a-crack-in-time.png",
+      "gameId": "ratchet-clank-future-a-crack-in-time",
+      "gameTitle": "Ratchet & Clank Future: A Crack in Time",
+      "status": "success",
+      "originalSize": 845117,
+      "optimizedSize": 99164,
+      "sizeReduction": 88.26624005906875,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "ratchet-clank-rift-apart.png",
+      "gameId": "ratchet-clank-rift-apart",
+      "gameTitle": "Ratchet & Clank: Rift Apart",
+      "status": "success",
+      "originalSize": 880909,
+      "optimizedSize": 95530,
+      "sizeReduction": 89.15552003668937,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "ratchet-clank-up-your-arsenal.png",
+      "gameId": "ratchet-clank-up-your-arsenal",
+      "gameTitle": "Ratchet & Clank: Up Your Arsenal (HD Collection)",
+      "status": "success",
+      "originalSize": 721660,
+      "optimizedSize": 79268,
+      "sizeReduction": 89.01588005431921,
+      "processingTime": 104
+    },
+    {
+      "originalFilename": "ratchet-clank.png",
+      "gameId": "ratchet-clank",
+      "gameTitle": "Ratchet & Clank (HD Collection)",
+      "status": "success",
+      "originalSize": 766034,
+      "optimizedSize": 77788,
+      "sizeReduction": 89.8453593443633,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "rayman-legends.png",
+      "gameId": "rayman-legends",
+      "gameTitle": "Rayman Legends",
+      "status": "success",
+      "originalSize": 783023,
+      "optimizedSize": 91516,
+      "sizeReduction": 88.31247613416208,
+      "processingTime": 110
+    },
+    {
+      "originalFilename": "red-dead-redemption-2.png",
+      "gameId": "red-dead-redemption-2",
+      "gameTitle": "Red Dead Redemption 2",
+      "status": "success",
+      "originalSize": 761578,
+      "optimizedSize": 103288,
+      "sizeReduction": 86.4376334400416,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "red-dead-redemption.png",
+      "gameId": "red-dead-redemption",
+      "gameTitle": "Red Dead Redemption",
+      "status": "success",
+      "originalSize": 548275,
+      "optimizedSize": 76840,
+      "sizeReduction": 85.98513519675346,
+      "processingTime": 96
+    },
+    {
+      "originalFilename": "resident-evil-2.png",
+      "gameId": "resident-evil-2",
+      "gameTitle": "Resident Evil 2 (Remastered)",
+      "status": "success",
+      "originalSize": 726081,
+      "optimizedSize": 65192,
+      "sizeReduction": 91.02138742096267,
+      "processingTime": 101
+    },
+    {
+      "originalFilename": "resident-evil-3.png",
+      "gameId": "resident-evil-3",
+      "gameTitle": "Resident Evil 3 (Remastered)",
+      "status": "success",
+      "originalSize": 322967,
+      "optimizedSize": 49382,
+      "sizeReduction": 84.70989296120037,
+      "processingTime": 84
+    },
+    {
+      "originalFilename": "resident-evil-4.png",
+      "gameId": "resident-evil-4",
+      "gameTitle": "Resident Evil 4 (Remastered)",
+      "status": "success",
+      "originalSize": 190161,
+      "optimizedSize": 70844,
+      "sizeReduction": 62.745252706916766,
+      "processingTime": 112
+    },
+    {
+      "originalFilename": "resident-evil-5.png",
+      "gameId": "resident-evil-5",
+      "gameTitle": "Resident Evil 5 (Gold Edition)",
+      "status": "success",
+      "originalSize": 1060569,
+      "optimizedSize": 146088,
+      "sizeReduction": 86.22550725129624,
+      "processingTime": 162
+    },
+    {
+      "originalFilename": "resident-evil-7-biohazard.png",
+      "gameId": "resident-evil-7-biohazard",
+      "gameTitle": "Resident Evil 7 Biohazard",
+      "status": "success",
+      "originalSize": 1029976,
+      "optimizedSize": 102756,
+      "sizeReduction": 90.02345685724717,
+      "processingTime": 535
+    },
+    {
+      "originalFilename": "resident-evil-revelations-2.png",
+      "gameId": "resident-evil-revelations-2",
+      "gameTitle": "Resident Evil Revelations 2",
+      "status": "success",
+      "originalSize": 773618,
+      "optimizedSize": 88462,
+      "sizeReduction": 88.56515748082387,
+      "processingTime": 118
+    },
+    {
+      "originalFilename": "resident-evil-revelations.png",
+      "gameId": "resident-evil-revelations",
+      "gameTitle": "Resident Evil Revelations",
+      "status": "success",
+      "originalSize": 830358,
+      "optimizedSize": 94782,
+      "sizeReduction": 88.5854053311945,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "resident-evil-village.png",
+      "gameId": "resident-evil-village",
+      "gameTitle": "Resident Evil Village",
+      "status": "success",
+      "originalSize": 770354,
+      "optimizedSize": 78992,
+      "sizeReduction": 89.7460128720043,
+      "processingTime": 109
+    },
+    {
+      "originalFilename": "resident-evil.png",
+      "gameId": "resident-evil",
+      "gameTitle": "Resident Evil (Remastered)",
+      "status": "success",
+      "originalSize": 319884,
+      "optimizedSize": 39160,
+      "sizeReduction": 87.75806229758287,
+      "processingTime": 82
+    },
+    {
+      "originalFilename": "return-of-the-obra-dinn.png",
+      "gameId": "return-of-the-obra-dinn",
+      "gameTitle": "Return of the Obra Dinn",
+      "status": "success",
+      "originalSize": 6385,
+      "optimizedSize": 51836,
+      "sizeReduction": -711.840250587314,
+      "processingTime": 63
+    },
+    {
+      "originalFilename": "returnal.png",
+      "gameId": "returnal",
+      "gameTitle": "Returnal",
+      "status": "success",
+      "originalSize": 936215,
+      "optimizedSize": 104858,
+      "sizeReduction": 88.79979491890218,
+      "processingTime": 136
+    },
+    {
+      "originalFilename": "rez-infinite.png",
+      "gameId": "rez-infinite",
+      "gameTitle": "Rez Infinite",
+      "status": "success",
+      "originalSize": 786867,
+      "optimizedSize": 95240,
+      "sizeReduction": 87.8963026788517,
+      "processingTime": 106
+    },
+    {
+      "originalFilename": "rime.png",
+      "gameId": "rime",
+      "gameTitle": "RiME",
+      "status": "success",
+      "originalSize": 588362,
+      "optimizedSize": 54140,
+      "sizeReduction": 90.79818207158178,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "rise-of-the-tomb-raider.png",
+      "gameId": "rise-of-the-tomb-raider",
+      "gameTitle": "Rise of the Tomb Raider (20 Year Celebration)",
+      "status": "success",
+      "originalSize": 723052,
+      "optimizedSize": 93442,
+      "sizeReduction": 87.07672477221556,
+      "processingTime": 135
+    },
+    {
+      "originalFilename": "risk-of-rain-2.png",
+      "gameId": "risk-of-rain-2",
+      "gameTitle": "Risk of Rain 2",
+      "status": "success",
+      "originalSize": 936652,
+      "optimizedSize": 103958,
+      "sizeReduction": 88.90110734830012,
+      "processingTime": 128
+    },
+    {
+      "originalFilename": "risk-of-rain-returns.png",
+      "gameId": "risk-of-rain-returns",
+      "gameTitle": "Risk of Rain Returns",
+      "status": "success",
+      "originalSize": 475766,
+      "optimizedSize": 52224,
+      "sizeReduction": 89.02317525842535,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "road-96.png",
+      "gameId": "road-96",
+      "gameTitle": "Road 96",
+      "status": "success",
+      "originalSize": 706840,
+      "optimizedSize": 70664,
+      "sizeReduction": 90.00282949465226,
+      "processingTime": 101
+    },
+    {
+      "originalFilename": "ruiner.png",
+      "gameId": "ruiner",
+      "gameTitle": "RUINER",
+      "status": "success",
+      "originalSize": 8366521,
+      "optimizedSize": 11384,
+      "sizeReduction": 99.86393388602025,
+      "processingTime": 42
+    },
+    {
+      "originalFilename": "ryse-son-of-rome.png",
+      "gameId": "ryse-son-of-rome",
+      "gameTitle": "Ryse: Son of Rome",
+      "status": "success",
+      "originalSize": 1127070,
+      "optimizedSize": 169056,
+      "sizeReduction": 85.00039926535176,
+      "processingTime": 170
+    },
+    {
+      "originalFilename": "sable.png",
+      "gameId": "sable",
+      "gameTitle": "Sable",
+      "status": "success",
+      "originalSize": 312610,
+      "optimizedSize": 51818,
+      "sizeReduction": 83.42407472569656,
+      "processingTime": 76
+    },
+    {
+      "originalFilename": "saints-row-2.png",
+      "gameId": "saints-row-2",
+      "gameTitle": "Saints Row 2",
+      "status": "success",
+      "originalSize": 857047,
+      "optimizedSize": 113008,
+      "sizeReduction": 86.81425872793442,
+      "processingTime": 127
+    },
+    {
+      "originalFilename": "saints-row-the-third.png",
+      "gameId": "saints-row-the-third",
+      "gameTitle": "Saints Row - The Third (Remastered)",
+      "status": "success",
+      "originalSize": 495562,
+      "optimizedSize": 49300,
+      "sizeReduction": 90.05169887925224,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "sally-face.png",
+      "gameId": "sally-face",
+      "gameTitle": "Sally Face",
+      "status": "success",
+      "originalSize": 572221,
+      "optimizedSize": 64694,
+      "sizeReduction": 88.69422827893419,
+      "processingTime": 88
+    },
+    {
+      "originalFilename": "salt-and-sanctuary.png",
+      "gameId": "salt-and-sanctuary",
+      "gameTitle": "Salt and Sanctuary",
+      "status": "success",
+      "originalSize": 585939,
+      "optimizedSize": 30754,
+      "sizeReduction": 94.75133076992657,
+      "processingTime": 76
+    },
+    {
+      "originalFilename": "sam-max-the-devils-playhouse.png",
+      "gameId": "sam-max-the-devils-playhouse",
+      "gameTitle": "Sam & Max: The Devil's Playhouse",
+      "status": "success",
+      "originalSize": 810523,
+      "optimizedSize": 90632,
+      "sizeReduction": 88.81808412592856,
+      "processingTime": 117
+    },
+    {
+      "originalFilename": "samorost-3.png",
+      "gameId": "samorost-3",
+      "gameTitle": "Samorost 3",
+      "status": "success",
+      "originalSize": 616522,
+      "optimizedSize": 82562,
+      "sizeReduction": 86.60842597668858,
+      "processingTime": 111
+    },
+    {
+      "originalFilename": "sanabi.png",
+      "gameId": "sanabi",
+      "gameTitle": "SANABI",
+      "status": "success",
+      "originalSize": 717055,
+      "optimizedSize": 74062,
+      "sizeReduction": 89.6713641213017,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "sayonara-wild-hearts.png",
+      "gameId": "sayonara-wild-hearts",
+      "gameTitle": "Sayonara Wild Hearts",
+      "status": "success",
+      "originalSize": 350600,
+      "optimizedSize": 25510,
+      "sizeReduction": 92.72390188248717,
+      "processingTime": 60
+    },
+    {
+      "originalFilename": "second-sight.png",
+      "gameId": "second-sight",
+      "gameTitle": "Second Sight",
+      "status": "success",
+      "originalSize": 270358,
+      "optimizedSize": 25246,
+      "sizeReduction": 90.66201111119331,
+      "processingTime": 51
+    },
+    {
+      "originalFilename": "sekiro-shadows-die-twice.png",
+      "gameId": "sekiro-shadows-die-twice",
+      "gameTitle": "Sekiro: Shadows Die Twice",
+      "status": "success",
+      "originalSize": 621296,
+      "optimizedSize": 48966,
+      "sizeReduction": 92.1187324560274,
+      "processingTime": 84
+    },
+    {
+      "originalFilename": "severed-steel.png",
+      "gameId": "severed-steel",
+      "gameTitle": "Severed Steel",
+      "status": "success",
+      "originalSize": 2215452,
+      "optimizedSize": 49416,
+      "sizeReduction": 97.76948451151277,
+      "processingTime": 95
+    },
+    {
+      "originalFilename": "shadow-complex.png",
+      "gameId": "shadow-complex",
+      "gameTitle": "Shadow Complex (Remastered)",
+      "status": "success",
+      "originalSize": 687742,
+      "optimizedSize": 67812,
+      "sizeReduction": 90.13990711633141,
+      "processingTime": 100
+    },
+    {
+      "originalFilename": "shadow-of-the-colossus.png",
+      "gameId": "shadow-of-the-colossus",
+      "gameTitle": "Shadow of the Colossus",
+      "status": "success",
+      "originalSize": 799112,
+      "optimizedSize": 59786,
+      "sizeReduction": 92.51844547447668,
+      "processingTime": 98
+    },
+    {
+      "originalFilename": "shadow-of-the-tomb-raider.png",
+      "gameId": "shadow-of-the-tomb-raider",
+      "gameTitle": "Shadow of the Tomb Raider (Definitive Edition)",
+      "status": "success",
+      "originalSize": 650744,
+      "optimizedSize": 59438,
+      "sizeReduction": 90.86614705629249,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "shadow-tactics-blades-of-the-shogun.png",
+      "gameId": "shadow-tactics-blades-of-the-shogun",
+      "gameTitle": "Shadow Tactics: Blades of the Shogun",
+      "status": "success",
+      "originalSize": 598318,
+      "optimizedSize": 65742,
+      "sizeReduction": 89.01219752706754,
+      "processingTime": 95
+    },
+    {
+      "originalFilename": "shadow-warrior.png",
+      "gameId": "shadow-warrior",
+      "gameTitle": "Shadow Warrior",
+      "status": "success",
+      "originalSize": 764937,
+      "optimizedSize": 93348,
+      "sizeReduction": 87.7966420764063,
+      "processingTime": 105
+    },
+    {
+      "originalFilename": "shovel-knight-treasure-trove.png",
+      "gameId": "shovel-knight-treasure-trove",
+      "gameTitle": "Shovel Knight: Treasure Trove",
+      "status": "success",
+      "originalSize": 951796,
+      "optimizedSize": 135200,
+      "sizeReduction": 85.79527545818641,
+      "processingTime": 136
+    },
+    {
+      "originalFilename": "sifu.png",
+      "gameId": "sifu",
+      "gameTitle": "Sifu",
+      "status": "success",
+      "originalSize": 664796,
+      "optimizedSize": 53170,
+      "sizeReduction": 92.00205777411416,
+      "processingTime": 89
+    },
+    {
+      "originalFilename": "signalis.png",
+      "gameId": "signalis",
+      "gameTitle": "SIGNALIS",
+      "status": "success",
+      "originalSize": 2733266,
+      "optimizedSize": 20334,
+      "sizeReduction": 99.25605484427787,
+      "processingTime": 71
+    },
+    {
+      "originalFilename": "silent-hill-1.png",
+      "gameId": "silent-hill-1",
+      "gameTitle": "Silent Hill 1",
+      "status": "success",
+      "originalSize": 704504,
+      "optimizedSize": 79414,
+      "sizeReduction": 88.72767223465019,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "silent-hill-2.png",
+      "gameId": "silent-hill-2",
+      "gameTitle": "Silent Hill 2 (Directors Cut)",
+      "status": "success",
+      "originalSize": 1053246,
+      "optimizedSize": 161246,
+      "sizeReduction": 84.69056611655776,
+      "processingTime": 175
+    },
+    {
+      "originalFilename": "silent-hill-3.png",
+      "gameId": "silent-hill-3",
+      "gameTitle": "Silent Hill 3",
+      "status": "success",
+      "originalSize": 722606,
+      "optimizedSize": 57180,
+      "sizeReduction": 92.08697409099842,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "silent-hill-4-the-room.png",
+      "gameId": "silent-hill-4-the-room",
+      "gameTitle": "Silent Hill 4: The Room",
+      "status": "success",
+      "originalSize": 778432,
+      "optimizedSize": 81386,
+      "sizeReduction": 89.54487996382471,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "singularity.png",
+      "gameId": "singularity",
+      "gameTitle": "Singularity",
+      "status": "success",
+      "originalSize": 673974,
+      "optimizedSize": 69318,
+      "sizeReduction": 89.71503351761343,
+      "processingTime": 98
+    },
+    {
+      "originalFilename": "slay-the-princess.png",
+      "gameId": "slay-the-princess",
+      "gameTitle": "Slay the Princess",
+      "status": "success",
+      "originalSize": 182390,
+      "optimizedSize": 115160,
+      "sizeReduction": 36.860573496353965,
+      "processingTime": 141
+    },
+    {
+      "originalFilename": "sleeping-dogs.png",
+      "gameId": "sleeping-dogs",
+      "gameTitle": "Sleeping Dogs (Limited Edition)",
+      "status": "success",
+      "originalSize": 903689,
+      "optimizedSize": 162206,
+      "sizeReduction": 82.05068336562688,
+      "processingTime": 147
+    },
+    {
+      "originalFilename": "sly-2-band-of-thieves.png",
+      "gameId": "sly-2-band-of-thieves",
+      "gameTitle": "Sly 2: Band of Thieves (Sly Collection)",
+      "status": "success",
+      "originalSize": 583396,
+      "optimizedSize": 52582,
+      "sizeReduction": 90.98691112040535,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "sly-3-honor-among-thieves.png",
+      "gameId": "sly-3-honor-among-thieves",
+      "gameTitle": "Sly 3: Honor Among Thieves (Sly Collection)",
+      "status": "success",
+      "originalSize": 799938,
+      "optimizedSize": 104574,
+      "sizeReduction": 86.92723686085671,
+      "processingTime": 115
+    },
+    {
+      "originalFilename": "small-saga.png",
+      "gameId": "small-saga",
+      "gameTitle": "Small Saga",
+      "status": "success",
+      "originalSize": 197402,
+      "optimizedSize": 26044,
+      "sizeReduction": 86.80661796739648,
+      "processingTime": 56
+    },
+    {
+      "originalFilename": "solar-ash.png",
+      "gameId": "solar-ash",
+      "gameTitle": "Solar Ash",
+      "status": "success",
+      "originalSize": 295829,
+      "optimizedSize": 96808,
+      "sizeReduction": 67.27568967207407,
+      "processingTime": 115
+    },
+    {
+      "originalFilename": "soma.png",
+      "gameId": "soma",
+      "gameTitle": "SOMA",
+      "status": "success",
+      "originalSize": 2403106,
+      "optimizedSize": 19522,
+      "sizeReduction": 99.18763466946527,
+      "processingTime": 60
+    },
+    {
+      "originalFilename": "sons-of-the-forest.png",
+      "gameId": "sons-of-the-forest",
+      "gameTitle": "Sons of the Forest",
+      "status": "success",
+      "originalSize": 436128,
+      "optimizedSize": 41518,
+      "sizeReduction": 90.48031770489398,
+      "processingTime": 76
+    },
+    {
+      "originalFilename": "spec-ops-the-line.png",
+      "gameId": "spec-ops-the-line",
+      "gameTitle": "Spec Ops: The Line",
+      "status": "success",
+      "originalSize": 854029,
+      "optimizedSize": 81278,
+      "sizeReduction": 90.482992966281,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "spelunky-2.png",
+      "gameId": "spelunky-2",
+      "gameTitle": "Spelunky 2",
+      "status": "success",
+      "originalSize": 694069,
+      "optimizedSize": 52082,
+      "sizeReduction": 92.49613511048614,
+      "processingTime": 91
+    },
+    {
+      "originalFilename": "spiritfarer.png",
+      "gameId": "spiritfarer",
+      "gameTitle": "Spiritfarer (Farewell Edition)",
+      "status": "success",
+      "originalSize": 563724,
+      "optimizedSize": 43554,
+      "sizeReduction": 92.2738787066011,
+      "processingTime": 85
+    },
+    {
+      "originalFilename": "spyro-2-riptos-rage.png",
+      "gameId": "spyro-2-riptos-rage",
+      "gameTitle": "Spyro 2: Ripto's Rage! (Reignited Trilogy)",
+      "status": "success",
+      "originalSize": 838166,
+      "optimizedSize": 78840,
+      "sizeReduction": 90.59374873235136,
+      "processingTime": 119
+    },
+    {
+      "originalFilename": "spyro-the-dragon.png",
+      "gameId": "spyro-the-dragon",
+      "gameTitle": "Spyro the Dragon (Reignited Trilogy)",
+      "status": "success",
+      "originalSize": 309106,
+      "optimizedSize": 53170,
+      "sizeReduction": 82.79878100069233,
+      "processingTime": 92
+    },
+    {
+      "originalFilename": "spyro-year-of-the-dragon.png",
+      "gameId": "spyro-year-of-the-dragon",
+      "gameTitle": "Spyro: Year of the Dragon (Reignited Trilogy)",
+      "status": "success",
+      "originalSize": 667722,
+      "optimizedSize": 58776,
+      "sizeReduction": 91.19753430319804,
+      "processingTime": 100
+    },
+    {
+      "originalFilename": "stalker-2-heart-of-chornobyl.png",
+      "gameId": "stalker-2-heart-of-chornobyl",
+      "gameTitle": "S.T.A.L.K.E.R. 2: Heart of Chornobyl",
+      "status": "success",
+      "originalSize": 387089,
+      "optimizedSize": 73830,
+      "sizeReduction": 80.92686694791121,
+      "processingTime": 109
+    },
+    {
+      "originalFilename": "stalker-call-of-pripyat.png",
+      "gameId": "stalker-call-of-pripyat",
+      "gameTitle": "S.T.A.L.K.E.R.: Call of Pripyat",
+      "status": "success",
+      "originalSize": 1073473,
+      "optimizedSize": 157540,
+      "sizeReduction": 85.32426991643013,
+      "processingTime": 173
+    },
+    {
+      "originalFilename": "stalker-clear-sky.png",
+      "gameId": "stalker-clear-sky",
+      "gameTitle": "S.T.A.L.K.E.R.: Clear Sky",
+      "status": "success",
+      "originalSize": 934834,
+      "optimizedSize": 122610,
+      "sizeReduction": 86.88430245369766,
+      "processingTime": 147
+    },
+    {
+      "originalFilename": "stalker-shadow-of-chernobyl.png",
+      "gameId": "stalker-shadow-of-chernobyl",
+      "gameTitle": "S.T.A.L.K.E.R.: Shadow of Chernobyl",
+      "status": "success",
+      "originalSize": 821037,
+      "optimizedSize": 94488,
+      "sizeReduction": 88.49162705213041,
+      "processingTime": 121
+    },
+    {
+      "originalFilename": "star-wars-battlefront-ii.png",
+      "gameId": "star-wars-battlefront-ii",
+      "gameTitle": "Star Wars: Battlefront II (Celebration Edition)",
+      "status": "success",
+      "originalSize": 805299,
+      "optimizedSize": 94908,
+      "sizeReduction": 88.21456378314141,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "star-wars-knights-of-the-old-republic-ii-the-sith-lords.png",
+      "gameId": "star-wars-knights-of-the-old-republic-ii-the-sith-lords",
+      "gameTitle": "Star Wars: Knights of the Old Republic II - The Sith Lords",
+      "status": "success",
+      "originalSize": 556683,
+      "optimizedSize": 64158,
+      "sizeReduction": 88.47494893862395,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "star-wars-knights-of-the-old-republic.png",
+      "gameId": "star-wars-knights-of-the-old-republic",
+      "gameTitle": "Star Wars: Knights of the Old Republic",
+      "status": "success",
+      "originalSize": 609222,
+      "optimizedSize": 71272,
+      "sizeReduction": 88.30114473869952,
+      "processingTime": 95
+    },
+    {
+      "originalFilename": "starcraft-ii-legacy-of-the-void.png",
+      "gameId": "starcraft-ii-legacy-of-the-void",
+      "gameTitle": "StarCraft II: Legacy of the Void",
+      "status": "success",
+      "originalSize": 647844,
+      "optimizedSize": 61962,
+      "sizeReduction": 90.43566043677181,
+      "processingTime": 112
+    },
+    {
+      "originalFilename": "starcraft-ii-wings-of-liberty.png",
+      "gameId": "starcraft-ii-wings-of-liberty",
+      "gameTitle": "StarCraft II: Wings of Liberty",
+      "status": "success",
+      "originalSize": 1193298,
+      "optimizedSize": 132332,
+      "sizeReduction": 88.9103979056363,
+      "processingTime": 575
+    },
+    {
+      "originalFilename": "starcraft.png",
+      "gameId": "starcraft",
+      "gameTitle": "StarCraft (Remastered)",
+      "status": "success",
+      "originalSize": 608120,
+      "optimizedSize": 57414,
+      "sizeReduction": 90.55877129513912,
+      "processingTime": 88
+    },
+    {
+      "originalFilename": "still-wakes-the-deep.png",
+      "gameId": "still-wakes-the-deep",
+      "gameTitle": "Still Wakes the Deep",
+      "status": "success",
+      "originalSize": 754583,
+      "optimizedSize": 75164,
+      "sizeReduction": 90.03900167377213,
+      "processingTime": 103
+    },
+    {
+      "originalFilename": "stray.png",
+      "gameId": "stray",
+      "gameTitle": "Stray",
+      "status": "success",
+      "originalSize": 632066,
+      "optimizedSize": 53348,
+      "sizeReduction": 91.5597421788231,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "subnautica.png",
+      "gameId": "subnautica",
+      "gameTitle": "Subnautica",
+      "status": "success",
+      "originalSize": 1152627,
+      "optimizedSize": 177124,
+      "sizeReduction": 84.63301657865033,
+      "processingTime": 178
+    },
+    {
+      "originalFilename": "suikoden-i.png",
+      "gameId": "suikoden-i",
+      "gameTitle": "Suikoden I (HD Remaster)",
+      "status": "success",
+      "originalSize": 598652,
+      "optimizedSize": 97598,
+      "sizeReduction": 83.69703934840274,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "suikoden-ii.png",
+      "gameId": "suikoden-ii",
+      "gameTitle": "Suikoden II (HD Remaster)",
+      "status": "success",
+      "originalSize": 573526,
+      "optimizedSize": 89484,
+      "sizeReduction": 84.39756872399856,
+      "processingTime": 101
+    },
+    {
+      "originalFilename": "superhot.png",
+      "gameId": "superhot",
+      "gameTitle": "SuperHOT",
+      "status": "success",
+      "originalSize": 621349,
+      "optimizedSize": 50280,
+      "sizeReduction": 91.90792936015025,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "superliminal.png",
+      "gameId": "superliminal",
+      "gameTitle": "Superliminal",
+      "status": "success",
+      "originalSize": 580304,
+      "optimizedSize": 45836,
+      "sizeReduction": 92.10138134495023,
+      "processingTime": 87
+    },
+    {
+      "originalFilename": "syberia-the-world-before.png",
+      "gameId": "syberia-the-world-before",
+      "gameTitle": "Syberia: The World Before",
+      "status": "success",
+      "originalSize": 540044,
+      "optimizedSize": 60616,
+      "sizeReduction": 88.77572938501307,
+      "processingTime": 89
+    },
+    {
+      "originalFilename": "tangle-tower.png",
+      "gameId": "tangle-tower",
+      "gameTitle": "Tangle Tower",
+      "status": "success",
+      "originalSize": 6695186,
+      "optimizedSize": 98990,
+      "sizeReduction": 98.52147498217376,
+      "processingTime": 139
+    },
+    {
+      "originalFilename": "tell-me-why.png",
+      "gameId": "tell-me-why",
+      "gameTitle": "Tell Me Why",
+      "status": "success",
+      "originalSize": 889474,
+      "optimizedSize": 132900,
+      "sizeReduction": 85.05858518630112,
+      "processingTime": 143
+    },
+    {
+      "originalFilename": "telling-lies.png",
+      "gameId": "telling-lies",
+      "gameTitle": "Telling Lies",
+      "status": "success",
+      "originalSize": 607550,
+      "optimizedSize": 72310,
+      "sizeReduction": 88.09809892189944,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "terraria.png",
+      "gameId": "terraria",
+      "gameTitle": "Terraria",
+      "status": "success",
+      "originalSize": 1143854,
+      "optimizedSize": 158360,
+      "sizeReduction": 86.15557579900931,
+      "processingTime": 155
+    },
+    {
+      "originalFilename": "the-artful-escape.png",
+      "gameId": "the-artful-escape",
+      "gameTitle": "The Artful Escape",
+      "status": "success",
+      "originalSize": 903377,
+      "optimizedSize": 105492,
+      "sizeReduction": 88.3224833043126,
+      "processingTime": 593
+    },
+    {
+      "originalFilename": "the-beginners-guide.png",
+      "gameId": "the-beginners-guide",
+      "gameTitle": "The Beginner's Guide",
+      "status": "success",
+      "originalSize": 309821,
+      "optimizedSize": 16908,
+      "sizeReduction": 94.54265527514274,
+      "processingTime": 68
+    },
+    {
+      "originalFilename": "the-binding-of-isaac-rebirth.png",
+      "gameId": "the-binding-of-isaac-rebirth",
+      "gameTitle": "The Binding of Isaac: Rebirth",
+      "status": "success",
+      "originalSize": 574665,
+      "optimizedSize": 57114,
+      "sizeReduction": 90.06134008509305,
+      "processingTime": 89
+    },
+    {
+      "originalFilename": "the-case-of-the-golden-idol.png",
+      "gameId": "the-case-of-the-golden-idol",
+      "gameTitle": "The Case of the Golden Idol",
+      "status": "success",
+      "originalSize": 2845387,
+      "optimizedSize": 98232,
+      "sizeReduction": 96.547675237147,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "the-cat-lady.png",
+      "gameId": "the-cat-lady",
+      "gameTitle": "The Cat Lady",
+      "status": "success",
+      "originalSize": 297832,
+      "optimizedSize": 83720,
+      "sizeReduction": 71.89019312901233,
+      "processingTime": 125
+    },
+    {
+      "originalFilename": "the-count-lucanor.png",
+      "gameId": "the-count-lucanor",
+      "gameTitle": "The Count Lucanor",
+      "status": "success",
+      "originalSize": 676736,
+      "optimizedSize": 83818,
+      "sizeReduction": 87.61437251749574,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "the-cub.png",
+      "gameId": "the-cub",
+      "gameTitle": "The Cub",
+      "status": "success",
+      "originalSize": 769517,
+      "optimizedSize": 65698,
+      "sizeReduction": 91.46243682725658,
+      "processingTime": 94
+    },
+    {
+      "originalFilename": "the-curse-of-monkey-island.png",
+      "gameId": "the-curse-of-monkey-island",
+      "gameTitle": "The Curse of Monkey Island (Special Edition)",
+      "status": "success",
+      "originalSize": 773110,
+      "optimizedSize": 90488,
+      "sizeReduction": 88.29558536301431,
+      "processingTime": 108
+    },
+    {
+      "originalFilename": "the-dark-pictures-anthology-house-of-ashes.png",
+      "gameId": "the-dark-pictures-anthology-house-of-ashes",
+      "gameTitle": "The Dark Pictures Anthology: House of Ashes",
+      "status": "success",
+      "originalSize": 242929,
+      "optimizedSize": 102620,
+      "sizeReduction": 57.75720477999745,
+      "processingTime": 172
+    },
+    {
+      "originalFilename": "the-dark-pictures-anthology-little-hope.png",
+      "gameId": "the-dark-pictures-anthology-little-hope",
+      "gameTitle": "The Dark Pictures Anthology: Little Hope",
+      "status": "success",
+      "originalSize": 812333,
+      "optimizedSize": 78628,
+      "sizeReduction": 90.3207182276234,
+      "processingTime": 112
+    },
+    {
+      "originalFilename": "the-darkness-ii.png",
+      "gameId": "the-darkness-ii",
+      "gameTitle": "The Darkness II",
+      "status": "success",
+      "originalSize": 684801,
+      "optimizedSize": 63910,
+      "sizeReduction": 90.66736175910958,
+      "processingTime": 94
+    },
+    {
+      "originalFilename": "the-darkness.png",
+      "gameId": "the-darkness",
+      "gameTitle": "The Darkness",
+      "status": "success",
+      "originalSize": 593902,
+      "optimizedSize": 44026,
+      "sizeReduction": 92.58699246677061,
+      "processingTime": 77
+    },
+    {
+      "originalFilename": "the-dream-machine.png",
+      "gameId": "the-dream-machine",
+      "gameTitle": "The Dream Machine",
+      "status": "success",
+      "originalSize": 827213,
+      "optimizedSize": 87468,
+      "sizeReduction": 89.42618164849924,
+      "processingTime": 114
+    },
+    {
+      "originalFilename": "the-elder-scrolls-iv-oblivion.png",
+      "gameId": "the-elder-scrolls-iv-oblivion",
+      "gameTitle": "The Elder Scrolls IV: Oblivion (Remastered)",
+      "status": "success",
+      "originalSize": 815531,
+      "optimizedSize": 184078,
+      "sizeReduction": 77.42844845873424,
+      "processingTime": 187
+    },
+    {
+      "originalFilename": "the-evil-within-2.png",
+      "gameId": "the-evil-within-2",
+      "gameTitle": "The Evil Within 2",
+      "status": "success",
+      "originalSize": 391898,
+      "optimizedSize": 61736,
+      "sizeReduction": 84.24692139281139,
+      "processingTime": 82
+    },
+    {
+      "originalFilename": "the-evil-within.png",
+      "gameId": "the-evil-within",
+      "gameTitle": "The Evil Within",
+      "status": "success",
+      "originalSize": 932783,
+      "optimizedSize": 91264,
+      "sizeReduction": 90.2159451876803,
+      "processingTime": 122
+    },
+    {
+      "originalFilename": "the-forest.png",
+      "gameId": "the-forest",
+      "gameTitle": "The Forest",
+      "status": "success",
+      "originalSize": 493449,
+      "optimizedSize": 69500,
+      "sizeReduction": 85.91546441476221,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "the-forgotten-city.png",
+      "gameId": "the-forgotten-city",
+      "gameTitle": "The Forgotten City",
+      "status": "success",
+      "originalSize": 648761,
+      "optimizedSize": 69864,
+      "sizeReduction": 89.23116525191865,
+      "processingTime": 111
+    },
+    {
+      "originalFilename": "the-great-ace-attorney-chronicles.png",
+      "gameId": "the-great-ace-attorney-chronicles",
+      "gameTitle": "The Great Ace Attorney Chronicles",
+      "status": "success",
+      "originalSize": 942196,
+      "optimizedSize": 149244,
+      "sizeReduction": 84.15998369765951,
+      "processingTime": 144
+    },
+    {
+      "originalFilename": "the-house-in-fata-morgana-a-requiem-for-innocence.png",
+      "gameId": "the-house-in-fata-morgana-a-requiem-for-innocence",
+      "gameTitle": "The House in Fata Morgana: A Requiem for Innocence",
+      "status": "success",
+      "originalSize": 785516,
+      "optimizedSize": 79858,
+      "sizeReduction": 89.8336889382266,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "the-house-in-fata-morgana.png",
+      "gameId": "the-house-in-fata-morgana",
+      "gameTitle": "The House in Fata Morgana",
+      "status": "success",
+      "originalSize": 866383,
+      "optimizedSize": 88854,
+      "sizeReduction": 89.74425860156536,
+      "processingTime": 520
+    },
+    {
+      "originalFilename": "the-last-campfire.png",
+      "gameId": "the-last-campfire",
+      "gameTitle": "The Last Campfire",
+      "status": "success",
+      "originalSize": 483629,
+      "optimizedSize": 40216,
+      "sizeReduction": 91.68453504649224,
+      "processingTime": 81
+    },
+    {
+      "originalFilename": "the-last-door.png",
+      "gameId": "the-last-door",
+      "gameTitle": "The Last Door (Collector’s Edition)",
+      "status": "success",
+      "originalSize": 281860,
+      "optimizedSize": 31808,
+      "sizeReduction": 88.71496487617966,
+      "processingTime": 64
+    },
+    {
+      "originalFilename": "the-last-of-us-left-behind-dlc.png",
+      "gameId": "the-last-of-us-left-behind-dlc",
+      "gameTitle": "The Last of Us: Left Behind [DLC]",
+      "status": "success",
+      "originalSize": 785502,
+      "optimizedSize": 98316,
+      "sizeReduction": 87.48367286143129,
+      "processingTime": 137
+    },
+    {
+      "originalFilename": "the-last-of-us-part-i.png",
+      "gameId": "the-last-of-us-part-i",
+      "gameTitle": "The Last of Us: Part I",
+      "status": "success",
+      "originalSize": 755610,
+      "optimizedSize": 73672,
+      "sizeReduction": 90.24999669141488,
+      "processingTime": 114
+    },
+    {
+      "originalFilename": "the-last-of-us-part-ii.png",
+      "gameId": "the-last-of-us-part-ii",
+      "gameTitle": "The Last of Us Part II (Remastered)",
+      "status": "success",
+      "originalSize": 586240,
+      "optimizedSize": 52638,
+      "sizeReduction": 91.02108351528383,
+      "processingTime": 93
+    },
+    {
+      "originalFilename": "the-legend-of-zelda-majoras-mask.png",
+      "gameId": "the-legend-of-zelda-majoras-mask",
+      "gameTitle": "The Legend of Zelda: Majora's Mask",
+      "status": "success",
+      "originalSize": 563960,
+      "optimizedSize": 87650,
+      "sizeReduction": 84.4581175969927,
+      "processingTime": 101
+    },
+    {
+      "originalFilename": "the-legend-of-zelda-ocarina-of-time.png",
+      "gameId": "the-legend-of-zelda-ocarina-of-time",
+      "gameTitle": "The Legend of Zelda: Ocarina of Time",
+      "status": "success",
+      "originalSize": 723924,
+      "optimizedSize": 79610,
+      "sizeReduction": 89.00298926406639,
+      "processingTime": 104
+    },
+    {
+      "originalFilename": "the-legend-of-zelda-the-wind-waker.png",
+      "gameId": "the-legend-of-zelda-the-wind-waker",
+      "gameTitle": "The Legend of Zelda: The Wind Waker",
+      "status": "success",
+      "originalSize": 558580,
+      "optimizedSize": 68606,
+      "sizeReduction": 87.71778438182535,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "the-life-and-suffering-of-sir-brante.png",
+      "gameId": "the-life-and-suffering-of-sir-brante",
+      "gameTitle": "The Life and Suffering of Sir Brante",
+      "status": "success",
+      "originalSize": 885296,
+      "optimizedSize": 117488,
+      "sizeReduction": 86.72895845005513,
+      "processingTime": 132
+    },
+    {
+      "originalFilename": "the-long-dark.png",
+      "gameId": "the-long-dark",
+      "gameTitle": "The Long Dark",
+      "status": "success",
+      "originalSize": 562349,
+      "optimizedSize": 41780,
+      "sizeReduction": 92.5704500230284,
+      "processingTime": 84
+    },
+    {
+      "originalFilename": "the-longest-journey.png",
+      "gameId": "the-longest-journey",
+      "gameTitle": "The Longest Journey (HD)",
+      "status": "success",
+      "originalSize": 881746,
+      "optimizedSize": 109350,
+      "sizeReduction": 87.59846940048494,
+      "processingTime": 130
+    },
+    {
+      "originalFilename": "the-medium.png",
+      "gameId": "the-medium",
+      "gameTitle": "The Medium",
+      "status": "success",
+      "originalSize": 805580,
+      "optimizedSize": 75698,
+      "sizeReduction": 90.60329203803471,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "the-messenger.png",
+      "gameId": "the-messenger",
+      "gameTitle": "The Messenger",
+      "status": "success",
+      "originalSize": 707081,
+      "optimizedSize": 81602,
+      "sizeReduction": 88.45931371370466,
+      "processingTime": 98
+    },
+    {
+      "originalFilename": "the-painscreek-killings.png",
+      "gameId": "the-painscreek-killings",
+      "gameTitle": "The Painscreek Killings",
+      "status": "success",
+      "originalSize": 363637,
+      "optimizedSize": 20044,
+      "sizeReduction": 94.48790964615812,
+      "processingTime": 61
+    },
+    {
+      "originalFilename": "the-pedestrian.png",
+      "gameId": "the-pedestrian",
+      "gameTitle": "The Pedestrian",
+      "status": "success",
+      "originalSize": 1061930,
+      "optimizedSize": 140078,
+      "sizeReduction": 86.80911171169474,
+      "processingTime": 202
+    },
+    {
+      "originalFilename": "the-procession-to-calvary.png",
+      "gameId": "the-procession-to-calvary",
+      "gameTitle": "The Procession to Calvary",
+      "status": "success",
+      "originalSize": 1046735,
+      "optimizedSize": 105576,
+      "sizeReduction": 89.91377951439476,
+      "processingTime": 138
+    },
+    {
+      "originalFilename": "the-red-strings-club.png",
+      "gameId": "the-red-strings-club",
+      "gameTitle": "The Red Strings Club",
+      "status": "success",
+      "originalSize": 5593616,
+      "optimizedSize": 41806,
+      "sizeReduction": 99.2526122636949,
+      "processingTime": 84
+    },
+    {
+      "originalFilename": "the-room-4-old-sins.png",
+      "gameId": "the-room-4-old-sins",
+      "gameTitle": "The Room 4: Old Sins",
+      "status": "success",
+      "originalSize": 349277,
+      "optimizedSize": 54956,
+      "sizeReduction": 84.2657833181114,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "the-saboteur.png",
+      "gameId": "the-saboteur",
+      "gameTitle": "The Saboteur",
+      "status": "success",
+      "originalSize": 894278,
+      "optimizedSize": 109102,
+      "sizeReduction": 87.79999060694773,
+      "processingTime": 129
+    },
+    {
+      "originalFilename": "the-secret-of-monkey-island.png",
+      "gameId": "the-secret-of-monkey-island",
+      "gameTitle": "The Secret of Monkey Island (Special Edition)",
+      "status": "success",
+      "originalSize": 400582,
+      "optimizedSize": 60892,
+      "sizeReduction": 84.79911728435127,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "the-sexy-brutale.png",
+      "gameId": "the-sexy-brutale",
+      "gameTitle": "The Sexy Brutale",
+      "status": "success",
+      "originalSize": 995351,
+      "optimizedSize": 172552,
+      "sizeReduction": 82.66420589319748,
+      "processingTime": 151
+    },
+    {
+      "originalFilename": "the-stanley-parable-ultra-deluxe.png",
+      "gameId": "the-stanley-parable-ultra-deluxe",
+      "gameTitle": "The Stanley Parable: Ultra Deluxe",
+      "status": "success",
+      "originalSize": 3356678,
+      "optimizedSize": 38516,
+      "sizeReduction": 98.85255600924485,
+      "processingTime": 83
+    },
+    {
+      "originalFilename": "the-swapper.png",
+      "gameId": "the-swapper",
+      "gameTitle": "The Swapper",
+      "status": "success",
+      "originalSize": 914826,
+      "optimizedSize": 122770,
+      "sizeReduction": 86.57996165391015,
+      "processingTime": 159
+    },
+    {
+      "originalFilename": "the-talos-principle-2.png",
+      "gameId": "the-talos-principle-2",
+      "gameTitle": "The Talos Principle 2",
+      "status": "success",
+      "originalSize": 388236,
+      "optimizedSize": 38654,
+      "sizeReduction": 90.04368476905799,
+      "processingTime": 78
+    },
+    {
+      "originalFilename": "the-talos-principle.png",
+      "gameId": "the-talos-principle",
+      "gameTitle": "The Talos Principle",
+      "status": "success",
+      "originalSize": 162116,
+      "optimizedSize": 72308,
+      "sizeReduction": 55.39736978459868,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "the-vanishing-of-ethan-carter.png",
+      "gameId": "the-vanishing-of-ethan-carter",
+      "gameTitle": "The Vanishing of Ethan Carter (Redux)",
+      "status": "success",
+      "originalSize": 1001008,
+      "optimizedSize": 141694,
+      "sizeReduction": 85.84486837268034,
+      "processingTime": 148
+    },
+    {
+      "originalFilename": "the-walking-dead-the-telltale-definitive-series.png",
+      "gameId": "the-walking-dead-the-telltale-definitive-series",
+      "gameTitle": "The Walking Dead: The Telltale Definitive Series",
+      "status": "success",
+      "originalSize": 605650,
+      "optimizedSize": 99944,
+      "sizeReduction": 83.49805993560638,
+      "processingTime": 109
+    },
+    {
+      "originalFilename": "the-witcher-3-blood-and-wine-dlc.png",
+      "gameId": "the-witcher-3-blood-and-wine-dlc",
+      "gameTitle": "The Witcher 3: Blood and Wine [DLC]",
+      "status": "success",
+      "originalSize": 721876,
+      "optimizedSize": 123286,
+      "sizeReduction": 82.92144357202622,
+      "processingTime": 137
+    },
+    {
+      "originalFilename": "the-witcher-3-hearts-of-stone-dlc.png",
+      "gameId": "the-witcher-3-hearts-of-stone-dlc",
+      "gameTitle": "The Witcher 3: Hearts of Stone [DLC]",
+      "status": "success",
+      "originalSize": 846049,
+      "optimizedSize": 87934,
+      "sizeReduction": 89.60651215236942,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "the-witcher-3-wild-hunt.png",
+      "gameId": "the-witcher-3-wild-hunt",
+      "gameTitle": "The Witcher 3: Wild Hunt (Complete Edition)",
+      "status": "success",
+      "originalSize": 915452,
+      "optimizedSize": 137946,
+      "sizeReduction": 84.93137816073371,
+      "processingTime": 138
+    },
+    {
+      "originalFilename": "the-wolf-among-us.png",
+      "gameId": "the-wolf-among-us",
+      "gameTitle": "The Wolf Among Us",
+      "status": "success",
+      "originalSize": 395624,
+      "optimizedSize": 37860,
+      "sizeReduction": 90.43030756475846,
+      "processingTime": 68
+    },
+    {
+      "originalFilename": "the-wonderful-101.png",
+      "gameId": "the-wonderful-101",
+      "gameTitle": "The Wonderful 101 (Remastered)",
+      "status": "success",
+      "originalSize": 1043020,
+      "optimizedSize": 141026,
+      "sizeReduction": 86.47907039174704,
+      "processingTime": 144
+    },
+    {
+      "originalFilename": "there-is-no-game-wrong-dimension.png",
+      "gameId": "there-is-no-game-wrong-dimension",
+      "gameTitle": "There Is No Game: Wrong Dimension",
+      "status": "success",
+      "originalSize": 470127,
+      "optimizedSize": 67256,
+      "sizeReduction": 85.69407840860023,
+      "processingTime": 91
+    },
+    {
+      "originalFilename": "this-strange-realm-of-mine.png",
+      "gameId": "this-strange-realm-of-mine",
+      "gameTitle": "This Strange Realm of Mine",
+      "status": "success",
+      "originalSize": 690119,
+      "optimizedSize": 86040,
+      "sizeReduction": 87.53258495998516,
+      "processingTime": 95
+    },
+    {
+      "originalFilename": "this-war-of-mine.png",
+      "gameId": "this-war-of-mine",
+      "gameTitle": "This War of Mine",
+      "status": "success",
+      "originalSize": 564032,
+      "optimizedSize": 57978,
+      "sizeReduction": 89.72079598320663,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "thomas-was-alone.png",
+      "gameId": "thomas-was-alone",
+      "gameTitle": "Thomas Was Alone",
+      "status": "success",
+      "originalSize": 60640,
+      "optimizedSize": 6818,
+      "sizeReduction": 88.7565963060686,
+      "processingTime": 39
+    },
+    {
+      "originalFilename": "thymesia.png",
+      "gameId": "thymesia",
+      "gameTitle": "Thymesia",
+      "status": "success",
+      "originalSize": 450227,
+      "optimizedSize": 38430,
+      "sizeReduction": 91.46430578352698,
+      "processingTime": 76
+    },
+    {
+      "originalFilename": "timesplitters-2.png",
+      "gameId": "timesplitters-2",
+      "gameTitle": "TimeSplitters 2",
+      "status": "success",
+      "originalSize": 640720,
+      "optimizedSize": 56198,
+      "sizeReduction": 91.22892995380198,
+      "processingTime": 91
+    },
+    {
+      "originalFilename": "timesplitters-future-perfect.png",
+      "gameId": "timesplitters-future-perfect",
+      "gameTitle": "TimeSplitters: Future Perfect",
+      "status": "success",
+      "originalSize": 602692,
+      "optimizedSize": 55562,
+      "sizeReduction": 90.78102911603273,
+      "processingTime": 86
+    },
+    {
+      "originalFilename": "titanfall-2.png",
+      "gameId": "titanfall-2",
+      "gameTitle": "Titanfall 2",
+      "status": "success",
+      "originalSize": 959351,
+      "optimizedSize": 129574,
+      "sizeReduction": 86.49357742890767,
+      "processingTime": 151
+    },
+    {
+      "originalFilename": "to-the-moon.png",
+      "gameId": "to-the-moon",
+      "gameTitle": "To the Moon",
+      "status": "success",
+      "originalSize": 751971,
+      "optimizedSize": 55362,
+      "sizeReduction": 92.63774799826056,
+      "processingTime": 88
+    },
+    {
+      "originalFilename": "toem.png",
+      "gameId": "toem",
+      "gameTitle": "TOEM",
+      "status": "success",
+      "originalSize": 766916,
+      "optimizedSize": 51984,
+      "sizeReduction": 93.22168268754335,
+      "processingTime": 92
+    },
+    {
+      "originalFilename": "tom-clancys-splinter-cell-blacklist.png",
+      "gameId": "tom-clancys-splinter-cell-blacklist",
+      "gameTitle": "Tom Clancy's Splinter Cell: Blacklist",
+      "status": "success",
+      "originalSize": 722212,
+      "optimizedSize": 111380,
+      "sizeReduction": 84.57793556462644,
+      "processingTime": 143
+    },
+    {
+      "originalFilename": "tom-clancys-splinter-cell-chaos-theory.png",
+      "gameId": "tom-clancys-splinter-cell-chaos-theory",
+      "gameTitle": "Tom Clancy's Splinter Cell: Chaos Theory",
+      "status": "success",
+      "originalSize": 961295,
+      "optimizedSize": 121882,
+      "sizeReduction": 87.32106169282062,
+      "processingTime": 564
+    },
+    {
+      "originalFilename": "tomb-raider.png",
+      "gameId": "tomb-raider",
+      "gameTitle": "Tomb Raider (GOTY)",
+      "status": "success",
+      "originalSize": 844590,
+      "optimizedSize": 124218,
+      "sizeReduction": 85.29250879124783,
+      "processingTime": 161
+    },
+    {
+      "originalFilename": "tormented-souls.png",
+      "gameId": "tormented-souls",
+      "gameTitle": "Tormented Souls",
+      "status": "success",
+      "originalSize": 737247,
+      "optimizedSize": 61068,
+      "sizeReduction": 91.71675164497108,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "touhou-luna-nights.png",
+      "gameId": "touhou-luna-nights",
+      "gameTitle": "Touhou Luna Nights",
+      "status": "success",
+      "originalSize": 837964,
+      "optimizedSize": 118728,
+      "sizeReduction": 85.83137223078796,
+      "processingTime": 124
+    },
+    {
+      "originalFilename": "transformers-devastation.png",
+      "gameId": "transformers-devastation",
+      "gameTitle": "Transformers: Devastation",
+      "status": "success",
+      "originalSize": 1004887,
+      "optimizedSize": 119612,
+      "sizeReduction": 88.09697010708668,
+      "processingTime": 133
+    },
+    {
+      "originalFilename": "transformers-fall-of-cybertron.png",
+      "gameId": "transformers-fall-of-cybertron",
+      "gameTitle": "Transformers: Fall of Cybertron",
+      "status": "success",
+      "originalSize": 990705,
+      "optimizedSize": 126850,
+      "sizeReduction": 87.19598669634252,
+      "processingTime": 144
+    },
+    {
+      "originalFilename": "transistor.png",
+      "gameId": "transistor",
+      "gameTitle": "Transistor",
+      "status": "success",
+      "originalSize": 662987,
+      "optimizedSize": 74184,
+      "sizeReduction": 88.81064032929757,
+      "processingTime": 111
+    },
+    {
+      "originalFilename": "trepang2.png",
+      "gameId": "trepang2",
+      "gameTitle": "Trepang2",
+      "status": "success",
+      "originalSize": 939820,
+      "optimizedSize": 87216,
+      "sizeReduction": 90.7199250920389,
+      "processingTime": 542
+    },
+    {
+      "originalFilename": "trine-2-complete-story.png",
+      "gameId": "trine-2-complete-story",
+      "gameTitle": "Trine 2: Complete Story",
+      "status": "success",
+      "originalSize": 884478,
+      "optimizedSize": 114824,
+      "sizeReduction": 87.01787947241198,
+      "processingTime": 119
+    },
+    {
+      "originalFilename": "trine.png",
+      "gameId": "trine",
+      "gameTitle": "Trine (Enchanted Edition)",
+      "status": "success",
+      "originalSize": 13152633,
+      "optimizedSize": 128326,
+      "sizeReduction": 99.02433223826742,
+      "processingTime": 147
+    },
+    {
+      "originalFilename": "tunic.png",
+      "gameId": "tunic",
+      "gameTitle": "TUNIC",
+      "status": "success",
+      "originalSize": 1124838,
+      "optimizedSize": 151236,
+      "sizeReduction": 86.55486390040166,
+      "processingTime": 179
+    },
+    {
+      "originalFilename": "turbo-overkill.png",
+      "gameId": "turbo-overkill",
+      "gameTitle": "Turbo Overkill",
+      "status": "success",
+      "originalSize": 969523,
+      "optimizedSize": 118958,
+      "sizeReduction": 87.7302549810577,
+      "processingTime": 132
+    },
+    {
+      "originalFilename": "tyranny.png",
+      "gameId": "tyranny",
+      "gameTitle": "Tyranny",
+      "status": "success",
+      "originalSize": 848776,
+      "optimizedSize": 97418,
+      "sizeReduction": 88.52253126855614,
+      "processingTime": 113
+    },
+    {
+      "originalFilename": "ultrakill.png",
+      "gameId": "ultrakill",
+      "gameTitle": "ULTRAKILL",
+      "status": "success",
+      "originalSize": 484358,
+      "optimizedSize": 60844,
+      "sizeReduction": 87.43821718646126,
+      "processingTime": 78
+    },
+    {
+      "originalFilename": "umineko-when-they-cry.png",
+      "gameId": "umineko-when-they-cry",
+      "gameTitle": "Umineko When They Cry",
+      "status": "success",
+      "originalSize": 954752,
+      "optimizedSize": 128398,
+      "sizeReduction": 86.5516909103097,
+      "processingTime": 139
+    },
+    {
+      "originalFilename": "unavowed.png",
+      "gameId": "unavowed",
+      "gameTitle": "Unavowed",
+      "status": "success",
+      "originalSize": 835881,
+      "optimizedSize": 87094,
+      "sizeReduction": 89.58057426834681,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "uncharted-2-among-thieves.png",
+      "gameId": "uncharted-2-among-thieves",
+      "gameTitle": "Uncharted 2: Among Thieves",
+      "status": "success",
+      "originalSize": 1133727,
+      "optimizedSize": 168126,
+      "sizeReduction": 85.17050401022468,
+      "processingTime": 167
+    },
+    {
+      "originalFilename": "uncharted-3-drakes-deception.png",
+      "gameId": "uncharted-3-drakes-deception",
+      "gameTitle": "Uncharted 3: Drake’s Deception",
+      "status": "success",
+      "originalSize": 955996,
+      "optimizedSize": 113038,
+      "sizeReduction": 88.1758919493387,
+      "processingTime": 132
+    },
+    {
+      "originalFilename": "uncharted-4-a-thiefs-end.png",
+      "gameId": "uncharted-4-a-thiefs-end",
+      "gameTitle": "Uncharted 4: A Thief’s End",
+      "status": "success",
+      "originalSize": 980952,
+      "optimizedSize": 119162,
+      "sizeReduction": 87.85241275821855,
+      "processingTime": 145
+    },
+    {
+      "originalFilename": "uncharted-the-lost-legacy-dlc.png",
+      "gameId": "uncharted-the-lost-legacy-dlc",
+      "gameTitle": "Uncharted: The Lost Legacy [DLC]",
+      "status": "success",
+      "originalSize": 941339,
+      "optimizedSize": 91708,
+      "sizeReduction": 90.25770737215817,
+      "processingTime": 130
+    },
+    {
+      "originalFilename": "undertale.png",
+      "gameId": "undertale",
+      "gameTitle": "Undertale",
+      "status": "success",
+      "originalSize": 5885,
+      "optimizedSize": 8914,
+      "sizeReduction": -51.46983857264231,
+      "processingTime": 45
+    },
+    {
+      "originalFilename": "unmetal.png",
+      "gameId": "unmetal",
+      "gameTitle": "UnMetal",
+      "status": "success",
+      "originalSize": 737625,
+      "optimizedSize": 73858,
+      "sizeReduction": 89.98705304185731,
+      "processingTime": 136
+    },
+    {
+      "originalFilename": "unpacking.png",
+      "gameId": "unpacking",
+      "gameTitle": "Unpacking",
+      "status": "success",
+      "originalSize": 376534,
+      "optimizedSize": 61226,
+      "sizeReduction": 83.73958261405345,
+      "processingTime": 91
+    },
+    {
+      "originalFilename": "unravel-two.png",
+      "gameId": "unravel-two",
+      "gameTitle": "Unravel Two",
+      "status": "success",
+      "originalSize": 246162,
+      "optimizedSize": 105324,
+      "sizeReduction": 57.213542301411266,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "unsighted.png",
+      "gameId": "unsighted",
+      "gameTitle": "UNSIGHTED",
+      "status": "success",
+      "originalSize": 381436,
+      "optimizedSize": 121700,
+      "sizeReduction": 68.09425434411015,
+      "processingTime": 132
+    },
+    {
+      "originalFilename": "until-dawn.png",
+      "gameId": "until-dawn",
+      "gameTitle": "Until Dawn",
+      "status": "success",
+      "originalSize": 729986,
+      "optimizedSize": 75582,
+      "sizeReduction": 89.64610280197155,
+      "processingTime": 112
+    },
+    {
+      "originalFilename": "untitled-goose-game.png",
+      "gameId": "untitled-goose-game",
+      "gameTitle": "Untitled Goose Game",
+      "status": "success",
+      "originalSize": 1888756,
+      "optimizedSize": 33208,
+      "sizeReduction": 98.24180571762578,
+      "processingTime": 64
+    },
+    {
+      "originalFilename": "valiant-hearts-the-great-war.png",
+      "gameId": "valiant-hearts-the-great-war",
+      "gameTitle": "Valiant Hearts: The Great War",
+      "status": "success",
+      "originalSize": 698300,
+      "optimizedSize": 78612,
+      "sizeReduction": 88.74237433767722,
+      "processingTime": 116
+    },
+    {
+      "originalFilename": "vanquish.png",
+      "gameId": "vanquish",
+      "gameTitle": "Vanquish",
+      "status": "success",
+      "originalSize": 899852,
+      "optimizedSize": 99980,
+      "sizeReduction": 88.88928401559367,
+      "processingTime": 128
+    },
+    {
+      "originalFilename": "viewfinder.png",
+      "gameId": "viewfinder",
+      "gameTitle": "Viewfinder",
+      "status": "success",
+      "originalSize": 449542,
+      "optimizedSize": 33280,
+      "sizeReduction": 92.5969097436947,
+      "processingTime": 71
+    },
+    {
+      "originalFilename": "void-stranger.png",
+      "gameId": "void-stranger",
+      "gameTitle": "Void Stranger",
+      "status": "success",
+      "originalSize": 113821,
+      "optimizedSize": 58424,
+      "sizeReduction": 48.670280528197786,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "vvvvvv.png",
+      "gameId": "vvvvvv",
+      "gameTitle": "VVVVVV",
+      "status": "success",
+      "originalSize": 122715,
+      "optimizedSize": 19006,
+      "sizeReduction": 84.5120808377134,
+      "processingTime": 47
+    },
+    {
+      "originalFilename": "watchdogs-2.png",
+      "gameId": "watchdogs-2",
+      "gameTitle": "Watch_Dogs 2 (Gold Edition)",
+      "status": "success",
+      "originalSize": 1040751,
+      "optimizedSize": 148436,
+      "sizeReduction": 85.73760678586905,
+      "processingTime": 152
+    },
+    {
+      "originalFilename": "watchdogs.png",
+      "gameId": "watchdogs",
+      "gameTitle": "Watch_Dogs (Complete Edition)",
+      "status": "success",
+      "originalSize": 914407,
+      "optimizedSize": 165600,
+      "sizeReduction": 81.88990241763241,
+      "processingTime": 151
+    },
+    {
+      "originalFilename": "we-were-here-expeditions-the-friendship.png",
+      "gameId": "we-were-here-expeditions-the-friendship",
+      "gameTitle": "We Were Here Expeditions: The FriendShip",
+      "status": "success",
+      "originalSize": 818849,
+      "optimizedSize": 72822,
+      "sizeReduction": 91.10678525588966,
+      "processingTime": 516
+    },
+    {
+      "originalFilename": "we-were-here-forever.png",
+      "gameId": "we-were-here-forever",
+      "gameTitle": "We Were Here Forever",
+      "status": "success",
+      "originalSize": 189720,
+      "optimizedSize": 60478,
+      "sizeReduction": 68.1224963103521,
+      "processingTime": 105
+    },
+    {
+      "originalFilename": "we-were-here.png",
+      "gameId": "we-were-here",
+      "gameTitle": "We Were Here",
+      "status": "success",
+      "originalSize": 611932,
+      "optimizedSize": 38242,
+      "sizeReduction": 93.7506128131884,
+      "processingTime": 81
+    },
+    {
+      "originalFilename": "webbed.png",
+      "gameId": "webbed",
+      "gameTitle": "Webbed",
+      "status": "success",
+      "originalSize": 688705,
+      "optimizedSize": 92330,
+      "sizeReduction": 86.59367944185101,
+      "processingTime": 120
+    },
+    {
+      "originalFilename": "west-of-loathing.png",
+      "gameId": "west-of-loathing",
+      "gameTitle": "West of Loathing",
+      "status": "success",
+      "originalSize": 271176,
+      "optimizedSize": 29664,
+      "sizeReduction": 89.06097884768563,
+      "processingTime": 64
+    },
+    {
+      "originalFilename": "what-remains-of-edith-finch.png",
+      "gameId": "what-remains-of-edith-finch",
+      "gameTitle": "What Remains of Edith Finch",
+      "status": "success",
+      "originalSize": 8360109,
+      "optimizedSize": 44280,
+      "sizeReduction": 99.47034183405982,
+      "processingTime": 85
+    },
+    {
+      "originalFilename": "whispers-of-a-machine.png",
+      "gameId": "whispers-of-a-machine",
+      "gameTitle": "Whispers of a Machine",
+      "status": "success",
+      "originalSize": 532977,
+      "optimizedSize": 53048,
+      "sizeReduction": 90.04685005169078,
+      "processingTime": 90
+    },
+    {
+      "originalFilename": "whos-lila.png",
+      "gameId": "whos-lila",
+      "gameTitle": "Who's Lila?",
+      "status": "success",
+      "originalSize": 799837,
+      "optimizedSize": 176976,
+      "sizeReduction": 77.87349172393874,
+      "processingTime": 137
+    },
+    {
+      "originalFilename": "wolfenstein-ii-the-new-colossus.png",
+      "gameId": "wolfenstein-ii-the-new-colossus",
+      "gameTitle": "Wolfenstein II: The New Colossus",
+      "status": "success",
+      "originalSize": 464608,
+      "optimizedSize": 54522,
+      "sizeReduction": 88.2649459329155,
+      "processingTime": 497
+    },
+    {
+      "originalFilename": "wolfenstein-the-new-order.png",
+      "gameId": "wolfenstein-the-new-order",
+      "gameTitle": "Wolfenstein: The New Order",
+      "status": "success",
+      "originalSize": 4012574,
+      "optimizedSize": 40826,
+      "sizeReduction": 98.98254835923275,
+      "processingTime": 87
+    },
+    {
+      "originalFilename": "wolfenstein-the-old-blood.png",
+      "gameId": "wolfenstein-the-old-blood",
+      "gameTitle": "Wolfenstein: The Old Blood",
+      "status": "success",
+      "originalSize": 509162,
+      "optimizedSize": 77524,
+      "sizeReduction": 84.77419760312041,
+      "processingTime": 94
+    },
+    {
+      "originalFilename": "wolfenstein-youngblood.png",
+      "gameId": "wolfenstein-youngblood",
+      "gameTitle": "Wolfenstein: Youngblood",
+      "status": "success",
+      "originalSize": 944640,
+      "optimizedSize": 111742,
+      "sizeReduction": 88.17094342818427,
+      "processingTime": 141
+    },
+    {
+      "originalFilename": "wytchwood.png",
+      "gameId": "wytchwood",
+      "gameTitle": "Wytchwood",
+      "status": "success",
+      "originalSize": 705096,
+      "optimizedSize": 70350,
+      "sizeReduction": 90.0226352156302,
+      "processingTime": 102
+    },
+    {
+      "originalFilename": "xcom-2-war-of-the-chosen.png",
+      "gameId": "xcom-2-war-of-the-chosen",
+      "gameTitle": "XCOM 2: War of the Chosen",
+      "status": "success",
+      "originalSize": 978332,
+      "optimizedSize": 111238,
+      "sizeReduction": 88.62983118205273,
+      "processingTime": 129
+    },
+    {
+      "originalFilename": "xcom-2.png",
+      "gameId": "xcom-2",
+      "gameTitle": "XCOM 2",
+      "status": "success",
+      "originalSize": 776227,
+      "optimizedSize": 79940,
+      "sizeReduction": 89.70146619481157,
+      "processingTime": 107
+    },
+    {
+      "originalFilename": "xenogears.png",
+      "gameId": "xenogears",
+      "gameTitle": "Xenogears (Perfect World Build)",
+      "status": "success",
+      "originalSize": 557111,
+      "optimizedSize": 70170,
+      "sizeReduction": 87.40466442055533,
+      "processingTime": 99
+    },
+    {
+      "originalFilename": "yakuza-0.png",
+      "gameId": "yakuza-0",
+      "gameTitle": "Yakuza 0",
+      "status": "success",
+      "originalSize": 650442,
+      "optimizedSize": 71284,
+      "sizeReduction": 89.04068310471956,
+      "processingTime": 98
+    },
+    {
+      "originalFilename": "yakuza-kiwami-2.png",
+      "gameId": "yakuza-kiwami-2",
+      "gameTitle": "Yakuza Kiwami 2",
+      "status": "success",
+      "originalSize": 904746,
+      "optimizedSize": 122320,
+      "sizeReduction": 86.48018338848694,
+      "processingTime": 133
+    },
+    {
+      "originalFilename": "yakuza-kiwami.png",
+      "gameId": "yakuza-kiwami",
+      "gameTitle": "Yakuza Kiwami",
+      "status": "success",
+      "originalSize": 601204,
+      "optimizedSize": 71096,
+      "sizeReduction": 88.17439671060073,
+      "processingTime": 100
+    },
+    {
+      "originalFilename": "year-walk.png",
+      "gameId": "year-walk",
+      "gameTitle": "Year Walk",
+      "status": "success",
+      "originalSize": 584316,
+      "optimizedSize": 30830,
+      "sizeReduction": 94.72374537065559,
+      "processingTime": 74
+    },
+    {
+      "originalFilename": "your-turn-to-die-death-game-by-majority.png",
+      "gameId": "your-turn-to-die-death-game-by-majority",
+      "gameTitle": "Your Turn To Die -Death Game By Majority-",
+      "status": "success",
+      "originalSize": 316996,
+      "optimizedSize": 53026,
+      "sizeReduction": 83.27234413052531,
+      "processingTime": 70
+    },
+    {
+      "originalFilename": "zero-escape-nine-hours-nine-persons-nine-doors.png",
+      "gameId": "zero-escape-nine-hours-nine-persons-nine-doors",
+      "gameTitle": "Zero Escape: Nine Hours, Nine Persons, Nine Doors",
+      "status": "success",
+      "originalSize": 804953,
+      "optimizedSize": 81594,
+      "sizeReduction": 89.86350755882641,
+      "processingTime": 106
+    },
+    {
+      "originalFilename": "zero-escape-virtues-last-reward.png",
+      "gameId": "zero-escape-virtues-last-reward",
+      "gameTitle": "Zero Escape: Virtue's Last Reward",
+      "status": "success",
+      "originalSize": 274789,
+      "optimizedSize": 45354,
+      "sizeReduction": 83.49497250617746,
+      "processingTime": 84
+    },
+    {
+      "originalFilename": "zone-of-the-enders-the-2nd-runner-mars.png",
+      "gameId": "zone-of-the-enders-the-2nd-runner-mars",
+      "gameTitle": "Zone of The Enders: The 2nd Runner - Mars",
+      "status": "success",
+      "originalSize": 961857,
+      "optimizedSize": 164288,
+      "sizeReduction": 82.91970635967716,
+      "processingTime": 167
+    }
+  ]
+}
