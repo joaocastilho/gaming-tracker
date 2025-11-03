@@ -285,7 +285,7 @@
 
 	/* Title Section */
 	.title-section {
-		margin-bottom: 4px;
+		margin-bottom: 2px;
 		min-height: 2.4rem; /* 2 lines at 1.2 line-height */
 		display: flex;
 		align-items: center;
@@ -309,7 +309,7 @@
 
 	/* Subtitle Section */
 	.subtitle-section {
-		margin-bottom: 4px;
+		margin-bottom: 2px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
