@@ -56,9 +56,16 @@
 		};
 	});
 
-	// Filter to show only completed games
+	// Filter to show only completed games, sorted by finished date desc
 	let displayGames = $derived(
-		filteredData.filteredGames.filter((game) => game.status === 'Completed')
+		filteredData.filteredGames
+			.filter((game) => game.status === 'Completed')
+			.toSorted((a, b) => {
+				if (!a.finishedDate && !b.finishedDate) return 0;
+				if (!a.finishedDate) return 1;
+				if (!b.finishedDate) return -1;
+				return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+			})
 	);
 
 	// Handle game card/row clicks for detail modal

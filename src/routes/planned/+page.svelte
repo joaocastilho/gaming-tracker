@@ -56,9 +56,11 @@
 		};
 	});
 
-	// Filter to show only planned games
+	// Filter to show only planned games, sorted alphabetically
 	let displayGames = $derived(
-		filteredData.filteredGames.filter((game) => game.status === 'Planned')
+		filteredData.filteredGames
+			.filter((game) => game.status === 'Planned')
+			.toSorted((a, b) => a.title.localeCompare(b.title))
 	);
 
 	// Handle game card/row clicks for detail modal

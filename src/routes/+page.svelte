@@ -79,6 +79,14 @@
 	});
 
 	// Show filtered games based on active tab (computed in template)
+	let allGames = $derived(filteredData.filteredGames.toSorted((a, b) => a.title.localeCompare(b.title)));
+	let completedGames = $derived(filteredData.filteredGames.filter((game: Game) => game.status === 'Completed'));
+	let plannedGames = $derived(filteredData.filteredGames
+		.filter((game: Game) => game.status === 'Planned')
+		.toSorted((a, b) => a.title.localeCompare(b.title)));
+	let tierlistGames = $derived(filteredData.filteredGames.filter(
+		(game: Game) => game.status === 'Completed' && game.tier
+	));
 
 	// Handle game card/row clicks for detail modal
 	function handleGameClick(game: Game): void {
@@ -92,10 +100,7 @@
 
 <div class="main-content" id="main-content">
 	{#if currentActiveTab === 'completed'}
-		{@const filteredGames = filteredData.filteredGames.filter(
-			(game: Game) => game.status === 'Completed'
-		)}
-		{#if filteredGames.length === 0}
+		{#if completedGames.length === 0}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}
 					<h2>No games found</h2>
@@ -120,20 +125,17 @@
 				<div
 					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
 				>
-					{#each filteredGames as game (game.id)}
+					{#each completedGames as game (game.id)}
 						<GameCard {game} />
 					{/each}
 				</div>
 			{:else}
 				<!-- Table View -->
-				<GameTable games={filteredGames} onRowClick={handleGameClick} />
+				<GameTable games={completedGames} onRowClick={handleGameClick} />
 			{/if}
 		{/if}
 	{:else if currentActiveTab === 'planned'}
-		{@const filteredGames = filteredData.filteredGames.filter(
-			(game: Game) => game.status === 'Planned'
-		)}
-		{#if filteredGames.length === 0}
+		{#if plannedGames.length === 0}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}
 					<h2>No games found</h2>
@@ -158,20 +160,17 @@
 				<div
 					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
 				>
-					{#each filteredGames as game (game.id)}
+					{#each plannedGames as game (game.id)}
 						<GameCard {game} />
 					{/each}
 				</div>
 			{:else}
 				<!-- Table View -->
-				<GameTable games={filteredGames} onRowClick={handleGameClick} />
+				<GameTable games={plannedGames} onRowClick={handleGameClick} />
 			{/if}
 		{/if}
 	{:else if currentActiveTab === 'tierlist'}
-		{@const filteredGames = filteredData.filteredGames.filter(
-			(game: Game) => game.status === 'Completed' && game.tier
-		)}
-		{#if filteredGames.length === 0}
+		{#if tierlistGames.length === 0}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}
 					<h2>No games found</h2>
@@ -196,18 +195,17 @@
 				<div
 					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
 				>
-					{#each filteredGames as game (game.id)}
+					{#each tierlistGames as game (game.id)}
 						<GameCard {game} />
 					{/each}
 				</div>
 			{:else}
 				<!-- Table View -->
-				<GameTable games={filteredGames} onRowClick={handleGameClick} />
+				<GameTable games={tierlistGames} onRowClick={handleGameClick} />
 			{/if}
 		{/if}
 	{:else}
-		{@const filteredGames = filteredData.filteredGames}
-		{#if filteredGames.length === 0}
+		{#if allGames.length === 0}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}
 					<h2>No games found</h2>
@@ -232,13 +230,13 @@
 				<div
 					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
 				>
-					{#each filteredGames as game (game.id)}
+					{#each allGames as game (game.id)}
 						<GameCard {game} />
 					{/each}
 				</div>
 			{:else}
 				<!-- Table View -->
-				<GameTable games={filteredGames} onRowClick={handleGameClick} />
+				<GameTable games={allGames} onRowClick={handleGameClick} />
 			{/if}
 		{/if}
 	{/if}
