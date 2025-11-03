@@ -192,7 +192,7 @@
 	>
 		<!-- Modal Content -->
 		<div
-			class="modal-content bg-background max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl shadow-2xl"
+			class="modal-content bg-background max-h-[90vh] w-full max-w-4xl rounded-2xl shadow-2xl"
 			role="document"
 		>
 			<!-- Close Button -->

@@ -200,7 +200,7 @@
 
 		<!-- Modal Content -->
 		<div
-			class="relative h-[600px] w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-900"
+			class="relative h-[600px] w-full max-w-4xl rounded-xl bg-white shadow-2xl dark:bg-gray-900"
 		>
 			<!-- Close Button -->
 			<button
