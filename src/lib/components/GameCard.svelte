@@ -264,6 +264,9 @@
 	/* Title Section */
 	.title-section {
 		margin-bottom: 4px;
+		min-height: 2.4rem; /* 2 lines at 1.2 line-height */
+		display: flex;
+		align-items: flex-start;
 	}
 
 	.game-title {
@@ -272,6 +275,10 @@
 		margin: 0;
 		line-height: 1.2;
 		word-wrap: break-word;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	/* Platform/Genre/Year Section */
@@ -403,6 +410,10 @@
 	@media (max-width: 480px) {
 		.game-info {
 			padding: 8px;
+		}
+
+		.title-section {
+			min-height: 2.04rem; /* Adjusted for smaller font size */
 		}
 
 		.game-title {
