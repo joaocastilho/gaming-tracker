@@ -168,7 +168,7 @@
 	<!-- Modal Overlay -->
 	<div
 		bind:this={modalElement}
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-1"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-[2px] p-1"
 		onclick={handleOverlayClick}
 		onkeydown={handleOverlayKeydown}
 		role="dialog"
