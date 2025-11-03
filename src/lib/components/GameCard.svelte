@@ -93,7 +93,7 @@
 		<!-- Badges on Cover -->
 		{#if game.coOp === 'Yes'}
 			<div class="co-op-badge">
-				<span class="co-op-icon" aria-hidden="true">👥</span>
+				<span class="co-op-icon" aria-hidden="true" title="Co-op game">👥</span>
 				<span class="co-op-text">Co-op</span>
 			</div>
 		{/if}
@@ -134,19 +134,19 @@
 		<!-- Ratings Section (always present) -->
 		<div class="ratings-section">
 			<div class="rating-item">
-				<span class="rating-icon" aria-label="Presentation rating">👁️</span>
+				<span class="rating-icon" aria-label="Presentation rating" title="Presentation">👁️</span>
 				<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
 			</div>
 			<div class="rating-item">
-				<span class="rating-icon" aria-label="Story rating">✏️</span>
+				<span class="rating-icon" aria-label="Story rating" title="Story">✏️</span>
 				<span class="rating-score">{game.ratingStory ?? '-'}</span>
 			</div>
 			<div class="rating-item">
-				<span class="rating-icon" aria-label="Gameplay rating">🎮</span>
+				<span class="rating-icon" aria-label="Gameplay rating" title="Gameplay">🎮</span>
 				<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
 			</div>
 			<div class="rating-item total-score">
-				<span class="rating-icon" aria-label="Total score">🏆</span>
+				<span class="rating-icon" aria-label="Total score" title="Total score">🏆</span>
 				<span class="rating-score">{totalScore ?? '-'}</span>
 			</div>
 		</div>
@@ -154,11 +154,11 @@
 		<!-- Time/Date Section (always present) -->
 		<div class="time-date-section">
 			<div class="time-item">
-				<span class="time-icon" aria-label="Time">⏱️</span>
+				<span class="time-icon" aria-label="Time" title="Time played / Time to beat">⏱️</span>
 				<span class="time-text">{game.status === 'Completed' ? (game.hoursPlayed ?? 'N/A') : (game.timeToBeat ?? 'N/A')}</span>
 			</div>
 			<div class="date-item">
-				<span class="date-icon" aria-label="Date">📅</span>
+				<span class="date-icon" aria-label="Date" title="Completion date">📅</span>
 				<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span>
 			</div>
 		</div>
@@ -173,6 +173,7 @@
 		width: 260px;
 		border-radius: 12px;
 		overflow: hidden;
+		margin-top: 16px;
 
 		/* Shadow */
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -190,8 +191,6 @@
 	.game-card:focus {
 		transform: translateY(-4px);
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-		outline: 2px solid #60a5fa;
-		outline-offset: 2px;
 	}
 
 	/* Cover Container */
