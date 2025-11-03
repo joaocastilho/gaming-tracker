@@ -218,7 +218,7 @@
 						bind:this={coverImage}
 						src="/{modalState.activeGame.coverImage}"
 						alt="{modalState.activeGame.title} cover"
-						class="w-full h-full object-cover"
+						class="w-full h-full object-cover border border-black"
 						style="width: 400px; height: 600px;"
 						loading="lazy"
 					/>
