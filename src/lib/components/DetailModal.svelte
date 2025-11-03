@@ -107,6 +107,12 @@
 		return GENRE_COLORS[genre] || 'bg-gray-600 text-white';
 	}
 
+	function getRatingBarColor(rating: number): string {
+		if (rating >= 7) return 'bg-gradient-to-r from-green-500 to-green-600';
+		if (rating >= 5) return 'bg-gradient-to-r from-yellow-500 to-yellow-600';
+		return 'bg-gradient-to-r from-red-500 to-red-600';
+	}
+
 	onMount(() => {
 		if (browser) {
 			document.addEventListener('keydown', handleKeydown);
@@ -239,22 +245,31 @@
 								{modalState.activeGame.year}
 							</div>
 						</div>
+						{#if modalState.activeGame.status === 'Completed'}
+							<div>
+								<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Hours Played</div>
+								<div class="font-semibold text-gray-900 dark:text-white">
+									{modalState.activeGame.hoursPlayed || 'Not completed'}
+								</div>
+							</div>
+						{:else}
+							<div>
+								<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Time to Beat</div>
+								<div class="font-semibold text-gray-900 dark:text-white">
+									{modalState.activeGame.timeToBeat}
+								</div>
+							</div>
+						{/if}
 						<div>
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Time to Beat</div>
+							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Platform</div>
 							<div class="font-semibold text-gray-900 dark:text-white">
-								{modalState.activeGame.timeToBeat}
+								{modalState.activeGame.platform}
 							</div>
 						</div>
 						<div>
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Hours Played</div>
+							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Genre</div>
 							<div class="font-semibold text-gray-900 dark:text-white">
-								{modalState.activeGame.hoursPlayed || 'Not completed'}
-							</div>
-						</div>
-						<div>
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Finished Date</div>
-							<div class="font-semibold text-gray-900 dark:text-white">
-								{formatDate(modalState.activeGame.finishedDate)}
+								{modalState.activeGame.genre}
 							</div>
 						</div>
 					</div>
@@ -267,7 +282,7 @@
 							<!-- Presentation Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<Presentation size={20} class="flex-shrink-0 text-blue-500" />
+									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
 									<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
 										>Presentation</span
 									>
@@ -277,7 +292,7 @@
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
-										class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+										class="h-2 rounded-full {getRatingBarColor(modalState.activeGame.ratingPresentation)} transition-all duration-300"
 										style="width: {modalState.activeGame.ratingPresentation * 10}%"
 									></div>
 								</div>
@@ -286,7 +301,7 @@
 							<!-- Story Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<NotebookPen size={20} class="flex-shrink-0 text-green-500" />
+									<NotebookPen size={20} class="flex-shrink-0 text-orange-500" />
 									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Story</span>
 								</div>
 								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
@@ -294,7 +309,7 @@
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
-										class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+										class="h-2 rounded-full {getRatingBarColor(modalState.activeGame.ratingStory)} transition-all duration-300"
 										style="width: {modalState.activeGame.ratingStory * 10}%"
 									></div>
 								</div>
@@ -303,7 +318,7 @@
 							<!-- Gameplay Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<Gamepad2 size={20} class="flex-shrink-0 text-purple-500" />
+									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
 									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Gameplay</span>
 								</div>
 								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
@@ -311,7 +326,7 @@
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
-										class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+										class="h-2 rounded-full {getRatingBarColor(modalState.activeGame.ratingGameplay)} transition-all duration-300"
 										style="width: {modalState.activeGame.ratingGameplay * 10}%"
 									></div>
 								</div>
@@ -332,10 +347,62 @@
 							{/if}
 						</div>
 					{:else}
-						<div class="py-8 text-center text-gray-500 dark:text-gray-400">
-							<Gamepad2 size={48} class="mx-auto mb-4 opacity-50" />
-							<p class="text-lg">Game not completed yet</p>
-							<p class="text-sm">Complete the game to see detailed ratings</p>
+						<div class="space-y-4">
+							<h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Ratings</h3>
+
+							<!-- Placeholder Presentation Rating -->
+							<div class="flex items-center gap-3">
+								<div class="flex min-w-0 flex-1 items-center gap-2">
+									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
+									<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+										>Presentation</span
+									>
+								</div>
+								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+									Not rated
+								</span>
+								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+									<div class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300" style="width: 0%"></div>
+								</div>
+							</div>
+
+							<!-- Placeholder Story Rating -->
+							<div class="flex items-center gap-3">
+								<div class="flex min-w-0 flex-1 items-center gap-2">
+									<NotebookPen size={20} class="flex-shrink-0 text-orange-500" />
+									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Story</span>
+								</div>
+								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+									Not rated
+								</span>
+								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+									<div class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300" style="width: 0%"></div>
+								</div>
+							</div>
+
+							<!-- Placeholder Gameplay Rating -->
+							<div class="flex items-center gap-3">
+								<div class="flex min-w-0 flex-1 items-center gap-2">
+									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
+									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Gameplay</span>
+								</div>
+								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+									Not rated
+								</span>
+								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+									<div class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300" style="width: 0%"></div>
+								</div>
+							</div>
+
+							<!-- Placeholder Total Score -->
+							<div class="mt-6 rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-50 p-4 dark:border-gray-700 dark:from-gray-800/20 dark:to-gray-800/20">
+								<div class="flex items-center justify-center gap-2">
+									<Trophy size={24} class="text-gray-400" />
+									<span class="text-lg font-bold text-gray-900 dark:text-white">
+										Complete the game to see your score
+									</span>
+								</div>
+							</div>
 						</div>
 					{/if}
 				</div>
