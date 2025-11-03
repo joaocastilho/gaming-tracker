@@ -266,7 +266,9 @@
 		margin-bottom: 4px;
 		min-height: 2.4rem; /* 2 lines at 1.2 line-height */
 		display: flex;
-		align-items: flex-start;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
 	}
 
 	.game-title {
@@ -279,6 +281,8 @@
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+		text-align: center;
+		width: 100%;
 	}
 
 	/* Platform/Genre/Year Section */
@@ -326,9 +330,12 @@
 	.rating-item {
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
 		gap: 2px;
 		font-size: 0.75rem;
 		color: #8b92a8;
+		min-width: 0;
+		flex: 1;
 	}
 
 	:global(.light) .rating-item {
@@ -337,11 +344,13 @@
 
 	.rating-icon {
 		font-size: 0.8rem;
+		flex-shrink: 0;
 	}
 
 	.rating-score {
 		font-weight: 700;
 		font-size: 0.8rem;
+		margin-left: auto;
 	}
 
 	.total-score {
@@ -443,6 +452,7 @@
 
 		.rating-item {
 			font-size: 0.65rem;
+			justify-content: flex-start;
 		}
 
 		.time-date-section {
