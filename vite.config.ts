@@ -3,6 +3,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	base: '/gaming-tracker/',
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
