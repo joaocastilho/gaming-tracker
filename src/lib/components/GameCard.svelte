@@ -11,9 +11,10 @@
 
 	interface Props {
 		game: Game;
+		size?: 'small' | 'large';
 	}
 
-	let { game }: Props = $props();
+	let { game, size = 'small' }: Props = $props();
 
 	// Image loading state
 	let isImageLoaded = $state(false);
@@ -47,16 +48,16 @@
 	// Dynamic font size calculation for title
 	let titleFontSize = $derived(() => {
 		const title = titleParts().mainTitle;
-		const baseSize = 0.95; // Base font size in rem
-		const minSize = 0.7; // Minimum font size in rem
-		const maxLength = 35; // Length at which we start reducing font size
+		const baseSize = 0.85; // Base font size in rem
+		const minSize = 0.65; // Minimum font size in rem
+		const maxLength = 25; // Length at which we start reducing font size
 
 		if (title.length <= maxLength) {
 			return baseSize;
 		}
 
 		// Calculate reduction factor based on length
-		const reduction = Math.min((title.length - maxLength) * 0.01, baseSize - minSize);
+		const reduction = Math.min((title.length - maxLength) * 0.015, baseSize - minSize);
 		return Math.max(baseSize - reduction, minSize);
 	});
 
@@ -89,7 +90,7 @@
 
 <button
 	class="game-card"
-	style="background-color: var(--color-surface); color: var(--color-text-primary);"
+	style="background-color: var(--color-surface); color: var(--color-text-primary); --card-width: {size === 'large' ? '250px' : '300px'}; --cover-height: {size === 'large' ? '375px' : '450px'};"
 	onclick={() => modalStore.openViewModal(game)}
 	onkeydown={handleKeyDown}
 	aria-label="View details for {game.title}"
@@ -117,14 +118,6 @@
 				<span class="co-op-text">Co-op</span>
 			</div>
 		{/if}
-
-		{#if game.status === 'Completed' && game.tier}
-			<div
-				class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}"
-			>
-				{getTierDisplayName(game.tier)}
-			</div>
-		{/if}
 	</div>
 
 	<!-- Game Info -->
@@ -140,60 +133,62 @@
 			</h3>
 		</div>
 
-		<!-- Platform/Genre left, Year right (always shown) -->
-		<div class="platform-genre-year-section">
-			<div class="first-line">
-				<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
-					{game.platform}
-				</span>
-				<span class="game-year">{game.year}</span>
-			</div>
-			<div class="second-line">
-				<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
-					{game.genre}
-				</span>
-				<div class="total-score">
-					<span class="rating-icon" aria-label="Total score">🏆</span>
-					<span class="rating-score">{totalScore ?? '-'}</span>
+		{#if size === 'small'}
+			<!-- Platform/Genre left, Year right (always shown) -->
+			<div class="platform-genre-year-section">
+				<div class="first-line">
+					<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
+						{game.platform}
+					</span>
+					<span class="game-year">{game.year}</span>
+				</div>
+				<div class="second-line">
+					<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
+						{game.genre}
+					</span>
+					<div class="total-score">
+						<span class="rating-icon" aria-label="Total score">🏆</span>
+						<span class="rating-score">{totalScore ?? '-'}</span>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<!-- Ratings Section (always present) -->
-		<div class="ratings-section">
-			<div class="rating-item">
-				<Presentation
-					class="rating-icon text-cyan-500"
-					aria-label="Presentation rating"
-					size={20}
-				/>
-				<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
+			<!-- Ratings Section (always present) -->
+			<div class="ratings-section">
+				<div class="rating-item">
+					<Presentation
+						class="rating-icon text-cyan-500"
+						aria-label="Presentation rating"
+						size={20}
+					/>
+					<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
+				</div>
+				<div class="rating-item">
+					<NotebookPen class="rating-icon text-amber-600" aria-label="Story rating" size={20} />
+					<span class="rating-score">{game.ratingStory ?? '-'}</span>
+				</div>
+				<div class="rating-item">
+					<Gamepad2 class="rating-icon text-pink-500" aria-label="Gameplay rating" size={20} />
+					<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
+				</div>
 			</div>
-			<div class="rating-item">
-				<NotebookPen class="rating-icon text-amber-600" aria-label="Story rating" size={20} />
-				<span class="rating-score">{game.ratingStory ?? '-'}</span>
-			</div>
-			<div class="rating-item">
-				<Gamepad2 class="rating-icon text-pink-500" aria-label="Gameplay rating" size={20} />
-				<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
-			</div>
-		</div>
 
-		<!-- Time/Date Section (always present) -->
-		<div class="time-date-section">
-			<div class="time-item">
-				<Timer class="time-icon" aria-label="Time played / Time to beat" size={20} />
-				<span class="time-text"
-					>{game.status === 'Completed'
-						? (game.hoursPlayed ?? 'N/A')
-						: (game.timeToBeat ?? 'N/A')}</span
-				>
+			<!-- Time/Date Section (always present) -->
+			<div class="time-date-section">
+				<div class="time-item">
+					<Timer class="time-icon" aria-label="Time played / Time to beat" size={20} />
+					<span class="time-text"
+						>{game.status === 'Completed'
+							? (game.hoursPlayed ?? 'N/A')
+							: (game.timeToBeat ?? 'N/A')}</span
+					>
+				</div>
+				<div class="date-item">
+					<CalendarDays class="date-icon" aria-label="Completion date" size={20} />
+					<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span>
+				</div>
 			</div>
-			<div class="date-item">
-				<CalendarDays class="date-icon" aria-label="Completion date" size={20} />
-				<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span>
-			</div>
-		</div>
+		{/if}
 	</div>
 </button>
 
@@ -202,7 +197,7 @@
 		/* Layout */
 		display: flex;
 		flex-direction: column;
-		width: 300px;
+		width: var(--card-width, 300px);
 		border-radius: 6px;
 		overflow: hidden;
 		margin-top: 16px;
@@ -228,8 +223,8 @@
 	/* Cover Container */
 	.cover-container {
 		position: relative;
-		width: 300px;
-		height: 450px;
+		width: var(--card-width, 300px);
+		height: var(--cover-height, 450px);
 		margin: 0 auto;
 	}
 
@@ -293,19 +288,7 @@
 		font-size: 0.8rem;
 	}
 
-	/* Tier Badge */
-	.tier-badge {
-		position: absolute;
-		top: 8px;
-		right: 8px;
-		padding: 4px 8px;
-		border-radius: 4px;
-		font-size: 0.8rem;
-		font-weight: 600;
-		min-width: 24px;
-		text-align: center;
-		backdrop-filter: blur(4px);
-	}
+
 
 	/* Game Info */
 	.game-info {

@@ -196,7 +196,7 @@
 				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 			>
 				{#each completedGames as game (game.id)}
-					<GameCard {game} />
+					<GameCard {game} size="small" />
 				{/each}
 			</div>
 		{:else}
@@ -220,7 +220,7 @@
 				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 			>
 				{#each plannedGames as game (game.id)}
-					<GameCard {game} />
+					<GameCard {game} size="small" />
 				{/each}
 			</div>
 		{:else}
@@ -250,12 +250,12 @@
 								<span class="tier-count">({games.length})</span>
 							</h3>
 							{#if currentViewMode === 'gallery'}
-								<!-- Gallery View -->
+								<!-- Gallery View - Larger cards for tier list -->
 								<div
-									class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
+									class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
 								>
 									{#each games as game (game.id)}
-										<GameCard {game} />
+										<GameCard {game} size="large" />
 									{/each}
 								</div>
 							{:else}
@@ -290,7 +290,7 @@
 			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 		>
 			{#each allGames as game (game.id)}
-				<GameCard {game} />
+				<GameCard {game} size="small" />
 			{/each}
 		</div>
 	{:else if isLoadingGames}

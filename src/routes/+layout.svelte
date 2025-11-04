@@ -4,7 +4,6 @@
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 	import RatingsFilter from '$lib/components/RatingsFilter.svelte';
-	import AddEditModal from '$lib/components/AddEditModal.svelte';
 	import DetailModal from '$lib/components/DetailModal.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import NavigationTabs from '$lib/components/NavigationTabs.svelte';
@@ -251,9 +250,6 @@
 			{@render children?.()}
 		</div>
 	</main>
-
-	<!-- Add/Edit Game Modal -->
-	<AddEditModal />
 
 	<!-- Detail Modal -->
 	<DetailModal />
