@@ -100,7 +100,7 @@
 									<!-- Cover -->
 									<div class="relative">
 										<img
-											src="/{game.coverImage}"
+											src="{game.coverImage}"
 											alt="{game.title} cover"
 											class="h-full w-full rounded-none border border-black object-cover dark:border-gray-300"
 											loading="lazy"

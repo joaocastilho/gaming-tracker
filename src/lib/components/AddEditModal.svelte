@@ -202,7 +202,7 @@
 						<div class="lg:col-span-2">
 							<div class="relative">
 								<img
-									src="/{modalState.activeGame.coverImage}"
+									src="{modalState.activeGame.coverImage}"
 									alt="{modalState.activeGame.title} cover"
 									class="w-full rounded-lg shadow-lg"
 									loading="lazy"

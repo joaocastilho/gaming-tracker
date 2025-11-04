@@ -100,7 +100,7 @@
 			<div class="image-placeholder"></div>
 		{/if}
 		<img
-			src="/{game.coverImage}"
+			src="{game.coverImage}"
 			alt="{game.title} cover"
 			class="cover-image"
 			class:loaded={isImageLoaded}
