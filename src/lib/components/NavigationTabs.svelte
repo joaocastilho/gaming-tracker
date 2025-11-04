@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { appStore } from '../stores/app.js';
 	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
@@ -42,16 +42,16 @@
 		return unsubscribe;
 	});
 
-	// Set active tab based on current URL path
+	// Set active tab based on current route
 	$effect(() => {
-		const currentPath = $page.url.pathname;
+		const currentRoute = page.route.id;
 		let newActiveTab: TabId = 'all';
 
-		if (currentPath === '/completed') {
+		if (currentRoute === '/completed') {
 			newActiveTab = 'completed';
-		} else if (currentPath === '/planned') {
+		} else if (currentRoute === '/planned') {
 			newActiveTab = 'planned';
-		} else if (currentPath === '/tierlist') {
+		} else if (currentRoute === '/tierlist') {
 			newActiveTab = 'tierlist';
 		} else {
 			newActiveTab = 'all';
@@ -73,19 +73,19 @@
 		{
 			id: 'completed',
 			label: 'Completed',
-			route: '/completed',
+			route: 'completed',
 			count: gameCounts.completed
 		},
 		{
 			id: 'planned',
 			label: 'Planned',
-			route: '/planned',
+			route: 'planned',
 			count: gameCounts.planned
 		},
 		{
 			id: 'tierlist',
 			label: 'Tier List',
-			route: '/tierlist',
+			route: 'tierlist',
 			count: null
 		}
 	]);
