@@ -48,15 +48,15 @@
 	let titleFontSize = $derived(() => {
 		const title = titleParts().mainTitle;
 		const baseSize = 0.95; // Base font size in rem
-		const minSize = 0.6; // Minimum font size in rem
-		const maxLength = 25; // Length at which we start reducing font size
+		const minSize = 0.7; // Minimum font size in rem
+		const maxLength = 35; // Length at which we start reducing font size
 
 		if (title.length <= maxLength) {
 			return baseSize;
 		}
 
 		// Calculate reduction factor based on length
-		const reduction = Math.min((title.length - maxLength) * 0.02, baseSize - minSize);
+		const reduction = Math.min((title.length - maxLength) * 0.01, baseSize - minSize);
 		return Math.max(baseSize - reduction, minSize);
 	});
 
@@ -134,6 +134,7 @@
 			<h3 class="game-title" style="font-size: {titleFontSize()}rem;">
 				{titleParts().mainTitle}
 				{#if titleParts().subtitle}
+					<br />
 					<span class="game-subtitle">{titleParts().subtitle}</span>
 				{/if}
 			</h3>
@@ -329,9 +330,10 @@
 		margin: 0;
 		line-height: 1.2;
 		word-wrap: break-word;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+		height: 40px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 		text-align: center;
 		width: 100%;
 	}
