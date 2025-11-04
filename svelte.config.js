@@ -8,7 +8,6 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		// Static adapter for deployment to GitHub Pages/Netlify
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',
