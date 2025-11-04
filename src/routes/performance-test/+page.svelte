@@ -1,3 +1,13 @@
+<script module lang="ts">
+	import { dev } from '$app/environment';
+	import { error } from '@sveltejs/kit';
+
+	// Only allow access in development
+	if (!dev) {
+		error(404, 'Performance test page is only available in development mode');
+	}
+</script>
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { gamesStore } from '$lib/stores/games.js';

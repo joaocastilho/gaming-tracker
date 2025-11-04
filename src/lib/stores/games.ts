@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import { base } from '$app/paths';
+import { dev } from '$app/environment';
 import { GameSchema } from '../validation/game';
 import { transformGameData } from '../utils/dataTransformer';
 import type { Game } from '../types/game';
@@ -43,7 +43,9 @@ function createGamesStore() {
 			try {
 				// Use event.fetch for server context, global fetch for client context
 				const fetchFn = event?.fetch ?? globalThis.fetch;
-				const datasetPath = useLargeDataset ? `${base}/games-large.json` : `${base}/games.json`;
+				// Only allow large dataset in development mode
+				const datasetPath =
+					useLargeDataset && dev ? `games-large.json` : `games.json`;
 				const response = await fetchFn(datasetPath);
 				if (!response.ok) {
 					throw new Error(`Failed to fetch games: ${response.statusText}`);

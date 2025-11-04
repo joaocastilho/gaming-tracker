@@ -16,8 +16,8 @@
 	<div class="header-left">
 		<div class="logo">
 			<picture class="logo-image">
-				<source srcset="/logo.webp" type="image/webp" />
-				<img src="/logo.png" alt="Gaming Tracker Logo" />
+				<source srcset="logo.webp" type="image/webp" />
+				<img src="logo.png" alt="Gaming Tracker Logo" />
 			</picture>
 		</div>
 	</div>
