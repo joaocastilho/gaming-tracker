@@ -32,6 +32,9 @@
 	// Get loading state from games store
 	let isLoadingGames = $state(false);
 
+	// Get all games for tier list
+	let allGamesForTierList = $state<Game[]>([]);
+
 	// Subscribe to stores
 	filteredGamesStore.subscribe((data) => {
 		filteredData = data;
@@ -47,6 +50,10 @@
 
 	gamesStore.loading.subscribe((loading) => {
 		isLoadingGames = loading;
+	});
+
+	gamesStore.subscribe((games) => {
+		allGamesForTierList = games;
 	});
 
 	// Handle browser back/forward navigation
@@ -85,20 +92,85 @@
 		filteredData.filteredGames.toSorted((a, b) => a.title.localeCompare(b.title))
 	);
 	let completedGames = $derived(
-		filteredData.filteredGames.filter((game: Game) => game.status === 'Completed')
+		filteredData.filteredGames
+			.filter((game: Game) => game.status === 'Completed')
+			.toSorted((a, b) => {
+				// Sort by finished date descending (most recent first)
+				if (!a.finishedDate && !b.finishedDate) return 0;
+				if (!a.finishedDate) return 1; // null dates go to end
+				if (!b.finishedDate) return -1; // null dates go to end
+				return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+			})
 	);
 	let plannedGames = $derived(
 		filteredData.filteredGames
 			.filter((game: Game) => game.status === 'Planned')
 			.toSorted((a, b) => a.title.localeCompare(b.title))
 	);
-	let tierlistGames = $derived(
-		filteredData.filteredGames.filter((game: Game) => game.status === 'Completed' && game.tier)
-	);
+	// Tier list organized by tiers (uses all games, not filtered)
+	let tierList = $state<Record<string, Game[]>>({
+		'S - Masterpiece': [],
+		'A - Amazing': [],
+		'B - Great': [],
+		'C - Good': [],
+		'D - Decent': [],
+		'E - Bad': []
+	});
+
+	// Update tier list when games change
+	$effect(() => {
+		const gamesByTier: Record<string, Game[]> = {
+			'S - Masterpiece': [],
+			'A - Amazing': [],
+			'B - Great': [],
+			'C - Good': [],
+			'D - Decent': [],
+			'E - Bad': []
+		};
+
+		// Map single letter tiers to full tier names
+		const tierMapping: Record<string, string> = {
+			'S': 'S - Masterpiece',
+			'A': 'A - Amazing',
+			'B': 'B - Great',
+			'C': 'C - Good',
+			'D': 'D - Decent',
+			'E': 'E - Bad'
+		};
+
+		// Group completed games with tiers from allGamesForTierList
+		const tieredGames = allGamesForTierList
+			.filter((game: Game) => game.status === 'Completed' && game.tier);
+
+		tieredGames.forEach((game) => {
+			if (game.tier) {
+				// Map single letter tier to full tier name
+				const fullTierName = tierMapping[game.tier] || game.tier;
+				if (gamesByTier[fullTierName]) {
+					gamesByTier[fullTierName].push(game);
+				}
+			}
+		});
+
+		// Sort games within each tier alphabetically
+		Object.keys(gamesByTier).forEach((tier) => {
+			gamesByTier[tier].sort((a, b) => a.title.localeCompare(b.title));
+		});
+
+		tierList = gamesByTier;
+	});
 
 	// Handle game card/row clicks for detail modal
 	function handleGameClick(game: Game): void {
 		modalStore.openViewModal(game);
+	}
+
+	// Convert tier name to CSS class
+	function getTierClass(tier: string): string {
+		return tier
+			.toLowerCase()
+			.replace(/\s+/g, '-')
+			.replace(/[^a-z0-9-]/g, '');
 	}
 </script>
 
@@ -156,28 +228,44 @@
 			<GameTable games={plannedGames} onRowClick={handleGameClick} />
 		{/if}
 	{:else if currentActiveTab === 'tierlist'}
-		{#if tierlistGames.length === 0}
+
+		{#if Object.values(tierList).every((games) => games.length === 0)}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}
 					<h2>No games found</h2>
 					<p>Add your first game to get started!</p>
 				{:else}
-					<h2>No games match your search</h2>
-					<p>Try adjusting your search terms or filters.</p>
+					<h2>No tiered games found</h2>
+					<p>Complete some games and assign them tiers to see them here!</p>
 				{/if}
 			</div>
-		{:else if currentViewMode === 'gallery'}
-			<!-- Gallery View -->
-			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
-			>
-				{#each tierlistGames as game (game.id)}
-					<GameCard {game} />
+		{:else}
+			<!-- Tier List View -->
+			<div class="tier-list-container">
+				{#each Object.entries(tierList) as [tier, games] (tier)}
+					{#if games.length > 0}
+						<div class="tier-section">
+							<h3 class="tier-header tier-{getTierClass(tier)}">
+								Tier {tier}
+								<span class="tier-count">({games.length})</span>
+							</h3>
+							{#if currentViewMode === 'gallery'}
+								<!-- Gallery View -->
+								<div
+									class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
+								>
+									{#each games as game (game.id)}
+										<GameCard {game} />
+									{/each}
+								</div>
+							{:else}
+								<!-- Table View -->
+								<GameTable {games} onRowClick={handleGameClick} />
+							{/if}
+						</div>
+					{/if}
 				{/each}
 			</div>
-		{:else}
-			<!-- Table View -->
-			<GameTable games={tierlistGames} onRowClick={handleGameClick} />
 		{/if}
 	{:else if allGames.length === 0}
 		<div class="empty-state">
@@ -241,5 +329,158 @@
 	/* Light mode */
 	:global(.light) .empty-state {
 		color: #6b7280;
+	}
+
+	/* Tier List Styles */
+	.tier-list-container {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.tier-section {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.tier-header {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin: 0;
+		padding: 0.75rem 1rem;
+		border-radius: 0.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.tier-count {
+		font-size: 0.875rem;
+		font-weight: 500;
+		opacity: 0.8;
+	}
+
+	/* Tier Colors */
+	.tier-s-masterpiece {
+		background: linear-gradient(135deg, #fbbf24, #f59e0b);
+		color: #92400e;
+	}
+
+	.tier-s-masterpiece .tier-count {
+		color: #92400e;
+		opacity: 0.9;
+	}
+
+	.tier-a-amazing {
+		background: linear-gradient(135deg, #34d399, #10b981);
+		color: #064e3b;
+	}
+
+	.tier-a-amazing .tier-count {
+		color: #064e3b;
+		opacity: 0.9;
+	}
+
+	.tier-b-great {
+		background: linear-gradient(135deg, #60a5fa, #3b82f6);
+		color: #1e3a8a;
+	}
+
+	.tier-b-great .tier-count {
+		color: #1e3a8a;
+		opacity: 0.9;
+	}
+
+	.tier-c-good {
+		background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+		color: #581c87;
+	}
+
+	.tier-c-good .tier-count {
+		color: #581c87;
+		opacity: 0.9;
+	}
+
+	.tier-d-decent {
+		background: linear-gradient(135deg, #f87171, #ef4444);
+		color: #991b1b;
+	}
+
+	.tier-d-decent .tier-count {
+		color: #991b1b;
+		opacity: 0.9;
+	}
+
+	.tier-e-bad {
+		background: linear-gradient(135deg, #94a3b8, #64748b);
+		color: #334155;
+	}
+
+	.tier-e-bad .tier-count {
+		color: #334155;
+		opacity: 0.9;
+	}
+
+	/* Light mode tier colors */
+	:global(.light) .tier-s-masterpiece {
+		background: linear-gradient(135deg, #fef3c7, #fde68a);
+		color: #92400e;
+	}
+
+	:global(.light) .tier-s-masterpiece .tier-count {
+		color: #92400e;
+		opacity: 0.9;
+	}
+
+	:global(.light) .tier-a-amazing {
+		background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+		color: #064e3b;
+	}
+
+	:global(.light) .tier-a-amazing .tier-count {
+		color: #064e3b;
+		opacity: 0.9;
+	}
+
+	:global(.light) .tier-b-great {
+		background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+		color: #1e3a8a;
+	}
+
+	:global(.light) .tier-b-great .tier-count {
+		color: #1e3a8a;
+		opacity: 0.9;
+	}
+
+	:global(.light) .tier-c-good {
+		background: linear-gradient(135deg, #e9d5ff, #d8b4fe);
+		color: #581c87;
+	}
+
+	:global(.light) .tier-c-good .tier-count {
+		color: #581c87;
+		opacity: 0.9;
+	}
+
+	:global(.light) .tier-d-decent {
+		background: linear-gradient(135deg, #fee2e2, #fecaca);
+		color: #991b1b;
+	}
+
+	:global(.light) .tier-d-decent .tier-count {
+		color: #991b1b;
+		opacity: 0.9;
+	}
+
+	:global(.light) .tier-e-bad {
+		background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+		color: #334155;
+	}
+
+	:global(.light) .tier-e-bad .tier-count {
+		color: #334155;
+		opacity: 0.9;
 	}
 </style>

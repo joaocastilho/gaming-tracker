@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { appStore } from '../stores/app.js';
 	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
@@ -42,24 +40,26 @@
 		return unsubscribe;
 	});
 
-	// Set active tab based on current route
+	// Set active tab based on URL hash
 	$effect(() => {
-		const currentRoute = page.route.id;
-		let newActiveTab: TabId = 'all';
+		if (typeof window !== 'undefined') {
+			const hash = window.location.hash.replace('#', '');
+			let newActiveTab: TabId = 'all';
 
-		if (currentRoute === '/completed') {
-			newActiveTab = 'completed';
-		} else if (currentRoute === '/planned') {
-			newActiveTab = 'planned';
-		} else if (currentRoute === '/tierlist') {
-			newActiveTab = 'tierlist';
-		} else {
-			newActiveTab = 'all';
-		}
+			if (hash === 'completed') {
+				newActiveTab = 'completed';
+			} else if (hash === 'planned') {
+				newActiveTab = 'planned';
+			} else if (hash === 'tierlist') {
+				newActiveTab = 'tierlist';
+			} else {
+				newActiveTab = 'all';
+			}
 
-		// Only update if different to avoid unnecessary store updates
-		if (newActiveTab !== activeTab) {
-			appStore.activeTab.set(newActiveTab);
+			// Only update if different to avoid unnecessary store updates
+			if (newActiveTab !== activeTab) {
+				appStore.activeTab.set(newActiveTab);
+			}
 		}
 	});
 
@@ -94,9 +94,14 @@
 		if (tab.id !== activeTab) {
 			appStore.activeTab.set(tab.id);
 
-			// Navigate to the route (if not already on it)
-			if (typeof window !== 'undefined' && window.location && window.history) {
-				goto(tab.route, { replaceState: true });
+			// Update URL hash for client-side navigation
+			if (typeof window !== 'undefined' && window.location) {
+				const newHash = tab.id === 'all' ? '' : `#${tab.id}`;
+				window.history.replaceState(
+					null,
+					'',
+					`${window.location.pathname}${window.location.search}${newHash}`
+				);
 			}
 		}
 	}

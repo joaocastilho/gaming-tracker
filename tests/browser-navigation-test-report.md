@@ -1,6 +1,6 @@
 # Browser Navigation Testing Report
 
-Generated: 2025-11-04T21:15:11.064Z
+Generated: 2025-11-04T21:42:50.748Z
 
 ## Summary
 
@@ -8,7 +8,7 @@ Generated: 2025-11-04T21:15:11.064Z
 - **Passed**: 9 ✅
 - **Failed**: 0 ❌
 - **Success Rate**: 100.0%
-- **Total Duration**: 6.49ms
+- **Total Duration**: 9.56ms
 
 ## Navigation Validation Status
 
@@ -22,15 +22,15 @@ Generated: 2025-11-04T21:15:11.064Z
 
 | Test | Status | Duration | Details |
 |------|--------|----------|--------|
-| Filter State Persistence | ✅ | 0.67ms | Passed |
-| Sort State Persistence | ✅ | 0.38ms | Passed |
-| View Mode Persistence | ✅ | 0.33ms | Passed |
-| Search Persistence | ✅ | 0.19ms | Passed |
-| Modal Deep Linking | ✅ | 0.23ms | Passed |
-| Complex State Combinations | ✅ | 3.79ms | Passed |
-| Route Navigation | ✅ | 0.47ms | Passed |
-| URL Parameter Encoding | ✅ | 0.24ms | Passed |
-| Browser Refresh | ✅ | 0.19ms | Passed |
+| Filter State Persistence | ✅ | 0.66ms | Passed |
+| Sort State Persistence | ✅ | 0.23ms | Passed |
+| View Mode Persistence | ✅ | 0.23ms | Passed |
+| Search Persistence | ✅ | 0.38ms | Passed |
+| Modal Deep Linking | ✅ | 0.27ms | Passed |
+| Complex State Combinations | ✅ | 5.10ms | Passed |
+| Route Navigation | ✅ | 0.73ms | Passed |
+| URL Parameter Encoding | ✅ | 0.62ms | Passed |
+| Browser Refresh | ✅ | 1.34ms | Passed |
 
 ## Test Coverage
 
