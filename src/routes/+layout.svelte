@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page, navigating } from '$app/stores';
 	import '../app.css';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
@@ -8,6 +8,7 @@
 	import DetailModal from '$lib/components/DetailModal.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import NavigationTabs from '$lib/components/NavigationTabs.svelte';
+	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
@@ -251,6 +252,17 @@
 			{@render children?.()}
 		</div>
 	</main>
+
+	<!-- Page Navigation Loading -->
+	{#if $navigating}
+		<LoadingSpinner
+			variant="spinner"
+			size="lg"
+			fullscreen={true}
+			overlay={true}
+			message="Loading page..."
+		/>
+	{/if}
 
 	<!-- Add/Edit Game Modal -->
 	<AddEditModal />

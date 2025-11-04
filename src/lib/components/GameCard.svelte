@@ -100,7 +100,7 @@
 			<div class="image-placeholder"></div>
 		{/if}
 		<img
-			src="{game.coverImage}"
+			src={game.coverImage}
 			alt="{game.title} cover"
 			class="cover-image"
 			class:loaded={isImageLoaded}
@@ -202,7 +202,7 @@
 		/* Layout */
 		display: flex;
 		flex-direction: column;
-		width: 260px;
+		width: 300px;
 		border-radius: 6px;
 		overflow: hidden;
 		margin-top: 16px;
@@ -228,8 +228,8 @@
 	/* Cover Container */
 	.cover-container {
 		position: relative;
-		width: 260px;
-		height: 400px;
+		width: 300px;
+		height: 450px;
 		margin: 0 auto;
 	}
 

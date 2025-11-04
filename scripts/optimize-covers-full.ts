@@ -92,28 +92,43 @@ async function processImage(
 		}
 
 		const inputPath = join(COVERS_RAW_DIR, filename);
-		const outputPath = join(outputDir, `${matchingGame.id}.webp`);
+		const gameId = matchingGame.id;
+		const galleryPath = join(outputDir, `${gameId}.webp`);
+		const detailPath = join(outputDir, `${gameId}-detail.webp`);
 
 		// Get original file size
 		const originalStats = await stat(inputPath);
 		const originalSize = originalStats.size;
 
-		// Optimize image
+		// Optimize image for gallery view (300x450px)
 		await sharp(inputPath)
 			.webp({
 				quality: 85,
 				effort: 6
 			})
-			.resize(600, 900, {
+			.resize(300, 450, {
 				fit: 'cover',
 				position: 'center',
 				background: { r: 0, g: 0, b: 0, alpha: 0 }
 			})
-			.toFile(outputPath);
+			.toFile(galleryPath);
 
-		// Get optimized file size
-		const optimizedStats = await stat(outputPath);
-		const optimizedSize = optimizedStats.size;
+		// Optimize image for detail modal (400x600px)
+		await sharp(inputPath)
+			.webp({
+				quality: 85,
+				effort: 6
+			})
+			.resize(400, 600, {
+				fit: 'cover',
+				position: 'center',
+				background: { r: 0, g: 0, b: 0, alpha: 0 }
+			})
+			.toFile(detailPath);
+
+		// Get optimized file sizes (use gallery size for stats since it's the primary image)
+		const galleryStats = await stat(galleryPath);
+		const optimizedSize = galleryStats.size;
 
 		const processingTime = Date.now() - startTime;
 		const sizeReduction = ((originalSize - optimizedSize) / originalSize) * 100;

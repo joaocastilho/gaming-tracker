@@ -15,37 +15,32 @@ import type { ZodError } from 'zod';
  */
 function createGamesStore() {
 	const { subscribe, set, update } = writable<Game[]>([]);
-	let loading = false;
-	let error: string | null = null;
+	const loadingStore = writable<boolean>(false);
+	const errorStore = writable<string | null>(null);
 
 	return {
 		// Subscribe to games array changes
 		subscribe,
 
-		// Get current loading state
-		get loading() {
-			return loading;
-		},
+		// Loading state store
+		loading: loadingStore,
 
-		// Get current error state
-		get error() {
-			return error;
-		},
+		// Error state store
+		error: errorStore,
 
 		// Load games from JSON file
 		async loadGames(
 			event?: import('@sveltejs/kit').LoadEvent,
 			useLargeDataset: boolean = false
 		): Promise<void> {
-			loading = true;
-			error = null;
+			loadingStore.set(true);
+			errorStore.set(null);
 
 			try {
 				// Use event.fetch for server context, global fetch for client context
 				const fetchFn = event?.fetch ?? globalThis.fetch;
 				// Only allow large dataset in development mode
-				const datasetPath =
-					useLargeDataset && dev ? `games-large.json` : `games.json`;
+				const datasetPath = useLargeDataset && dev ? `games-large.json` : `games.json`;
 				const response = await fetchFn(datasetPath);
 				if (!response.ok) {
 					throw new Error(`Failed to fetch games: ${response.statusText}`);
@@ -90,16 +85,16 @@ function createGamesStore() {
 				set(validatedGames);
 
 				if (validatedGames.length === 0) {
-					error = 'No valid games found in data file';
+					errorStore.set('No valid games found in data file');
 				}
 			} catch (err) {
 				const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-				error = `Failed to load games: ${errorMessage}`;
+				errorStore.set(`Failed to load games: ${errorMessage}`);
 				console.error('Error loading games:', err);
 				// Set empty array on error to prevent undefined state
 				set([]);
 			} finally {
-				loading = false;
+				loadingStore.set(false);
 			}
 		},
 
@@ -148,8 +143,8 @@ function createGamesStore() {
 		// Reset store state
 		reset(): void {
 			set([]);
-			loading = false;
-			error = null;
+			loadingStore.set(false);
+			errorStore.set(null);
 		}
 	};
 }

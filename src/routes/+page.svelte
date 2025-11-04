@@ -11,6 +11,7 @@
 	import type { Game } from '$lib/types/game.js';
 	import GameCard from '$lib/components/GameCard.svelte';
 	import GameTable from '$lib/components/GameTable.svelte';
+	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
 
 	// Create filtered games store combining games and filters
 	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
@@ -29,6 +30,9 @@
 	// Get current active tab
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 
+	// Get loading state from games store
+	let isLoadingGames = $state(false);
+
 	// Subscribe to stores
 	filteredGamesStore.subscribe((data) => {
 		filteredData = data;
@@ -40,6 +44,10 @@
 
 	appStore.activeTab.subscribe((activeTab) => {
 		currentActiveTab = activeTab;
+	});
+
+	gamesStore.loading.subscribe((loading) => {
+		isLoadingGames = loading;
 	});
 
 	// Handle browser back/forward navigation
@@ -119,7 +127,7 @@
 		{:else if currentViewMode === 'gallery'}
 			<!-- Gallery View -->
 			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]"
 			>
 				{#each completedGames as game (game.id)}
 					<GameCard {game} />
@@ -143,7 +151,7 @@
 		{:else if currentViewMode === 'gallery'}
 			<!-- Gallery View -->
 			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]"
 			>
 				{#each plannedGames as game (game.id)}
 					<GameCard {game} />
@@ -167,7 +175,7 @@
 		{:else if currentViewMode === 'gallery'}
 			<!-- Gallery View -->
 			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]"
 			>
 				{#each tierlistGames as game (game.id)}
 					<GameCard {game} />
@@ -187,14 +195,26 @@
 				<p>Try adjusting your search terms or filters.</p>
 			{/if}
 		</div>
+	{:else if isLoadingGames && currentViewMode === 'gallery'}
+		<!-- Loading Skeleton Gallery View -->
+		<div
+			class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]"
+		>
+			<GameCardSkeleton count={12} />
+		</div>
 	{:else if currentViewMode === 'gallery'}
 		<!-- Gallery View -->
 		<div
-			class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+			class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]"
 		>
 			{#each allGames as game (game.id)}
 				<GameCard {game} />
 			{/each}
+		</div>
+	{:else if isLoadingGames}
+		<!-- Loading Skeleton Table View -->
+		<div class="loading-table-placeholder">
+			<GameCardSkeleton count={6} />
 		</div>
 	{:else}
 		<!-- Table View -->

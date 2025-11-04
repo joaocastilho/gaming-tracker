@@ -235,7 +235,7 @@
 					<!-- Cover Column -->
 					<td class="p-3">
 						<img
-							src="{game.coverImage}"
+							src={game.coverImage}
 							alt="{game.title} cover"
 							class="h-12 w-8 rounded border object-cover"
 							loading="lazy"

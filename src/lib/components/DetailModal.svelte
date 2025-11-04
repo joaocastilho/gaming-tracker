@@ -207,7 +207,7 @@
 				<!-- Cover Section -->
 				<div class="relative overflow-hidden rounded-l-lg">
 					<img
-						src="{modalState.activeGame.coverImage}"
+						src={modalState.activeGame.coverImage.replace('.webp', '-detail.webp')}
 						alt="{modalState.activeGame.title} cover"
 						class="h-full w-full object-cover"
 						style="width: 400px; height: 600px;"
