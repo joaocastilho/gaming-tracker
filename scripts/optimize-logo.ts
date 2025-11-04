@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { readFile, writeFile, stat } from 'fs/promises';
+import { stat } from 'fs/promises';
 import { join } from 'path';
 
 async function optimizeLogo(): Promise<void> {
@@ -44,14 +44,15 @@ async function optimizeLogo(): Promise<void> {
 		const compressedSize = compressedStats.size;
 		const pngReduction = ((originalSize - compressedSize) / originalSize) * 100;
 
-		console.log(`🖼️  Compressed PNG size: ${formatBytes(compressedSize)} (${pngReduction.toFixed(1)}% reduction)`);
+		console.log(
+			`🖼️  Compressed PNG size: ${formatBytes(compressedSize)} (${pngReduction.toFixed(1)}% reduction)`
+		);
 
 		console.log('\n🎉 Logo optimization complete!');
 		console.log('📁 Files created:');
 		console.log(`   - static/logo.webp`);
 		console.log(`   - static/logo-compressed.png`);
 		console.log('\n💡 Update your HTML to use logo.webp for better performance!');
-
 	} catch (error) {
 		console.error('❌ Error optimizing logo:', error);
 		process.exit(1);

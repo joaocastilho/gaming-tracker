@@ -10,7 +10,7 @@ export default {
 				surface: 'var(--color-surface)',
 				border: 'var(--color-border)',
 				foreground: 'var(--color-text-primary)',
-				'accent': 'var(--color-accent)',
+				accent: 'var(--color-accent)',
 				'accent-foreground': '#ffffff',
 				'muted-foreground': 'var(--color-text-secondary)',
 

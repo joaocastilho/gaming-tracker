@@ -167,7 +167,7 @@
 	<!-- Dropdown trigger button -->
 	<button
 		type="button"
-		class="filter-button {getButtonColorClasses()} rounded-md px-3 py-2 text-xs font-medium transition-colors min-h-[44px] flex items-center"
+		class="filter-button {getButtonColorClasses()} flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs font-medium transition-colors"
 		onclick={() => (isOpen = !isOpen)}
 		onkeydown={handleKeydown}
 		{...getAriaAttributes()}
@@ -182,14 +182,11 @@
 			<!-- Header -->
 			<div class="dropdown-header border-border border-b px-3 py-2">
 				<div class="flex items-center justify-between">
-					<span class="text-sm font-medium" style="color: var(--color-text-primary);"> Filter by ratings </span>
+					<span class="text-sm font-medium" style="color: var(--color-text-primary);">
+						Filter by ratings
+					</span>
 					{#if hasNonDefaultRanges()}
-						<button
-							type="button"
-							class="text-xs"
-							style="color: #3b82f6;"
-							onclick={resetAllRatings}
-						>
+						<button type="button" class="text-xs" style="color: #3b82f6;" onclick={resetAllRatings}>
 							Reset all
 						</button>
 					{/if}

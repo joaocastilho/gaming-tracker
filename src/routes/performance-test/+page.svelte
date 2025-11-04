@@ -1,21 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { gamesStore } from '$lib/stores/games.js';
-	import { filtersStore } from '$lib/stores/filters.js';
 	import GameCard from '$lib/components/GameCard.svelte';
-	import GameTable from '$lib/components/GameTable.svelte';
-	import { extractFilterOptions } from '$lib/utils/filterOptions.js';
 	import { memoizeGameFilter } from '$lib/utils/memoize.js';
 	import type { Game } from '$lib/types/game.js';
 
 	let games: Game[] = [];
 	let filteredGames = $state<Game[]>([]);
-	let filterOptions = $state({
-		platforms: [] as string[],
-		genres: [] as string[],
-		tiers: [] as string[]
-	});
-	let currentViewMode = 'gallery';
 	let performanceMetrics = {
 		loadTime: 0,
 		filterTime: 0,
@@ -27,42 +18,50 @@
 	// Subscribe to games store
 	gamesStore.subscribe((g) => {
 		games = g;
-		filterOptions = extractFilterOptions(g);
 		performanceMetrics.totalGames = g.length;
 	});
 
 	// Memoized filter function for performance testing
-	const filterGames = memoizeGameFilter((games: Game[], filters: any): Game[] => {
-		const startTime = performance.now();
-
-		const result = games.filter((game) => {
-			// Basic filtering logic for testing
-			if (filters.searchQuery?.trim()) {
-				const query = filters.searchQuery.toLowerCase().trim();
-				const titleMatch = game.title.toLowerCase().includes(query);
-				if (!titleMatch) return false;
+	const filterGames = memoizeGameFilter(
+		(
+			games: Game[],
+			filters: {
+				searchQuery?: string;
+				selectedPlatforms?: string[];
+				selectedGenres?: string[];
 			}
+		): Game[] => {
+			const startTime = performance.now();
 
-			if (filters.selectedPlatforms?.length > 0) {
-				if (!filters.selectedPlatforms.includes(game.platform)) {
-					return false;
+			const result = games.filter((game) => {
+				// Basic filtering logic for testing
+				if (filters.searchQuery && filters.searchQuery.trim()) {
+					const query = filters.searchQuery.toLowerCase().trim();
+					const titleMatch = game.title.toLowerCase().includes(query);
+					if (!titleMatch) return false;
 				}
-			}
 
-			if (filters.selectedGenres?.length > 0) {
-				if (!filters.selectedGenres.includes(game.genre)) {
-					return false;
+				if (filters.selectedPlatforms && filters.selectedPlatforms.length > 0) {
+					if (!filters.selectedPlatforms.includes(game.platform)) {
+						return false;
+					}
 				}
-			}
 
-			return true;
-		});
+				if (filters.selectedGenres && filters.selectedGenres.length > 0) {
+					if (!filters.selectedGenres.includes(game.genre)) {
+						return false;
+					}
+				}
 
-		const endTime = performance.now();
-		performanceMetrics.filterTime = endTime - startTime;
+				return true;
+			});
 
-		return result;
-	});
+			const endTime = performance.now();
+			performanceMetrics.filterTime = endTime - startTime;
+
+			return result;
+		}
+	);
 
 	// Reactive filtered games
 	$effect(() => {
@@ -107,7 +106,9 @@
 			const startTime = performance.now();
 			const result = filterGames(games, test.filters);
 			const endTime = performance.now();
-			console.log(`   ${test.name}: ${result.length} results in ${(endTime - startTime).toFixed(2)}ms`);
+			console.log(
+				`   ${test.name}: ${result.length} results in ${(endTime - startTime).toFixed(2)}ms`
+			);
 		}
 
 		// Test 3: Memoization effectiveness
@@ -144,42 +145,46 @@
 
 <div class="container mx-auto px-6 py-8">
 	<div class="mb-8">
-		<h1 class="text-3xl font-bold mb-4">Performance Testing</h1>
+		<h1 class="mb-4 text-3xl font-bold">Performance Testing</h1>
 		<p class="text-muted-foreground mb-6">
-			Testing app performance with large datasets (1000+ games).
-			Check browser console for detailed performance metrics.
+			Testing app performance with large datasets (1000+ games). Check browser console for detailed
+			performance metrics.
 		</p>
 
 		<!-- Performance Metrics -->
-		<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-			<div class="bg-card p-4 rounded-lg border">
-				<div class="text-2xl font-bold text-primary">{performanceMetrics.totalGames}</div>
-				<div class="text-sm text-muted-foreground">Total Games</div>
+		<div class="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+			<div class="bg-card rounded-lg border p-4">
+				<div class="text-primary text-2xl font-bold">{performanceMetrics.totalGames}</div>
+				<div class="text-muted-foreground text-sm">Total Games</div>
 			</div>
-			<div class="bg-card p-4 rounded-lg border">
-				<div class="text-2xl font-bold text-primary">{performanceMetrics.filteredCount}</div>
-				<div class="text-sm text-muted-foreground">Filtered Games</div>
+			<div class="bg-card rounded-lg border p-4">
+				<div class="text-primary text-2xl font-bold">{performanceMetrics.filteredCount}</div>
+				<div class="text-muted-foreground text-sm">Filtered Games</div>
 			</div>
-			<div class="bg-card p-4 rounded-lg border">
-				<div class="text-2xl font-bold text-primary">{performanceMetrics.loadTime.toFixed(0)}ms</div>
-				<div class="text-sm text-muted-foreground">Load Time</div>
+			<div class="bg-card rounded-lg border p-4">
+				<div class="text-primary text-2xl font-bold">
+					{performanceMetrics.loadTime.toFixed(0)}ms
+				</div>
+				<div class="text-muted-foreground text-sm">Load Time</div>
 			</div>
-			<div class="bg-card p-4 rounded-lg border">
-				<div class="text-2xl font-bold text-primary">{performanceMetrics.filterTime.toFixed(2)}ms</div>
-				<div class="text-sm text-muted-foreground">Filter Time</div>
+			<div class="bg-card rounded-lg border p-4">
+				<div class="text-primary text-2xl font-bold">
+					{performanceMetrics.filterTime.toFixed(2)}ms
+				</div>
+				<div class="text-muted-foreground text-sm">Filter Time</div>
 			</div>
 		</div>
 
 		<!-- Test Controls -->
-		<div class="flex gap-4 mb-6">
+		<div class="mb-6 flex gap-4">
 			<button
-				class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+				class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 transition-colors"
 				onclick={runPerformanceTests}
 			>
 				Run Performance Tests
 			</button>
 			<button
-				class="bg-secondary text-secondary-foreground px-4 py-2 rounded-md hover:bg-secondary/90 transition-colors"
+				class="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md px-4 py-2 transition-colors"
 				onclick={loadLargeDataset}
 			>
 				Reload Large Dataset
@@ -189,8 +194,8 @@
 
 	<!-- Sample Games Display -->
 	<div class="mb-8">
-		<h2 class="text-xl font-semibold mb-4">Sample Games (First 20)</h2>
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+		<h2 class="mb-4 text-xl font-semibold">Sample Games (First 20)</h2>
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			{#each filteredGames.slice(0, 20) as game (game.id)}
 				<GameCard {game} />
 			{/each}
@@ -198,9 +203,9 @@
 	</div>
 
 	<!-- Performance Notes -->
-	<div class="bg-muted p-6 rounded-lg">
-		<h3 class="text-lg font-semibold mb-3">Performance Optimizations Tested:</h3>
-		<ul class="list-disc list-inside space-y-1 text-sm">
+	<div class="bg-muted rounded-lg p-6">
+		<h3 class="mb-3 text-lg font-semibold">Performance Optimizations Tested:</h3>
+		<ul class="list-inside list-disc space-y-1 text-sm">
 			<li><strong>Memoized Filtering:</strong> Cached filter results with TTL-based expiration</li>
 			<li><strong>Memoized Sorting:</strong> Cached sort operations for table views</li>
 			<li><strong>Optimized Re-renders:</strong> Reduced unnecessary reactive updates</li>

@@ -4,8 +4,21 @@
 	import { modalStore } from '../stores/modal.js';
 	import { gamesStore } from '../stores/games.js';
 	import type { Game } from '../types/game.js';
-	import { TIER_COLORS, PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
-	import { Presentation, NotebookPen, Gamepad2, Trophy, X, ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import {
+		TIER_COLORS,
+		PLATFORM_COLORS,
+		GENRE_COLORS,
+		getTierDisplayName
+	} from '../utils/colorConstants.js';
+	import {
+		Presentation,
+		NotebookPen,
+		Gamepad2,
+		Trophy,
+		X,
+		ChevronLeft,
+		ChevronRight
+	} from 'lucide-svelte';
 
 	let modalState = $state(modalStore.getState());
 	let allGames = $state<Game[]>([]);
@@ -29,8 +42,6 @@
 	});
 
 	let modalElement = $state<HTMLDivElement>();
-	let coverImage = $state<HTMLImageElement>();
-	let titleElement = $state<HTMLHeadingElement>();
 
 	// Extract parenthetical content from title for subtitle display
 	let titleParts = $derived(() => {
@@ -48,29 +59,10 @@
 		};
 	});
 
-	// Dynamic font size for title based on length
-	let titleFontSize = $derived(() => {
-		if (!modalState.activeGame?.title) return 'text-2xl lg:text-3xl';
-		const length = modalState.activeGame.title.length;
-		if (length > 50) return 'text-base lg:text-lg';
-		if (length > 35) return 'text-lg lg:text-xl';
-		if (length > 20) return 'text-xl lg:text-2xl';
-		return 'text-2xl lg:text-3xl';
-	});
-
-	// Dynamic font size for subtitle based on title size
-	let subtitleFontSize = $derived(() => {
-		if (!modalState.activeGame?.title) return '1.2rem';
-		const length = modalState.activeGame.title.length;
-		if (length > 50) return '0.8rem'; // Smaller for very long titles
-		if (length > 30) return '1.0rem'; // Smaller for medium titles
-		return '1.2rem'; // Smaller for short titles
-	});
-
 	// Get current game index for navigation
 	let currentGameIndex = $derived(() => {
 		if (!modalState.activeGame) return -1;
-		return allGames.findIndex(game => game.id === modalState.activeGame?.id);
+		return allGames.findIndex((game) => game.id === modalState.activeGame?.id);
 	});
 
 	// Navigation functions
@@ -165,61 +157,59 @@
 </script>
 
 {#if modalState.isOpen && modalState.activeGame && modalState.mode === 'view'}
-		<!-- Modal Overlay -->
-		<div
-			bind:this={modalElement}
-			class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[1px] p-1"
-			onclick={handleOverlayClick}
-			onkeydown={handleOverlayKeydown}
-			role="dialog"
-			tabindex="-1"
-			aria-modal="true"
-			aria-labelledby="modal-title"
-		>
-			<!-- Previous Button -->
-			{#if currentGameIndex() > 0}
-				<button
-					onclick={navigateToPrevious}
-					class="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-16 w-16 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
-					aria-label="Previous game"
-				>
-					<ChevronLeft size={32} />
-				</button>
-			{/if}
-
-			<!-- Next Button -->
-			{#if currentGameIndex() < allGames.length - 1}
-				<button
-					onclick={navigateToNext}
-					class="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-16 w-16 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white transition-all hover:bg-black/70 hover:scale-110"
-					aria-label="Next game"
-				>
-					<ChevronRight size={32} />
-				</button>
-			{/if}
-
-			<!-- Close Button -->
+	<!-- Modal Overlay -->
+	<div
+		bind:this={modalElement}
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-1 backdrop-blur-[1px]"
+		onclick={handleOverlayClick}
+		onkeydown={handleOverlayKeydown}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
+		aria-labelledby="modal-title"
+	>
+		<!-- Previous Button -->
+		{#if currentGameIndex() > 0}
 			<button
-				onclick={() => modalStore.closeModal()}
-				class="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-				aria-label="Close modal"
+				onclick={navigateToPrevious}
+				class="absolute top-1/2 left-2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/70"
+				aria-label="Previous game"
 			>
-				<X size={20} class="text-gray-600 dark:text-gray-300" />
+				<ChevronLeft size={32} />
 			</button>
+		{/if}
 
-			<!-- Modal Content -->
-			<div
-				class="relative h-[600px] w-full max-w-4xl rounded-xl bg-white shadow-2xl dark:bg-gray-900"
+		<!-- Next Button -->
+		{#if currentGameIndex() < allGames.length - 1}
+			<button
+				onclick={navigateToNext}
+				class="absolute top-1/2 right-2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/70"
+				aria-label="Next game"
 			>
+				<ChevronRight size={32} />
+			</button>
+		{/if}
 
+		<!-- Close Button -->
+		<button
+			onclick={() => modalStore.closeModal()}
+			class="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+			aria-label="Close modal"
+		>
+			<X size={20} class="text-gray-600 dark:text-gray-300" />
+		</button>
+
+		<!-- Modal Content -->
+		<div
+			class="relative h-[600px] w-full max-w-4xl rounded-xl bg-white shadow-2xl dark:bg-gray-900"
+		>
 			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
 				<!-- Cover Section -->
-				<div class="relative rounded-l-lg overflow-hidden">
+				<div class="relative overflow-hidden rounded-l-lg">
 					<img
-						bind:this={coverImage}
 						src="/{modalState.activeGame.coverImage}"
 						alt="{modalState.activeGame.title} cover"
-						class="w-full h-full object-cover"
+						class="h-full w-full object-cover"
 						style="width: 400px; height: 600px;"
 						loading="lazy"
 					/>
@@ -235,17 +225,22 @@
 				</div>
 
 				<!-- Info Section -->
-				<div class="max-h-[60vh] overflow-y-auto pt-4 pb-6 pl-6 pr-6 lg:pt-6 lg:pb-8 lg:pl-8 lg:pr-8">
+				<div
+					class="max-h-[60vh] overflow-y-auto pt-4 pr-6 pb-6 pl-6 lg:pt-6 lg:pr-8 lg:pb-8 lg:pl-8"
+				>
 					<!-- Title -->
 					<h1
 						id="modal-title"
-						class="text-3xl font-bold text-gray-900 dark:text-white flex flex-col justify-center"
+						class="flex flex-col justify-center text-3xl font-bold text-gray-900 dark:text-white"
 						style="height: 65px; margin-bottom: 15px;"
 					>
 						{titleParts().mainTitle}
 						{#if titleParts().subtitle}
-							<br>
-							<span class="font-semibold text-gray-700 dark:text-gray-300" style="font-size: 1.2rem; line-height: 1.2;">{titleParts().subtitle}</span>
+							<br />
+							<span
+								class="font-semibold text-gray-700 dark:text-gray-300"
+								style="font-size: 1.2rem; line-height: 1.2;">{titleParts().subtitle}</span
+							>
 						{/if}
 					</h1>
 
@@ -275,7 +270,11 @@
 
 						<!-- Tier Level -->
 						{#if modalState.activeGame.tier}
-							<span class="rounded-md px-3 py-1 text-sm font-semibold text-white {getTierColor(modalState.activeGame.tier)}">
+							<span
+								class="rounded-md px-3 py-1 text-sm font-semibold text-white {getTierColor(
+									modalState.activeGame.tier
+								)}"
+							>
 								{getTierDisplayName(modalState.activeGame.tier)}
 							</span>
 						{/if}
@@ -336,7 +335,9 @@
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
-										class="h-2 rounded-full {getRatingBarColor(modalState.activeGame.ratingPresentation)} transition-all duration-300"
+										class="h-2 rounded-full {getRatingBarColor(
+											modalState.activeGame.ratingPresentation
+										)} transition-all duration-300"
 										style="width: {modalState.activeGame.ratingPresentation * 10}%"
 									></div>
 								</div>
@@ -353,7 +354,9 @@
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
-										class="h-2 rounded-full {getRatingBarColor(modalState.activeGame.ratingStory)} transition-all duration-300"
+										class="h-2 rounded-full {getRatingBarColor(
+											modalState.activeGame.ratingStory
+										)} transition-all duration-300"
 										style="width: {modalState.activeGame.ratingStory * 10}%"
 									></div>
 								</div>
@@ -370,7 +373,9 @@
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
-										class="h-2 rounded-full {getRatingBarColor(modalState.activeGame.ratingGameplay)} transition-all duration-300"
+										class="h-2 rounded-full {getRatingBarColor(
+											modalState.activeGame.ratingGameplay
+										)} transition-all duration-300"
 										style="width: {modalState.activeGame.ratingGameplay * 10}%"
 									></div>
 								</div>
@@ -406,7 +411,10 @@
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300" style="width: 0%"></div>
+									<div
+										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
+										style="width: 0%"
+									></div>
 								</div>
 							</div>
 
@@ -420,7 +428,10 @@
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300" style="width: 0%"></div>
+									<div
+										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
+										style="width: 0%"
+									></div>
 								</div>
 							</div>
 
@@ -434,12 +445,17 @@
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300" style="width: 0%"></div>
+									<div
+										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
+										style="width: 0%"
+									></div>
 								</div>
 							</div>
 
 							<!-- Placeholder Total Score -->
-							<div class="mt-6 rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-50 p-4 dark:border-gray-700 dark:from-gray-800/20 dark:to-gray-800/20">
+							<div
+								class="mt-6 rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-50 p-4 dark:border-gray-700 dark:from-gray-800/20 dark:to-gray-800/20"
+							>
 								<div class="flex items-center justify-center gap-2">
 									<Trophy size={24} class="text-gray-400" />
 									<span class="text-lg font-bold text-gray-900 dark:text-white">

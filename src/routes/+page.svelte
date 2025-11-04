@@ -79,14 +79,20 @@
 	});
 
 	// Show filtered games based on active tab (computed in template)
-	let allGames = $derived(filteredData.filteredGames.toSorted((a, b) => a.title.localeCompare(b.title)));
-	let completedGames = $derived(filteredData.filteredGames.filter((game: Game) => game.status === 'Completed'));
-	let plannedGames = $derived(filteredData.filteredGames
-		.filter((game: Game) => game.status === 'Planned')
-		.toSorted((a, b) => a.title.localeCompare(b.title)));
-	let tierlistGames = $derived(filteredData.filteredGames.filter(
-		(game: Game) => game.status === 'Completed' && game.tier
-	));
+	let allGames = $derived(
+		filteredData.filteredGames.toSorted((a, b) => a.title.localeCompare(b.title))
+	);
+	let completedGames = $derived(
+		filteredData.filteredGames.filter((game: Game) => game.status === 'Completed')
+	);
+	let plannedGames = $derived(
+		filteredData.filteredGames
+			.filter((game: Game) => game.status === 'Planned')
+			.toSorted((a, b) => a.title.localeCompare(b.title))
+	);
+	let tierlistGames = $derived(
+		filteredData.filteredGames.filter((game: Game) => game.status === 'Completed' && game.tier)
+	);
 
 	// Handle game card/row clicks for detail modal
 	function handleGameClick(game: Game): void {
@@ -110,20 +116,18 @@
 					<p>Try adjusting your search terms or filters.</p>
 				{/if}
 			</div>
+		{:else if currentViewMode === 'gallery'}
+			<!-- Gallery View -->
+			<div
+				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+			>
+				{#each completedGames as game (game.id)}
+					<GameCard {game} />
+				{/each}
+			</div>
 		{:else}
-			{#if currentViewMode === 'gallery'}
-				<!-- Gallery View -->
-				<div
-					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
-				>
-					{#each completedGames as game (game.id)}
-						<GameCard {game} />
-					{/each}
-				</div>
-			{:else}
-				<!-- Table View -->
-				<GameTable games={completedGames} onRowClick={handleGameClick} />
-			{/if}
+			<!-- Table View -->
+			<GameTable games={completedGames} onRowClick={handleGameClick} />
 		{/if}
 	{:else if currentActiveTab === 'planned'}
 		{#if plannedGames.length === 0}
@@ -136,20 +140,18 @@
 					<p>Try adjusting your search terms or filters.</p>
 				{/if}
 			</div>
+		{:else if currentViewMode === 'gallery'}
+			<!-- Gallery View -->
+			<div
+				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+			>
+				{#each plannedGames as game (game.id)}
+					<GameCard {game} />
+				{/each}
+			</div>
 		{:else}
-			{#if currentViewMode === 'gallery'}
-				<!-- Gallery View -->
-				<div
-					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
-				>
-					{#each plannedGames as game (game.id)}
-						<GameCard {game} />
-					{/each}
-				</div>
-			{:else}
-				<!-- Table View -->
-				<GameTable games={plannedGames} onRowClick={handleGameClick} />
-			{/if}
+			<!-- Table View -->
+			<GameTable games={plannedGames} onRowClick={handleGameClick} />
 		{/if}
 	{:else if currentActiveTab === 'tierlist'}
 		{#if tierlistGames.length === 0}
@@ -162,47 +164,41 @@
 					<p>Try adjusting your search terms or filters.</p>
 				{/if}
 			</div>
-		{:else}
-			{#if currentViewMode === 'gallery'}
-				<!-- Gallery View -->
-				<div
-					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
-				>
-					{#each tierlistGames as game (game.id)}
-						<GameCard {game} />
-					{/each}
-				</div>
-			{:else}
-				<!-- Table View -->
-				<GameTable games={tierlistGames} onRowClick={handleGameClick} />
-			{/if}
-		{/if}
-	{:else}
-		{#if allGames.length === 0}
-			<div class="empty-state">
-				{#if filteredData.totalCount === 0}
-					<h2>No games found</h2>
-					<p>Add your first game to get started!</p>
-				{:else}
-					<h2>No games match your search</h2>
-					<p>Try adjusting your search terms or filters.</p>
-				{/if}
+		{:else if currentViewMode === 'gallery'}
+			<!-- Gallery View -->
+			<div
+				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+			>
+				{#each tierlistGames as game (game.id)}
+					<GameCard {game} />
+				{/each}
 			</div>
 		{:else}
-			{#if currentViewMode === 'gallery'}
-				<!-- Gallery View -->
-				<div
-					class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
-				>
-					{#each allGames as game (game.id)}
-						<GameCard {game} />
-					{/each}
-				</div>
-			{:else}
-				<!-- Table View -->
-				<GameTable games={allGames} onRowClick={handleGameClick} />
-			{/if}
+			<!-- Table View -->
+			<GameTable games={tierlistGames} onRowClick={handleGameClick} />
 		{/if}
+	{:else if allGames.length === 0}
+		<div class="empty-state">
+			{#if filteredData.totalCount === 0}
+				<h2>No games found</h2>
+				<p>Add your first game to get started!</p>
+			{:else}
+				<h2>No games match your search</h2>
+				<p>Try adjusting your search terms or filters.</p>
+			{/if}
+		</div>
+	{:else if currentViewMode === 'gallery'}
+		<!-- Gallery View -->
+		<div
+			class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+		>
+			{#each allGames as game (game.id)}
+				<GameCard {game} />
+			{/each}
+		</div>
+	{:else}
+		<!-- Table View -->
+		<GameTable games={allGames} onRowClick={handleGameClick} />
 	{/if}
 </div>
 

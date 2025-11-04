@@ -32,7 +32,10 @@ function createGamesStore() {
 		},
 
 		// Load games from JSON file
-		async loadGames(event?: import('@sveltejs/kit').LoadEvent, useLargeDataset: boolean = false): Promise<void> {
+		async loadGames(
+			event?: import('@sveltejs/kit').LoadEvent,
+			useLargeDataset: boolean = false
+		): Promise<void> {
 			loading = true;
 			error = null;
 
@@ -122,7 +125,6 @@ function createGamesStore() {
 		calculateScore(presentation: number, story: number, gameplay: number): number {
 			return Math.round(((presentation + story + gameplay) / 3) * 2);
 		},
-
 
 		// Get games by status
 		getGamesByStatus(status: 'Planned' | 'Completed'): Game[] {

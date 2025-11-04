@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { modalStore } from '../stores/modal.js';
 	import type { Game } from '../types/game.js';
-	import { PLATFORM_COLORS, GENRE_COLORS, TIER_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
-	import { Presentation, NotebookPen, Award, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
+	import {
+		PLATFORM_COLORS,
+		GENRE_COLORS,
+		TIER_COLORS,
+		getTierDisplayName
+	} from '../utils/colorConstants.js';
+	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
@@ -54,8 +59,6 @@
 		const reduction = Math.min((title.length - maxLength) * 0.02, baseSize - minSize);
 		return Math.max(baseSize - reduction, minSize);
 	});
-
-
 
 	// Format date for display
 	function formatDate(dateString: string): string {
@@ -116,7 +119,9 @@
 		{/if}
 
 		{#if game.status === 'Completed' && game.tier}
-			<div class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}">
+			<div
+				class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}"
+			>
 				{getTierDisplayName(game.tier)}
 			</div>
 		{/if}
@@ -156,7 +161,11 @@
 		<!-- Ratings Section (always present) -->
 		<div class="ratings-section">
 			<div class="rating-item">
-				<Presentation class="rating-icon text-cyan-500" aria-label="Presentation rating" size={20} />
+				<Presentation
+					class="rating-icon text-cyan-500"
+					aria-label="Presentation rating"
+					size={20}
+				/>
 				<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
 			</div>
 			<div class="rating-item">
@@ -173,7 +182,11 @@
 		<div class="time-date-section">
 			<div class="time-item">
 				<Timer class="time-icon" aria-label="Time played / Time to beat" size={20} />
-				<span class="time-text">{game.status === 'Completed' ? (game.hoursPlayed ?? 'N/A') : (game.timeToBeat ?? 'N/A')}</span>
+				<span class="time-text"
+					>{game.status === 'Completed'
+						? (game.hoursPlayed ?? 'N/A')
+						: (game.timeToBeat ?? 'N/A')}</span
+				>
 			</div>
 			<div class="date-item">
 				<CalendarDays class="date-icon" aria-label="Completion date" size={20} />
@@ -487,7 +500,7 @@
 		}
 
 		.title-section {
-			min-height: 1.0rem; /* Adjusted for smaller screens */
+			min-height: 1rem; /* Adjusted for smaller screens */
 		}
 
 		.platform-genre-year-section {

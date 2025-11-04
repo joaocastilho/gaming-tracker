@@ -13,8 +13,12 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"optimize-covers": "bun scripts/optimize-covers-full.ts",
+		"test:user-flows": "bun tests/test-user-flows.ts",
+		"test:data-persistence": "bun tests/test-data-persistence.ts",
+		"test:browser-navigation": "bun tests/test-browser-navigation.ts",
+		"test:theme-switching": "bun tests/test-theme-switching.ts",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run"
+		"test": "bun run test:user-flows && bun run test:data-persistence && bun run test:browser-navigation && bun run test:theme-switching"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",

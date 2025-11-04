@@ -5,10 +5,9 @@
 		games: Game[];
 		itemHeight: number;
 		containerHeight: number;
-		onRowClick?: (game: Game) => void;
 	}
 
-	let { games, itemHeight, containerHeight, onRowClick }: Props = $props();
+	let { games, itemHeight, containerHeight }: Props = $props();
 
 	// Virtualization state
 	let scrollTop = $state(0);
@@ -16,12 +15,6 @@
 
 	// Calculate visible range
 	let startIndex = $derived(Math.floor(scrollTop / itemHeight));
-	let endIndex = $derived(Math.min(
-		startIndex + Math.ceil(containerHeight / itemHeight) + 1, // +1 for buffer
-		games.length
-	));
-
-	let visibleGames = $derived(games.slice(startIndex, endIndex));
 	let offsetY = $derived(startIndex * itemHeight);
 
 	// Total height for scrollbar
@@ -30,12 +23,6 @@
 	function handleScroll(event: Event) {
 		const target = event.target as HTMLDivElement;
 		scrollTop = target.scrollTop;
-	}
-
-	function handleRowClick(game: Game) {
-		if (onRowClick) {
-			onRowClick(game);
-		}
 	}
 </script>
 

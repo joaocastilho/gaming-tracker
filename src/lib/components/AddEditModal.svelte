@@ -13,7 +13,7 @@
 		isSubmitting: false
 	});
 
-	// Form field states
+	// Form field states - used in template with bind:value
 	let formTitle = $state('');
 	let formPlatform = $state('');
 	let formYear = $state<number | ''>('');
@@ -83,14 +83,6 @@
 	// Handle escape key
 	function handleKeydown(event: KeyboardEvent): void {
 		if (event.key === 'Escape') {
-			closeModal();
-		}
-	}
-
-	// Handle overlay keyboard interaction for accessibility
-	function handleOverlayKeydown(event: KeyboardEvent): void {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
 			closeModal();
 		}
 	}
@@ -175,37 +167,34 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if modalState.isOpen}
-		<!-- Modal Overlay -->
-		<div
-			class="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+	<!-- Modal Overlay -->
+	<div
+		class="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+		onclick={closeModal}
+		onkeydown={(e) => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				closeModal();
+			}
+		}}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
+		aria-labelledby="modal-title"
+	>
+		<!-- Close Button -->
+		<button
+			class="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			onclick={closeModal}
-			onkeydown={(e) => {
-				if (e.key === 'Escape') {
-					e.preventDefault();
-					closeModal();
-				}
-			}}
-			role="dialog"
-			tabindex="-1"
-			aria-modal="true"
-			aria-labelledby="modal-title"
+			aria-label="Close modal"
 		>
-			<!-- Close Button -->
-			<button
-				class="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-				onclick={closeModal}
-				aria-label="Close modal"
-			>
-				<X size={20} class="text-gray-600 dark:text-gray-300" />
-			</button>
+			<X size={20} class="text-gray-600 dark:text-gray-300" />
+		</button>
 
-			<!-- Modal Content -->
-			<div
-				class="bg-background max-h-[90vh] w-full max-w-4xl rounded-2xl shadow-2xl"
-				role="document"
-			>
-				<!-- Content -->
-				<div class="modal-body max-h-[90vh] overflow-y-auto p-6">
+		<!-- Modal Content -->
+		<div class="bg-background max-h-[90vh] w-full max-w-4xl rounded-2xl shadow-2xl" role="document">
+			<!-- Modal Body -->
+			<div class="modal-body max-h-[90vh] overflow-y-auto p-6">
 				{#if modalState.mode === 'view' && modalState.activeGame}
 					<!-- View Mode Content -->
 					<div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
@@ -771,10 +760,6 @@
 		animation: fadeIn 0.2s ease-out;
 	}
 
-	.modal-content {
-		animation: slideIn 0.3s ease-out;
-	}
-
 	@keyframes fadeIn {
 		from {
 			opacity: 0;
@@ -793,31 +778,5 @@
 			opacity: 1;
 			transform: scale(1) translateY(0);
 		}
-	}
-
-	/* Scrollbar styling for modal body */
-	.modal-body::-webkit-scrollbar {
-		width: 6px;
-	}
-
-	.modal-body::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	.modal-body::-webkit-scrollbar-thumb {
-		background: rgba(139, 146, 168, 0.3);
-		border-radius: 3px;
-	}
-
-	.modal-body::-webkit-scrollbar-thumb:hover {
-		background: rgba(139, 146, 168, 0.5);
-	}
-
-	:global(.light) .modal-body::-webkit-scrollbar-thumb {
-		background: rgba(107, 114, 128, 0.3);
-	}
-
-	:global(.light) .modal-body::-webkit-scrollbar-thumb:hover {
-		background: rgba(107, 114, 128, 0.5);
 	}
 </style>

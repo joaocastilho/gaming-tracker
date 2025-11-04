@@ -71,7 +71,9 @@
 					<!-- Tier Row -->
 					<div class="tier-row mb-6">
 						<!-- Tier Header -->
-						<div class="tier-header mb-2 md:mb-3 {tierInfo.color} {tierInfo.textColor} rounded px-3 py-2 flex items-center justify-between">
+						<div
+							class="tier-header mb-2 md:mb-3 {tierInfo.color} {tierInfo.textColor} flex items-center justify-between rounded px-3 py-2"
+						>
 							<span class="text-base font-semibold">
 								{tierInfo.name}
 							</span>
@@ -81,11 +83,11 @@
 						</div>
 
 						<!-- Games in this tier -->
-						<div class="games-row flex flex-wrap gap-3 justify-center">
+						<div class="games-row flex flex-wrap justify-center gap-3">
 							{#each gamesInTier as game (game.id)}
 								<button
 									type="button"
-									class="game-card flex-shrink-0 transform cursor-pointer transition-transform hover:scale-105 rounded-none"
+									class="game-card flex-shrink-0 transform cursor-pointer rounded-none transition-transform hover:scale-105"
 									onclick={() => handleGameClick(game)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -100,7 +102,7 @@
 										<img
 											src="/{game.coverImage}"
 											alt="{game.title} cover"
-											class="w-full h-full rounded-none border border-black object-cover dark:border-gray-300"
+											class="h-full w-full rounded-none border border-black object-cover dark:border-gray-300"
 											loading="lazy"
 											onerror={(e) => {
 												const img = e.target as HTMLImageElement;

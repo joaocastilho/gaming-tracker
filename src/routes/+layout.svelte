@@ -13,7 +13,7 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';
 	import { modalStore } from '$lib/stores/modal.js';
-	import { derived } from 'svelte/store';
+
 	import { Grid3X3, List } from 'lucide-svelte';
 
 	let { children } = $props();
@@ -196,7 +196,9 @@
 			<SearchBar />
 
 			<!-- Filter Controls -->
-			<div class="flex flex-nowrap items-center gap-3 overflow-x-auto pb-2 md:flex-wrap md:overflow-x-visible md:pb-0">
+			<div
+				class="flex flex-nowrap items-center gap-3 overflow-x-auto pb-2 md:flex-wrap md:overflow-x-visible md:pb-0"
+			>
 				<FilterDropdown
 					type="platforms"
 					label="Platforms"
@@ -217,7 +219,7 @@
 				/>
 				<RatingsFilter />
 				<button
-					class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground rounded-md px-3 py-2 text-xs transition-colors min-h-[44px] flex items-center"
+					class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
 					title="Reset all filters"
 					onclick={resetFilters}
 				>
@@ -226,8 +228,10 @@
 
 				<div class="ml-auto flex items-center">
 					<button
-						class="view-toggle-button rounded-md p-3 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800"
-						title={currentViewMode === 'gallery' ? 'Switch to table view' : 'Switch to gallery view'}
+						class="view-toggle-button flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+						title={currentViewMode === 'gallery'
+							? 'Switch to table view'
+							: 'Switch to gallery view'}
 						onclick={handleViewModeToggle}
 					>
 						{#if currentViewMode === 'gallery'}
@@ -274,8 +278,6 @@
 	.reset-button {
 		color: var(--color-text-primary);
 	}
-
-
 
 	/* Ensure proper spacing for content area */
 	:global(.pt-\[calc\(60px\+50px\+100px\)\]) {

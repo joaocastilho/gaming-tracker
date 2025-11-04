@@ -1,8 +1,5 @@
 <script lang="ts">
 	import { appStore } from '../stores/app.js';
-	import { gamesStore } from '../stores/games.js';
-	import { filtersStore } from '../stores/filters.js';
-	import { modalStore } from '../stores/modal.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	// Subscribe to theme changes (value used for reactive updates)
@@ -12,38 +9,6 @@
 		});
 		return unsubscribe;
 	});
-
-	// Game count data - using filtered counts when search is active
-	let gameCounts = $state({ total: 0, planned: 0, completed: 0 });
-	let isFiltered = $state(false);
-
-	// Create filtered games store
-	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
-
-	// Subscribe to filtered games store to get counts
-	$effect(() => {
-		const unsubscribe = filteredGamesStore.subscribe((data) => {
-			gameCounts = {
-				total: data.totalCount,
-				planned: data.plannedCount,
-				completed: data.completedCount
-			};
-		});
-		return unsubscribe;
-	});
-
-	// Check if any filters are active
-	$effect(() => {
-		const unsubscribe = filtersStore.filterState.subscribe(() => {
-			isFiltered = filtersStore.hasActiveFilters();
-		});
-		return unsubscribe;
-	});
-
-	// Add game handler - opens the add game modal
-	function handleAddGame() {
-		modalStore.openAddModal();
-	}
 </script>
 
 <header class="header">
@@ -116,16 +81,12 @@
 		object-fit: contain;
 	}
 
-
-
 	/* Right section */
 	.header-right {
 		display: flex;
 		align-items: center;
 		gap: 20px;
 	}
-
-
 
 	/* Responsive design */
 	@media (max-width: 768px) {

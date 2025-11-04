@@ -52,20 +52,27 @@ export const getAllTiers = (games: Game[]): string[] => {
 
 	// Map single letter tiers to full names and return in correct order
 	const tierMapping: Record<string, string> = {
-		'S': 'S - Masterpiece',
-		'A': 'A - Amazing',
-		'B': 'B - Great',
-		'C': 'C - Good',
-		'D': 'D - Decent',
-		'E': 'E - Bad'
+		S: 'S - Masterpiece',
+		A: 'A - Amazing',
+		B: 'B - Great',
+		C: 'C - Good',
+		D: 'D - Decent',
+		E: 'E - Bad'
 	};
 
 	const result = Array.from(tiers)
-		.map(tier => tierMapping[tier])
+		.map((tier) => tierMapping[tier])
 		.filter(Boolean)
 		.sort((a, b) => {
 			// Sort by tier order: S, A, B, C, D, E
-			const order = ['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad'];
+			const order = [
+				'S - Masterpiece',
+				'A - Amazing',
+				'B - Great',
+				'C - Good',
+				'D - Decent',
+				'E - Bad'
+			];
 			return order.indexOf(a) - order.indexOf(b);
 		});
 

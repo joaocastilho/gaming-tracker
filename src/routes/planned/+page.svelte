@@ -85,20 +85,18 @@
 				<p>Try adjusting your search terms or filters.</p>
 			{/if}
 		</div>
-		{:else}
-			{#if currentViewMode === 'gallery'}
-			<!-- Gallery View -->
-			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
-			>
-				{#each displayGames as game (game.id)}
-					<GameCard {game} />
-				{/each}
-			</div>
-		{:else}
-			<!-- Table View -->
-			<GameTable games={displayGames} onRowClick={handleGameClick} />
-		{/if}
+	{:else if currentViewMode === 'gallery'}
+		<!-- Gallery View -->
+		<div
+			class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+		>
+			{#each displayGames as game (game.id)}
+				<GameCard {game} />
+			{/each}
+		</div>
+	{:else}
+		<!-- Table View -->
+		<GameTable games={displayGames} onRowClick={handleGameClick} />
 	{/if}
 </div>
 

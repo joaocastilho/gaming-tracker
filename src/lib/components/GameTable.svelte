@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { sortStore } from '../stores/sort.js';
-	import VirtualizedTable from './VirtualizedTable.svelte';
 	import { memoizeGameSort } from '../utils/memoize.js';
-	import { TIER_COLORS, PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
+	import {
+		TIER_COLORS,
+		PLATFORM_COLORS,
+		GENRE_COLORS,
+		getTierDisplayName
+	} from '../utils/colorConstants.js';
 	import type { Game } from '../types/game.js';
 
 	interface Props {
@@ -11,11 +15,6 @@
 	}
 
 	let { games, onRowClick }: Props = $props();
-
-	// Use virtualization for large datasets (>100 games)
-	const USE_VIRTUALIZATION = games.length > 100;
-	const ITEM_HEIGHT = 60; // Approximate row height
-	const CONTAINER_HEIGHT = 600; // Fixed container height
 
 	// Sorting state from store
 	let sortState = $state(sortStore.state);
@@ -65,63 +64,63 @@
 	}
 
 	// Memoized sorting function for performance
-	const sortGames = memoizeGameSort((games: Game[], sortBy: string, sortDirection: string): Game[] => {
-		return [...games].sort((a, b) => {
-			if (!sortBy) return 0;
+	const sortGames = memoizeGameSort(
+		(games: Game[], sortBy: string, sortDirection: string): Game[] => {
+			return [...games].sort((a, b) => {
+				if (!sortBy) return 0;
 
-			let aValue: string | number | null, bValue: string | number | null;
+				let aValue: string | number | null, bValue: string | number | null;
 
-			switch (sortBy) {
-				case 'title':
-					aValue = a.title.toLowerCase();
-					bValue = b.title.toLowerCase();
-					break;
-				case 'year':
-					aValue = a.year;
-					bValue = b.year;
-					break;
-				case 'platform':
-					aValue = a.platform;
-					bValue = b.platform;
-					break;
-				case 'genre':
-					aValue = a.genre;
-					bValue = b.genre;
-					break;
-				case 'status':
-					aValue = a.status;
-					bValue = b.status;
-					break;
-				case 'tier':
-					aValue = a.tier || '';
-					bValue = b.tier || '';
-					break;
-				case 'score':
-					aValue = calculateScore(a) || 0;
-					bValue = calculateScore(b) || 0;
-					break;
-				case 'hours':
-					aValue = a.hoursPlayed || '';
-					bValue = b.hoursPlayed || '';
-					break;
-				case 'finished':
-					aValue = a.finishedDate || '';
-					bValue = b.finishedDate || '';
-					break;
-				default:
-					return 0;
-			}
+				switch (sortBy) {
+					case 'title':
+						aValue = a.title.toLowerCase();
+						bValue = b.title.toLowerCase();
+						break;
+					case 'year':
+						aValue = a.year;
+						bValue = b.year;
+						break;
+					case 'platform':
+						aValue = a.platform;
+						bValue = b.platform;
+						break;
+					case 'genre':
+						aValue = a.genre;
+						bValue = b.genre;
+						break;
+					case 'status':
+						aValue = a.status;
+						bValue = b.status;
+						break;
+					case 'tier':
+						aValue = a.tier || '';
+						bValue = b.tier || '';
+						break;
+					case 'score':
+						aValue = calculateScore(a) || 0;
+						bValue = calculateScore(b) || 0;
+						break;
+					case 'hours':
+						aValue = a.hoursPlayed || '';
+						bValue = b.hoursPlayed || '';
+						break;
+					case 'finished':
+						aValue = a.finishedDate || '';
+						bValue = b.finishedDate || '';
+						break;
+					default:
+						return 0;
+				}
 
-			if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-			if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-			return 0;
-		});
-	});
+				if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+				if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+				return 0;
+			});
+		}
+	);
 
 	// Get sorted games
-	let sortedGames = $derived(
-		sortGames(games, sortState.sortBy, sortState.sortDirection)
-	);
+	let sortedGames = $derived(sortGames(games, sortState.sortBy, sortState.sortDirection));
 
 	// Handle row click
 	function handleRowClick(game: Game) {
@@ -254,13 +253,20 @@
 					<td class="text-muted-foreground p-3 text-sm">{game.year}</td>
 					<!-- Platform Column -->
 					<td class="p-3">
-						<span class="inline-flex rounded px-2 py-1 text-xs font-medium {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
+						<span
+							class="inline-flex rounded px-2 py-1 text-xs font-medium {PLATFORM_COLORS[
+								game.platform
+							] || 'bg-gray-600 text-white'}"
+						>
 							{game.platform}
 						</span>
 					</td>
 					<!-- Genre Column -->
 					<td class="p-3">
-						<span class="inline-flex rounded px-2 py-1 text-xs font-medium {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
+						<span
+							class="inline-flex rounded px-2 py-1 text-xs font-medium {GENRE_COLORS[game.genre] ||
+								'bg-gray-600 text-white'}"
+						>
 							{game.genre}
 						</span>
 					</td>
@@ -268,7 +274,9 @@
 					<td class="p-3">
 						{#if game.status === 'Completed' && game.tier}
 							<span
-								class="inline-flex rounded px-2 py-1 text-xs font-medium {TIER_COLORS[getTierDisplayName(game.tier)]}"
+								class="inline-flex rounded px-2 py-1 text-xs font-medium {TIER_COLORS[
+									getTierDisplayName(game.tier)
+								]}"
 							>
 								{getTierDisplayName(game.tier)}
 							</span>

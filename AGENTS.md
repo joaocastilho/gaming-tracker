@@ -31,61 +31,61 @@
 
 ### RULE #1: CLARIFY AMBIGUITY BEFORE CODING
 
-* **Trigger:** You detect ambiguity in the user's request. Ambiguity includes, but is not limited to:
-    * Conflicting requirements (e.g., two rules contradict).
-    * Missing specifications (e.g., "add a button" without defining its behavior or style).
-    * Undefined technical choices (e.g., "add a store" without defining its structure).
-* **Action:** You MUST halt all code generation for the ambiguous task.
-* **Response:** You MUST ask the user clarifying questions to resolve the ambiguity.
-* **Constraint:** Do not make assumptions or proceed with implementation until the user provides clarification.
+- **Trigger:** You detect ambiguity in the user's request. Ambiguity includes, but is not limited to:
+  - Conflicting requirements (e.g., two rules contradict).
+  - Missing specifications (e.g., "add a button" without defining its behavior or style).
+  - Undefined technical choices (e.g., "add a store" without defining its structure).
+- **Action:** You MUST halt all code generation for the ambiguous task.
+- **Response:** You MUST ask the user clarifying questions to resolve the ambiguity.
+- **Constraint:** Do not make assumptions or proceed with implementation until the user provides clarification.
 
 ---
 
 ### RULE #2: IMPLEMENT AND VERIFY INCREMENTALLY
 
-* **Action:** Decompose all tasks into the smallest logical, sequential sub-steps (e.g., create a new type, then create a store using that type, then update a component to use the store).
-* **Workflow:**
-    1.  Implement **one** sub-step.
-    2.  Run verification commands (e.g., `bun run check`, `bun run lint`) to confirm the sub-step introduced no new errors.
-    3.  Only after verification, proceed to the next sub-step.
-* **Constraint:** Do not chain multiple unverified changes together. Do not make "sweeping changes" that modify multiple, unrelated files in a single step.
+- **Action:** Decompose all tasks into the smallest logical, sequential sub-steps (e.g., create a new type, then create a store using that type, then update a component to use the store).
+- **Workflow:**
+  1.  Implement **one** sub-step.
+  2.  Run verification commands (e.g., `bun run check`, `bun run lint`) to confirm the sub-step introduced no new errors.
+  3.  Only after verification, proceed to the next sub-step.
+- **Constraint:** Do not chain multiple unverified changes together. Do not make "sweeping changes" that modify multiple, unrelated files in a single step.
 
 ---
 
 ### RULE #3: EXECUTE PRE-COMMIT WORKFLOW
 
-* **Trigger:** You are about to report a task as complete, generate a commit message, or ask the user for approval to proceed.
-* **Action:** You MUST halt and execute the full **[✋ MANDATORY: Pre-Commit Workflow (8-STEP CHECKLIST)](#-mandatory-pre-commit-workflow-8-step-checklist)** section from this document.
-* **Constraint:** All 8 steps MUST be executed in the specified sequential order. No steps may be skipped. You MUST report the pass/fail status of each step to the user.
+- **Trigger:** You are about to report a task as complete, generate a commit message, or ask the user for approval to proceed.
+- **Action:** You MUST halt and execute the full **[✋ MANDATORY: Pre-Commit Workflow (8-STEP CHECKLIST)](#-mandatory-pre-commit-workflow-8-step-checklist)** section from this document.
+- **Constraint:** All 8 steps MUST be executed in the specified sequential order. No steps may be skipped. You MUST report the pass/fail status of each step to the user.
 
 ---
 
 ### RULE #4: TREAT `/static` FOLDER AS IMMUTABLE
 
-* **Scope:** All files and sub-directories within the `/static/` directory (e.g., `static/games.json`, all images in `static/covers/`).
-* **Allowed Operation:** **Read-only**.
-* **Prohibited Operations:** **Write, modify, or delete.**
-* **Rationale:** These files are the project's static data source. Your code MUST be written to consume this data as-is.
+- **Scope:** All files and sub-directories within the `/static/` directory (e.g., `static/games.json`, all images in `static/covers/`).
+- **Allowed Operation:** **Read-only**.
+- **Prohibited Operations:** **Write, modify, or delete.**
+- **Rationale:** These files are the project's static data source. Your code MUST be written to consume this data as-is.
 
 ---
 
 ### RULE #5: ADHERE TO `project.md` AS THE SINGLE SOURCE OF TRUTH
 
-* **Primary Source:** The file `docs/project.md` contains all project specifications and constraints.
-* **Action:** Before starting any task, you MUST consult this file to determine the correct:
-    * **Technology Stack:** (e.g., Svelte 5 Runes, TypeScript, Shadcn-Svelte).
-    * **Architectural Constraints:** (e.g., No backend, static data, client-side only).
-    * **Data Schemas:** (e.g., the `Game` interface).
-* **Constraint:** Any implementation that deviates from `docs/project.md` is invalid and will be rejected.
+- **Primary Source:** The file `docs/project.md` contains all project specifications and constraints.
+- **Action:** Before starting any task, you MUST consult this file to determine the correct:
+  - **Technology Stack:** (e.g., Svelte 5 Runes, TypeScript, Shadcn-Svelte).
+  - **Architectural Constraints:** (e.g., No backend, static data, client-side only).
+  - **Data Schemas:** (e.g., the `Game` interface).
+- **Constraint:** Any implementation that deviates from `docs/project.md` is invalid and will be rejected.
 
 ---
 
 ### RULE #6: DELETE ALL TEMPORARY FILES
 
-* **Scope:** Any temporary "scratchpad" files you create for your own processing (e.g., `temp_notes.md`, `todo.txt`, `debug.json`).
-* **Action:** You MUST delete all such temporary files from the file system immediately after they are no longer needed for your internal processing.
-* **Constraint:** Temporary files MUST NOT be included in the git staging area and MUST NOT be part of any commit.
-* **Exception:** Do not delete any files that are part of the project's defined structure (e.g., any file inside `src/`, `docs/`, etc.).
+- **Scope:** Any temporary "scratchpad" files you create for your own processing (e.g., `temp_notes.md`, `todo.txt`, `debug.json`).
+- **Action:** You MUST delete all such temporary files from the file system immediately after they are no longer needed for your internal processing.
+- **Constraint:** Temporary files MUST NOT be included in the git staging area and MUST NOT be part of any commit.
+- **Exception:** Do not delete any files that are part of the project's defined structure (e.g., any file inside `src/`, `docs/`, etc.).
 
 ### Enforcement Mechanism
 

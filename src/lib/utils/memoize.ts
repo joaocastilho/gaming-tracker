@@ -26,7 +26,7 @@ export function memoize<TArgs extends unknown[], TReturn>(
 		const cached = cache.get(key);
 		if (cached) {
 			const now = Date.now();
-			if (!ttl || (now - cached.timestamp) < ttl) {
+			if (!ttl || now - cached.timestamp < ttl) {
 				return cached.value;
 			}
 			// Remove expired entry
@@ -55,7 +55,7 @@ export function memoize<TArgs extends unknown[], TReturn>(
  * Memoization specifically for game filtering operations
  * Uses a more efficient cache key generation for game arrays and filter objects
  */
-export function memoizeGameFilter<TGames, TFilters, TReturn>(
+export function memoizeGameFilter<TGames extends { id: string | number }[], TFilters, TReturn>(
 	fn: (games: TGames, filters: TFilters) => TReturn,
 	options: MemoizeOptions = {}
 ): (games: TGames, filters: TFilters) => TReturn {
@@ -65,8 +65,10 @@ export function memoizeGameFilter<TGames, TFilters, TReturn>(
 	return (games: TGames, filters: TFilters): TReturn => {
 		// Create a more efficient cache key
 		// Use game IDs and filter state for uniqueness
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const gameIds = (games as any[]).map((g: any) => g.id).sort().join(',');
+		const gameIds = games
+			.map((g) => g.id)
+			.sort()
+			.join(',');
 		const filterKey = JSON.stringify(filters);
 		const key = `${gameIds}|${filterKey}`;
 
@@ -74,7 +76,7 @@ export function memoizeGameFilter<TGames, TFilters, TReturn>(
 		const cached = cache.get(key);
 		if (cached) {
 			const now = Date.now();
-			if ((now - cached.timestamp) < ttl) {
+			if (now - cached.timestamp < ttl) {
 				return cached.value;
 			}
 			cache.delete(key);
@@ -101,7 +103,7 @@ export function memoizeGameFilter<TGames, TFilters, TReturn>(
 /**
  * Memoization for sorting operations
  */
-export function memoizeGameSort<TGames, TReturn>(
+export function memoizeGameSort<TGames extends { id: string | number }[], TReturn>(
 	fn: (games: TGames, sortBy: string, sortDirection: string) => TReturn,
 	options: MemoizeOptions = {}
 ): (games: TGames, sortBy: string, sortDirection: string) => TReturn {
@@ -110,15 +112,17 @@ export function memoizeGameSort<TGames, TReturn>(
 
 	return (games: TGames, sortBy: string, sortDirection: string): TReturn => {
 		// Create cache key from game IDs and sort parameters
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const gameIds = (games as any[]).map((g: any) => g.id).sort().join(',');
+		const gameIds = games
+			.map((g) => g.id)
+			.sort()
+			.join(',');
 		const key = `${gameIds}|${sortBy}|${sortDirection}`;
 
 		// Check cache
 		const cached = cache.get(key);
 		if (cached) {
 			const now = Date.now();
-			if ((now - cached.timestamp) < ttl) {
+			if (now - cached.timestamp < ttl) {
 				return cached.value;
 			}
 			cache.delete(key);
