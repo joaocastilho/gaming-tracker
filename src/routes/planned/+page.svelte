@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { gamesStore } from '$lib/stores/games.js';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { appStore } from '$lib/stores/app.js';
@@ -39,21 +38,16 @@
 	});
 
 	// Handle browser back/forward navigation
-	onMount(() => {
-		// Subscribe to URL changes
-		const unsubscribePage = page.subscribe(($page) => {
-			// Read search query from URL when browser navigation occurs
-			filtersStore.readFromURL($page.url.searchParams);
-			appStore.readFromURL($page.url.searchParams);
-		});
+	$effect(() => {
+		// Read search query from URL when browser navigation occurs
+		filtersStore.readFromURL(page.url.searchParams);
+		appStore.readFromURL(page.url.searchParams);
+	});
 
-		// Update URL with current filter state on initial load
+	// Update URL with current filter state on initial load
+	$effect(() => {
 		filtersStore.writeToURL();
 		appStore.writeToURL();
-
-		return () => {
-			unsubscribePage();
-		};
 	});
 
 	// Filter to show only planned games, sorted alphabetically
@@ -88,7 +82,7 @@
 	{:else if currentViewMode === 'gallery'}
 		<!-- Gallery View -->
 		<div
-			class="grid max-w-full grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]"
+			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 		>
 			{#each displayGames as game (game.id)}
 				<GameCard {game} />

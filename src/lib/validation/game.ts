@@ -15,7 +15,7 @@ export const GameSchema = z.object({
 		.string()
 		.regex(/^\d+h \d+m$/)
 		.nullable(),
-	finishedDate: z.string().datetime().nullable(),
+	finishedDate: z.string().pipe(z.coerce.date()).nullable(),
 	ratingPresentation: z.number().min(0).max(10).nullable(),
 	ratingStory: z.number().min(0).max(10).nullable(),
 	ratingGameplay: z.number().min(0).max(10).nullable(),

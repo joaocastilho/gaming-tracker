@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page, navigating } from '$app/stores';
+	import { page, navigating } from '$app/state';
 	import '../app.css';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
@@ -15,7 +15,7 @@
 	import { appStore } from '$lib/stores/app.js';
 	import { modalStore } from '$lib/stores/modal.js';
 
-	import { Grid3X3, List } from 'lucide-svelte';
+	import { Grid3x3, List } from 'lucide-svelte';
 
 	let { children } = $props();
 
@@ -49,9 +49,9 @@
 	// Initialize app from URL parameters
 	$effect(() => {
 		if (!initialized) {
-			appStore.readFromURLWithFilters($page.url.searchParams, filtersStore);
+			appStore.readFromURLWithFilters(page.url.searchParams, filtersStore);
 			// Handle game parameter for detail modal
-			const gameId = $page.url.searchParams.get('game');
+			const gameId = page.url.searchParams.get('game');
 			if (gameId) {
 				// Find the game and open modal (will be handled by modal store)
 				setTimeout(() => {
@@ -97,7 +97,7 @@
 	// Handle browser back/forward navigation
 	$effect(() => {
 		// Compare current state with previous to detect external URL changes
-		const currentURL = $page.url;
+		const currentURL = page.url;
 		const searchParam = currentURL.searchParams.get('search') || '';
 		const platformsParam = currentURL.searchParams.get('platforms') || '';
 		const genresParam = currentURL.searchParams.get('genres') || '';
@@ -134,11 +134,11 @@
 		const currentStateString = JSON.stringify(currentFilterState);
 
 		if (initialized && urlStateString !== currentStateString) {
-			filtersStore.readFromURL($page.url.searchParams);
+			filtersStore.readFromURL(page.url.searchParams);
 		}
 
 		// URL parameters changed, trigger filter update
-		filtersStore.readFromURL($page.url.searchParams);
+		filtersStore.readFromURL(page.url.searchParams);
 	});
 
 	function handleViewModeToggle() {
@@ -238,7 +238,7 @@
 						{#if currentViewMode === 'gallery'}
 							<List size={18} class="text-gray-600 dark:text-gray-400" />
 						{:else}
-							<Grid3X3 size={18} class="text-gray-600 dark:text-gray-400" />
+							<Grid3x3 size={18} class="text-gray-600 dark:text-gray-400" />
 						{/if}
 					</button>
 				</div>
@@ -254,7 +254,7 @@
 	</main>
 
 	<!-- Page Navigation Loading -->
-	{#if $navigating}
+	{#if navigating}
 		<LoadingSpinner
 			variant="spinner"
 			size="lg"
