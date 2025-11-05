@@ -185,25 +185,18 @@
 		return currentMin === minLimit && currentMax === maxLimit;
 	}
 
-	function getDisplayValues(): { min: number; max: number } {
-		return {
-			min: currentMin,
-			max: currentMax
-		};
-	}
-
 	// Get consistent color for all bars (neutral)
-	function getRatingColor(value: number): string {
+	function getRatingColor(): string {
 		return '#6b7280'; // Consistent gray color for all bars
 	}
 </script>
 
-<div class="rating-slider" style="--min-color: {getRatingColor(currentMin)}; --max-color: {getRatingColor(currentMax)}">
+<div class="rating-slider" style="--min-color: {getRatingColor()}; --max-color: {getRatingColor()}">
 	<div class="slider-header">
 		<span class="slider-label">
 			{#if getRatingIcon()}
-				<svelte:component
-					this={getRatingIcon()}
+				{@const IconComponent = getRatingIcon()}
+				<IconComponent
 					class="filter-icon {getIconColor()}"
 					aria-label="{label} filter"
 					size={20}
@@ -211,13 +204,17 @@
 			{:else}
 				<span class="filter-icon" aria-label="Rating filter">🏆</span>
 			{/if}
-			{label} {currentMin} - {currentMax}
+			{label}
+			{currentMin} - {currentMax}
 		</span>
 		{#if !isDefaultRange()}
 			<button
 				type="button"
 				class="reset-button"
-				onclick={(event) => { event.stopPropagation(); resetRange(); }}
+				onclick={(event) => {
+					event.stopPropagation();
+					resetRange();
+				}}
 				{disabled}
 				title="Reset to default range"
 			>
@@ -229,9 +226,9 @@
 	<div class="slider-container" bind:this={sliderContainer}>
 		<!-- Dual-range slider -->
 		<div class="dual-slider-row">
-
 			<!-- Track background with drag handles -->
-			<div class="slider-track" onmousedown={handleMouseDown}>
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<div class="slider-track" onmousedown={handleMouseDown} role="application" aria-label="Rating range slider track">
 				<div
 					class="slider-fill"
 					style="left: {getMinPercentage()}%; width: {getMaxPercentage() - getMinPercentage()}%"
@@ -240,14 +237,20 @@
 					<div
 						class="drag-handle drag-handle-left"
 						onmousedown={(e) => handleDragStart(e, 'min')}
-						style="background-color: {getRatingColor(currentMin)}"
+						style="background-color: {getRatingColor()}"
+						role="button"
+						aria-label="Drag to adjust minimum {label.toLowerCase()} value"
+						tabindex="0"
 					></div>
 
 					<!-- Right drag handle -->
 					<div
 						class="drag-handle drag-handle-right"
 						onmousedown={(e) => handleDragStart(e, 'max')}
-						style="background-color: {getRatingColor(currentMax)}"
+						style="background-color: {getRatingColor()}"
+						role="button"
+						aria-label="Drag to adjust maximum {label.toLowerCase()} value"
+						tabindex="0"
 					></div>
 				</div>
 
@@ -276,11 +279,8 @@
 					aria-label="Maximum {label.toLowerCase()} rating"
 				/>
 			</div>
-
 		</div>
 	</div>
-
-
 </div>
 
 <style>
@@ -359,7 +359,9 @@
 		height: 60px;
 		background-color: rgba(59, 130, 246, 0.6);
 		border-radius: 10px;
-		transition: left 0.1s ease, width 0.1s ease;
+		transition:
+			left 0.1s ease,
+			width 0.1s ease;
 		pointer-events: none;
 	}
 
@@ -433,66 +435,6 @@
 		background: transparent;
 		height: 8px;
 		border: none;
-	}
-
-	.slider-input::-moz-range-track {
-		width: 100%;
-		height: 4px;
-		background-color: #374151;
-		border-radius: 2px;
-		border: none;
-	}
-
-	:global(.light) .slider-input::-moz-range-track {
-		background-color: #d1d5db;
-	}
-
-	.slider-input::-moz-range-thumb {
-		width: 16px;
-		height: 16px;
-		background-color: #3b82f6;
-		border: 2px solid var(--background);
-		border-radius: 50%;
-		cursor: pointer;
-		border: none;
-		box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2);
-		transition: box-shadow 0.2s ease;
-	}
-
-	.slider-input::-moz-range-thumb:hover {
-		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
-	}
-
-	.slider-input::-moz-range-thumb:active {
-		box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.3);
-	}
-
-	.slider-input:disabled {
-		cursor: not-allowed;
-	}
-
-	.slider-input:disabled::-webkit-slider-thumb {
-		background-color: #6b7280;
-		cursor: not-allowed;
-		box-shadow: none;
-	}
-
-	.slider-input:disabled::-moz-range-thumb {
-		background-color: #6b7280;
-		cursor: not-allowed;
-		box-shadow: none;
-	}
-
-	.slider-value {
-		font-size: 0.875rem;
-		font-weight: 600;
-		color: var(--color-text-primary);
-		min-width: 20px;
-		text-align: center;
-		background-color: var(--color-surface);
-		padding: 2px 6px;
-		border-radius: 4px;
-		border: 1px solid var(--color-border);
 	}
 
 	.slider-track {
@@ -599,26 +541,6 @@
 		background-color: #6b7280;
 		cursor: not-allowed;
 		box-shadow: none;
-	}
-
-	.slider-values {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		font-size: 0.875rem;
-		color: var(--color-text-secondary);
-	}
-
-	.value-display {
-		font-weight: 500;
-		color: var(--color-text-primary);
-		min-width: 24px;
-		text-align: center;
-	}
-
-	.range-indicator {
-		font-weight: 500;
-		margin: 0 8px;
 	}
 
 	/* Mobile responsive */

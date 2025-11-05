@@ -52,10 +52,9 @@
 		return unsubscribe;
 	});
 
-	// Initialize app from URL parameters
+	// Initialize app - localStorage is already loaded, only handle game parameter for detail modal
 	$effect(() => {
 		if (!initialized) {
-			appStore.readFromURLWithFilters(page.url.searchParams, filtersStore);
 			// Handle game parameter for detail modal
 			const gameSlug = page.url.searchParams.get('game');
 			if (gameSlug) {

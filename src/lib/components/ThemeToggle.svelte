@@ -1,8 +1,12 @@
 <script>
 	import { appStore } from '../stores/app.js';
 
-	// Theme state from store
-	let theme = $state('dark');
+	// Get initial theme from document class (set by HTML script) or default to dark
+	let theme = $state(
+		typeof document !== 'undefined' && document.documentElement.classList.contains('light')
+			? 'light'
+			: 'dark'
+	);
 
 	// Subscribe to theme changes
 	$effect(() => {

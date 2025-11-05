@@ -7,7 +7,7 @@
 		TIER_COLORS,
 		getTierDisplayName
 	} from '../utils/colorConstants.js';
-	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays, Star } from 'lucide-svelte';
+	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
@@ -91,7 +91,16 @@
 
 <button
 	class="game-card"
-	style="background-color: var(--color-surface); color: var(--color-text-primary); --card-width: {size === 'large' ? '250px' : size === 'tiny' ? '200px' : '300px'}; --cover-height: {size === 'large' ? '375px' : size === 'tiny' ? '300px' : '450px'};"
+	style="background-color: var(--color-surface); color: var(--color-text-primary); --card-width: {size ===
+	'large'
+		? '250px'
+		: size === 'tiny'
+			? '200px'
+			: '300px'}; --cover-height: {size === 'large'
+		? '375px'
+		: size === 'tiny'
+			? '300px'
+			: '450px'};"
 	onclick={() => modalStore.openViewModal(game)}
 	onkeydown={handleKeyDown}
 	aria-label="View details for {game.title}"
@@ -121,7 +130,9 @@
 		{/if}
 
 		{#if showTierBadge && game.status === 'Completed' && game.tier}
-			<div class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}">
+			<div
+				class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}"
+			>
 				<span class="tier-text">{getTierDisplayName(game.tier)}</span>
 			</div>
 		{/if}
@@ -192,7 +203,8 @@
 				</div>
 				<div class="date-item">
 					<CalendarDays class="date-icon" aria-label="Completion date" size={20} />
-					<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span>
+					<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span
+					>
 				</div>
 			</div>
 		{/if}
@@ -269,12 +281,7 @@
 	}
 
 	:global(.light) .image-placeholder::before {
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			rgba(0, 0, 0, 0.08) 50%,
-			transparent 100%
-		);
+		background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 50%, transparent 100%);
 	}
 
 	@keyframes strongPulse {
@@ -367,8 +374,6 @@
 		font-size: 0.9rem;
 		font-weight: 700;
 	}
-
-
 
 	/* Game Info */
 	.game-info {

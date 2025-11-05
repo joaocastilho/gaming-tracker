@@ -97,7 +97,9 @@ function createFiltersStore() {
 				};
 
 				// Convert selected full tier names to single letters
-				const selectedTierLetters = filters.selectedTiers.map(tier => tierMapping[tier]).filter(Boolean);
+				const selectedTierLetters = filters.selectedTiers
+					.map((tier) => tierMapping[tier])
+					.filter(Boolean);
 
 				if (game.status === 'Completed' && game.tier) {
 					if (!selectedTierLetters.includes(game.tier)) {

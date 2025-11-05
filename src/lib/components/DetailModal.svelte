@@ -101,11 +101,12 @@
 		const filteredGames = filteredGamesData.filteredGames;
 
 		switch (currentActiveTab) {
-			case 'all':
+			case 'all': {
 				// All games sorted alphabetically
 				return filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+			}
 
-			case 'completed':
+			case 'completed': {
 				// Completed games sorted by finished date (most recent first)
 				return filteredGames
 					.filter((game) => game.status === 'Completed')
@@ -115,25 +116,34 @@
 						if (!b.finishedDate) return -1;
 						return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
 					});
+			}
 
-			case 'planned':
+			case 'planned': {
 				// Planned games sorted alphabetically
 				return filteredGames
 					.filter((game) => game.status === 'Planned')
 					.toSorted((a, b) => a.title.localeCompare(b.title));
+			}
 
-			case 'tierlist':
+			case 'tierlist': {
 				// All completed games with tiers, sorted by tier then alphabetically
 				const tierMapping: Record<string, string> = {
-					'S': 'S - Masterpiece',
-					'A': 'A - Amazing',
-					'B': 'B - Great',
-					'C': 'C - Good',
-					'D': 'D - Decent',
-					'E': 'E - Bad'
+					S: 'S - Masterpiece',
+					A: 'A - Amazing',
+					B: 'B - Great',
+					C: 'C - Good',
+					D: 'D - Decent',
+					E: 'E - Bad'
 				};
 
-				const tierOrder = ['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad'];
+				const tierOrder = [
+					'S - Masterpiece',
+					'A - Amazing',
+					'B - Great',
+					'C - Good',
+					'D - Decent',
+					'E - Bad'
+				];
 
 				return allGames
 					.filter((game) => game.status === 'Completed' && game.tier)
@@ -150,9 +160,11 @@
 
 						return a.title.localeCompare(b.title);
 					});
+			}
 
-			default:
+			default: {
 				return filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+			}
 		}
 	});
 
@@ -330,8 +342,6 @@
 			</button>
 		{/if}
 
-
-
 		<!-- Close Button -->
 		<button
 			onclick={() => modalStore.closeModal()}
@@ -379,10 +389,10 @@
 					class="max-h-[60vh] overflow-y-auto pt-4 pr-6 pb-6 pl-6 lg:pt-6 lg:pr-8 lg:pb-8 lg:pl-8"
 				>
 					<!-- Title and Share Button -->
-					<div class="flex items-start justify-between gap-4 mb-4">
+					<div class="mb-4 flex items-start justify-between gap-4">
 						<h1
 							id="modal-title"
-							class="flex flex-col justify-center text-3xl font-bold flex-1"
+							class="flex flex-1 flex-col justify-center text-3xl font-bold"
 							style="height: 65px; color: var(--color-text-primary);"
 						>
 							{titleParts().mainTitle}
@@ -390,7 +400,8 @@
 								<br />
 								<span
 									class="font-semibold"
-									style="font-size: 1.2rem; line-height: 1.2; color: var(--color-text-secondary);">{titleParts().subtitle}</span
+									style="font-size: 1.2rem; line-height: 1.2; color: var(--color-text-secondary);"
+									>{titleParts().subtitle}</span
 								>
 							{/if}
 						</h1>
@@ -398,16 +409,23 @@
 						<!-- Share Button -->
 						<button
 							onclick={shareGame}
-							class="flex h-10 items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:bg-transparent dark:hover:bg-black/20 transition-colors px-3 cursor-pointer"
+							class="flex h-10 cursor-pointer items-center justify-center rounded-full bg-transparent px-3 transition-colors hover:bg-black/5 dark:bg-transparent dark:hover:bg-black/20"
 							aria-label="Share game"
 							style="min-width: 40px;"
 						>
 							{#if shareFeedback}
-								<span style="color: var(--color-text-primary)" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+								<span
+									style="color: var(--color-text-primary)"
+									class="text-sm font-medium text-gray-700 dark:text-gray-200"
+								>
 									{shareFeedback}
 								</span>
 							{:else}
-								<Share2 size={18} style="color: var(--color-text-primary)" class="text-gray-700 dark:text-gray-200" />
+								<Share2
+									size={18}
+									style="color: var(--color-text-primary)"
+									class="text-gray-700 dark:text-gray-200"
+								/>
 							{/if}
 						</button>
 					</div>
@@ -451,28 +469,36 @@
 					<!-- Detail Grid -->
 					<div class="mb-8 grid grid-cols-2 gap-4">
 						<div>
-							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Year Released</div>
+							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">
+								Year Released
+							</div>
 							<div class="font-semibold" style="color: var(--color-text-primary);">
 								{modalState.activeGame.year}
 							</div>
 						</div>
 						{#if modalState.activeGame.status === 'Completed'}
 							<div>
-								<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Hours Played</div>
+								<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">
+									Hours Played
+								</div>
 								<div class="font-semibold" style="color: var(--color-text-primary);">
 									{modalState.activeGame.hoursPlayed || 'Not completed'}
 								</div>
 							</div>
 						{:else}
 							<div>
-								<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Time to Beat</div>
+								<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">
+									Time to Beat
+								</div>
 								<div class="font-semibold" style="color: var(--color-text-primary);">
 									{modalState.activeGame.timeToBeat}
 								</div>
 							</div>
 						{/if}
 						<div>
-							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Finished Date</div>
+							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">
+								Finished Date
+							</div>
 							<div class="font-semibold" style="color: var(--color-text-primary);">
 								{formatDate(modalState.activeGame.finishedDate)}
 							</div>
@@ -488,7 +514,9 @@
 					<!-- Ratings Section -->
 					{#if modalState.activeGame.status === 'Completed' && modalState.activeGame.ratingPresentation !== null && modalState.activeGame.ratingStory !== null && modalState.activeGame.ratingGameplay !== null}
 						<div class="space-y-4">
-							<h3 class="mb-4 text-xl font-semibold" style="color: var(--color-text-primary);">Ratings</h3>
+							<h3 class="mb-4 text-xl font-semibold" style="color: var(--color-text-primary);">
+								Ratings
+							</h3>
 
 							<!-- Presentation Rating -->
 							<div class="flex items-center gap-3">
@@ -498,7 +526,10 @@
 										>Presentation</span
 									>
 								</div>
-								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
+								<span
+									class="min-w-0 text-sm font-semibold"
+									style="color: var(--color-text-primary);"
+								>
 									{modalState.activeGame.ratingPresentation}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -515,9 +546,14 @@
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
-									<span class="text-sm font-medium" style="color: var(--color-text-secondary);">Story</span>
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);"
+										>Story</span
+									>
 								</div>
-								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
+								<span
+									class="min-w-0 text-sm font-semibold"
+									style="color: var(--color-text-primary);"
+								>
 									{modalState.activeGame.ratingStory}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -534,9 +570,14 @@
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
-									<span class="text-sm font-medium" style="color: var(--color-text-secondary);">Gameplay</span>
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);"
+										>Gameplay</span
+									>
 								</div>
-								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
+								<span
+									class="min-w-0 text-sm font-semibold"
+									style="color: var(--color-text-primary);"
+								>
 									{modalState.activeGame.ratingGameplay}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -565,7 +606,9 @@
 						</div>
 					{:else}
 						<div class="space-y-4">
-							<h3 class="mb-4 text-xl font-semibold" style="color: var(--color-text-primary);">Ratings</h3>
+							<h3 class="mb-4 text-xl font-semibold" style="color: var(--color-text-primary);">
+								Ratings
+							</h3>
 
 							<!-- Placeholder Presentation Rating -->
 							<div class="flex items-center gap-3">
@@ -575,7 +618,10 @@
 										>Presentation</span
 									>
 								</div>
-								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
+								<span
+									class="min-w-0 text-sm font-semibold"
+									style="color: var(--color-text-primary);"
+								>
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -590,9 +636,14 @@
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
-									<span class="text-sm font-medium" style="color: var(--color-text-secondary);">Story</span>
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);"
+										>Story</span
+									>
 								</div>
-								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
+								<span
+									class="min-w-0 text-sm font-semibold"
+									style="color: var(--color-text-primary);"
+								>
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -607,9 +658,14 @@
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
-									<span class="text-sm font-medium" style="color: var(--color-text-secondary);">Gameplay</span>
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);"
+										>Gameplay</span
+									>
 								</div>
-								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
+								<span
+									class="min-w-0 text-sm font-semibold"
+									style="color: var(--color-text-primary);"
+								>
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -674,12 +730,7 @@
 	}
 
 	:global(.light) .image-placeholder::before {
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			rgba(0, 0, 0, 0.08) 50%,
-			transparent 100%
-		);
+		background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 50%, transparent 100%);
 	}
 
 	@keyframes strongPulse {

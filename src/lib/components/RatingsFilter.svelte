@@ -74,8 +74,6 @@
 		}
 	});
 
-
-
 	// Reset all ratings
 	function resetAllRatings() {
 		filtersStore.setRatingRange('presentation', 0, 10);
@@ -87,10 +85,14 @@
 	// Check if any ratings are filtered
 	function hasActiveFilters(): boolean {
 		return (
-			ratingRanges.presentation[0] > 0 || ratingRanges.presentation[1] < 10 ||
-			ratingRanges.story[0] > 0 || ratingRanges.story[1] < 10 ||
-			ratingRanges.gameplay[0] > 0 || ratingRanges.gameplay[1] < 10 ||
-			ratingRanges.total[0] > 0 || ratingRanges.total[1] < 20
+			ratingRanges.presentation[0] > 0 ||
+			ratingRanges.presentation[1] < 10 ||
+			ratingRanges.story[0] > 0 ||
+			ratingRanges.story[1] < 10 ||
+			ratingRanges.gameplay[0] > 0 ||
+			ratingRanges.gameplay[1] < 10 ||
+			ratingRanges.total[0] > 0 ||
+			ratingRanges.total[1] < 20
 		);
 	}
 
@@ -136,14 +138,19 @@
 		<Star size={16} class="text-gray-600 dark:text-gray-400" />
 		<span class="filter-label">Filter by Ratings</span>
 		{#if hasActiveFilters()}
-			<span class="selected-count bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full">
+			<span class="selected-count bg-accent text-accent-foreground rounded-full px-2 py-1 text-xs">
 				{[
 					ratingRanges.presentation,
 					ratingRanges.story,
 					ratingRanges.gameplay,
 					ratingRanges.total
 				].filter(([min, max], i) => {
-					const defaults = [[0, 10], [0, 10], [0, 10], [0, 20]];
+					const defaults = [
+						[0, 10],
+						[0, 10],
+						[0, 10],
+						[0, 20]
+					];
 					return min > defaults[i][0] || max < defaults[i][1];
 				}).length}
 			</span>
@@ -165,7 +172,8 @@
 								step={1}
 								minLimit={0}
 								maxLimit={config.maxValue}
-								onRangeChange={(min: number, max: number) => filtersStore.setRatingRange(ratingType, min, max)}
+								onRangeChange={(min: number, max: number) =>
+									filtersStore.setRatingRange(ratingType, min, max)}
 							/>
 						</div>
 					{/each}
@@ -175,8 +183,11 @@
 					<div class="filter-actions mt-4 flex justify-center">
 						<button
 							type="button"
-							class="text-xs text-blue-400 transition-colors hover:text-blue-300 cursor-pointer"
-							onclick={(event) => { event.stopPropagation(); resetAllRatings(); }}
+							class="cursor-pointer text-xs text-blue-400 transition-colors hover:text-blue-300"
+							onclick={(event) => {
+								event.stopPropagation();
+								resetAllRatings();
+							}}
 						>
 							Clear all
 						</button>

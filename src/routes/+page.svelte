@@ -130,17 +130,18 @@
 
 		// Map single letter tiers to full tier names
 		const tierMapping: Record<string, string> = {
-			'S': 'S - Masterpiece',
-			'A': 'A - Amazing',
-			'B': 'B - Great',
-			'C': 'C - Good',
-			'D': 'D - Decent',
-			'E': 'E - Bad'
+			S: 'S - Masterpiece',
+			A: 'A - Amazing',
+			B: 'B - Great',
+			C: 'C - Good',
+			D: 'D - Decent',
+			E: 'E - Bad'
 		};
 
 		// Group completed games with tiers from allGamesForTierList
-		const tieredGames = allGamesForTierList
-			.filter((game: Game) => game.status === 'Completed' && game.tier);
+		const tieredGames = allGamesForTierList.filter(
+			(game: Game) => game.status === 'Completed' && game.tier
+		);
 
 		tieredGames.forEach((game) => {
 			if (game.tier) {
@@ -165,29 +166,28 @@
 		modalStore.openViewModal(game);
 	}
 
-	// Convert tier name to CSS class
-	function getTierClass(tier: string): string {
-		return tier
-			.toLowerCase()
-			.replace(/\s+/g, '-')
-			.replace(/[^a-z0-9-]/g, '');
-	}
-
 	// Get tier background color
 	function getTierBackgroundColor(tier: string): string {
 		switch (tier) {
-			case 'S - Masterpiece': return '#dc2626';
-			case 'A - Amazing': return '#f97316';
-			case 'B - Great': return '#eab308';
-			case 'C - Good': return '#22c55e';
-			case 'D - Decent': return '#06b6d4';
-			case 'E - Bad': return '#6b7280';
-			default: return '#6b7280';
+			case 'S - Masterpiece':
+				return '#dc2626';
+			case 'A - Amazing':
+				return '#f97316';
+			case 'B - Great':
+				return '#eab308';
+			case 'C - Good':
+				return '#22c55e';
+			case 'D - Decent':
+				return '#06b6d4';
+			case 'E - Bad':
+				return '#6b7280';
+			default:
+				return '#6b7280';
 		}
 	}
 
 	// Get tier text color
-	function getTierTextColor(tier: string): string {
+	function getTierTextColor(): string {
 		return 'white';
 	}
 </script>
@@ -211,7 +211,7 @@
 		{:else if currentViewMode === 'gallery'}
 			<!-- Gallery View -->
 			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] pt-6"
+				class="grid max-w-full grid-cols-1 justify-items-center gap-2 pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 			>
 				{#each completedGames as game (game.id)}
 					<GameCard {game} size="small" />
@@ -235,7 +235,7 @@
 		{:else if currentViewMode === 'gallery'}
 			<!-- Gallery View -->
 			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] pt-6"
+				class="grid max-w-full grid-cols-1 justify-items-center gap-2 pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 			>
 				{#each plannedGames as game (game.id)}
 					<GameCard {game} size="small" />
@@ -246,7 +246,6 @@
 			<GameTable games={plannedGames} onRowClick={handleGameClick} />
 		{/if}
 	{:else if currentActiveTab === 'tierlist'}
-
 		{#if Object.values(tierList).every((games) => games.length === 0)}
 			<div class="empty-state">
 				{#if filteredData.totalCount === 0}
@@ -260,16 +259,23 @@
 		{:else}
 			<!-- Tier List View -->
 			<div class="tier-list-container">
-				{#each Object.entries(tierList) as [tier, games] (tier)}
+				{#each Object.entries(tierList) as [tierName, games] (tierName)}
 					{#if games.length > 0}
 						<div class="tier-section">
-							<h3 class="tier-header" style="background-color: {getTierBackgroundColor(tier)} !important; color: {getTierTextColor(tier)} !important;">
-								{tier}
-								<span class="tier-count" style="color: {getTierTextColor(tier)} !important;">{games.length} {games.length === 1 ? 'game' : 'games'}</span>
+							<h3
+								class="tier-header"
+								style="background-color: {getTierBackgroundColor(
+									tierName
+								)} !important; color: {getTierTextColor()} !important;"
+							>
+								{tierName}
+								<span class="tier-count" style="color: {getTierTextColor()} !important;"
+									>{games.length} {games.length === 1 ? 'game' : 'games'}</span
+								>
 							</h3>
 							{#if currentViewMode === 'gallery'}
 								<div
-									class="grid max-w-full grid-cols-2 justify-items-center gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 4xl:grid-cols-9"
+									class="3xl:grid-cols-8 4xl:grid-cols-9 grid max-w-full grid-cols-2 justify-items-center gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7"
 								>
 									{#each games as game (game.id)}
 										<GameCard {game} size="tiny" showTierBadge={false} />
@@ -304,7 +310,7 @@
 	{:else if currentViewMode === 'gallery'}
 		<!-- Gallery View -->
 		<div
-			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] pt-6"
+			class="grid max-w-full grid-cols-1 justify-items-center gap-2 pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 		>
 			{#each allGames as game (game.id)}
 				<GameCard {game} size="small" />
@@ -377,6 +383,4 @@
 		font-weight: 500;
 		opacity: 0.8;
 	}
-
-
 </style>

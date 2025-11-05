@@ -1,6 +1,6 @@
 # End-to-End User Flow Testing Report
 
-Generated: 2025-11-04T21:42:50.370Z
+Generated: 2025-11-05T23:39:19.660Z
 
 ## Game Management Flows
 
@@ -12,15 +12,15 @@ Testing core game CRUD operations
 - **Passed**: 3 ✅
 - **Failed**: 0 ❌
 - **Skipped**: 0 ⏭️
-- **Total Duration**: 348.82ms
+- **Total Duration**: 364.01ms
 
 ### Test Results
 
 | Flow | Status | Duration | Issues |
 |------|--------|----------|--------|
-| Add New Game | ✅ | 102.97ms |  |
-| Complete Game with Ratings | ✅ | 154.33ms |  |
-| Edit Existing Game | ✅ | 91.52ms |  |
+| Add New Game | ✅ | 120.63ms |  |
+| Complete Game with Ratings | ✅ | 152.50ms |  |
+| Edit Existing Game | ✅ | 90.87ms |  |
 
 ## Filtering and Search Flows
 
@@ -32,15 +32,15 @@ Testing data filtering and search functionality
 - **Passed**: 3 ✅
 - **Failed**: 0 ❌
 - **Skipped**: 0 ⏭️
-- **Total Duration**: 200.00ms
+- **Total Duration**: 204.46ms
 
 ### Test Results
 
 | Flow | Status | Duration | Issues |
 |------|--------|----------|--------|
-| Search by Title | ✅ | 61.01ms |  |
-| Filter by Platform | ✅ | 61.99ms |  |
-| Filter by Rating Range | ✅ | 77.00ms |  |
+| Search by Title | ✅ | 62.53ms |  |
+| Filter by Platform | ✅ | 63.42ms |  |
+| Filter by Rating Range | ✅ | 78.51ms |  |
 
 ## View and Navigation Flows
 
@@ -52,15 +52,15 @@ Testing view switching and navigation
 - **Passed**: 3 ✅
 - **Failed**: 0 ❌
 - **Skipped**: 0 ⏭️
-- **Total Duration**: 170.27ms
+- **Total Duration**: 172.67ms
 
 ### Test Results
 
 | Flow | Status | Duration | Issues |
 |------|--------|----------|--------|
-| Switch Between Gallery and Table Views | ✅ | 45.68ms |  |
-| Navigate Between Tabs | ✅ | 62.39ms |  |
-| Sort Table Columns | ✅ | 62.19ms |  |
+| Switch Between Gallery and Table Views | ✅ | 47.51ms |  |
+| Navigate Between Tabs | ✅ | 63.35ms |  |
+| Sort Table Columns | ✅ | 61.81ms |  |
 
 ## Data Export and Persistence
 
@@ -72,14 +72,14 @@ Testing data export and persistence features
 - **Passed**: 2 ✅
 - **Failed**: 0 ❌
 - **Skipped**: 0 ⏭️
-- **Total Duration**: 160.60ms
+- **Total Duration**: 138.19ms
 
 ### Test Results
 
 | Flow | Status | Duration | Issues |
 |------|--------|----------|--------|
-| Export Games to JSON | ✅ | 113.63ms |  |
-| Theme Persistence | ✅ | 46.97ms |  |
+| Export Games to JSON | ✅ | 107.15ms |  |
+| Theme Persistence | ✅ | 31.03ms |  |
 
 ## Advanced Features
 
@@ -91,14 +91,14 @@ Testing advanced functionality
 - **Passed**: 2 ✅
 - **Failed**: 0 ❌
 - **Skipped**: 1 ⏭️
-- **Total Duration**: 178.25ms
+- **Total Duration**: 187.00ms
 
 ### Test Results
 
 | Flow | Status | Duration | Issues |
 |------|--------|----------|--------|
-| Deep Link to Game Detail | ✅ | 86.00ms |  |
-| Tier List Generation | ✅ | 92.25ms |  |
+| Deep Link to Game Detail | ✅ | 93.23ms |  |
+| Tier List Generation | ✅ | 93.78ms |  |
 | Performance with Large Datasets | ⏭️ | 0.00ms | Requires browser environment for accurate testing |
 
 ## Overall Summary
@@ -109,5 +109,5 @@ Testing advanced functionality
 - **Failed**: 0 ❌
 - **Skipped**: 1 ⏭️
 - **Success Rate**: 92.9%
-- **Total Duration**: 1057.95ms
+- **Total Duration**: 1066.33ms
 

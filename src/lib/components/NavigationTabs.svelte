@@ -160,8 +160,6 @@
 		z-index: 35; /* Below header (40) but above filter section (30) */
 	}
 
-
-
 	/* Light mode overrides */
 	:global(.light) .navigation-tabs {
 		background-color: #f2ebe1;

@@ -14,9 +14,9 @@ function createAppStore() {
 	const theme = writable<'dark' | 'light'>('dark');
 	const activeTab = writable<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 
-	// Initialize from localStorage
+	// Initialize from localStorage first
 	if (typeof window !== 'undefined') {
-		// Load from localStorage on initialization
+		// Load from localStorage on initialization - this is the primary source
 		const savedViewMode = localStorage.getItem('gaming-tracker-view-mode') as
 			| 'gallery'
 			| 'table'
@@ -100,25 +100,37 @@ function createAppStore() {
 			activeTab.set(tab);
 		},
 
-		// URL parameter management
+		// URL parameter management - only override localStorage if URL params are present and different
 		readFromURL(searchParams: URLSearchParams) {
 			const view = searchParams.get('view');
 			const themeParam = searchParams.get('theme');
 			const tab = searchParams.get('tab');
 
+			// Only set view mode if URL parameter exists and differs from current localStorage value
 			if (view && (view === 'gallery' || view === 'table')) {
-				viewMode.set(view);
+				const currentView = get(viewMode);
+				if (view !== currentView) {
+					viewMode.set(view);
+				}
 			}
 
+			// Only set theme if URL parameter exists and differs from current localStorage value
 			if (themeParam && (themeParam === 'dark' || themeParam === 'light')) {
-				theme.set(themeParam);
+				const currentTheme = get(theme);
+				if (themeParam !== currentTheme) {
+					theme.set(themeParam);
+				}
 			}
 
+			// Only set active tab if URL parameter exists and differs from current localStorage value
 			if (
 				tab &&
 				(tab === 'all' || tab === 'completed' || tab === 'planned' || tab === 'tierlist')
 			) {
-				activeTab.set(tab);
+				const currentTab = get(activeTab);
+				if (tab !== currentTab) {
+					activeTab.set(tab);
+				}
 			}
 		},
 

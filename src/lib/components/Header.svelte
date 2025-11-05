@@ -36,7 +36,11 @@
 	<div class="header-content container mx-auto px-6">
 		<!-- Left section: Logo -->
 		<div class="header-left">
-			<button class="logo" onclick={handleLogoClick} aria-label="Go to homepage and reset all filters">
+			<button
+				class="logo"
+				onclick={handleLogoClick}
+				aria-label="Go to homepage and reset all filters"
+			>
 				<picture class="logo-image">
 					<source srcset="logo.webp" type="image/webp" />
 					<img src="logo.png" alt="Gaming Tracker Logo" />
@@ -137,8 +141,6 @@
 		max-width: 130px;
 		object-fit: contain;
 	}
-
-
 
 	/* Responsive design */
 	@media (max-width: 768px) {

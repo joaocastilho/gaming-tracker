@@ -65,18 +65,6 @@
 		});
 	}
 
-	// Get display text for button
-	function getDisplayText(): string {
-		if (selectedOptions.length === 0) {
-			return `All ${label}`;
-		} else if (selectedOptions.length === 1) {
-			const option = selectedOptions[0];
-			return type === 'tiers' ? getTierDisplayName(option) : option;
-		} else {
-			return `${selectedOptions.length} ${label}`;
-		}
-	}
-
 	// Get color class for option
 	function getOptionColor(option: string): string {
 		if (type === 'platforms') {
@@ -137,7 +125,7 @@
 		{/if}
 		<span class="filter-label">Filter by {label}</span>
 		{#if selectedOptions.length > 0}
-			<span class="selected-count bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full">
+			<span class="selected-count bg-accent text-accent-foreground rounded-full px-2 py-1 text-xs">
 				{selectedOptions.length}
 			</span>
 		{/if}
@@ -150,7 +138,9 @@
 					{#each options as option (option)}
 						<button
 							type="button"
-							class="filter-option-item {getOptionColor(option)} {selectedOptions.includes(option) ? 'selected' : ''}"
+							class="filter-option-item {getOptionColor(option)} {selectedOptions.includes(option)
+								? 'selected'
+								: ''}"
 							onclick={() => toggleOption(option)}
 						>
 							{type === 'tiers' ? getTierDisplayName(option) : option}
@@ -162,8 +152,11 @@
 					<div class="filter-actions mt-3 flex justify-center">
 						<button
 							type="button"
-							class="text-xs text-blue-400 transition-colors hover:text-blue-300 cursor-pointer"
-							onclick={(event) => { event.stopPropagation(); selectAll(); }}
+							class="cursor-pointer text-xs text-blue-400 transition-colors hover:text-blue-300"
+							onclick={(event) => {
+								event.stopPropagation();
+								selectAll();
+							}}
 						>
 							Clear all
 						</button>
@@ -171,7 +164,7 @@
 				{/if}
 
 				{#if options.length === 0}
-					<div class="empty-state text-center py-2">
+					<div class="empty-state py-2 text-center">
 						<span class="text-muted-foreground text-sm">
 							No {label.toLowerCase()} available
 						</span>
