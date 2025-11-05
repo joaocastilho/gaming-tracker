@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Header from '$lib/components/Header.svelte';
 	import { appStore } from '../stores/app.js';
 	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
@@ -107,6 +108,7 @@
 	}
 </script>
 
+<Header />
 <nav class="navigation-tabs" aria-label="Game navigation">
 	<!-- Navigation tabs centered -->
 	<ul class="tabs-list" role="tablist">
@@ -145,7 +147,6 @@
 		height: 55px;
 		background-color: #0a0d11;
 		padding: 0;
-		border-bottom: 1px solid rgba(42, 47, 58, 0.5);
 
 		/* Positioning */
 		position: sticky;

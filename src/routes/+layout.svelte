@@ -5,7 +5,6 @@
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 	import RatingsFilter from '$lib/components/RatingsFilter.svelte';
 	import DetailModal from '$lib/components/DetailModal.svelte';
-	import Header from '$lib/components/Header.svelte';
 	import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
 	import { filtersStore } from '$lib/stores/filters.js';
@@ -191,8 +190,6 @@
 </svelte:head>
 
 <div class="bg-background text-foreground min-h-screen">
-	<Header />
-
 	<NavigationTabs />
 
 	<section class="filter-section sticky top-[104px] z-30 md:top-[110px]">

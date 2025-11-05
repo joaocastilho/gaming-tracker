@@ -11,61 +11,83 @@
 	});
 </script>
 
-<header class="header">
-	<!-- Left section: Logo -->
-	<div class="header-left">
-		<div class="logo">
-			<picture class="logo-image">
-				<source srcset="logo.webp" type="image/webp" />
-				<img src="logo.png" alt="Gaming Tracker Logo" />
-			</picture>
+<div class="header-background">
+	<header class="header container mx-auto px-6">
+		<!-- Left section: Logo -->
+		<div class="header-left">
+			<div class="logo">
+				<picture class="logo-image">
+					<source srcset="logo.webp" type="image/webp" />
+					<img src="logo.png" alt="Gaming Tracker Logo" />
+				</picture>
+			</div>
 		</div>
-	</div>
 
-	<!-- Right section: Theme Toggle -->
-	<div class="header-right">
-		<ThemeToggle />
-	</div>
-</header>
+		<!-- Right section: Theme Toggle -->
+		<div class="header-right">
+			<ThemeToggle />
+		</div>
+	</header>
+</div>
 
 <style>
+	.header-background {
+		/* Full width background using pseudo-element */
+		position: relative;
+
+		/* Sticky positioning for the entire header */
+		position: sticky;
+		top: 0;
+		z-index: 40;
+
+		/* Create full-width background with pseudo-element */
+	}
+
+	.header-background::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 50%;
+		right: 50%;
+		width: 100vw;
+		height: 100%;
+		margin-left: -50vw;
+		margin-right: -50vw;
+		z-index: -1;
+
+		/* Dark mode colors */
+		background-color: #0a0d11;
+	}
+
+	:global(.light) .header-background::before {
+		background-color: #f2ebe1;
+	}
+
+
+
 	.header {
 		/* Layout */
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 0 24px 0 0; /* Remove left padding since logo has its own margin */
 		height: 60px;
 		width: 100%;
 
-		/* Dark mode colors */
-		background-color: #0a0d11;
-		color: #ffffff;
-
-		/* Typography */
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-
-		/* Positioning */
-		position: sticky;
-		top: 0;
-		z-index: 40;
+		/* Make background transparent since it's handled by parent */
+		background-color: transparent;
 
 		/* Remove border */
 		border: none;
 	}
 
-	/* Light mode overrides */
-	:global(.light) .header {
-		background-color: #f2ebe1;
-		color: #1a1a1a;
-	}
+
 
 	/* Left section */
 	.header-left {
 		display: flex;
 		align-items: center;
 		gap: 20px;
-		margin-left: 24px; /* Align with search bar margin */
+		margin-left: 40px; /* Align with search bar content start (24px container + 16px search bar) */
 	}
 
 	/* Logo section */
@@ -93,7 +115,7 @@
 
 		.header-left {
 			gap: 12px;
-			margin-left: 16px;
+			margin-left: 36px; /* 24px container + 12px search bar */
 		}
 	}
 
@@ -104,7 +126,7 @@
 
 		.header-left {
 			gap: 8px;
-			margin-left: 12px;
+			margin-left: 32px; /* 24px container + 8px search bar */
 		}
 	}
 

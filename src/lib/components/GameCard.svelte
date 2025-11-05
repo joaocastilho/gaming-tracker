@@ -12,9 +12,10 @@
 	interface Props {
 		game: Game;
 		size?: 'small' | 'large' | 'tiny';
+		showTierBadge?: boolean;
 	}
 
-	let { game, size = 'small' }: Props = $props();
+	let { game, size = 'small', showTierBadge = true }: Props = $props();
 
 	// Image loading state
 	let isImageLoaded = $state(false);
@@ -119,7 +120,7 @@
 			</div>
 		{/if}
 
-		{#if game.status === 'Completed' && game.tier}
+		{#if showTierBadge && game.status === 'Completed' && game.tier}
 			<div class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}">
 				<span class="tier-text">{getTierDisplayName(game.tier)}</span>
 			</div>
