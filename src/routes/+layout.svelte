@@ -58,11 +58,11 @@
 		if (!initialized) {
 			appStore.readFromURLWithFilters(page.url.searchParams, filtersStore);
 			// Handle game parameter for detail modal
-			const gameId = page.url.searchParams.get('game');
-			if (gameId) {
+			const gameSlug = page.url.searchParams.get('game');
+			if (gameSlug) {
 				// Find the game and open modal (will be handled by modal store)
 				setTimeout(() => {
-					const game = gamesStore.getGameById(gameId);
+					const game = gamesStore.getGameBySlug(gameSlug);
 					if (game) {
 						modalStore.openViewModal(game);
 					}

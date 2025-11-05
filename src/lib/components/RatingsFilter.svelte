@@ -82,7 +82,6 @@
 		filtersStore.setRatingRange('story', 0, 10);
 		filtersStore.setRatingRange('gameplay', 0, 10);
 		filtersStore.setRatingRange('total', 0, 20);
-		isOpen = false;
 	}
 
 	// Check if any ratings are filtered
@@ -98,9 +97,9 @@
 	// Get button color classes
 	function getButtonColorClasses(): string {
 		if (hasActiveFilters()) {
-			return 'bg-accent text-accent-foreground';
+			return 'bg-accent text-accent-foreground border-0';
 		} else {
-			return 'bg-surface hover:bg-accent hover:text-accent-foreground';
+			return 'bg-surface hover:bg-accent hover:text-accent-foreground border-0';
 		}
 	}
 
@@ -176,8 +175,8 @@
 					<div class="filter-actions mt-4 flex justify-center">
 						<button
 							type="button"
-							class="text-xs text-blue-400 transition-colors hover:text-blue-300"
-							onclick={resetAllRatings}
+							class="text-xs text-blue-400 transition-colors hover:text-blue-300 cursor-pointer"
+							onclick={(event) => { event.stopPropagation(); resetAllRatings(); }}
 						>
 							Clear all
 						</button>
@@ -257,8 +256,7 @@
 
 	/* Focus states */
 	.filter-button:focus {
-		outline: 2px solid #3b82f6;
-		outline-offset: 2px;
+		outline: none;
 	}
 
 	/* Mobile responsive */
@@ -312,7 +310,7 @@
 
 	.selected-count {
 		font-size: 0.75rem;
-		font-weight: 600;
+		font-weight: 500;
 		min-width: 20px;
 		height: 20px;
 		display: flex;
@@ -343,7 +341,6 @@
 	.filter-options-grid {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
 	}
 
 	.rating-slider-item {

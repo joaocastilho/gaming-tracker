@@ -86,12 +86,25 @@ function createFiltersStore() {
 
 			// Tier filter (only applies to completed games)
 			if (filters.selectedTiers.length > 0) {
+				// Map full tier names back to single letters for comparison
+				const tierMapping: Record<string, string> = {
+					'S - Masterpiece': 'S',
+					'A - Amazing': 'A',
+					'B - Great': 'B',
+					'C - Good': 'C',
+					'D - Decent': 'D',
+					'E - Bad': 'E'
+				};
+
+				// Convert selected full tier names to single letters
+				const selectedTierLetters = filters.selectedTiers.map(tier => tierMapping[tier]).filter(Boolean);
+
 				if (game.status === 'Completed' && game.tier) {
-					if (!filters.selectedTiers.includes(game.tier)) {
+					if (!selectedTierLetters.includes(game.tier)) {
 						return false;
 					}
-				} else if (game.status !== 'Completed') {
-					// If filtering by tier but game is not completed, exclude it
+				} else {
+					// If filtering by tier, exclude games that are not completed or don't have a tier
 					return false;
 				}
 			}

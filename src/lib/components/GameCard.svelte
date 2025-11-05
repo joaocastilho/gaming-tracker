@@ -7,7 +7,7 @@
 		TIER_COLORS,
 		getTierDisplayName
 	} from '../utils/colorConstants.js';
-	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
+	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays, Star } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
@@ -116,6 +116,12 @@
 			<div class="co-op-badge">
 				<span class="co-op-icon" aria-hidden="true" title="Co-op game">👥</span>
 				<span class="co-op-text">Co-op</span>
+			</div>
+		{/if}
+
+		{#if game.status === 'Completed' && game.tier}
+			<div class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}">
+				<span class="tier-text">{getTierDisplayName(game.tier)}</span>
 			</div>
 		{/if}
 	</div>
@@ -340,6 +346,27 @@
 		font-size: 0.8rem;
 	}
 
+	/* Tier Badge */
+	.tier-badge {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		display: flex;
+		align-items: center;
+		padding: 4px 8px;
+		border-radius: 4px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		backdrop-filter: blur(4px);
+		min-width: 24px;
+		justify-content: center;
+	}
+
+	.tier-text {
+		font-size: 0.9rem;
+		font-weight: 700;
+	}
+
 
 
 	/* Game Info */
@@ -374,7 +401,7 @@
 	}
 
 	.game-subtitle {
-		font-size: 0.70rem;
+		font-size: 0.75rem;
 		font-weight: 500;
 		color: #8b92a8;
 		line-height: 1.2;

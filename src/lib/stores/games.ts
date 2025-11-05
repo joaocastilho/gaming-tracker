@@ -119,6 +119,22 @@ function createGamesStore() {
 			return games.find((game) => game.id === id);
 		},
 
+		// Get game by slug (URL-friendly title)
+		getGameBySlug(slug: string): Game | undefined {
+			const games = get({ subscribe });
+			return games.find((game) => {
+				// Create slug from game title using same logic as shareGame function
+				const gameSlug = game.title
+					.toLowerCase()
+					.replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+					.replace(/\s+/g, '-') // Replace spaces with hyphens
+					.replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+					.trim()
+					.replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+				return gameSlug === slug;
+			});
+		},
+
 		// Calculate score based on ratings (0-20 scale)
 		calculateScore(presentation: number, story: number, gameplay: number): number {
 			return Math.round(((presentation + story + gameplay) / 3) * 2);

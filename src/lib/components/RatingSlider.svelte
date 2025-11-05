@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Presentation, NotebookPen, Gamepad2 } from 'lucide-svelte';
+
 	interface Props {
 		label: string;
 		minValue: number;
@@ -21,9 +23,40 @@
 		onRangeChange = () => {}
 	}: Props = $props();
 
+	// Get the appropriate icon based on the label
+	function getRatingIcon() {
+		const lowerLabel = label.toLowerCase();
+		if (lowerLabel.includes('presentation')) {
+			return Presentation;
+		} else if (lowerLabel.includes('story')) {
+			return NotebookPen;
+		} else if (lowerLabel.includes('gameplay')) {
+			return Gamepad2;
+		}
+		return null; // For total score, we use the trophy emoji
+	}
+
+	// Get the appropriate color based on the label
+	function getIconColor() {
+		const lowerLabel = label.toLowerCase();
+		if (lowerLabel.includes('presentation')) {
+			return 'text-cyan-500';
+		} else if (lowerLabel.includes('story')) {
+			return 'text-amber-600';
+		} else if (lowerLabel.includes('gameplay')) {
+			return 'text-pink-500';
+		}
+		return 'text-gray-600'; // For total score
+	}
+
 	// Local state for slider values
 	let currentMin = $state(minValue);
 	let currentMax = $state(maxValue);
+
+	// DOM references
+	let sliderContainer: HTMLDivElement;
+	let isDragging = $state(false);
+	let dragType: 'min' | 'max' | null = $state(null);
 
 	// Update local state when props change
 	$effect(() => {
@@ -74,6 +107,70 @@
 		updateRange(minLimit, maxLimit);
 	}
 
+	// Handle drag start for the visible drag handles
+	function handleDragStart(event: MouseEvent, type: 'min' | 'max') {
+		if (disabled) return;
+
+		dragType = type;
+		isDragging = true;
+		document.addEventListener('mousemove', handleMouseMove);
+		document.addEventListener('mouseup', handleMouseUp);
+		event.preventDefault();
+	}
+
+	// Handle mouse events for dragging the filled bar
+	function handleMouseDown(event: MouseEvent) {
+		if (disabled || !sliderContainer) return;
+
+		const rect = sliderContainer.getBoundingClientRect();
+		const clickX = event.clientX - rect.left;
+		const containerWidth = rect.width;
+		const clickPercentage = clickX / containerWidth;
+
+		const minPercent = getMinPercentage() / 100;
+		const maxPercent = getMaxPercentage() / 100;
+		const filledStart = minPercent;
+		const filledEnd = maxPercent;
+
+		// Check if clicking on the filled portion
+		if (clickPercentage >= filledStart && clickPercentage <= filledEnd) {
+			// Determine which edge is closer
+			const distanceToMin = Math.abs(clickPercentage - minPercent);
+			const distanceToMax = Math.abs(clickPercentage - maxPercent);
+
+			dragType = distanceToMin <= distanceToMax ? 'min' : 'max';
+			isDragging = true;
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+			event.preventDefault();
+		}
+	}
+
+	function handleMouseMove(event: MouseEvent) {
+		if (!isDragging || !sliderContainer || disabled) return;
+
+		const rect = sliderContainer.getBoundingClientRect();
+		const mouseX = event.clientX - rect.left;
+		const containerWidth = rect.width;
+		const mousePercentage = Math.max(0, Math.min(1, mouseX / containerWidth));
+
+		const newValue = Math.round((mousePercentage * (maxLimit - minLimit) + minLimit) / step) * step;
+		const clampedValue = clamp(newValue, minLimit, maxLimit);
+
+		if (dragType === 'min') {
+			updateRange(clampedValue, currentMax, true);
+		} else if (dragType === 'max') {
+			updateRange(currentMin, clampedValue, false);
+		}
+	}
+
+	function handleMouseUp() {
+		isDragging = false;
+		dragType = null;
+		document.removeEventListener('mousemove', handleMouseMove);
+		document.removeEventListener('mouseup', handleMouseUp);
+	}
+
 	// Calculate percentage for track fill
 	function getMinPercentage(): number {
 		return ((currentMin - minLimit) / (maxLimit - minLimit)) * 100;
@@ -95,36 +192,32 @@
 		};
 	}
 
-	// Get color based on rating value (using tier color scheme)
+	// Get consistent color for all bars (neutral)
 	function getRatingColor(value: number): string {
-		if (maxLimit === 20) {
-			// For total score (0-20), map to tier colors
-			if (value >= 18) return '#dc2626'; // S - Red
-			if (value >= 16) return '#f97316'; // A - Orange
-			if (value >= 14) return '#eab308'; // B - Yellow
-			if (value >= 12) return '#22c55e'; // C - Green
-			if (value >= 10) return '#06b6d4'; // D - Cyan
-			return '#6b7280'; // E - Gray
-		} else {
-			// For individual ratings (0-10), map to tier colors
-			if (value >= 9) return '#dc2626'; // S - Red
-			if (value >= 8) return '#f97316'; // A - Orange
-			if (value >= 7) return '#eab308'; // B - Yellow
-			if (value >= 6) return '#22c55e'; // C - Green
-			if (value >= 5) return '#06b6d4'; // D - Cyan
-			return '#6b7280'; // E - Gray
-		}
+		return '#6b7280'; // Consistent gray color for all bars
 	}
 </script>
 
 <div class="rating-slider" style="--min-color: {getRatingColor(currentMin)}; --max-color: {getRatingColor(currentMax)}">
 	<div class="slider-header">
-		<span class="slider-label">{label}</span>
+		<span class="slider-label">
+			{#if getRatingIcon()}
+				<svelte:component
+					this={getRatingIcon()}
+					class="filter-icon {getIconColor()}"
+					aria-label="{label} filter"
+					size={20}
+				/>
+			{:else}
+				<span class="filter-icon" aria-label="Rating filter">🏆</span>
+			{/if}
+			{label} {currentMin} - {currentMax}
+		</span>
 		{#if !isDefaultRange()}
 			<button
 				type="button"
 				class="reset-button"
-				onclick={resetRange}
+				onclick={(event) => { event.stopPropagation(); resetRange(); }}
 				{disabled}
 				title="Reset to default range"
 			>
@@ -133,49 +226,57 @@
 		{/if}
 	</div>
 
-	<div class="slider-container">
+	<div class="slider-container" bind:this={sliderContainer}>
 		<!-- Dual-range slider -->
 		<div class="dual-slider-row">
-			<!-- Track background -->
-			<div class="slider-track">
+
+			<!-- Track background with drag handles -->
+			<div class="slider-track" onmousedown={handleMouseDown}>
 				<div
 					class="slider-fill"
 					style="left: {getMinPercentage()}%; width: {getMaxPercentage() - getMinPercentage()}%"
-				></div>
+				>
+					<!-- Left drag handle -->
+					<div
+						class="drag-handle drag-handle-left"
+						onmousedown={(e) => handleDragStart(e, 'min')}
+						style="background-color: {getRatingColor(currentMin)}"
+					></div>
+
+					<!-- Right drag handle -->
+					<div
+						class="drag-handle drag-handle-right"
+						onmousedown={(e) => handleDragStart(e, 'max')}
+						style="background-color: {getRatingColor(currentMax)}"
+					></div>
+				</div>
+
+				<!-- Hidden input sliders for accessibility and fallback -->
+				<input
+					type="range"
+					class="slider-thumb slider-thumb-min"
+					min={minLimit}
+					max={maxLimit}
+					{step}
+					value={currentMin}
+					oninput={handleMinInput}
+					{disabled}
+					aria-label="Minimum {label.toLowerCase()} rating"
+				/>
+
+				<input
+					type="range"
+					class="slider-thumb slider-thumb-max"
+					min={minLimit}
+					max={maxLimit}
+					{step}
+					value={currentMax}
+					oninput={handleMaxInput}
+					{disabled}
+					aria-label="Maximum {label.toLowerCase()} rating"
+				/>
 			</div>
 
-			<!-- Min slider -->
-			<input
-				type="range"
-				class="slider-thumb slider-thumb-min"
-				min={minLimit}
-				max={maxLimit}
-				{step}
-				value={currentMin}
-				oninput={handleMinInput}
-				{disabled}
-				aria-label="Minimum {label.toLowerCase()} rating"
-			/>
-
-			<!-- Max slider -->
-			<input
-				type="range"
-				class="slider-thumb slider-thumb-max"
-				min={minLimit}
-				max={maxLimit}
-				{step}
-				value={currentMax}
-				oninput={handleMaxInput}
-				{disabled}
-				aria-label="Maximum {label.toLowerCase()} rating"
-			/>
-		</div>
-
-		<!-- Value display -->
-		<div class="slider-values">
-			<span class="value-display min-value" style="color: {getRatingColor(currentMin)}">{currentMin}</span>
-			<span class="range-indicator">–</span>
-			<span class="value-display max-value" style="color: {getRatingColor(currentMax)}">{currentMax}</span>
 		</div>
 	</div>
 
@@ -186,7 +287,6 @@
 	.rating-slider {
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
 		min-width: 200px;
 	}
 
@@ -197,9 +297,19 @@
 	}
 
 	.slider-label {
-		font-size: 0.875rem;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 1rem;
 		font-weight: 500;
 		color: var(--color-text-primary);
+	}
+
+	.filter-icon {
+		width: 20px;
+		height: 20px;
+		color: var(--color-text-secondary);
+		flex-shrink: 0;
 	}
 
 	.reset-button {
@@ -225,42 +335,30 @@
 	.slider-container {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
 	}
 
 	.dual-slider-row {
 		position: relative;
-		height: 40px;
+		height: 60px;
 		display: flex;
-		align-items: center;
 	}
 
 	.slider-track {
-		position: absolute;
-		top: 50%;
-		left: 0;
-		right: 0;
-		height: 8px;
-		background: linear-gradient(to right,
-			#6b7280 0%,   /* E - Gray */
-			#06b6d4 20%,  /* D - Cyan */
-			#22c55e 40%,  /* C - Green */
-			#eab308 60%,  /* B - Yellow */
-			#f97316 80%,  /* A - Orange */
-			#dc2626 100%  /* S - Red */
-		);
-		border-radius: 4px;
+		position: relative;
+		width: 275px;
+		height: 20px;
+		background-color: #e5e7eb;
+		border-radius: 10px;
 		border: 1px solid var(--color-border);
-		transform: translateY(-50%);
+		margin: 0 auto;
 	}
 
 	.slider-fill {
 		position: absolute;
-		top: 50%;
-		height: 8px;
-		background-color: rgba(59, 130, 246, 0.3);
-		border-radius: 4px;
-		transform: translateY(-50%);
+		top: 0;
+		height: 60px;
+		background-color: rgba(59, 130, 246, 0.6);
+		border-radius: 10px;
 		transition: left 0.1s ease, width 0.1s ease;
 		pointer-events: none;
 	}
@@ -268,8 +366,8 @@
 	.slider-thumb {
 		position: absolute;
 		width: 100%;
-		height: 40px;
-		opacity: 0;
+		height: 60px;
+		opacity: 1;
 		cursor: pointer;
 		margin: 0;
 		padding: 0;
@@ -415,7 +513,7 @@
 	.slider-fill {
 		position: absolute;
 		top: 50%;
-		height: 4px;
+		height: 10px;
 		background-color: #3b82f6;
 		border-radius: 2px;
 		transform: translateY(-50%);
@@ -512,14 +610,10 @@
 	}
 
 	.value-display {
-		background-color: var(--color-surface);
-		padding: 2px 6px;
-		border-radius: 4px;
 		font-weight: 500;
 		color: var(--color-text-primary);
 		min-width: 24px;
 		text-align: center;
-		border: 1px solid var(--color-border);
 	}
 
 	.range-indicator {
@@ -550,6 +644,39 @@
 		}
 	}
 
+	/* Drag handles for the filled bar */
+	.drag-handle {
+		position: absolute;
+		top: 50%;
+		width: 16px;
+		height: 16px;
+		border-radius: 2px;
+		border: 2px solid var(--background);
+		cursor: pointer;
+		transform: translateY(-50%);
+		z-index: 5;
+		transition: all 0.2s ease;
+		box-shadow: 0 0 0 0 currentColor;
+	}
+
+	.drag-handle:hover {
+		box-shadow: 0 0 0 4px currentColor;
+		transform: translateY(-50%) scale(1.1);
+	}
+
+	.drag-handle:active {
+		box-shadow: 0 0 0 6px currentColor;
+		transform: translateY(-50%) scale(1.2);
+	}
+
+	.drag-handle-left {
+		left: -8px;
+	}
+
+	.drag-handle-right {
+		right: -8px;
+	}
+
 	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.slider-fill {
@@ -561,6 +688,10 @@
 		}
 
 		.reset-button {
+			transition: none;
+		}
+
+		.drag-handle {
 			transition: none;
 		}
 	}

@@ -44,6 +44,13 @@
 
 	let modalElement = $state<HTMLDivElement>();
 
+	// Image loading state
+	let isImageLoaded = $state(false);
+	let hasImageError = $state(false);
+
+	// Share feedback state
+	let shareFeedback = $state('');
+
 	// Extract parenthetical content from title for subtitle display
 	let titleParts = $derived(() => {
 		if (!modalState.activeGame?.title) return { mainTitle: '', subtitle: null };
@@ -109,6 +116,18 @@
 		}
 	}
 
+	// Handle image load success
+	function handleImageLoad() {
+		isImageLoaded = true;
+		hasImageError = false;
+	}
+
+	// Handle image load error
+	function handleImageError() {
+		isImageLoaded = false;
+		hasImageError = true;
+	}
+
 	function formatDate(dateString: string | null): string {
 		if (!dateString) return 'Not completed';
 		try {
@@ -160,8 +179,16 @@
 			url.searchParams.set('game', slug);
 
 			await navigator.clipboard.writeText(url.toString());
+			shareFeedback = 'Copied!';
+			setTimeout(() => {
+				shareFeedback = '';
+			}, 2000);
 		} catch (error) {
 			console.warn('Failed to copy to clipboard:', error);
+			shareFeedback = 'Failed';
+			setTimeout(() => {
+				shareFeedback = '';
+			}, 2000);
 		}
 	}
 
@@ -212,14 +239,7 @@
 			</button>
 		{/if}
 
-		<!-- Share Button -->
-		<button
-			onclick={shareGame}
-			class="absolute top-4 right-16 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm border border-gray-300 shadow-lg transition-all hover:scale-110 hover:bg-white dark:bg-gray-800/90 dark:border-gray-600 dark:hover:bg-gray-700"
-			aria-label="Share game"
-		>
-			<Share2 size={18} class="text-gray-700 dark:text-gray-200" />
-		</button>
+
 
 		<!-- Close Button -->
 		<button
@@ -238,12 +258,19 @@
 			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
 				<!-- Cover Section -->
 				<div class="relative overflow-hidden rounded-l-lg">
+					{#if !isImageLoaded && !hasImageError}
+						<div class="image-placeholder"></div>
+					{/if}
 					<img
 						src={modalState.activeGame.coverImage.replace('.webp', '-detail.webp')}
 						alt="{modalState.activeGame.title} cover"
 						class="h-full w-full object-cover"
+						class:loaded={isImageLoaded}
+						class:error={hasImageError}
 						style="width: 400px; height: 600px;"
 						loading="lazy"
+						onload={handleImageLoad}
+						onerror={handleImageError}
 					/>
 
 					<!-- Co-op Badge -->
@@ -260,21 +287,39 @@
 				<div
 					class="max-h-[60vh] overflow-y-auto pt-4 pr-6 pb-6 pl-6 lg:pt-6 lg:pr-8 lg:pb-8 lg:pl-8"
 				>
-					<!-- Title -->
-					<h1
-						id="modal-title"
-						class="flex flex-col justify-center text-3xl font-bold"
-						style="height: 65px; margin-bottom: 15px; color: var(--color-text-primary);"
-					>
-						{titleParts().mainTitle}
-						{#if titleParts().subtitle}
-							<br />
-							<span
-								class="font-semibold"
-								style="font-size: 1.2rem; line-height: 1.2; color: var(--color-text-secondary);">{titleParts().subtitle}</span
-							>
-						{/if}
-					</h1>
+					<!-- Title and Share Button -->
+					<div class="flex items-start justify-between gap-4 mb-4">
+						<h1
+							id="modal-title"
+							class="flex flex-col justify-center text-3xl font-bold flex-1"
+							style="height: 65px; color: var(--color-text-primary);"
+						>
+							{titleParts().mainTitle}
+							{#if titleParts().subtitle}
+								<br />
+								<span
+									class="font-semibold"
+									style="font-size: 1.2rem; line-height: 1.2; color: var(--color-text-secondary);">{titleParts().subtitle}</span
+								>
+							{/if}
+						</h1>
+
+						<!-- Share Button -->
+						<button
+							onclick={shareGame}
+							class="flex h-10 items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors border border-gray-300 dark:border-gray-600 px-3 cursor-pointer"
+							aria-label="Share game"
+							style="min-width: 40px;"
+						>
+							{#if shareFeedback}
+								<span class="text-sm font-medium text-gray-700 dark:text-gray-200">
+									{shareFeedback}
+								</span>
+							{:else}
+								<Share2 size={18} class="text-gray-700 dark:text-gray-200" />
+							{/if}
+						</button>
+					</div>
 
 					<!-- Meta Badges -->
 					<div class="mb-6 flex items-center justify-between">
@@ -504,4 +549,91 @@
 {/if}
 
 <style>
+	/* Image Placeholder */
+	.image-placeholder {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, #2a2d3a 0%, #1a1f27 100%);
+		animation-name: strongPulse;
+		animation-duration: 1.5s;
+		animation-timing-function: ease-in-out;
+		animation-iteration-count: infinite;
+		animation-fill-mode: forwards;
+		overflow: hidden;
+	}
+
+	.image-placeholder::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(255, 255, 255, 0.1) 50%,
+			transparent 100%
+		);
+		animation: shimmer 2s ease-in-out infinite;
+	}
+
+	:global(.light) .image-placeholder {
+		background: linear-gradient(135deg, #ede3d3 0%, #f7f2eb 100%);
+	}
+
+	:global(.light) .image-placeholder::before {
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(0, 0, 0, 0.08) 50%,
+			transparent 100%
+		);
+	}
+
+	@keyframes strongPulse {
+		0% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		25% {
+			opacity: 0.7;
+			transform: scale(1.01);
+		}
+		50% {
+			opacity: 0.4;
+			transform: scale(1.02);
+		}
+		75% {
+			opacity: 0.7;
+			transform: scale(1.01);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	@keyframes shimmer {
+		0% {
+			left: -100%;
+		}
+		100% {
+			left: 100%;
+		}
+	}
+
+	/* Image loading states */
+	.cover-image {
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.cover-image.loaded {
+		opacity: 1;
+	}
+
+	.cover-image.error {
+		display: none;
+	}
 </style>

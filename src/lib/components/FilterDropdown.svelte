@@ -63,7 +63,6 @@
 				filtersStore.removeTier(option);
 			}
 		});
-		isOpen = false;
 	}
 
 	// Get display text for button
@@ -93,9 +92,9 @@
 	// Get button color classes
 	function getButtonColorClasses(): string {
 		if (selectedOptions.length === 0) {
-			return 'bg-surface hover:bg-accent hover:text-accent-foreground';
+			return 'bg-surface hover:bg-accent hover:text-accent-foreground border-0';
 		} else {
-			return 'bg-accent text-accent-foreground';
+			return 'bg-accent text-accent-foreground border-0';
 		}
 	}
 
@@ -163,8 +162,8 @@
 					<div class="filter-actions mt-3 flex justify-center">
 						<button
 							type="button"
-							class="text-xs text-blue-400 transition-colors hover:text-blue-300"
-							onclick={selectAll}
+							class="text-xs text-blue-400 transition-colors hover:text-blue-300 cursor-pointer"
+							onclick={(event) => { event.stopPropagation(); selectAll(); }}
 						>
 							Clear all
 						</button>
@@ -284,8 +283,7 @@
 
 	/* Focus states */
 	.filter-button:focus {
-		outline: 2px solid #3b82f6;
-		outline-offset: 2px;
+		outline: none;
 	}
 
 	.option-checkbox:focus {
