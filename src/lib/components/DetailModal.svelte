@@ -307,16 +307,16 @@
 						<!-- Share Button -->
 						<button
 							onclick={shareGame}
-							class="flex h-10 items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors border border-gray-300 dark:border-gray-600 px-3 cursor-pointer"
+							class="flex h-10 items-center justify-center rounded-full bg-transparent hover:bg-black/5 dark:bg-transparent dark:hover:bg-black/20 transition-colors px-3 cursor-pointer"
 							aria-label="Share game"
 							style="min-width: 40px;"
 						>
 							{#if shareFeedback}
-								<span class="text-sm font-medium text-gray-700 dark:text-gray-200">
+								<span style="color: var(--color-text-primary)" class="text-sm font-medium text-gray-700 dark:text-gray-200">
 									{shareFeedback}
 								</span>
 							{:else}
-								<Share2 size={18} class="text-gray-700 dark:text-gray-200" />
+								<Share2 size={18} style="color: var(--color-text-primary)" class="text-gray-700 dark:text-gray-200" />
 							{/if}
 						</button>
 					</div>

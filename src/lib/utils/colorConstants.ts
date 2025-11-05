@@ -3,14 +3,14 @@
 
 // Platform color mappings - each platform has its own widely different, vibrant, colorful unique color
 export const PLATFORM_COLORS: Record<string, string> = {
-	PC: 'bg-[#4c1d95] text-[#a78bfa]', // Deep purple
+	PC: 'bg-[#1e40af] text-white', // Royal blue (changed from purple)
 	PS4: 'bg-[#f59e0b] text-[#fef3c7]', // Bright amber
 	PS3: 'bg-[#ef4444] text-[#fecaca]', // Bright red
 	PS2: 'bg-[#a855f7] text-[#e9d5ff]', // Bright purple
 	PS1: 'bg-[#f97316] text-white', // Vibrant orange
 	Switch: 'bg-[#22c55e] text-[#dcfce7]', // Bright green
 	'3DS': 'bg-[#ec4899] text-[#fce7f3]', // Bright pink
-	N64: 'bg-[#eab308] text-[#fef3c7]', // Bright yellow
+	N64: 'bg-[#7c3aed] text-white', // Electric purple (changed from bright yellow)
 	GameCube: 'bg-[#06b6d4] text-[#cffafe]', // Bright cyan
 	'Game Boy Advance': 'bg-[#dc2626] text-[#fca5a5]', // Crimson red
 	Xbox: 'bg-[#166534] text-[#dcfce7]', // Dark green
@@ -18,33 +18,33 @@ export const PLATFORM_COLORS: Record<string, string> = {
 	Dreamcast: 'bg-[#0d9488] text-[#ccfbf1]' // Bright teal
 };
 
-// Genre color mappings - each genre has its own widely different, vibrant, colorful unique color
+// Genre color mappings - maximally distinct, unique colors with white text
 export const GENRE_COLORS: Record<string, string> = {
-	// Each genre gets its own widely different, vibrant, colorful unique color
-	Platformer: 'bg-[#ea580c] text-[#fed7aa]', // Bright orange
-	'Action Platformer': 'bg-[#ef4444] text-[#fecaca]', // Bright red
-	'Puzzle Platformer': 'bg-[#a855f7] text-[#e9d5ff]', // Bright purple
-	'Story Platformer': 'bg-[#f97316] text-white', // Vibrant orange
-	'Story Adventure': 'bg-[#eab308] text-[#fef3c7]', // Bright yellow
-	'Action Adventure': 'bg-[#06b6d4] text-[#cffafe]', // Bright cyan
-	'Survival Horror': 'bg-[#9333ea] text-[#f3e8ff]', // Bright purple
-	'Story Puzzle': 'bg-[#ec4899] text-[#fce7f3]', // Bright pink
-	Puzzle: 'bg-[#22c55e] text-[#dcfce7]', // Bright green
-	'Action RPG': 'bg-[#f59e0b] text-[#fef3c7]', // Bright amber
-	'Classic RPG': 'bg-[#dc2626] text-[#fca5a5]', // Crimson red
-	'Japanese RPG': 'bg-[#059669] text-[#a7f3d0]', // Emerald green
-	'Sandbox RPG': 'bg-[#0891b2] text-[#ecfeff]', // Bright cyan-blue
-	'Story RPG': 'bg-[#be123c] text-[#f9a8d4]', // Hot pink
-	FPS: 'bg-[#b91c1c] text-[#fecaca]', // Scarlet red
-	Action: 'bg-[#7f1d1d] text-[#fecaca]', // Burgundy red
-	'Bullet Hell': 'bg-[#991b1b] text-[#fca5a5]', // Dark red
-	'Hack & Slash': 'bg-[#92400e] text-[#fed7aa]', // Burnt orange
-	Survival: 'bg-[#16a34a] text-[#dcfce7]', // Bright green
-	Strategy: 'bg-[#6366f1] text-[#e0e7ff]', // Bright blue
-	Metroidvania: 'bg-[#4c1d95] text-[#ddd6fe]', // Deep purple
-	Roguelike: 'bg-[#c2410c] text-[#fed7aa]', // Dark orange
-	'Story Horror': 'bg-[#581c87] text-[#d8b4fe]', // Royal purple
-	'Horror RPG': 'bg-[#0d9488] text-[#ccfbf1]' // Bright teal
+	// Each genre gets a completely unique color with maximum visual distinction
+	Platformer: 'bg-[#dc2626] text-white', // Scarlet red
+	'Action Platformer': 'bg-[#7f1d1d] text-white', // Maroon
+	'Puzzle Platformer': 'bg-[#7c3aed] text-white', // Electric purple
+	'Story Platformer': 'bg-[#ea580c] text-white', // Tangerine
+	'Story Adventure': 'bg-[#92400e] text-white', // Sepia
+	'Action Adventure': 'bg-[#0d9488] text-white', // Persian green
+	'Survival Horror': 'bg-[#581c87] text-white', // Eggplant
+	'Story Puzzle': 'bg-[#be185d] text-white', // Ruby
+	Puzzle: 'bg-[#15803d] text-white', // Jungle green
+	'Action RPG': 'bg-[#b91c1c] text-white', // Venetian red
+	'Classic RPG': 'bg-[#7c2d12] text-white', // Peru
+	'Japanese RPG': 'bg-[#0891b2] text-white', // Bondi blue
+	'Sandbox RPG': 'bg-[#4d7c0f] text-white', // Limeade
+	'Story RPG': 'bg-[#be123c] text-white', // Crimson
+	FPS: 'bg-[#991b1b] text-white', // Fire engine red
+	Action: 'bg-[#9a3412] text-white', // Burnt umber
+	'Bullet Hell': 'bg-[#dc143c] text-white', // Cardinal red
+	'Hack & Slash': 'bg-[#c2410c] text-white', // Carrot orange
+	Survival: 'bg-[#166534] text-white', // Evergreen
+	Strategy: 'bg-[#1e40af] text-white', // Cobalt blue
+	Metroidvania: 'bg-[#6b21a8] text-white', // Byzantium
+	Roguelike: 'bg-[#f97316] text-white', // Princeton orange
+	'Story Horror': 'bg-[#4c1d95] text-white', // Indigo
+	'Horror RPG': 'bg-[#0f172a] text-white' // Gunmetal
 };
 
 // Tier color mappings - uses full names as keys (matching display format)

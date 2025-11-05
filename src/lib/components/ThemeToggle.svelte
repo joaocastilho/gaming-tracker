@@ -85,25 +85,24 @@
 		overflow: hidden;
 		outline: none;
 
-		/* Dark mode colors */
-		background-color: rgba(42, 47, 58, 0.6);
+		/* Dark mode colors - match header background */
+		background-color: #0a0d11;
 		color: #8b92a8;
 	}
 
 	.theme-toggle:hover {
 		background-color: rgba(42, 47, 58, 0.8);
 		color: #ffffff;
-		transform: translateY(-1px);
 	}
 
-	/* Light mode overrides */
+	/* Light mode overrides - match header background */
 	:global(.light) .theme-toggle {
-		background-color: rgba(229, 231, 235, 0.6);
+		background-color: #f2ebe1;
 		color: #6b7280;
 	}
 
 	:global(.light) .theme-toggle:hover {
-		background-color: rgba(229, 231, 235, 0.8);
+		background-color: #e9decd;
 		color: #1a1a1a;
 	}
 

@@ -56,6 +56,23 @@
 			}
 		}
 	}
+
+	// Global escape key handler to focus search bar
+	function handleGlobalKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && inputElement) {
+			event.preventDefault();
+			inputElement.focus();
+			inputElement.select();
+		}
+	}
+
+	// Add global escape key listener
+	$effect(() => {
+		document.addEventListener('keydown', handleGlobalKeydown);
+		return () => {
+			document.removeEventListener('keydown', handleGlobalKeydown);
+		};
+	});
 </script>
 
 <div class="search-bar-container">
@@ -83,8 +100,9 @@
 <style>
 	.search-bar-container {
 		width: 100%;
+		max-width: 1000px;
 		padding: 0 16px;
-		margin-bottom: 16px;
+		margin: 0 auto 16px auto;
 	}
 
 	.search-bar {

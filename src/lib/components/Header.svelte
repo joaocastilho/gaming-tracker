@@ -11,8 +11,9 @@
 	});
 </script>
 
-<div class="header-background">
-	<header class="header container mx-auto px-6">
+<header class="header">
+	<div class="header-background"></div>
+	<div class="header-content container mx-auto px-6">
 		<!-- Left section: Logo -->
 		<div class="header-left">
 			<div class="logo">
@@ -27,60 +28,53 @@
 		<div class="header-right">
 			<ThemeToggle />
 		</div>
-	</header>
-</div>
+	</div>
+</header>
 
 <style>
-	.header-background {
-		/* Full width background using pseudo-element */
-		position: relative;
-
+	.header {
 		/* Sticky positioning for the entire header */
 		position: sticky;
 		top: 0;
 		z-index: 40;
 
-		/* Create full-width background with pseudo-element */
+		/* Layout */
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+
+		/* Remove border */
+		border: none;
 	}
 
-	.header-background::before {
-		content: '';
+	.header-background {
+		/* Full width background */
+		width: 100vw;
 		position: absolute;
-		top: 0;
 		left: 50%;
 		right: 50%;
-		width: 100vw;
-		height: 100%;
 		margin-left: -50vw;
 		margin-right: -50vw;
-		z-index: -1;
+		height: 100%;
 
 		/* Dark mode colors */
 		background-color: #0a0d11;
 	}
 
-	:global(.light) .header-background::before {
+	:global(.light) .header-background {
 		background-color: #f2ebe1;
 	}
 
-
-
-	.header {
+	.header-content {
 		/* Layout */
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		height: 60px;
 		width: 100%;
-
-		/* Make background transparent since it's handled by parent */
-		background-color: transparent;
-
-		/* Remove border */
-		border: none;
+		position: relative;
+		z-index: 1;
 	}
-
-
 
 	/* Left section */
 	.header-left {
@@ -108,8 +102,7 @@
 
 	/* Responsive design */
 	@media (max-width: 768px) {
-		.header {
-			padding: 0 16px 0 0;
+		.header-content {
 			height: 56px;
 		}
 
@@ -120,10 +113,6 @@
 	}
 
 	@media (max-width: 480px) {
-		.header {
-			padding: 0 12px 0 0;
-		}
-
 		.header-left {
 			gap: 8px;
 			margin-left: 32px; /* 24px container + 8px search bar */
