@@ -27,6 +27,7 @@
 		tiers: [] as string[]
 	});
 	let currentViewMode = $state('gallery');
+	let currentActiveTab = $state('all');
 
 	// Reactive filter options derived from games store
 	$effect(() => {
@@ -40,6 +41,14 @@
 	$effect(() => {
 		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
 			currentViewMode = viewMode;
+		});
+		return unsubscribe;
+	});
+
+	// Reactive active tab from app store
+	$effect(() => {
+		const unsubscribe = appStore.activeTab.subscribe((activeTab) => {
+			currentActiveTab = activeTab;
 		});
 		return unsubscribe;
 	});
@@ -182,76 +191,71 @@
 </svelte:head>
 
 <div class="bg-background text-foreground min-h-screen">
-	<!-- Header Component -->
 	<Header />
 
-	<!-- Navigation Tabs -->
 	<NavigationTabs />
 
-	<!-- Search & Filter Section (Sticky) -->
 	<section class="filter-section sticky top-[104px] z-30 md:top-[110px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
-			<!-- Search Bar -->
 			<SearchBar />
 
-			<!-- Filter Controls -->
-			<div
-				class="flex flex-nowrap items-center gap-3 overflow-x-auto pb-2 md:flex-wrap md:overflow-x-visible md:pb-0"
-			>
-				<FilterDropdown
-					type="platforms"
-					label="Platforms"
-					options={filterOptions.platforms}
-					selectedOptions={selectedPlatforms}
-				/>
-				<FilterDropdown
-					type="genres"
-					label="Genres"
-					options={filterOptions.genres}
-					selectedOptions={selectedGenres}
-				/>
-				<FilterDropdown
-					type="tiers"
-					label="Tiers"
-					options={filterOptions.tiers}
-					selectedOptions={selectedTiers}
-				/>
-				<RatingsFilter />
-				<button
-					class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
-					title="Reset all filters"
-					onclick={resetFilters}
+			{#if currentActiveTab !== 'tierlist'}
+				<div
+					class="flex flex-nowrap items-center gap-3 overflow-x-auto pb-2 md:flex-wrap md:overflow-x-visible md:pb-0"
 				>
-					↻ Reset
-				</button>
-
-				<div class="ml-auto flex items-center">
+					<FilterDropdown
+						type="platforms"
+						label="Platforms"
+						options={filterOptions.platforms}
+						selectedOptions={selectedPlatforms}
+					/>
+					<FilterDropdown
+						type="genres"
+						label="Genres"
+						options={filterOptions.genres}
+						selectedOptions={selectedGenres}
+					/>
+					<FilterDropdown
+						type="tiers"
+						label="Tiers"
+						options={filterOptions.tiers}
+						selectedOptions={selectedTiers}
+					/>
+					<RatingsFilter />
 					<button
-						class="view-toggle-button flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-						title={currentViewMode === 'gallery'
-							? 'Switch to table view'
-							: 'Switch to gallery view'}
-						onclick={handleViewModeToggle}
+						class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
+						title="Reset all filters"
+						onclick={resetFilters}
 					>
-						{#if currentViewMode === 'gallery'}
-							<List size={18} class="text-gray-600 dark:text-gray-400" />
-						{:else}
-							<Grid3x3 size={18} class="text-gray-600 dark:text-gray-400" />
-						{/if}
+						↻ Reset
 					</button>
+
+					<div class="ml-auto flex items-center">
+						<button
+							class="view-toggle-button flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+							title={currentViewMode === 'gallery'
+								? 'Switch to table view'
+								: 'Switch to gallery view'}
+							onclick={handleViewModeToggle}
+						>
+							{#if currentViewMode === 'gallery'}
+								<List size={18} class="text-gray-600 dark:text-gray-400" />
+							{:else}
+								<Grid3x3 size={18} class="text-gray-600 dark:text-gray-400" />
+							{/if}
+						</button>
+					</div>
 				</div>
-			</div>
+			{/if}
 		</div>
 	</section>
 
-	<!-- Content Area (Scrollable) -->
 	<main style="background-color: var(--color-background);" class="px-6 pt-0 pb-6">
 		<div class="container mx-auto">
 			{@render children?.()}
 		</div>
 	</main>
 
-	<!-- Detail Modal -->
 	<DetailModal />
 </div>
 

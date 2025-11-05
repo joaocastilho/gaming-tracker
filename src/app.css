@@ -4,6 +4,8 @@
 html {
 	font-size: 110%; /* 10% larger than default */
 	font-family:
+		'Cormorant Garamond',
+		'Fira Sans',
 		'Inter',
 		-apple-system,
 		BlinkMacSystemFont,
@@ -17,9 +19,9 @@ html {
 /* Theme Variables - Light Mode (Default) - Pastel Theme */
 :root {
 	/* Background Colors */
-	--color-background: #f0f9ff;
-	--color-surface: #f0fdf4;
-	--color-border: #dcfce7;
+	--color-background: #f2ebe1;
+	--color-surface: #f7f2eb;
+	--color-border: #ede3d3;
 
 	/* Text Colors */
 	--color-text-primary: #1a1a1a;

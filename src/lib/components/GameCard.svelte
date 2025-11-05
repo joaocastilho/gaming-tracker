@@ -11,7 +11,7 @@
 
 	interface Props {
 		game: Game;
-		size?: 'small' | 'large';
+		size?: 'small' | 'large' | 'tiny';
 	}
 
 	let { game, size = 'small' }: Props = $props();
@@ -48,7 +48,7 @@
 	// Dynamic font size calculation for title
 	let titleFontSize = $derived(() => {
 		const title = titleParts().mainTitle;
-		const baseSize = 0.85; // Base font size in rem
+		const baseSize = 1.1; // Base font size in rem
 		const minSize = 0.65; // Minimum font size in rem
 		const maxLength = 25; // Length at which we start reducing font size
 
@@ -90,7 +90,7 @@
 
 <button
 	class="game-card"
-	style="background-color: var(--color-surface); color: var(--color-text-primary); --card-width: {size === 'large' ? '250px' : '300px'}; --cover-height: {size === 'large' ? '375px' : '450px'};"
+	style="background-color: var(--color-surface); color: var(--color-text-primary); --card-width: {size === 'large' ? '250px' : size === 'tiny' ? '200px' : '300px'}; --cover-height: {size === 'large' ? '375px' : size === 'tiny' ? '300px' : '450px'};"
 	onclick={() => modalStore.openViewModal(game)}
 	onkeydown={handleKeyDown}
 	aria-label="View details for {game.title}"
@@ -200,7 +200,7 @@
 		width: var(--card-width, 300px);
 		border-radius: 6px;
 		overflow: hidden;
-		margin-top: 16px;
+		margin-top: 8px;
 
 		/* Shadow */
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -237,7 +237,7 @@
 	}
 
 	:global(.light) .image-placeholder {
-		background: linear-gradient(135deg, #e5e7eb 0%, #f9fafb 100%);
+		background: linear-gradient(135deg, #ede3d3 0%, #f7f2eb 100%);
 	}
 
 	@keyframes pulse {
@@ -309,11 +309,11 @@
 	}
 
 	.game-title {
-		font-weight: 600;
+		font-weight: 500;
 		margin: 0;
 		line-height: 1.2;
 		word-wrap: break-word;
-		height: 40px;
+		height: 45px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -322,8 +322,8 @@
 	}
 
 	.game-subtitle {
-		font-size: 0.85rem;
-		font-weight: 600;
+		font-size: 0.70rem;
+		font-weight: 500;
 		color: #8b92a8;
 		line-height: 1.2;
 	}

@@ -3,6 +3,17 @@ import { replaceState } from '$app/navigation';
 import type { Game } from '../types/game.js';
 import { gamesStore } from './games.js';
 
+// Utility function to create URL-friendly slugs from game titles
+function createGameSlug(title: string): string {
+	return title
+		.toLowerCase()
+		.replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+		.replace(/\s+/g, '-') // Replace spaces with hyphens
+		.replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+		.trim()
+		.replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+}
+
 // TypeScript interfaces for modal state
 export interface ModalState {
 	isOpen: boolean;
@@ -334,9 +345,14 @@ function createModalStore() {
 
 		// URL parameter management for deep linking
 		readFromURL(searchParams: URLSearchParams, games: Game[]) {
-			const gameId = searchParams.get('game');
-			if (gameId) {
-				const game = games.find((g) => g.id === gameId);
+			const gameSlug = searchParams.get('game');
+			if (gameSlug) {
+				// First try to find by exact slug match
+				let game = games.find((g) => createGameSlug(g.title) === gameSlug);
+				// If not found, try to find by ID (for backward compatibility)
+				if (!game) {
+					game = games.find((g) => g.id === gameSlug);
+				}
 				if (game) {
 					modalState.set({
 						isOpen: true,
@@ -358,7 +374,8 @@ function createModalStore() {
 				const url = new URL(window.location.href);
 
 				if (state.isOpen && state.activeGame) {
-					url.searchParams.set('game', state.activeGame.id);
+					const slug = createGameSlug(state.activeGame.title);
+					url.searchParams.set('game', slug);
 				} else {
 					url.searchParams.delete('game');
 				}

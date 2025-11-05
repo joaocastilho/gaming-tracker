@@ -108,6 +108,7 @@
 </script>
 
 <nav class="navigation-tabs" aria-label="Game navigation">
+	<!-- Navigation tabs centered -->
 	<ul class="tabs-list" role="tablist">
 		{#each tabs as tab (tab.id)}
 			<li class="tab-item" role="presentation">
@@ -138,25 +139,25 @@
 	.navigation-tabs {
 		/* Layout */
 		display: flex;
+		align-items: center;
 		justify-content: center;
 		width: 100%;
-		height: 52px;
+		height: 55px;
 		background-color: #0a0d11;
-		padding: 0 24px;
+		padding: 0;
 		border-bottom: 1px solid rgba(42, 47, 58, 0.5);
 
 		/* Positioning */
 		position: sticky;
 		top: 60px; /* Height of header */
-		z-index: 30;
-
-		/* Typography */
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+		z-index: 35; /* Below header (40) but above filter section (30) */
 	}
+
+
 
 	/* Light mode overrides */
 	:global(.light) .navigation-tabs {
-		background-color: #f0f9ff;
+		background-color: #f2ebe1;
 		border-bottom: 1px solid rgba(229, 231, 235, 0.8);
 	}
 
@@ -189,10 +190,10 @@
 		cursor: pointer;
 
 		/* Typography */
-		font-size: 0.9rem;
+		font-size: 1.1rem;
 		font-weight: 500;
 		line-height: 1.2;
-		color: #94a3b8;
+		color: #475569;
 		text-decoration: none;
 
 		/* Border for active state */
@@ -237,7 +238,7 @@
 
 	.tab-count {
 		/* Modern count styling with background */
-		background: rgba(71, 85, 105, 0.6);
+		background: rgba(126, 137, 151, 0.6);
 		color: #cbd5e1;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -269,7 +270,7 @@
 	/* Responsive design */
 	@media (max-width: 768px) {
 		.navigation-tabs {
-			padding: 0 16px;
+			padding: 0;
 			height: 48px; /* Slightly smaller on mobile */
 			top: 56px; /* Adjust for smaller header */
 		}
@@ -301,7 +302,7 @@
 
 	@media (max-width: 480px) {
 		.navigation-tabs {
-			padding: 0 12px;
+			padding: 0;
 		}
 
 		.tab-button {

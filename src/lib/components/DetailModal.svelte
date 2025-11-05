@@ -17,7 +17,8 @@
 		Trophy,
 		X,
 		ChevronLeft,
-		ChevronRight
+		ChevronRight,
+		Share2
 	} from 'lucide-svelte';
 
 	let modalState = $state(modalStore.getState());
@@ -143,6 +144,27 @@
 		return 'bg-gradient-to-r from-[#D32F2F] to-[#F44336]'; // Deep Red
 	}
 
+	async function shareGame() {
+		if (!browser || !modalState.activeGame) return;
+
+		try {
+			const url = new URL(window.location.href);
+			// Create a slug from the game title for the URL
+			const slug = modalState.activeGame.title
+				.toLowerCase()
+				.replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+				.replace(/\s+/g, '-') // Replace spaces with hyphens
+				.replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+				.trim()
+				.replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+			url.searchParams.set('game', slug);
+
+			await navigator.clipboard.writeText(url.toString());
+		} catch (error) {
+			console.warn('Failed to copy to clipboard:', error);
+		}
+	}
+
 	onMount(() => {
 		if (browser) {
 			document.addEventListener('keydown', handleKeydown);
@@ -160,7 +182,7 @@
 	<!-- Modal Overlay -->
 	<div
 		bind:this={modalElement}
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-1 backdrop-blur-[1px]"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-1 backdrop-blur-[8px]"
 		onclick={handleOverlayClick}
 		onkeydown={handleOverlayKeydown}
 		role="dialog"
@@ -190,6 +212,15 @@
 			</button>
 		{/if}
 
+		<!-- Share Button -->
+		<button
+			onclick={shareGame}
+			class="absolute top-4 right-16 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm border border-gray-300 shadow-lg transition-all hover:scale-110 hover:bg-white dark:bg-gray-800/90 dark:border-gray-600 dark:hover:bg-gray-700"
+			aria-label="Share game"
+		>
+			<Share2 size={18} class="text-gray-700 dark:text-gray-200" />
+		</button>
+
 		<!-- Close Button -->
 		<button
 			onclick={() => modalStore.closeModal()}
@@ -201,7 +232,8 @@
 
 		<!-- Modal Content -->
 		<div
-			class="relative h-[600px] w-full max-w-4xl rounded-xl bg-white shadow-2xl dark:bg-gray-900"
+			class="relative h-[600px] w-full max-w-4xl rounded-xl shadow-2xl"
+			style="background-color: var(--color-surface);"
 		>
 			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
 				<!-- Cover Section -->
@@ -231,15 +263,15 @@
 					<!-- Title -->
 					<h1
 						id="modal-title"
-						class="flex flex-col justify-center text-3xl font-bold text-gray-900 dark:text-white"
-						style="height: 65px; margin-bottom: 15px;"
+						class="flex flex-col justify-center text-3xl font-bold"
+						style="height: 65px; margin-bottom: 15px; color: var(--color-text-primary);"
 					>
 						{titleParts().mainTitle}
 						{#if titleParts().subtitle}
 							<br />
 							<span
-								class="font-semibold text-gray-700 dark:text-gray-300"
-								style="font-size: 1.2rem; line-height: 1.2;">{titleParts().subtitle}</span
+								class="font-semibold"
+								style="font-size: 1.2rem; line-height: 1.2; color: var(--color-text-secondary);">{titleParts().subtitle}</span
 							>
 						{/if}
 					</h1>
@@ -283,35 +315,35 @@
 					<!-- Detail Grid -->
 					<div class="mb-8 grid grid-cols-2 gap-4">
 						<div>
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Year Released</div>
-							<div class="font-semibold text-gray-900 dark:text-white">
+							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Year Released</div>
+							<div class="font-semibold" style="color: var(--color-text-primary);">
 								{modalState.activeGame.year}
 							</div>
 						</div>
 						{#if modalState.activeGame.status === 'Completed'}
 							<div>
-								<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Hours Played</div>
-								<div class="font-semibold text-gray-900 dark:text-white">
+								<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Hours Played</div>
+								<div class="font-semibold" style="color: var(--color-text-primary);">
 									{modalState.activeGame.hoursPlayed || 'Not completed'}
 								</div>
 							</div>
 						{:else}
 							<div>
-								<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Time to Beat</div>
-								<div class="font-semibold text-gray-900 dark:text-white">
+								<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Time to Beat</div>
+								<div class="font-semibold" style="color: var(--color-text-primary);">
 									{modalState.activeGame.timeToBeat}
 								</div>
 							</div>
 						{/if}
 						<div>
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Finished Date</div>
-							<div class="font-semibold text-gray-900 dark:text-white">
+							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Finished Date</div>
+							<div class="font-semibold" style="color: var(--color-text-primary);">
 								{formatDate(modalState.activeGame.finishedDate)}
 							</div>
 						</div>
 						<div>
-							<div class="mb-1 text-sm text-gray-500 dark:text-gray-400">Co-op</div>
-							<div class="font-semibold text-gray-900 dark:text-white">
+							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Co-op</div>
+							<div class="font-semibold" style="color: var(--color-text-primary);">
 								{modalState.activeGame.coOp === 'Yes' ? 'Yes' : 'No'}
 							</div>
 						</div>
@@ -320,17 +352,17 @@
 					<!-- Ratings Section -->
 					{#if modalState.activeGame.status === 'Completed' && modalState.activeGame.ratingPresentation !== null && modalState.activeGame.ratingStory !== null && modalState.activeGame.ratingGameplay !== null}
 						<div class="space-y-4">
-							<h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Ratings</h3>
+							<h3 class="mb-4 text-xl font-semibold" style="color: var(--color-text-primary);">Ratings</h3>
 
 							<!-- Presentation Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
-									<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);"
 										>Presentation</span
 									>
 								</div>
-								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
 									{modalState.activeGame.ratingPresentation}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -347,9 +379,9 @@
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
-									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Story</span>
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);">Story</span>
 								</div>
-								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
 									{modalState.activeGame.ratingStory}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -366,9 +398,9 @@
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
-									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Gameplay</span>
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);">Gameplay</span>
 								</div>
-								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
 									{modalState.activeGame.ratingGameplay}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -384,11 +416,11 @@
 							<!-- Total Score -->
 							{#if modalState.activeGame.score !== null}
 								<div
-									class="mt-6 rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4 dark:border-blue-800 dark:from-blue-900/20 dark:to-purple-900/20"
+									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
 								>
 									<div class="flex items-center justify-center gap-2">
 										<Trophy size={24} class="text-yellow-500" />
-										<span class="text-lg font-bold text-gray-900 dark:text-white">
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);">
 											Total Score: {modalState.activeGame.score}/20
 										</span>
 									</div>
@@ -397,17 +429,17 @@
 						</div>
 					{:else}
 						<div class="space-y-4">
-							<h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Ratings</h3>
+							<h3 class="mb-4 text-xl font-semibold" style="color: var(--color-text-primary);">Ratings</h3>
 
 							<!-- Placeholder Presentation Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
-									<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);"
 										>Presentation</span
 									>
 								</div>
-								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -422,9 +454,9 @@
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
-									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Story</span>
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);">Story</span>
 								</div>
-								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -439,9 +471,9 @@
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
-									<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Gameplay</span>
+									<span class="text-sm font-medium" style="color: var(--color-text-secondary);">Gameplay</span>
 								</div>
-								<span class="min-w-0 text-sm font-semibold text-gray-900 dark:text-white">
+								<span class="min-w-0 text-sm font-semibold" style="color: var(--color-text-primary);">
 									Not rated
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -454,11 +486,11 @@
 
 							<!-- Placeholder Total Score -->
 							<div
-								class="mt-6 rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-50 p-4 dark:border-gray-700 dark:from-gray-800/20 dark:to-gray-800/20"
+								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 dark:border-gray-700"
 							>
 								<div class="flex items-center justify-center gap-2">
 									<Trophy size={24} class="text-gray-400" />
-									<span class="text-lg font-bold text-gray-900 dark:text-white">
+									<span class="text-lg font-bold" style="color: var(--color-text-primary);">
 										Game to be completed
 									</span>
 								</div>

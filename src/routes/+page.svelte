@@ -172,10 +172,28 @@
 			.replace(/\s+/g, '-')
 			.replace(/[^a-z0-9-]/g, '');
 	}
+
+	// Get tier background color
+	function getTierBackgroundColor(tier: string): string {
+		switch (tier) {
+			case 'S - Masterpiece': return '#dc2626';
+			case 'A - Amazing': return '#f97316';
+			case 'B - Great': return '#eab308';
+			case 'C - Good': return '#22c55e';
+			case 'D - Decent': return '#06b6d4';
+			case 'E - Bad': return '#6b7280';
+			default: return '#6b7280';
+		}
+	}
+
+	// Get tier text color
+	function getTierTextColor(tier: string): string {
+		return 'white';
+	}
 </script>
 
 <svelte:head>
-	<title>Gaming Tracker - All Games</title>
+	<title>Gaming Tracker</title>
 </svelte:head>
 
 <div class="main-content" id="main-content">
@@ -193,7 +211,7 @@
 		{:else if currentViewMode === 'gallery'}
 			<!-- Gallery View -->
 			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
+				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] pt-6"
 			>
 				{#each completedGames as game (game.id)}
 					<GameCard {game} size="small" />
@@ -217,7 +235,7 @@
 		{:else if currentViewMode === 'gallery'}
 			<!-- Gallery View -->
 			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
+				class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] pt-6"
 			>
 				{#each plannedGames as game (game.id)}
 					<GameCard {game} size="small" />
@@ -245,17 +263,16 @@
 				{#each Object.entries(tierList) as [tier, games] (tier)}
 					{#if games.length > 0}
 						<div class="tier-section">
-							<h3 class="tier-header tier-{getTierClass(tier)}">
-								Tier {tier}
-								<span class="tier-count">({games.length})</span>
+							<h3 class="tier-header" style="background-color: {getTierBackgroundColor(tier)} !important; color: {getTierTextColor(tier)} !important;">
+								{tier}
+								<span class="tier-count" style="color: {getTierTextColor(tier)} !important;">{games.length} {games.length === 1 ? 'game' : 'games'}</span>
 							</h3>
 							{#if currentViewMode === 'gallery'}
-								<!-- Gallery View - Larger cards for tier list -->
 								<div
-									class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+									class="grid max-w-full grid-cols-2 justify-items-center gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 4xl:grid-cols-9"
 								>
 									{#each games as game (game.id)}
-										<GameCard {game} size="large" />
+										<GameCard {game} size="tiny" />
 									{/each}
 								</div>
 							{:else}
@@ -287,7 +304,7 @@
 	{:else if currentViewMode === 'gallery'}
 		<!-- Gallery View -->
 		<div
-			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
+			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] pt-6"
 		>
 			{#each allGames as game (game.id)}
 				<GameCard {game} size="small" />
@@ -306,7 +323,6 @@
 
 <style>
 	.main-content {
-		padding: 0 1.5rem;
 		min-height: calc(100vh - 140px); /* Account for header and navigation */
 	}
 
@@ -362,125 +378,5 @@
 		opacity: 0.8;
 	}
 
-	/* Tier Colors */
-	.tier-s-masterpiece {
-		background: linear-gradient(135deg, #fbbf24, #f59e0b);
-		color: #92400e;
-	}
 
-	.tier-s-masterpiece .tier-count {
-		color: #92400e;
-		opacity: 0.9;
-	}
-
-	.tier-a-amazing {
-		background: linear-gradient(135deg, #34d399, #10b981);
-		color: #064e3b;
-	}
-
-	.tier-a-amazing .tier-count {
-		color: #064e3b;
-		opacity: 0.9;
-	}
-
-	.tier-b-great {
-		background: linear-gradient(135deg, #60a5fa, #3b82f6);
-		color: #1e3a8a;
-	}
-
-	.tier-b-great .tier-count {
-		color: #1e3a8a;
-		opacity: 0.9;
-	}
-
-	.tier-c-good {
-		background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-		color: #581c87;
-	}
-
-	.tier-c-good .tier-count {
-		color: #581c87;
-		opacity: 0.9;
-	}
-
-	.tier-d-decent {
-		background: linear-gradient(135deg, #f87171, #ef4444);
-		color: #991b1b;
-	}
-
-	.tier-d-decent .tier-count {
-		color: #991b1b;
-		opacity: 0.9;
-	}
-
-	.tier-e-bad {
-		background: linear-gradient(135deg, #94a3b8, #64748b);
-		color: #334155;
-	}
-
-	.tier-e-bad .tier-count {
-		color: #334155;
-		opacity: 0.9;
-	}
-
-	/* Light mode tier colors */
-	:global(.light) .tier-s-masterpiece {
-		background: linear-gradient(135deg, #fef3c7, #fde68a);
-		color: #92400e;
-	}
-
-	:global(.light) .tier-s-masterpiece .tier-count {
-		color: #92400e;
-		opacity: 0.9;
-	}
-
-	:global(.light) .tier-a-amazing {
-		background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-		color: #064e3b;
-	}
-
-	:global(.light) .tier-a-amazing .tier-count {
-		color: #064e3b;
-		opacity: 0.9;
-	}
-
-	:global(.light) .tier-b-great {
-		background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-		color: #1e3a8a;
-	}
-
-	:global(.light) .tier-b-great .tier-count {
-		color: #1e3a8a;
-		opacity: 0.9;
-	}
-
-	:global(.light) .tier-c-good {
-		background: linear-gradient(135deg, #e9d5ff, #d8b4fe);
-		color: #581c87;
-	}
-
-	:global(.light) .tier-c-good .tier-count {
-		color: #581c87;
-		opacity: 0.9;
-	}
-
-	:global(.light) .tier-d-decent {
-		background: linear-gradient(135deg, #fee2e2, #fecaca);
-		color: #991b1b;
-	}
-
-	:global(.light) .tier-d-decent .tier-count {
-		color: #991b1b;
-		opacity: 0.9;
-	}
-
-	:global(.light) .tier-e-bad {
-		background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-		color: #334155;
-	}
-
-	:global(.light) .tier-e-bad .tier-count {
-		color: #334155;
-		opacity: 0.9;
-	}
 </style>

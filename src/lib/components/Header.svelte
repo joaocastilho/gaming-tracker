@@ -56,7 +56,7 @@
 
 	/* Light mode overrides */
 	:global(.light) .header {
-		background-color: #f0f9ff;
+		background-color: #f2ebe1;
 		color: #1a1a1a;
 	}
 
@@ -81,12 +81,7 @@
 		object-fit: contain;
 	}
 
-	/* Right section */
-	.header-right {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-	}
+
 
 	/* Responsive design */
 	@media (max-width: 768px) {
@@ -95,8 +90,7 @@
 			height: 56px;
 		}
 
-		.header-left,
-		.header-right {
+		.header-left {
 			gap: 12px;
 		}
 	}
@@ -106,8 +100,7 @@
 			padding: 0 12px;
 		}
 
-		.header-left,
-		.header-right {
+		.header-left {
 			gap: 8px;
 		}
 	}
