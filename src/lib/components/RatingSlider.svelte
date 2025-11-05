@@ -94,9 +94,30 @@
 			max: currentMax
 		};
 	}
+
+	// Get color based on rating value (using tier color scheme)
+	function getRatingColor(value: number): string {
+		if (maxLimit === 20) {
+			// For total score (0-20), map to tier colors
+			if (value >= 18) return '#dc2626'; // S - Red
+			if (value >= 16) return '#f97316'; // A - Orange
+			if (value >= 14) return '#eab308'; // B - Yellow
+			if (value >= 12) return '#22c55e'; // C - Green
+			if (value >= 10) return '#06b6d4'; // D - Cyan
+			return '#6b7280'; // E - Gray
+		} else {
+			// For individual ratings (0-10), map to tier colors
+			if (value >= 9) return '#dc2626'; // S - Red
+			if (value >= 8) return '#f97316'; // A - Orange
+			if (value >= 7) return '#eab308'; // B - Yellow
+			if (value >= 6) return '#22c55e'; // C - Green
+			if (value >= 5) return '#06b6d4'; // D - Cyan
+			return '#6b7280'; // E - Gray
+		}
+	}
 </script>
 
-<div class="rating-slider">
+<div class="rating-slider" style="--min-color: {getRatingColor(currentMin)}; --max-color: {getRatingColor(currentMax)}">
 	<div class="slider-header">
 		<span class="slider-label">{label}</span>
 		{#if !isDefaultRange()}
@@ -112,52 +133,53 @@
 		{/if}
 	</div>
 
-	<div
-		class="slider-container"
-		style="--min-percent: {getMinPercentage()}%; --max-percent: {getMaxPercentage()}%"
-	>
-		<!-- Track background with fill -->
-		<div class="slider-track">
-			<div
-				class="slider-fill"
-				style="left: {getMinPercentage()}%; width: {getMaxPercentage() - getMinPercentage()}%"
-			></div>
+	<div class="slider-container">
+		<!-- Dual-range slider -->
+		<div class="dual-slider-row">
+			<!-- Track background -->
+			<div class="slider-track">
+				<div
+					class="slider-fill"
+					style="left: {getMinPercentage()}%; width: {getMaxPercentage() - getMinPercentage()}%"
+				></div>
+			</div>
+
+			<!-- Min slider -->
+			<input
+				type="range"
+				class="slider-thumb slider-thumb-min"
+				min={minLimit}
+				max={maxLimit}
+				{step}
+				value={currentMin}
+				oninput={handleMinInput}
+				{disabled}
+				aria-label="Minimum {label.toLowerCase()} rating"
+			/>
+
+			<!-- Max slider -->
+			<input
+				type="range"
+				class="slider-thumb slider-thumb-max"
+				min={minLimit}
+				max={maxLimit}
+				{step}
+				value={currentMax}
+				oninput={handleMaxInput}
+				{disabled}
+				aria-label="Maximum {label.toLowerCase()} rating"
+			/>
 		</div>
 
-		<!-- Min slider -->
-		<input
-			type="range"
-			class="slider-thumb slider-thumb-min"
-			min={minLimit}
-			max={maxLimit}
-			{step}
-			value={currentMin}
-			oninput={handleMinInput}
-			{disabled}
-			aria-label="Minimum {label.toLowerCase()} rating"
-			style="left: {getMinPercentage()}%"
-		/>
-
-		<!-- Max slider -->
-		<input
-			type="range"
-			class="slider-thumb slider-thumb-max"
-			min={minLimit}
-			max={maxLimit}
-			{step}
-			value={currentMax}
-			oninput={handleMaxInput}
-			{disabled}
-			aria-label="Maximum {label.toLowerCase()} rating"
-			style="left: {getMaxPercentage()}%"
-		/>
+		<!-- Value display -->
+		<div class="slider-values">
+			<span class="value-display min-value" style="color: {getRatingColor(currentMin)}">{currentMin}</span>
+			<span class="range-indicator">–</span>
+			<span class="value-display max-value" style="color: {getRatingColor(currentMax)}">{currentMax}</span>
+		</div>
 	</div>
 
-	<div class="slider-values">
-		<span class="value-display min-value">{getDisplayValues().min}</span>
-		<span class="range-indicator">–</span>
-		<span class="value-display max-value">{getDisplayValues().max}</span>
-	</div>
+
 </div>
 
 <style>
@@ -201,10 +223,178 @@
 	}
 
 	.slider-container {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.dual-slider-row {
 		position: relative;
-		height: 32px;
+		height: 40px;
 		display: flex;
 		align-items: center;
+	}
+
+	.slider-track {
+		position: absolute;
+		top: 50%;
+		left: 0;
+		right: 0;
+		height: 8px;
+		background: linear-gradient(to right,
+			#6b7280 0%,   /* E - Gray */
+			#06b6d4 20%,  /* D - Cyan */
+			#22c55e 40%,  /* C - Green */
+			#eab308 60%,  /* B - Yellow */
+			#f97316 80%,  /* A - Orange */
+			#dc2626 100%  /* S - Red */
+		);
+		border-radius: 4px;
+		border: 1px solid var(--color-border);
+		transform: translateY(-50%);
+	}
+
+	.slider-fill {
+		position: absolute;
+		top: 50%;
+		height: 8px;
+		background-color: rgba(59, 130, 246, 0.3);
+		border-radius: 4px;
+		transform: translateY(-50%);
+		transition: left 0.1s ease, width 0.1s ease;
+		pointer-events: none;
+	}
+
+	.slider-thumb {
+		position: absolute;
+		width: 100%;
+		height: 40px;
+		opacity: 0;
+		cursor: pointer;
+		margin: 0;
+		padding: 0;
+	}
+
+	.slider-thumb-min::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 20px;
+		height: 20px;
+		background-color: var(--min-color);
+		border: 2px solid var(--background);
+		border-radius: 50%;
+		cursor: pointer;
+		box-shadow: 0 0 0 0 var(--min-color);
+		transition: all 0.2s ease;
+		opacity: 0.9;
+		z-index: 3;
+	}
+
+	.slider-thumb-min::-webkit-slider-thumb:hover {
+		box-shadow: 0 0 0 6px var(--min-color);
+		transform: scale(1.1);
+		opacity: 1;
+	}
+
+	.slider-thumb-min::-webkit-slider-thumb:active {
+		box-shadow: 0 0 0 8px var(--min-color);
+		transform: scale(1.2);
+		opacity: 1;
+	}
+
+	.slider-thumb-max::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 20px;
+		height: 20px;
+		background-color: var(--max-color);
+		border: 2px solid var(--background);
+		border-radius: 50%;
+		cursor: pointer;
+		box-shadow: 0 0 0 0 var(--max-color);
+		transition: all 0.2s ease;
+		opacity: 0.9;
+		z-index: 4;
+	}
+
+	.slider-thumb-max::-webkit-slider-thumb:hover {
+		box-shadow: 0 0 0 6px var(--max-color);
+		transform: scale(1.1);
+		opacity: 1;
+	}
+
+	.slider-thumb-max::-webkit-slider-thumb:active {
+		box-shadow: 0 0 0 8px var(--max-color);
+		transform: scale(1.2);
+		opacity: 1;
+	}
+
+	/* Hide the default track for both sliders */
+	.slider-thumb-min::-webkit-slider-track,
+	.slider-thumb-max::-webkit-slider-track {
+		background: transparent;
+		height: 8px;
+		border: none;
+	}
+
+	.slider-input::-moz-range-track {
+		width: 100%;
+		height: 4px;
+		background-color: #374151;
+		border-radius: 2px;
+		border: none;
+	}
+
+	:global(.light) .slider-input::-moz-range-track {
+		background-color: #d1d5db;
+	}
+
+	.slider-input::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		background-color: #3b82f6;
+		border: 2px solid var(--background);
+		border-radius: 50%;
+		cursor: pointer;
+		border: none;
+		box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2);
+		transition: box-shadow 0.2s ease;
+	}
+
+	.slider-input::-moz-range-thumb:hover {
+		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+	}
+
+	.slider-input::-moz-range-thumb:active {
+		box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.3);
+	}
+
+	.slider-input:disabled {
+		cursor: not-allowed;
+	}
+
+	.slider-input:disabled::-webkit-slider-thumb {
+		background-color: #6b7280;
+		cursor: not-allowed;
+		box-shadow: none;
+	}
+
+	.slider-input:disabled::-moz-range-thumb {
+		background-color: #6b7280;
+		cursor: not-allowed;
+		box-shadow: none;
+	}
+
+	.slider-value {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+		min-width: 20px;
+		text-align: center;
+		background-color: var(--color-surface);
+		padding: 2px 6px;
+		border-radius: 4px;
+		border: 1px solid var(--color-border);
 	}
 
 	.slider-track {
@@ -224,10 +414,11 @@
 
 	.slider-fill {
 		position: absolute;
-		top: 0;
-		height: 100%;
+		top: 50%;
+		height: 4px;
 		background-color: #3b82f6;
 		border-radius: 2px;
+		transform: translateY(-50%);
 		transition:
 			left 0.1s ease,
 			width 0.1s ease;
@@ -235,42 +426,15 @@
 
 	.slider-thumb {
 		position: absolute;
-		width: 16px;
-		height: 16px;
-		background-color: #3b82f6;
-		border: 2px solid var(--background);
-		border-radius: 50%;
+		width: 100%;
+		height: 20px;
+		opacity: 0;
 		cursor: pointer;
-		appearance: none;
-		-webkit-appearance: none;
-		transition:
-			box-shadow 0.2s ease,
-			background-color 0.2s ease;
-		z-index: 10;
+		margin: 0;
+		padding: 0;
 	}
 
-	.slider-thumb:hover:not(:disabled) {
-		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
-	}
-
-	.slider-thumb:active:not(:disabled) {
-		box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.3);
-	}
-
-	.slider-thumb:disabled {
-		background-color: #6b7280;
-		cursor: not-allowed;
-		box-shadow: none;
-	}
-
-	.slider-thumb:focus {
-		outline: none;
-		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
-	}
-
-	/* Position thumbs using inline styles */
-
-	/* Hide default range slider appearance */
+	/* Custom thumb styling */
 	.slider-thumb::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		appearance: none;
@@ -280,6 +444,21 @@
 		border: 2px solid var(--background);
 		border-radius: 50%;
 		cursor: pointer;
+		box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2);
+		transition: box-shadow 0.2s ease;
+	}
+
+	.slider-thumb::-webkit-slider-thumb:hover {
+		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+	}
+
+	.slider-thumb::-webkit-slider-thumb:active {
+		box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.3);
+	}
+
+	.slider-thumb::-webkit-slider-track {
+		background: transparent;
+		height: 4px;
 	}
 
 	.slider-thumb::-moz-range-thumb {
@@ -290,15 +469,38 @@
 		border-radius: 50%;
 		cursor: pointer;
 		border: none;
+		box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2);
+		transition: box-shadow 0.2s ease;
 	}
 
-	.slider-thumb::-webkit-slider-track {
-		background: transparent;
+	.slider-thumb::-moz-range-thumb:hover {
+		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+	}
+
+	.slider-thumb::-moz-range-thumb:active {
+		box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.3);
 	}
 
 	.slider-thumb::-moz-range-track {
 		background: transparent;
+		height: 4px;
 		border: none;
+	}
+
+	.slider-thumb:disabled {
+		cursor: not-allowed;
+	}
+
+	.slider-thumb:disabled::-webkit-slider-thumb {
+		background-color: #6b7280;
+		cursor: not-allowed;
+		box-shadow: none;
+	}
+
+	.slider-thumb:disabled::-moz-range-thumb {
+		background-color: #6b7280;
+		cursor: not-allowed;
+		box-shadow: none;
 	}
 
 	.slider-values {

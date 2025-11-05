@@ -233,20 +233,72 @@
 		position: absolute;
 		inset: 0;
 		background: linear-gradient(135deg, #2a2d3a 0%, #1a1f27 100%);
-		animation: pulse 1.5s ease-in-out infinite;
+		animation-name: strongPulse;
+		animation-duration: 1.5s;
+		animation-timing-function: ease-in-out;
+		animation-iteration-count: infinite;
+		animation-fill-mode: forwards;
+		overflow: hidden;
+	}
+
+	.image-placeholder::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(255, 255, 255, 0.1) 50%,
+			transparent 100%
+		);
+		animation: shimmer 2s ease-in-out infinite;
 	}
 
 	:global(.light) .image-placeholder {
 		background: linear-gradient(135deg, #ede3d3 0%, #f7f2eb 100%);
 	}
 
-	@keyframes pulse {
-		0%,
-		100% {
+	:global(.light) .image-placeholder::before {
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(0, 0, 0, 0.08) 50%,
+			transparent 100%
+		);
+	}
+
+	@keyframes strongPulse {
+		0% {
 			opacity: 1;
+			transform: scale(1);
+		}
+		25% {
+			opacity: 0.7;
+			transform: scale(1.01);
 		}
 		50% {
+			opacity: 0.4;
+			transform: scale(1.02);
+		}
+		75% {
 			opacity: 0.7;
+			transform: scale(1.01);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	@keyframes shimmer {
+		0% {
+			left: -100%;
+		}
+		100% {
+			left: 100%;
 		}
 	}
 

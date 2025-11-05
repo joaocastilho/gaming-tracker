@@ -200,50 +200,50 @@
 			<SearchBar />
 
 			{#if currentActiveTab !== 'tierlist'}
-				<div
-					class="flex flex-nowrap items-center gap-3 overflow-x-auto pb-2 md:flex-wrap md:overflow-x-visible md:pb-0"
-				>
-					<FilterDropdown
-						type="platforms"
-						label="Platforms"
-						options={filterOptions.platforms}
-						selectedOptions={selectedPlatforms}
-					/>
-					<FilterDropdown
-						type="genres"
-						label="Genres"
-						options={filterOptions.genres}
-						selectedOptions={selectedGenres}
-					/>
-					<FilterDropdown
-						type="tiers"
-						label="Tiers"
-						options={filterOptions.tiers}
-						selectedOptions={selectedTiers}
-					/>
-					<RatingsFilter />
-					<button
-						class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
-						title="Reset all filters"
-						onclick={resetFilters}
-					>
-						↻ Reset
-					</button>
-
-					<div class="ml-auto flex items-center">
+				<div class="flex flex-col items-center gap-4">
+					<div class="flex flex-wrap items-center justify-center gap-3">
+						<FilterDropdown
+							type="platforms"
+							label="Platforms"
+							options={filterOptions.platforms}
+							selectedOptions={selectedPlatforms}
+						/>
+						<FilterDropdown
+							type="genres"
+							label="Genres"
+							options={filterOptions.genres}
+							selectedOptions={selectedGenres}
+						/>
+						<FilterDropdown
+							type="tiers"
+							label="Tiers"
+							options={filterOptions.tiers}
+							selectedOptions={selectedTiers}
+						/>
+						<RatingsFilter />
 						<button
-							class="view-toggle-button flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-							title={currentViewMode === 'gallery'
-								? 'Switch to table view'
-								: 'Switch to gallery view'}
-							onclick={handleViewModeToggle}
+							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
+							title="Reset all filters"
+							onclick={resetFilters}
 						>
-							{#if currentViewMode === 'gallery'}
-								<List size={18} class="text-gray-600 dark:text-gray-400" />
-							{:else}
-								<Grid3x3 size={18} class="text-gray-600 dark:text-gray-400" />
-							{/if}
+							↻ Reset
 						</button>
+
+						<div class="view-toggle-container">
+							<button
+								class="view-toggle-button flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+								title={currentViewMode === 'gallery'
+									? 'Switch to table view'
+									: 'Switch to gallery view'}
+								onclick={handleViewModeToggle}
+							>
+								{#if currentViewMode === 'gallery'}
+									<List size={18} class="text-gray-600 dark:text-gray-400" />
+								{:else}
+									<Grid3x3 size={18} class="text-gray-600 dark:text-gray-400" />
+								{/if}
+							</button>
+						</div>
 					</div>
 				</div>
 			{/if}

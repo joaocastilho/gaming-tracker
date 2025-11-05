@@ -2,6 +2,7 @@
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions.js';
 	import { getTierDisplayName } from '$lib/utils/colorConstants.js';
+	import { Monitor, Tag, Trophy } from 'lucide-svelte';
 
 	interface Props {
 		type: 'platforms' | 'genres' | 'tiers';
@@ -18,7 +19,14 @@
 
 	// Handle clicks outside to close dropdown
 	function handleClickOutside(event: MouseEvent) {
-		if (dropdownElement && !dropdownElement.contains(event.target as Node)) {
+		// Don't close if clicking on the dropdown content
+		const target = event.target as Node;
+		const dropdown = document.querySelector('.filter-options-dropdown');
+		if (dropdown && dropdown.contains(target)) {
+			return;
+		}
+
+		if (dropdownElement && !dropdownElement.contains(target)) {
 			isOpen = false;
 		}
 	}
@@ -115,25 +123,44 @@
 <div class="filter-dropdown" bind:this={dropdownElement}>
 	<button
 		type="button"
-		class="filter-button {getButtonColorClasses()} flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs font-medium transition-colors"
+		class="filter-button {getButtonColorClasses()} flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
 		class:selected={selectedOptions.length > 0}
 		onclick={() => (isOpen = !isOpen)}
 		onkeydown={handleKeydown}
 		{...getAriaAttributes()}
 	>
-		{getDisplayText()}
-		<span class="dropdown-arrow" class:rotated={isOpen} aria-hidden="true">▼</span>
+		{#if type === 'platforms'}
+			<Monitor size={16} class="text-gray-600 dark:text-gray-400" />
+		{:else if type === 'genres'}
+			<Tag size={16} class="text-gray-600 dark:text-gray-400" />
+		{:else if type === 'tiers'}
+			<Trophy size={16} class="text-gray-600 dark:text-gray-400" />
+		{/if}
+		<span class="filter-label">Filter by {label}</span>
+		{#if selectedOptions.length > 0}
+			<span class="selected-count bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full">
+				{selectedOptions.length}
+			</span>
+		{/if}
 	</button>
 
 	{#if isOpen}
-		<div class="dropdown-panel rounded-md border shadow-lg">
-			<!-- Header -->
-			<div class="dropdown-header border-border border-b px-3 py-2">
-				<div class="flex items-center justify-between">
-					<span class="text-foreground text-sm font-medium">
-						Filter by {label.toLowerCase()}
-					</span>
-					{#if selectedOptions.length > 0}
+		<div class="filter-options-dropdown">
+			<div class="filter-options-section">
+				<div class="filter-options-grid">
+					{#each options as option (option)}
+						<button
+							type="button"
+							class="filter-option-item {getOptionColor(option)} {selectedOptions.includes(option) ? 'selected' : ''}"
+							onclick={() => toggleOption(option)}
+						>
+							{type === 'tiers' ? getTierDisplayName(option) : option}
+						</button>
+					{/each}
+				</div>
+
+				{#if selectedOptions.length > 0}
+					<div class="filter-actions mt-3 flex justify-center">
 						<button
 							type="button"
 							class="text-xs text-blue-400 transition-colors hover:text-blue-300"
@@ -141,32 +168,11 @@
 						>
 							Clear all
 						</button>
-					{/if}
-				</div>
-			</div>
-
-			<!-- Options List -->
-			<div class="dropdown-options max-h-60 overflow-y-auto py-1">
-				{#each options as option (option)}
-					<label
-						class="option-item hover:bg-accent hover:text-accent-foreground flex items-center gap-3 px-3 py-2 transition-colors"
-					>
-						<input
-							type="checkbox"
-							class="option-checkbox border-border h-4 w-4 rounded text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
-							checked={selectedOptions.includes(option)}
-							onchange={() => toggleOption(option)}
-						/>
-						<span
-							class="option-badge {getOptionColor(option)} rounded px-2 py-1 text-xs font-medium"
-						>
-							{type === 'tiers' ? getTierDisplayName(option) : option}
-						</span>
-					</label>
-				{/each}
+					</div>
+				{/if}
 
 				{#if options.length === 0}
-					<div class="empty-state px-3 py-4 text-center">
+					<div class="empty-state text-center py-2">
 						<span class="text-muted-foreground text-sm">
 							No {label.toLowerCase()} available
 						</span>
@@ -186,22 +192,27 @@
 	.filter-button {
 		display: flex;
 		align-items: center;
-		gap: 4px;
-		white-space: nowrap;
 		color: var(--color-text-primary);
+		min-height: 44px;
 	}
 
 	.filter-button.selected {
 		font-weight: 500;
 	}
 
-	.dropdown-arrow {
-		font-size: 0.7rem;
-		transition: transform 0.2s ease;
+	.filter-label {
+		font-size: 0.875rem;
+		font-weight: 500;
 	}
 
-	.dropdown-arrow.rotated {
-		transform: rotate(180deg);
+	.selected-count {
+		font-size: 0.75rem;
+		font-weight: 600;
+		min-width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.dropdown-panel {
@@ -309,6 +320,61 @@
 		}
 	}
 
+	/* Dropdown positioning for filter options */
+	.filter-options-dropdown {
+		position: absolute;
+		top: calc(100% + 8px);
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 1000;
+		min-width: 300px;
+		max-width: 90vw;
+	}
+
+	/* New filter options section styles */
+	.filter-options-section {
+		background-color: var(--color-background);
+		border: 1px solid var(--color-border);
+		border-radius: 0.5rem;
+		padding: 1rem;
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+	}
+
+	.filter-options-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		justify-content: center;
+	}
+
+	.filter-option-item {
+		padding: 0.5rem 0.75rem;
+		border-radius: 0.375rem;
+		transition: all 0.15s ease;
+		cursor: pointer;
+		font-size: 0.875rem;
+		font-weight: 500;
+		border: none;
+		min-height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.filter-option-item:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	}
+
+	.filter-option-item.selected {
+		box-shadow: 0 0 0 2px var(--color-accent);
+		font-weight: 600;
+	}
+
+	.filter-actions {
+		margin-top: 0.5rem;
+	}
+
 	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.dropdown-panel {
@@ -324,6 +390,10 @@
 		}
 
 		.filter-button {
+			transition: none;
+		}
+
+		.filter-option-item {
 			transition: none;
 		}
 

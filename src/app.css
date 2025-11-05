@@ -16,16 +16,16 @@ html {
 		sans-serif;
 }
 
-/* Theme Variables - Light Mode (Default) - Pastel Theme */
+/* Theme Variables - Dark Mode (Default) - Pastel Theme */
 :root {
 	/* Background Colors */
-	--color-background: #f2ebe1;
-	--color-surface: #f7f2eb;
-	--color-border: #ede3d3;
+	--color-background: #0f1419;
+	--color-surface: #1a1f27;
+	--color-border: #2a2f3a;
 
 	/* Text Colors */
-	--color-text-primary: #1a1a1a;
-	--color-text-secondary: #4b5563;
+	--color-text-primary: #ffffff;
+	--color-text-secondary: #8b92a8;
 	--color-text-tertiary: #6b7280;
 
 	/* Accent Colors */
@@ -63,16 +63,16 @@ html {
 	--color-genre-metroidvania-text: #a78bfa;
 }
 
-/* Dark Mode */
-.dark {
+/* Light Mode */
+.light {
 	/* Background Colors */
-	--color-background: #0f1419;
-	--color-surface: #1a1f27;
-	--color-border: #2a2f3a;
+	--color-background: #f2ebe1;
+	--color-surface: #f7f2eb;
+	--color-border: #ede3d3;
 
 	/* Text Colors */
-	--color-text-primary: #ffffff;
-	--color-text-secondary: #8b92a8;
+	--color-text-primary: #1a1a1a;
+	--color-text-secondary: #4b5563;
 	--color-text-tertiary: #6b7280;
 
 	/* Accent Colors */

@@ -34,7 +34,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 0 24px;
+		padding: 0 24px 0 0; /* Remove left padding since logo has its own margin */
 		height: 60px;
 		width: 100%;
 
@@ -65,6 +65,7 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
+		margin-left: 24px; /* Align with search bar margin */
 	}
 
 	/* Logo section */
@@ -75,9 +76,9 @@
 	}
 
 	.logo-image {
-		height: 56px;
+		height: 55px;
 		width: auto;
-		max-width: 180px;
+		max-width: 130px;
 		object-fit: contain;
 	}
 
@@ -86,22 +87,24 @@
 	/* Responsive design */
 	@media (max-width: 768px) {
 		.header {
-			padding: 0 16px;
+			padding: 0 16px 0 0;
 			height: 56px;
 		}
 
 		.header-left {
 			gap: 12px;
+			margin-left: 16px;
 		}
 	}
 
 	@media (max-width: 480px) {
 		.header {
-			padding: 0 12px;
+			padding: 0 12px 0 0;
 		}
 
 		.header-left {
 			gap: 8px;
+			margin-left: 12px;
 		}
 	}
 
