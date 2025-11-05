@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { appStore } from '../stores/app.js';
+	import { filtersStore } from '../stores/filters.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	// Subscribe to theme changes (value used for reactive updates)
@@ -9,6 +10,25 @@
 		});
 		return unsubscribe;
 	});
+
+	// Handle logo click - reset all filters and go to homepage
+	function handleLogoClick() {
+		// Reset all filters
+		filtersStore.resetAllFilters();
+
+		// Set active tab to 'all' (homepage)
+		appStore.setActiveTab('all');
+
+		// Clear URL hash to go to homepage
+		if (typeof window !== 'undefined' && window.location) {
+			window.history.replaceState(null, '', window.location.pathname + window.location.search);
+		}
+
+		// Scroll to top of page
+		if (typeof window !== 'undefined') {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
 </script>
 
 <header class="header">
@@ -16,12 +36,12 @@
 	<div class="header-content container mx-auto px-6">
 		<!-- Left section: Logo -->
 		<div class="header-left">
-			<div class="logo">
+			<button class="logo" onclick={handleLogoClick} aria-label="Go to homepage and reset all filters">
 				<picture class="logo-image">
 					<source srcset="logo.webp" type="image/webp" />
 					<img src="logo.png" alt="Gaming Tracker Logo" />
 				</picture>
-			</div>
+			</button>
 		</div>
 
 		<!-- Right section: Theme Toggle -->
@@ -89,6 +109,26 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		border: none;
+		background: none;
+		padding: 0;
+		cursor: pointer;
+		transition: opacity 0.2s ease;
+	}
+
+	.logo:hover {
+		opacity: 0.8;
+	}
+
+	.logo:focus {
+		outline: none;
+	}
+
+	.logo:active,
+	.logo:focus:active {
+		outline: none;
+		border: none;
+		box-shadow: none;
 	}
 
 	.logo-image {

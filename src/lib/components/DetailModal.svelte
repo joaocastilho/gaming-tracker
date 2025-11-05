@@ -3,7 +3,10 @@
 	import { browser } from '$app/environment';
 	import { modalStore } from '../stores/modal.js';
 	import { gamesStore } from '../stores/games.js';
+	import { filtersStore } from '../stores/filters.js';
+	import { appStore } from '../stores/app.js';
 	import type { Game } from '../types/game.js';
+	import type { FilteredGameData } from '../stores/filters.js';
 	import {
 		TIER_COLORS,
 		PLATFORM_COLORS,
@@ -23,6 +26,16 @@
 
 	let modalState = $state(modalStore.getState());
 	let allGames = $state<Game[]>([]);
+	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
+	let filteredGamesData = $state<FilteredGameData>({
+		filteredGames: [],
+		totalCount: 0,
+		completedCount: 0,
+		plannedCount: 0
+	});
+
+	// Create filtered games store
+	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
 
 	// Subscribe to modal store changes
 	$effect(() => {
@@ -38,6 +51,22 @@
 	$effect(() => {
 		const unsubscribe = gamesStore.subscribe((games) => {
 			allGames = games;
+		});
+		return unsubscribe;
+	});
+
+	// Subscribe to filtered games store
+	$effect(() => {
+		const unsubscribe = filteredGamesStore.subscribe((data) => {
+			filteredGamesData = data;
+		});
+		return unsubscribe;
+	});
+
+	// Subscribe to active tab changes
+	$effect(() => {
+		const unsubscribe = appStore.activeTab.subscribe((tab) => {
+			currentActiveTab = tab;
 		});
 		return unsubscribe;
 	});
@@ -67,25 +96,87 @@
 		};
 	});
 
-	// Get current game index for navigation
+	// Get filtered and sorted games for current tab navigation
+	let currentTabGames = $derived(() => {
+		const filteredGames = filteredGamesData.filteredGames;
+
+		switch (currentActiveTab) {
+			case 'all':
+				// All games sorted alphabetically
+				return filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+
+			case 'completed':
+				// Completed games sorted by finished date (most recent first)
+				return filteredGames
+					.filter((game) => game.status === 'Completed')
+					.toSorted((a, b) => {
+						if (!a.finishedDate && !b.finishedDate) return 0;
+						if (!a.finishedDate) return 1;
+						if (!b.finishedDate) return -1;
+						return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+					});
+
+			case 'planned':
+				// Planned games sorted alphabetically
+				return filteredGames
+					.filter((game) => game.status === 'Planned')
+					.toSorted((a, b) => a.title.localeCompare(b.title));
+
+			case 'tierlist':
+				// All completed games with tiers, sorted by tier then alphabetically
+				const tierMapping: Record<string, string> = {
+					'S': 'S - Masterpiece',
+					'A': 'A - Amazing',
+					'B': 'B - Great',
+					'C': 'C - Good',
+					'D': 'D - Decent',
+					'E': 'E - Bad'
+				};
+
+				const tierOrder = ['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad'];
+
+				return allGames
+					.filter((game) => game.status === 'Completed' && game.tier)
+					.toSorted((a, b) => {
+						const aTier = tierMapping[a.tier!] || a.tier!;
+						const bTier = tierMapping[b.tier!] || b.tier!;
+
+						const aTierIndex = tierOrder.indexOf(aTier);
+						const bTierIndex = tierOrder.indexOf(bTier);
+
+						if (aTierIndex !== bTierIndex) {
+							return aTierIndex - bTierIndex;
+						}
+
+						return a.title.localeCompare(b.title);
+					});
+
+			default:
+				return filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+		}
+	});
+
+	// Get current game index for navigation within the current tab's games
 	let currentGameIndex = $derived(() => {
 		if (!modalState.activeGame) return -1;
-		return allGames.findIndex((game) => game.id === modalState.activeGame?.id);
+		return currentTabGames().findIndex((game) => game.id === modalState.activeGame?.id);
 	});
 
 	// Navigation functions
 	function navigateToPrevious() {
 		const index = currentGameIndex();
+		const tabGames = currentTabGames();
 		if (index > 0) {
-			const prevGame = allGames[index - 1];
+			const prevGame = tabGames[index - 1];
 			modalStore.openViewModal(prevGame);
 		}
 	}
 
 	function navigateToNext() {
 		const index = currentGameIndex();
-		if (index < allGames.length - 1) {
-			const nextGame = allGames[index + 1];
+		const tabGames = currentTabGames();
+		if (index < tabGames.length - 1) {
+			const nextGame = tabGames[index + 1];
 			modalStore.openViewModal(nextGame);
 		}
 	}
@@ -229,7 +320,7 @@
 		{/if}
 
 		<!-- Next Button -->
-		{#if currentGameIndex() < allGames.length - 1}
+		{#if currentGameIndex() < currentTabGames().length - 1}
 			<button
 				onclick={navigateToNext}
 				class="absolute top-1/2 right-2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/70"

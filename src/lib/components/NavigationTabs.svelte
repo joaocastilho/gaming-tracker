@@ -41,20 +41,26 @@
 		return unsubscribe;
 	});
 
-	// Set active tab based on URL hash
+	// Set active tab based on localStorage or URL hash
 	$effect(() => {
 		if (typeof window !== 'undefined') {
-			const hash = window.location.hash.replace('#', '');
-			let newActiveTab: TabId = 'all';
+			// First check localStorage for saved preference
+			const savedTab = localStorage.getItem('gaming-tracker-active-tab') as TabId | null;
 
+			// Then check URL hash for direct navigation
+			const hash = window.location.hash.replace('#', '');
+			let newActiveTab: TabId = savedTab || 'all';
+
+			// URL hash takes precedence for direct navigation
 			if (hash === 'completed') {
 				newActiveTab = 'completed';
 			} else if (hash === 'planned') {
 				newActiveTab = 'planned';
 			} else if (hash === 'tierlist') {
 				newActiveTab = 'tierlist';
-			} else {
-				newActiveTab = 'all';
+			} else if (hash === '') {
+				// If no hash, use localStorage preference
+				newActiveTab = savedTab || 'all';
 			}
 
 			// Only update if different to avoid unnecessary store updates

@@ -16,17 +16,6 @@ function createAppStore() {
 
 	// Initialize from localStorage
 	if (typeof window !== 'undefined') {
-		viewMode.subscribe((mode) => {
-			localStorage.setItem('gaming-tracker-view-mode', mode);
-		});
-
-		theme.subscribe((t) => {
-			localStorage.setItem('gaming-tracker-theme', t);
-			// Apply theme to document
-			document.documentElement.classList.remove('light', 'dark');
-			document.documentElement.classList.add(t);
-		});
-
 		// Load from localStorage on initialization
 		const savedViewMode = localStorage.getItem('gaming-tracker-view-mode') as
 			| 'gallery'
@@ -39,7 +28,36 @@ function createAppStore() {
 		const savedTheme = localStorage.getItem('gaming-tracker-theme') as 'dark' | 'light' | null;
 		if (savedTheme) {
 			theme.set(savedTheme);
+			// Apply theme immediately to document
+			document.documentElement.classList.remove('light', 'dark');
+			document.documentElement.classList.add(savedTheme);
 		}
+
+		const savedActiveTab = localStorage.getItem('gaming-tracker-active-tab') as
+			| 'all'
+			| 'completed'
+			| 'planned'
+			| 'tierlist'
+			| null;
+		if (savedActiveTab) {
+			activeTab.set(savedActiveTab);
+		}
+
+		// Subscribe to changes and save to localStorage
+		viewMode.subscribe((mode) => {
+			localStorage.setItem('gaming-tracker-view-mode', mode);
+		});
+
+		theme.subscribe((t) => {
+			localStorage.setItem('gaming-tracker-theme', t);
+			// Apply theme to document
+			document.documentElement.classList.remove('light', 'dark');
+			document.documentElement.classList.add(t);
+		});
+
+		activeTab.subscribe((tab) => {
+			localStorage.setItem('gaming-tracker-active-tab', tab);
+		});
 	}
 
 	// Derived store for combined app state
