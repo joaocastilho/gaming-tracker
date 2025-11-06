@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { appStore } from '../stores/app.js';
+	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
@@ -11,13 +12,53 @@
 		return unsubscribe;
 	});
 
+	const { activeTab } = appStore;
+
+	type TabId = 'all' | 'completed' | 'planned' | 'tierlist';
+
+	interface Tab {
+		id: TabId;
+		label: string;
+		route: string;
+		count: number | null;
+	}
+
+	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
+
+	// Initialize active tab
+	if (typeof window !== 'undefined') {
+		const savedTab = localStorage.getItem('gaming-tracker-active-tab') as TabId | null;
+		const hash = window.location.hash.replace('#', '');
+		let newActiveTab: TabId = savedTab || 'all';
+
+		if (hash === 'completed') newActiveTab = 'completed';
+		else if (hash === 'planned') newActiveTab = 'planned';
+		else if (hash === 'tierlist') newActiveTab = 'tierlist';
+
+		if (newActiveTab !== $activeTab) {
+			activeTab.set(newActiveTab);
+		}
+	}
+
+	const tabs = $derived<Tab[]>([
+		{ id: 'all', label: 'Games', route: '/', count: $filteredGamesStore.totalCount },
+		{
+			id: 'completed',
+			label: 'Completed',
+			route: 'completed',
+			count: $filteredGamesStore.completedCount
+		},
+		{ id: 'planned', label: 'Planned', route: 'planned', count: $filteredGamesStore.plannedCount },
+		{ id: 'tierlist', label: 'Tier List', route: 'tierlist', count: null }
+	]);
+
 	// Handle logo click - reset all filters and go to homepage
 	function handleLogoClick() {
 		// Reset all filters
 		filtersStore.resetAllFilters();
 
 		// Set active tab to 'all' (homepage)
-		appStore.setActiveTab('all');
+		activeTab.set('all');
 
 		// Clear URL hash to go to homepage
 		if (typeof window !== 'undefined' && window.location) {
@@ -27,6 +68,16 @@
 		// Scroll to top of page
 		if (typeof window !== 'undefined') {
 			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
+
+	function handleTabClick(tab: Tab) {
+		if (tab.id !== $activeTab) {
+			activeTab.set(tab.id);
+			if (typeof window !== 'undefined') {
+				const newHash = tab.id === 'all' ? '' : `#${tab.id}`;
+				window.history.replaceState(null, '', `${window.location.pathname}${newHash}`);
+			}
 		}
 	}
 </script>
@@ -53,11 +104,38 @@
 			<ThemeToggle />
 		</div>
 	</div>
+
+	<!-- Navigation Tabs -->
+	<nav class="navigation-tabs" aria-label="Game navigation">
+		<div class="navigation-background"></div>
+		<div class="navigation-content">
+			<ul class="tabs-list" role="tablist">
+				{#each tabs as tab (tab.id)}
+					<li class="tab-item" role="presentation">
+						<button
+							type="button"
+							class="tab-button"
+							class:active={$activeTab === tab.id}
+							onclick={() => handleTabClick(tab)}
+							role="tab"
+							aria-selected={$activeTab === tab.id}
+							tabindex={$activeTab === tab.id ? 0 : -1}
+						>
+							<span class="tab-label">{tab.label}</span>
+							{#if tab.count !== null}
+								<span class="tab-count">({tab.count})</span>
+							{/if}
+						</button>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	</nav>
 </header>
 
 <style>
 	.header {
-		/* Sticky positioning for the entire header */
+		/* Sticky positioning for the entire header + navigation */
 		position: sticky;
 		top: 0;
 		z-index: 40;
@@ -136,13 +214,143 @@
 	}
 
 	.logo-image {
-		height: 55px;
 		width: auto;
+		max-height: 55px;
 		max-width: 130px;
 		object-fit: contain;
 	}
 
-	/* Responsive design */
+	/* Navigation Tabs Styling */
+	.navigation-tabs {
+		position: relative;
+	}
+
+	.navigation-background {
+		/* Full width background matching header */
+		width: 100vw;
+		position: absolute;
+		left: 50%;
+		right: 50%;
+		margin-left: -50vw;
+		margin-right: -50vw;
+		height: 100%;
+		background-color: #0a0d11; /* Dark mode - matches header */
+	}
+
+	:global(.light) .navigation-background {
+		background-color: #f2ebe1; /* Light mode - matches header */
+	}
+
+	.navigation-content {
+		position: relative;
+		z-index: 1;
+	}
+
+	.tabs-list {
+		display: flex;
+		justify-content: center;
+		list-style: none;
+		margin: 0;
+		padding: 0 6rem; /* Center aligned with header container */
+		overflow-x: auto;
+		scrollbar-width: none; /* Firefox */
+		-ms-overflow-style: none; /* Internet Explorer 10+ */
+	}
+
+	.tabs-list::-webkit-scrollbar {
+		display: none; /* WebKit */
+	}
+
+	@media (min-width: 768px) {
+		.tabs-list {
+			padding: 0 8rem; /* More padding on larger screens */
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.tabs-list {
+			padding: 0 10rem; /* Even more padding on desktop */
+		}
+	}
+
+	.tab-item {
+		flex-shrink: 0;
+	}
+
+	.tab-button {
+		background: none;
+		border: none;
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		font-family: inherit;
+		font-size: 0.9rem;
+		font-weight: 500;
+		padding: 1rem 1.5rem;
+		position: relative;
+		text-decoration: none;
+		transition: all 0.2s ease;
+		white-space: nowrap;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		border-radius: 0;
+	}
+
+	.tab-button:hover {
+		color: var(--color-text-primary);
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
+	:global(.light) .tab-button:hover {
+		background-color: rgba(0, 0, 0, 0.05);
+	}
+
+	.tab-button:focus {
+		outline: 2px solid var(--color-accent);
+		outline-offset: -2px;
+	}
+
+	.tab-button:active {
+		transform: translateY(1px);
+	}
+
+	.tab-button.active {
+		color: var(--color-accent);
+	}
+
+	.tab-button.active::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 2px;
+		background-color: var(--color-accent);
+		border-radius: 1px;
+	}
+
+	.tab-label {
+		font-weight: 500;
+	}
+
+	.tab-count {
+		background-color: var(--color-border);
+		color: var(--color-text-tertiary);
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 0.125rem 0.375rem;
+		border-radius: 12px;
+		line-height: 1;
+		min-width: 1.5rem;
+		text-align: center;
+	}
+
+	.tab-button.active .tab-count {
+		background-color: var(--color-accent);
+		color: var(--color-accent-foreground);
+	}
+
+	/* Mobile Responsive */
 	@media (max-width: 768px) {
 		.header-content {
 			height: 56px;
@@ -152,6 +360,20 @@
 			gap: 12px;
 			margin-left: 36px; /* 24px container + 12px search bar */
 		}
+
+		.tabs-list {
+			padding: 0 4rem; /* Reduced padding on mobile */
+		}
+
+		.tab-button {
+			padding: 0.75rem 1rem;
+			font-size: 0.85rem;
+		}
+
+		.tab-count {
+			font-size: 0.7rem;
+			padding: 0.1rem 0.3rem;
+		}
 	}
 
 	@media (max-width: 480px) {
@@ -159,10 +381,42 @@
 			gap: 8px;
 			margin-left: 32px; /* 24px container + 8px search bar */
 		}
+
+		.tabs-list {
+			padding: 0 2rem;
+		}
+
+		.tab-button {
+			padding: 0.6rem 0.8rem;
+			font-size: 0.8rem;
+		}
+	}
+
+	/* High contrast mode support */
+	@media (prefers-contrast: high) {
+		.tab-button {
+			border: 1px solid transparent;
+		}
+
+		.tab-button:hover,
+		.tab-button:focus {
+			border-color: var(--color-accent);
+		}
+
+		.tab-button.active {
+			border-color: var(--color-accent);
+			border-bottom-color: transparent;
+		}
 	}
 
 	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
-		/* No transitions to remove since Add Game button is removed */
+		.tab-button {
+			transition: none;
+		}
+
+		.tab-button:active {
+			transform: none;
+		}
 	}
 </style>

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import '../app.css';
+	import Header from '$lib/components/Header.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 	import RatingsFilter from '$lib/components/RatingsFilter.svelte';
-	import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
@@ -215,8 +215,7 @@
 </svelte:head>
 
 <div class="bg-background text-foreground min-h-screen">
-	<NavigationTabs />
-
+	<Header />
 	<section class="filter-section sticky top-[104px] z-30 md:top-[110px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<SearchBar />
