@@ -15,7 +15,6 @@
 		count: number | null;
 	}
 
-
 	let activeTab = $state<TabId>('all');
 
 	// Game counts - using filtered counts when search is active
