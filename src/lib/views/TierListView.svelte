@@ -5,6 +5,20 @@
 	export let filteredGames: Game[];
 
 	// Group games by tier
+	const tierNames = {
+		S: 'Masterpiece',
+		A: 'Excellent',
+		B: 'Great',
+		C: 'Good',
+		D: 'Average',
+		E: 'Mediocre',
+		Unrated: 'Unrated'
+	};
+
+	function getTierName(tierLabel: string): string {
+		return tierNames[tierLabel as keyof typeof tierNames] || tierLabel;
+	}
+
 	$: tierGroups = {
 		S: filteredGames.filter((game) => game.tier === 'S'),
 		A: filteredGames.filter((game) => game.tier === 'A'),
@@ -16,8 +30,8 @@
 	};
 </script>
 
-<div class="tier-list-container">
+<div class="tier-list-container bg-background pt-4">
 	{#each Object.entries(tierGroups) as [tierLabel, games] (tierLabel)}
-		<TierRow {tierLabel} {games} />
+		<TierRow {tierLabel} {games} tierName={getTierName(tierLabel)} />
 	{/each}
 </div>

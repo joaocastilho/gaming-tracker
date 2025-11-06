@@ -39,6 +39,7 @@ html {
 	--color-tier-c: #22c55e;
 	--color-tier-d: #06b6d4;
 	--color-tier-e: #6b7280;
+	--tier-color: var(--color-tier-s);
 
 	/* Platform Colors */
 	--color-platform-pc-bg: #4c1d95;

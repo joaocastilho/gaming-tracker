@@ -192,9 +192,20 @@
 	// Reset all filters
 	function resetFilters() {
 		filtersStore.resetAllFilters();
+		filtersStore.searchQuery.set(''); // Clear search
+		appStore.activeTab.set('all'); // Switch to first tab
 		// Immediately update URL to reflect reset state
 		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 		appStore.writeToURLWithFilters(filtersStore);
+		// Scroll to top with multiple methods for reliability
+		setTimeout(() => {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			// Double scroll ensures works on all browsers
+			requestAnimationFrame(() => {
+				window.scrollTo(0, 0);
+				document.documentElement.scrollTop = 0;
+			});
+		}, 200);
 	}
 </script>
 

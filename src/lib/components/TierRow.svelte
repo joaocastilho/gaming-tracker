@@ -3,12 +3,13 @@
 	import GameCard from '$lib/components/GameCard.svelte';
 
 	export let tierLabel: string;
+	export let tierName: string;
 	export let games: Game[];
 </script>
 
 <div class="tier-section">
-	<h3 class="tier-header">
-		{tierLabel}
+	<h3 class="tier-header" style="background-color: var(--color-tier-{tierLabel.toLowerCase()})">
+		{tierLabel} - {tierName}
 		<span class="tier-count">{games.length} {games.length === 1 ? 'game' : 'games'}</span>
 	</h3>
 
@@ -20,6 +21,10 @@
 </div>
 
 <style>
+	.tier-section {
+		margin-bottom: 2rem; /* Space between sections */
+	}
+
 	.tier-header {
 		font-size: 1.5rem;
 		font-weight: 700;
@@ -29,6 +34,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		/* background-color set via inline style */
+		color: white;
 	}
 
 	.tier-count {
@@ -39,7 +46,7 @@
 
 	.tier-games-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-		gap: 1rem;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 1.5rem;
 	}
 </style>
