@@ -11,10 +11,6 @@
  * - Theme accessibility and contrast validation
  * - Theme transitions and animations
  */
-
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-
 interface ThemeTest {
 	name: string;
 	description: string;
@@ -668,14 +664,6 @@ class ThemeSwitchingTester {
 
 		return report;
 	}
-
-	// Save report to file
-	saveReport(filename: string = 'theme-switching-test-report.md') {
-		const report = this.generateReport();
-		const outputPath = join(process.cwd(), 'tests', filename);
-		writeFileSync(outputPath, report);
-		console.log(`📄 Report saved to: ${outputPath}`);
-	}
 }
 
 interface Expectation<T> {
@@ -746,9 +734,6 @@ async function runThemeSwitchingTests() {
 			console.log(`     - ${test.name}: ${test.error}`);
 		}
 	}
-
-	// Save report
-	tester.saveReport();
 
 	return results;
 }

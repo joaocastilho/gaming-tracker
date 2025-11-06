@@ -11,10 +11,6 @@
  * - Exporting data
  * - Navigation and deep linking
  */
-
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-
 interface TestResult {
 	flow: string;
 	steps: string[];
@@ -212,13 +208,6 @@ class UserFlowTester {
 		}
 
 		return report;
-	}
-
-	saveReport(filename: string = 'user-flow-test-report.md') {
-		const report = this.generateReport();
-		const outputPath = join(process.cwd(), 'tests', filename);
-		writeFileSync(outputPath, report);
-		console.log(`📄 Report saved to: ${outputPath}`);
 	}
 }
 
@@ -607,9 +596,6 @@ async function runUserFlowTests() {
 	);
 
 	tester.endSuite();
-
-	// Generate and save report
-	tester.saveReport();
 
 	console.log('\n' + '='.repeat(60));
 	console.log('🎯 End-to-End User Flow Testing Complete!');

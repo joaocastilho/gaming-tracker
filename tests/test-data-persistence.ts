@@ -11,10 +11,6 @@
  * - JSON export/import functionality
  * - Data integrity across sessions
  */
-
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-
 interface PersistenceTest {
 	name: string;
 	description: string;
@@ -610,14 +606,6 @@ class DataPersistenceTester {
 
 		return report;
 	}
-
-	// Save report to file
-	saveReport(filename: string = 'data-persistence-test-report.md') {
-		const report = this.generateReport();
-		const outputPath = join(process.cwd(), 'tests', filename);
-		writeFileSync(outputPath, report);
-		console.log(`📄 Report saved to: ${outputPath}`);
-	}
 }
 
 // Helper function for assertions
@@ -671,9 +659,6 @@ async function runDataPersistenceTests() {
 			console.log(`     - ${test.name}: ${test.error}`);
 		}
 	}
-
-	// Save report
-	tester.saveReport();
 
 	return results;
 }

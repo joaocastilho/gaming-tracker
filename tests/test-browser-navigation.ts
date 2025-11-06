@@ -12,10 +12,6 @@
  * - Search query persistence
  * - Route changes with state preservation
  */
-
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-
 interface NavigationTest {
 	name: string;
 	description: string;
@@ -719,14 +715,6 @@ class BrowserNavigationTester {
 
 		return report;
 	}
-
-	// Save report to file
-	saveReport(filename: string = 'browser-navigation-test-report.md') {
-		const report = this.generateReport();
-		const outputPath = join(process.cwd(), 'tests', filename);
-		writeFileSync(outputPath, report);
-		console.log(`📄 Report saved to: ${outputPath}`);
-	}
 }
 
 // Helper function for assertions
@@ -797,9 +785,6 @@ async function runBrowserNavigationTests() {
 			console.log(`     - ${test.name}: ${test.error}`);
 		}
 	}
-
-	// Save report
-	tester.saveReport();
 
 	return results;
 }
