@@ -3,14 +3,21 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { appStore } from '$lib/stores/app.js';
-	import { modalStore } from '$lib/stores/modal.js';
 	import { sortStore } from '$lib/stores/sort.js';
+	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
-	import GameCard from '$lib/components/GameCard.svelte';
-	import GameTable from '$lib/components/GameTable.svelte';
-	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
+	import type { Component } from 'svelte';
+
+	interface StandardViewProps {
+		filteredGames: Game[];
+		viewMode: 'gallery' | 'table';
+	}
+
+	interface TierListViewProps {
+		filteredGames: Game[];
+	}
 
 	// Create filtered games store combining games and filters
 	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
@@ -32,8 +39,9 @@
 	// Get loading state from games store
 	let isLoadingGames = $state(false);
 
-	// Get all games for tier list
-	let allGamesForTierList = $state<Game[]>([]);
+	// View components
+	let ActiveView = $state<null | Component<StandardViewProps> | Component<TierListViewProps>>(null);
+	let isLoadingView = $state(false);
 
 	// Subscribe to stores
 	filteredGamesStore.subscribe((data) => {
@@ -46,14 +54,11 @@
 
 	appStore.activeTab.subscribe((activeTab) => {
 		currentActiveTab = activeTab;
+		loadViewComponent(activeTab);
 	});
 
 	gamesStore.loading.subscribe((loading) => {
 		isLoadingGames = loading;
-	});
-
-	gamesStore.subscribe((games) => {
-		allGamesForTierList = games;
 	});
 
 	// Handle browser back/forward navigation
@@ -107,89 +112,38 @@
 			.filter((game: Game) => game.status === 'Planned')
 			.toSorted((a, b) => a.title.localeCompare(b.title))
 	);
-	// Tier list organized by tiers (uses all games, not filtered)
-	let tierList = $state<Record<string, Game[]>>({
-		'S - Masterpiece': [],
-		'A - Amazing': [],
-		'B - Great': [],
-		'C - Good': [],
-		'D - Decent': [],
-		'E - Bad': []
-	});
 
-	// Update tier list when games change
-	$effect(() => {
-		const gamesByTier: Record<string, Game[]> = {
-			'S - Masterpiece': [],
-			'A - Amazing': [],
-			'B - Great': [],
-			'C - Good': [],
-			'D - Decent': [],
-			'E - Bad': []
-		};
-
-		// Map single letter tiers to full tier names
-		const tierMapping: Record<string, string> = {
-			S: 'S - Masterpiece',
-			A: 'A - Amazing',
-			B: 'B - Great',
-			C: 'C - Good',
-			D: 'D - Decent',
-			E: 'E - Bad'
-		};
-
-		// Group completed games with tiers from allGamesForTierList
-		const tieredGames = allGamesForTierList.filter(
-			(game: Game) => game.status === 'Completed' && game.tier
-		);
-
-		tieredGames.forEach((game) => {
-			if (game.tier) {
-				// Map single letter tier to full tier name
-				const fullTierName = tierMapping[game.tier] || game.tier;
-				if (gamesByTier[fullTierName]) {
-					gamesByTier[fullTierName].push(game);
-				}
+	// Load view component dynamically based on active tab
+	async function loadViewComponent(tab: string) {
+		isLoadingView = true;
+		try {
+			switch (tab) {
+				case 'all':
+					ActiveView = (await import('$lib/views/AllGamesView.svelte')).default;
+					break;
+				case 'completed':
+					ActiveView = (await import('$lib/views/CompletedGamesView.svelte')).default;
+					break;
+				case 'planned':
+					ActiveView = (await import('$lib/views/PlannedGamesView.svelte')).default;
+					break;
+				case 'tierlist':
+					ActiveView = (await import('$lib/views/TierListView.svelte')).default;
+					break;
+				default:
+					ActiveView = null;
 			}
-		});
-
-		// Sort games within each tier alphabetically
-		Object.keys(gamesByTier).forEach((tier) => {
-			gamesByTier[tier].sort((a, b) => a.title.localeCompare(b.title));
-		});
-
-		tierList = gamesByTier;
-	});
-
-	// Handle game card/row clicks for detail modal
-	function handleGameClick(game: Game): void {
-		modalStore.openViewModal(game);
-	}
-
-	// Get tier background color
-	function getTierBackgroundColor(tier: string): string {
-		switch (tier) {
-			case 'S - Masterpiece':
-				return '#dc2626';
-			case 'A - Amazing':
-				return '#f97316';
-			case 'B - Great':
-				return '#eab308';
-			case 'C - Good':
-				return '#22c55e';
-			case 'D - Decent':
-				return '#06b6d4';
-			case 'E - Bad':
-				return '#6b7280';
-			default:
-				return '#6b7280';
+		} catch (err) {
+			console.error('Failed to load view component:', err);
+		} finally {
+			isLoadingView = false;
 		}
 	}
 
-	// Get tier text color
-	function getTierTextColor(): string {
-		return 'white';
-	}
+	// Load initial view (wrapped in effect to capture reactive updates)
+	$effect(() => {
+		loadViewComponent(currentActiveTab);
+	});
 </script>
 
 <svelte:head>
@@ -197,133 +151,29 @@
 </svelte:head>
 
 <div class="main-content" id="main-content">
-	{#if currentActiveTab === 'completed'}
-		{#if completedGames.length === 0}
-			<div class="empty-state">
-				{#if filteredData.totalCount === 0}
-					<h2>No games found</h2>
-					<p>Add your first game to get started!</p>
-				{:else}
-					<h2>No games match your search</h2>
-					<p>Try adjusting your search terms or filters.</p>
-				{/if}
-			</div>
-		{:else if currentViewMode === 'gallery'}
-			<!-- Gallery View -->
-			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-2 pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
-			>
-				{#each completedGames as game (game.id)}
-					<GameCard {game} size="small" />
-				{/each}
-			</div>
-		{:else}
-			<!-- Table View -->
-			<GameTable games={completedGames} onRowClick={handleGameClick} />
-		{/if}
-	{:else if currentActiveTab === 'planned'}
-		{#if plannedGames.length === 0}
-			<div class="empty-state">
-				{#if filteredData.totalCount === 0}
-					<h2>No games found</h2>
-					<p>Add your first game to get started!</p>
-				{:else}
-					<h2>No games match your search</h2>
-					<p>Try adjusting your search terms or filters.</p>
-				{/if}
-			</div>
-		{:else if currentViewMode === 'gallery'}
-			<!-- Gallery View -->
-			<div
-				class="grid max-w-full grid-cols-1 justify-items-center gap-2 pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
-			>
-				{#each plannedGames as game (game.id)}
-					<GameCard {game} size="small" />
-				{/each}
-			</div>
-		{:else}
-			<!-- Table View -->
-			<GameTable games={plannedGames} onRowClick={handleGameClick} />
-		{/if}
-	{:else if currentActiveTab === 'tierlist'}
-		{#if Object.values(tierList).every((games) => games.length === 0)}
-			<div class="empty-state">
-				{#if filteredData.totalCount === 0}
-					<h2>No games found</h2>
-					<p>Add your first game to get started!</p>
-				{:else}
-					<h2>No tiered games found</h2>
-					<p>Complete some games and assign them tiers to see them here!</p>
-				{/if}
-			</div>
-		{:else}
-			<!-- Tier List View -->
-			<div class="tier-list-container">
-				{#each Object.entries(tierList) as [tierName, games] (tierName)}
-					{#if games.length > 0}
-						<div class="tier-section">
-							<h3
-								class="tier-header"
-								style="background-color: {getTierBackgroundColor(
-									tierName
-								)} !important; color: {getTierTextColor()} !important;"
-							>
-								{tierName}
-								<span class="tier-count" style="color: {getTierTextColor()} !important;"
-									>{games.length} {games.length === 1 ? 'game' : 'games'}</span
-								>
-							</h3>
-							{#if currentViewMode === 'gallery'}
-								<div
-									class="3xl:grid-cols-8 4xl:grid-cols-9 grid max-w-full grid-cols-2 justify-items-center gap-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7"
-								>
-									{#each games as game (game.id)}
-										<GameCard {game} size="tiny" showTierBadge={false} />
-									{/each}
-								</div>
-							{:else}
-								<!-- Table View -->
-								<GameTable {games} onRowClick={handleGameClick} />
-							{/if}
-						</div>
-					{/if}
-				{/each}
-			</div>
-		{/if}
-	{:else if allGames.length === 0}
-		<div class="empty-state">
-			{#if filteredData.totalCount === 0}
-				<h2>No games found</h2>
-				<p>Add your first game to get started!</p>
-			{:else}
-				<h2>No games match your search</h2>
-				<p>Try adjusting your search terms or filters.</p>
-			{/if}
-		</div>
-	{:else if isLoadingGames && currentViewMode === 'gallery'}
-		<!-- Loading Skeleton Gallery View -->
+	{#if isLoadingView || isLoadingGames}
+		<!-- Loading Skeleton -->
 		<div
 			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 		>
 			<GameCardSkeleton count={12} />
 		</div>
-	{:else if currentViewMode === 'gallery'}
-		<!-- Gallery View -->
-		<div
-			class="grid max-w-full grid-cols-1 justify-items-center gap-2 pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
-		>
-			{#each allGames as game (game.id)}
-				<GameCard {game} size="small" />
-			{/each}
-		</div>
-	{:else if isLoadingGames}
-		<!-- Loading Skeleton Table View -->
-		<div class="loading-table-placeholder">
-			<GameCardSkeleton count={6} />
-		</div>
+	{:else if ActiveView}
+		<ActiveView
+			filteredGames={currentActiveTab === 'completed'
+				? completedGames
+				: currentActiveTab === 'planned'
+					? plannedGames
+					: currentActiveTab === 'tierlist'
+						? filteredData.filteredGames
+						: allGames}
+			viewMode={currentViewMode}
+		/>
 	{:else}
-		<!-- Table View -->
-		<GameTable games={allGames} onRowClick={handleGameClick} />
+		<div class="empty-state">
+			<h2>View not found</h2>
+			<p>Please select a valid view from the navigation tabs</p>
+		</div>
 	{/if}
 </div>
 
@@ -351,36 +201,5 @@
 	/* Light mode */
 	:global(.light) .empty-state {
 		color: #6b7280;
-	}
-
-	/* Tier List Styles */
-	.tier-list-container {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-	}
-
-	.tier-section {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.tier-header {
-		font-size: 1.5rem;
-		font-weight: 700;
-		margin: 0;
-		padding: 0.75rem 1rem;
-		border-radius: 0.5rem;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	}
-
-	.tier-count {
-		font-size: 0.875rem;
-		font-weight: 500;
-		opacity: 0.8;
 	}
 </style>

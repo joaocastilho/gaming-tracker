@@ -163,7 +163,7 @@ function createAppStore() {
 				url.searchParams.delete('theme');
 				url.searchParams.delete('tab');
 
-				// Use replaceState to avoid adding to browser history
+				// Use SvelteKit's replaceState
 				replaceState(url.toString(), {});
 			} catch (error) {
 				// Silently ignore router initialization errors

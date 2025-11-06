@@ -61,11 +61,14 @@ function createGamesStore() {
 				const validatedGames: Game[] = gamesArray
 					.map((game, index) => {
 						try {
-							// First transform the data to match schema requirements
 							const transformedGame = transformGameData(game);
 
-							// Then validate the transformed data
-							return GameSchema.parse(transformedGame);
+							if (dev) {
+								// Validate only in development
+								return GameSchema.parse(transformedGame);
+							}
+							// In production, return transformed game directly
+							return transformedGame;
 						} catch (validationError) {
 							console.error(
 								`Invalid game data at index ${index} (${game.title}):`,

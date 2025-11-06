@@ -1,6 +1,6 @@
 # Theme Switching Testing Report
 
-Generated: 2025-11-05T23:39:20.128Z
+Generated: 2025-11-06T21:08:08.715Z
 
 ## Summary
 
@@ -8,7 +8,7 @@ Generated: 2025-11-05T23:39:20.128Z
 - **Passed**: 9 ✅
 - **Failed**: 0 ❌
 - **Success Rate**: 100.0%
-- **Total Duration**: 5.25ms
+- **Total Duration**: 6.54ms
 
 ## Theme Validation Status
 
@@ -21,15 +21,15 @@ Generated: 2025-11-05T23:39:20.128Z
 
 | Test | Status | Duration | Details |
 |------|--------|----------|--------|
-| Theme Toggle Functionality | ✅ | 0.31ms | Passed |
-| Theme Persistence | ✅ | 0.30ms | Passed |
-| Theme Application | ✅ | 0.25ms | Passed |
-| Theme Restoration | ✅ | 0.28ms | Passed |
-| Theme Colors | ✅ | 0.40ms | Passed |
-| Theme Accessibility | ✅ | 2.95ms | Passed |
-| Theme Transitions | ✅ | 0.21ms | Passed |
-| Theme Toggle States | ✅ | 0.27ms | Passed |
-| System Theme Preference | ✅ | 0.27ms | Passed |
+| Theme Toggle Functionality | ✅ | 0.47ms | Passed |
+| Theme Persistence | ✅ | 0.36ms | Passed |
+| Theme Application | ✅ | 0.24ms | Passed |
+| Theme Restoration | ✅ | 0.19ms | Passed |
+| Theme Colors | ✅ | 0.37ms | Passed |
+| Theme Accessibility | ✅ | 3.90ms | Passed |
+| Theme Transitions | ✅ | 0.34ms | Passed |
+| Theme Toggle States | ✅ | 0.36ms | Passed |
+| System Theme Preference | ✅ | 0.30ms | Passed |
 
 ## Test Coverage
 

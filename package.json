@@ -21,6 +21,10 @@
 		"test": "bun run test:user-flows && bun run test:data-persistence && bun run test:browser-navigation && bun run test:theme-switching",
 		"validate": "bun run format && bun run lint && bun run check && bun run test"
 	},
+	"dependencies": {
+		"html2canvas": "^1.4.1",
+		"string-similarity": "^4.0.4"
+	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
 		"@eslint/js": "^9.36.0",
@@ -51,11 +55,7 @@
 		"typescript-eslint": "^8.44.1",
 		"vite": "^7.1.7",
 		"vitest": "^3.2.4",
-		"zod": "^4.1.12"
-	},
-	"dependencies": {
-		"html2canvas": "^1.4.1",
-		"sharp": "^0.34.4",
-		"string-similarity": "^4.0.4"
+		"zod": "^4.1.12",
+		"sharp": "^0.34.4"
 	}
 }

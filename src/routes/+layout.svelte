@@ -4,7 +4,6 @@
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 	import RatingsFilter from '$lib/components/RatingsFilter.svelte';
-	import DetailModal from '$lib/components/DetailModal.svelte';
 	import NavigationTabs from '$lib/components/NavigationTabs.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
 	import { filtersStore } from '$lib/stores/filters.js';
@@ -18,6 +17,9 @@
 
 	let initialized = false;
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
+	let DetailModalComponent = $state<
+		typeof import('$lib/components/DetailModal.svelte').default | null
+	>(null);
 
 	// Reactive state
 	let filterOptions = $state({
@@ -67,6 +69,19 @@
 				}, 100); // Small delay to ensure games are loaded
 			}
 			initialized = true;
+		}
+	});
+
+	// Dynamically load DetailModal when needed
+	$effect(() => {
+		if ($modalStore.isOpen && !DetailModalComponent) {
+			import('$lib/components/DetailModal.svelte')
+				.then((module) => {
+					DetailModalComponent = module.default;
+				})
+				.catch((err) => {
+					console.error('Failed to load DetailModal:', err);
+				});
 		}
 	});
 
@@ -252,7 +267,9 @@
 		</div>
 	</main>
 
-	<DetailModal />
+	{#if DetailModalComponent}
+		<DetailModalComponent />
+	{/if}
 </div>
 
 <style>

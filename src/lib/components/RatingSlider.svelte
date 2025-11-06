@@ -196,11 +196,7 @@
 		<span class="slider-label">
 			{#if getRatingIcon()}
 				{@const IconComponent = getRatingIcon()}
-				<IconComponent
-					class="filter-icon {getIconColor()}"
-					aria-label="{label} filter"
-					size={20}
-				/>
+				<IconComponent class="filter-icon {getIconColor()}" aria-label="{label} filter" size={20} />
 			{:else}
 				<span class="filter-icon" aria-label="Rating filter">🏆</span>
 			{/if}
@@ -228,7 +224,12 @@
 		<div class="dual-slider-row">
 			<!-- Track background with drag handles -->
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<div class="slider-track" onmousedown={handleMouseDown} role="application" aria-label="Rating range slider track">
+			<div
+				class="slider-track"
+				onmousedown={handleMouseDown}
+				role="application"
+				aria-label="Rating range slider track"
+			>
 				<div
 					class="slider-fill"
 					style="left: {getMinPercentage()}%; width: {getMaxPercentage() - getMinPercentage()}%"
