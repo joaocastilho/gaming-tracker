@@ -80,6 +80,19 @@
 			}
 		}
 	}
+
+	// --- ADD THIS PRELOAD FUNCTION ---
+	function preloadView(tabId: TabId) {
+		if (tabId === 'all') {
+			import('$lib/views/AllGamesView.svelte');
+		} else if (tabId === 'completed') {
+			import('$lib/views/CompletedGamesView.svelte');
+		} else if (tabId === 'planned') {
+			import('$lib/views/PlannedGamesView.svelte');
+		} else if (tabId === 'tierlist') {
+			import('$lib/views/TierListView.svelte');
+		}
+	}
 </script>
 
 <header class="header">
@@ -117,6 +130,8 @@
 							class="tab-button"
 							class:active={$activeTab === tab.id}
 							onclick={() => handleTabClick(tab)}
+							onmouseover={() => preloadView(tab.id)}
+							onfocus={() => preloadView(tab.id)}
 							role="tab"
 							aria-selected={$activeTab === tab.id}
 							tabindex={$activeTab === tab.id ? 0 : -1}
