@@ -35,8 +35,23 @@
 	// Dynamic font size calculation for title
 	let titleFontSize = $derived(() => {
 		const title = game.mainTitle || game.title || '';
-		const baseSize = 1;
+		const baseSize = 1.25;
 		const minSize = 0.65;
+		const maxLength = 25;
+
+		if (!title || title.length <= maxLength) {
+			return baseSize;
+		}
+
+		const reduction = Math.min((title.length - maxLength) * 0.015, baseSize - minSize);
+		return Math.max(baseSize - reduction, minSize);
+	});
+
+	// Dynamic font size calculation for subtitle
+	let subtitleFontSize = $derived(() => {
+		const title = game.subtitle || '';
+		const baseSize = 0.95;
+		const minSize = 0.55;
 		const maxLength = 25;
 
 		if (!title || title.length <= maxLength) {
@@ -154,7 +169,7 @@
 				{game.mainTitle}
 				{#if game.subtitle}
 					<br />
-					<span class="game-subtitle">{game.subtitle}</span>
+					<span class="game-subtitle" style="font-size: {subtitleFontSize()}rem;">{game.subtitle}</span>
 				{/if}
 			</h3>
 		</div>
@@ -383,7 +398,6 @@
 	}
 
 	.game-subtitle {
-		font-size: 0.8rem;
 		font-weight: 500;
 		color: #8b92a8;
 		line-height: 1.2;
