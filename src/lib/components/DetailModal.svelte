@@ -66,6 +66,19 @@
 		return unsubscribe;
 	});
 
+	// Focus management when modal opens
+	$effect(() => {
+		if (modalState.isOpen && modalElement && browser) {
+			// Small delay to ensure DOM is ready
+			setTimeout(() => {
+				const focusableElements = getFocusableElements();
+				if (focusableElements.length > 0) {
+					focusableElements[0].focus();
+				}
+			}, 100);
+		}
+	});
+
 	let modalElement = $state<HTMLDivElement>();
 
 	// Image loading state
@@ -74,6 +87,51 @@
 
 	// Share feedback state
 	let shareFeedback = $state('');
+
+	// Focus trap state
+	let focusableElements = $state<HTMLElement[]>([]);
+	let firstFocusableElement = $state<HTMLElement>();
+	let lastFocusableElement = $state<HTMLElement>();
+
+	// Focus trap functions
+	function getFocusableElements(): HTMLElement[] {
+		if (!modalElement) return [];
+		const focusableSelectors = [
+			'button',
+			'[href]',
+			'input',
+			'select',
+			'textarea',
+			'[tabindex]:not([tabindex="-1"])'
+		];
+		return Array.from(
+			modalElement.querySelectorAll(focusableSelectors.join(', '))
+		) as HTMLElement[];
+	}
+
+	function handleFocusTrap(event: KeyboardEvent) {
+		if (event.key !== 'Tab') return;
+
+		focusableElements = getFocusableElements();
+		if (focusableElements.length === 0) return;
+
+		firstFocusableElement = focusableElements[0];
+		lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+		if (event.shiftKey) {
+			// Shift + Tab
+			if (document.activeElement === firstFocusableElement) {
+				event.preventDefault();
+				lastFocusableElement.focus();
+			}
+		} else {
+			// Tab
+			if (document.activeElement === lastFocusableElement) {
+				event.preventDefault();
+				firstFocusableElement.focus();
+			}
+		}
+	}
 
 	// Get filtered and sorted games for current tab navigation
 	let currentTabGames = $derived(() => {
@@ -179,6 +237,9 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		// Handle focus trap first
+		handleFocusTrap(event);
+
 		if (event.key === 'Escape') {
 			modalStore.closeModal();
 		} else if (event.key === 'ArrowLeft') {
