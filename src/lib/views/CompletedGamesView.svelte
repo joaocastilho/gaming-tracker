@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { crossfade } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
 
@@ -10,7 +11,8 @@
 	$: completedGames = filteredGames.filter((game) => game.status === 'Completed');
 
 	const [send, receive] = crossfade({
-		duration: 300
+		duration: 300,
+		easing: quintOut
 	});
 </script>
 
