@@ -4,13 +4,14 @@
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
 	import { getTierClass } from '../utils/tierUtils.js';
 	import { imageCache } from '../utils/imageCache.js';
+	import { browser } from '$app/environment';
 	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
 		size?: 'small' | 'large' | 'tiny';
 		showTierBadge?: boolean;
-		isAboveFold?: boolean; // New prop for fetchpriority
+		isAboveFold?: boolean;
 	}
 
 	let { game, size = 'small', showTierBadge = true, isAboveFold = false }: Props = $props();
@@ -21,6 +22,9 @@
 	// Image loading state - initialize from cache
 	let isImageLoaded = $state(imageEntry.isLoaded);
 	let hasImageError = $state(imageEntry.hasError);
+
+	// Reference to the image element for Intersection Observer
+	let imageElement = $state<HTMLImageElement>();
 
 	// Calculate total score for completed games
 	let totalScore = $derived(
@@ -94,6 +98,36 @@
 		imageCache.preload(detailImageSrc);
 	}
 
+	// Setup Intersection Observer for progressive loading
+	$effect(() => {
+		if (!browser || !imageElement || isAboveFold) return;
+
+		// If already loaded, no need to observe
+		if (isImageLoaded) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						// Image is about to enter viewport, ensure it's preloaded
+						imageCache.preload(game.coverImage);
+						observer.disconnect();
+					}
+				});
+			},
+			{
+				rootMargin: '200px', // Start loading 200px before entering viewport
+				threshold: 0.1
+			}
+		);
+
+		observer.observe(imageElement);
+
+		return () => {
+			observer.disconnect();
+		};
+	});
+
 	// Sync with cache entry if it loads asynchronously
 	$effect(() => {
 		if (imageEntry.loadPromise) {
@@ -134,6 +168,7 @@
 			<div class="image-placeholder"></div>
 		{/if}
 		<img
+			bind:this={imageElement}
 			src={game.coverImage}
 			alt="{game.title} cover"
 			class="cover-image"
@@ -169,7 +204,9 @@
 				{game.mainTitle}
 				{#if game.subtitle}
 					<br />
-					<span class="game-subtitle" style="font-size: {subtitleFontSize()}rem;">{game.subtitle}</span>
+					<span class="game-subtitle" style="font-size: {subtitleFontSize()}rem;"
+						>{game.subtitle}</span
+					>
 				{/if}
 			</h3>
 		</div>

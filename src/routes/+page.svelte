@@ -130,6 +130,9 @@
 			: []
 	);
 
+	// Get first 6 games for preloading critical images
+	let criticalGames = $derived(memoizedFilteredGames.slice(0, 6));
+
 	// For tier list, get all games that have tiers assigned (ignoring status filters)
 	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
 
@@ -180,6 +183,9 @@
 
 <svelte:head>
 	<title>Gaming Tracker</title>
+	{#each criticalGames as game (game.id)}
+		<link rel="preload" as="image" href={game.coverImage} fetchpriority="high" />
+	{/each}
 </svelte:head>
 
 <div class="main-content" id="main-content">
