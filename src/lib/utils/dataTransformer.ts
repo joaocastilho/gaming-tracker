@@ -44,6 +44,7 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 	// Pre-compute title parts
 	if (transformed.title) {
 		const titleMatch = String(transformed.title).match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+
 		if (titleMatch) {
 			transformed.mainTitle = titleMatch[1].trim();
 			transformed.subtitle = `(${titleMatch[2]})`;

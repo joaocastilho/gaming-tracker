@@ -4,6 +4,8 @@ import type { GameStatus, TierValue, CoOpStatus } from '../types/game';
 export const GameSchema = z.object({
 	id: z.string().regex(/^[\w-]+$/),
 	title: z.string().min(1).max(200),
+	mainTitle: z.string().min(1).max(200),
+	subtitle: z.string().nullable(),
 	platform: z.string().min(1),
 	year: z.number().int().min(1970).max(2099),
 	genre: z.string().min(1),

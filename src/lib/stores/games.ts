@@ -67,6 +67,7 @@ function createGamesStore() {
 								// Validate only in development
 								return GameSchema.parse(transformedGame);
 							}
+
 							// In production, return transformed game directly
 							return transformedGame;
 						} catch (validationError) {

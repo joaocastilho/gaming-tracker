@@ -376,7 +376,7 @@
 					<div class="mb-4 flex items-start justify-between gap-4">
 						<h1
 							id="modal-title"
-							class="flex flex-1 flex-col justify-start text-3xl font-bold overflow-visible"
+							class="flex flex-1 flex-col justify-start overflow-visible text-3xl font-bold"
 							style="color: var(--color-text-primary); min-height: 65px; white-space: normal;"
 						>
 							{modalState.activeGame.mainTitle}
