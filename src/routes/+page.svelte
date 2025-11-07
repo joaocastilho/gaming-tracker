@@ -21,7 +21,7 @@
 	}
 
 	// Create filtered games store combining games and filters
-	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
+	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
 	// Get filtered games and counts
 	let filteredData = $state<FilteredGameData>({
@@ -154,9 +154,14 @@
 		loadViewComponent(currentActiveTab);
 	});
 
-	// Load games data when the component mounts
+	// Load games data when the component mounts (fallback for client-side)
 	$effect(() => {
-		gamesStore.loadGames();
+		// Only load if games store is empty (server-side loading might have failed)
+		gamesStore.subscribe((games) => {
+			if (games.length === 0) {
+				gamesStore.loadGames();
+			}
+		});
 	});
 
 	// Simulate image loading delay after data loads

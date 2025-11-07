@@ -86,22 +86,11 @@
 	});
 
 	// Handle URL updates for all filters (debounced)
-	let currentFilterState = {
-		searchQuery: '',
-		selectedPlatforms: [] as string[],
-		selectedGenres: [] as string[],
-		selectedTiers: [] as string[],
-		ratingRanges: {
-			presentation: [0, 10] as [number, number],
-			story: [0, 10] as [number, number],
-			gameplay: [0, 10] as [number, number],
-			total: [0, 20] as [number, number]
-		}
-	};
+	let currentFilterState: import('$lib/stores/filters').FilterState | null = null;
 
 	// Direct subscription to filter state
-	filtersStore.filterState.subscribe((filters) => {
-		currentFilterState = filters;
+	filtersStore.subscribe(($filters) => {
+		currentFilterState = $filters;
 	});
 
 	// Debounced URL update for all filter changes
@@ -192,7 +181,7 @@
 	// Reset all filters
 	function resetFilters() {
 		filtersStore.resetAllFilters();
-		filtersStore.searchQuery.set(''); // Clear search
+		filtersStore.setSearchTerm(''); // Clear search
 		appStore.activeTab.set('all'); // Switch to first tab
 		// Immediately update URL to reflect reset state
 		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);

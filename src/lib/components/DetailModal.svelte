@@ -30,7 +30,7 @@
 	});
 
 	// Create filtered games store
-	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
+	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
 	// Subscribe to modal store changes
 	$effect(() => {

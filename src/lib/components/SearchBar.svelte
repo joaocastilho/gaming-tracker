@@ -3,12 +3,12 @@
 
 	let inputElement: HTMLInputElement | undefined;
 	let debounceTimeout: ReturnType<typeof setTimeout> | undefined;
-	let searchQuery = $state('');
+	let searchTerm = $state('');
 
-	// Subscribe to search query changes
+	// Subscribe to search term changes
 	$effect(() => {
-		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
-			searchQuery = value;
+		const unsubscribe = filtersStore.subscribe(($filters) => {
+			if ($filters) searchTerm = $filters.searchTerm;
 		});
 		return unsubscribe;
 	});
@@ -30,7 +30,7 @@
 		}
 
 		debounceTimeout = setTimeout(() => {
-			filtersStore.searchQuery.set(newValue);
+			filtersStore.setSearchTerm(newValue);
 			filtersStore.writeToURL();
 		}, 300);
 	}
@@ -41,7 +41,7 @@
 			inputElement.value = '';
 			inputElement.focus();
 		}
-		filtersStore.searchQuery.set('');
+		filtersStore.setSearchTerm('');
 		filtersStore.writeToURL();
 		if (debounceTimeout) {
 			clearTimeout(debounceTimeout);
@@ -89,7 +89,7 @@
 			autocomplete="off"
 			spellcheck="false"
 		/>
-		{#if searchQuery}
+		{#if searchTerm}
 			<button type="button" class="clear-button" onclick={clearSearch} aria-label="Clear search">
 				<span aria-hidden="true">×</span>
 			</button>

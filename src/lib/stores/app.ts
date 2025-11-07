@@ -1,6 +1,6 @@
 import { writable, derived, get } from 'svelte/store';
 import { replaceState } from '$app/navigation';
-import type { FiltersStore } from './filters.js';
+import type { filtersStore as FiltersStoreType } from './filters.js';
 
 // TypeScript interfaces for app state
 export interface AppState {
@@ -135,7 +135,7 @@ function createAppStore() {
 		},
 
 		// Enhanced URL parameter management with filter support
-		readFromURLWithFilters(searchParams: URLSearchParams, filtersStore: FiltersStore) {
+		readFromURLWithFilters(searchParams: URLSearchParams, filtersStore: typeof FiltersStoreType) {
 			// Read app parameters
 			this.readFromURL(searchParams);
 
@@ -174,7 +174,7 @@ function createAppStore() {
 		},
 
 		// Enhanced writeToURL with filter support
-		writeToURLWithFilters(filtersStore: FiltersStore) {
+		writeToURLWithFilters(filtersStore: typeof FiltersStoreType) {
 			if (typeof window === 'undefined') return;
 
 			// Write app parameters

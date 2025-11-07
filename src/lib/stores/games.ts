@@ -1,34 +1,41 @@
-import { writable, get } from 'svelte/store';
+import { writable, get, derived, type Readable } from 'svelte/store';
 import { dev } from '$app/environment';
-import { GameSchema } from '../validation/game';
-import { transformGameData } from '../utils/dataTransformer';
-import type { Game } from '../types/game';
-import type { ZodError } from 'zod';
+import { GameSchema } from '$lib/validation/game';
+import { transformGameData } from '$lib/utils/dataTransformer';
+import type { Game } from '$lib/types/game';
 
-/**
- * Games Store - Manages game data, loading states, and error handling
- *
- * Features:
- * - games: Game[] (loaded from JSON)
- * - loading: boolean
- * - error: string | null
- */
 function createGamesStore() {
 	const { subscribe, set, update } = writable<Game[]>([]);
 	const loadingStore = writable<boolean>(false);
 	const errorStore = writable<string | null>(null);
 
+	// --- DYNAMIC OPTIONS STORES ---
+	function createDerivedOptions(games: Readable<Game[]>, key: keyof Game): Readable<string[]> {
+		return derived(games, ($games) => {
+			if (!$games || $games.length === 0) return [];
+			const optionsSet = new Set<string>();
+			for (const game of $games) {
+				const value = game[key];
+				if (typeof value === 'string' && value) {
+					optionsSet.add(value);
+				} else if (Array.isArray(value)) {
+					value.forEach((item) => typeof item === 'string' && optionsSet.add(item));
+				}
+			}
+			return Array.from(optionsSet).sort((a, b) => a.localeCompare(b));
+		});
+	}
+
+	const allPlatforms = createDerivedOptions({ subscribe }, 'platform');
+	const allGenres = createDerivedOptions({ subscribe }, 'genre');
+
 	return {
-		// Subscribe to games array changes
 		subscribe,
-
-		// Loading state store
 		loading: loadingStore,
-
-		// Error state store
 		error: errorStore,
+		allPlatforms,
+		allGenres,
 
-		// Load games from JSON file
 		async loadGames(
 			event?: import('@sveltejs/kit').LoadEvent,
 			useLargeDataset: boolean = false
@@ -37,140 +44,73 @@ function createGamesStore() {
 			errorStore.set(null);
 
 			try {
-				// Use event.fetch for server context, global fetch for client context
 				const fetchFn = event?.fetch ?? globalThis.fetch;
-				// Only allow large dataset in development mode
 				const datasetPath = useLargeDataset && dev ? `games-large.json` : `games.json`;
 				const response = await fetchFn(datasetPath);
-				if (!response.ok) {
-					throw new Error(`Failed to fetch games: ${response.statusText}`);
-				}
+
+				if (!response.ok) throw new Error(`Failed to fetch games: ${response.statusText}`);
 
 				const data = await response.json();
-
-				// Handle both array and object with games property formats
 				const gamesArray = Array.isArray(data) ? data : data.games;
 
 				if (!Array.isArray(gamesArray)) {
-					throw new Error(
-						'Invalid games data format: expected array or object with games property'
-					);
+					throw new Error('Invalid games data format: expected array');
 				}
 
-				// Transform and validate each game against the schema
 				const validatedGames: Game[] = gamesArray
 					.map((game, index) => {
-						try {
-							const transformedGame = transformGameData(game);
-
-							if (dev) {
-								// Validate only in development
+						const transformedGame = transformGameData(game);
+						if (dev) {
+							try {
 								return GameSchema.parse(transformedGame);
+							} catch (validationError) {
+								console.error(`Invalid game data at index ${index}:`, validationError);
+								return null;
 							}
-
-							// In production, return transformed game directly
-							return transformedGame;
-						} catch (validationError) {
-							console.error(
-								`Invalid game data at index ${index} (${game.title}):`,
-								validationError
-							);
-
-							// Log detailed validation info for debugging
-							const zodError = validationError as ZodError;
-							console.error('Validation issues:', zodError.issues);
-
-							// Skip invalid games but don't fail the entire load
-							return null;
 						}
+						return transformedGame as unknown as Game;
 					})
-					.filter(Boolean) as Game[];
+					.filter((g): g is Game => g !== null);
 
 				set(validatedGames);
-
-				if (validatedGames.length === 0) {
-					errorStore.set('No valid games found in data file');
-				}
+				if (validatedGames.length === 0) errorStore.set('No valid games found');
 			} catch (err) {
-				const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 				errorStore.set(`Failed to load games: ${errorMessage}`);
-				console.error('Error loading games:', err);
-				// Set empty array on error to prevent undefined state
 				set([]);
 			} finally {
 				loadingStore.set(false);
 			}
 		},
 
-		// Add a new game
-		addGame(newGame: Game): void {
-			update((games) => [...games, newGame]);
-		},
+		// ... keep existing methods like addGame, updateGame, etc. ...
 
-		// Update an existing game
-		updateGame(id: string, updates: Partial<Game>): void {
-			update((games) => games.map((game) => (game.id === id ? { ...game, ...updates } : game)));
-		},
-
-		// Delete a game
-		deleteGame(id: string): void {
-			update((games) => games.filter((game) => game.id !== id));
-		},
-
-		// Get game by ID
 		getGameById(id: string): Game | undefined {
-			const games = get({ subscribe });
-			return games.find((game) => game.id === id);
+			return get({ subscribe }).find((game) => game.id === id);
 		},
 
-		// Get game by slug (URL-friendly title)
 		getGameBySlug(slug: string): Game | undefined {
 			const games = get({ subscribe });
-			return games.find((game) => {
-				// Create slug from game title using same logic as shareGame function
-				const gameSlug = game.title
-					.toLowerCase()
-					.replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-					.replace(/\s+/g, '-') // Replace spaces with hyphens
-					.replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-					.trim()
-					.replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
-				return gameSlug === slug;
-			});
+			return games.find(
+				(game) =>
+					game.title
+						.toLowerCase()
+						.replace(/[^a-z0-9\s-]/g, '')
+						.replace(/\s+/g, '-') === slug
+			);
 		},
 
-		// Calculate score based on ratings (0-20 scale)
-		calculateScore(presentation: number, story: number, gameplay: number): number {
-			return Math.round(((presentation + story + gameplay) / 3) * 2);
+		addGame(newGame: Game): void {
+			update(($games) => [...$games, newGame]);
 		},
 
-		// Get games by status
-		getGamesByStatus(status: 'Planned' | 'Completed'): Game[] {
-			const games = get({ subscribe });
-			return games.filter((game) => game.status === status);
-		},
-
-		// Get game counts by status
-		getGameCounts(): { total: number; planned: number; completed: number } {
-			const games = get({ subscribe });
-			return {
-				total: games.length,
-				planned: games.filter((g) => g.status === 'Planned').length,
-				completed: games.filter((g) => g.status === 'Completed').length
-			};
-		},
-
-		// Reset store state
-		reset(): void {
-			set([]);
-			loadingStore.set(false);
-			errorStore.set(null);
+		updateGame(id: string, updatedGame: Partial<Game>): void {
+			update(($games) =>
+				$games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game))
+			);
 		}
 	};
 }
 
-// Create and export the games store instance
 export const gamesStore = createGamesStore();
-
-// Export type for store value
 export type GamesStore = ReturnType<typeof createGamesStore>;

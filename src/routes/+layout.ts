@@ -4,9 +4,9 @@ import { gamesStore } from '$lib/stores/games';
  * Layout load function that initializes the games store
  * Loads games data from games.json and populates the store
  */
-export async function load(event) {
+export async function load(event: import('@sveltejs/kit').LoadEvent) {
 	// Start loading games data with event context for proper fetch handling
-	gamesStore.loadGames(event);
+	await gamesStore.loadGames(event);
 
 	// Return any data that needs to be available in the layout
 	return {

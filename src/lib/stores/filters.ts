@@ -1,27 +1,24 @@
 import { writable, derived, get } from 'svelte/store';
-import { replaceState } from '$app/navigation';
-import type { Game } from '../types/game.js';
-import { memoizeGameFilter } from '../utils/memoize.js';
+import { browser } from '$app/environment';
+import { gamesStore } from './games';
+import type { Game } from '$lib/types/game';
+import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
+import FilterWorker from '$lib/workers/filterWorker?worker';
 
-// TypeScript interfaces for filter state
 export interface FilterState {
-	searchQuery: string;
-	selectedPlatforms: string[];
-	selectedGenres: string[];
-	selectedTiers: string[];
-	ratingRanges: {
-		presentation: [number, number];
-		story: [number, number];
-		gameplay: [number, number];
-		total: [number, number];
-	};
+	searchTerm: string;
+	platforms: string[];
+	genres: string[];
+	years: [number, number];
+	ratings: [number, number];
+	statuses: string[];
+	tiers: string[];
 }
 
-// TypeScript interfaces for app state
-export interface AppState {
-	viewMode: 'gallery' | 'table';
-	theme: 'dark' | 'light';
-	activeTab: 'all' | 'completed' | 'planned' | 'tierlist';
+export interface GameCounts {
+	total: number;
+	planned: number;
+	completed: number;
 }
 
 export interface FilteredGameData {
@@ -31,430 +28,258 @@ export interface FilteredGameData {
 	plannedCount: number;
 }
 
+const baseFilters: Pick<FilterState, 'searchTerm' | 'years' | 'ratings'> = {
+	searchTerm: '',
+	years: [1980, new Date().getFullYear()],
+	ratings: [0, 10]
+};
+
 function createFiltersStore() {
-	const searchQuery = writable<string>('');
-	const selectedPlatforms = writable<string[]>([]);
-	const selectedGenres = writable<string[]>([]);
-	const selectedTiers = writable<string[]>([]);
-	const ratingRanges = writable<FilterState['ratingRanges']>({
-		presentation: [0, 10],
-		story: [0, 10],
-		gameplay: [0, 10],
-		total: [0, 20]
+	const worker = new FilterWorker();
+	const filters = writable<FilterState | null>(null);
+	const filteredGames = writable<Game[]>([]);
+	const gameCounts = writable<GameCounts>({
+		total: 0,
+		planned: 0,
+		completed: 0
 	});
 
-	// Combined filter state for easy subscription
-	const filterState = derived(
-		[searchQuery, selectedPlatforms, selectedGenres, selectedTiers, ratingRanges],
-		([$searchQuery, $selectedPlatforms, $selectedGenres, $selectedTiers, $ratingRanges]) => ({
-			searchQuery: $searchQuery,
-			selectedPlatforms: $selectedPlatforms,
-			selectedGenres: $selectedGenres,
-			selectedTiers: $selectedTiers,
-			ratingRanges: $ratingRanges
+	const gamesAndOptions = derived(
+		[gamesStore, gamesStore.allPlatforms, gamesStore.allGenres],
+		([$games, $allPlatforms, $allGenres]) => ({
+			games: $games,
+			platforms: $allPlatforms,
+			genres: $allGenres
 		})
 	);
 
-	// Core filtering logic (memoized for performance)
-	const filterGames = memoizeGameFilter((games: Game[], filters: FilterState): Game[] => {
-		return games.filter((game) => {
-			// Search query filter (title matching)
-			if (filters.searchQuery.trim()) {
-				const query = filters.searchQuery.toLowerCase().trim();
-				const titleMatch = game.title.toLowerCase().includes(query);
-				const genreMatch = game.genre.toLowerCase().includes(query);
-				const platformMatch = game.platform.toLowerCase().includes(query);
+	let hasInitialized = false;
 
-				if (!titleMatch && !genreMatch && !platformMatch) {
-					return false;
-				}
-			}
+	gamesAndOptions.subscribe(({ games, platforms, genres }) => {
+		if (games.length > 0 && platforms.length > 0 && genres.length > 0 && !hasInitialized) {
+			hasInitialized = true;
+			const initialFilters: FilterState = {
+				...baseFilters,
+				platforms: [], // Start with empty selection
+				genres: [], // Start with empty selection
+				statuses: ['Completed', 'Planned'], // Keep default statuses
+				tiers: [] // Start with empty tier selection
+			};
 
-			// Platform filter
-			if (filters.selectedPlatforms.length > 0) {
-				if (!filters.selectedPlatforms.includes(game.platform)) {
-					return false;
-				}
-			}
-
-			// Genre filter
-			if (filters.selectedGenres.length > 0) {
-				if (!filters.selectedGenres.includes(game.genre)) {
-					return false;
-				}
-			}
-
-			// Tier filter (only applies to completed games)
-			if (filters.selectedTiers.length > 0) {
-				// Map full tier names back to single letters for comparison
-				const tierMapping: Record<string, string> = {
-					'S - Masterpiece': 'S',
-					'A - Amazing': 'A',
-					'B - Great': 'B',
-					'C - Good': 'C',
-					'D - Decent': 'D',
-					'E - Bad': 'E'
-				};
-
-				// Convert selected full tier names to single letters
-				const selectedTierLetters = filters.selectedTiers
-					.map((tier) => tierMapping[tier])
-					.filter(Boolean);
-
-				if (game.status === 'Completed' && game.tier) {
-					if (!selectedTierLetters.includes(game.tier)) {
-						return false;
+			let loadedFilters = initialFilters;
+			if (browser) {
+				const savedFilters = localStorage.getItem('gaming-tracker-filters');
+				if (savedFilters) {
+					try {
+						const parsed: Partial<FilterState> = JSON.parse(savedFilters);
+						loadedFilters = {
+							...initialFilters,
+							...parsed,
+							platforms: Array.isArray(parsed.platforms) ? parsed.platforms : [], // Use empty array as fallback
+							genres: Array.isArray(parsed.genres) ? parsed.genres : [], // Use empty array as fallback
+							years:
+								Array.isArray(parsed.years) && parsed.years.length === 2
+									? (parsed.years as [number, number])
+									: initialFilters.years,
+							ratings:
+								Array.isArray(parsed.ratings) && parsed.ratings.length === 2
+									? (parsed.ratings as [number, number])
+									: initialFilters.ratings,
+							statuses: Array.isArray(parsed.statuses) ? parsed.statuses : initialFilters.statuses,
+							tiers: Array.isArray(parsed.tiers) ? parsed.tiers : [] // Use empty array as fallback
+						};
+					} catch {
+						// Ignore invalid storage
 					}
-				} else {
-					// If filtering by tier, exclude games that are not completed or don't have a tier
-					return false;
 				}
 			}
 
-			// Rating range filters (only applies to completed games with ratings)
-			if (
-				game.status === 'Completed' &&
-				game.ratingPresentation !== null &&
-				game.ratingStory !== null &&
-				game.ratingGameplay !== null
-			) {
-				const [pMin, pMax] = filters.ratingRanges.presentation;
-				const [sMin, sMax] = filters.ratingRanges.story;
-				const [gMin, gMax] = filters.ratingRanges.gameplay;
-				const [tMin, tMax] = filters.ratingRanges.total;
-
-				// Check if ratings fall within specified ranges
-				if (game.ratingPresentation < pMin || game.ratingPresentation > pMax) return false;
-				if (game.ratingStory < sMin || game.ratingStory > sMax) return false;
-				if (game.ratingGameplay < gMin || game.ratingGameplay > gMax) return false;
-
-				// Calculate total score and check range
-				const totalScore = Math.round(
-					((game.ratingPresentation + game.ratingStory + game.ratingGameplay) / 3) * 2
-				);
-				if (totalScore < tMin || totalScore > tMax) return false;
-			}
-
-			return true;
-		});
+			filters.set(loadedFilters);
+			worker.postMessage({ type: 'LOAD_GAMES', payload: games });
+			worker.postMessage({
+				type: 'APPLY_FILTERS',
+				payload: { filters: loadedFilters, allGames: games }
+			});
+		}
 	});
 
-	// Derived store for filtered games and counts
-	function createFilteredGamesStore(gamesStore: {
-		subscribe: (fn: (games: Game[]) => void) => () => void;
-	}) {
-		return derived(
-			[gamesStore, filterState],
-			([games, filters]: [Game[], FilterState]): FilteredGameData => {
-				const filteredGames = filterGames(games, filters);
+	worker.onmessage = (event) => {
+		const { type, payload } = event.data;
+		if (type === 'FILTER_RESULTS') {
+			filteredGames.set(payload.filteredGames);
+			gameCounts.set(payload.counts);
+		}
+	};
 
-				return {
-					filteredGames,
-					totalCount: filteredGames.length,
-					completedCount: filteredGames.filter((g) => g.status === 'Completed').length,
-					plannedCount: filteredGames.filter((g) => g.status === 'Planned').length
-				};
-			}
-		);
-	}
+	filters.subscribe((currentFilters) => {
+		if (!currentFilters) return;
+		const allGames = get(gamesStore);
+		if (allGames.length > 0) {
+			worker.postMessage({
+				type: 'APPLY_FILTERS',
+				payload: { filters: currentFilters, allGames: allGames }
+			});
+		}
+
+		if (browser) {
+			localStorage.setItem('gaming-tracker-filters', JSON.stringify(currentFilters));
+		}
+	});
 
 	return {
-		// State stores
-		searchQuery,
-		selectedPlatforms,
-		selectedGenres,
-		selectedTiers,
-		ratingRanges,
-		filterState,
+		subscribe: filters.subscribe,
+		set: filters.set,
+		update: filters.update,
 
-		// Core filtering function
-		filterGames,
-
-		// Factory for creating filtered games stores
-		createFilteredGamesStore,
-
-		// Filter management methods
-		reset() {
-			searchQuery.set('');
-			selectedPlatforms.set([]);
-			selectedGenres.set([]);
-			selectedTiers.set([]);
-			ratingRanges.set({
-				presentation: [0, 10],
-				story: [0, 10],
-				gameplay: [0, 10],
-				total: [0, 20]
-			});
-		},
-
-		// Enhanced URL Parameter Management
-		readFromURL(searchParams: URLSearchParams) {
-			// Read search query
-			const query = searchParams.get('search');
-			if (query !== null) {
-				searchQuery.set(query);
-			}
-
-			// Read platforms (comma-separated)
-			const platformsParam = searchParams.get('platforms');
-			if (platformsParam !== null && platformsParam.trim()) {
-				const platforms = platformsParam
-					.split(',')
-					.map((p) => p.trim())
-					.filter((p) => p);
-				selectedPlatforms.set(platforms);
-			}
-
-			// Read genres (comma-separated)
-			const genresParam = searchParams.get('genres');
-			if (genresParam !== null && genresParam.trim()) {
-				const genres = genresParam
-					.split(',')
-					.map((g) => g.trim())
-					.filter((g) => g);
-				selectedGenres.set(genres);
-			}
-
-			// Read tiers (comma-separated)
-			const tiersParam = searchParams.get('tiers');
-			if (tiersParam !== null && tiersParam.trim()) {
-				const tiers = tiersParam
-					.split(',')
-					.map((t) => t.trim())
-					.filter((t) => t);
-				selectedTiers.set(tiers);
-			}
-
-			// Read rating ranges (range format: "min,max")
-			const ratingPresentationParam = searchParams.get('ratingPresentation');
-			const ratingStoryParam = searchParams.get('ratingStory');
-			const ratingGameplayParam = searchParams.get('ratingGameplay');
-			const ratingTotalParam = searchParams.get('ratingTotal');
-
-			const currentRanges = get(ratingRanges);
-			const newRanges = { ...currentRanges };
-
-			// Helper function to parse range
-			function parseRange(param: string | null, defaultRange: [number, number]): [number, number] {
-				if (!param || !param.includes(',')) return defaultRange;
-				const [minStr, maxStr] = param.split(',');
-				const min = parseFloat(minStr);
-				const max = parseFloat(maxStr);
-				if (isNaN(min) || isNaN(max)) return defaultRange;
-				return [min, max];
-			}
-
-			newRanges.presentation = parseRange(ratingPresentationParam, currentRanges.presentation);
-			newRanges.story = parseRange(ratingStoryParam, currentRanges.story);
-			newRanges.gameplay = parseRange(ratingGameplayParam, currentRanges.gameplay);
-			newRanges.total = parseRange(ratingTotalParam, currentRanges.total);
-
-			ratingRanges.set(newRanges);
-		},
-
-		writeToURL() {
-			if (typeof window === 'undefined') return;
-
-			try {
-				const currentQuery = get(searchQuery);
-				const currentPlatforms = get(selectedPlatforms);
-				const currentGenres = get(selectedGenres);
-				const currentTiers = get(selectedTiers);
-				const currentRanges = get(ratingRanges);
-				const url = new URL(window.location.href);
-
-				// Handle search query
-				if (currentQuery.trim()) {
-					url.searchParams.set('search', currentQuery.trim());
-				} else {
-					url.searchParams.delete('search');
-				}
-
-				// Handle platforms (comma-separated)
-				if (currentPlatforms.length > 0) {
-					url.searchParams.set('platforms', currentPlatforms.join(','));
-				} else {
-					url.searchParams.delete('platforms');
-				}
-
-				// Handle genres (comma-separated)
-				if (currentGenres.length > 0) {
-					url.searchParams.set('genres', currentGenres.join(','));
-				} else {
-					url.searchParams.delete('genres');
-				}
-
-				// Handle tiers (comma-separated)
-				if (currentTiers.length > 0) {
-					url.searchParams.set('tiers', currentTiers.join(','));
-				} else {
-					url.searchParams.delete('tiers');
-				}
-
-				// Handle rating ranges (range format: "min,max")
-				const [pMin, pMax] = currentRanges.presentation;
-				const [sMin, sMax] = currentRanges.story;
-				const [gMin, gMax] = currentRanges.gameplay;
-				const [tMin, tMax] = currentRanges.total;
-
-				// Only add rating parameters if they differ from defaults
-				if (pMin > 0 || pMax < 10) {
-					url.searchParams.set('ratingPresentation', `${pMin},${pMax}`);
-				} else {
-					url.searchParams.delete('ratingPresentation');
-				}
-
-				if (sMin > 0 || sMax < 10) {
-					url.searchParams.set('ratingStory', `${sMin},${sMax}`);
-				} else {
-					url.searchParams.delete('ratingStory');
-				}
-
-				if (gMin > 0 || gMax < 10) {
-					url.searchParams.set('ratingGameplay', `${gMin},${gMax}`);
-				} else {
-					url.searchParams.delete('ratingGameplay');
-				}
-
-				if (tMin > 0 || tMax < 20) {
-					url.searchParams.set('ratingTotal', `${tMin},${tMax}`);
-				} else {
-					url.searchParams.delete('ratingTotal');
-				}
-
-				// Use replaceState to avoid adding to browser history
-				replaceState(url.toString(), {});
-			} catch (error) {
-				// Silently ignore router initialization errors
-				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
-					console.warn('Failed to update URL:', error);
-				}
-			}
-		},
-
-		addPlatform(platform: string) {
-			selectedPlatforms.update((platforms) =>
-				platforms.includes(platform) ? platforms : [...platforms, platform]
-			);
-		},
-
-		removePlatform(platform: string) {
-			selectedPlatforms.update((platforms) => platforms.filter((p) => p !== platform));
+		resetFilters: () => {
+			const resetFilters: FilterState = {
+				...baseFilters,
+				platforms: [], // Reset to empty selection
+				genres: [], // Reset to empty selection
+				statuses: ['Completed', 'Planned'],
+				tiers: [] // Reset to empty tier selection
+			};
+			filters.set(resetFilters);
 		},
 
 		togglePlatform(platform: string) {
-			selectedPlatforms.update((platforms) =>
-				platforms.includes(platform)
-					? platforms.filter((p) => p !== platform)
-					: [...platforms, platform]
-			);
-		},
-
-		addGenre(genre: string) {
-			selectedGenres.update((genres) => (genres.includes(genre) ? genres : [...genres, genre]));
-		},
-
-		removeGenre(genre: string) {
-			selectedGenres.update((genres) => genres.filter((g) => g !== genre));
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				const platforms = $filters.platforms.includes(platform)
+					? $filters.platforms.filter((p) => p !== platform)
+					: [...$filters.platforms, platform];
+				return { ...$filters, platforms };
+			});
 		},
 
 		toggleGenre(genre: string) {
-			selectedGenres.update((genres) =>
-				genres.includes(genre) ? genres.filter((g) => g !== genre) : [...genres, genre]
-			);
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				const genres = $filters.genres.includes(genre)
+					? $filters.genres.filter((g) => g !== genre)
+					: [...$filters.genres, genre];
+				return { ...$filters, genres };
+			});
 		},
 
-		addTier(tier: string) {
-			selectedTiers.update((tiers) => (tiers.includes(tier) ? tiers : [...tiers, tier]));
-		},
-
-		removeTier(tier: string) {
-			selectedTiers.update((tiers) => tiers.filter((t) => t !== tier));
+		toggleStatus(status: string) {
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				const statuses = $filters.statuses.includes(status)
+					? $filters.statuses.filter((s) => s !== status)
+					: [...$filters.statuses, status];
+				return { ...$filters, statuses };
+			});
 		},
 
 		toggleTier(tier: string) {
-			selectedTiers.update((tiers) =>
-				tiers.includes(tier) ? tiers.filter((t) => t !== tier) : [...tiers, tier]
-			);
-		},
-
-		setRatingRange(
-			type: 'presentation' | 'story' | 'gameplay' | 'total',
-			min: number,
-			max: number
-		) {
-			ratingRanges.update((ranges) => ({ ...ranges, [type]: [min, max] }));
-		},
-
-		// Utility methods
-		getActiveFilterCount(): number {
-			const currentQuery = get(searchQuery);
-			const currentPlatforms = get(selectedPlatforms);
-			const currentGenres = get(selectedGenres);
-			const currentTiers = get(selectedTiers);
-			const currentRanges = get(ratingRanges);
-
-			let count = 0;
-
-			// Count active search query
-			if (currentQuery.trim().length > 0) {
-				count++;
-			}
-
-			// Count selected platforms, genres, and tiers
-			count += currentPlatforms.length;
-			count += currentGenres.length;
-			count += currentTiers.length;
-
-			// Count non-default rating ranges
-			if (currentRanges.presentation[0] > 0 || currentRanges.presentation[1] < 10) count++;
-			if (currentRanges.story[0] > 0 || currentRanges.story[1] < 10) count++;
-			if (currentRanges.gameplay[0] > 0 || currentRanges.gameplay[1] < 10) count++;
-			if (currentRanges.total[0] > 0 || currentRanges.total[1] < 20) count++;
-
-			return count;
-		},
-
-		hasActiveFilters(): boolean {
-			// Check if any filters are active
-			const currentQuery = get(searchQuery);
-			const currentPlatforms = get(selectedPlatforms);
-			const currentGenres = get(selectedGenres);
-			const currentTiers = get(selectedTiers);
-			const currentRanges = get(ratingRanges);
-
-			return (
-				currentQuery.trim().length > 0 ||
-				currentPlatforms.length > 0 ||
-				currentGenres.length > 0 ||
-				currentTiers.length > 0 ||
-				currentRanges.presentation[0] > 0 ||
-				currentRanges.presentation[1] < 10 ||
-				currentRanges.story[0] > 0 ||
-				currentRanges.story[1] < 10 ||
-				currentRanges.gameplay[0] > 0 ||
-				currentRanges.gameplay[1] < 10 ||
-				currentRanges.total[0] > 0 ||
-				currentRanges.total[1] < 20
-			);
-		},
-
-		// Alias for reset() method for better naming consistency
-		resetAllFilters() {
-			searchQuery.set('');
-			selectedPlatforms.set([]);
-			selectedGenres.set([]);
-			selectedTiers.set([]);
-			ratingRanges.set({
-				presentation: [0, 10],
-				story: [0, 10],
-				gameplay: [0, 10],
-				total: [0, 20]
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				const tiers = $filters.tiers.includes(tier)
+					? $filters.tiers.filter((t) => t !== tier)
+					: [...$filters.tiers, tier];
+				return { ...$filters, tiers };
 			});
+		},
+
+		removePlatform(platform: string) {
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				return { ...$filters, platforms: $filters.platforms.filter((p) => p !== platform) };
+			});
+		},
+
+		removeGenre(genre: string) {
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				return { ...$filters, genres: $filters.genres.filter((g) => g !== genre) };
+			});
+		},
+
+		removeTier(tier: string) {
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				return { ...$filters, tiers: $filters.tiers.filter((t) => t !== tier) };
+			});
+		},
+
+		resetAllFilters() {
+			this.resetFilters();
+		},
+
+		setSearchTerm(term: string) {
+			filters.update(($filters) => {
+				if (!$filters) return $filters;
+				return { ...$filters, searchTerm: term };
+			});
+		},
+
+		setYearsRange(years: [number, number]) {
+			filters.update(($filters) => {
+				if (!$filters) return $filters;
+				return { ...$filters, years };
+			});
+		},
+
+		setRatingsRange(ratings: [number, number]) {
+			filters.update(($filters) => {
+				if (!$filters) return $filters;
+				return { ...$filters, ratings };
+			});
+		},
+
+		// Derived stores for individual properties
+		ratingRanges: derived(filters, ($filters) => ({
+			presentation: $filters?.ratings ?? [0, 10],
+			story: $filters?.ratings ?? [0, 10],
+			gameplay: $filters?.ratings ?? [0, 10],
+			total: $filters?.ratings
+				? ([Math.round($filters.ratings[0] * 2), Math.round($filters.ratings[1] * 2)] as [
+						number,
+						number
+					])
+				: [0, 20]
+		})),
+		selectedPlatforms: derived(filters, ($filters) => $filters?.platforms ?? []),
+		selectedGenres: derived(filters, ($filters) => $filters?.genres ?? []),
+		selectedTiers: derived(filters, ($filters) => $filters?.tiers ?? []),
+		searchQuery: derived(filters, ($filters) => $filters?.searchTerm ?? ''),
+
+		createFilteredGamesStore: () => {
+			return derived([filteredGames, gameCounts], ([$filteredGames, $gameCounts]) => ({
+				filteredGames: $filteredGames,
+				totalCount: $gameCounts.total,
+				completedCount: $gameCounts.completed,
+				plannedCount: $gameCounts.planned
+			}));
+		},
+
+		readFromURL: (searchParams: URLSearchParams) => {
+			const params = getUrlParams(searchParams);
+			filters.update((currentFilters) => {
+				if (!currentFilters) return null;
+				return {
+					...currentFilters,
+					searchTerm: params.searchTerm ?? currentFilters.searchTerm,
+					platforms: params.platforms ?? currentFilters.platforms,
+					genres: params.genres ?? currentFilters.genres,
+					statuses: params.statuses ?? currentFilters.statuses,
+					ratings: params.ratings ?? currentFilters.ratings,
+					years: params.years ?? currentFilters.years,
+					tiers: params.tiers ?? currentFilters.tiers
+				};
+			});
+		},
+
+		writeToURL: () => {
+			const currentFilters = get(filters);
+			const $allPlatforms = get(gamesStore.allPlatforms);
+			const $allGenres = get(gamesStore.allGenres);
+			if (currentFilters && $allPlatforms.length > 0 && $allGenres.length > 0) {
+				setUrlParams(currentFilters, $allPlatforms, $allGenres);
+			}
 		}
 	};
 }
 
 export const filtersStore = createFiltersStore();
-
-export type FiltersStore = ReturnType<typeof createFiltersStore>;

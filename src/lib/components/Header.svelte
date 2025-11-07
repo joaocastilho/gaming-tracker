@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { appStore } from '../stores/app.js';
-	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
@@ -23,7 +22,7 @@
 		count: number | null;
 	}
 
-	const filteredGamesStore = filtersStore.createFilteredGamesStore(gamesStore);
+	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
 	// Initialize active tab
 	if (typeof window !== 'undefined') {

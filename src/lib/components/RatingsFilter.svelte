@@ -44,8 +44,13 @@
 
 	// Subscribe to store changes
 	$effect(() => {
-		const unsubscribe = filtersStore.ratingRanges.subscribe((ranges) => {
-			ratingRanges = ranges;
+		const unsubscribe = filtersStore.ratingRanges.subscribe(($ranges) => {
+			ratingRanges = $ranges as {
+				presentation: [number, number];
+				story: [number, number];
+				gameplay: [number, number];
+				total: [number, number];
+			};
 		});
 		return unsubscribe;
 	});
@@ -76,10 +81,7 @@
 
 	// Reset all ratings
 	function resetAllRatings() {
-		filtersStore.setRatingRange('presentation', 0, 10);
-		filtersStore.setRatingRange('story', 0, 10);
-		filtersStore.setRatingRange('gameplay', 0, 10);
-		filtersStore.setRatingRange('total', 0, 20);
+		filtersStore.setRatingsRange([0, 10]);
 	}
 
 	// Check if any ratings are filtered
@@ -172,8 +174,15 @@
 								step={1}
 								minLimit={0}
 								maxLimit={config.maxValue}
-								onRangeChange={(min: number, max: number) =>
-									filtersStore.setRatingRange(ratingType, min, max)}
+								onRangeChange={(min: number, max: number) => {
+									const newRatings = { ...ratingRanges, [ratingType]: [min, max] };
+									// Convert back to single range for store (average of all categories)
+									const avgMin =
+										(newRatings.presentation[0] + newRatings.story[0] + newRatings.gameplay[0]) / 3;
+									const avgMax =
+										(newRatings.presentation[1] + newRatings.story[1] + newRatings.gameplay[1]) / 3;
+									filtersStore.setRatingsRange([Math.round(avgMin), Math.round(avgMax)]);
+								}}
 							/>
 						</div>
 					{/each}
