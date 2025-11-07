@@ -80,6 +80,7 @@
 		<span class="search-icon" aria-hidden="true">🔍</span>
 		<input
 			bind:this={inputElement}
+			bind:value={searchTerm}
 			type="text"
 			placeholder="Search games..."
 			oninput={handleInput}

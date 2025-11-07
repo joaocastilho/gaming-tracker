@@ -58,10 +58,38 @@
 			window.history.replaceState(null, '', window.location.pathname + window.location.search);
 		}
 
-		// Scroll to top of page
-		if (typeof window !== 'undefined') {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
+		// Scroll to top of page - multiple approaches for reliability
+		scrollToTop();
+	}
+
+	// Enhanced scroll function for better reliability
+	function scrollToTop() {
+		if (typeof window === 'undefined') return;
+
+		// Method 1: Immediate scroll to top
+		window.scrollTo({ top: 0, behavior: 'instant' });
+
+		// Method 2: Scroll main content element if it exists
+		const mainContent = document.getElementById('main-content');
+		if (mainContent) {
+			mainContent.scrollTop = 0;
 		}
+
+		// Method 3: Document body scroll
+		document.body.scrollTop = 0;
+
+		// Method 4: Document element scroll  
+		document.documentElement.scrollTop = 0;
+
+		// Method 5: Fallback with setTimeout for async updates
+		setTimeout(() => {
+			window.scrollTo({ top: 0, behavior: 'instant' });
+			
+			// Additional fallback scroll
+			if (document.getElementById('main-content')) {
+				document.getElementById('main-content')!.scrollTop = 0;
+			}
+		}, 50);
 	}
 
 	function handleTabClick(tab: Tab) {
@@ -74,7 +102,6 @@
 		}
 	}
 
-	// --- ADD THIS PRELOAD FUNCTION ---
 	function preloadView(tabId: TabId) {
 		if (tabId === 'all') {
 			import('$lib/views/AllGamesView.svelte');

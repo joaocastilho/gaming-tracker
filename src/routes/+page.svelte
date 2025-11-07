@@ -30,6 +30,9 @@
 		plannedCount: 0
 	});
 
+	// Get all games directly from gamesStore for tier list
+	let allGamesFromStore = $state<Game[]>([]);
+
 	// Get current active tab
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 
@@ -51,6 +54,10 @@
 	// Subscribe to stores
 	filteredGamesStore.subscribe((data) => {
 		filteredData = data;
+	});
+
+	gamesStore.subscribe((games) => {
+		allGamesFromStore = games;
 	});
 
 	appStore.activeTab.subscribe((activeTab) => {
@@ -112,6 +119,11 @@
 		filteredData.filteredGames
 			.filter((game: Game) => game.status === 'Planned')
 			.toSorted((a, b) => a.title.localeCompare(b.title))
+	);
+
+	// For tier list, get all games that have tiers assigned (ignoring status filters)
+	let tierListGames = $derived(
+		allGamesFromStore.filter((game) => game.tier)
 	);
 
 	// Load view component dynamically based on active tab
@@ -188,7 +200,7 @@
 				: currentActiveTab === 'planned'
 					? plannedGames
 					: currentActiveTab === 'tierlist'
-						? filteredData.filteredGames
+						? tierListGames
 						: allGames}
 		/>
 	{:else}

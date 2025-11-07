@@ -55,6 +55,8 @@ export function getUrlParams(searchParams: URLSearchParams): Partial<FilterState
 
 /**
  * Update URL with current filter state
+ * Note: Status parameters are intentionally excluded from URL to avoid
+ * conflicts with tier list view which shows all tiered games regardless of status
  */
 export function setUrlParams(
 	filters: FilterState,
@@ -75,9 +77,9 @@ export function setUrlParams(
 		filters.genres.forEach((g) => searchParams.append('genres', g));
 	}
 
-	if (filters.statuses.length > 0) {
-		filters.statuses.forEach((s) => searchParams.append('statuses', s));
-	}
+	// Intentionally exclude status parameters from URL
+	// Status filtering is handled by view selection (completed/planned tabs)
+	// rather than URL parameters to avoid conflicts with tier list view
 
 	if (filters.years[0] !== 1980 || filters.years[1] !== new Date().getFullYear()) {
 		searchParams.set('years', JSON.stringify(filters.years));
@@ -87,6 +89,13 @@ export function setUrlParams(
 		searchParams.set('ratings', JSON.stringify(filters.ratings));
 	}
 
-	const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-	window.history.replaceState(null, '', newUrl);
+	// Only update URL if there are actually parameters to write
+	const queryString = searchParams.toString();
+	if (queryString) {
+		const newUrl = `${window.location.pathname}?${queryString}`;
+		window.history.replaceState(null, '', newUrl);
+	} else {
+		// If no parameters, remove the query string entirely
+		window.history.replaceState(null, '', window.location.pathname);
+	}
 }
