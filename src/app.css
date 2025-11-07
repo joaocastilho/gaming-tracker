@@ -114,3 +114,34 @@ html {
 .filter-section .view-toggle-button {
 	color: #ffffff !important; /* White text on accent background */
 }
+
+/* Tier Badge Classes */
+.tier-badge.tier-s {
+	background-color: var(--color-tier-s);
+	color: white;
+}
+
+.tier-badge.tier-a {
+	background-color: var(--color-tier-a);
+	color: white;
+}
+
+.tier-badge.tier-b {
+	background-color: var(--color-tier-b);
+	color: black; /* Yellow shows better with black text */
+}
+
+.tier-badge.tier-c {
+	background-color: var(--color-tier-c);
+	color: white;
+}
+
+.tier-badge.tier-d {
+	background-color: var(--color-tier-d);
+	color: white;
+}
+
+.tier-badge.tier-e {
+	background-color: var(--color-tier-e);
+	color: white;
+}

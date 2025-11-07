@@ -7,12 +7,8 @@
 	import { appStore } from '../stores/app.js';
 	import type { Game } from '../types/game.js';
 	import type { FilteredGameData } from '../stores/filters.js';
-	import {
-		TIER_COLORS,
-		PLATFORM_COLORS,
-		GENRE_COLORS,
-		getTierDisplayName
-	} from '../utils/colorConstants.js';
+	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
+	import { getTierClass } from '../utils/tierUtils.js';
 	import {
 		Presentation,
 		NotebookPen,
@@ -110,7 +106,7 @@
 			}
 
 			case 'tierlist': {
-				// All completed games with tiers, sorted by tier then alphabetically
+				// All completed games with tiers, sorted by tier order (preserving original order within each tier)
 				const tierMapping: Record<string, string> = {
 					S: 'S - Masterpiece',
 					A: 'A - Amazing',
@@ -129,21 +125,27 @@
 					'E - Bad'
 				];
 
-				return allGames
+				// First, create a map of tier to games in their original filtered order
+				const gamesByTier: Record<string, Game[]> = {};
+				filteredGames
 					.filter((game) => game.status === 'Completed' && game.tier)
-					.toSorted((a, b) => {
-						const aTier = tierMapping[a.tier!] || a.tier!;
-						const bTier = tierMapping[b.tier!] || b.tier!;
-
-						const aTierIndex = tierOrder.indexOf(aTier);
-						const bTierIndex = tierOrder.indexOf(bTier);
-
-						if (aTierIndex !== bTierIndex) {
-							return aTierIndex - bTierIndex;
+					.forEach((game) => {
+						const tierKey = tierMapping[game.tier!] || game.tier!;
+						if (!gamesByTier[tierKey]) {
+							gamesByTier[tierKey] = [];
 						}
-
-						return a.title.localeCompare(b.title);
+						gamesByTier[tierKey].push(game);
 					});
+
+				// Then build the final array by tier order, preserving original order within each tier
+				const result: Game[] = [];
+				tierOrder.forEach((tierKey) => {
+					if (gamesByTier[tierKey]) {
+						result.push(...gamesByTier[tierKey]);
+					}
+				});
+
+				return result;
 			}
 
 			default: {
@@ -226,12 +228,6 @@
 		} catch {
 			return 'Invalid date';
 		}
-	}
-
-	function getTierColor(tier: string | null): string {
-		if (!tier) return 'bg-gray-400';
-		const fullName = getTierDisplayName(tier);
-		return TIER_COLORS[fullName] || 'bg-gray-400';
 	}
 
 	function getPlatformColor(platform: string): string {
@@ -377,7 +373,7 @@
 						<h1
 							id="modal-title"
 							class="flex flex-1 flex-col justify-start overflow-visible text-3xl font-bold"
-							style="color: var(--color-text-primary); min-height: 65px; white-space: normal;"
+							style="color: var(--color-text-primary); min-height: 80px; white-space: normal;"
 						>
 							{modalState.activeGame.mainTitle}
 							{#if modalState.activeGame.subtitle}
@@ -441,7 +437,7 @@
 						<!-- Tier Level -->
 						{#if modalState.activeGame.tier}
 							<span
-								class="rounded-md px-3 py-1 text-sm font-semibold text-white {getTierColor(
+								class="tier-badge rounded-md px-3 py-1 text-sm font-semibold {getTierClass(
 									modalState.activeGame.tier
 								)}"
 							>

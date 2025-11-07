@@ -1,12 +1,8 @@
 <script lang="ts">
 	import { modalStore } from '../stores/modal.js';
 	import type { Game } from '../types/game.js';
-	import {
-		PLATFORM_COLORS,
-		GENRE_COLORS,
-		TIER_COLORS,
-		getTierDisplayName
-	} from '../utils/colorConstants.js';
+	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
+	import { getTierClass } from '../utils/tierUtils.js';
 	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
@@ -34,7 +30,7 @@
 	// Dynamic font size calculation for title
 	let titleFontSize = $derived(() => {
 		const title = game.mainTitle || game.title || '';
-		const baseSize = 1.1; // Base font size in rem
+		const baseSize = 1; // Base font size in rem
 		const minSize = 0.65; // Minimum font size in rem
 		const maxLength = 25; // Length at which we start reducing font size
 
@@ -115,9 +111,7 @@
 		{/if}
 
 		{#if showTierBadge && game.status === 'Completed' && game.tier}
-			<div
-				class="tier-badge {TIER_COLORS[getTierDisplayName(game.tier)] || 'bg-gray-600 text-white'}"
-			>
+			<div class="tier-badge {getTierClass(game.tier)}">
 				<span class="tier-text">{getTierDisplayName(game.tier)}</span>
 			</div>
 		{/if}

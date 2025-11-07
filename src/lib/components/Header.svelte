@@ -305,13 +305,10 @@
 		background-color: rgba(0, 0, 0, 0.05);
 	}
 
-	.tab-button:focus {
-		outline: 2px solid var(--color-accent);
-		outline-offset: -2px;
-	}
-
 	.tab-button:active {
 		transform: translateY(1px);
+		outline: none;
+		border-color: transparent;
 	}
 
 	.tab-button.active {
