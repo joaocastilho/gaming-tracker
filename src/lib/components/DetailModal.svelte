@@ -86,18 +86,36 @@
 	const detailImageSrc = $derived(
 		modalState.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
 	);
-	const detailImageEntry = $derived(
-		detailImageSrc ? imageCache.getImage(detailImageSrc) : null
-	);
+	const detailImageEntry = $derived(detailImageSrc ? imageCache.getImage(detailImageSrc) : null);
 
-	let isImageLoaded = $state(detailImageEntry?.isLoaded ?? false);
-	let hasImageError = $state(detailImageEntry?.hasError ?? false);
+	// Track loading state - initialize from cache entry, then sync via effect
+	let isImageLoaded = $state(false);
+	let hasImageError = $state(false);
 
-
-	// Sync with cache entry
+	// Sync with cache entry - this effect runs when detailImageEntry changes
 	$effect(() => {
-		if (detailImageEntry?.loadPromise) {
-			detailImageEntry.loadPromise
+		const entry = detailImageEntry;
+
+		if (!entry) {
+			isImageLoaded = false;
+			hasImageError = false;
+			return;
+		}
+
+		// If already loaded, set immediately
+		if (entry.isLoaded) {
+			isImageLoaded = true;
+			hasImageError = false;
+			return;
+		}
+
+		// Reset state for new image
+		isImageLoaded = false;
+		hasImageError = false;
+
+		// If there's a load promise, wait for it
+		if (entry.loadPromise) {
+			entry.loadPromise
 				.then(() => {
 					isImageLoaded = true;
 					hasImageError = false;
@@ -106,9 +124,6 @@
 					isImageLoaded = false;
 					hasImageError = true;
 				});
-		} else if (detailImageEntry?.isLoaded) {
-			isImageLoaded = true;
-			hasImageError = false;
 		}
 	});
 

@@ -103,14 +103,11 @@
 	}
 
 	function preloadView(tabId: TabId) {
-		if (tabId === 'all') {
-			import('$lib/views/AllGamesView.svelte');
-		} else if (tabId === 'completed') {
-			import('$lib/views/CompletedGamesView.svelte');
-		} else if (tabId === 'planned') {
-			import('$lib/views/PlannedGamesView.svelte');
-		} else if (tabId === 'tierlist') {
-			import('$lib/views/TierListView.svelte');
+		// Preload the tier list view component
+		if (tabId === 'tierlist') {
+			import('$lib/views/TierListView.svelte').catch(() => {
+				// Silently fail if preload fails
+			});
 		}
 	}
 </script>

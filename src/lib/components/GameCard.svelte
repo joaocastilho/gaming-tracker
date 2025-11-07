@@ -4,7 +4,6 @@
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
 	import { getTierClass } from '../utils/tierUtils.js';
 	import { imageCache } from '../utils/imageCache.js';
-	import { browser } from '$app/environment';
 	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
@@ -18,7 +17,7 @@
 
 	// Get image cache entry
 	const imageEntry = imageCache.getImage(game.coverImage);
-	
+
 	// Image loading state - initialize from cache
 	let isImageLoaded = $state(imageEntry.isLoaded);
 	let hasImageError = $state(imageEntry.hasError);
@@ -26,9 +25,9 @@
 	// Calculate total score for completed games
 	let totalScore = $derived(
 		game.status === 'Completed' &&
-		game.ratingPresentation !== null &&
-		game.ratingStory !== null &&
-		game.ratingGameplay !== null
+			game.ratingPresentation !== null &&
+			game.ratingStory !== null &&
+			game.ratingGameplay !== null
 			? Math.round(((game.ratingPresentation + game.ratingStory + game.ratingGameplay) / 3) * 2)
 			: null
 	);
@@ -384,7 +383,7 @@
 	}
 
 	.game-subtitle {
-		font-size: 0.80rem;
+		font-size: 0.8rem;
 		font-weight: 500;
 		color: #8b92a8;
 		line-height: 1.2;

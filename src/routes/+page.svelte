@@ -5,15 +5,13 @@
 	import { appStore } from '$lib/stores/app.js';
 	import { sortStore } from '$lib/stores/sort.js';
 	import { debounce } from '$lib/utils/debounce.js';
+	import { memoizeGameFilter } from '$lib/utils/memoize.js';
 	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
+	import UnifiedGamesView from '$lib/views/UnifiedGamesView.svelte';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
 	import type { Component } from 'svelte';
-
-	interface StandardViewProps {
-		filteredGames: Game[];
-	}
 
 	interface TierListViewProps {
 		filteredGames: Game[];
@@ -39,8 +37,8 @@
 	// Get loading state from games store
 	let isLoadingGames = $state(false);
 
-	// View components
-	let ActiveView = $state<null | Component<StandardViewProps> | Component<TierListViewProps>>(null);
+	// View components - only tier list needs dynamic loading
+	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
 	let isLoadingView = $state(false);
 
 	// Debounced URL update functions to reduce main-thread jank
@@ -59,7 +57,9 @@
 
 	appStore.activeTab.subscribe((activeTab) => {
 		currentActiveTab = activeTab;
-		loadViewComponent(activeTab);
+		if (activeTab === 'tierlist') {
+			loadTierListView();
+		}
 	});
 
 	gamesStore.loading.subscribe((loading) => {
@@ -68,7 +68,6 @@
 
 	// Handle browser back/forward navigation
 	$effect(() => {
-		// Read search query from URL when browser navigation occurs
 		filtersStore.readFromURL(page.url.searchParams);
 		appStore.readFromURL(page.url.searchParams);
 		sortStore.readFromURL(page.url.searchParams);
@@ -97,63 +96,73 @@
 		}
 	});
 
-	// Show filtered games based on active tab (computed in template)
-	let allGames = $derived(
-		filteredData.filteredGames.toSorted((a, b) => a.title.localeCompare(b.title))
+	// Memoized function to get filtered games for a specific tab
+	// This prevents unnecessary recalculations when switching tabs with the same filtered games
+	const getFilteredGamesForTab = memoizeGameFilter(
+		(games: Game[], tab: 'all' | 'completed' | 'planned' | 'tierlist'): Game[] => {
+			switch (tab) {
+				case 'completed':
+					return games
+						.filter((game) => game.status === 'Completed')
+						.toSorted((a, b) => {
+							if (!a.finishedDate && !b.finishedDate) return 0;
+							if (!a.finishedDate) return 1;
+							if (!b.finishedDate) return -1;
+							return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+						});
+				case 'planned':
+					return games
+						.filter((game) => game.status === 'Planned')
+						.toSorted((a, b) => a.title.localeCompare(b.title));
+				case 'all':
+				default:
+					return games.toSorted((a, b) => a.title.localeCompare(b.title));
+			}
+		},
+		{ maxSize: 5, ttl: 5000 } // Cache up to 5 results for 5 seconds
 	);
-	let completedGames = $derived(
-		filteredData.filteredGames
-			.filter((game: Game) => game.status === 'Completed')
-			.toSorted((a, b) => {
-				// Sort by finished date descending (most recent first)
-				if (!a.finishedDate && !b.finishedDate) return 0;
-				if (!a.finishedDate) return 1; // null dates go to end
-				if (!b.finishedDate) return -1; // null dates go to end
-				return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
-			})
-	);
-	let plannedGames = $derived(
-		filteredData.filteredGames
-			.filter((game: Game) => game.status === 'Planned')
-			.toSorted((a, b) => a.title.localeCompare(b.title))
+
+	// Memoized filtered games for the current tab
+	// This will only recalculate if the filtered games array or tab changes
+	let memoizedFilteredGames = $derived(
+		currentActiveTab !== 'tierlist'
+			? getFilteredGamesForTab(filteredData.filteredGames, currentActiveTab)
+			: []
 	);
 
 	// For tier list, get all games that have tiers assigned (ignoring status filters)
-	let tierListGames = $derived(
-		allGamesFromStore.filter((game) => game.tier)
-	);
+	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
 
-	// Load view component dynamically based on active tab
-	async function loadViewComponent(tab: string) {
+	// Load tier list view component only when needed
+	async function loadTierListView() {
+		if (TierListViewComponent) return; // Already loaded
+
 		isLoadingView = true;
 		try {
-			switch (tab) {
-				case 'all':
-					ActiveView = (await import('$lib/views/AllGamesView.svelte')).default;
-					break;
-				case 'completed':
-					ActiveView = (await import('$lib/views/CompletedGamesView.svelte')).default;
-					break;
-				case 'planned':
-					ActiveView = (await import('$lib/views/PlannedGamesView.svelte')).default;
-					break;
-				case 'tierlist':
-					ActiveView = (await import('$lib/views/TierListView.svelte')).default;
-					break;
-				default:
-					ActiveView = null;
-			}
+			const module = await import('$lib/views/TierListView.svelte');
+			TierListViewComponent = module.default;
 		} catch (err) {
-			console.error('Failed to load view component:', err);
+			console.error('Failed to load tier list view:', err);
 		} finally {
 			isLoadingView = false;
 		}
 	}
 
-	// Load initial view (wrapped in effect to capture reactive updates)
-	$effect(() => {
-		loadViewComponent(currentActiveTab);
-	});
+	// Preload tier list view when hovering over tier list tab (called from Header component)
+	function preloadTierListView() {
+		if (!TierListViewComponent) {
+			loadTierListView();
+		}
+	}
+
+	// Expose preload function for Header component to use
+	// This will be called via appStore or directly if needed
+	if (typeof window !== 'undefined') {
+		type WindowWithPreload = Window & {
+			__preloadTierListView?: () => void;
+		};
+		(window as WindowWithPreload).__preloadTierListView = preloadTierListView;
+	}
 
 	// Load games data when the component mounts (fallback for client-side)
 	$effect(() => {
@@ -165,6 +174,7 @@
 		});
 	});
 
+	// Derived loading state - no artificial delay
 	let imagesLoading = $derived(isLoadingGames || isLoadingView);
 </script>
 
@@ -180,47 +190,9 @@
 		>
 			<GameCardSkeleton count={12} />
 		</div>
-	{:else if ActiveView}
-		<ActiveView
-			filteredGames={currentActiveTab === 'completed'
-				? completedGames
-				: currentActiveTab === 'planned'
-					? plannedGames
-					: currentActiveTab === 'tierlist'
-						? tierListGames
-						: allGames}
-		/>
-	{:else}
-		<div class="empty-state">
-			<h2>View not found</h2>
-			<p>Please select a valid view from the navigation tabs</p>
-		</div>
+	{:else if currentActiveTab === 'tierlist' && TierListViewComponent}
+		<TierListViewComponent filteredGames={tierListGames} />
+	{:else if currentActiveTab !== 'tierlist'}
+		<UnifiedGamesView filteredGames={memoizedFilteredGames} activeTab={currentActiveTab} />
 	{/if}
 </div>
-
-<style>
-	.main-content {
-		min-height: calc(100vh - 140px); /* Account for header and navigation */
-	}
-
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 400px;
-		text-align: center;
-		color: #8b92a8;
-	}
-
-	.empty-state h2 {
-		font-size: 1.5rem;
-		margin-bottom: 0.5rem;
-		color: inherit;
-	}
-
-	/* Light mode */
-	:global(.light) .empty-state {
-		color: #6b7280;
-	}
-</style>

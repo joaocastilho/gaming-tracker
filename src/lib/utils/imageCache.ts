@@ -18,7 +18,7 @@ class ImageCache {
 	 */
 	isImageCached(src: string): boolean {
 		if (!browser) return false;
-		
+
 		// Check our cache first
 		const entry = this.cache.get(src);
 		if (entry?.isLoaded) return true;
@@ -34,13 +34,13 @@ class ImageCache {
 	 */
 	getImage(src: string): ImageCacheEntry {
 		let entry = this.cache.get(src);
-		
+
 		if (!entry) {
 			const img = new Image();
-			
+
 			// Check if already cached in browser
 			const isCached = this.isImageCached(src);
-			
+
 			entry = {
 				image: img,
 				isLoaded: isCached,
@@ -64,7 +64,7 @@ class ImageCache {
 			}
 
 			this.cache.set(src, entry);
-			
+
 			// Start loading if not cached
 			if (!isCached) {
 				img.src = src;
@@ -126,4 +126,41 @@ class ImageCache {
 	}
 }
 
+interface ComponentInstance {
+	gameId: string;
+	lastUsed: number;
+}
+
+class ComponentCache {
+	private instances = new Map<string, ComponentInstance>();
+	private maxAge = 5 * 60 * 1000; // 5 minutes
+
+	register(gameId: string): void {
+		this.instances.set(gameId, {
+			gameId,
+			lastUsed: Date.now()
+		});
+	}
+
+	isRegistered(gameId: string): boolean {
+		return this.instances.has(gameId);
+	}
+
+	cleanup(): void {
+		const now = Date.now();
+		for (const [gameId, instance] of this.instances.entries()) {
+			if (now - instance.lastUsed > this.maxAge) {
+				this.instances.delete(gameId);
+			}
+		}
+	}
+}
+
 export const imageCache = new ImageCache();
+export const componentCache = new ComponentCache();
+
+if (typeof window !== 'undefined') {
+	setInterval(() => {
+		componentCache.cleanup();
+	}, 60000); // Every minute
+}
