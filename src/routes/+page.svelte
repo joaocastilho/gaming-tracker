@@ -144,6 +144,11 @@
 	$effect(() => {
 		loadViewComponent(currentActiveTab);
 	});
+
+	// Load games data when the component mounts
+	$effect(() => {
+		gamesStore.loadGames();
+	});
 </script>
 
 <svelte:head>

@@ -7,6 +7,8 @@ export type CoOpStatus = 'Yes' | 'No';
 export interface Game {
 	id: string; // UUID v4
 	title: string; // Required, 1-200 chars
+	mainTitle: string; // Pre-computed from title
+	subtitle: string | null; // Pre-computed from title
 	platform: string; // Required (PC, PS5, Xbox, Switch, etc.)
 	year: number; // Required, 1970-2099
 	genre: string; // Required (RPG, Action, etc.)

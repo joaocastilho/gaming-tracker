@@ -31,29 +31,14 @@
 			: null
 	);
 
-	// Extract parenthetical content from title for subtitle display
-	let titleParts = $derived(() => {
-		const match = game.title.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
-		if (match) {
-			return {
-				mainTitle: match[1].trim(),
-				subtitle: `(${match[2]})`
-			};
-		}
-		return {
-			mainTitle: game.title,
-			subtitle: null
-		};
-	});
-
 	// Dynamic font size calculation for title
 	let titleFontSize = $derived(() => {
-		const title = titleParts().mainTitle;
+		const title = game.mainTitle || game.title || '';
 		const baseSize = 1.1; // Base font size in rem
 		const minSize = 0.65; // Minimum font size in rem
 		const maxLength = 25; // Length at which we start reducing font size
 
-		if (title.length <= maxLength) {
+		if (!title || title.length <= maxLength) {
 			return baseSize;
 		}
 
@@ -143,10 +128,10 @@
 		<!-- Title with subtitle (if exists) -->
 		<div class="title-section">
 			<h3 class="game-title" style="font-size: {titleFontSize()}rem;">
-				{titleParts().mainTitle}
-				{#if titleParts().subtitle}
+				{game.mainTitle}
+				{#if game.subtitle}
 					<br />
-					<span class="game-subtitle">{titleParts().subtitle}</span>
+					<span class="game-subtitle">{game.subtitle}</span>
 				{/if}
 			</h3>
 		</div>

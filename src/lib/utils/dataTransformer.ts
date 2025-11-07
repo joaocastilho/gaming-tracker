@@ -41,6 +41,21 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 		transformed.coOp = 'No';
 	}
 
+	// Pre-compute title parts
+	if (transformed.title) {
+		const titleMatch = String(transformed.title).match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+		if (titleMatch) {
+			transformed.mainTitle = titleMatch[1].trim();
+			transformed.subtitle = `(${titleMatch[2]})`;
+		} else {
+			transformed.mainTitle = String(transformed.title);
+			transformed.subtitle = null;
+		}
+	} else {
+		transformed.mainTitle = '';
+		transformed.subtitle = null;
+	}
+
 	return transformed;
 }
 
@@ -78,11 +93,4 @@ function generateDeterministicUUID(seed: string): string {
 	const uuid = `${hex.slice(0, 8)}-${hex.slice(0, 4)}-1${hex.slice(4, 7)}-${Math.abs(hash % 16).toString(16)}${Math.abs(hash % 16).toString(16)}${hex.slice(0, 2)}-${Math.abs(hash).toString(16).padEnd(12, '0').slice(0, 12)}`;
 
 	return uuid;
-}
-
-/**
- * Transform array of games
- */
-export function transformGamesData(games: Record<string, unknown>[]): Record<string, unknown>[] {
-	return games.map(transformGameData);
 }

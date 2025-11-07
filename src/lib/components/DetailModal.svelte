@@ -80,22 +80,6 @@
 	// Share feedback state
 	let shareFeedback = $state('');
 
-	// Extract parenthetical content from title for subtitle display
-	let titleParts = $derived(() => {
-		if (!modalState.activeGame?.title) return { mainTitle: '', subtitle: null };
-		const match = modalState.activeGame.title.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
-		if (match) {
-			return {
-				mainTitle: match[1].trim(),
-				subtitle: `(${match[2]})`
-			};
-		}
-		return {
-			mainTitle: modalState.activeGame.title,
-			subtitle: null
-		};
-	});
-
 	// Get filtered and sorted games for current tab navigation
 	let currentTabGames = $derived(() => {
 		const filteredGames = filteredGamesData.filteredGames;
@@ -392,16 +376,16 @@
 					<div class="mb-4 flex items-start justify-between gap-4">
 						<h1
 							id="modal-title"
-							class="flex flex-1 flex-col justify-center text-3xl font-bold"
-							style="height: 65px; color: var(--color-text-primary);"
+							class="flex flex-1 flex-col justify-start text-3xl font-bold overflow-visible"
+							style="color: var(--color-text-primary); min-height: 65px; white-space: normal;"
 						>
-							{titleParts().mainTitle}
-							{#if titleParts().subtitle}
+							{modalState.activeGame.mainTitle}
+							{#if modalState.activeGame.subtitle}
 								<br />
 								<span
 									class="font-semibold"
 									style="font-size: 1.2rem; line-height: 1.2; color: var(--color-text-secondary);"
-									>{titleParts().subtitle}</span
+									>{modalState.activeGame.subtitle}</span
 								>
 							{/if}
 						</h1>
