@@ -9,6 +9,7 @@
 	import type { FilteredGameData } from '../stores/filters.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';
 	import { getTierClass } from '../utils/tierUtils.js';
+	import { imageCache } from '../utils/imageCache.js';
 	import {
 		Presentation,
 		NotebookPen,
@@ -81,9 +82,35 @@
 
 	let modalElement = $state<HTMLDivElement>();
 
-	// Image loading state
-	let isImageLoaded = $state(false);
-	let hasImageError = $state(false);
+	// Image loading state - use cache
+	const detailImageSrc = $derived(
+		modalState.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
+	);
+	const detailImageEntry = $derived(
+		detailImageSrc ? imageCache.getImage(detailImageSrc) : null
+	);
+
+	let isImageLoaded = $state(detailImageEntry?.isLoaded ?? false);
+	let hasImageError = $state(detailImageEntry?.hasError ?? false);
+
+
+	// Sync with cache entry
+	$effect(() => {
+		if (detailImageEntry?.loadPromise) {
+			detailImageEntry.loadPromise
+				.then(() => {
+					isImageLoaded = true;
+					hasImageError = false;
+				})
+				.catch(() => {
+					isImageLoaded = false;
+					hasImageError = true;
+				});
+		} else if (detailImageEntry?.isLoaded) {
+			isImageLoaded = true;
+			hasImageError = false;
+		}
+	});
 
 	// Share feedback state
 	let shareFeedback = $state('');
@@ -403,13 +430,15 @@
 						<div class="image-placeholder"></div>
 					{/if}
 					<img
-						src={modalState.activeGame.coverImage.replace('.webp', '-detail.webp')}
+						src={detailImageSrc}
 						alt="{modalState.activeGame.title} cover"
 						class="h-full w-full object-cover"
 						class:loaded={isImageLoaded}
 						class:error={hasImageError}
 						style="width: 400px; height: 600px;"
-						loading="lazy"
+						loading="eager"
+						fetchpriority="high"
+						decoding="async"
 						onload={handleImageLoad}
 						onerror={handleImageError}
 					/>

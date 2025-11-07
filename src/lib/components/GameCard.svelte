@@ -3,26 +3,32 @@
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
 	import { getTierClass } from '../utils/tierUtils.js';
+	import { imageCache } from '../utils/imageCache.js';
+	import { browser } from '$app/environment';
 	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
 		size?: 'small' | 'large' | 'tiny';
 		showTierBadge?: boolean;
+		isAboveFold?: boolean; // New prop for fetchpriority
 	}
 
-	let { game, size = 'small', showTierBadge = true }: Props = $props();
+	let { game, size = 'small', showTierBadge = true, isAboveFold = false }: Props = $props();
 
-	// Image loading state
-	let isImageLoaded = $state(false);
-	let hasImageError = $state(false);
+	// Get image cache entry
+	const imageEntry = imageCache.getImage(game.coverImage);
+	
+	// Image loading state - initialize from cache
+	let isImageLoaded = $state(imageEntry.isLoaded);
+	let hasImageError = $state(imageEntry.hasError);
 
 	// Calculate total score for completed games
 	let totalScore = $derived(
 		game.status === 'Completed' &&
-			game.ratingPresentation !== null &&
-			game.ratingStory !== null &&
-			game.ratingGameplay !== null
+		game.ratingPresentation !== null &&
+		game.ratingStory !== null &&
+		game.ratingGameplay !== null
 			? Math.round(((game.ratingPresentation + game.ratingStory + game.ratingGameplay) / 3) * 2)
 			: null
 	);
@@ -30,15 +36,14 @@
 	// Dynamic font size calculation for title
 	let titleFontSize = $derived(() => {
 		const title = game.mainTitle || game.title || '';
-		const baseSize = 1; // Base font size in rem
-		const minSize = 0.65; // Minimum font size in rem
-		const maxLength = 25; // Length at which we start reducing font size
+		const baseSize = 1;
+		const minSize = 0.65;
+		const maxLength = 25;
 
 		if (!title || title.length <= maxLength) {
 			return baseSize;
 		}
 
-		// Calculate reduction factor based on length
 		const reduction = Math.min((title.length - maxLength) * 0.015, baseSize - minSize);
 		return Math.max(baseSize - reduction, minSize);
 	});
@@ -72,21 +77,21 @@
 	// Preload detail image on hover for faster modal loading
 	function preloadDetailImage() {
 		const detailImageSrc = game.coverImage.replace('.webp', '-detail.webp');
-		const img = new Image();
-		img.src = detailImageSrc;
+		imageCache.preload(detailImageSrc);
 	}
 
-	// Check if image is cached to prevent loading animation flicker
+	// Sync with cache entry if it loads asynchronously
 	$effect(() => {
-		const img = new Image();
-		img.src = game.coverImage;
-
-		// If image is already complete (cached), mark as loaded immediately
-		if (img.complete && img.naturalWidth > 0) {
-			isImageLoaded = true;
-		} else {
-			// Reset state for non-cached images
-			isImageLoaded = false;
+		if (imageEntry.loadPromise) {
+			imageEntry.loadPromise
+				.then(() => {
+					isImageLoaded = true;
+					hasImageError = false;
+				})
+				.catch(() => {
+					isImageLoaded = false;
+					hasImageError = true;
+				});
 		}
 	});
 </script>
@@ -120,7 +125,9 @@
 			class="cover-image"
 			class:loaded={isImageLoaded}
 			class:error={hasImageError}
-			loading="lazy"
+			loading={isAboveFold ? 'eager' : 'lazy'}
+			fetchpriority={isAboveFold ? 'high' : 'low'}
+			decoding="async"
 			onload={handleImageLoad}
 			onerror={handleImageError}
 		/>

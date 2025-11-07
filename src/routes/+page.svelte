@@ -39,9 +39,6 @@
 	// Get loading state from games store
 	let isLoadingGames = $state(false);
 
-	// Track image loading state
-	let imagesLoading = $state(true);
-
 	// View components
 	let ActiveView = $state<null | Component<StandardViewProps> | Component<TierListViewProps>>(null);
 	let isLoadingView = $state(false);
@@ -168,17 +165,7 @@
 		});
 	});
 
-	// Simulate image loading delay after data loads
-	$effect(() => {
-		if (!isLoadingGames && !isLoadingView && filteredData.filteredGames.length > 0) {
-			// Add a delay to simulate image loading time
-			setTimeout(() => {
-				imagesLoading = false;
-			}, 2000); // 2 second delay to show skeleton while images load
-		} else {
-			imagesLoading = true;
-		}
-	});
+	let imagesLoading = $derived(isLoadingGames || isLoadingView);
 </script>
 
 <svelte:head>

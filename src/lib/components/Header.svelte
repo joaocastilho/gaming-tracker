@@ -5,7 +5,7 @@
 
 	// Remove the unnecessary $effect + subscribe pattern
 	// Store values can be accessed directly with $ prefix
-	const { activeTab, theme } = appStore;
+	const { activeTab } = appStore;
 
 	type TabId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -78,13 +78,13 @@
 		// Method 3: Document body scroll
 		document.body.scrollTop = 0;
 
-		// Method 4: Document element scroll  
+		// Method 4: Document element scroll
 		document.documentElement.scrollTop = 0;
 
 		// Method 5: Fallback with setTimeout for async updates
 		setTimeout(() => {
 			window.scrollTo({ top: 0, behavior: 'instant' });
-			
+
 			// Additional fallback scroll
 			if (document.getElementById('main-content')) {
 				document.getElementById('main-content')!.scrollTop = 0;
