@@ -22,6 +22,7 @@
 		"validate": "bun run format && bun run lint && bun run check && bun run test"
 	},
 	"dependencies": {
+		"html2canvas": "^1.4.1",
 		"string-similarity": "^4.0.4"
 	},
 	"devDependencies": {
@@ -40,7 +41,6 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.12.4",
 		"globals": "^16.4.0",
-		"html2canvas": "^1.4.1",
 		"lucide-svelte": "^0.552.0",
 		"postcss": "^8.5.6",
 		"postcss-load-config": "^6.0.1",

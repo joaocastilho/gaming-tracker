@@ -5,8 +5,9 @@ import { gamesStore } from '$lib/stores/games';
  * Loads games data from games.json and populates the store
  */
 export async function load(event: import('@sveltejs/kit').LoadEvent) {
-	// Start loading games data with event context for proper fetch handling
-	await gamesStore.loadGames(event);
+	// Start loading games data, but DO NOT await it.
+	// This allows the page to render immediately while the store loads.
+	gamesStore.loadGames(event);
 
 	// Return any data that needs to be available in the layout
 	return {

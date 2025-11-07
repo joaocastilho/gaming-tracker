@@ -1,0 +1,4 @@
+	// Remove the unnecessary $effect + subscribe pattern
+	// Store values can be accessed directly with $ prefix
+	
+	const { activeTab, theme } = appStore;

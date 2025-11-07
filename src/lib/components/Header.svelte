@@ -3,15 +3,9 @@
 	import { filtersStore } from '../stores/filters.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
-	// Subscribe to theme changes (value used for reactive updates)
-	$effect(() => {
-		const unsubscribe = appStore.theme.subscribe(() => {
-			// Theme changes trigger reactive updates
-		});
-		return unsubscribe;
-	});
-
-	const { activeTab } = appStore;
+	// Remove the unnecessary $effect + subscribe pattern
+	// Store values can be accessed directly with $ prefix
+	const { activeTab, theme } = appStore;
 
 	type TabId = 'all' | 'completed' | 'planned' | 'tierlist';
 
