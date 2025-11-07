@@ -286,38 +286,6 @@
 		background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 50%, transparent 100%);
 	}
 
-	@keyframes strongPulse {
-		0% {
-			opacity: 1;
-			transform: scale(1);
-		}
-		25% {
-			opacity: 0.7;
-			transform: scale(1.01);
-		}
-		50% {
-			opacity: 0.4;
-			transform: scale(1.02);
-		}
-		75% {
-			opacity: 0.7;
-			transform: scale(1.01);
-		}
-		100% {
-			opacity: 1;
-			transform: scale(1);
-		}
-	}
-
-	@keyframes shimmer {
-		0% {
-			left: -100%;
-		}
-		100% {
-			left: 100%;
-		}
-	}
-
 	.cover-image {
 		width: 100%;
 		height: 100%;
