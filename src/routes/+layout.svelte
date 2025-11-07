@@ -10,6 +10,8 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';
 	import { modalStore } from '$lib/stores/modal.js';
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
 
@@ -25,7 +27,42 @@
 		genres: [] as string[],
 		tiers: [] as string[]
 	});
+
 	let currentActiveTab = $state('all');
+
+	// Register service worker
+	onMount(() => {
+		if (browser && 'serviceWorker' in navigator) {
+			const swPath = '/gaming-tracker/service-worker.js';
+
+			navigator.serviceWorker
+				.register(swPath, {
+					updateViaCache: 'none'
+				})
+				.then((registration) => {
+					console.log('Service Worker registered:', registration);
+
+					// Only check for updates if service worker is active
+					const checkForUpdates = () => {
+						if (
+							registration.installing === null &&
+							registration.waiting === null &&
+							registration.active !== null
+						) {
+							registration.update().catch(() => {
+								// Silently ignore update errors
+							});
+						}
+					};
+
+					// Check for updates periodically
+					setInterval(checkForUpdates, 60000);
+				})
+				.catch((error) => {
+					console.warn('Service Worker registration failed:', error);
+				});
+		}
+	});
 
 	// Reactive filter options derived from games store
 	$effect(() => {

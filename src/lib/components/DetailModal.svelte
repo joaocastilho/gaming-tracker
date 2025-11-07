@@ -10,6 +10,7 @@
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';
 	import { getTierClass } from '../utils/tierUtils.js';
 	import { imageCache } from '../utils/imageCache.js';
+	import { generateSrcset, generateSizes } from '../utils/imageSrcset.js';
 	import {
 		Presentation,
 		NotebookPen,
@@ -82,15 +83,21 @@
 
 	let modalElement = $state<HTMLDivElement>();
 
+	// Track loading state - initialize from cache entry, then sync via effect
+	let isImageLoaded = $state(false);
+	let hasImageError = $state(false);
+
 	// Image loading state - use cache
 	const detailImageSrc = $derived(
 		modalState.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
 	);
-	const detailImageEntry = $derived(detailImageSrc ? imageCache.getImage(detailImageSrc) : null);
 
-	// Track loading state - initialize from cache entry, then sync via effect
-	let isImageLoaded = $state(false);
-	let hasImageError = $state(false);
+	// Generate srcset for detail modal (after detailImageSrc is declared)
+	const detailImageSrcset = $derived(
+		detailImageSrc ? generateSrcset(detailImageSrc.replace('-detail.webp', '')) : ''
+	);
+	const detailImageSizes = $derived(generateSizes('modal'));
+	const detailImageEntry = $derived(detailImageSrc ? imageCache.getImage(detailImageSrc) : null);
 
 	// Sync with cache entry - this effect runs when detailImageEntry changes
 	$effect(() => {
@@ -446,6 +453,8 @@
 					{/if}
 					<img
 						src={detailImageSrc}
+						srcset={detailImageSrcset}
+						sizes={detailImageSizes}
 						alt="{modalState.activeGame.title} cover"
 						class="h-full w-full object-cover"
 						class:loaded={isImageLoaded}

@@ -42,10 +42,7 @@ export default defineConfig(
 			}
 		},
 		rules: {
-			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
-			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
 			'no-undef': 'off',
-			// Disable the svelte/no-navigation-without-resolve rule for proper SvelteKit navigation
 			'svelte/no-navigation-without-resolve': 'off',
 			'@typescript-eslint/no-deprecated': 'warn'
 		}
@@ -59,6 +56,25 @@ export default defineConfig(
 				parser: ts.parser,
 				svelteConfig
 			}
+		}
+	},
+	{
+		// Service Worker configuration
+		files: ['static/service-worker.js'],
+		languageOptions: {
+			globals: {
+				self: 'readonly',
+				caches: 'readonly',
+				fetch: 'readonly',
+				URL: 'readonly',
+				location: 'readonly',
+				ServiceWorkerGlobalScope: 'readonly',
+				ExtendableEvent: 'readonly',
+				FetchEvent: 'readonly'
+			}
+		},
+		rules: {
+			'no-undef': 'off' // Service worker runs in a different context
 		}
 	}
 );

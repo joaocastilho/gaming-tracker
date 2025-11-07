@@ -33,6 +33,42 @@ export default defineConfig({
 			}
 		}
 	],
+	build: {
+		rollupOptions: {
+			output: {
+				// Optimize chunk splitting for better caching
+				// Use function-based manualChunks to check actual module IDs
+				manualChunks: (id) => {
+					// Check if it's from node_modules
+					if (id.includes('node_modules')) {
+						// UI libraries
+						if (id.includes('lucide-svelte')) {
+							return 'vendor-ui';
+						}
+						// Utility libraries
+						if (id.includes('date-fns')) {
+							return 'vendor-utils';
+						}
+						if (id.includes('zod')) {
+							return 'vendor-utils';
+						}
+						// Group other large vendor packages
+						if (id.includes('svelte') || id.includes('@sveltejs')) {
+							return 'vendor-svelte';
+						}
+						// Other vendor code
+						return 'vendor';
+					}
+				}
+			}
+		},
+		chunkSizeWarningLimit: 1000,
+		sourcemap: false
+	},
+	// Optimize dependencies
+	optimizeDeps: {
+		include: ['lucide-svelte', 'date-fns']
+	},
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

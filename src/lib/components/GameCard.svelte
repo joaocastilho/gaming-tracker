@@ -5,6 +5,7 @@
 	import { getTierClass } from '../utils/tierUtils.js';
 	import { imageCache } from '../utils/imageCache.js';
 	import { browser } from '$app/environment';
+	import { generateSrcset, generateSizes } from '../utils/imageSrcset.js';
 	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
@@ -18,6 +19,10 @@
 
 	// Get image cache entry
 	const imageEntry = imageCache.getImage(game.coverImage);
+
+	// Generate srcset for responsive images
+	const imageSrcset = $derived(generateSrcset(game.coverImage));
+	const imageSizes = $derived(generateSizes('gallery'));
 
 	// Image loading state - initialize from cache
 	let isImageLoaded = $state(imageEntry.isLoaded);
@@ -170,6 +175,8 @@
 		<img
 			bind:this={imageElement}
 			src={game.coverImage}
+			srcset={imageSrcset}
+			sizes={imageSizes}
 			alt="{game.title} cover"
 			class="cover-image"
 			class:loaded={isImageLoaded}

@@ -100,34 +100,42 @@ async function processImage(
 		const originalStats = await stat(inputPath);
 		const originalSize = originalStats.size;
 
-		// Optimize image for gallery view (300x450px)
-		await sharp(inputPath)
-			.webp({
-				quality: 85,
-				effort: 6
-			})
-			.resize(300, 450, {
-				fit: 'cover',
-				position: 'center',
-				background: { r: 0, g: 0, b: 0, alpha: 0 }
-			})
-			.toFile(galleryPath);
+		// Generate multiple sizes for responsive images
+		const sizes = [
+			{ name: 'thumbnail', width: 200, height: 300, suffix: '-thumb' },
+			{ name: 'small', width: 300, height: 450, suffix: '' }, // Gallery view
+			{ name: 'medium', width: 400, height: 600, suffix: '-detail' }, // Detail modal
+			{ name: 'large', width: 600, height: 900, suffix: '-large' } // High-res displays
+		];
 
-		// Optimize image for detail modal (400x600px)
-		await sharp(inputPath)
-			.webp({
-				quality: 85,
-				effort: 6
-			})
-			.resize(400, 600, {
-				fit: 'cover',
-				position: 'center',
-				background: { r: 0, g: 0, b: 0, alpha: 0 }
-			})
-			.toFile(detailPath);
+		const optimizationResults: { size: string; path: string; fileSize: number }[] = [];
 
-		// Get optimized file sizes (use gallery size for stats since it's the primary image)
-		const galleryStats = await stat(galleryPath);
+		// Optimize for each size
+		for (const size of sizes) {
+			const outputPath = join(outputDir, `${gameId}${size.suffix}.webp`);
+
+			await sharp(inputPath)
+				.webp({
+					quality: size.name === 'thumbnail' ? 80 : 85, // Lower quality for thumbnails
+					effort: 6
+				})
+				.resize(size.width, size.height, {
+					fit: 'cover',
+					position: 'center',
+					background: { r: 0, g: 0, b: 0, alpha: 0 }
+				})
+				.toFile(outputPath);
+
+			const stats = await stat(outputPath);
+			optimizationResults.push({
+				size: size.name,
+				path: outputPath,
+				fileSize: stats.size
+			});
+		}
+
+		// Get optimized file size (use gallery size for stats)
+		const galleryStats = await stat(join(outputDir, `${gameId}.webp`));
 		const optimizedSize = galleryStats.size;
 
 		const processingTime = Date.now() - startTime;
