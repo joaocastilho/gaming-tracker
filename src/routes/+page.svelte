@@ -4,6 +4,7 @@
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { appStore } from '$lib/stores/app.js';
 	import { sortStore } from '$lib/stores/sort.js';
+	import { debounce } from '$lib/utils/debounce.js';
 	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
@@ -39,9 +40,17 @@
 	// Get loading state from games store
 	let isLoadingGames = $state(false);
 
+	// Track image loading state
+	let imagesLoading = $state(true);
+
 	// View components
 	let ActiveView = $state<null | Component<StandardViewProps> | Component<TierListViewProps>>(null);
 	let isLoadingView = $state(false);
+
+	// Debounced URL update functions to reduce main-thread jank
+	const debouncedFiltersWriteToURL = debounce(() => filtersStore.writeToURL(), 100);
+	const debouncedAppWriteToURL = debounce(() => appStore.writeToURL(), 100);
+	const debouncedSortWriteToURL = debounce(() => sortStore.writeToURL(), 100);
 
 	// Subscribe to stores
 	filteredGamesStore.subscribe((data) => {
@@ -73,9 +82,9 @@
 	$effect(() => {
 		const updateURLs = () => {
 			try {
-				filtersStore.writeToURL();
-				appStore.writeToURL();
-				sortStore.writeToURL();
+				debouncedFiltersWriteToURL();
+				debouncedAppWriteToURL();
+				debouncedSortWriteToURL();
 			} catch (error) {
 				// If router still not ready, try again later
 				if (error instanceof Error && error.message.includes('router is initialized')) {
@@ -149,6 +158,18 @@
 	$effect(() => {
 		gamesStore.loadGames();
 	});
+
+	// Simulate image loading delay after data loads
+	$effect(() => {
+		if (!isLoadingGames && !isLoadingView && filteredData.filteredGames.length > 0) {
+			// Add a delay to simulate image loading time
+			setTimeout(() => {
+				imagesLoading = false;
+			}, 2000); // 2 second delay to show skeleton while images load
+		} else {
+			imagesLoading = true;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -156,7 +177,7 @@
 </svelte:head>
 
 <div class="main-content" id="main-content">
-	{#if isLoadingView || isLoadingGames}
+	{#if isLoadingView || isLoadingGames || imagesLoading}
 		<!-- Loading Skeleton -->
 		<div
 			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"

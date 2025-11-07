@@ -21,7 +21,6 @@
 	} from 'lucide-svelte';
 
 	let modalState = $state(modalStore.getState());
-	let allGames = $state<Game[]>([]);
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 	let filteredGamesData = $state<FilteredGameData>({
 		filteredGames: [],
@@ -45,8 +44,8 @@
 
 	// Subscribe to games store for navigation
 	$effect(() => {
-		const unsubscribe = gamesStore.subscribe((games) => {
-			allGames = games;
+		const unsubscribe = gamesStore.subscribe(() => {
+			// Navigation is now handled through filteredGamesData
 		});
 		return unsubscribe;
 	});

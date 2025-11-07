@@ -1,9 +1,15 @@
 <script lang="ts">
+	import { crossfade } from 'svelte/transition';
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
 
 	export let filteredGames: Game[];
 	export let viewMode: string;
+
+	const [, receive] = crossfade({
+		duration: 300,
+		easing: (t) => t * t * (3 - 2 * t) // ease-in-out cubic
+	});
 </script>
 
 {#if viewMode === 'gallery'}
@@ -12,7 +18,9 @@
 		class="game-grid grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 	>
 		{#each filteredGames as game (game.id)}
-			<GameCard {game} />
+			<div transition:receive={{ key: game.id }}>
+				<GameCard {game} />
+			</div>
 		{/each}
 	</div>
 {:else}

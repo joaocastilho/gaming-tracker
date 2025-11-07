@@ -1,10 +1,16 @@
 <script lang="ts">
+	import { crossfade } from 'svelte/transition';
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
 
 	export let tierLabel: string;
 	export let tierName: string;
 	export let games: Game[];
+
+	const [, receive] = crossfade({
+		duration: 300,
+		easing: (t) => t * t * (3 - 2 * t) // ease-in-out cubic
+	});
 </script>
 
 <div class="tier-section">
@@ -15,7 +21,9 @@
 
 	<div class="tier-games-grid">
 		{#each games as game (game.id)}
-			<GameCard {game} size="tiny" showTierBadge={false} />
+			<div transition:receive={{ key: game.id }}>
+				<GameCard {game} size="tiny" showTierBadge={false} />
+			</div>
 		{/each}
 	</div>
 </div>

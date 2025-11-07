@@ -68,6 +68,27 @@
 			modalStore.openViewModal(game);
 		}
 	}
+
+	// Preload detail image on hover for faster modal loading
+	function preloadDetailImage() {
+		const detailImageSrc = game.coverImage.replace('.webp', '-detail.webp');
+		const img = new Image();
+		img.src = detailImageSrc;
+	}
+
+	// Check if image is cached to prevent loading animation flicker
+	$effect(() => {
+		const img = new Image();
+		img.src = game.coverImage;
+
+		// If image is already complete (cached), mark as loaded immediately
+		if (img.complete && img.naturalWidth > 0) {
+			isImageLoaded = true;
+		} else {
+			// Reset state for non-cached images
+			isImageLoaded = false;
+		}
+	});
 </script>
 
 <button
@@ -84,6 +105,8 @@
 			: '450px'};"
 	onclick={() => modalStore.openViewModal(game)}
 	onkeydown={handleKeyDown}
+	onmouseover={preloadDetailImage}
+	onfocus={preloadDetailImage}
 	aria-label="View details for {game.title}"
 >
 	<!-- Cover Image Container -->
