@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { appStore } from '$lib/stores/app';
 	import type { Game } from '$lib/types/game';
-	import { getTierClass } from '$lib/utils/tierUtils';
+	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
 	import GameCard from '$lib/components/GameCard.svelte';
 	import GameTable from '$lib/components/GameTable.svelte';
 	import type { TransitionConfig, CrossfadeParams } from 'svelte/transition';
@@ -20,11 +20,11 @@
 
 <div class="tier-section">
 	<h3 class="tier-header {getTierClass(tierName)}">
-		{tierName}
+		{getTierDisplayName(tierName)}
 		<span class="tier-count">{games.length} {games.length === 1 ? 'game' : 'games'}</span>
 	</h3>
 	{#if $viewMode === 'gallery'}
-		<div class="tier-grid">
+		<div class="tier-games-grid">
 			{#each games as game (game.id)}
 				<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
 					<GameCard {game} size="tiny" showTierBadge={false} />
@@ -62,7 +62,9 @@
 
 	.tier-games-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-		gap: 1.5rem;
+		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+		gap: 1rem;
+		max-width: none;
+		width: 100%;
 	}
 </style>

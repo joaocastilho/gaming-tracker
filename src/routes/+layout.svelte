@@ -212,6 +212,14 @@
 <svelte:head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Gaming Tracker</title>
+
+	<!-- Performance optimizations for font loading -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+
+	<!-- Preload common system fonts for better performance -->
+	<link rel="dns-prefetch" href="//fonts.googleapis.com" />
+	<link rel="dns-prefetch" href="//fonts.gstatic.com" />
 </svelte:head>
 
 <div class="bg-background text-foreground min-h-screen">

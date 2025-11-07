@@ -7,7 +7,7 @@
 	import { appStore } from '../stores/app.js';
 	import type { Game } from '../types/game.js';
 	import type { FilteredGameData } from '../stores/filters.js';
-	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
+	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';
 	import { getTierClass } from '../utils/tierUtils.js';
 	import {
 		Presentation,

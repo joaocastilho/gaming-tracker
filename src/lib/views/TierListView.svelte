@@ -58,7 +58,7 @@
 		<p>Filter your games or assign tiers to see them here!</p>
 	</div>
 {:else}
-	<div class="tier-list-container">
+	<div class="tier-list-container max-w-none">
 		{#each Object.entries(tierList) as [tierName, games] (tierName)}
 			{#if games.length > 0}
 				<TierRow {tierName} {games} {send} {receive} />
