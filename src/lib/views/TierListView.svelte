@@ -39,9 +39,9 @@
 		};
 
 		// Use the 'games' argument instead of the global store
+		// DO NOT sort - preserve the original filtered order for consistent navigation
 		games
 			.filter((game) => game.tier)
-			.sort((a, b) => a.title.localeCompare(b.title))
 			.forEach((game) => {
 				if (game.tier && gamesByTier[game.tier]) {
 					gamesByTier[game.tier].push(game);
