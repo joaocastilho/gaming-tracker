@@ -11,8 +11,6 @@
 	import { appStore } from '$lib/stores/app.js';
 	import { modalStore } from '$lib/stores/modal.js';
 
-	import { Grid3x3, List } from 'lucide-svelte';
-
 	let { children } = $props();
 
 	let initialized = false;
@@ -27,7 +25,6 @@
 		genres: [] as string[],
 		tiers: [] as string[]
 	});
-	let currentViewMode = $state('gallery');
 	let currentActiveTab = $state('all');
 
 	// Reactive filter options derived from games store
@@ -38,18 +35,18 @@
 		return unsubscribe;
 	});
 
-	// Reactive view mode from app store
-	$effect(() => {
-		const unsubscribe = appStore.viewMode.subscribe((viewMode) => {
-			currentViewMode = viewMode;
-		});
-		return unsubscribe;
-	});
-
 	// Reactive active tab from app store
 	$effect(() => {
 		const unsubscribe = appStore.activeTab.subscribe((activeTab) => {
 			currentActiveTab = activeTab;
+			// Clear filters when switching to tier list page
+			if (activeTab === 'tierlist') {
+				filtersStore.resetAllFilters();
+				filtersStore.setSearchTerm('');
+				// Update URL to reflect clean state
+				if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
+				appStore.writeToURLWithFilters(filtersStore);
+			}
 		});
 		return unsubscribe;
 	});
@@ -150,10 +147,6 @@
 		filtersStore.readFromURL(page.url.searchParams);
 	});
 
-	function handleViewModeToggle() {
-		appStore.toggleViewMode();
-	}
-
 	// Filter state with reactive updates
 	let selectedPlatforms: string[] = $state([]);
 	let selectedGenres: string[] = $state([]);
@@ -246,22 +239,6 @@
 						>
 							↻ Reset
 						</button>
-
-						<div class="view-toggle-container">
-							<button
-								class="view-toggle-button flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-								title={currentViewMode === 'gallery'
-									? 'Switch to table view'
-									: 'Switch to gallery view'}
-								onclick={handleViewModeToggle}
-							>
-								{#if currentViewMode === 'gallery'}
-									<List size={18} class="text-gray-600 dark:text-gray-400" />
-								{:else}
-									<Grid3x3 size={18} class="text-gray-600 dark:text-gray-400" />
-								{/if}
-							</button>
-						</div>
 					</div>
 				</div>
 			{/if}

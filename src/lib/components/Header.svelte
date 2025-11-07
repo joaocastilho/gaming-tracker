@@ -297,7 +297,7 @@
 		color: var(--color-text-secondary);
 		cursor: pointer;
 		font-family: inherit;
-		font-size: 0.9rem;
+		font-size: 1.2rem;
 		font-weight: 500;
 		padding: 1rem 1.5rem;
 		position: relative;
@@ -345,19 +345,15 @@
 	}
 
 	.tab-count {
-		background-color: var(--color-border);
 		color: var(--color-text-tertiary);
-		font-size: 0.75rem;
 		font-weight: 600;
 		padding: 0.125rem 0.375rem;
-		border-radius: 12px;
 		line-height: 1;
 		min-width: 1.5rem;
 		text-align: center;
 	}
 
 	.tab-button.active .tab-count {
-		background-color: var(--color-accent);
 		color: var(--color-accent-foreground);
 	}
 

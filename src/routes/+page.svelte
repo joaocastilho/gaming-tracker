@@ -13,7 +13,6 @@
 
 	interface StandardViewProps {
 		filteredGames: Game[];
-		viewMode: 'gallery' | 'table';
 	}
 
 	interface TierListViewProps {
@@ -30,9 +29,6 @@
 		completedCount: 0,
 		plannedCount: 0
 	});
-
-	// Get current view mode
-	let currentViewMode = $state<'gallery' | 'table'>('gallery');
 
 	// Get current active tab
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
@@ -55,10 +51,6 @@
 	// Subscribe to stores
 	filteredGamesStore.subscribe((data) => {
 		filteredData = data;
-	});
-
-	appStore.viewMode.subscribe((viewMode) => {
-		currentViewMode = viewMode;
 	});
 
 	appStore.activeTab.subscribe((activeTab) => {
@@ -198,7 +190,6 @@
 					: currentActiveTab === 'tierlist'
 						? filteredData.filteredGames
 						: allGames}
-			viewMode={currentViewMode}
 		/>
 	{:else}
 		<div class="empty-state">

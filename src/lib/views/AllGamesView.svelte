@@ -6,10 +6,9 @@
 
 	interface Props {
 		filteredGames: Game[];
-		viewMode: string;
 	}
 
-	let { filteredGames, viewMode }: Props = $props();
+	let { filteredGames }: Props = $props();
 
 	const [send, receive] = crossfade({
 		duration: 300,
@@ -17,28 +16,12 @@
 	});
 </script>
 
-{#if viewMode === 'gallery'}
-	<!-- Gallery view implementation -->
-	<div
-		class="game-grid grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
-	>
-		{#each filteredGames as game (game.id)}
-			<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
-				<GameCard {game} />
-			</div>
-		{/each}
-	</div>
-{:else}
-	<!-- Table view implementation -->
-	<table class="game-table">
-		<tbody>
-			{#each filteredGames as game (game.id)}
-				<tr>
-					<td>{game.title}</td>
-					<td>{game.platform}</td>
-					<td>{game.status}</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
-{/if}
+<div
+	class="game-grid grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
+>
+	{#each filteredGames as game (game.id)}
+		<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
+			<GameCard {game} />
+		</div>
+	{/each}
+</div>

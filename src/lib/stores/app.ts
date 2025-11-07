@@ -4,27 +4,16 @@ import type { filtersStore as FiltersStoreType } from './filters.js';
 
 // TypeScript interfaces for app state
 export interface AppState {
-	viewMode: 'gallery' | 'table';
 	theme: 'dark' | 'light';
 	activeTab: 'all' | 'completed' | 'planned' | 'tierlist';
 }
 
 function createAppStore() {
-	const viewMode = writable<'gallery' | 'table'>('gallery');
 	const theme = writable<'dark' | 'light'>('dark');
 	const activeTab = writable<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 
 	// Initialize from localStorage first
 	if (typeof window !== 'undefined') {
-		// Load from localStorage on initialization - this is the primary source
-		const savedViewMode = localStorage.getItem('gaming-tracker-view-mode') as
-			| 'gallery'
-			| 'table'
-			| null;
-		if (savedViewMode) {
-			viewMode.set(savedViewMode);
-		}
-
 		const savedTheme = localStorage.getItem('gaming-tracker-theme') as 'dark' | 'light' | null;
 		if (savedTheme) {
 			theme.set(savedTheme);
@@ -44,10 +33,6 @@ function createAppStore() {
 		}
 
 		// Subscribe to changes and save to localStorage
-		viewMode.subscribe((mode) => {
-			localStorage.setItem('gaming-tracker-view-mode', mode);
-		});
-
 		theme.subscribe((t) => {
 			localStorage.setItem('gaming-tracker-theme', t);
 			// Apply theme to document
@@ -62,9 +47,8 @@ function createAppStore() {
 
 	// Derived store for combined app state
 	const appState = derived(
-		[viewMode, theme, activeTab],
-		([$viewMode, $theme, $activeTab]): AppState => ({
-			viewMode: $viewMode,
+		[theme, activeTab],
+		([$theme, $activeTab]): AppState => ({
 			theme: $theme,
 			activeTab: $activeTab
 		})
@@ -72,7 +56,6 @@ function createAppStore() {
 
 	return {
 		// Individual state stores
-		viewMode,
 		theme,
 		activeTab,
 
@@ -80,14 +63,6 @@ function createAppStore() {
 		appState,
 
 		// Action methods
-		toggleViewMode() {
-			viewMode.update((mode) => (mode === 'gallery' ? 'table' : 'gallery'));
-		},
-
-		setViewMode(mode: 'gallery' | 'table') {
-			viewMode.set(mode);
-		},
-
 		toggleTheme() {
 			theme.update((t) => (t === 'dark' ? 'light' : 'dark'));
 		},
@@ -102,17 +77,8 @@ function createAppStore() {
 
 		// URL parameter management - only override localStorage if URL params are present and different
 		readFromURL(searchParams: URLSearchParams) {
-			const view = searchParams.get('view');
 			const themeParam = searchParams.get('theme');
 			const tab = searchParams.get('tab');
-
-			// Only set view mode if URL parameter exists and differs from current localStorage value
-			if (view && (view === 'gallery' || view === 'table')) {
-				const currentView = get(viewMode);
-				if (view !== currentView) {
-					viewMode.set(view);
-				}
-			}
 
 			// Only set theme if URL parameter exists and differs from current localStorage value
 			if (themeParam && (themeParam === 'dark' || themeParam === 'light')) {
@@ -149,19 +115,12 @@ function createAppStore() {
 			if (typeof window === 'undefined') return;
 
 			try {
-				const currentViewMode = get(viewMode);
 				const url = new URL(window.location.href);
 
-				// Only update if different from defaults to keep URLs clean
-				if (currentViewMode !== 'gallery') {
-					url.searchParams.set('view', currentViewMode);
-				} else {
-					url.searchParams.delete('view');
-				}
-
-				// Remove theme and tab parameters - theme is stored in localStorage, tab is indicated by route
+				// Remove all parameters except filters to keep URLs clean
 				url.searchParams.delete('theme');
 				url.searchParams.delete('tab');
+				url.searchParams.delete('view');
 
 				// Use SvelteKit's replaceState
 				replaceState(url.toString(), {});

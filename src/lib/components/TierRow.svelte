@@ -1,12 +1,8 @@
 <script lang="ts">
-	import { appStore } from '$lib/stores/app';
 	import type { Game } from '$lib/types/game';
 	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
 	import GameCard from '$lib/components/GameCard.svelte';
-	import GameTable from '$lib/components/GameTable.svelte';
 	import type { TransitionConfig, CrossfadeParams } from 'svelte/transition';
-
-	const { viewMode } = appStore;
 
 	interface Props {
 		tierName: string;
@@ -23,17 +19,13 @@
 		{getTierDisplayName(tierName)}
 		<span class="tier-count">{games.length} {games.length === 1 ? 'game' : 'games'}</span>
 	</h3>
-	{#if $viewMode === 'gallery'}
-		<div class="tier-games-grid">
-			{#each games as game (game.id)}
-				<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
-					<GameCard {game} size="tiny" showTierBadge={false} />
-				</div>
-			{/each}
-		</div>
-	{:else}
-		<GameTable {games} />
-	{/if}
+	<div class="tier-games-grid">
+		{#each games as game (game.id)}
+			<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
+				<GameCard {game} size="tiny" showTierBadge={false} />
+			</div>
+		{/each}
+	</div>
 </div>
 
 <style>
