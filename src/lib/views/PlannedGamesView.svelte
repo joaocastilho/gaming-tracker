@@ -4,11 +4,15 @@
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
 
-	export let filteredGames: Game[];
-	export let viewMode: string;
+	interface Props {
+		filteredGames: Game[];
+		viewMode: string;
+	}
+
+	let { filteredGames, viewMode }: Props = $props();
 
 	// Filter to only planned games
-	$: plannedGames = filteredGames.filter((game) => game.status === 'Planned');
+	let plannedGames = $derived(filteredGames.filter((game) => game.status === 'Planned'));
 
 	const [send, receive] = crossfade({
 		duration: 300,

@@ -1,32 +1,39 @@
 <script lang="ts">
-	import { crossfade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
+	import { appStore } from '$lib/stores/app';
 	import type { Game } from '$lib/types/game';
+	import { getTierClass } from '$lib/utils/tierUtils';
 	import GameCard from '$lib/components/GameCard.svelte';
+	import GameTable from '$lib/components/GameTable.svelte';
+	import type { TransitionConfig, CrossfadeParams } from 'svelte/transition';
 
-	export let tierLabel: string;
-	export let tierName: string;
-	export let games: Game[];
+	const { viewMode } = appStore;
 
-	const [send, receive] = crossfade({
-		duration: 300,
-		easing: quintOut
-	});
+	interface Props {
+		tierName: string;
+		games: Game[];
+		send: (node: Element, params: CrossfadeParams & { key: string }) => () => TransitionConfig;
+		receive: (node: Element, params: CrossfadeParams & { key: string }) => () => TransitionConfig;
+	}
+
+	let { tierName, games, send, receive }: Props = $props();
 </script>
 
 <div class="tier-section">
-	<h3 class="tier-header" style="background-color: var(--color-tier-{tierLabel.toLowerCase()})">
-		{tierLabel} - {tierName}
+	<h3 class="tier-header {getTierClass(tierName)}">
+		{tierName}
 		<span class="tier-count">{games.length} {games.length === 1 ? 'game' : 'games'}</span>
 	</h3>
-
-	<div class="tier-games-grid">
-		{#each games as game (game.id)}
-			<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
-				<GameCard {game} size="tiny" showTierBadge={false} />
-			</div>
-		{/each}
-	</div>
+	{#if $viewMode === 'gallery'}
+		<div class="tier-grid">
+			{#each games as game (game.id)}
+				<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
+					<GameCard {game} size="tiny" showTierBadge={false} />
+				</div>
+			{/each}
+		</div>
+	{:else}
+		<GameTable {games} />
+	{/if}
 </div>
 
 <style>
