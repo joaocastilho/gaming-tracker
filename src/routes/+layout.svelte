@@ -12,6 +12,7 @@
 	import { modalStore } from '$lib/stores/modal.js';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	let { children } = $props();
 
@@ -20,15 +21,6 @@
 	let DetailModalComponent = $state<
 		typeof import('$lib/components/DetailModal.svelte').default | null
 	>(null);
-
-	// Reactive state
-	let filterOptions = $state({
-		platforms: [] as string[],
-		genres: [] as string[],
-		tiers: [] as string[]
-	});
-
-	let currentActiveTab = $state('all');
 
 	// Register service worker
 	onMount(() => {
@@ -65,27 +57,23 @@
 	});
 
 	// Reactive filter options derived from games store
-	$effect(() => {
-		const unsubscribe = gamesStore.subscribe((games) => {
-			filterOptions = extractFilterOptions(games);
-		});
-		return unsubscribe;
-	});
+	// Use $derived instead of $effect + subscribe
+	let filterOptions = $derived(extractFilterOptions($gamesStore));
 
-	// Reactive active tab from app store
+	// Reactive active tab from app store - use rune directly
+	let currentActiveTab = $derived(get(appStore.activeTab));
+
+	// Handle tab changes with effect
 	$effect(() => {
-		const unsubscribe = appStore.activeTab.subscribe((activeTab) => {
-			currentActiveTab = activeTab;
-			// Clear filters when switching to tier list page
-			if (activeTab === 'tierlist') {
-				filtersStore.resetAllFilters();
-				filtersStore.setSearchTerm('');
-				// Update URL to reflect clean state
-				if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
-				appStore.writeToURLWithFilters(filtersStore);
-			}
-		});
-		return unsubscribe;
+		const tab = get(appStore.activeTab);
+		// Clear filters when switching to tier list page
+		if (tab === 'tierlist') {
+			filtersStore.resetAllFilters();
+			filtersStore.setSearchTerm('');
+			// Update URL to reflect clean state
+			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
+			appStore.writeToURLWithFilters(filtersStore);
+		}
 	});
 
 	// Initialize app - localStorage is already loaded, only handle game parameter for detail modal

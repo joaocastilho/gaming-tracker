@@ -3,12 +3,16 @@
 
 	let inputElement: HTMLInputElement | undefined;
 	let debounceTimeout: ReturnType<typeof setTimeout> | undefined;
+
 	let searchTerm = $state('');
 
-	// Subscribe to search term changes
+	// Sync with store
 	$effect(() => {
-		const unsubscribe = filtersStore.subscribe(($filters) => {
-			if ($filters) searchTerm = $filters.searchTerm;
+		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
+			searchTerm = value;
+			if (inputElement && inputElement.value !== value) {
+				inputElement.value = value;
+			}
 		});
 		return unsubscribe;
 	});

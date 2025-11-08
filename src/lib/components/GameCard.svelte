@@ -17,16 +17,16 @@
 
 	let { game, size = 'small', showTierBadge = true, isAboveFold = false }: Props = $props();
 
-	// Get image cache entry
-	const imageEntry = imageCache.getImage(game.coverImage);
-
 	// Generate srcset for responsive images
 	const imageSrcset = $derived(generateSrcset(game.coverImage));
 	const imageSizes = $derived(generateSizes('gallery'));
 
-	// Image loading state - initialize from cache
-	let isImageLoaded = $state(imageEntry.isLoaded);
-	let hasImageError = $state(imageEntry.hasError);
+	// Get image cache entry - memoize to avoid recreating
+	const imageEntry = $derived(imageCache.getImage(game.coverImage));
+
+	// Image loading state - sync with cache entry
+	let isImageLoaded = $derived(imageEntry.isLoaded);
+	let hasImageError = $derived(imageEntry.hasError);
 
 	// Reference to the image element for Intersection Observer
 	let imageElement = $state<HTMLImageElement>();
@@ -104,24 +104,23 @@
 	}
 
 	// Setup Intersection Observer for progressive loading
+	// Only set up observer once when image element is available and not above fold
 	$effect(() => {
-		if (!browser || !imageElement || isAboveFold) return;
-
-		// If already loaded, no need to observe
-		if (isImageLoaded) return;
+		if (!browser || !imageElement || isAboveFold || isImageLoaded) return;
 
 		const observer = new IntersectionObserver(
 			(entries) => {
-				entries.forEach((entry) => {
+				for (const entry of entries) {
 					if (entry.isIntersecting) {
 						// Image is about to enter viewport, ensure it's preloaded
 						imageCache.preload(game.coverImage);
 						observer.disconnect();
+						break; // Exit early since we disconnect
 					}
-				});
+				}
 			},
 			{
-				rootMargin: '200px', // Start loading 200px before entering viewport
+				rootMargin: '200px',
 				threshold: 0.1
 			}
 		);
@@ -135,8 +134,17 @@
 
 	// Sync with cache entry if it loads asynchronously
 	$effect(() => {
-		if (imageEntry.loadPromise) {
-			imageEntry.loadPromise
+		const entry = imageEntry;
+		if (entry.isLoaded) {
+			isImageLoaded = true;
+			hasImageError = false;
+		} else if (entry.hasError) {
+			isImageLoaded = false;
+			hasImageError = true;
+		}
+
+		if (entry.loadPromise) {
+			entry.loadPromise
 				.then(() => {
 					isImageLoaded = true;
 					hasImageError = false;

@@ -5,6 +5,22 @@ import type { Game } from '$lib/types/game';
 import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
 import FilterWorker from '$lib/workers/filterWorker?worker';
 
+// Add memoization utility
+function memoize<TArgs extends unknown[], TReturn>(
+	fn: (...args: TArgs) => TReturn
+): (...args: TArgs) => TReturn {
+	const cache = new Map<string, TReturn>();
+	return (...args: TArgs) => {
+		const key = JSON.stringify(args);
+		if (cache.has(key)) {
+			return cache.get(key)!;
+		}
+		const result = fn(...args);
+		cache.set(key, result);
+		return result;
+	};
+}
+
 export interface FilterState {
 	searchTerm: string;
 	platforms: string[];
@@ -246,12 +262,17 @@ function createFiltersStore() {
 		searchQuery: derived(filters, ($filters) => $filters?.searchTerm ?? ''),
 
 		createFilteredGamesStore: () => {
-			return derived([filteredGames, gameCounts], ([$filteredGames, $gameCounts]) => ({
-				filteredGames: $filteredGames,
-				totalCount: $gameCounts.total,
-				completedCount: $gameCounts.completed,
-				plannedCount: $gameCounts.planned
+			// Memoize the derived store computation
+			const memoizedDerived = memoize((games: Game[], counts: GameCounts) => ({
+				filteredGames: games,
+				totalCount: counts.total,
+				completedCount: counts.completed,
+				plannedCount: counts.planned
 			}));
+
+			return derived([filteredGames, gameCounts], ([$filteredGames, $gameCounts]) => {
+				return memoizedDerived($filteredGames, $gameCounts);
+			});
 		},
 
 		readFromURL: (searchParams: URLSearchParams) => {

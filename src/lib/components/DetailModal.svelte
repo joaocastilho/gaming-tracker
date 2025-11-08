@@ -2,11 +2,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { modalStore } from '../stores/modal.js';
-	import { gamesStore } from '../stores/games.js';
 	import { filtersStore } from '../stores/filters.js';
 	import { appStore } from '../stores/app.js';
 	import type { Game } from '../types/game.js';
-	import type { FilteredGameData } from '../stores/filters.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';
 	import { getTierClass } from '../utils/tierUtils.js';
 	import { imageCache } from '../utils/imageCache.js';
@@ -22,55 +20,23 @@
 		Share2
 	} from 'lucide-svelte';
 
-	let modalState = $state(modalStore.getState());
-	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
-	let filteredGamesData = $state<FilteredGameData>({
-		filteredGames: [],
-		totalCount: 0,
-		completedCount: 0,
-		plannedCount: 0
-	});
+	let currentActiveTab = $derived(appStore.activeTab);
 
 	// Create filtered games store
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
-	// Subscribe to modal store changes
+	let filteredGamesData = $derived($filteredGamesStore);
+
+	// Handle modal state changes
 	$effect(() => {
-		const unsubscribe = modalStore.subscribe((state) => {
-			modalState = state;
-			// Update URL when modal state changes
+		if ($modalStore.isOpen) {
 			modalStore.writeToURL();
-		});
-		return unsubscribe;
-	});
-
-	// Subscribe to games store for navigation
-	$effect(() => {
-		const unsubscribe = gamesStore.subscribe(() => {
-			// Navigation is now handled through filteredGamesData
-		});
-		return unsubscribe;
-	});
-
-	// Subscribe to filtered games store
-	$effect(() => {
-		const unsubscribe = filteredGamesStore.subscribe((data) => {
-			filteredGamesData = data;
-		});
-		return unsubscribe;
-	});
-
-	// Subscribe to active tab changes
-	$effect(() => {
-		const unsubscribe = appStore.activeTab.subscribe((tab) => {
-			currentActiveTab = tab;
-		});
-		return unsubscribe;
+		}
 	});
 
 	// Focus management when modal opens
 	$effect(() => {
-		if (modalState.isOpen && modalElement && browser) {
+		if ($modalStore.isOpen && modalElement && browser) {
 			// Small delay to ensure DOM is ready
 			setTimeout(() => {
 				const focusableElements = getFocusableElements();
@@ -89,7 +55,7 @@
 
 	// Image loading state - use cache
 	const detailImageSrc = $derived(
-		modalState.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
+		$modalStore.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
 	);
 
 	// Generate srcset for detail modal (after detailImageSrc is declared)
@@ -186,7 +152,7 @@
 	let currentTabGames = $derived(() => {
 		const filteredGames = filteredGamesData.filteredGames;
 
-		switch (currentActiveTab) {
+		switch ($currentActiveTab) {
 			case 'all': {
 				// All games sorted alphabetically
 				return filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
@@ -262,8 +228,8 @@
 
 	// Get current game index for navigation within the current tab's games
 	let currentGameIndex = $derived(() => {
-		if (!modalState.activeGame) return -1;
-		return currentTabGames().findIndex((game) => game.id === modalState.activeGame?.id);
+		if (!$modalStore.activeGame) return -1;
+		return currentTabGames().findIndex((game) => game.id === $modalStore.activeGame?.id);
 	});
 
 	// Navigation functions
@@ -356,12 +322,12 @@
 	}
 
 	async function shareGame() {
-		if (!browser || !modalState.activeGame) return;
+		if (!browser || !$modalStore.activeGame) return;
 
 		try {
 			const url = new URL(window.location.href);
 			// Create a slug from the game title for the URL
-			const slug = modalState.activeGame.title
+			const slug = $modalStore.activeGame.title
 				.toLowerCase()
 				.replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
 				.replace(/\s+/g, '-') // Replace spaces with hyphens
@@ -397,7 +363,7 @@
 	});
 </script>
 
-{#if modalState.isOpen && modalState.activeGame && modalState.mode === 'view'}
+{#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}
 	<!-- Modal Overlay -->
 	<div
 		bind:this={modalElement}
@@ -455,7 +421,7 @@
 						src={detailImageSrc}
 						srcset={detailImageSrcset}
 						sizes={detailImageSizes}
-						alt="{modalState.activeGame.title} cover"
+						alt="{$modalStore.activeGame.title} cover"
 						class="h-full w-full object-cover"
 						class:loaded={isImageLoaded}
 						class:error={hasImageError}
@@ -468,7 +434,7 @@
 					/>
 
 					<!-- Co-op Badge -->
-					{#if modalState.activeGame.coOp === 'Yes'}
+					{#if $modalStore.activeGame.coOp === 'Yes'}
 						<div
 							class="absolute top-4 right-4 rounded-md bg-blue-600 px-3 py-1 text-sm font-semibold text-white"
 						>
@@ -488,13 +454,13 @@
 							class="flex flex-1 flex-col justify-start overflow-visible text-3xl font-bold"
 							style="color: var(--color-text-primary); min-height: 80px; white-space: normal;"
 						>
-							{modalState.activeGame.mainTitle}
-							{#if modalState.activeGame.subtitle}
+							{$modalStore.activeGame.mainTitle}
+							{#if $modalStore.activeGame.subtitle}
 								<br />
 								<span
 									class="font-semibold"
 									style="font-size: 1.2rem; line-height: 1.2; color: var(--color-text-secondary);"
-									>{modalState.activeGame.subtitle}</span
+									>{$modalStore.activeGame.subtitle}</span
 								>
 							{/if}
 						</h1>
@@ -528,19 +494,19 @@
 						<div class="flex flex-wrap gap-2">
 							<span
 								class="rounded-md px-3 py-1 text-sm font-medium text-white {getPlatformColor(
-									modalState.activeGame.platform
+									$modalStore.activeGame.platform
 								)}"
 							>
-								{modalState.activeGame.platform}
+								{$modalStore.activeGame.platform}
 							</span>
 							<span
 								class="rounded-md px-3 py-1 text-sm font-medium text-white {getGenreColor(
-									modalState.activeGame.genre
+									$modalStore.activeGame.genre
 								)}"
 							>
-								{modalState.activeGame.genre}
+								{$modalStore.activeGame.genre}
 							</span>
-							{#if modalState.activeGame.coOp === 'Yes'}
+							{#if $modalStore.activeGame.coOp === 'Yes'}
 								<span class="rounded-md bg-blue-600 px-3 py-1 text-sm font-medium text-white">
 									Co-op
 								</span>
@@ -548,13 +514,13 @@
 						</div>
 
 						<!-- Tier Level -->
-						{#if modalState.activeGame.tier}
+						{#if $modalStore.activeGame.tier}
 							<span
 								class="tier-badge rounded-md px-3 py-1 text-sm font-semibold {getTierClass(
-									modalState.activeGame.tier
+									$modalStore.activeGame.tier
 								)}"
 							>
-								{getTierDisplayName(modalState.activeGame.tier)}
+								{getTierDisplayName($modalStore.activeGame.tier)}
 							</span>
 						{/if}
 					</div>
@@ -566,16 +532,16 @@
 								Year Released
 							</div>
 							<div class="font-semibold" style="color: var(--color-text-primary);">
-								{modalState.activeGame.year}
+								{$modalStore.activeGame.year}
 							</div>
 						</div>
-						{#if modalState.activeGame.status === 'Completed'}
+						{#if $modalStore.activeGame.status === 'Completed'}
 							<div>
 								<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">
 									Hours Played
 								</div>
 								<div class="font-semibold" style="color: var(--color-text-primary);">
-									{modalState.activeGame.hoursPlayed || 'Not completed'}
+									{$modalStore.activeGame.hoursPlayed || 'Not completed'}
 								</div>
 							</div>
 						{:else}
@@ -584,7 +550,7 @@
 									Time to Beat
 								</div>
 								<div class="font-semibold" style="color: var(--color-text-primary);">
-									{modalState.activeGame.timeToBeat}
+									{$modalStore.activeGame.timeToBeat}
 								</div>
 							</div>
 						{/if}
@@ -593,19 +559,19 @@
 								Finished Date
 							</div>
 							<div class="font-semibold" style="color: var(--color-text-primary);">
-								{formatDate(modalState.activeGame.finishedDate)}
+								{formatDate($modalStore.activeGame.finishedDate)}
 							</div>
 						</div>
 						<div>
 							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">Co-op</div>
 							<div class="font-semibold" style="color: var(--color-text-primary);">
-								{modalState.activeGame.coOp === 'Yes' ? 'Yes' : 'No'}
+								{$modalStore.activeGame.coOp === 'Yes' ? 'Yes' : 'No'}
 							</div>
 						</div>
 					</div>
 
 					<!-- Ratings Section -->
-					{#if modalState.activeGame.status === 'Completed' && modalState.activeGame.ratingPresentation !== null && modalState.activeGame.ratingStory !== null && modalState.activeGame.ratingGameplay !== null}
+					{#if $modalStore.activeGame.status === 'Completed' && $modalStore.activeGame.ratingPresentation !== null && $modalStore.activeGame.ratingStory !== null && $modalStore.activeGame.ratingGameplay !== null}
 						<div class="space-y-4">
 							<h3 class="mb-4 text-xl font-semibold" style="color: var(--color-text-primary);">
 								Ratings
@@ -623,14 +589,14 @@
 									class="min-w-0 text-sm font-semibold"
 									style="color: var(--color-text-primary);"
 								>
-									{modalState.activeGame.ratingPresentation}/10
+									{$modalStore.activeGame.ratingPresentation}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full {getRatingBarColor(
-											modalState.activeGame.ratingPresentation
+											$modalStore.activeGame.ratingPresentation
 										)} transition-all duration-300"
-										style="width: {modalState.activeGame.ratingPresentation * 10}%"
+										style="width: {$modalStore.activeGame.ratingPresentation * 10}%"
 									></div>
 								</div>
 							</div>
@@ -647,14 +613,14 @@
 									class="min-w-0 text-sm font-semibold"
 									style="color: var(--color-text-primary);"
 								>
-									{modalState.activeGame.ratingStory}/10
+									{$modalStore.activeGame.ratingStory}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full {getRatingBarColor(
-											modalState.activeGame.ratingStory
+											$modalStore.activeGame.ratingStory
 										)} transition-all duration-300"
-										style="width: {modalState.activeGame.ratingStory * 10}%"
+										style="width: {$modalStore.activeGame.ratingStory * 10}%"
 									></div>
 								</div>
 							</div>
@@ -671,27 +637,27 @@
 									class="min-w-0 text-sm font-semibold"
 									style="color: var(--color-text-primary);"
 								>
-									{modalState.activeGame.ratingGameplay}/10
+									{$modalStore.activeGame.ratingGameplay}/10
 								</span>
 								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full {getRatingBarColor(
-											modalState.activeGame.ratingGameplay
+											$modalStore.activeGame.ratingGameplay
 										)} transition-all duration-300"
-										style="width: {modalState.activeGame.ratingGameplay * 10}%"
+										style="width: {$modalStore.activeGame.ratingGameplay * 10}%"
 									></div>
 								</div>
 							</div>
 
 							<!-- Total Score -->
-							{#if modalState.activeGame.score !== null}
+							{#if $modalStore.activeGame.score !== null}
 								<div
 									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
 								>
 									<div class="flex items-center justify-center gap-2">
 										<Trophy size={24} class="text-yellow-500" />
 										<span class="text-lg font-bold" style="color: var(--color-text-primary);">
-											Total Score: {modalState.activeGame.score}/20
+											Total Score: {$modalStore.activeGame.score}/20
 										</span>
 									</div>
 								</div>
