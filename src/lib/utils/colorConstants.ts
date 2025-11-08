@@ -17,39 +17,39 @@ export const PLATFORM_COLORS: Record<string, string> = {
 
 // Genre color mappings
 export const GENRE_COLORS: Record<string, string> = {
-    // Highly distinct colors, guaranteeing separation and white text readability
-    
-    // REDS / ORANGES
-    'Platformer': 'bg-[#b91c1c] text-white',      // Deep Red (Base)
-    'Action Platformer': 'bg-[#991b1b] text-white', // Darker Red
-    'Hack & Slash': 'bg-[#d97706] text-white',      // Dark Amber
-    'Survival': 'bg-[#78350f] text-white',            // Deep Brown
-    'Bullet Hell': 'bg-[#ea580c] text-white',       // Burnt Orange
-    'Action': 'bg-[#ef4444] text-white',              // Primary Red
-    
-    // BLUES / TEALS
-    'Action Adventure': 'bg-[#1e40af] text-white',   // Strong Royal Blue
-    'Story Adventure': 'bg-[#4338ca] text-white',   // Bright Indigo
-    'Action RPG': 'bg-[#0369a1] text-white',       // Sapphire Blue
-    
-    // PURPLES / MAGENTAS
-    'Puzzle Platformer': 'bg-[#581c87] text-white',  // Deep Violet
-    'Story Platformer': 'bg-[#7c3aed] text-white',   // Royal Purple
-    'Classic RPG': 'bg-[#4f46e5] text-white',      // Indigo
-    'Japanese RPG': 'bg-[#8b5cf6] text-white',      // Medium Purple
-    'Sandbox RPG': 'bg-[#c026d3] text-white',       // Magenta
-    'Story RPG': 'bg-[#db2777] text-white',         // Deep Pink
-    'FPS': 'bg-[#9f1239] text-white',                 // Wine Red
-    
-    // GREENS / CYANS / UTILITY
-    'Puzzle': 'bg-[#15803d] text-white',              // Dark Green (Base)
-    'Story Puzzle': 'bg-[#047871] text-white',      // Deep Teal
-    'Story Horror': 'bg-[#065f46] text-white',      // Forest Green
-    'Horror RPG': 'bg-[#4d7c0f] text-white',         // Olive Green
-    'Survival Horror': 'bg-[#57534e] text-white',      // Dark Slate Gray
-    'Strategy': 'bg-[#44403c] text-white',           // Dark Gray/Slate
-    'Metroidvania': 'bg-[#a16207] text-white',        // Dark Goldenrod
-    'Roguelike': 'bg-[#0f766e] text-white',           // Dark Cyan
+	// Highly distinct colors, guaranteeing separation and white text readability
+
+	// REDS / ORANGES
+	Platformer: 'bg-[#b91c1c] text-white', // Deep Red (Base)
+	'Action Platformer': 'bg-[#991b1b] text-white', // Darker Red
+	'Hack & Slash': 'bg-[#d97706] text-white', // Dark Amber
+	Survival: 'bg-[#78350f] text-white', // Deep Brown
+	'Bullet Hell': 'bg-[#ea580c] text-white', // Burnt Orange
+	Action: 'bg-[#ef4444] text-white', // Primary Red
+
+	// BLUES / TEALS
+	'Action Adventure': 'bg-[#1e40af] text-white', // Strong Royal Blue
+	'Story Adventure': 'bg-[#4338ca] text-white', // Bright Indigo
+	'Action RPG': 'bg-[#0369a1] text-white', // Sapphire Blue
+
+	// PURPLES / MAGENTAS
+	'Puzzle Platformer': 'bg-[#581c87] text-white', // Deep Violet
+	'Story Platformer': 'bg-[#7c3aed] text-white', // Royal Purple
+	'Classic RPG': 'bg-[#4f46e5] text-white', // Indigo
+	'Japanese RPG': 'bg-[#8b5cf6] text-white', // Medium Purple
+	'Sandbox RPG': 'bg-[#c026d3] text-white', // Magenta
+	'Story RPG': 'bg-[#db2777] text-white', // Deep Pink
+	FPS: 'bg-[#9f1239] text-white', // Wine Red
+
+	// GREENS / CYANS / UTILITY
+	Puzzle: 'bg-[#15803d] text-white', // Dark Green (Base)
+	'Story Puzzle': 'bg-[#047871] text-white', // Deep Teal
+	'Story Horror': 'bg-[#065f46] text-white', // Forest Green
+	'Horror RPG': 'bg-[#4d7c0f] text-white', // Olive Green
+	'Survival Horror': 'bg-[#57534e] text-white', // Dark Slate Gray
+	Strategy: 'bg-[#44403c] text-white', // Dark Gray/Slate
+	Metroidvania: 'bg-[#a16207] text-white', // Dark Goldenrod
+	Roguelike: 'bg-[#0f766e] text-white' // Dark Cyan
 };
 
 // Tier color mappings
@@ -116,7 +116,6 @@ export const TIER_LABELS: Record<string, string> = {
 	D: 'D - Decent',
 	E: 'E - Bad'
 };
-
 
 export const getTierDisplayName = (tierLetter: string): string => {
 	return TIER_LABELS[tierLetter] || tierLetter;

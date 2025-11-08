@@ -22,6 +22,15 @@ function memoize<TArgs extends unknown[], TReturn>(
 	};
 }
 
+export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score';
+
+export type SortDirection = 'asc' | 'desc';
+
+export interface SortOption {
+	key: SortKey;
+	direction: SortDirection;
+}
+
 export interface FilterState {
 	searchTerm: string;
 	platforms: string[];
@@ -30,6 +39,7 @@ export interface FilterState {
 	ratings: [number, number];
 	statuses: string[];
 	tiers: string[];
+	sortOption: SortOption | null;
 }
 
 export interface GameCounts {
@@ -85,7 +95,8 @@ function createFiltersStore() {
 				platforms: [], // Start with empty selection
 				genres: [], // Start with empty selection
 				statuses: ['Completed', 'Planned'], // Keep default statuses
-				tiers: [] // Start with empty tier selection
+				tiers: [], // Start with empty tier selection
+				sortOption: null
 			};
 
 			const loadedFilters = initialFilters;
@@ -135,7 +146,8 @@ function createFiltersStore() {
 				platforms: [], // Reset to empty selection
 				genres: [], // Reset to empty selection
 				statuses: ['Completed', 'Planned'],
-				tiers: [] // Reset to empty tier selection
+				tiers: [], // Reset to empty tier selection
+				sortOption: null
 			};
 			filters.set(resetFilters);
 		},
@@ -223,6 +235,13 @@ function createFiltersStore() {
 			filters.update(($filters) => {
 				if (!$filters) return $filters;
 				return { ...$filters, ratings };
+			});
+		},
+
+		setSort(sortOption: SortOption | null) {
+			filters.update(($filters) => {
+				if (!$filters) return $filters;
+				return { ...$filters, sortOption };
 			});
 		},
 

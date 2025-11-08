@@ -7,7 +7,7 @@
 	import { imageCache } from '../utils/imageCache.js';
 	import { browser } from '$app/environment';
 	import { generateSrcset, generateTinySrcset, generateSizes } from '../utils/imageSrcset.js';
-	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
+	import { Award, Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
@@ -259,7 +259,7 @@
 						{game.genre}
 					</span>
 					<div class="total-score">
-						<span class="rating-icon" aria-label="Total score">🏆</span>
+						<Award class="rating-icon text-yellow-400" aria-label="Total score" />
 						<span class="rating-score">{totalScore ?? '-'}</span>
 					</div>
 				</div>

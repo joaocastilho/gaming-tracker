@@ -4,7 +4,7 @@
 	import Header from '$lib/components/Header.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
-	import RatingsFilter from '$lib/components/RatingsFilter.svelte';
+	import RatingsSort from '$lib/components/RatingsSort.svelte';
 	import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
 	import { filtersStore } from '$lib/stores/filters.js';
@@ -64,6 +64,7 @@
 	// Handle tab changes with effect
 	$effect(() => {
 		const tab = get(appStore.activeTab);
+
 		// Clear filters when switching to tier list page
 		if (tab === 'tierlist') {
 			filtersStore.resetAllFilters();
@@ -92,7 +93,6 @@
 		}
 	});
 
-	// Dynamically load DetailModal when needed
 	$effect(() => {
 		if ($modalStore.isOpen && !DetailModalComponent) {
 			import('$lib/components/DetailModal.svelte')
@@ -105,7 +105,6 @@
 		}
 	});
 
-	// Handle URL updates for all filters (debounced)
 	let currentFilterState: import('$lib/stores/filters').FilterState | null = null;
 
 	filtersStore.subscribe(($filters) => {
@@ -132,7 +131,6 @@
 		const ratingGameplayParam = currentURL.searchParams.get('ratingGameplay') || '';
 		const ratingTotalParam = currentURL.searchParams.get('ratingTotal') || '';
 
-		// Check if URL parameters differ from current filter state
 		const urlState = {
 			searchQuery: searchParam,
 			selectedPlatforms: platformsParam ? platformsParam.split(',') : [],
@@ -190,20 +188,11 @@
 
 	function resetFilters() {
 		filtersStore.resetAllFilters();
-		filtersStore.setSearchTerm(''); // Clear search
-		appStore.activeTab.set('all'); // Switch to first tab
-		// Immediately update URL to reflect reset state
+		filtersStore.setSearchTerm('');
+
+		// Update URL to reflect clean state
 		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 		appStore.writeToURLWithFilters(filtersStore);
-		// Scroll to top with multiple methods for reliability
-		setTimeout(() => {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-			// Double scroll ensures works on all browsers
-			requestAnimationFrame(() => {
-				window.scrollTo(0, 0);
-				document.documentElement.scrollTop = 0;
-			});
-		}, 200);
 	}
 </script>
 
@@ -250,7 +239,7 @@
 							options={filterOptions.tiers}
 							selectedOptions={selectedTiers}
 						/>
-						<RatingsFilter />
+						<RatingsSort />
 						<button
 							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
 							title="Reset all filters"
@@ -278,7 +267,6 @@
 </div>
 
 <style>
-	/* Height calculations for fixed/sticky positioning */
 	:global(.h-15) {
 		height: 60px;
 	}
@@ -286,20 +274,17 @@
 		height: 50px;
 	}
 
-	/* Filter section with proper background */
 	.filter-section {
 		background-color: var(--color-background);
 		border-color: var(--color-border);
 	}
 
-	/* Reset button text color */
 	.reset-button {
 		color: var(--color-text-primary);
 		font-size: 0.85rem;
 		cursor: pointer;
 	}
 
-	/* Ensure proper spacing for content area */
 	:global(.pt-\[calc\(60px\+50px\+100px\)\]) {
 		padding-top: calc(60px + 50px + 100px);
 	}

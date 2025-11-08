@@ -14,7 +14,7 @@ interface FilterMessage {
 		games?: Game[];
 		filters?: FilterState;
 		allGames?: Game[];
-		activeTab?: 'all' | 'completed' | 'planned' | 'tierlist'; // <-- ADD activeTab
+		activeTab?: 'all' | 'completed' | 'planned' | 'tierlist';
 		allGamesAndFilters?: {
 			allGames: Game[];
 			filters: FilterState;
@@ -90,13 +90,12 @@ function filterGames(games: Game[], filters: FilterState): Game[] {
 
 		// Tier filter (only show games that have the selected tiers)
 		if (filters.tiers.length > 0) {
-			// If tiers are selected, the game must have a tier and it must match
 			if (!game.tier) {
-				return false; // Filter out games without tiers
+				return false;
 			}
 			const gameTierFullName = getTierDisplayName(game.tier);
 			if (!filters.tiers.includes(gameTierFullName)) {
-				return false; // Filter out games with non-matching tiers
+				return false;
 			}
 		}
 
@@ -113,30 +112,69 @@ function filterGames(games: Game[], filters: FilterState): Game[] {
 	});
 }
 
+function applySortOption(games: Game[], sortOption: FilterState['sortOption']): Game[] {
+	if (!sortOption) return games;
+
+	const { key, direction } = sortOption;
+	const dir = direction === 'asc' ? 1 : -1;
+
+	return games.toSorted((a, b) => {
+		const aVal =
+			key === 'presentation'
+				? (a.ratingPresentation ?? 0)
+				: key === 'story'
+					? (a.ratingStory ?? 0)
+					: key === 'gameplay'
+						? (a.ratingGameplay ?? 0)
+						: (a.ratingPresentation ?? 0) + (a.ratingStory ?? 0) + (a.ratingGameplay ?? 0);
+
+		const bVal =
+			key === 'presentation'
+				? (b.ratingPresentation ?? 0)
+				: key === 'story'
+					? (b.ratingStory ?? 0)
+					: key === 'gameplay'
+						? (b.ratingGameplay ?? 0)
+						: (b.ratingPresentation ?? 0) + (b.ratingStory ?? 0) + (b.ratingGameplay ?? 0);
+
+		if (aVal === bVal) return 0;
+		return aVal > bVal ? dir : -dir;
+	});
+}
+
 function filterAndSortForTab(
 	games: Game[],
-	tab: 'all' | 'completed' | 'planned' | 'tierlist'
+	tab: 'all' | 'completed' | 'planned' | 'tierlist',
+	sortOption: FilterState['sortOption']
 ): Game[] {
+	let base = games;
+
 	switch (tab) {
 		case 'completed':
-			return games
-				.filter((game) => game.status === 'Completed')
-				.toSorted((a, b) => {
-					if (!a.finishedDate && !b.finishedDate) return 0;
-					if (!a.finishedDate) return 1;
-					if (!b.finishedDate) return -1;
-					return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
-				});
+			base = base.filter((game) => game.status === 'Completed');
+			break;
 		case 'planned':
-			return games
-				.filter((game) => game.status === 'Planned')
-				.toSorted((a, b) => a.title.localeCompare(b.title));
+			base = base.filter((game) => game.status === 'Planned');
+			break;
 		case 'all':
 		default:
-			// 'all' tab shows both 'Completed' and 'Planned', which the main
-			// filter already does. We just need to sort it by title.
-			return games.toSorted((a, b) => a.title.localeCompare(b.title));
+			break;
 	}
+
+	if (sortOption) {
+		return applySortOption(base, sortOption);
+	}
+
+	if (tab === 'completed') {
+		return base.toSorted((a, b) => {
+			if (!a.finishedDate && !b.finishedDate) return 0;
+			if (!a.finishedDate) return 1;
+			if (!b.finishedDate) return -1;
+			return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+		});
+	}
+
+	return base.toSorted((a, b) => a.title.localeCompare(b.title));
 }
 
 // Main worker message handler
@@ -145,19 +183,15 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 
 	try {
 		if (type === 'LOAD_GAMES') {
-			// Store games for filtering
 			if (payload.games) {
 				loadedGames = payload.games;
 				const response: LoadResponse = {
 					type: 'GAMES_LOADED',
-					payload: {
-						gamesCount: loadedGames.length
-					}
+					payload: { gamesCount: loadedGames.length }
 				};
 				self.postMessage(response);
 			}
 		} else if (type === 'APPLY_FILTERS') {
-			// Handle the message format from filters store
 			const { filters, allGames, activeTab } = payload;
 			let gamesToFilter = loadedGames;
 
@@ -166,21 +200,17 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 			}
 
 			if (filters && gamesToFilter.length > 0 && activeTab) {
-				// 1. Perform filtering in the worker thread
 				const baseFilteredGames = filterGames(gamesToFilter, filters);
 
-				// 2. Calculate counts based on the *base* filtered list
 				const totalCount = baseFilteredGames.length;
 				const completedCount = baseFilteredGames.filter((g) => g.status === 'Completed').length;
 				const plannedCount = baseFilteredGames.filter((g) => g.status === 'Planned').length;
 
-				// 3. Apply tab-specific filtering and sorting
 				const finalFilteredGames =
 					activeTab === 'tierlist'
-						? [] // Tier list has its own logic on the main thread, send empty
-						: filterAndSortForTab(baseFilteredGames, activeTab);
+						? []
+						: filterAndSortForTab(baseFilteredGames, activeTab, filters.sortOption);
 
-				// 4. Send results back to main thread
 				const response: FilterResponse = {
 					type: 'FILTER_RESULTS',
 					payload: {
@@ -198,16 +228,11 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 		}
 	} catch (error) {
 		console.error('Worker filtering error:', error);
-		// Send empty result on error
 		self.postMessage({
 			type: 'FILTER_RESULTS',
 			payload: {
 				filteredGames: [],
-				counts: {
-					total: 0,
-					completed: 0,
-					planned: 0
-				}
+				counts: { total: 0, completed: 0, planned: 0 }
 			}
 		});
 	}
