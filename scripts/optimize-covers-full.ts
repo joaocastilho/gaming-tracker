@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { readdir, readFile, writeFile, mkdir, stat } from 'fs/promises';
+import { readdir, readFile, writeFile, mkdir, stat, access } from 'fs/promises';
 import { join } from 'path';
 
 const COVERS_RAW_DIR = join(process.cwd(), 'static', 'covers_raw');
@@ -74,6 +74,15 @@ async function findMatchingGame(filename: string, games: Game[]): Promise<Game |
 	return null;
 }
 
+async function fileExists(path: string): Promise<boolean> {
+	try {
+		await access(path);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 async function processImage(
 	filename: string,
 	games: Game[],
@@ -106,6 +115,22 @@ async function processImage(
 
 		const originalStats = await stat(inputPath);
 		const originalSize = originalStats.size;
+
+		// If all optimized variants already exist, skip expensive work
+		const has200 = await fileExists(cover200Path);
+		const has300 = await fileExists(cover300Path);
+		const has400 = await fileExists(detail400Path);
+
+		if (has200 && has300 && has400) {
+			return {
+				originalFilename: filename,
+				gameId,
+				gameTitle: matchingGame.title,
+				status: 'skipped',
+				originalSize,
+				processingTime: Date.now() - startTime
+			};
+		}
 
 		// 1) 200w x 300h -> tier list / small usage
 		await sharp(inputPath)
