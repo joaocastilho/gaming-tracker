@@ -256,7 +256,7 @@
 							title="Reset all filters"
 							onclick={resetFilters}
 						>
-							↻ Reset
+							↻ Reset filters
 						</button>
 					</div>
 				</div>
@@ -295,6 +295,8 @@
 	/* Reset button text color */
 	.reset-button {
 		color: var(--color-text-primary);
+		font-size: 0.85rem;
+		cursor: pointer;
 	}
 
 	/* Ensure proper spacing for content area */

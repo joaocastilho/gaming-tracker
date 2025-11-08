@@ -42,14 +42,13 @@ export function extractFilterOptions(games: Game[]): {
 	games.forEach((game) => {
 		if (game.platform) platforms.add(game.platform);
 		if (game.genre) genres.add(game.genre);
-		if (game.tier) tiers.add(getTierDisplayName(game.tier)); // Convert to full name for filtering
+		if (game.tier) tiers.add(getTierDisplayName(game.tier));
 	});
 
 	return {
 		platforms: Array.from(platforms).sort(),
 		genres: Array.from(genres).sort(),
 		tiers: Array.from(tiers).sort((a, b) => {
-			// Sort tiers by the predefined order instead of alphabetically
 			return TIER_ORDER.indexOf(a) - TIER_ORDER.indexOf(b);
 		})
 	};

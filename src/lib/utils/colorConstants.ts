@@ -1,4 +1,4 @@
-// Platform color mappings - each platform has its own widely different, vibrant, colorful unique color
+// Platform color mappings
 export const PLATFORM_COLORS: Record<string, string> = {
 	PC: 'bg-[#1e40af] text-white', // Royal blue (changed from purple)
 	PS4: 'bg-[#f59e0b] text-[#fef3c7]', // Bright amber
@@ -15,36 +15,44 @@ export const PLATFORM_COLORS: Record<string, string> = {
 	Dreamcast: 'bg-[#0d9488] text-[#ccfbf1]' // Bright teal
 };
 
-// Genre color mappings - maximally distinct, unique colors with white text
+// Genre color mappings
 export const GENRE_COLORS: Record<string, string> = {
-	// Each genre gets a completely unique color with maximum visual distinction
-	Platformer: 'bg-[#dc2626] text-white', // Scarlet red
-	'Action Platformer': 'bg-[#991b1b] text-white', // Dark red
-	'Puzzle Platformer': 'bg-[#7c2d12] text-white', // Deep brown
-	'Story Platformer': 'bg-[#92400e] text-white', // Dark orange
-	'Story Adventure': 'bg-[#a16207] text-white', // Amber
-	'Action Adventure': 'bg-[#ca8a04] text-white', // Yellow
-	'Survival Horror': 'bg-[#65a30d] text-white', // Lime green
-	'Story Puzzle': 'bg-[#16a34a] text-white', // Emerald green
-	Puzzle: 'bg-[#059669] text-white', // Teal green
-	'Action RPG': 'bg-[#0891b2] text-white', // Sky blue
-	'Classic RPG': 'bg-[#0284c7] text-white', // Bright blue
-	'Japanese RPG': 'bg-[#2563eb] text-white', // Royal blue
-	'Sandbox RPG': 'bg-[#4f46e5] text-white', // Indigo
-	'Story RPG': 'bg-[#7c3aed] text-white', // Purple
-	FPS: 'bg-[#9333ea] text-white', // Violet
-	Action: 'bg-[#c026d3] text-white', // Magenta
-	'Bullet Hell': 'bg-[#db2777] text-white', // Pink
-	'Hack & Slash': 'bg-[#e11d48] text-white', // Rose
-	Survival: 'bg-[#ea580c] text-white', // Orange
-	Strategy: 'bg-[#f97316] text-white', // Pumpkin
-	Metroidvania: 'bg-[#f59e0b] text-white', // Amber
-	Roguelike: 'bg-[#eab308] text-white', // Yellow
-	'Story Horror': 'bg-[#84cc16] text-white', // Lime
-	'Horror RPG': 'bg-[#22c55e] text-white' // Emerald
+    // Highly distinct colors, guaranteeing separation and white text readability
+    
+    // REDS / ORANGES
+    'Platformer': 'bg-[#b91c1c] text-white',      // Deep Red (Base)
+    'Action Platformer': 'bg-[#991b1b] text-white', // Darker Red
+    'Hack & Slash': 'bg-[#d97706] text-white',      // Dark Amber
+    'Survival': 'bg-[#78350f] text-white',            // Deep Brown
+    'Bullet Hell': 'bg-[#ea580c] text-white',       // Burnt Orange
+    'Action': 'bg-[#ef4444] text-white',              // Primary Red
+    
+    // BLUES / TEALS
+    'Action Adventure': 'bg-[#1e40af] text-white',   // Strong Royal Blue
+    'Story Adventure': 'bg-[#4338ca] text-white',   // Bright Indigo
+    'Action RPG': 'bg-[#0369a1] text-white',       // Sapphire Blue
+    
+    // PURPLES / MAGENTAS
+    'Puzzle Platformer': 'bg-[#581c87] text-white',  // Deep Violet
+    'Story Platformer': 'bg-[#7c3aed] text-white',   // Royal Purple
+    'Classic RPG': 'bg-[#4f46e5] text-white',      // Indigo
+    'Japanese RPG': 'bg-[#8b5cf6] text-white',      // Medium Purple
+    'Sandbox RPG': 'bg-[#c026d3] text-white',       // Magenta
+    'Story RPG': 'bg-[#db2777] text-white',         // Deep Pink
+    'FPS': 'bg-[#9f1239] text-white',                 // Wine Red
+    
+    // GREENS / CYANS / UTILITY
+    'Puzzle': 'bg-[#15803d] text-white',              // Dark Green (Base)
+    'Story Puzzle': 'bg-[#047871] text-white',      // Deep Teal
+    'Story Horror': 'bg-[#065f46] text-white',      // Forest Green
+    'Horror RPG': 'bg-[#4d7c0f] text-white',         // Olive Green
+    'Survival Horror': 'bg-[#57534e] text-white',      // Dark Slate Gray
+    'Strategy': 'bg-[#44403c] text-white',           // Dark Gray/Slate
+    'Metroidvania': 'bg-[#a16207] text-white',        // Dark Goldenrod
+    'Roguelike': 'bg-[#0f766e] text-white',           // Dark Cyan
 };
 
-// Tier color mappings - uses full names as keys (matching display format)
+// Tier color mappings
 export const TIER_COLORS: Record<string, string> = {
 	'S - Masterpiece': 'bg-[#dc2626] text-white', // Red background, white text
 	'A - Amazing': 'bg-[#f97316] text-white', // Orange background, white text
@@ -109,7 +117,7 @@ export const TIER_LABELS: Record<string, string> = {
 	E: 'E - Bad'
 };
 
-// Utility function to get full tier display name
+
 export const getTierDisplayName = (tierLetter: string): string => {
 	return TIER_LABELS[tierLetter] || tierLetter;
 };
