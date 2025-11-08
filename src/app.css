@@ -1,6 +1,13 @@
 @import 'tailwindcss';
 
 /* Global font size increase for better readability */
+html,
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
 html {
 	font-size: 110%; /* 10% larger than default */
 	font-family:

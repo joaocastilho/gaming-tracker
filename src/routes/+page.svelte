@@ -7,7 +7,7 @@
 	import { debounce } from '$lib/utils/debounce.js';
 	import { memoizeGameFilter } from '$lib/utils/memoize.js';
 	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
-	import UnifiedGamesView from '$lib/views/UnifiedGamesView.svelte';
+	import GamesView from '$lib/views/GamesView.svelte';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
@@ -199,6 +199,6 @@
 	{:else if currentActiveTab === 'tierlist' && TierListViewComponent}
 		<TierListViewComponent filteredGames={tierListGames} />
 	{:else if currentActiveTab !== 'tierlist'}
-		<UnifiedGamesView filteredGames={memoizedFilteredGames} activeTab={currentActiveTab} />
+		<GamesView filteredGames={memoizedFilteredGames} activeTab={currentActiveTab} />
 	{/if}
 </div>

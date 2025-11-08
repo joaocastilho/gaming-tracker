@@ -4,8 +4,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { Game } from '$lib/types/game';
-	import GameCard from '$lib/components/GameCard.svelte';
-	import { setupProgressiveImagePreloading } from '$lib/utils/imagePreloader.js';
+import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
+import GameCard from '$lib/components/GameCard.svelte';
+import { setupProgressiveImagePreloading } from '$lib/utils/imagePreloader.js';
 
 	interface Props {
 		filteredGames: Game[];
@@ -69,13 +70,22 @@
 	});
 </script>
 
-<div
-	bind:this={gridContainer}
-	class="game-grid grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
->
-	{#each displayedGames() as game, index (game.id)}
-		<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
-			<GameCard {game} isAboveFold={index < ABOVE_FOLD_COUNT} />
-		</div>
-	{/each}
-</div>
+{#if displayedGames().length === 0}
+	<!-- Show skeleton if no games to display -->
+	<div
+		class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
+	>
+		<GameCardSkeleton count={12} />
+	</div>
+{:else}
+	<div
+		bind:this={gridContainer}
+		class="game-grid grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
+	>
+		{#each displayedGames() as game, index (game.id)}
+			<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
+				<GameCard {game} isAboveFold={index < ABOVE_FOLD_COUNT} />
+			</div>
+		{/each}
+	</div>
+{/if}
