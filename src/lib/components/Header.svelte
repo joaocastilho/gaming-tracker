@@ -24,11 +24,11 @@
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
 	const tabs = $derived<Tab[]>([
-		{ 
-			id: 'all', 
-			label: 'Games', 
-			route: resolve('/'), 
-			count: $filteredGamesStore.totalCount 
+		{
+			id: 'all',
+			label: 'Games',
+			route: resolve('/'),
+			count: $filteredGamesStore.totalCount
 		},
 		{
 			id: 'completed',
@@ -36,17 +36,17 @@
 			route: 'completed',
 			count: $filteredGamesStore.completedCount
 		},
-		{ 
-			id: 'planned', 
-			label: 'Planned', 
-			route: 'planned', 
-			count: $filteredGamesStore.plannedCount 
+		{
+			id: 'planned',
+			label: 'Planned',
+			route: 'planned',
+			count: $filteredGamesStore.plannedCount
 		},
-		{ 
-			id: 'tierlist', 
-			label: 'Tier List', 
-			route: 'tierlist', 
-			count: null 
+		{
+			id: 'tierlist',
+			label: 'Tier List',
+			route: 'tierlist',
+			count: null
 		}
 	]);
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { filtersStore } from '$lib/stores/filters.js';
-	import { Star } from 'lucide-svelte';
+	import { ChevronDown, Star } from 'lucide-svelte';
 	import RatingSlider from './RatingSlider.svelte';
 
 	// Rating type
@@ -139,6 +139,10 @@
 	>
 		<Star size={16} class="text-gray-600 dark:text-gray-400" />
 		<span class="filter-label">Filter by Ratings</span>
+		<ChevronDown
+			size={16}
+			class="dropdown-arrow text-gray-600 transition-transform duration-200 dark:text-gray-400"
+		/>
 		{#if hasActiveFilters()}
 			<span class="selected-count bg-accent text-accent-foreground rounded-full px-2 py-1 text-xs">
 				{[
@@ -219,6 +223,7 @@
 		gap: 4px;
 		white-space: nowrap;
 		color: var(--color-text-primary);
+		cursor: pointer;
 	}
 
 	.dropdown-arrow {
