@@ -88,34 +88,7 @@ function createFiltersStore() {
 				tiers: [] // Start with empty tier selection
 			};
 
-			let loadedFilters = initialFilters;
-			if (browser) {
-				const savedFilters = localStorage.getItem('gaming-tracker-filters');
-				if (savedFilters) {
-					try {
-						const parsed: Partial<FilterState> = JSON.parse(savedFilters);
-						loadedFilters = {
-							...initialFilters,
-							...parsed,
-							platforms: Array.isArray(parsed.platforms) ? parsed.platforms : [], // Use empty array as fallback
-							genres: Array.isArray(parsed.genres) ? parsed.genres : [], // Use empty array as fallback
-							years:
-								Array.isArray(parsed.years) && parsed.years.length === 2
-									? (parsed.years as [number, number])
-									: initialFilters.years,
-							ratings:
-								Array.isArray(parsed.ratings) && parsed.ratings.length === 2
-									? (parsed.ratings as [number, number])
-									: initialFilters.ratings,
-							statuses: Array.isArray(parsed.statuses) ? parsed.statuses : initialFilters.statuses,
-							tiers: Array.isArray(parsed.tiers) ? parsed.tiers : [] // Use empty array as fallback
-						};
-					} catch {
-						// Ignore invalid storage
-					}
-				}
-			}
-
+			const loadedFilters = initialFilters;
 			filters.set(loadedFilters);
 			if (worker) {
 				worker.postMessage({ type: 'LOAD_GAMES', payload: games });
@@ -148,10 +121,6 @@ function createFiltersStore() {
 				type: 'APPLY_FILTERS',
 				payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
 			});
-		}
-
-		if (browser) {
-			localStorage.setItem('gaming-tracker-filters', JSON.stringify(currentFilters));
 		}
 	});
 
