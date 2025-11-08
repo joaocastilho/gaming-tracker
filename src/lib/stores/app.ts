@@ -22,26 +22,12 @@ function createAppStore() {
 			document.documentElement.classList.add(savedTheme);
 		}
 
-		const savedActiveTab = localStorage.getItem('gaming-tracker-active-tab') as
-			| 'all'
-			| 'completed'
-			| 'planned'
-			| 'tierlist'
-			| null;
-		if (savedActiveTab) {
-			activeTab.set(savedActiveTab);
-		}
-
 		// Subscribe to changes and save to localStorage
 		theme.subscribe((t) => {
 			localStorage.setItem('gaming-tracker-theme', t);
 			// Apply theme to document
 			document.documentElement.classList.remove('light', 'dark');
 			document.documentElement.classList.add(t);
-		});
-
-		activeTab.subscribe((tab) => {
-			localStorage.setItem('gaming-tracker-active-tab', tab);
 		});
 	}
 

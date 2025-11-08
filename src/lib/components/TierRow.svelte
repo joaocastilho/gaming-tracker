@@ -47,7 +47,7 @@
 	}
 
 	.tier-count {
-		font-size: 0.875rem;
+		font-size: 1.2rem;
 		font-weight: 500;
 		opacity: 0.8;
 	}
