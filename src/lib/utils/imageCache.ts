@@ -47,11 +47,13 @@ class ImageCache {
 					img.onload = () => {
 						entry!.isLoaded = true;
 						entry!.hasError = false;
+						this.cache.set(src, entry!);
 						resolve();
 					};
 					img.onerror = () => {
 						entry!.isLoaded = false;
 						entry!.hasError = true;
+						this.cache.set(src, entry!);
 						reject(new Error(`Failed to load image: ${src}`));
 					};
 				});
@@ -71,10 +73,60 @@ class ImageCache {
 		return entry;
 	}
 
+	/**
+	 * Manually marks an image as loaded in the cache.
+	 * This is used by components when the 'onload' event fires.
+	 */
+	setLoaded(src: string): void {
+		let entry = this.cache.get(src);
+		if (entry) {
+			if (entry.isLoaded) return;
+			entry.isLoaded = true;
+			entry.hasError = false;
+		} else {
+			// If entry doesn't exist, create it (e.g., loaded from browser cache)
+			const img = new Image();
+			img.src = src;
+			entry = {
+				image: img,
+				isLoaded: true,
+				hasError: false
+			};
+		}
+		// Use a new Map to trigger Svelte 5's $derived update
+		const newCache = new Map(this.cache);
+		newCache.set(src, entry);
+		this.cache = newCache;
+	}
+
+	/**
+	 * Manually marks an image as having an error in the cache.
+	 * This is used by components when the 'onerror' event fires.
+	 */
+	setError(src: string): void {
+		let entry = this.cache.get(src);
+		if (entry) {
+			if (entry.hasError) return;
+			entry.isLoaded = false;
+			entry.hasError = true;
+		} else {
+			// If entry doesn't exist, create it
+			entry = {
+				image: new Image(),
+				isLoaded: false,
+				hasError: true
+			};
+		}
+		// Use a new Map to trigger Svelte 5's $derived update
+		const newCache = new Map(this.cache);
+		newCache.set(src, entry);
+		this.cache = newCache;
+	}
+
 	preload(src: string): void {
 		if (!browser) return;
-		if (this.cache.has(src)) return; // Already cached
-		if (this.preloadQueue.includes(src)) return; // Already queued
+		if (this.cache.has(src)) return;
+		if (this.preloadQueue.includes(src)) return;
 
 		this.preloadQueue.push(src);
 		this.processPreloadQueue();
@@ -86,10 +138,17 @@ class ImageCache {
 			if (!src) break;
 
 			this.activePreloads++;
-			this.getImage(src).loadPromise?.finally(() => {
+			// Ensure we use the promise from getImage to process the queue
+			const entry = this.getImage(src);
+			if (entry.loadPromise) {
+				entry.loadPromise.finally(() => {
+					this.activePreloads--;
+					this.processPreloadQueue();
+				});
+			} else {
 				this.activePreloads--;
 				this.processPreloadQueue();
-			});
+			}
 		}
 	}
 

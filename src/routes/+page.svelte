@@ -5,13 +5,16 @@
 	import { appStore } from '$lib/stores/app.js';
 	import { sortStore } from '$lib/stores/sort.js';
 	import { debounce } from '$lib/utils/debounce.js';
-	import { memoizeGameFilter } from '$lib/utils/memoize.js';
+	import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
 	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
 	import type { Component } from 'svelte';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	interface TierListViewProps {
 		filteredGames: Game[];
@@ -27,11 +30,7 @@
 	});
 
 	let allGamesFromStore = $state<Game[]>([]);
-
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
-
-	let isLoadingGames = $state(false);
-
 	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
 	let isLoadingView = $state(false);
 
@@ -44,6 +43,8 @@
 		filteredData = data;
 	});
 
+	const { loading } = gamesStore;
+
 	gamesStore.subscribe((games) => {
 		allGamesFromStore = games;
 	});
@@ -53,10 +54,6 @@
 		if (activeTab === 'tierlist') {
 			loadTierListView();
 		}
-	});
-
-	gamesStore.loading.subscribe((loading) => {
-		isLoadingGames = loading;
 	});
 
 	// Handle browser back/forward navigation
@@ -89,42 +86,7 @@
 		}
 	});
 
-	// Memoized function to get filtered games for a specific tab
-	// This prevents unnecessary recalculations when switching tabs with the same filtered games
-	const getFilteredGamesForTab = memoizeGameFilter(
-		(games: Game[], tab: 'all' | 'completed' | 'planned' | 'tierlist'): Game[] => {
-			switch (tab) {
-				case 'completed':
-					return games
-						.filter((game) => game.status === 'Completed')
-						.toSorted((a, b) => {
-							if (!a.finishedDate && !b.finishedDate) return 0;
-							if (!a.finishedDate) return 1;
-							if (!b.finishedDate) return -1;
-							return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
-						});
-				case 'planned':
-					return games
-						.filter((game) => game.status === 'Planned')
-						.toSorted((a, b) => a.title.localeCompare(b.title));
-				case 'all':
-				default:
-					return games.toSorted((a, b) => a.title.localeCompare(b.title));
-			}
-		},
-		{ maxSize: 5, ttl: 5000 } // Cache up to 5 results for 5 seconds
-	);
-
-	// Memoized filtered games for the current tab
-	// This will only recalculate if the filtered games array or tab changes
-	let memoizedFilteredGames = $derived(
-		currentActiveTab !== 'tierlist'
-			? getFilteredGamesForTab(filteredData.filteredGames, currentActiveTab)
-			: []
-	);
-
-	// Get first 6 games for preloading critical images
-	let criticalGames = $derived(memoizedFilteredGames.slice(0, 6));
+	let criticalGames = data.criticalGames || [];
 
 	// For tier list, get all games that have tiers assigned (ignoring status filters)
 	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
@@ -160,28 +122,30 @@
 		(window as WindowWithPreload).__preloadTierListView = preloadTierListView;
 	}
 
-	// Load games data when the component mounts (fallback for client-side)
+	// Load games data when the component mounts
 	$effect(() => {
-		// Only load if games store is empty (server-side loading might have failed)
-		gamesStore.subscribe((games) => {
-			if (games.length === 0) {
-				gamesStore.loadGames();
-			}
-		});
+		if (data.games) {
+			gamesStore.initializeGames(data.games);
+		}
 	});
-
-	let imagesLoading = $derived(isLoadingGames || isLoadingView);
 </script>
 
 <svelte:head>
 	<title>Gaming Tracker</title>
 	{#each criticalGames as game (game.id)}
-		<link rel="preload" as="image" href={game.coverImage} fetchpriority="high" />
+		<link
+			rel="preload"
+			as="image"
+			href={game.coverImage}
+			imagesrcset={generateSrcset(game.coverImage)}
+			imagesizes={generateSizes('gallery')}
+			fetchpriority="high"
+		/>
 	{/each}
 </svelte:head>
 
 <div class="main-content" id="main-content">
-	{#if isLoadingView || isLoadingGames || imagesLoading}
+	{#if $loading || isLoadingView}
 		<!-- Loading Skeleton -->
 		<div
 			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
@@ -191,6 +155,6 @@
 	{:else if currentActiveTab === 'tierlist' && TierListViewComponent}
 		<TierListViewComponent filteredGames={tierListGames} />
 	{:else if currentActiveTab !== 'tierlist'}
-		<GamesView filteredGames={memoizedFilteredGames} activeTab={currentActiveTab} />
+		<GamesView filteredGames={filteredData.filteredGames} />
 	{/if}
 </div>

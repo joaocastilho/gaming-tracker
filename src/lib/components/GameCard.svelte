@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { modalStore } from '../stores/modal.js';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
@@ -22,7 +23,7 @@
 	const imageSizes = $derived(generateSizes('gallery'));
 
 	// Get image cache entry - memoize to avoid recreating
-	const imageEntry = $derived(imageCache.getImage(game.coverImage));
+	const imageEntry = $derived.by(() => imageCache.getImage(game.coverImage));
 
 	// Image loading state - sync with cache entry
 	let isImageLoaded = $derived(imageEntry.isLoaded);
@@ -77,16 +78,12 @@
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	}
 
-	// Handle image load success
 	function handleImageLoad() {
-		isImageLoaded = true;
-		hasImageError = false;
+		imageCache.setLoaded(game.coverImage);
 	}
 
-	// Handle image load error
 	function handleImageError() {
-		isImageLoaded = false;
-		hasImageError = true;
+		imageCache.setError(game.coverImage);
 	}
 
 	// Handle keyboard interaction for accessibility
@@ -113,9 +110,10 @@
 				for (const entry of entries) {
 					if (entry.isIntersecting) {
 						// Image is about to enter viewport, ensure it's preloaded
+						// This will trigger the $derived imageEntry to update
 						imageCache.preload(game.coverImage);
 						observer.disconnect();
-						break; // Exit early since we disconnect
+						break;
 					}
 				}
 			},
@@ -132,27 +130,15 @@
 		};
 	});
 
-	// Sync with cache entry if it loads asynchronously
-	$effect(() => {
-		const entry = imageEntry;
-		if (entry.isLoaded) {
-			isImageLoaded = true;
-			hasImageError = false;
-		} else if (entry.hasError) {
-			isImageLoaded = false;
-			hasImageError = true;
-		}
-
-		if (entry.loadPromise) {
-			entry.loadPromise
-				.then(() => {
-					isImageLoaded = true;
-					hasImageError = false;
-				})
-				.catch(() => {
-					isImageLoaded = false;
-					hasImageError = true;
-				});
+	// If the image is loaded *eagerly* and is *already in the cache*,
+	// we need to bypass the 'onload' event which may not fire.
+	onMount(() => {
+		if (isAboveFold && imageElement?.complete) {
+			if (imageElement.naturalWidth > 0) {
+				handleImageLoad();
+			} else {
+				handleImageError();
+			}
 		}
 	});
 </script>

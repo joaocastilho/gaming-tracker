@@ -1,6 +1,7 @@
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { gamesStore } from './games';
+import { appStore } from './app';
 import type { Game } from '$lib/types/game';
 import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
 import FilterWorker from '$lib/workers/filterWorker?worker';
@@ -69,6 +70,11 @@ function createFiltersStore() {
 		})
 	);
 
+	const filtersAndTab = derived([filters, appStore.activeTab], ([$filters, $activeTab]) => ({
+		filters: $filters,
+		activeTab: $activeTab
+	}));
+
 	let hasInitialized = false;
 
 	gamesAndOptions.subscribe(({ games, platforms, genres }) => {
@@ -112,9 +118,10 @@ function createFiltersStore() {
 
 			filters.set(loadedFilters);
 			worker.postMessage({ type: 'LOAD_GAMES', payload: games });
+			const initialTab = get(appStore.activeTab);
 			worker.postMessage({
 				type: 'APPLY_FILTERS',
-				payload: { filters: loadedFilters, allGames: games }
+				payload: { filters: loadedFilters, allGames: games, activeTab: initialTab }
 			});
 		}
 	});
@@ -127,13 +134,15 @@ function createFiltersStore() {
 		}
 	};
 
-	filters.subscribe((currentFilters) => {
+	filtersAndTab.subscribe((currentData) => {
+		const { filters: currentFilters, activeTab } = currentData;
 		if (!currentFilters) return;
+
 		const allGames = get(gamesStore);
 		if (allGames.length > 0) {
 			worker.postMessage({
 				type: 'APPLY_FILTERS',
-				payload: { filters: currentFilters, allGames: allGames }
+				payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
 			});
 		}
 
