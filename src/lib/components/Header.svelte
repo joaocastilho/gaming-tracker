@@ -45,18 +45,10 @@
 		{ id: 'tierlist', label: 'Tier List', route: 'tierlist', count: null }
 	]);
 
-	// Handle logo click - reset all filters and go to homepage
 	function handleLogoClick() {
-		// Reset all filters
 		filtersStore.resetAllFilters();
-
-		// Set active tab to 'all' (homepage)
-		activeTab.set('all');
-
-		// Clear URL hash to go to homepage
-		if (typeof window !== 'undefined' && window.location) {
-			window.history.replaceState(null, '', window.location.pathname + window.location.search);
-		}
+		appStore.activeTab.set('all');
+		appStore.writeToURLWithFilters(filtersStore); // This will clear filter-related URL params
 
 		// Scroll to top of page - multiple approaches for reliability
 		scrollToTop();
