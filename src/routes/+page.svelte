@@ -57,6 +57,23 @@
 		}
 	});
 
+	// Sync initial tab with URL path (/games, /completed, /planned, /tierlist)
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+
+		const path = window.location.pathname;
+		if (path === 'tierlist') {
+			appStore.setActiveTab('tierlist');
+		} else if (path === 'completed') {
+			appStore.setActiveTab('completed');
+		} else if (path === 'planned') {
+			appStore.setActiveTab('planned');
+		} else {
+			// Default for / or /games or anything else
+			appStore.setActiveTab('all');
+		}
+	});
+
 	// Handle browser back/forward navigation
 	$effect(() => {
 		filtersStore.readFromURL(page.url.searchParams);
@@ -94,7 +111,7 @@
 
 	// Load tier list view component only when needed
 	async function loadTierListView() {
-		if (TierListViewComponent) return; // Already loaded
+		if (TierListViewComponent) return;
 
 		isLoadingView = true;
 		try {

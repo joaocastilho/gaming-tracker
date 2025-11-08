@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { appStore } from '../stores/app.js';
 	import { filtersStore } from '../stores/filters.js';
 	import ThemeToggle from './ThemeToggle.svelte';
@@ -6,6 +7,12 @@
 	// Remove the unnecessary $effect + subscribe pattern
 	// Store values can be accessed directly with $ prefix
 	const { activeTab } = appStore;
+
+	function navigateTo(path: string) {
+		if (typeof window !== 'undefined') {
+			window.history.pushState({}, '', path);
+		}
+	}
 
 	type TabId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -19,13 +26,8 @@
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
 	const tabs = $derived<Tab[]>([
-		{ id: 'all', label: 'Games', route: '/', count: $filteredGamesStore.totalCount },
-		{
-			id: 'completed',
-			label: 'Completed',
-			route: 'completed',
-			count: $filteredGamesStore.completedCount
-		},
+		{ id: 'all', label: 'Games', route: resolve('/'), count: $filteredGamesStore.totalCount },
+		{ id: 'completed', label: 'Completed', route: 'completed', count: $filteredGamesStore.completedCount },
 		{ id: 'planned', label: 'Planned', route: 'planned', count: $filteredGamesStore.plannedCount },
 		{ id: 'tierlist', label: 'Tier List', route: 'tierlist', count: null }
 	]);
@@ -43,22 +45,8 @@
 	function scrollToTop() {
 		if (typeof window === 'undefined') return;
 
-		// Method 1: Immediate scroll to top
 		window.scrollTo({ top: 0, behavior: 'instant' });
 
-		// Method 2: Scroll main content element if it exists
-		const mainContent = document.getElementById('main-content');
-		if (mainContent) {
-			mainContent.scrollTop = 0;
-		}
-
-		// Method 3: Document body scroll
-		document.body.scrollTop = 0;
-
-		// Method 4: Document element scroll
-		document.documentElement.scrollTop = 0;
-
-		// Method 5: Fallback with setTimeout for async updates
 		setTimeout(() => {
 			window.scrollTo({ top: 0, behavior: 'instant' });
 
@@ -72,10 +60,8 @@
 	function handleTabClick(tab: Tab) {
 		if (tab.id !== $activeTab) {
 			activeTab.set(tab.id);
-			if (typeof window !== 'undefined') {
-				const newHash = tab.id === 'all' ? '' : `#${tab.id}`;
-				window.history.replaceState(null, '', `${window.location.pathname}${newHash}`);
-			}
+
+			navigateTo(tab.route);
 		}
 	}
 
