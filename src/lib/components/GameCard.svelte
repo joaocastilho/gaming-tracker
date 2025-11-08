@@ -456,7 +456,7 @@
 	}
 
 	.game-title {
-		font-weight: 500;
+		font-weight: 600;
 		margin: 0;
 		line-height: 1.2;
 		word-wrap: break-word;

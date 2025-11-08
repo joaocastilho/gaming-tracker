@@ -40,7 +40,11 @@ export default defineConfig({
 						if (id.includes('lucide-svelte')) {
 							return 'vendor-ui';
 						}
-						if (id.includes('date-fns') || id.includes('zod')) {
+						if (
+							id.includes('date-fns') ||
+							id.includes('zod') ||
+							id.match(/node_modules\/(lodash|date-fns|dayjs)/)
+						) {
 							return 'vendor-utils';
 						}
 						if (id.includes('svelte') || id.includes('@sveltejs')) {
@@ -51,8 +55,12 @@ export default defineConfig({
 				}
 			}
 		},
-		chunkSizeWarningLimit: 1000,
-		sourcemap: false
+		target: 'es2020',
+		cssCodeSplit: true,
+		minify: 'esbuild',
+		sourcemap: false,
+		assetsInlineLimit: 4096,
+		chunkSizeWarningLimit: 1000
 	},
 	optimizeDeps: {
 		include: ['lucide-svelte', 'date-fns']
