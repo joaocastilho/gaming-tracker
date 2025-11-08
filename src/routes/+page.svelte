@@ -62,11 +62,11 @@
 		if (typeof window === 'undefined') return;
 
 		const path = window.location.pathname;
-		if (path === 'tierlist') {
+		if (path === '/tierlist') {
 			appStore.setActiveTab('tierlist');
-		} else if (path === 'completed') {
+		} else if (path === '/completed') {
 			appStore.setActiveTab('completed');
-		} else if (path === 'planned') {
+		} else if (path === '/planned') {
 			appStore.setActiveTab('planned');
 		} else {
 			// Default for / or /games or anything else
