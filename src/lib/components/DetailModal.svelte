@@ -226,27 +226,53 @@
 		}
 	});
 
+	// Get all tiered games for tier list navigation
+	let allTieredGames = $derived(() => {
+		// Get all games that have tiers assigned
+		const tieredGames = filteredGamesData.filteredGames.filter(
+			(game) => game.status === 'Completed' && game.tier
+		);
+
+		// Sort by tier order (S, A, B, C, D, E) and then by title within each tier
+		const tierOrder = ['S', 'A', 'B', 'C', 'D', 'E'];
+		return tieredGames.toSorted((a, b) => {
+			const aTierIndex = tierOrder.indexOf(a.tier!);
+			const bTierIndex = tierOrder.indexOf(b.tier!);
+			if (aTierIndex !== bTierIndex) {
+				return aTierIndex - bTierIndex;
+			}
+			return a.title.localeCompare(b.title);
+		});
+	});
+
 	// Get current game index for navigation within the current tab's games
 	let currentGameIndex = $derived(() => {
 		if (!$modalStore.activeGame) return -1;
+
+		// If we're in tier list mode, navigate through all tiered games
+		if ($currentActiveTab === 'tierlist') {
+			return allTieredGames().findIndex((game) => game.id === $modalStore.activeGame?.id);
+		}
+
+		// Otherwise, navigate through the current tab's games
 		return currentTabGames().findIndex((game) => game.id === $modalStore.activeGame?.id);
 	});
 
 	// Navigation functions
 	function navigateToPrevious() {
 		const index = currentGameIndex();
-		const tabGames = currentTabGames();
+		const games = $currentActiveTab === 'tierlist' ? allTieredGames() : currentTabGames();
 		if (index > 0) {
-			const prevGame = tabGames[index - 1];
+			const prevGame = games[index - 1];
 			modalStore.openViewModal(prevGame);
 		}
 	}
 
 	function navigateToNext() {
 		const index = currentGameIndex();
-		const tabGames = currentTabGames();
-		if (index < tabGames.length - 1) {
-			const nextGame = tabGames[index + 1];
+		const games = $currentActiveTab === 'tierlist' ? allTieredGames() : currentTabGames();
+		if (index < games.length - 1) {
+			const nextGame = games[index + 1];
 			modalStore.openViewModal(nextGame);
 		}
 	}
@@ -255,13 +281,23 @@
 		// Handle focus trap first
 		handleFocusTrap(event);
 
+		// Only handle keys when the detail modal is open and in view mode
+		if (!$modalStore.isOpen || $modalStore.mode !== 'view') {
+			return;
+		}
+
 		if (event.key === 'Escape') {
+			// Close the detail modal on Escape
+			event.preventDefault();
+			event.stopPropagation();
 			modalStore.closeModal();
 		} else if (event.key === 'ArrowLeft') {
 			event.preventDefault();
+			event.stopPropagation();
 			navigateToPrevious();
 		} else if (event.key === 'ArrowRight') {
 			event.preventDefault();
+			event.stopPropagation();
 			navigateToNext();
 		}
 	}
@@ -387,7 +423,7 @@
 		{/if}
 
 		<!-- Next Button -->
-		{#if currentGameIndex() < currentTabGames().length - 1}
+		{#if currentGameIndex() < ($currentActiveTab === 'tierlist' ? allTieredGames().length - 1 : currentTabGames().length - 1)}
 			<button
 				onclick={navigateToNext}
 				class="absolute top-1/2 right-2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/70"

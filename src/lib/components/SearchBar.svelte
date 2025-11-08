@@ -61,20 +61,33 @@
 		}
 	}
 
-	// Global escape key handler to focus search bar
+	// Global escape key handler to focus search bar and scroll to top
+	// This should work regardless of which element has focus
 	function handleGlobalKeydown(event: KeyboardEvent) {
+		// Only handle Escape key
 		if (event.key === 'Escape' && inputElement) {
 			event.preventDefault();
+			event.stopPropagation();
+
+			// Focus the search input
 			inputElement.focus();
 			inputElement.select();
+
+			// Scroll to top to make search bar visible, accounting for fixed header
+			const headerHeight = 110; // Approximate height of header + filter section
+			window.scrollTo({
+				top: -headerHeight,
+				behavior: 'smooth'
+			});
 		}
 	}
 
-	// Add global escape key listener
+	// Add global escape key listener that always works
 	$effect(() => {
-		document.addEventListener('keydown', handleGlobalKeydown);
+		// Use capture phase to ensure we get the event before other handlers
+		document.addEventListener('keydown', handleGlobalKeydown, { capture: true });
 		return () => {
-			document.removeEventListener('keydown', handleGlobalKeydown);
+			document.removeEventListener('keydown', handleGlobalKeydown, { capture: true });
 		};
 	});
 </script>

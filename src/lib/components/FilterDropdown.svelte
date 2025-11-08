@@ -2,7 +2,7 @@
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions.js';
 	import { getTierDisplayName } from '$lib/utils/colorConstants.js';
-	import { Monitor, Tag, Trophy } from 'lucide-svelte';
+	import { Monitor, Tag, Trophy, ChevronDown } from 'lucide-svelte';
 
 	interface Props {
 		type: 'platforms' | 'genres' | 'tiers';
@@ -94,6 +94,9 @@
 		} else if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
 			isOpen = !isOpen;
+		} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+			// Prevent page scroll when using arrow keys on the filter button
+			event.preventDefault();
 		}
 	}
 
@@ -124,6 +127,7 @@
 			<Trophy size={16} class="text-gray-600 dark:text-gray-400" />
 		{/if}
 		<span class="filter-label">Filter by {label}</span>
+		<ChevronDown size={16} class="text-gray-600 dark:text-gray-400 dropdown-arrow transition-transform duration-200" />
 		{#if selectedOptions.length > 0}
 			<span class="selected-count bg-accent text-accent-foreground rounded-full px-2 py-1 text-xs">
 				{selectedOptions.length}
@@ -186,6 +190,7 @@
 		align-items: center;
 		color: var(--color-text-primary);
 		min-height: 44px;
+		cursor: pointer;
 	}
 
 	.filter-button.selected {
@@ -364,6 +369,11 @@
 
 	.filter-actions {
 		margin-top: 0.5rem;
+	}
+
+	/* Dropdown arrow styles */
+	.dropdown-arrow {
+		transition: transform 0.2s ease;
 	}
 
 	/* Reduced motion support */

@@ -8,6 +8,7 @@
 	import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
 	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
+	import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
@@ -158,3 +159,7 @@
 		<GamesView filteredGames={filteredData.filteredGames} />
 	{/if}
 </div>
+
+<!-- Global scroll-to-top button for gallery/list views -->
+<!-- Appears after scrolling down; uses window scroll position internally -->
+<ScrollToTopButton />

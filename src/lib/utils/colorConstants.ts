@@ -19,29 +19,29 @@ export const PLATFORM_COLORS: Record<string, string> = {
 export const GENRE_COLORS: Record<string, string> = {
 	// Each genre gets a completely unique color with maximum visual distinction
 	Platformer: 'bg-[#dc2626] text-white', // Scarlet red
-	'Action Platformer': 'bg-[#7f1d1d] text-white', // Maroon
-	'Puzzle Platformer': 'bg-[#7c3aed] text-white', // Electric purple
-	'Story Platformer': 'bg-[#ea580c] text-white', // Tangerine
-	'Story Adventure': 'bg-[#92400e] text-white', // Sepia
-	'Action Adventure': 'bg-[#0d9488] text-white', // Persian green
-	'Survival Horror': 'bg-[#581c87] text-white', // Eggplant
-	'Story Puzzle': 'bg-[#be185d] text-white', // Ruby
-	Puzzle: 'bg-[#15803d] text-white', // Jungle green
-	'Action RPG': 'bg-[#b91c1c] text-white', // Venetian red
-	'Classic RPG': 'bg-[#7c2d12] text-white', // Peru
-	'Japanese RPG': 'bg-[#0891b2] text-white', // Bondi blue
-	'Sandbox RPG': 'bg-[#4d7c0f] text-white', // Limeade
-	'Story RPG': 'bg-[#be123c] text-white', // Crimson
-	FPS: 'bg-[#991b1b] text-white', // Fire engine red
-	Action: 'bg-[#9a3412] text-white', // Burnt umber
-	'Bullet Hell': 'bg-[#dc143c] text-white', // Cardinal red
-	'Hack & Slash': 'bg-[#c2410c] text-white', // Carrot orange
-	Survival: 'bg-[#166534] text-white', // Evergreen
-	Strategy: 'bg-[#1e40af] text-white', // Cobalt blue
-	Metroidvania: 'bg-[#6b21a8] text-white', // Byzantium
-	Roguelike: 'bg-[#f97316] text-white', // Princeton orange
-	'Story Horror': 'bg-[#4c1d95] text-white', // Indigo
-	'Horror RPG': 'bg-[#0f172a] text-white' // Gunmetal
+	'Action Platformer': 'bg-[#991b1b] text-white', // Dark red
+	'Puzzle Platformer': 'bg-[#7c2d12] text-white', // Deep brown
+	'Story Platformer': 'bg-[#92400e] text-white', // Dark orange
+	'Story Adventure': 'bg-[#a16207] text-white', // Amber
+	'Action Adventure': 'bg-[#ca8a04] text-white', // Yellow
+	'Survival Horror': 'bg-[#65a30d] text-white', // Lime green
+	'Story Puzzle': 'bg-[#16a34a] text-white', // Emerald green
+	Puzzle: 'bg-[#059669] text-white', // Teal green
+	'Action RPG': 'bg-[#0891b2] text-white', // Sky blue
+	'Classic RPG': 'bg-[#0284c7] text-white', // Bright blue
+	'Japanese RPG': 'bg-[#2563eb] text-white', // Royal blue
+	'Sandbox RPG': 'bg-[#4f46e5] text-white', // Indigo
+	'Story RPG': 'bg-[#7c3aed] text-white', // Purple
+	FPS: 'bg-[#9333ea] text-white', // Violet
+	Action: 'bg-[#c026d3] text-white', // Magenta
+	'Bullet Hell': 'bg-[#db2777] text-white', // Pink
+	'Hack & Slash': 'bg-[#e11d48] text-white', // Rose
+	Survival: 'bg-[#ea580c] text-white', // Orange
+	Strategy: 'bg-[#f97316] text-white', // Pumpkin
+	Metroidvania: 'bg-[#f59e0b] text-white', // Amber
+	Roguelike: 'bg-[#eab308] text-white', // Yellow
+	'Story Horror': 'bg-[#84cc16] text-white', // Lime
+	'Horror RPG': 'bg-[#22c55e] text-white' // Emerald
 };
 
 // Tier color mappings - uses full names as keys (matching display format)

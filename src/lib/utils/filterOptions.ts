@@ -20,6 +20,16 @@ export function getTierColor(tier: string): string {
 	return TIER_COLORS[fullTierName] || 'bg-gray-600 text-white';
 }
 
+// Define the correct tier order
+const TIER_ORDER = [
+	'S - Masterpiece',
+	'A - Amazing',
+	'B - Great',
+	'C - Good',
+	'D - Decent',
+	'E - Bad'
+];
+
 export function extractFilterOptions(games: Game[]): {
 	platforms: string[];
 	genres: string[];
@@ -38,6 +48,9 @@ export function extractFilterOptions(games: Game[]): {
 	return {
 		platforms: Array.from(platforms).sort(),
 		genres: Array.from(genres).sort(),
-		tiers: Array.from(tiers).sort()
+		tiers: Array.from(tiers).sort((a, b) => {
+			// Sort tiers by the predefined order instead of alphabetically
+			return TIER_ORDER.indexOf(a) - TIER_ORDER.indexOf(b);
+		})
 	};
 }
