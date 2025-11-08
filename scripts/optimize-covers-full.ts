@@ -32,6 +32,7 @@ interface OptimizationResult {
 	status: 'success' | 'error' | 'skipped';
 	error?: string;
 	originalSize?: number;
+	cover200Size?: number;
 	cover300Size?: number;
 	detail400Size?: number;
 	processingTime?: number;
@@ -44,6 +45,7 @@ interface OptimizationStats {
 	errors: number;
 	skipped: number;
 	totalOriginalSize: number;
+	totalCover200Size: number;
 	totalCover300Size: number;
 	totalDetail400Size: number;
 	totalTime: number;
@@ -95,17 +97,30 @@ async function processImage(
 		const gameId = matchingGame.id;
 
 		// Paths:
-		// - 300w: {id}.webp          (card / grid)
-		// - 400w: {id}-detail.webp   (detail / modal)
+		// - 200w: {id}-200w.webp      (tier list view / compact)
+		// - 300w: {id}.webp           (card / grid)
+		// - 400w: {id}-detail.webp    (detail / modal)
+		const cover200Path = join(outputDir, `${gameId}-200w.webp`);
 		const cover300Path = join(outputDir, `${gameId}.webp`);
 		const detail400Path = join(outputDir, `${gameId}-detail.webp`);
 
 		const originalStats = await stat(inputPath);
 		const originalSize = originalStats.size;
 
-		// Generate exactly two sizes:
-		// 1) 300w x 450h -> card usage
-		// 2) 400w x 600h -> detail usage
+		// 1) 200w x 300h -> tier list / small usage
+		await sharp(inputPath)
+			.resize(200, 300, {
+				fit: 'cover',
+				position: 'center',
+				background: { r: 0, g: 0, b: 0, alpha: 0 }
+			})
+			.webp({
+				quality: 80,
+				effort: 6
+			})
+			.toFile(cover200Path);
+
+		// 2) 300w x 450h -> card usage
 		await sharp(inputPath)
 			.resize(300, 450, {
 				fit: 'cover',
@@ -118,6 +133,7 @@ async function processImage(
 			})
 			.toFile(cover300Path);
 
+		// 3) 400w x 600h -> detail usage
 		await sharp(inputPath)
 			.resize(400, 600, {
 				fit: 'cover',
@@ -130,6 +146,7 @@ async function processImage(
 			})
 			.toFile(detail400Path);
 
+		const cover200Stats = await stat(cover200Path);
 		const cover300Stats = await stat(cover300Path);
 		const detail400Stats = await stat(detail400Path);
 
@@ -141,6 +158,7 @@ async function processImage(
 			gameTitle: matchingGame.title,
 			status: 'success',
 			originalSize,
+			cover200Size: cover200Stats.size,
 			cover300Size: cover300Stats.size,
 			detail400Size: detail400Stats.size,
 			processingTime
@@ -224,6 +242,7 @@ async function main(): Promise<void> {
 		errors: results.filter((r) => r.status === 'error').length,
 		skipped: results.filter((r) => r.status === 'skipped').length,
 		totalOriginalSize: successful.reduce((sum, r) => sum + (r.originalSize || 0), 0),
+		totalCover200Size: successful.reduce((sum, r) => sum + (r.cover200Size || 0), 0),
 		totalCover300Size: successful.reduce((sum, r) => sum + (r.cover300Size || 0), 0),
 		totalDetail400Size: successful.reduce((sum, r) => sum + (r.detail400Size || 0), 0),
 		totalTime
@@ -240,6 +259,7 @@ async function main(): Promise<void> {
 	if (stats.successful > 0) {
 		console.log(`\n📈 Size Overview:`);
 		console.log(`Original total: ${formatBytes(stats.totalOriginalSize)}`);
+		console.log(`200w covers total: ${formatBytes(stats.totalCover200Size)}`);
 		console.log(`300w covers total: ${formatBytes(stats.totalCover300Size)}`);
 		console.log(`400w details total: ${formatBytes(stats.totalDetail400Size)}`);
 	}
@@ -249,6 +269,7 @@ async function main(): Promise<void> {
 		totalImages: stats.totalFiles,
 		optimizedImages: stats.successful,
 		totalSizeBefore: stats.totalOriginalSize,
+		totalCover200Size: stats.totalCover200Size,
 		totalCover300Size: stats.totalCover300Size,
 		totalDetail400Size: stats.totalDetail400Size,
 		totalTimeMs: stats.totalTime,

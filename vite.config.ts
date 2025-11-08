@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { unlinkSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -16,7 +16,6 @@ export default defineConfig({
 				const largeDatasetBrPath = join(buildDir, 'games-large.json.br');
 				const largeDatasetGzPath = join(buildDir, 'games-large.json.gz');
 
-				// Remove the large dataset files from build output
 				try {
 					if (existsSync(largeDatasetPath)) {
 						unlinkSync(largeDatasetPath);
@@ -36,27 +35,17 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			output: {
-				// Optimize chunk splitting for better caching
-				// Use function-based manualChunks to check actual module IDs
-				manualChunks: (id) => {
-					// Check if it's from node_modules
+				manualChunks(id: string) {
 					if (id.includes('node_modules')) {
-						// UI libraries
 						if (id.includes('lucide-svelte')) {
 							return 'vendor-ui';
 						}
-						// Utility libraries
-						if (id.includes('date-fns')) {
+						if (id.includes('date-fns') || id.includes('zod')) {
 							return 'vendor-utils';
 						}
-						if (id.includes('zod')) {
-							return 'vendor-utils';
-						}
-						// Group other large vendor packages
 						if (id.includes('svelte') || id.includes('@sveltejs')) {
 							return 'vendor-svelte';
 						}
-						// Other vendor code
 						return 'vendor';
 					}
 				}
@@ -65,22 +54,7 @@ export default defineConfig({
 		chunkSizeWarningLimit: 1000,
 		sourcemap: false
 	},
-	// Optimize dependencies
 	optimizeDeps: {
 		include: ['lucide-svelte', 'date-fns']
-	},
-	test: {
-		expect: { requireAssertions: true },
-		projects: [
-			{
-				extends: './vite.config.ts',
-				test: {
-					name: 'server',
-					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
 	}
 });

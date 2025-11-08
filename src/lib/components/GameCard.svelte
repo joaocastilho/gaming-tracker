@@ -18,9 +18,18 @@
 
 	let { game, size = 'small', showTierBadge = true, isAboveFold = false }: Props = $props();
 
-	// Generate srcset and sizes for responsive images (400w max covers)
-	const imageSrcset = $derived(generateSrcset(game.coverImage));
-	const imageSizes = $derived(generateSizes(isAboveFold ? 'card' : 'gallery'));
+	// Generate srcset and sizes for responsive images.
+	// We keep generateSrcset as the single source of truth, but:
+	// - For size === 'tiny' (tier list), we start from the 200w variant.
+	// - For other sizes, behavior matches existing card/gallery logic.
+	const imageSrcset = $derived(() => generateSrcset(game.coverImage));
+	const imageSizes = $derived(() => {
+		if (size === 'tiny') {
+			// Compact thumbnails for tier list view
+			return '(max-width: 640px) 40vw, (max-width: 1024px) 20vw, 200px';
+		}
+		return generateSizes(isAboveFold ? 'card' : 'gallery');
+	});
 
 	// Get image cache entry - memoize to avoid recreating
 	const imageEntry = $derived.by(() => imageCache.getImage(game.coverImage));
@@ -175,9 +184,9 @@
 		{/if}
 		<img
 			bind:this={imageElement}
-			src={isActive ? game.coverImage : game.coverImage.replace('.webp', '-detail.webp')}
-			srcset={isActive ? imageSrcset : undefined}
-			sizes={isActive ? imageSizes : undefined}
+			src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
+			srcset={isActive ? imageSrcset() : undefined}
+			sizes={isActive ? imageSizes() : undefined}
 			alt="{game.title} cover"
 			class="cover-image"
 			class:loaded={isImageLoaded}

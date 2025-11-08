@@ -18,21 +18,6 @@
 
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
-	// Initialize active tab
-	if (typeof window !== 'undefined') {
-		const savedTab = localStorage.getItem('gaming-tracker-active-tab') as TabId | null;
-		const hash = window.location.hash.replace('#', '');
-		let newActiveTab: TabId = savedTab || 'all';
-
-		if (hash === 'completed') newActiveTab = 'completed';
-		else if (hash === 'planned') newActiveTab = 'planned';
-		else if (hash === 'tierlist') newActiveTab = 'tierlist';
-
-		if (newActiveTab !== $activeTab) {
-			activeTab.set(newActiveTab);
-		}
-	}
-
 	const tabs = $derived<Tab[]>([
 		{ id: 'all', label: 'Games', route: '/', count: $filteredGamesStore.totalCount },
 		{
