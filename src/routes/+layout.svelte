@@ -225,7 +225,7 @@
 	class="bg-background text-foreground h-full min-h-screen"
 >
 	<Header />
-	<section class="filter-section sticky top-[104px] z-30 md:top-[110px]">
+	<section class="filter-section top-[104px] z-30 md:top-[110px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			<SearchBar />
 

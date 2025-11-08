@@ -8,7 +8,6 @@
 	import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
 	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
-	import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
@@ -35,7 +34,6 @@
 	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
 	let isLoadingView = $state(false);
 
-	// Debounced URL update functions to reduce main-thread jank
 	const debouncedFiltersWriteToURL = debounce(() => filtersStore.writeToURL(), 100);
 	const debouncedAppWriteToURL = debounce(() => appStore.writeToURL(), 100);
 	const debouncedSortWriteToURL = debounce(() => sortStore.writeToURL(), 100);
@@ -57,7 +55,6 @@
 		}
 	});
 
-	// Sync initial tab with URL path (/games, /completed, /planned, /tierlist)
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 
@@ -66,7 +63,7 @@
 			appStore.setActiveTab('tierlist');
 		} else if (path === '/completed') {
 			appStore.setActiveTab('completed');
-		} else if (path === '/planned') {
+		} else if (path === 'planned') {
 			appStore.setActiveTab('planned');
 		} else {
 			// Default for / or /games or anything else
@@ -74,14 +71,12 @@
 		}
 	});
 
-	// Handle browser back/forward navigation
 	$effect(() => {
 		filtersStore.readFromURL(page.url.searchParams);
 		appStore.readFromURL(page.url.searchParams);
 		sortStore.readFromURL(page.url.searchParams);
 	});
 
-	// Update URL with current filter state on initial load (defer to ensure router is ready)
 	$effect(() => {
 		const updateURLs = () => {
 			try {
@@ -96,7 +91,6 @@
 			}
 		};
 
-		// Use requestAnimationFrame for better timing, fallback to setTimeout
 		if (typeof requestAnimationFrame !== 'undefined') {
 			requestAnimationFrame(updateURLs);
 		} else {
@@ -105,11 +99,8 @@
 	});
 
 	let criticalGames = (data.criticalGames || []).slice(0, 15);
-
-	// For tier list, get all games that have tiers assigned (ignoring status filters)
 	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
 
-	// Load tier list view component only when needed
 	async function loadTierListView() {
 		if (TierListViewComponent) return;
 
@@ -124,15 +115,12 @@
 		}
 	}
 
-	// Preload tier list view when hovering over tier list tab (called from Header component)
 	function preloadTierListView() {
 		if (!TierListViewComponent) {
 			loadTierListView();
 		}
 	}
 
-	// Expose preload function for Header component to use
-	// This will be called via appStore or directly if needed
 	if (typeof window !== 'undefined') {
 		type WindowWithPreload = Window & {
 			__preloadTierListView?: () => void;
@@ -140,7 +128,6 @@
 		(window as WindowWithPreload).__preloadTierListView = preloadTierListView;
 	}
 
-	// Load games data when the component mounts
 	$effect(() => {
 		if (data.games) {
 			gamesStore.initializeGames(data.games);
@@ -176,7 +163,3 @@
 		<GamesView filteredGames={filteredData.filteredGames} />
 	{/if}
 </div>
-
-<!-- Global scroll-to-top button for gallery/list views -->
-<!-- Appears after scrolling down; uses window scroll position internally -->
-<ScrollToTopButton />

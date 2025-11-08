@@ -4,8 +4,6 @@
 	import { filtersStore } from '../stores/filters.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
-	// Remove the unnecessary $effect + subscribe pattern
-	// Store values can be accessed directly with $ prefix
 	const { activeTab } = appStore;
 
 	function navigateTo(path: string) {
@@ -26,46 +24,49 @@
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
 	const tabs = $derived<Tab[]>([
-		{ id: 'all', label: 'Games', route: resolve('/'), count: $filteredGamesStore.totalCount },
+		{ 
+			id: 'all', 
+			label: 'Games', 
+			route: resolve('/'), 
+			count: $filteredGamesStore.totalCount 
+		},
 		{
 			id: 'completed',
 			label: 'Completed',
 			route: 'completed',
 			count: $filteredGamesStore.completedCount
 		},
-		{ id: 'planned', label: 'Planned', route: 'planned', count: $filteredGamesStore.plannedCount },
-		{ id: 'tierlist', label: 'Tier List', route: 'tierlist', count: null }
+		{ 
+			id: 'planned', 
+			label: 'Planned', 
+			route: 'planned', 
+			count: $filteredGamesStore.plannedCount 
+		},
+		{ 
+			id: 'tierlist', 
+			label: 'Tier List', 
+			route: 'tierlist', 
+			count: null 
+		}
 	]);
 
 	function handleLogoClick() {
 		filtersStore.resetAllFilters();
 		appStore.activeTab.set('all');
-		appStore.writeToURLWithFilters(filtersStore); // This will clear filter-related URL params
+		appStore.writeToURLWithFilters(filtersStore);
 
-		// Scroll to top of page - multiple approaches for reliability
 		scrollToTop();
 	}
 
-	// Enhanced scroll function for better reliability
 	function scrollToTop() {
 		if (typeof window === 'undefined') return;
 
 		window.scrollTo({ top: 0, behavior: 'instant' });
-
-		setTimeout(() => {
-			window.scrollTo({ top: 0, behavior: 'instant' });
-
-			// Additional fallback scroll
-			if (document.getElementById('main-content')) {
-				document.getElementById('main-content')!.scrollTop = 0;
-			}
-		}, 50);
 	}
 
 	function handleTabClick(tab: Tab) {
 		if (tab.id !== $activeTab) {
 			activeTab.set(tab.id);
-
 			navigateTo(tab.route);
 		}
 	}
@@ -80,8 +81,7 @@
 	}
 </script>
 
-<header class="header">
-	<div class="header-background"></div>
+<header class="header header-background">
 	<div class="header-content container mx-auto px-6">
 		<!-- Left section: Logo -->
 		<div class="header-left">
@@ -105,7 +105,6 @@
 
 	<!-- Navigation Tabs -->
 	<nav class="navigation-tabs" aria-label="Game navigation">
-		<div class="navigation-background"></div>
 		<div class="navigation-content">
 			<ul class="tabs-list" role="tablist">
 				{#each tabs as tab (tab.id)}
@@ -135,30 +134,14 @@
 
 <style>
 	.header {
-		/* Sticky positioning for the entire header + navigation */
-		position: sticky;
 		top: 0;
-		z-index: 40;
-
-		/* Layout */
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-
-		/* Remove border */
 		border: none;
 	}
 
 	.header-background {
-		/* Full width background */
-		width: 100vw;
-		position: absolute;
-		left: 50%;
-		right: 50%;
-		margin-left: -50vw;
-		margin-right: -50vw;
-		height: 100%;
-
 		/* Dark mode colors */
 		background-color: #0a0d11;
 	}
@@ -168,14 +151,12 @@
 	}
 
 	.header-content {
-		/* Layout */
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		height: 60px;
 		width: 100%;
 		position: relative;
-		z-index: 1;
 	}
 
 	/* Left section */
@@ -186,7 +167,6 @@
 		margin-left: 40px; /* Align with search bar content start (24px container + 16px search bar) */
 	}
 
-	/* Logo section */
 	.logo {
 		display: flex;
 		align-items: center;
@@ -220,30 +200,12 @@
 		object-fit: contain;
 	}
 
-	/* Navigation Tabs Styling */
 	.navigation-tabs {
 		position: relative;
 	}
 
-	.navigation-background {
-		/* Full width background matching header */
-		width: 100vw;
-		position: absolute;
-		left: 50%;
-		right: 50%;
-		margin-left: -50vw;
-		margin-right: -50vw;
-		height: 100%;
-		background-color: #0a0d11; /* Dark mode - matches header */
-	}
-
-	:global(.light) .navigation-background {
-		background-color: #f2ebe1; /* Light mode - matches header */
-	}
-
 	.navigation-content {
 		position: relative;
-		z-index: 1;
 	}
 
 	.tabs-list {
@@ -251,7 +213,7 @@
 		justify-content: center;
 		list-style: none;
 		margin: 0;
-		padding: 0 6rem; /* Center aligned with header container */
+		padding: 0 6rem;
 		overflow-x: auto;
 		scrollbar-width: none; /* Firefox */
 		-ms-overflow-style: none; /* Internet Explorer 10+ */
@@ -263,13 +225,13 @@
 
 	@media (min-width: 768px) {
 		.tabs-list {
-			padding: 0 8rem; /* More padding on larger screens */
+			padding: 0 8rem;
 		}
 	}
 
 	@media (min-width: 1024px) {
 		.tabs-list {
-			padding: 0 10rem; /* Even more padding on desktop */
+			padding: 0 10rem;
 		}
 	}
 
