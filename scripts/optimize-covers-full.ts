@@ -32,8 +32,8 @@ interface OptimizationResult {
 	status: 'success' | 'error' | 'skipped';
 	error?: string;
 	originalSize?: number;
-	optimizedSize?: number;
-	sizeReduction?: number;
+	cover300Size?: number;
+	detail400Size?: number;
 	processingTime?: number;
 }
 
@@ -44,7 +44,8 @@ interface OptimizationStats {
 	errors: number;
 	skipped: number;
 	totalOriginalSize: number;
-	totalOptimizedSize: number;
+	totalCover300Size: number;
+	totalDetail400Size: number;
 	totalTime: number;
 }
 
@@ -79,7 +80,6 @@ async function processImage(
 	const startTime = Date.now();
 
 	try {
-		// Find matching game
 		const matchingGame = await findMatchingGame(filename, games);
 		if (!matchingGame) {
 			return {
@@ -93,53 +93,47 @@ async function processImage(
 
 		const inputPath = join(COVERS_RAW_DIR, filename);
 		const gameId = matchingGame.id;
-		const galleryPath = join(outputDir, `${gameId}.webp`);
-		const detailPath = join(outputDir, `${gameId}-detail.webp`);
 
-		// Get original file size
+		// Paths:
+		// - 300w: {id}.webp          (card / grid)
+		// - 400w: {id}-detail.webp   (detail / modal)
+		const cover300Path = join(outputDir, `${gameId}.webp`);
+		const detail400Path = join(outputDir, `${gameId}-detail.webp`);
+
 		const originalStats = await stat(inputPath);
 		const originalSize = originalStats.size;
 
-		// Generate multiple sizes for responsive images
-		const sizes = [
-			{ name: 'thumbnail', width: 200, height: 300, suffix: '-thumb' },
-			{ name: 'small', width: 300, height: 450, suffix: '' }, // Gallery view
-			{ name: 'medium', width: 400, height: 600, suffix: '-detail' }, // Detail modal
-			{ name: 'large', width: 600, height: 900, suffix: '-large' } // High-res displays
-		];
+		// Generate exactly two sizes:
+		// 1) 300w x 450h -> card usage
+		// 2) 400w x 600h -> detail usage
+		await sharp(inputPath)
+			.resize(300, 450, {
+				fit: 'cover',
+				position: 'center',
+				background: { r: 0, g: 0, b: 0, alpha: 0 }
+			})
+			.webp({
+				quality: 85,
+				effort: 6
+			})
+			.toFile(cover300Path);
 
-		const optimizationResults: { size: string; path: string; fileSize: number }[] = [];
+		await sharp(inputPath)
+			.resize(400, 600, {
+				fit: 'cover',
+				position: 'center',
+				background: { r: 0, g: 0, b: 0, alpha: 0 }
+			})
+			.webp({
+				quality: 90,
+				effort: 6
+			})
+			.toFile(detail400Path);
 
-		// Optimize for each size
-		for (const size of sizes) {
-			const outputPath = join(outputDir, `${gameId}${size.suffix}.webp`);
-
-			await sharp(inputPath)
-				.webp({
-					quality: size.name === 'thumbnail' ? 80 : 85, // Lower quality for thumbnails
-					effort: 6
-				})
-				.resize(size.width, size.height, {
-					fit: 'cover',
-					position: 'center',
-					background: { r: 0, g: 0, b: 0, alpha: 0 }
-				})
-				.toFile(outputPath);
-
-			const stats = await stat(outputPath);
-			optimizationResults.push({
-				size: size.name,
-				path: outputPath,
-				fileSize: stats.size
-			});
-		}
-
-		// Get optimized file size (use gallery size for stats)
-		const galleryStats = await stat(join(outputDir, `${gameId}.webp`));
-		const optimizedSize = galleryStats.size;
+		const cover300Stats = await stat(cover300Path);
+		const detail400Stats = await stat(detail400Path);
 
 		const processingTime = Date.now() - startTime;
-		const sizeReduction = ((originalSize - optimizedSize) / originalSize) * 100;
 
 		return {
 			originalFilename: filename,
@@ -147,8 +141,8 @@ async function processImage(
 			gameTitle: matchingGame.title,
 			status: 'success',
 			originalSize,
-			optimizedSize,
-			sizeReduction,
+			cover300Size: cover300Stats.size,
+			detail400Size: detail400Stats.size,
 			processingTime
 		};
 	} catch (error) {
@@ -199,7 +193,6 @@ async function main(): Promise<void> {
 	await mkdir(COVERS_DIR, { recursive: true });
 	console.log(`✅ Output directory ready: ${COVERS_DIR}`);
 
-	// Process all images
 	console.log('\n🚀 Starting optimization process...');
 	console.log('Progress: 0/' + pngFiles.length);
 
@@ -211,13 +204,11 @@ async function main(): Promise<void> {
 		results.push(result);
 		processed++;
 
-		// Progress update every 25 files
 		if (processed % 25 === 0 || processed === pngFiles.length) {
 			const progress = Math.round((processed / pngFiles.length) * 100);
 			console.log(`Progress: ${processed}/${pngFiles.length} (${progress}%)`);
 		}
 
-		// Show status for errors
 		if (result.status === 'error') {
 			console.log(`⚠️  Error processing ${filename}: ${result.error}`);
 		}
@@ -225,23 +216,19 @@ async function main(): Promise<void> {
 
 	const totalTime = Date.now() - overallStartTime;
 
-	// Calculate statistics
+	const successful = results.filter((r) => r.status === 'success');
 	const stats: OptimizationStats = {
 		totalFiles: pngFiles.length,
 		processed: results.length,
-		successful: results.filter((r) => r.status === 'success').length,
+		successful: successful.length,
 		errors: results.filter((r) => r.status === 'error').length,
 		skipped: results.filter((r) => r.status === 'skipped').length,
-		totalOriginalSize: results
-			.filter((r) => r.status === 'success' && r.originalSize)
-			.reduce((sum, r) => sum + (r.originalSize || 0), 0),
-		totalOptimizedSize: results
-			.filter((r) => r.status === 'success' && r.optimizedSize)
-			.reduce((sum, r) => sum + (r.optimizedSize || 0), 0),
+		totalOriginalSize: successful.reduce((sum, r) => sum + (r.originalSize || 0), 0),
+		totalCover300Size: successful.reduce((sum, r) => sum + (r.cover300Size || 0), 0),
+		totalDetail400Size: successful.reduce((sum, r) => sum + (r.detail400Size || 0), 0),
 		totalTime
 	};
 
-	// Display results
 	console.log('\n📊 Optimization Results');
 	console.log('========================');
 	console.log(`Total files: ${stats.totalFiles}`);
@@ -251,25 +238,19 @@ async function main(): Promise<void> {
 	console.log(`\nTotal processing time: ${formatTime(stats.totalTime)}`);
 
 	if (stats.successful > 0) {
-		const avgReduction =
-			results
-				.filter((r) => r.status === 'success' && r.sizeReduction)
-				.reduce((sum, r) => sum + (r.sizeReduction || 0), 0) / stats.successful;
-
-		console.log(`\n📈 Size Optimization:`);
+		console.log(`\n📈 Size Overview:`);
 		console.log(`Original total: ${formatBytes(stats.totalOriginalSize)}`);
-		console.log(`Optimized total: ${formatBytes(stats.totalOptimizedSize)}`);
-		console.log(`Space saved: ${formatBytes(stats.totalOriginalSize - stats.totalOptimizedSize)}`);
-		console.log(`Average reduction: ${avgReduction.toFixed(1)}%`);
+		console.log(`300w covers total: ${formatBytes(stats.totalCover300Size)}`);
+		console.log(`400w details total: ${formatBytes(stats.totalDetail400Size)}`);
 	}
 
-	// Generate manifest
 	const manifest = {
 		generatedAt: new Date().toISOString(),
 		totalImages: stats.totalFiles,
 		optimizedImages: stats.successful,
 		totalSizeBefore: stats.totalOriginalSize,
-		totalSizeAfter: stats.totalOptimizedSize,
+		totalCover300Size: stats.totalCover300Size,
+		totalDetail400Size: stats.totalDetail400Size,
 		totalTimeMs: stats.totalTime,
 		results
 	};
@@ -278,11 +259,12 @@ async function main(): Promise<void> {
 	await writeFile(manifestPath, JSON.stringify(manifest, null, 2));
 	console.log(`\n📋 Manifest saved: ${manifestPath}`);
 
-	// Update games.json with new cover paths
+	// Update games.json with new cover paths:
+	// coverImage always points to the 300w card image: covers/{id}.webp
 	console.log('\n🔗 Updating cover paths in games.json...');
 	const updatedGames = games.map((game) => {
-		const result = results.find((r) => r.gameId === game.id);
-		if (result && result.status === 'success') {
+		const result = results.find((r) => r.gameId === game.id && r.status === 'success');
+		if (result) {
 			return {
 				...game,
 				coverImage: `covers/${game.id}.webp`
@@ -293,10 +275,9 @@ async function main(): Promise<void> {
 
 	const updatedGamesPath = join(process.cwd(), 'static', 'games.json');
 	await writeFile(updatedGamesPath, JSON.stringify({ games: updatedGames }, null, 2));
-	console.log('✅ Updated games.json with new cover paths');
+	console.log('✅ Updated games.json with 300w coverImage paths');
 
 	console.log('\n🎉 Optimization complete!');
 }
 
-// Run the script
 main().catch(console.error);

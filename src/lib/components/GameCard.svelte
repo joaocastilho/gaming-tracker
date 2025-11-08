@@ -18,9 +18,9 @@
 
 	let { game, size = 'small', showTierBadge = true, isAboveFold = false }: Props = $props();
 
-	// Generate srcset for responsive images
+	// Generate srcset and sizes for responsive images (400w max covers)
 	const imageSrcset = $derived(generateSrcset(game.coverImage));
-	const imageSizes = $derived(generateSizes('gallery'));
+	const imageSizes = $derived(generateSizes(isAboveFold ? 'card' : 'gallery'));
 
 	// Get image cache entry - memoize to avoid recreating
 	const imageEntry = $derived.by(() => imageCache.getImage(game.coverImage));
@@ -28,6 +28,9 @@
 	// Image loading state - sync with cache entry
 	let isImageLoaded = $derived(imageEntry.isLoaded);
 	let hasImageError = $derived(imageEntry.hasError);
+
+	// Whether we've activated the real cover (after intersection or cached)
+	let isActive = $derived(isAboveFold || isImageLoaded);
 
 	// Reference to the image element for Intersection Observer
 	let imageElement = $state<HTMLImageElement>();
@@ -103,15 +106,19 @@
 	// Setup Intersection Observer for progressive loading
 	// Only set up observer once when image element is available and not above fold
 	$effect(() => {
-		if (!browser || !imageElement || isAboveFold || isImageLoaded) return;
+		if (!browser || !imageElement || isAboveFold) return;
 
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
 					if (entry.isIntersecting) {
-						// Image is about to enter viewport, ensure it's preloaded
-						// This will trigger the $derived imageEntry to update
+						// Activate real image only when close to viewport
+						isActive = true;
 						imageCache.preload(game.coverImage);
+						// If the cover image was already cached, mark as loaded immediately
+						if (imageCache.isImageCached(game.coverImage)) {
+							isImageLoaded = true;
+						}
 						observer.disconnect();
 						break;
 					}
@@ -168,9 +175,9 @@
 		{/if}
 		<img
 			bind:this={imageElement}
-			src={game.coverImage}
-			srcset={imageSrcset}
-			sizes={imageSizes}
+			src={isActive ? game.coverImage : game.coverImage.replace('.webp', '-detail.webp')}
+			srcset={isActive ? imageSrcset : undefined}
+			sizes={isActive ? imageSizes : undefined}
 			alt="{game.title} cover"
 			class="cover-image"
 			class:loaded={isImageLoaded}

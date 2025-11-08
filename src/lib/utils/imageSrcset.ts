@@ -1,17 +1,15 @@
 /**
- * Generate srcset string for responsive images
+ * Generate srcset string for cover images.
+ *
+ * Contract:
+ * - {id}.webp         -> 300w (card/grid)
+ * - {id}-detail.webp  -> 400w (detail/modal)
  */
 export function generateSrcset(basePath: string): string {
 	// Remove .webp extension if present
 	const base = basePath.replace(/\.webp$/, '');
 
-	// Generate srcset with different sizes
-	return [
-		`${base}-thumb.webp 200w`,
-		`${base}.webp 300w`,
-		`${base}-detail.webp 400w`,
-		`${base}-large.webp 600w`
-	].join(', ');
+	return [`${base}.webp 300w`, `${base}-detail.webp 400w`].join(', ');
 }
 
 /**
@@ -20,10 +18,13 @@ export function generateSrcset(basePath: string): string {
 export function generateSizes(context: 'gallery' | 'modal' | 'card'): string {
 	switch (context) {
 		case 'gallery':
-			return '(max-width: 640px) 200px, (max-width: 1024px) 300px, 300px';
+			// Card/grid uses the 300w cover; ensure we never exceed 300px CSS width in the grid.
+			return '(max-width: 640px) 200px, (max-width: 1024px) 250px, 300px';
 		case 'modal':
+			// Detail view uses the 400w image.
 			return '(max-width: 768px) 300px, 400px';
 		case 'card':
+			// Explicit card context: 300px, mapped to 300w cover.
 			return '300px';
 		default:
 			return '300px';
