@@ -52,7 +52,7 @@ const baseFilters: Pick<FilterState, 'searchTerm' | 'years' | 'ratings'> = {
 };
 
 function createFiltersStore() {
-	const worker = new FilterWorker();
+	const worker = browser ? new FilterWorker() : null;
 	const filters = writable<FilterState | null>(null);
 	const filteredGames = writable<Game[]>([]);
 	const gameCounts = writable<GameCounts>({
@@ -117,29 +117,33 @@ function createFiltersStore() {
 			}
 
 			filters.set(loadedFilters);
-			worker.postMessage({ type: 'LOAD_GAMES', payload: games });
-			const initialTab = get(appStore.activeTab);
-			worker.postMessage({
-				type: 'APPLY_FILTERS',
-				payload: { filters: loadedFilters, allGames: games, activeTab: initialTab }
-			});
+			if (worker) {
+				worker.postMessage({ type: 'LOAD_GAMES', payload: games });
+				const initialTab = get(appStore.activeTab);
+				worker.postMessage({
+					type: 'APPLY_FILTERS',
+					payload: { filters: loadedFilters, allGames: games, activeTab: initialTab }
+				});
+			}
 		}
 	});
 
-	worker.onmessage = (event) => {
-		const { type, payload } = event.data;
-		if (type === 'FILTER_RESULTS') {
-			filteredGames.set(payload.filteredGames);
-			gameCounts.set(payload.counts);
-		}
-	};
+	if (worker) {
+		worker.onmessage = (event: MessageEvent) => {
+			const { type, payload } = event.data;
+			if (type === 'FILTER_RESULTS') {
+				filteredGames.set(payload.filteredGames);
+				gameCounts.set(payload.counts);
+			}
+		};
+	}
 
 	filtersAndTab.subscribe((currentData) => {
 		const { filters: currentFilters, activeTab } = currentData;
 		if (!currentFilters) return;
 
 		const allGames = get(gamesStore);
-		if (allGames.length > 0) {
+		if (allGames.length > 0 && worker) {
 			worker.postMessage({
 				type: 'APPLY_FILTERS',
 				payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
