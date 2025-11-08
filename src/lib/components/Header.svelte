@@ -225,7 +225,7 @@
 	.logo-image {
 		width: auto;
 		max-height: 55px;
-		max-width: 130px;
+		max-width: 145px;
 		object-fit: contain;
 	}
 

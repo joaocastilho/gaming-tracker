@@ -6,7 +6,7 @@
 	import { getTierClass } from '../utils/tierUtils.js';
 	import { imageCache } from '../utils/imageCache.js';
 	import { browser } from '$app/environment';
-	import { generateSrcset, generateSizes } from '../utils/imageSrcset.js';
+	import { generateSrcset, generateTinySrcset, generateSizes } from '../utils/imageSrcset.js';
 	import { Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
 
 	interface Props {
@@ -22,11 +22,19 @@
 	// We keep generateSrcset as the single source of truth, but:
 	// - For size === 'tiny' (tier list), we start from the 200w variant.
 	// - For other sizes, behavior matches existing card/gallery logic.
-	const imageSrcset = $derived(() => generateSrcset(game.coverImage));
+	const imageSrcset = $derived(() => {
+		// For tiny thumbnails (tier list / compact views), use the lightweight tiny srcset.
+		if (size === 'tiny') {
+			return generateTinySrcset(game.coverImage);
+		}
+		// Default behavior for standard cards/gallery.
+		return generateSrcset(game.coverImage);
+	});
+
 	const imageSizes = $derived(() => {
 		if (size === 'tiny') {
-			// Compact thumbnails for tier list view
-			return '(max-width: 640px) 40vw, (max-width: 1024px) 20vw, 200px';
+			// Tiny covers: reuse the centralized tiny sizes contract.
+			return generateSizes('tiny');
 		}
 		return generateSizes(isAboveFold ? 'card' : 'gallery');
 	});
@@ -113,33 +121,42 @@
 	}
 
 	// Setup Intersection Observer for progressive loading
-	// Only set up observer once when image element is available and not above fold
+	// Only set up observer once when image element is available and not above fold.
+	// Note: we avoid duplicate preloading work here; the <img> itself will fetch when activated.
 	$effect(() => {
 		if (!browser || !imageElement || isAboveFold) return;
 
+		const element = imageElement;
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
 					if (entry.isIntersecting) {
-						// Activate real image only when close to viewport
+						// Activate real image only when close to viewport.
 						isActive = true;
-						imageCache.preload(game.coverImage);
-						// If the cover image was already cached, mark as loaded immediately
+
+						// If the cover image was already cached (e.g., via previous views),
+						// immediately reflect loaded state to skip skeleton flash.
 						if (imageCache.isImageCached(game.coverImage)) {
 							isImageLoaded = true;
 						}
-						observer.disconnect();
+
+						if (element) {
+							observer.unobserve(element);
+						}
 						break;
 					}
 				}
 			},
 			{
-				rootMargin: '200px',
-				threshold: 0.1
+				// Be conservative so we don't flood network with far-off images.
+				rootMargin: '150px',
+				threshold: 0.15
 			}
 		);
 
-		observer.observe(imageElement);
+		if (element) {
+			observer.observe(element);
+		}
 
 		return () => {
 			observer.disconnect();

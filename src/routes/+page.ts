@@ -46,7 +46,7 @@ export const load: PageLoad = async ({ fetch }) => {
 		// Sort games by title to get the default "critical" list
 		const initialCriticalGames = validatedGames
 			.toSorted((a, b) => a.title.localeCompare(b.title))
-			.slice(0, 6); // Get the first 6 for preloading
+			.slice(0, 15); // Get the first 15 for preloading
 
 		return {
 			games: validatedGames,

@@ -86,7 +86,7 @@
 		}
 	});
 
-	let criticalGames = data.criticalGames || [];
+	let criticalGames = (data.criticalGames || []).slice(0, 6);
 
 	// For tier list, get all games that have tiers assigned (ignoring status filters)
 	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
