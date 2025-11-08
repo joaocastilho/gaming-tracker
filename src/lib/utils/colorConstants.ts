@@ -1,6 +1,3 @@
-// Centralized color constants for platforms, genres, and tiers
-// Used by GameCard component and filter utilities for consistent theming
-
 // Platform color mappings - each platform has its own widely different, vibrant, colorful unique color
 export const PLATFORM_COLORS: Record<string, string> = {
 	PC: 'bg-[#1e40af] text-white', // Royal blue (changed from purple)
@@ -56,9 +53,6 @@ export const TIER_COLORS: Record<string, string> = {
 	'D - Decent': 'bg-[#06b6d4] text-white', // Cyan background, white text
 	'E - Bad': 'bg-[#6b7280] text-white' // Gray background, white text
 };
-
-// Centralized display labels for platforms, genres, and tiers
-// Used by components to ensure consistent labeling across the app
 
 // Platform display names
 export const PLATFORM_LABELS: Record<string, string> = {

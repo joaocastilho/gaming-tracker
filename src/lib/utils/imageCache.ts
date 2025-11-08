@@ -13,9 +13,6 @@ class ImageCache {
 	private maxPreloadConcurrency = 3;
 	private activePreloads = 0;
 
-	/**
-	 * Check if an image is already cached in the browser
-	 */
 	isImageCached(src: string): boolean {
 		if (!browser) return false;
 
@@ -29,9 +26,6 @@ class ImageCache {
 		return img.complete && img.naturalWidth > 0;
 	}
 
-	/**
-	 * Get or create an image entry in the cache
-	 */
 	getImage(src: string): ImageCacheEntry {
 		let entry = this.cache.get(src);
 
@@ -77,9 +71,6 @@ class ImageCache {
 		return entry;
 	}
 
-	/**
-	 * Preload an image (adds to queue)
-	 */
 	preload(src: string): void {
 		if (!browser) return;
 		if (this.cache.has(src)) return; // Already cached
@@ -89,9 +80,6 @@ class ImageCache {
 		this.processPreloadQueue();
 	}
 
-	/**
-	 * Process preload queue with concurrency limit
-	 */
 	private processPreloadQueue(): void {
 		while (this.activePreloads < this.maxPreloadConcurrency && this.preloadQueue.length > 0) {
 			const src = this.preloadQueue.shift();
@@ -105,18 +93,12 @@ class ImageCache {
 		}
 	}
 
-	/**
-	 * Clear cache (useful for memory management)
-	 */
 	clear(): void {
 		this.cache.clear();
 		this.preloadQueue = [];
 		this.activePreloads = 0;
 	}
 
-	/**
-	 * Get cache statistics
-	 */
 	getStats() {
 		return {
 			cached: this.cache.size,

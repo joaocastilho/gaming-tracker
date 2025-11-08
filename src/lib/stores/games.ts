@@ -83,8 +83,6 @@ function createGamesStore() {
 			}
 		},
 
-		// ... keep existing methods like addGame, updateGame, etc. ...
-
 		getGameById(id: string): Game | undefined {
 			return get({ subscribe }).find((game) => game.id === id);
 		},

@@ -2,7 +2,6 @@ import gamesData from '../../../static/games.json';
 
 export type Game = (typeof gamesData.games)[number];
 
-// Get all unique platforms from games data
 export const getAllPlatforms = (): string[] => {
 	const platforms = new Set<string>();
 	gamesData.games.forEach((game) => {
@@ -13,7 +12,6 @@ export const getAllPlatforms = (): string[] => {
 	return Array.from(platforms).sort();
 };
 
-// Get all unique genres from games data
 export const getAllGenres = (): string[] => {
 	const genres = new Set<string>();
 	gamesData.games.forEach((game) => {
@@ -24,7 +22,6 @@ export const getAllGenres = (): string[] => {
 	return Array.from(genres).sort();
 };
 
-// Get all unique tiers from games data (only completed games)
 export const getAllTiers = (): string[] => {
 	const tiers = new Set<string>();
 	const tierMapping: Record<string, string> = {
@@ -55,14 +52,12 @@ export const getAllTiers = (): string[] => {
 	});
 };
 
-// Validation helpers
 export const isValidPlatform = (platform: string): boolean => getAllPlatforms().includes(platform);
 
 export const isValidGenre = (genre: string): boolean => getAllGenres().includes(genre);
 
 export const isValidTier = (tier: string): boolean => getAllTiers().includes(tier);
 
-// Export dynamic lists
 export const platforms = getAllPlatforms();
 export const genres = getAllGenres();
 export const tiers = getAllTiers();

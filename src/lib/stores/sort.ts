@@ -19,10 +19,8 @@ function createSortStore() {
 	});
 
 	return {
-		// Subscribe to sort state changes
 		subscribe,
 
-		// Get current sort state
 		get state() {
 			let currentState: { sortBy: string; sortDirection: 'asc' | 'desc' } = {
 				sortBy: '',
@@ -35,7 +33,6 @@ function createSortStore() {
 			return currentState;
 		},
 
-		// Set sort column and direction
 		setSort(sortBy: string, sortDirection: 'asc' | 'desc' = 'asc') {
 			update(() => ({
 				sortBy,
@@ -43,7 +40,6 @@ function createSortStore() {
 			}));
 		},
 
-		// Toggle sort direction for a column
 		toggleSort(column: string) {
 			update((state) => {
 				if (state.sortBy === column) {
@@ -60,7 +56,6 @@ function createSortStore() {
 			});
 		},
 
-		// Clear sorting
 		clearSort() {
 			set({
 				sortBy: '',
@@ -68,7 +63,6 @@ function createSortStore() {
 			});
 		},
 
-		// Read sort state from URL parameters
 		readFromURL(searchParams: URLSearchParams) {
 			const sortBy = searchParams.get('sortBy') || '';
 			const sortDir = (searchParams.get('sortDir') as 'asc' | 'desc') || 'asc';
@@ -81,7 +75,6 @@ function createSortStore() {
 			}
 		},
 
-		// Write sort state to URL parameters
 		writeToURL() {
 			if (typeof window === 'undefined') return;
 
@@ -97,17 +90,14 @@ function createSortStore() {
 					url.searchParams.delete('sortDir');
 				}
 
-				// Use replaceState to avoid adding to browser history
 				replaceState(url.toString(), {});
 			} catch (error) {
-				// Silently ignore router initialization errors
 				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
 					console.warn('Failed to update URL:', error);
 				}
 			}
 		},
 
-		// Reset to default state
 		reset() {
 			set({
 				sortBy: '',

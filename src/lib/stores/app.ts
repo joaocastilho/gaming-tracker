@@ -62,7 +62,6 @@ function createAppStore() {
 		// Combined state
 		appState,
 
-		// Action methods
 		toggleTheme() {
 			theme.update((t) => (t === 'dark' ? 'light' : 'dark'));
 		},

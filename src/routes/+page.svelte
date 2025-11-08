@@ -17,10 +17,8 @@
 		filteredGames: Game[];
 	}
 
-	// Create filtered games store combining games and filters
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
-	// Get filtered games and counts
 	let filteredData = $state<FilteredGameData>({
 		filteredGames: [],
 		totalCount: 0,
@@ -28,16 +26,12 @@
 		plannedCount: 0
 	});
 
-	// Get all games directly from gamesStore for tier list
 	let allGamesFromStore = $state<Game[]>([]);
 
-	// Get current active tab
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 
-	// Get loading state from games store
 	let isLoadingGames = $state(false);
 
-	// View components - only tier list needs dynamic loading
 	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
 	let isLoadingView = $state(false);
 
@@ -46,7 +40,6 @@
 	const debouncedAppWriteToURL = debounce(() => appStore.writeToURL(), 100);
 	const debouncedSortWriteToURL = debounce(() => sortStore.writeToURL(), 100);
 
-	// Subscribe to stores
 	filteredGamesStore.subscribe((data) => {
 		filteredData = data;
 	});
@@ -177,7 +170,6 @@
 		});
 	});
 
-	// Derived loading state - no artificial delay
 	let imagesLoading = $derived(isLoadingGames || isLoadingView);
 </script>
 

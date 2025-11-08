@@ -15,12 +15,10 @@ function createGameSlug(title: string): string {
 		.replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
 }
 
-// TypeScript interfaces for modal state
 export interface ModalState {
 	isOpen: boolean;
 	activeGame: Game | null;
 	mode: 'view' | 'edit' | 'add';
-	// Form state management
 	formData: Partial<Game>;
 	validationErrors: Record<string, string>;
 	isSubmitting: boolean;
@@ -62,15 +60,12 @@ function createModalStore() {
 	}, 100); // 100ms debounce delay
 
 	return {
-		// Subscribe to modal state changes
 		subscribe: modalState.subscribe,
 
-		// Get current state
 		getState(): ModalState {
 			return get(modalState);
 		},
 
-		// Open modal for viewing a game
 		openViewModal(game: Game) {
 			modalState.set({
 				isOpen: true,
@@ -82,7 +77,6 @@ function createModalStore() {
 			});
 		},
 
-		// Open modal for editing a game
 		openEditModal(game: Game) {
 			modalState.set({
 				isOpen: true,
@@ -94,7 +88,6 @@ function createModalStore() {
 			});
 		},
 
-		// Open modal for adding a new game
 		openAddModal() {
 			modalState.set({
 				isOpen: true,
@@ -109,7 +102,6 @@ function createModalStore() {
 			});
 		},
 
-		// Close modal
 		closeModal() {
 			modalState.set({
 				isOpen: false,
@@ -121,7 +113,6 @@ function createModalStore() {
 			});
 		},
 
-		// Toggle modal open/closed state
 		toggleModal() {
 			modalState.update((state) => ({
 				...state,
@@ -129,7 +120,6 @@ function createModalStore() {
 			}));
 		},
 
-		// Update active game (for editing)
 		setActiveGame(game: Game | null) {
 			modalState.update((state) => ({
 				...state,
@@ -137,7 +127,6 @@ function createModalStore() {
 			}));
 		},
 
-		// Set mode
 		setMode(mode: 'view' | 'edit' | 'add') {
 			modalState.update((state) => ({
 				...state,
@@ -145,9 +134,6 @@ function createModalStore() {
 			}));
 		},
 
-		// Form management methods
-
-		// Update form field value
 		updateFormData(field: string, value: unknown) {
 			modalState.update((state) => ({
 				...state,
@@ -155,7 +141,6 @@ function createModalStore() {
 					...state.formData,
 					[field]: value
 				},
-				// Clear validation error for this field if it exists
 				validationErrors: {
 					...state.validationErrors,
 					[field]: ''
@@ -163,11 +148,9 @@ function createModalStore() {
 			}));
 		},
 
-		// Reset form to defaults or initial values
 		resetForm() {
 			modalState.update((state) => {
 				if (state.mode === 'edit' && state.activeGame) {
-					// Reset to original game data for edit mode
 					return {
 						...state,
 						formData: { ...state.activeGame },
@@ -175,7 +158,6 @@ function createModalStore() {
 						isSubmitting: false
 					};
 				} else {
-					// Reset to defaults for add mode
 					return {
 						...state,
 						formData: {
@@ -189,12 +171,10 @@ function createModalStore() {
 			});
 		},
 
-		// Validate form data
 		validateForm(): boolean {
 			const state = get(modalState);
 			const errors: Record<string, string> = {};
 
-			// Required field validation
 			if (!state.formData.title?.trim()) {
 				errors.title = 'Title is required';
 			}
@@ -208,7 +188,6 @@ function createModalStore() {
 				errors.timeToBeat = 'Time to beat is required';
 			}
 
-			// Year validation
 			if (state.formData.year !== undefined) {
 				if (state.formData.year < 1970 || state.formData.year > 2099) {
 					errors.year = 'Year must be between 1970 and 2099';
@@ -217,7 +196,6 @@ function createModalStore() {
 				errors.year = 'Year is required';
 			}
 
-			// Status-specific validation
 			if (state.formData.status === 'Completed') {
 				if (!state.formData.hoursPlayed?.trim()) {
 					errors.hoursPlayed = 'Hours played is required for completed games';
@@ -238,7 +216,6 @@ function createModalStore() {
 					errors.ratingGameplay = 'Gameplay rating is required for completed games';
 				}
 
-				// Rating range validation
 				if (
 					state.formData.ratingPresentation !== null &&
 					state.formData.ratingPresentation !== undefined &&
@@ -262,7 +239,6 @@ function createModalStore() {
 				}
 			}
 
-			// Update validation errors
 			modalState.update((currentState) => ({
 				...currentState,
 				validationErrors: errors
@@ -271,18 +247,15 @@ function createModalStore() {
 			return Object.keys(errors).length === 0;
 		},
 
-		// Submit form data
 		async submitForm(): Promise<boolean> {
 			const state = get(modalState);
 
-			// Set submitting state
 			modalState.update((currentState) => ({
 				...currentState,
 				isSubmitting: true,
 				validationErrors: {}
 			}));
 
-			// Validate form
 			if (!this.validateForm()) {
 				modalState.update((currentState) => ({
 					...currentState,
@@ -293,7 +266,6 @@ function createModalStore() {
 
 			try {
 				if (state.mode === 'add') {
-					// Calculate score if all ratings are provided
 					const ratingPresentation = state.formData.ratingPresentation ?? null;
 					const ratingStory = state.formData.ratingStory ?? null;
 					const ratingGameplay = state.formData.ratingGameplay ?? null;
@@ -302,13 +274,11 @@ function createModalStore() {
 							? Math.round(((ratingPresentation + ratingStory + ratingGameplay) / 3) * 2)
 							: null;
 
-					// Generate UUID for new game
 					const newGame: Game = {
 						...(state.formData as Game),
 						id: crypto.randomUUID(),
 						coverImage: `covers/${state.formData.title?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'game'}.webp`,
 						score,
-						// Set tier only if completed and has score
 						tier:
 							state.formData.status === 'Completed' && score !== null
 								? this.getTierFromScore(score)
@@ -317,7 +287,6 @@ function createModalStore() {
 
 					gamesStore.addGame(newGame);
 				} else if (state.mode === 'edit' && state.activeGame) {
-					// Calculate score if all ratings are provided
 					const ratingPresentation = state.formData.ratingPresentation ?? null;
 					const ratingStory = state.formData.ratingStory ?? null;
 					const ratingGameplay = state.formData.ratingGameplay ?? null;
@@ -326,12 +295,10 @@ function createModalStore() {
 							? Math.round(((ratingPresentation + ratingStory + ratingGameplay) / 3) * 2)
 							: state.activeGame.score;
 
-					// Update existing game
 					const updatedGame: Game = {
 						...state.activeGame,
 						...state.formData,
 						score,
-						// Update tier if score changed
 						tier:
 							state.formData.status === 'Completed' && score !== null
 								? this.getTierFromScore(score)
@@ -343,7 +310,6 @@ function createModalStore() {
 					gamesStore.updateGame(state.activeGame.id, updatedGame);
 				}
 
-				// Close modal on success
 				this.closeModal();
 				return true;
 			} catch (error) {
@@ -359,7 +325,6 @@ function createModalStore() {
 			}
 		},
 
-		// Helper method to determine tier from score
 		getTierFromScore(score: number): 'S' | 'A' | 'B' | 'C' | 'D' | 'E' {
 			if (score >= 18) return 'S';
 			if (score >= 15) return 'A';
@@ -369,13 +334,10 @@ function createModalStore() {
 			return 'E';
 		},
 
-		// URL parameter management for deep linking
 		readFromURL(searchParams: URLSearchParams, games: Game[]) {
 			const gameSlug = searchParams.get('game');
 			if (gameSlug) {
-				// First try to find by exact slug match
 				let game = games.find((g) => createGameSlug(g.title) === gameSlug);
-				// If not found, try to find by ID (for backward compatibility)
 				if (!game) {
 					game = games.find((g) => g.id === gameSlug);
 				}
@@ -394,7 +356,6 @@ function createModalStore() {
 
 		writeToURL: debouncedWriteToURL,
 
-		// Handle escape key to close modal
 		handleEscape() {
 			modalState.update((state) => {
 				if (state.isOpen) {

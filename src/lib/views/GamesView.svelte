@@ -4,9 +4,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { Game } from '$lib/types/game';
-import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
-import GameCard from '$lib/components/GameCard.svelte';
-import { setupProgressiveImagePreloading } from '$lib/utils/imagePreloader.js';
+	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
+	import GameCard from '$lib/components/GameCard.svelte';
+	import { setupProgressiveImagePreloading } from '$lib/utils/imagePreloader.js';
 
 	interface Props {
 		filteredGames: Game[];

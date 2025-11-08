@@ -1,6 +1,3 @@
-/**
- * Transform sample game data to match validation schema requirements
- */
 export function transformGameData(game: Record<string, unknown>): Record<string, unknown> {
 	const transformed = { ...game };
 

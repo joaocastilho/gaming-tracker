@@ -56,11 +56,8 @@
 		}
 	});
 
-	// Reactive filter options derived from games store
-	// Use $derived instead of $effect + subscribe
 	let filterOptions = $derived(extractFilterOptions($gamesStore));
 
-	// Reactive active tab from app store - use rune directly
 	let currentActiveTab = $derived(get(appStore.activeTab));
 
 	// Handle tab changes with effect
@@ -110,12 +107,10 @@
 	// Handle URL updates for all filters (debounced)
 	let currentFilterState: import('$lib/stores/filters').FilterState | null = null;
 
-	// Direct subscription to filter state
 	filtersStore.subscribe(($filters) => {
 		currentFilterState = $filters;
 	});
 
-	// Debounced URL update for all filter changes
 	$effect(() => {
 		if (initialized) {
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
@@ -125,9 +120,7 @@
 		}
 	});
 
-	// Handle browser back/forward navigation
 	$effect(() => {
-		// Compare current state with previous to detect external URL changes
 		const currentURL = page.url;
 		const searchParam = currentURL.searchParams.get('search') || '';
 		const platformsParam = currentURL.searchParams.get('platforms') || '';
@@ -172,12 +165,10 @@
 		filtersStore.readFromURL(page.url.searchParams);
 	});
 
-	// Filter state with reactive updates
 	let selectedPlatforms: string[] = $state([]);
 	let selectedGenres: string[] = $state([]);
 	let selectedTiers: string[] = $state([]);
 
-	// Reactive updates for filter selections (consolidated)
 	$effect(() => {
 		const unsubPlatforms = filtersStore.selectedPlatforms.subscribe((platforms) => {
 			selectedPlatforms = platforms;
@@ -196,7 +187,6 @@
 		};
 	});
 
-	// Reset all filters
 	function resetFilters() {
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm(''); // Clear search
@@ -229,7 +219,10 @@
 	<link rel="dns-prefetch" href="//fonts.gstatic.com" />
 </svelte:head>
 
-<div style="background-color: var(--color-background);" class="bg-background text-foreground min-h-screen h-full">
+<div
+	style="background-color: var(--color-background);"
+	class="bg-background text-foreground h-full min-h-screen"
+>
 	<Header />
 	<section class="filter-section sticky top-[104px] z-30 md:top-[110px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">

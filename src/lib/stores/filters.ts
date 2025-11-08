@@ -244,7 +244,6 @@ function createFiltersStore() {
 			});
 		},
 
-		// Derived stores for individual properties
 		ratingRanges: derived(filters, ($filters) => ({
 			presentation: $filters?.ratings ?? [0, 10],
 			story: $filters?.ratings ?? [0, 10],
