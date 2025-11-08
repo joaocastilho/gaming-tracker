@@ -127,7 +127,10 @@
 			<Trophy size={16} class="text-gray-600 dark:text-gray-400" />
 		{/if}
 		<span class="filter-label">Filter by {label}</span>
-		<ChevronDown size={16} class="text-gray-600 dark:text-gray-400 dropdown-arrow transition-transform duration-200" />
+		<ChevronDown
+			size={16}
+			class="dropdown-arrow text-gray-600 transition-transform duration-200 dark:text-gray-400"
+		/>
 		{#if selectedOptions.length > 0}
 			<span class="selected-count bg-accent text-accent-foreground rounded-full px-2 py-1 text-xs">
 				{selectedOptions.length}

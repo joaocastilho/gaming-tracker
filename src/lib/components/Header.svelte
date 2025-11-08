@@ -27,7 +27,12 @@
 
 	const tabs = $derived<Tab[]>([
 		{ id: 'all', label: 'Games', route: resolve('/'), count: $filteredGamesStore.totalCount },
-		{ id: 'completed', label: 'Completed', route: 'completed', count: $filteredGamesStore.completedCount },
+		{
+			id: 'completed',
+			label: 'Completed',
+			route: 'completed',
+			count: $filteredGamesStore.completedCount
+		},
 		{ id: 'planned', label: 'Planned', route: 'planned', count: $filteredGamesStore.plannedCount },
 		{ id: 'tierlist', label: 'Tier List', route: 'tierlist', count: null }
 	]);

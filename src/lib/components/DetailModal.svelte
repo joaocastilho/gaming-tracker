@@ -388,13 +388,13 @@
 
 	onMount(() => {
 		if (browser) {
-			document.addEventListener('keydown', handleKeydown);
+			document.addEventListener('keydown', handleKeydown, true);
 		}
 	});
 
 	onDestroy(() => {
 		if (browser) {
-			document.removeEventListener('keydown', handleKeydown);
+			document.removeEventListener('keydown', handleKeydown, true);
 		}
 	});
 </script>
