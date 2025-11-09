@@ -33,9 +33,6 @@
 					updateViaCache: 'none'
 				})
 				.then((registration) => {
-					console.log('Service Worker registered:', registration);
-
-					// Only check for updates if service worker is active
 					const checkForUpdates = () => {
 						if (
 							registration.installing === null &&
@@ -48,7 +45,6 @@
 						}
 					};
 
-					// Check for updates periodically
 					setInterval(checkForUpdates, 60000);
 				})
 				.catch((error) => {
@@ -58,30 +54,24 @@
 	});
 
 	let filterOptions = $derived(extractFilterOptions($gamesStore));
-
 	let currentActiveTab = $derived(get(appStore.activeTab));
 
-	// Handle tab changes with effect
 	$effect(() => {
 		const tab = get(appStore.activeTab);
 
-		// Clear filters when switching to tier list page
 		if (tab === 'tierlist') {
 			filtersStore.resetAllFilters();
 			filtersStore.setSearchTerm('');
-			// Update URL to reflect clean state
+
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 			appStore.writeToURLWithFilters(filtersStore);
 		}
 	});
 
-	// Initialize app - localStorage is already loaded, only handle game parameter for detail modal
 	$effect(() => {
 		if (!initialized) {
-			// Handle game parameter for detail modal
 			const gameSlug = page.url.searchParams.get('game');
 			if (gameSlug) {
-				// Find the game and open modal (will be handled by modal store)
 				setTimeout(() => {
 					const game = gamesStore.getGameBySlug(gameSlug);
 					if (game) {
@@ -152,7 +142,6 @@
 			}
 		};
 
-		// Simple comparison to detect changes (could be more sophisticated)
 		const urlStateString = JSON.stringify(urlState);
 		const currentStateString = JSON.stringify(currentFilterState);
 
@@ -160,7 +149,6 @@
 			filtersStore.readFromURL(page.url.searchParams);
 		}
 
-		// URL parameters changed, trigger filter update
 		filtersStore.readFromURL(page.url.searchParams);
 	});
 
@@ -200,11 +188,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Gaming Tracker</title>
 
-	<!-- Performance optimizations for font loading -->
+
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 
-	<!-- Preload common system fonts for better performance -->
 	<link rel="dns-prefetch" href="//fonts.googleapis.com" />
 	<link rel="dns-prefetch" href="//fonts.gstatic.com" />
 </svelte:head>

@@ -13,7 +13,7 @@
 		Presentation,
 		NotebookPen,
 		Gamepad2,
-		Trophy,
+		Award,
 		X,
 		ChevronLeft,
 		ChevronRight,
@@ -691,7 +691,7 @@
 									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
 								>
 									<div class="flex items-center justify-center gap-2">
-										<Trophy size={24} class="text-yellow-500" />
+										<Award size={24} class="text-yellow-500" />
 										<span class="text-lg font-bold" style="color: var(--color-text-primary);">
 											Total Score: {$modalStore.activeGame.score}/20
 										</span>
@@ -776,7 +776,7 @@
 								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 dark:border-gray-700"
 							>
 								<div class="flex items-center justify-center gap-2">
-									<Trophy size={24} class="text-gray-400" />
+									<Award size={24} class="text-gray-400" />
 									<span class="text-lg font-bold" style="color: var(--color-text-primary);">
 										Game to be completed
 									</span>
