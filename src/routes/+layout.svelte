@@ -26,7 +26,7 @@
 	// Register service worker
 	onMount(() => {
 		if (browser && 'serviceWorker' in navigator) {
-			const swPath = '/gaming-tracker/service-worker.js';
+			const swPath = '/service-worker.js';
 
 			navigator.serviceWorker
 				.register(swPath, {
