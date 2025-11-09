@@ -1,0 +1,10 @@
+name = "gaming-tracker"
+compatibility_date = "2025-11-09"
+
+[env.production]
+# Cloudflare Pages will inject the correct account/project context.
+
+# KV binding for canonical games data
+[[kv_namespaces]]
+binding = "GAMES_KV"
+id = "GAMES_KV"
