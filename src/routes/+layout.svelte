@@ -239,6 +239,7 @@
 							options={filterOptions.tiers}
 							selectedOptions={selectedTiers}
 						/>
+						<span class="pipe-separator">|</span>
 						<RatingsSort />
 						<button
 							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
@@ -287,5 +288,10 @@
 
 	:global(.pt-\[calc\(60px\+50px\+100px\)\]) {
 		padding-top: calc(60px + 50px + 100px);
+	}
+
+	.pipe-separator {
+		font-weight: 500;
+		color: var(--color-text-primary);
 	}
 </style>

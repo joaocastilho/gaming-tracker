@@ -135,7 +135,7 @@
 	}
 
 	.sort-field-label {
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 		color: var(--color-text-primary, #e5e7eb);
 		margin-right: 0.1rem;
 	}
