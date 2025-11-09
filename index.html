@@ -14,37 +14,35 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
 		<link rel="manifest" href="site.webmanifest" />
 		<script>
-			// Apply theme from localStorage immediately to prevent flash (client-side only)
 			if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
 				const savedTheme = localStorage.getItem('gaming-tracker-theme');
 				if (savedTheme === 'light' || savedTheme === 'dark') {
 					document.documentElement.classList.add(savedTheme);
 				} else {
-					// Default to dark if no preference saved
 					document.documentElement.classList.add('dark');
 				}
 			}
 		</script>
 		
-		<link rel="modulepreload" href="/_app/immutable/entry/start.DexVfSWY.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/Bm-QLcEP.js">
+		<link rel="modulepreload" href="/_app/immutable/entry/start.Bj5pXoNU.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/DVUNEmqU.js">
 		<link rel="modulepreload" href="/_app/immutable/chunks/CWlPGleM.js">
-		<link rel="modulepreload" href="/_app/immutable/entry/app.CA_19Lve.js">
+		<link rel="modulepreload" href="/_app/immutable/entry/app.0T4nx1gx.js">
 		<link rel="modulepreload" href="/_app/immutable/chunks/PPVm8Dsz.js">
 	</head>
-	<body data-sveltekit-preload-data="hover" class="bg-background min-h-screen">
+	<body data-sveltekit-preload-data="hover" class="bg-background min-h-screen" style="background-color: var(--color-background);">
 		<div style="display: contents">
 			<script>
 				{
-					__sveltekit_nmdq6u = {
+					__sveltekit_pveedu = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.DexVfSWY.js"),
-						import("/_app/immutable/entry/app.CA_19Lve.js")
+						import("/_app/immutable/entry/start.Bj5pXoNU.js"),
+						import("/_app/immutable/entry/app.0T4nx1gx.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element);
 					});
