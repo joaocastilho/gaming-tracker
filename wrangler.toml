@@ -9,4 +9,4 @@ pages_build_output_dir = "build/"
 # KV namespace binding for games data (must match your Cloudflare dashboard config)
 [[kv_namespaces]]
 binding = "GAMES_KV"
-id = "games_kv"
+id = "GAMES_KV"
