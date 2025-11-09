@@ -1,14 +1,12 @@
 name = "gaming-tracker"
-main = "functions/[[path]].ts"
 compatibility_date = "2024-09-01"
 
-# Configure Cloudflare Pages build output directory so Pages stops complaining.
-# SvelteKit + Pages Functions layout:
-# - Static assets are emitted under `.svelte-kit/output/client` during build.
-# - Pages will serve from that directory, and route dynamic requests to /functions.
-pages_build_output_dir = ".svelte-kit/output/client"
+# Cloudflare Pages configuration:
+# Use pages_build_output_dir for the static client bundle.
+# Do NOT set "main" here; Pages + Functions will auto-discover ./functions.
+pages_build_output_dir = "build/"
 
-# Optional: ensure KV binding matches docs/cloudflare-sync-tasks.md
+# KV namespace binding for games data (must match your Cloudflare dashboard config)
 [[kv_namespaces]]
 binding = "GAMES_KV"
 id = "games_kv"
