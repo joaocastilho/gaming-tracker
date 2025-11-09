@@ -486,8 +486,8 @@
     "tier": "C - Good"
   },
   {
-    "id": "call-of-duty-modern-warfare",
-    "title": "Call of Duty Modern Warfare",
+    "id": "call-of-duty-modern-warfare-2019",
+    "title": "Call of Duty Modern Warfare (2019)",
     "platform": "PC",
     "year": 2019,
     "genre": "FPS",
@@ -4482,7 +4482,7 @@
     "tier": null
   },
   {
-    "id": "call-of-duty-modern-warfare",
+    "id": "call-of-duty-modern-warfare-remastered",
     "title": "Call of Duty: Modern Warfare (Remastered)",
     "platform": "PC",
     "year": 2017,
