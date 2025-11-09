@@ -129,7 +129,6 @@
 			href={game.coverImage}
 			imagesrcset={generateSrcset(game.coverImage)}
 			imagesizes={generateSizes('gallery')}
-			fetchpriority="high"
 		/>
 	{/each}
 </svelte:head>
