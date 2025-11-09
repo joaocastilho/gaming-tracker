@@ -113,10 +113,11 @@
 							onclick={() => handleNavClick(item.id)}
 						>
 							<span class="label">{item.label}</span>
-							{#if item.count !== null}
-								<span class="count-badge">{item.count}</span>
-							{/if}
+		
 						</button>
+						{#if item.count !== null}
+							<span class="count-badge">{item.count}</span>
+						{/if}
 					</li>
 				{/each}
 			</ul>
@@ -212,14 +213,14 @@
 		font-size: 1.3rem;
 	}
 
-	.tabs-list button .count-badge {
+	.tabs-list .count-badge {
 		min-width: 1.5rem;
 		padding: 0.08rem 0.5rem;
 		border-radius: 999px;
-		background: rgba(15, 23, 42, 0.98);
-		color: #9ca3af;
 		font-size: 0.7rem;
 		text-align: center;
+		background: rgba(37, 99, 235, 0.22);
+		color: #60a5fa;
 	}
 
 	.tabs-list button::after {
@@ -239,12 +240,8 @@
 	}
 
 	.tabs-list button:hover {
-		color: #e5e7eb;
+		color: var(--color-text-primary);
 		transform: translateY(-1px);
-	}
-
-	.tabs-list button:hover .count-badge {
-		color: #e5e7eb;
 	}
 
 	.tabs-list button:hover::after {
@@ -253,12 +250,7 @@
 	}
 
 	.tabs-list button.active {
-		color: #e5e7eb;
-	}
-
-	.tabs-list button.active .count-badge {
-		background: rgba(37, 99, 235, 0.22);
-		color: #60a5fa;
+		color: var(--color-text-primary);
 	}
 
 	.tabs-list button.active::after {

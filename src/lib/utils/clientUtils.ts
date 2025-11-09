@@ -1,4 +1,5 @@
 import { transformGameData } from './dataTransformer';
+import { goto } from '$app/navigation';
 
 export function transformGamesData(games: Record<string, unknown>[]): Record<string, unknown>[] {
 	return games.map(transformGameData);
@@ -47,10 +48,11 @@ export function setUrlParams(
 	}
 
 	const queryString = searchParams.toString();
-	if (queryString) {
-		const newUrl = `${window.location.pathname}?${queryString}`;
-		window.history.replaceState(null, '', newUrl);
-	} else {
-		window.history.replaceState(null, '', window.location.pathname);
-	}
+	const newUrl = queryString
+		? `${window.location.pathname}?${queryString}`
+		: window.location.pathname;
+
+	// Use SvelteKit navigation helper to avoid interfering with router internals.
+	// `goto` with replaceState: true preserves SPA behavior without full reload.
+	goto(newUrl, { replaceState: true, noScroll: true, keepFocus: true });
 }

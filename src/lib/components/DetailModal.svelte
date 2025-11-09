@@ -22,10 +22,14 @@
 
 	let currentActiveTab = $derived(appStore.activeTab);
 
-	// Create filtered games store
+	// Use the shared filtered-games view so navigation matches list pages.
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
-
 	let filteredGamesData = $derived($filteredGamesStore);
+
+	// For tierlist navigation we must ignore filters (tierlist page clears them),
+	// so build a base array directly from gamesStore when active tab is 'tierlist'.
+	import { gamesStore } from '../stores/games.js';
+	let allGames = $derived($gamesStore);
 
 	// Handle modal state changes
 	$effect(() => {
@@ -226,29 +230,53 @@
 		}
 	});
 
-	// Get all tiered games for tier list navigation
 	let allTieredGames = $derived(() => {
-		// Get all games that have tiers assigned
-		const tieredGames = filteredGamesData.filteredGames.filter(
-			(game) => game.status === 'Completed' && game.tier
-		);
+		const sourceGames =
+			$currentActiveTab === 'tierlist' ? allGames : filteredGamesData.filteredGames;
 
-		// Sort by tier order (S, A, B, C, D, E) and then by title within each tier
-		const tierOrder = ['S', 'A', 'B', 'C', 'D', 'E'];
-		return tieredGames.toSorted((a, b) => {
-			const aTierIndex = tierOrder.indexOf(a.tier!);
-			const bTierIndex = tierOrder.indexOf(b.tier!);
-			if (aTierIndex !== bTierIndex) {
-				return aTierIndex - bTierIndex;
+		const tierOrder = [
+			'S - Masterpiece',
+			'A - Amazing',
+			'B - Great',
+			'C - Good',
+			'D - Decent',
+			'E - Bad'
+		];
+
+		const gamesByTier: Record<string, Game[]> = {
+			'S - Masterpiece': [],
+			'A - Amazing': [],
+			'B - Great': [],
+			'C - Good': [],
+			'D - Decent': [],
+			'E - Bad': []
+		};
+
+		sourceGames
+			.filter((game) => game.tier)
+			.forEach((game) => {
+				const tier = game.tier!;
+				if (gamesByTier[tier]) {
+					gamesByTier[tier].push(game);
+				}
+			});
+
+		const result: Game[] = [];
+		for (const tierName of tierOrder) {
+			const bucket = gamesByTier[tierName] || [];
+			if (bucket.length) {
+				result.push(...bucket);
 			}
-			return a.title.localeCompare(b.title);
-		});
+		}
+
+		return result;
 	});
 
 	// Get current game index for navigation within the current tab's games
 	let currentGameIndex = $derived(() => {
 		if (!$modalStore.activeGame) return -1;
 
+		
 		// If we're in tier list mode, navigate through all tiered games
 		if ($currentActiveTab === 'tierlist') {
 			return allTieredGames().findIndex((game) => game.id === $modalStore.activeGame?.id);
