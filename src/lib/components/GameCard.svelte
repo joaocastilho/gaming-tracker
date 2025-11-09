@@ -7,7 +7,7 @@
 	import { imageCache } from '../utils/imageCache.js';
 	import { browser } from '$app/environment';
 	import { generateSrcset, generateTinySrcset, generateSizes } from '../utils/imageSrcset.js';
-	import { Award, Presentation, NotebookPen, Gamepad2, Timer, CalendarDays } from 'lucide-svelte';
+	import { Award, Presentation, NotebookPen, Gamepad2, Timer, CalendarDays, Users } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
@@ -18,41 +18,27 @@
 
 	let { game, size = 'small', showTierBadge = true, isAboveFold = false }: Props = $props();
 
-	// Generate srcset and sizes for responsive images.
-	// We keep generateSrcset as the single source of truth, but:
-	// - For size === 'tiny' (tier list), we start from the 200w variant.
-	// - For other sizes, behavior matches existing card/gallery logic.
 	const imageSrcset = $derived(() => {
-		// For tiny thumbnails (tier list / compact views), use the lightweight tiny srcset.
 		if (size === 'tiny') {
 			return generateTinySrcset(game.coverImage);
 		}
-		// Default behavior for standard cards/gallery.
 		return generateSrcset(game.coverImage);
 	});
 
 	const imageSizes = $derived(() => {
 		if (size === 'tiny') {
-			// Tiny covers: reuse the centralized tiny sizes contract.
 			return generateSizes('tiny');
 		}
 		return generateSizes(isAboveFold ? 'card' : 'gallery');
 	});
 
-	// Get image cache entry - memoize to avoid recreating
 	const imageEntry = $derived.by(() => imageCache.getImage(game.coverImage));
 
-	// Image loading state - sync with cache entry
 	let isImageLoaded = $derived(imageEntry.isLoaded);
 	let hasImageError = $derived(imageEntry.hasError);
-
-	// Whether we've activated the real cover (after intersection or cached)
 	let isActive = $derived(isAboveFold || isImageLoaded);
-
-	// Reference to the image element for Intersection Observer
 	let imageElement = $state<HTMLImageElement>();
 
-	// Calculate total score for completed games
 	let totalScore = $derived(
 		game.status === 'Completed' &&
 			game.ratingPresentation !== null &&
@@ -77,7 +63,6 @@
 		return Math.max(baseSize - reduction, minSize);
 	});
 
-	// Dynamic font size calculation for subtitle
 	let subtitleFontSize = $derived(() => {
 		const title = game.subtitle || '';
 		const baseSize = 0.95;
@@ -92,7 +77,6 @@
 		return Math.max(baseSize - reduction, minSize);
 	});
 
-	// Format date for display
 	function formatDate(dateString: string): string {
 		const date = new Date(dateString);
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -114,15 +98,11 @@
 		}
 	}
 
-	// Preload detail image on hover for faster modal loading
 	function preloadDetailImage() {
 		const detailImageSrc = game.coverImage.replace('.webp', '-detail.webp');
 		imageCache.preload(detailImageSrc);
 	}
 
-	// Setup Intersection Observer for progressive loading
-	// Only set up observer once when image element is available and not above fold.
-	// Note: we avoid duplicate preloading work here; the <img> itself will fetch when activated.
 	$effect(() => {
 		if (!browser || !imageElement || isAboveFold) return;
 
@@ -131,11 +111,8 @@
 			(entries) => {
 				for (const entry of entries) {
 					if (entry.isIntersecting) {
-						// Activate real image only when close to viewport.
 						isActive = true;
 
-						// If the cover image was already cached (e.g., via previous views),
-						// immediately reflect loaded state to skip skeleton flash.
 						if (imageCache.isImageCached(game.coverImage)) {
 							isImageLoaded = true;
 						}
@@ -148,7 +125,6 @@
 				}
 			},
 			{
-				// Be conservative so we don't flood network with far-off images.
 				rootMargin: '150px',
 				threshold: 0.15
 			}
@@ -194,7 +170,6 @@
 	onfocus={preloadDetailImage}
 	aria-label="View details for {game.title}"
 >
-	<!-- Cover Image Container -->
 	<div class="cover-container">
 		{#if !isImageLoaded && !hasImageError}
 			<div class="image-placeholder"></div>
@@ -204,7 +179,7 @@
 			src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
 			srcset={isActive ? imageSrcset() : undefined}
 			sizes={isActive ? imageSizes() : undefined}
-			alt="{game.title} cover"
+			alt=""
 			class="cover-image"
 			class:loaded={isImageLoaded}
 			class:error={hasImageError}
@@ -215,10 +190,9 @@
 			onerror={handleImageError}
 		/>
 
-		<!-- Badges on Cover -->
 		{#if game.coOp === 'Yes'}
 			<div class="co-op-badge">
-				<span class="co-op-icon" aria-hidden="true" title="Co-op game">👥</span>
+				<Users class="co-op-icon" aria-hidden="true" size={14} />
 				<span class="co-op-text">Co-op</span>
 			</div>
 		{/if}
@@ -230,9 +204,7 @@
 		{/if}
 	</div>
 
-	<!-- Game Info -->
 	<div class="game-info">
-		<!-- Title with subtitle (if exists) -->
 		<div class="title-section">
 			<h3 class="game-title" style="font-size: {titleFontSize()}rem;">
 				{game.mainTitle}
@@ -246,7 +218,6 @@
 		</div>
 
 		{#if size === 'small'}
-			<!-- Platform/Genre left, Year right (always shown) -->
 			<div class="platform-genre-year-section">
 				<div class="first-line">
 					<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
@@ -265,7 +236,6 @@
 				</div>
 			</div>
 
-			<!-- Ratings Section (always present) -->
 			<div class="ratings-section">
 				<div class="rating-item">
 					<Presentation
@@ -285,7 +255,6 @@
 				</div>
 			</div>
 
-			<!-- Time/Date Section (always present) -->
 			<div class="time-date-section">
 				<div class="time-item">
 					<Timer class="time-icon" aria-label="Time played / Time to beat" size={20} />
@@ -307,23 +276,16 @@
 
 <style>
 	.game-card {
-		/* Layout */
 		display: flex;
 		flex-direction: column;
 		width: var(--card-width, 300px);
 		border-radius: 6px;
 		overflow: hidden;
 		margin-top: 8px;
-
-		/* Shadow */
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-
-		/* Transitions */
 		transition:
 			transform 0.2s ease,
 			box-shadow 0.2s ease;
-
-		/* Hover effect */
 		cursor: pointer;
 	}
 
@@ -333,7 +295,6 @@
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 	}
 
-	/* Cover Container */
 	.cover-container {
 		position: relative;
 		width: var(--card-width, 300px);
@@ -341,7 +302,6 @@
 		margin: 0 auto;
 	}
 
-	/* Image Placeholder */
 	.image-placeholder {
 		position: absolute;
 		inset: 0;
@@ -395,7 +355,6 @@
 		display: none;
 	}
 
-	/* Co-op Badge */
 	.co-op-badge {
 		position: absolute;
 		top: 8px;
@@ -416,7 +375,6 @@
 		font-size: 0.8rem;
 	}
 
-	/* Tier Badge */
 	.tier-badge {
 		position: absolute;
 		top: 8px;
@@ -437,7 +395,6 @@
 		font-weight: 700;
 	}
 
-	/* Game Info */
 	.game-info {
 		padding: 12px;
 		display: flex;
@@ -445,10 +402,9 @@
 		gap: 12px;
 	}
 
-	/* Title Section */
 	.title-section {
 		margin-bottom: 2px;
-		min-height: 1.2rem; /* Single line at 1.2 line-height */
+		min-height: 1.2rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;

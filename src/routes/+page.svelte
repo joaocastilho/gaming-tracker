@@ -5,7 +5,6 @@
 	import { appStore } from '$lib/stores/app.js';
 	import { sortStore } from '$lib/stores/sort.js';
 	import { debounce } from '$lib/utils/debounce.js';
-	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
 
 	import type { FilteredGameData } from '$lib/stores/filters.js';
@@ -82,7 +81,6 @@
 	});
 
 	let hasActiveFilters = filtersStore.isAnyFilterApplied();
-	let criticalGames = (data.criticalGames || []).slice(0, 15);
 	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
 
 	async function loadTierListView() {
@@ -124,13 +122,7 @@
 </svelte:head>
 
 <div class="main-content" id="main-content">
-	{#if $loading || isLoadingView}
-		<div
-			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
-		>
-			<GameCardSkeleton count={15} />
-		</div>
-	{:else if currentActiveTab === 'tierlist' && TierListViewComponent}
+	{#if currentActiveTab === 'tierlist' && TierListViewComponent}
 		<TierListViewComponent filteredGames={tierListGames} />
 	{:else if currentActiveTab !== 'tierlist' && hasActiveFilters && filteredData.filteredGames.length === 0}
 		<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
