@@ -3,6 +3,7 @@
 	import { quintOut } from 'svelte/easing';
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
+	import { editorStore } from '$lib/stores/editor';
 
 	interface Props {
 		filteredGames: Game[];
@@ -21,6 +22,8 @@
 	});
 
 	let gridContainer = $state<HTMLDivElement>();
+
+	const isEditor = $derived($editorStore.editorMode);
 </script>
 
 <div
@@ -33,5 +36,10 @@
 				<GameCard {game} />
 			</div>
 		{/each}
+	{:else if isEditor}
+		<div class="empty-editor-hint">
+			<p>No games found for this view.</p>
+			<p class="sub">Use the editor tools to add entries.</p>
+		</div>
 	{/if}
 </div>

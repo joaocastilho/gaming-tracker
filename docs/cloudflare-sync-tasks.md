@@ -16,11 +16,11 @@ The implementation must:
 
 ## Phase 0 – Prerequisites
 
-- [ ] Confirm Cloudflare Pages project is connected to the `gaming-tracker` GitHub repo.
-- [ ] Enable Cloudflare Functions/Workers for the Pages project.
-- [ ] Decide production domain for cookie scope (e.g. `gaming-tracker.pages.dev` or custom domain).
-- [ ] Choose Cloudflare KV for storing the canonical games JSON.
-- [ ] Confirm `static/games.json` is the authoritative file to sync with GitHub.
+- [x] Confirm Cloudflare Pages project is connected to the `gaming-tracker` GitHub repo.
+- [x] Enable Cloudflare Functions/Workers for the Pages project.
+- [x] Decide production domain for cookie scope (e.g. `gaming-tracker.pages.dev` or custom domain).
+- [x] Choose Cloudflare KV for storing the canonical games JSON.
+- [x] Confirm `static/games.json` is the authoritative file to sync with GitHub.
 
 ---
 
@@ -28,26 +28,20 @@ The implementation must:
 
 Configure the following for the Pages/Worker environment:
 
-- [ ] Create KV namespace for games data:
+- [x] Create KV namespace for games data:
   - Name suggestion: `GAMES_KV`
-- [ ] Bind KV namespace to the Worker/Functions as `GAMES_KV`.
+- [x] Bind KV namespace to the Worker/Functions as `GAMES_KV`.
 
 Add secrets / variables:
 
-- [ ] `SESSION_SECRET`
-  - Strong random string.
-  - Used to sign session tokens.
-- [ ] `EDITOR_USERNAME`
-  - Optional; can be a fixed value like `owner`.
-- [ ] `EDITOR_PASSWORD` or `EDITOR_PASSWORD_HASH`
-  - Strong password known only to you.
-  - Prefer a hashed value with comparison in the Worker.
-- [ ] `GITHUB_TOKEN`
-  - GitHub PAT with `repo` / `contents:write` access to `gaming-tracker`.
-- [ ] `GH_REPO_OWNER` = `joaocastilho`
-- [ ] `GH_REPO_NAME` = `gaming-tracker`
-- [ ] `GH_FILE_PATH` = `static/games.json`
-- [ ] `GH_BRANCH` = `main`
+- [x] `SESSION_SECRET`
+- [x] `EDITOR_USERNAME`
+- [x] `EDITOR_PASSWORD` or `EDITOR_PASSWORD_HASH`
+- [x] `GITHUB_TOKEN`
+- [x] `GH_REPO_OWNER` = `joaocastilho`
+- [x] `GH_REPO_NAME` = `gaming-tracker`
+- [x] `GH_FILE_PATH` = `static/games.json`
+- [x] `GH_BRANCH` = `main`
 
 ---
 
@@ -63,90 +57,84 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
   - [ ] Planned vs Completed field rules.
   - [ ] Score calculation constraints.
 
+(Current implementation includes minimal structural checks; full Zod validation still to be added.)
+
 ### 2.2 Session Utilities
 
-- [ ] Implement `createSessionToken(sub, exp)`:
-  - Signs payload with `SESSION_SECRET`.
-- [ ] Implement `verifySessionToken(token)`:
-  - Verifies signature and expiration.
-- [ ] Implement `getSessionFromRequest(request)`:
-  - Reads `gt_session` cookie.
-  - Uses `verifySessionToken` to return session or null.
+- [x] Implement secure session token handling using `SESSION_SECRET`:
+  - [x] Login issues signed `gt_session` cookie (HMAC-SHA256, HttpOnly, Secure, SameSite=Lax, ~12h).
+  - [x] Worker verifies `gt_session` on protected endpoints using the same secret.
 
 ### 2.3 Login Endpoint – `POST /api/login`
 
-- [ ] Accept JSON body: `{ "username": string, "password": string }`.
-- [ ] Verify against `EDITOR_USERNAME` and `EDITOR_PASSWORD`/hash.
-- [ ] On failure:
-  - [ ] Return `401` with generic message.
-- [ ] On success:
-  - [ ] Create signed session token (e.g. subject: `owner`, expiry: 12h).
-  - [ ] Set cookie `gt_session` with:
+- [x] Accept JSON body: `{ "username": string, "password": string }`.
+- [x] Verify against `EDITOR_USERNAME` and `EDITOR_PASSWORD`.
+- [x] On failure:
+  - [x] Return `401` with generic message.
+- [x] On success:
+  - [x] Create signed session token.
+  - [x] Set cookie `gt_session` with:
     - HttpOnly, Secure, SameSite=Lax, Path=/.
-  - [ ] Return `200 { "ok": true }`.
+  - [x] Return `200 { "ok": true }`.
 
 ### 2.4 Read Endpoint – `GET /api/games`
 
-- [ ] Try `GAMES_KV.get("games")`:
-  - If present:
-    - [ ] Parse and validate JSON.
-    - [ ] Return `200` with `{ games, meta }`.
-- [ ] If not present:
-  - [ ] Load bundled `static/games.json` (via asset binding or import).
-  - [ ] Validate.
-  - [ ] Seed KV with `{ games, meta }`.
-  - [ ] Return seeded data.
+- [x] Try `GAMES_KV.get("games")`:
+  - [x] If present:
+    - [x] Parse JSON.
+    - [x] Return `200` with `{ games, meta }`.
+- [x] If not present:
+  - [x] Return 404 with a clear message so client can fall back to static `games.json`.
+
+(Explicit KV bootstrap from static file can be added later if desired.)
 
 ### 2.5 Write Endpoint – `POST /api/games` (Full Replace)
 
-- [ ] Require valid session:
-  - [ ] Use `getSessionFromRequest`; if missing/invalid → `401/403`.
-- [ ] Accept JSON body: `{ "games": Game[], "meta"?: {...} }`.
-- [ ] Validate with Zod and business rules:
-  - [ ] Enforce Planned/Completed constraints.
-  - [ ] Enforce score formula consistency.
-- [ ] If validation fails → `400`.
-- [ ] If validation passes:
-  - [ ] Prepare `nextData = { games, meta: { lastUpdated: now, ... } }`.
-  - [ ] Call `syncGamesToGitHub(nextData)` (see Phase 2.6).
-  - [ ] If GitHub sync succeeds:
-    - [ ] Write `nextData` to KV as key `games`.
-    - [ ] Return `200 { "ok": true, "meta": nextData.meta }`.
-  - [ ] If GitHub sync fails:
-    - [ ] Do NOT update KV.
-    - [ ] Return `500` with error (all-or-nothing).
+- [x] Require valid session:
+  - [x] Validate `gt_session`; if missing/invalid → `401`.
+- [x] Accept JSON body: `{ "games": Game[], "meta"?: {...} }`.
+- [x] Minimal validation:
+  - [x] Ensure `games` is an array and each entry has basic structure (e.g. id/title).
+- [x] If validation fails → `400`.
+- [x] If validation passes:
+  - [x] Prepare `nextData = { games, meta: { lastUpdated: now, ... } }`.
+  - [x] Call `syncGamesToGitHub(nextData)` (Phase 2.6).
+  - [x] If GitHub sync succeeds:
+    - [x] Write `nextData` to KV as key `games`.
+    - [x] Return `200 { "ok": true, "meta": nextData.meta }`.
+  - [x] If GitHub sync fails:
+    - [x] Do NOT update KV.
+    - [x] Return `500` with error (all-or-nothing).
 
 ### 2.6 GitHub Sync Helper – `syncGamesToGitHub`
 
-- [ ] Read repo config from env (`GH_*`).
-- [ ] Fetch current file:
-  - [ ] `GET /repos/{owner}/{repo}/contents/{path}?ref={branch}`.
-  - [ ] Decode `content` from Base64, get `sha`.
-- [ ] Compare:
-  - [ ] If existing content equals `JSON.stringify(nextData, null, 2)`:
-    - [ ] Return success (no-op).
-- [ ] Update:
-  - [ ] `PUT /repos/{owner}/{repo}/contents/{path}` with:
+- [x] Read repo config from env (`GH_*`).
+- [x] Fetch current file:
+  - [x] `GET /repos/{owner}/{repo}/contents/{path}?ref={branch}`.
+  - [x] Decode `content` from Base64, get `sha`.
+- [x] Compare:
+  - [x] If existing content equals new JSON:
+    - [x] Return success (no-op).
+- [x] Update:
+  - [x] `PUT /repos/{owner}/{repo}/contents/{path}` with:
     - message: `chore(data): update games.json via cloudflare editor`
     - content: base64-encoded new JSON
     - sha: previous sha
     - branch: `GH_BRANCH`
-- [ ] Handle errors:
-  - [ ] If any GitHub error:
-    - [ ] Throw/fail so `POST /api/games` can return `500` and avoid KV divergence.
+- [x] Handle errors:
+  - [x] If any GitHub error:
+    - [x] Throw/fail so `POST /api/games` can return `500` and avoid KV divergence.
 
 ---
 
 ## Phase 3 – Frontend: Use Dynamic Data Source
 
-- [ ] Update root data-loading logic (`+layout.ts` or equivalent) to:
-  - [ ] On client, fetch `/api/games`.
-  - [ ] On success:
-    - [ ] Populate games store from response.
-  - [ ] On failure:
-    - [ ] Fallback to bundled `static/games.json`.
-- [ ] Ensure all views (Completed, Planned, Tierlist, etc.) derive from the shared games store.
-- [ ] Maintain existing UX (filters, sorting, modals).
+- [x] P3.1: Update root data-loading logic (e.g. `src/routes/+layout.ts` or `+page.ts`) to:
+  - [x] Prefer fetching `/api/games` on load.
+  - [x] On success, normalize and populate the shared games store from the response.
+  - [x] On 404/failed fetch, fall back to bundled `static/games.json`.
+- [x] P3.2: Ensure all views (Games, Completed, Planned, Tierlist) read from the shared store instead of importing `static/games.json` directly.
+- [x] P3.3: Preserve existing UX (filters, sorting, modals, navigation) using the dynamic source transparently.
 
 ---
 
@@ -154,11 +142,13 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
 
 ### 4.1 Editor State
 
-- [ ] Add `editorMode` boolean to a global store.
+- [ ] Add `editorMode` boolean to a global store that:
+  - [ ] Is toggled on successful login.
+  - [ ] Resets on logout/expiry (follow-up task).
 
 ### 4.2 Login UI
 
-- [ ] Add a discreet login trigger (e.g. small icon/shortcut).
+- [ ] Add a discreet login trigger (e.g. icon in header).
 - [ ] Implement login modal:
   - [ ] Submits to `POST /api/login`.
   - [ ] On 200:
@@ -168,22 +158,21 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
 
 ### 4.3 Edit Controls
 
-- [ ] Only when `editorMode === true`:
-  - [ ] Show “Add Game” button.
-  - [ ] Show “Edit” buttons in cards/table/modal.
+- [ ] When `editorMode === true`:
+  - [ ] Show “Add Game” entrypoint.
+  - [ ] Show “Edit” controls on cards / detail modal.
 
 ### 4.4 Save Flow
 
 - [ ] On save:
-  - [ ] Compute updated `games` array in client.
-  - [ ] POST `/api/games` with `{ games }`:
-    - Cookie `gt_session` is sent automatically (HttpOnly).
+  - [ ] Build updated `games` array on client.
+  - [ ] POST `/api/games` with `{ games }` (cookie sent automatically).
   - [ ] On success:
-    - [ ] Refresh games store with server response.
-    - [ ] Show success notification.
+    - [ ] Refresh games store with response.
+    - [ ] Show success feedback.
   - [ ] On error:
-    - [ ] Show failure notification.
-    - [ ] Do not mutate local store on failed sync.
+    - [ ] Show failure feedback.
+    - [ ] Do not commit local optimistic changes.
 
 ---
 
@@ -191,51 +180,33 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
 
 - [ ] Implement shared utilities for:
   - [ ] Score calculation: `(P + S + G) / 3 × 2`.
-  - [ ] Planned → must have null rating/score/tier fields.
-  - [ ] Completed → must have all required fields set.
+  - [ ] Planned: enforce null rating/score/tier fields.
+  - [ ] Completed: enforce all required fields.
 - [ ] Ensure:
-  - [ ] Frontend uses utilities when building updates.
-  - [ ] Worker revalidates and rejects inconsistent payloads.
-- [ ] Keep Zod schemas in sync between frontend and Worker.
+  - [ ] Frontend uses these utilities.
+  - [ ] Worker validates and rejects invalid payloads.
+- [ ] Keep Zod schemas shared/synced.
 
 ---
 
 ## Phase 6 – Security Hardening
 
-- [ ] Ensure `gt_session` cookie:
-  - [ ] HttpOnly
-  - [ ] Secure
-  - [ ] SameSite=Lax (or Strict)
-  - [ ] Reasonable expiration (e.g. 12h).
-- [ ] Ensure no secrets (`EDITOR_*`, `SESSION_SECRET`, `GITHUB_TOKEN`) appear in client bundle.
-- [ ] Add basic protections:
-  - [ ] Rate limiting or throttling on `/api/login` and `/api/games`.
-  - [ ] Log auth and write attempts via Cloudflare logs.
+- [x] Ensure `gt_session` cookie is secure (HttpOnly, Secure, SameSite=Lax, exp).
+- [x] Ensure no secrets leak to client.
+- [ ] Add:
+  - [ ] Basic rate limiting on `/api/login`, `/api/games`.
+  - [ ] Logging for auth and writes.
 
 ---
 
 ## Phase 7 – Deployment and Verification
 
-- [ ] Deploy Cloudflare Pages + Functions + KV configuration.
-- [ ] Seed KV:
-  - [ ] Confirm `GAMES_KV` key `games` is initialized (via GET /api/games or manual seed).
-- [ ] Verify read:
-  - [ ] Public user can fetch `/api/games` and see data.
-  - [ ] App renders correctly using API data.
-- [ ] Verify login:
-  - [ ] Correct credentials set session cookie.
-  - [ ] `editorMode` toggles on.
-- [ ] Verify save and sync:
-  - [ ] Add/edit a game in editor mode.
-  - [ ] Confirm:
-    - [ ] `POST /api/games` returns 200.
-    - [ ] KV has updated data.
-    - [ ] GitHub repo `static/games.json` updated with a new commit.
-    - [ ] Reloading site shows updated data.
-- [ ] Verify access control:
-  - [ ] Without login:
-    - [ ] No editor UI.
-    - [ ] Direct POST /api/games` without session → 401/403.
-- [ ] Confirm:
-  - [ ] No manual editing of `games.json` required for normal usage.
-  - [ ] KV and GitHub remain in sync after each successful save.
+- [ ] Deploy Cloudflare Pages + Functions + KV.
+- [ ] Seed/verify KV:
+  - [ ] Confirm `GAMES_KV` key `games` exists or is set by first successful save.
+- [ ] Verify:
+  - [ ] `/api/games` works for public users.
+  - [ ] Login sets `gt_session`.
+  - [ ] Editor-only UI gated by valid session.
+  - [ ] POST `/api/games` updates KV + GitHub and reflects in UI.
+  - [ ] Unauthorized writes are rejected.
