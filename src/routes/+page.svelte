@@ -121,9 +121,6 @@
 
 <svelte:head>
 	<title>Gaming Tracker</title>
-	{#each criticalGames as game (game.id)}
-		<link rel="preload" as="image" href={game.coverImage} />
-	{/each}
 </svelte:head>
 
 <div class="main-content" id="main-content">

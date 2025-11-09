@@ -461,7 +461,7 @@
 						srcset={detailImageSrcset}
 						sizes={detailImageSizes}
 						alt="{$modalStore.activeGame.title} cover"
-						class="h-full w-full object-cover"
+						class="cover-image h-full w-full object-cover"
 						class:loaded={isImageLoaded}
 						class:error={hasImageError}
 						style="width: 400px; height: 600px;"

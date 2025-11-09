@@ -14,20 +14,18 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
 		<link rel="manifest" href="site.webmanifest" />
 		<script>
-			// Apply theme from localStorage immediately to prevent flash (client-side only)
 			if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
 				const savedTheme = localStorage.getItem('gaming-tracker-theme');
 				if (savedTheme === 'light' || savedTheme === 'dark') {
 					document.documentElement.classList.add(savedTheme);
 				} else {
-					// Default to dark if no preference saved
 					document.documentElement.classList.add('dark');
 				}
 			}
 		</script>
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover" class="bg-background min-h-screen">
+	<body data-sveltekit-preload-data="hover" class="bg-background min-h-screen" style="background-color: var(--color-background);">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>

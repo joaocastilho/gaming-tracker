@@ -5,7 +5,7 @@ const IMAGE_CACHE_NAME = 'gaming-tracker-images-v1';
 // Assets to cache on install
 // Note: CSS and JS are bundled by SvelteKit, so we only cache JSON data
 const STATIC_ASSETS = [
-	'/gaming-tracker/games.json'
+	'/games.json'
 ];
 
 // Install event - cache static assets

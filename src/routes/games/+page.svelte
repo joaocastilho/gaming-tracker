@@ -38,13 +38,9 @@
 	});
 </script>
 
-<svelte:head>
-	<title>All Games - Gaming Tracker</title>
-</svelte:head>
-
 <div class="main-content" id="main-content">
 	{#if $loading}
-		<p>Loading games...</p>
+		<div class="loading">Loading games...</div>
 	{:else}
 		<GamesView
 			filteredGames={filteredData.filteredGames.length
@@ -53,3 +49,16 @@
 		/>
 	{/if}
 </div>
+
+<style>
+	.loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 50vh;
+		text-align: center;
+		font-weight: 500;
+		color: var(--color-text-primary);
+		font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+	}
+</style>
