@@ -9,7 +9,9 @@ export default defineConfig({
 		{
 			name: 'exclude-large-dataset',
 			closeBundle() {
-				console.log('🔧 Excluding large dataset from build...');
+				if (process.env.NODE_ENV !== 'production') {
+					console.log('🔧 Excluding large dataset from build...');
+				}
 
 				const buildDir = 'build';
 				const largeDatasetPath = join(buildDir, 'games-large.json');
