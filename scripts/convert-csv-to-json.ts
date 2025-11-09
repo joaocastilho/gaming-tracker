@@ -61,9 +61,10 @@ function parseCSV(csvContent: string): GameData[] {
 
 		if (values.length === headers.length) {
 			const game: Partial<GameData> = {};
-			headers.forEach((header, index) => {
-				game[header.replace(/\s+/g, '_') as keyof GameData] = values[index];
-			});
+	headers.forEach((header, index) => {
+		const key = header.replace(/\s+/g, '_').replace(/-/g, '_');
+		(game as any)[key] = values[index];
+	});
 			games.push(game as GameData);
 		}
 	}
@@ -99,7 +100,7 @@ function convertToGameJson(game: GameData): GameJson {
 		genre: game.Genre,
 		coOp: game.Co_op,
 		status: hasFinishedDate ? 'Completed' : 'Planned',
-		coverImage: `covers_raw/${id}.png`,
+		coverImage: `covers/${id}.webp`,
 		timeToBeat: game.Time_to_beat,
 		hoursPlayed: hasFinishedDate && game.Hours_to_beat ? parseFloat(game.Hours_to_beat) : null,
 		finishedDate: hasFinishedDate ? game.Finished : null,
@@ -113,8 +114,8 @@ function convertToGameJson(game: GameData): GameJson {
 
 function main() {
 	try {
-		const csvPath = join('.', 'games.csv');
-		const jsonPath = join('.', 'games.json');
+		const csvPath = join('static', 'games.csv');
+		const jsonPath = join('static', 'games.json');
 
 		if (!existsSync(csvPath)) {
 			console.error('games.csv file not found');
