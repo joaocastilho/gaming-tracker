@@ -41,7 +41,6 @@ export async function checkRateLimit(
 	recent.push({ t: now });
 
 	if (recent.length > config.max) {
-		// Store trimmed events but deny this request.
 		await kv.put(key, JSON.stringify(recent));
 		return { allowed: false, remaining: 0 };
 	}

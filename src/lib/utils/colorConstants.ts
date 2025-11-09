@@ -1,4 +1,3 @@
-// Platform color mappings
 export const PLATFORM_COLORS: Record<string, string> = {
 	PC: 'bg-[#1e40af] text-white', // Royal blue (changed from purple)
 	PS4: 'bg-[#f59e0b] text-[#fef3c7]', // Bright amber
@@ -54,12 +53,12 @@ export const GENRE_COLORS: Record<string, string> = {
 
 // Tier color mappings
 export const TIER_COLORS: Record<string, string> = {
-	'S - Masterpiece': 'bg-[#dc2626] text-white', // Red background, white text
-	'A - Amazing': 'bg-[#f97316] text-white', // Orange background, white text
-	'B - Great': 'bg-[#eab308] text-white', // Yellow background, white text
-	'C - Good': 'bg-[#22c55e] text-white', // Green background, white text
-	'D - Decent': 'bg-[#06b6d4] text-white', // Cyan background, white text
-	'E - Bad': 'bg-[#6b7280] text-white' // Gray background, white text
+	'S - Masterpiece': 'bg-[#dc2626] text-white',
+	'A - Amazing': 'bg-[#f97316] text-white',
+	'B - Great': 'bg-[#eab308] text-white',
+	'C - Good': 'bg-[#22c55e] text-white',
+	'D - Decent': 'bg-[#06b6d4] text-white',
+	'E - Bad': 'bg-[#6b7280] text-white'
 };
 
 // Platform display names

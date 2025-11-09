@@ -29,7 +29,7 @@ export const BaseGameSchema = z.object({
 		.string()
 		.regex(/^\d+h \d+m$/)
 		.nullable(),
-	// ISO 8601 instant (validated via regex to avoid deprecated datetime API)
+
 	finishedDate: z
 		.string()
 		.regex(
@@ -59,7 +59,7 @@ export function computeScore({
 }): number {
 	const avg = (ratingPresentation + ratingStory + ratingGameplay) / 3;
 	const score = avg * 2;
-	// Clamp to [0, 20] and normalize to one decimal place to keep JSON stable.
+
 	const clamped = Math.max(0, Math.min(20, score));
 	return Math.round(clamped * 10) / 10;
 }
@@ -82,7 +82,6 @@ export function computeScore({
 
 export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 	if (game.status === 'Planned') {
-		// Planned games must not have completion/score/tier data.
 		if (game.hoursPlayed !== null) {
 			ctx.addIssue({
 				code: 'custom',
@@ -136,7 +135,6 @@ export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 	}
 
 	if (game.status === 'Completed') {
-		// Completed games must have all mandatory completion data.
 		if (game.hoursPlayed === null) {
 			ctx.addIssue({
 				code: 'custom',
@@ -217,7 +215,6 @@ export const GamesPayloadSchema = z.object({
 	games: z.array(GameSchema),
 	meta: z
 		.object({
-			// lastUpdated as ISO datetime if present
 			lastUpdated: z
 				.string()
 				.regex(
@@ -230,6 +227,5 @@ export const GamesPayloadSchema = z.object({
 		.optional()
 });
 
-// Type inference for TypeScript
 export type GameValidationSchema = z.infer<typeof GameSchema>;
 export type GamesPayloadValidationSchema = z.infer<typeof GamesPayloadSchema>;

@@ -30,7 +30,7 @@
 
 <style>
 	.tier-section {
-		margin-bottom: 2rem; /* Space between sections */
+		margin-bottom: 2rem;
 	}
 
 	.tier-header {
@@ -42,7 +42,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		/* background-color set via inline style */
 		color: white;
 	}
 

@@ -37,11 +37,6 @@
 		filtersStore.readFromURL(page.url.searchParams);
 	});
 
-	$effect(() => {
-		// Ensure app state / filters reflect this tab semantics if needed
-		// but rely primarily on URL + filters for correctness.
-	});
-
 	const completedGames = $derived(
 		(filteredData.filteredGames.length ? filteredData.filteredGames : allGamesFromStore).filter(
 			(game) => game.status === 'Completed'

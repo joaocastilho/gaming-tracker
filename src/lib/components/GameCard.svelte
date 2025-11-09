@@ -56,7 +56,6 @@
 			: null
 	);
 
-	// Dynamic font size calculation for title
 	let titleFontSize = $derived(() => {
 		const title = game.mainTitle || game.title || '';
 		const baseSize = 1.25;
@@ -98,7 +97,6 @@
 		imageCache.setError(game.coverImage);
 	}
 
-	// Handle keyboard interaction for accessibility
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
@@ -147,8 +145,6 @@
 		};
 	});
 
-	// If the image is loaded *eagerly* and is *already in the cache*,
-	// we need to bypass the 'onload' event which may not fire.
 	onMount(() => {
 		if (isAboveFold && imageElement?.complete) {
 			if (imageElement.naturalWidth > 0) {

@@ -7,7 +7,6 @@ import type { Game } from '../types/game.js';
 import type { FilterState } from '../stores/filters.js';
 import { getTierDisplayName } from '../utils/colorConstants.js';
 
-// Type for worker messages
 interface FilterMessage {
 	type: 'LOAD_GAMES' | 'APPLY_FILTERS' | 'FILTER';
 	payload: {
@@ -41,13 +40,10 @@ interface LoadResponse {
 	};
 }
 
-// Global state in worker
 let loadedGames: Game[] = [];
 
-// Core filtering logic (same as in filters.ts but optimized for worker context)
 function filterGames(games: Game[], filters: FilterState): Game[] {
 	return games.filter((game) => {
-		// Search query filter (title matching)
 		if (filters.searchTerm.trim()) {
 			const query = filters.searchTerm.toLowerCase().trim();
 			const titleMatch = game.title.toLowerCase().includes(query);
@@ -59,28 +55,24 @@ function filterGames(games: Game[], filters: FilterState): Game[] {
 			}
 		}
 
-		// Platform filter
 		if (filters.platforms.length > 0) {
 			if (!filters.platforms.includes(game.platform)) {
 				return false;
 			}
 		}
 
-		// Genre filter
 		if (filters.genres.length > 0) {
 			if (!filters.genres.includes(game.genre)) {
 				return false;
 			}
 		}
 
-		// Status filter
 		if (filters.statuses.length > 0) {
 			if (!filters.statuses.includes(game.status)) {
 				return false;
 			}
 		}
 
-		// Tier filter (only show games that have the selected tiers)
 		if (filters.tiers.length > 0) {
 			if (!game.tier) {
 				return false;
@@ -160,7 +152,6 @@ function filterAndSortForTab(
 	return base.toSorted((a, b) => a.title.localeCompare(b.title));
 }
 
-// Main worker message handler
 self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 	const { type, payload } = event.data;
 

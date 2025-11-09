@@ -2,7 +2,6 @@ import { writable, derived, get } from 'svelte/store';
 import { replaceState } from '$app/navigation';
 import type { filtersStore as FiltersStoreType } from './filters.js';
 
-// TypeScript interfaces for app state
 export interface AppState {
 	theme: 'dark' | 'light';
 	activeTab: 'all' | 'completed' | 'planned' | 'tierlist';
@@ -12,26 +11,23 @@ function createAppStore() {
 	const theme = writable<'dark' | 'light'>('dark');
 	const activeTab = writable<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 
-	// Initialize from localStorage first
 	if (typeof window !== 'undefined') {
 		const savedTheme = localStorage.getItem('gaming-tracker-theme') as 'dark' | 'light' | null;
 		if (savedTheme) {
 			theme.set(savedTheme);
-			// Apply theme immediately to document
+
 			document.documentElement.classList.remove('light', 'dark');
 			document.documentElement.classList.add(savedTheme);
 		}
 
-		// Subscribe to changes and save to localStorage
 		theme.subscribe((t) => {
 			localStorage.setItem('gaming-tracker-theme', t);
-			// Apply theme to document
+
 			document.documentElement.classList.remove('light', 'dark');
 			document.documentElement.classList.add(t);
 		});
 	}
 
-	// Derived store for combined app state
 	const appState = derived(
 		[theme, activeTab],
 		([$theme, $activeTab]): AppState => ({
@@ -41,11 +37,9 @@ function createAppStore() {
 	);
 
 	return {
-		// Individual state stores
 		theme,
 		activeTab,
 
-		// Combined state
 		appState,
 
 		toggleTheme() {
@@ -60,12 +54,10 @@ function createAppStore() {
 			activeTab.set(tab);
 		},
 
-		// URL parameter management - only override localStorage if URL params are present and different
 		readFromURL(searchParams: URLSearchParams) {
 			const themeParam = searchParams.get('theme');
 			const tab = searchParams.get('tab');
 
-			// Only set theme if URL parameter exists and differs from current localStorage value
 			if (themeParam && (themeParam === 'dark' || themeParam === 'light')) {
 				const currentTheme = get(theme);
 				if (themeParam !== currentTheme) {
@@ -73,7 +65,6 @@ function createAppStore() {
 				}
 			}
 
-			// Only set active tab if URL parameter exists and differs from current localStorage value
 			if (
 				tab &&
 				(tab === 'all' || tab === 'completed' || tab === 'planned' || tab === 'tierlist')
@@ -85,12 +76,9 @@ function createAppStore() {
 			}
 		},
 
-		// Enhanced URL parameter management with filter support
 		readFromURLWithFilters(searchParams: URLSearchParams, filtersStore: typeof FiltersStoreType) {
-			// Read app parameters
 			this.readFromURL(searchParams);
 
-			// Read filter parameters
 			if (filtersStore && typeof filtersStore.readFromURL === 'function') {
 				filtersStore.readFromURL(searchParams);
 			}
@@ -102,29 +90,23 @@ function createAppStore() {
 			try {
 				const url = new URL(window.location.href);
 
-				// Remove all parameters except filters to keep URLs clean
 				url.searchParams.delete('theme');
 				url.searchParams.delete('tab');
 				url.searchParams.delete('view');
 
-				// Use SvelteKit's replaceState
 				replaceState(url.toString(), {});
 			} catch (error) {
-				// Silently ignore router initialization errors
 				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
 					console.warn('Failed to update URL:', error);
 				}
 			}
 		},
 
-		// Enhanced writeToURL with filter support
 		writeToURLWithFilters(filtersStore: typeof FiltersStoreType) {
 			if (typeof window === 'undefined') return;
 
-			// Write app parameters
 			this.writeToURL();
 
-			// Write filter parameters
 			if (filtersStore && typeof filtersStore.writeToURL === 'function') {
 				filtersStore.writeToURL();
 			}

@@ -13,13 +13,10 @@
 
 	let { type, label, options, selectedOptions = [] }: Props = $props();
 
-	// Dropdown state
 	let isOpen = $state(false);
 	let dropdownElement: HTMLDivElement | undefined;
 
-	// Handle clicks outside to close dropdown
 	function handleClickOutside(event: MouseEvent) {
-		// Don't close if clicking on the dropdown content
 		const target = event.target as Node;
 		const dropdown = document.querySelector('.filter-options-dropdown');
 		if (dropdown && dropdown.contains(target)) {
@@ -31,7 +28,6 @@
 		}
 	}
 
-	// Add event listener for clicks outside
 	$effect(() => {
 		if (isOpen) {
 			document.addEventListener('click', handleClickOutside);
@@ -41,7 +37,6 @@
 		}
 	});
 
-	// Handle option toggle
 	function toggleOption(option: string) {
 		if (type === 'platforms') {
 			filtersStore.togglePlatform(option);
@@ -52,7 +47,6 @@
 		}
 	}
 
-	// Handle "All" option
 	function selectAll() {
 		selectedOptions.forEach((option) => {
 			if (type === 'platforms') {
@@ -65,7 +59,6 @@
 		});
 	}
 
-	// Get color class for option
 	function getOptionColor(option: string): string {
 		if (type === 'platforms') {
 			return getPlatformColor(option);
@@ -77,7 +70,6 @@
 		return 'bg-gray-600 text-white';
 	}
 
-	// Get button color classes
 	function getButtonColorClasses(): string {
 		if (selectedOptions.length === 0) {
 			return 'bg-surface hover:bg-accent hover:text-accent-foreground border-0';
@@ -86,7 +78,6 @@
 		}
 	}
 
-	// Handle keyboard navigation
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			isOpen = false;
@@ -95,12 +86,10 @@
 			event.preventDefault();
 			isOpen = !isOpen;
 		} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-			// Prevent page scroll when using arrow keys on the filter button
 			event.preventDefault();
 		}
 	}
 
-	// Get ARIA attributes
 	function getAriaAttributes() {
 		return {
 			'aria-expanded': isOpen,
@@ -282,7 +271,6 @@
 		color: var(--color-text-secondary);
 	}
 
-	/* Focus states */
 	.filter-button:focus {
 		outline: none;
 	}
@@ -292,7 +280,6 @@
 		outline-offset: 2px;
 	}
 
-	/* Mobile responsive */
 	@media (max-width: 640px) {
 		.dropdown-panel {
 			position: fixed;
@@ -319,7 +306,6 @@
 		}
 	}
 
-	/* Dropdown positioning for filter options */
 	.filter-options-dropdown {
 		position: absolute;
 		top: calc(100% + 8px);
@@ -330,7 +316,6 @@
 		max-width: 90vw;
 	}
 
-	/* New filter options section styles */
 	.filter-options-section {
 		background-color: var(--color-background);
 		border: 1px solid var(--color-border);
@@ -374,12 +359,10 @@
 		margin-top: 0.5rem;
 	}
 
-	/* Dropdown arrow styles */
 	.dropdown-arrow {
 		transition: transform 0.2s ease;
 	}
 
-	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.dropdown-panel {
 			animation: none;

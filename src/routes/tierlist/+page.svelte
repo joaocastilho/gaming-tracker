@@ -39,18 +39,14 @@
 			gamesStore.initializeGames(data.games);
 		}
 
-		// Ensure URL-derived filters are respected
 		filtersStore.readFromURL(page.url.searchParams);
 		appStore.readFromURL(page.url.searchParams);
 
-		// Tierlist should ignore filters and search
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
 
-		// Mark active tab as tierlist for shared UI
 		appStore.setActiveTab('tierlist');
 
-		// Lazy-load tierlist view
 		loadTierListView();
 	});
 

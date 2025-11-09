@@ -1,5 +1,5 @@
 import { z } from 'zod';
-// Minimal Env type for Cloudflare Pages Functions.
+
 import { GamesPayloadSchema, computeScore } from '../../src/lib/validation/game';
 import { checkRateLimit } from '../utils/rateLimit';
 
@@ -16,11 +16,9 @@ type Env = {
 	GH_REPO_NAME?: string;
 	GH_FILE_PATH?: string;
 	GH_BRANCH?: string;
-	// Optional rate limit toggle and KV binding reuse:
 	ENABLE_RATE_LIMITING?: string;
 };
 
-// Shape used by both static/games.json and API.
 type GamesPayload = z.infer<typeof GamesPayloadSchema>;
 
 /**
@@ -30,7 +28,6 @@ type GamesPayload = z.infer<typeof GamesPayloadSchema>;
  * - and in plain Vite dev (bun run dev) where KV is absent but static files exist.
  */
 async function loadGames(env: Env): Promise<GamesPayload | null> {
-	// Prefer KV when configured/populated
 	if (env.GAMES_KV) {
 		const stored = await env.GAMES_KV.get('games');
 		if (stored) {
@@ -42,7 +39,6 @@ async function loadGames(env: Env): Promise<GamesPayload | null> {
 		}
 	}
 
-	// Fallback: try to read bundled static JSON (works in dev / SSR via fetch)
 	try {
 		const res = await fetch('https://dummy.local/games.json');
 		if (res.ok) {
@@ -137,7 +133,6 @@ export const onRequestGet = async ({ env }: { env: Env }) => {
 // POST /api/games (unchanged core logic, still requires valid session and KV/GitHub config)
 export const onRequestPost = async ({ request, env }: { request: Request; env: Env }) => {
 	try {
-		// Optional rate limiting for writes to /api/games
 		if (env.ENABLE_RATE_LIMITING === 'true') {
 			const ip =
 				request.headers.get('cf-connecting-ip') ||
@@ -225,7 +220,6 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			});
 		}
 
-		// Use shared Zod schema for full validation and integrity rules.
 		const parsed = GamesPayloadSchema.safeParse(body);
 		if (!parsed.success) {
 			console.warn(
@@ -247,7 +241,6 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			);
 		}
 
-		// Recompute scores on the server as source of truth for Completed games.
 		const normalizedGames = parsed.data.games.map((g) => {
 			if (g.status === 'Completed') {
 				if (g.ratingPresentation != null && g.ratingStory != null && g.ratingGameplay != null) {
@@ -270,7 +263,6 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			}
 		};
 
-		// All-or-nothing: first sync GitHub; only on success write KV.
 		await syncGamesToGitHub(nextData, env);
 		await env.GAMES_KV.put('games', JSON.stringify(nextData));
 		console.log(
@@ -304,7 +296,6 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 	}
 };
 
-// verifySession reused from original implementation:
 async function verifySession(cookieHeader: string | null, secret: string): Promise<boolean> {
 	if (!cookieHeader) return false;
 	const cookies = cookieHeader.split(';').map((c) => c.trim());

@@ -128,8 +128,6 @@ function createEditorStore() {
 				saveError: null
 			}));
 
-			// Caller is responsible for updating the shared games store
-			// with data.games/meta if the API returns it.
 			if (data && typeof data === 'object' && 'games' in data) {
 				return true;
 			}
@@ -149,7 +147,7 @@ function createEditorStore() {
 
 	return {
 		subscribe: state.subscribe,
-		// expose raw state booleans for $editorStore usage in components
+
 		get editorMode() {
 			return get(state).editorMode;
 		},

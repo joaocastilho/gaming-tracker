@@ -24,7 +24,6 @@
 		if (mode === 'edit' && initialGame) {
 			working = structuredClone(initialGame);
 		} else {
-			// Basic new game template aligned with canonical Game + validation rules.
 			const now = new Date();
 			const id = `game-${now.getTime()}-${Math.random().toString(36).slice(2, 8)}`;
 			working = {
@@ -51,7 +50,6 @@
 	});
 
 	function validateGame(game: Game): string | null {
-		// Normalize title fields
 		if (!game.title && game.mainTitle) {
 			game.title = game.mainTitle;
 		}
@@ -59,7 +57,6 @@
 			game.mainTitle = game.title;
 		}
 
-		// Basic requireds
 		if (!game.title) return 'Title is required.';
 		if (!game.mainTitle) return 'Main title is required.';
 		if (!game.platform) return 'Platform is required.';
@@ -67,7 +64,6 @@
 		if (!game.coverImage) return 'Cover image path is required.';
 		if (!game.timeToBeat) return 'Time to beat is required in "Xh Ym" format.';
 
-		// Client-side mirror of core integrity rules.
 		if (game.status === 'Planned') {
 			if (
 				game.hoursPlayed !== null ||
@@ -103,7 +99,6 @@
 				return 'Completed games must have a tier.';
 			}
 
-			// Compute expected score and ensure it matches what we will send.
 			const expectedScore = computeScore({
 				ratingPresentation: game.ratingPresentation,
 				ratingStory: game.ratingStory,
@@ -112,10 +107,8 @@
 			game.score = expectedScore;
 		}
 
-		// Run shared Zod schema as final gate on the client to stay in sync with backend.
 		const result = GameSchema.safeParse(game);
 		if (!result.success) {
-			// Surface the first error message for UX; backend will still enforce full details.
 			const first = result.error.issues[0];
 			return first?.message || 'Invalid game data.';
 		}
@@ -128,7 +121,6 @@
 			return [...allGames, working];
 		}
 
-		// edit
 		return allGames.map((g) => (g.id === working.id ? working : g));
 	}
 
@@ -154,7 +146,6 @@
 			return;
 		}
 
-		// Re-fetch from server to ensure we reflect canonical data.
 		try {
 			const res = await fetch('/api/games', {
 				method: 'GET',
@@ -268,7 +259,6 @@
 				</select>
 			</label>
 
-			<!-- Completed-only fields -->
 			<label>
 				<span>Presentation Rating</span>
 				<input type="number" min="0" max="10" step="0.5" bind:value={working.ratingPresentation} />

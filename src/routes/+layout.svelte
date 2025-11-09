@@ -23,7 +23,6 @@
 		typeof import('$lib/components/DetailModal.svelte').default | null
 	>(null);
 
-	// Register service worker
 	onMount(() => {
 		if (browser && 'serviceWorker' in navigator) {
 			const swPath = '/service-worker.js';
@@ -77,7 +76,7 @@
 					if (game) {
 						modalStore.openViewModal(game);
 					}
-				}, 100); // Small delay to ensure games are loaded
+				}, 100);
 			}
 			initialized = true;
 		}
@@ -160,7 +159,6 @@
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
 
-		// Update URL to reflect clean state
 		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 		appStore.writeToURLWithFilters(filtersStore);
 	}

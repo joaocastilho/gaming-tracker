@@ -4,15 +4,14 @@ import { debounce } from '../utils/debounce.js';
 import type { Game } from '../types/game.js';
 import { gamesStore } from './games.js';
 
-// Utility function to create URL-friendly slugs from game titles
 function createGameSlug(title: string): string {
 	return title
 		.toLowerCase()
-		.replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-		.replace(/\s+/g, '-') // Replace spaces with hyphens
-		.replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+		.replace(/[^a-z0-9\s-]/g, '')
+		.replace(/\s+/g, '-')
+		.replace(/-+/g, '-')
 		.trim()
-		.replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+		.replace(/^-|-$/g, '');
 }
 
 export interface ModalState {
@@ -34,7 +33,6 @@ function createModalStore() {
 		isSubmitting: false
 	});
 
-	// Debounced URL update to reduce main-thread jank
 	const debouncedWriteToURL = debounce(() => {
 		if (typeof window === 'undefined') return;
 
@@ -49,15 +47,13 @@ function createModalStore() {
 				url.searchParams.delete('game');
 			}
 
-			// Use replaceState to avoid adding to browser history
 			replaceState(url.toString(), {});
 		} catch (error) {
-			// Silently ignore router initialization errors
 			if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
 				console.warn('Failed to update URL:', error);
 			}
 		}
-	}, 100); // 100ms debounce delay
+	}, 100);
 
 	return {
 		subscribe: modalState.subscribe,
@@ -112,7 +108,6 @@ function createModalStore() {
 				isSubmitting: false
 			});
 
-			// Ensure URL is updated when modal closes
 			debouncedWriteToURL();
 		},
 

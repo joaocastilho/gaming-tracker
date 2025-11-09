@@ -34,7 +34,6 @@ async function hmacSign(payload: string, secret: string): Promise<string> {
 
 export const onRequestPost = async ({ request, env }: { request: Request; env: Env }) => {
 	try {
-		// Optional rate limiting for /api/login to mitigate brute-force attempts.
 		if (env.ENABLE_RATE_LIMITING === 'true' && env.GAMES_KV) {
 			const ip =
 				request.headers.get('cf-connecting-ip') ||

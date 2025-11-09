@@ -1,14 +1,12 @@
 <script>
 	import { appStore } from '../stores/app.js';
 
-	// Get initial theme from document class (set by HTML script) or default to dark
 	let theme = $state(
 		typeof document !== 'undefined' && document.documentElement.classList.contains('light')
 			? 'light'
 			: 'dark'
 	);
 
-	// Subscribe to theme changes
 	$effect(() => {
 		const unsubscribe = appStore.theme.subscribe((value) => {
 			theme = value;
@@ -16,7 +14,6 @@
 		return unsubscribe;
 	});
 
-	// Toggle theme function
 	function toggleTheme() {
 		appStore.toggleTheme();
 	}
@@ -30,7 +27,6 @@
 	title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
 >
 	<div class="icon-container">
-		<!-- Sun icon (shown in light mode) -->
 		<svg
 			class="sun-icon"
 			class:visible={theme === 'light'}
@@ -51,7 +47,6 @@
 			/>
 		</svg>
 
-		<!-- Moon icon (shown in dark mode) -->
 		<svg
 			class="moon-icon"
 			class:visible={theme === 'dark'}
@@ -73,7 +68,6 @@
 
 <style>
 	.theme-toggle {
-		/* Base button styling */
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -130,7 +124,6 @@
 		transform-origin: center;
 	}
 
-	/* Icon visibility states */
 	.sun-icon.visible,
 	.moon-icon.visible {
 		opacity: 1;
@@ -143,7 +136,6 @@
 		transform: scale(0.8) rotate(-45deg);
 	}
 
-	/* Smooth transition between icons */
 	:global(.light) .sun-icon {
 		color: #f59e0b;
 	}
@@ -152,7 +144,6 @@
 		color: #60a5fa;
 	}
 
-	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.theme-toggle,
 		.sun-icon,

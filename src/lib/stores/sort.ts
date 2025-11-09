@@ -107,8 +107,6 @@ function createSortStore() {
 	};
 }
 
-// Create and export the sort store instance
 export const sortStore = createSortStore();
 
-// Export type for store value
 export type SortStore = ReturnType<typeof createSortStore>;

@@ -113,7 +113,6 @@
 							onclick={() => handleNavClick(item.id)}
 						>
 							<span class="label">{item.label}</span>
-		
 						</button>
 						{#if item.count !== null}
 							<span class="count-badge">{item.count}</span>
@@ -260,16 +259,15 @@
 
 	.header-right {
 		display: flex;
-		align-items: flex-start; /* top-align container */
+		align-items: flex-start;
 		justify-content: flex-end;
 		gap: 0.5rem;
 	}
 
-	/* Make theme toggle bigger and pinned visually to top */
 	.theme-toggle-wrapper {
 		display: inline-flex;
 		align-items: flex-start;
-		transform: scale(1.2); /* increase size */
+		transform: scale(1.2);
 		transform-origin: top right;
 	}
 

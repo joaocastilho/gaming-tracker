@@ -22,26 +22,19 @@
 
 	let currentActiveTab = $derived(appStore.activeTab);
 
-	// Use the shared filtered-games view so navigation matches list pages.
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 	let filteredGamesData = $derived($filteredGamesStore);
-
-	// For tierlist navigation we must ignore filters (tierlist page clears them),
-	// so build a base array directly from gamesStore when active tab is 'tierlist'.
 	import { gamesStore } from '../stores/games.js';
 	let allGames = $derived($gamesStore);
 
-	// Handle modal state changes
 	$effect(() => {
 		if ($modalStore.isOpen) {
 			modalStore.writeToURL();
 		}
 	});
 
-	// Focus management when modal opens
 	$effect(() => {
 		if ($modalStore.isOpen && modalElement && browser) {
-			// Small delay to ensure DOM is ready
 			setTimeout(() => {
 				const focusableElements = getFocusableElements();
 				if (focusableElements.length > 0) {
@@ -53,23 +46,19 @@
 
 	let modalElement = $state<HTMLDivElement>();
 
-	// Track loading state - initialize from cache entry, then sync via effect
 	let isImageLoaded = $state(false);
 	let hasImageError = $state(false);
 
-	// Image loading state - use cache
 	const detailImageSrc = $derived(
 		$modalStore.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
 	);
 
-	// Generate srcset for detail modal (after detailImageSrc is declared)
 	const detailImageSrcset = $derived(
 		detailImageSrc ? generateSrcset(detailImageSrc.replace('-detail.webp', '')) : ''
 	);
 	const detailImageSizes = $derived(generateSizes('modal'));
 	const detailImageEntry = $derived(detailImageSrc ? imageCache.getImage(detailImageSrc) : null);
 
-	// Sync with cache entry - this effect runs when detailImageEntry changes
 	$effect(() => {
 		const entry = detailImageEntry;
 
@@ -79,18 +68,15 @@
 			return;
 		}
 
-		// If already loaded, set immediately
 		if (entry.isLoaded) {
 			isImageLoaded = true;
 			hasImageError = false;
 			return;
 		}
 
-		// Reset state for new image
 		isImageLoaded = false;
 		hasImageError = false;
 
-		// If there's a load promise, wait for it
 		if (entry.loadPromise) {
 			entry.loadPromise
 				.then(() => {
@@ -104,15 +90,11 @@
 		}
 	});
 
-	// Share feedback state
 	let shareFeedback = $state('');
-
-	// Focus trap state
 	let focusableElements = $state<HTMLElement[]>([]);
 	let firstFocusableElement = $state<HTMLElement>();
 	let lastFocusableElement = $state<HTMLElement>();
 
-	// Focus trap functions
 	function getFocusableElements(): HTMLElement[] {
 		if (!modalElement) return [];
 		const focusableSelectors = [
@@ -138,13 +120,11 @@
 		lastFocusableElement = focusableElements[focusableElements.length - 1];
 
 		if (event.shiftKey) {
-			// Shift + Tab
 			if (document.activeElement === firstFocusableElement) {
 				event.preventDefault();
 				lastFocusableElement.focus();
 			}
 		} else {
-			// Tab
 			if (document.activeElement === lastFocusableElement) {
 				event.preventDefault();
 				firstFocusableElement.focus();
@@ -152,18 +132,15 @@
 		}
 	}
 
-	// Get filtered and sorted games for current tab navigation
 	let currentTabGames = $derived(() => {
 		const filteredGames = filteredGamesData.filteredGames;
 
 		switch ($currentActiveTab) {
 			case 'all': {
-				// All games sorted alphabetically
 				return filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
 			}
 
 			case 'completed': {
-				// Completed games sorted by finished date (most recent first)
 				return filteredGames
 					.filter((game) => game.status === 'Completed')
 					.toSorted((a, b) => {
@@ -175,14 +152,12 @@
 			}
 
 			case 'planned': {
-				// Planned games sorted alphabetically
 				return filteredGames
 					.filter((game) => game.status === 'Planned')
 					.toSorted((a, b) => a.title.localeCompare(b.title));
 			}
 
 			case 'tierlist': {
-				// All completed games with tiers, sorted by tier order (preserving original order within each tier)
 				const tierMapping: Record<string, string> = {
 					S: 'S - Masterpiece',
 					A: 'A - Amazing',
@@ -201,7 +176,6 @@
 					'E - Bad'
 				];
 
-				// First, create a map of tier to games in their original filtered order
 				const gamesByTier: Record<string, Game[]> = {};
 				filteredGames
 					.filter((game) => game.status === 'Completed' && game.tier)
@@ -213,7 +187,6 @@
 						gamesByTier[tierKey].push(game);
 					});
 
-				// Then build the final array by tier order, preserving original order within each tier
 				const result: Game[] = [];
 				tierOrder.forEach((tierKey) => {
 					if (gamesByTier[tierKey]) {
@@ -272,21 +245,16 @@
 		return result;
 	});
 
-	// Get current game index for navigation within the current tab's games
 	let currentGameIndex = $derived(() => {
 		if (!$modalStore.activeGame) return -1;
 
-		
-		// If we're in tier list mode, navigate through all tiered games
 		if ($currentActiveTab === 'tierlist') {
 			return allTieredGames().findIndex((game) => game.id === $modalStore.activeGame?.id);
 		}
 
-		// Otherwise, navigate through the current tab's games
 		return currentTabGames().findIndex((game) => game.id === $modalStore.activeGame?.id);
 	});
 
-	// Navigation functions
 	function navigateToPrevious() {
 		const index = currentGameIndex();
 		const games = $currentActiveTab === 'tierlist' ? allTieredGames() : currentTabGames();
@@ -306,16 +274,13 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		// Handle focus trap first
 		handleFocusTrap(event);
 
-		// Only handle keys when the detail modal is open and in view mode
 		if (!$modalStore.isOpen || $modalStore.mode !== 'view') {
 			return;
 		}
 
 		if (event.key === 'Escape') {
-			// Close the detail modal on Escape
 			event.preventDefault();
 			event.stopPropagation();
 			modalStore.closeModal();
@@ -336,7 +301,6 @@
 		}
 	}
 
-	// Handle overlay keyboard interaction for accessibility
 	function handleOverlayKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
@@ -344,13 +308,11 @@
 		}
 	}
 
-	// Handle image load success
 	function handleImageLoad() {
 		isImageLoaded = true;
 		hasImageError = false;
 	}
 
-	// Handle image load error
 	function handleImageError() {
 		isImageLoaded = false;
 		hasImageError = true;
@@ -378,11 +340,11 @@
 	}
 
 	function getRatingBarColor(rating: number): string {
-		if (rating >= 8) return 'bg-gradient-to-r from-[#388E3C] to-[#4CAF50]'; // Deep Green
-		if (rating >= 6) return 'bg-gradient-to-r from-[#A4D454] to-[#8BC34A]'; // Yellow-Green
-		if (rating >= 5) return 'bg-gradient-to-r from-[#FFC107] to-[#FFEB3B]'; // Yellow/Amber
-		if (rating >= 3) return 'bg-gradient-to-r from-[#FF832B] to-[#FF9800]'; // Orange-Red
-		return 'bg-gradient-to-r from-[#D32F2F] to-[#F44336]'; // Deep Red
+		if (rating >= 8) return 'bg-gradient-to-r from-[#388E3C] to-[#4CAF50]';
+		if (rating >= 6) return 'bg-gradient-to-r from-[#A4D454] to-[#8BC34A]';
+		if (rating >= 5) return 'bg-gradient-to-r from-[#FFC107] to-[#FFEB3B]';
+		if (rating >= 3) return 'bg-gradient-to-r from-[#FF832B] to-[#FF9800]';
+		return 'bg-gradient-to-r from-[#D32F2F] to-[#F44336]';
 	}
 
 	async function shareGame() {
@@ -390,14 +352,13 @@
 
 		try {
 			const url = new URL(window.location.href);
-			// Create a slug from the game title for the URL
 			const slug = $modalStore.activeGame.title
 				.toLowerCase()
-				.replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-				.replace(/\s+/g, '-') // Replace spaces with hyphens
-				.replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+				.replace(/[^a-z0-9\s-]/g, '')
+				.replace(/\s+/g, '-')
+				.replace(/-+/g, '-')
 				.trim()
-				.replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+				.replace(/^-|-$/g, '');
 			url.searchParams.set('game', slug);
 
 			await navigator.clipboard.writeText(url.toString());
@@ -428,7 +389,6 @@
 </script>
 
 {#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}
-	<!-- Modal Overlay -->
 	<div
 		bind:this={modalElement}
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-1 backdrop-blur-[8px]"
@@ -439,7 +399,6 @@
 		aria-modal="true"
 		aria-labelledby="modal-title"
 	>
-		<!-- Previous Button -->
 		{#if currentGameIndex() > 0}
 			<button
 				onclick={navigateToPrevious}
@@ -450,7 +409,6 @@
 			</button>
 		{/if}
 
-		<!-- Next Button -->
 		{#if (() => {
 			const games = $currentActiveTab === 'tierlist' ? allTieredGames() : currentTabGames();
 			return currentGameIndex() > -1 && currentGameIndex() < games.length - 1;
@@ -464,7 +422,6 @@
 			</button>
 		{/if}
 
-		<!-- Close Button -->
 		<button
 			onclick={() => modalStore.closeModal()}
 			class="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
@@ -473,13 +430,11 @@
 			<X size={20} class="text-gray-600 dark:text-gray-300" />
 		</button>
 
-		<!-- Modal Content -->
 		<div
 			class="relative h-[600px] w-full max-w-4xl rounded-xl shadow-2xl"
 			style="background-color: var(--color-surface);"
 		>
 			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
-				<!-- Cover Section -->
 				<div class="relative overflow-hidden rounded-l-lg">
 					{#if !isImageLoaded && !hasImageError}
 						<div class="image-placeholder"></div>
@@ -500,7 +455,6 @@
 						onerror={handleImageError}
 					/>
 
-					<!-- Co-op Badge -->
 					{#if $modalStore.activeGame.coOp === 'Yes'}
 						<div
 							class="absolute top-4 right-4 rounded-md bg-blue-600 px-3 py-1 text-sm font-semibold text-white"
@@ -510,11 +464,9 @@
 					{/if}
 				</div>
 
-				<!-- Info Section -->
 				<div
 					class="max-h-[60vh] overflow-y-auto pt-4 pr-6 pb-6 pl-6 lg:pt-6 lg:pr-8 lg:pb-8 lg:pl-8"
 				>
-					<!-- Title and Share Button -->
 					<div class="mb-4 flex items-start justify-between gap-4">
 						<h1
 							id="modal-title"
@@ -532,7 +484,6 @@
 							{/if}
 						</h1>
 
-						<!-- Share Button -->
 						<button
 							onclick={shareGame}
 							class="flex h-10 cursor-pointer items-center justify-center rounded-full bg-transparent px-3 transition-colors hover:bg-black/5 dark:bg-transparent dark:hover:bg-black/20"
@@ -556,7 +507,6 @@
 						</button>
 					</div>
 
-					<!-- Meta Badges -->
 					<div class="mb-6 flex items-center justify-between">
 						<div class="flex flex-wrap gap-2">
 							<span
@@ -580,7 +530,6 @@
 							{/if}
 						</div>
 
-						<!-- Tier Level -->
 						{#if $modalStore.activeGame.tier}
 							<span
 								class="tier-badge rounded-md px-3 py-1 text-sm font-semibold {getTierClass(
@@ -592,7 +541,6 @@
 						{/if}
 					</div>
 
-					<!-- Detail Grid -->
 					<div class="mb-8 grid grid-cols-2 gap-4">
 						<div>
 							<div class="mb-1 text-sm" style="color: var(--color-text-tertiary);">
@@ -637,14 +585,12 @@
 						</div>
 					</div>
 
-					<!-- Ratings Section -->
 					{#if $modalStore.activeGame.status === 'Completed' && $modalStore.activeGame.ratingPresentation !== null && $modalStore.activeGame.ratingStory !== null && $modalStore.activeGame.ratingGameplay !== null}
 						<div class="space-y-4">
 							<h3 class="mb-4 text-xl font-semibold" style="color: var(--color-text-primary);">
 								Ratings
 							</h3>
 
-							<!-- Presentation Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
@@ -668,7 +614,6 @@
 								</div>
 							</div>
 
-							<!-- Story Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
@@ -692,7 +637,6 @@
 								</div>
 							</div>
 
-							<!-- Gameplay Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
@@ -716,7 +660,6 @@
 								</div>
 							</div>
 
-							<!-- Total Score -->
 							{#if $modalStore.activeGame.score !== null}
 								<div
 									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
@@ -736,7 +679,6 @@
 								Ratings
 							</h3>
 
-							<!-- Placeholder Presentation Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
@@ -758,7 +700,6 @@
 								</div>
 							</div>
 
-							<!-- Placeholder Story Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
@@ -780,7 +721,6 @@
 								</div>
 							</div>
 
-							<!-- Placeholder Gameplay Rating -->
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
@@ -802,7 +742,6 @@
 								</div>
 							</div>
 
-							<!-- Placeholder Total Score -->
 							<div
 								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 dark:border-gray-700"
 							>
@@ -822,7 +761,6 @@
 {/if}
 
 <style>
-	/* Image Placeholder */
 	.image-placeholder {
 		position: absolute;
 		inset: 0;
@@ -859,7 +797,6 @@
 		background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 50%, transparent 100%);
 	}
 
-	/* Image loading states */
 	.cover-image {
 		opacity: 0;
 		transition: opacity 0.3s ease;

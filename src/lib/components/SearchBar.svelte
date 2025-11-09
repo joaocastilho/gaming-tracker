@@ -6,7 +6,6 @@
 
 	let searchTerm = $state('');
 
-	// Sync with store
 	$effect(() => {
 		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
 			searchTerm = value;
@@ -17,14 +16,12 @@
 		return unsubscribe;
 	});
 
-	// Focus search input on mount and when Escape is pressed
 	$effect(() => {
 		if (inputElement) {
 			inputElement.focus();
 		}
 	});
 
-	// Handle input change with debouncing
 	function handleInput(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const newValue = target.value;
@@ -39,7 +36,6 @@
 		}, 300);
 	}
 
-	// Clear search
 	function clearSearch() {
 		if (inputElement) {
 			inputElement.value = '';
@@ -52,7 +48,6 @@
 		}
 	}
 
-	// Handle keyboard events
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			if (inputElement) {
@@ -61,20 +56,15 @@
 		}
 	}
 
-	// Global escape key handler to focus search bar and scroll to top
-	// This should work regardless of which element has focus
 	function handleGlobalKeydown(event: KeyboardEvent) {
-		// Only handle Escape key
 		if (event.key === 'Escape' && inputElement) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			// Focus the search input
 			inputElement.focus();
 			inputElement.select();
 
-			// Scroll to top to make search bar visible, accounting for fixed header
-			const headerHeight = 110; // Approximate height of header + filter section
+			const headerHeight = 110;
 			window.scrollTo({
 				top: -headerHeight,
 				behavior: 'smooth'
@@ -82,9 +72,7 @@
 		}
 	}
 
-	// Add global escape key listener that always works
 	$effect(() => {
-		// Use capture phase to ensure we get the event before other handlers
 		document.addEventListener('keydown', handleGlobalKeydown, { capture: true });
 		return () => {
 			document.removeEventListener('keydown', handleGlobalKeydown, { capture: true });
@@ -217,7 +205,6 @@
 		outline-offset: 2px;
 	}
 
-	/* Mobile responsive */
 	@media (max-width: 768px) {
 		.search-bar-container {
 			padding: 0 12px;
@@ -251,7 +238,6 @@
 		}
 	}
 
-	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.search-bar,
 		.clear-button {

@@ -11,22 +11,15 @@
 
 	let { filteredGames }: Props = $props();
 
-	// 1. Create the crossfade transitions
-	// These will be passed down to <TierRow>
 	const [send, receive] = crossfade({
 		duration: 300,
 		easing: quintOut
 	});
 
-	// 2. Create a memoized version of the build function
-	// This ensures the expensive filtering/sorting only runs when
-	// the list of games actually changes.
 	const memoizedBuildTierList = memoize(buildTierList);
 
-	// 3. Pass the reactive games array to the memoized function
 	let tierList = $derived(memoizedBuildTierList(filteredGames));
 
-	// 4. This is now a pure function that accepts the games array
 	function buildTierList(games: Game[]): Record<string, Game[]> {
 		const gamesByTier: Record<string, Game[]> = {
 			'S - Masterpiece': [],
@@ -38,7 +31,6 @@
 			'F - Awful': []
 		};
 
-		// DO NOT sort - preserve the original filtered order for consistent navigation
 		games
 			.filter((game) => game.tier)
 			.forEach((game) => {

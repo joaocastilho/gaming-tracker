@@ -63,7 +63,6 @@
 				debouncedAppWriteToURL();
 				debouncedSortWriteToURL();
 			} catch (error) {
-				// If router still not ready, try again later
 				if (error instanceof Error && error.message.includes('router is initialized')) {
 					setTimeout(updateURLs, 10);
 				}

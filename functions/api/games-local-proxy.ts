@@ -1,6 +1,5 @@
 import { GamesPayloadSchema } from '../../src/lib/validation/game';
 
-
 /**
  * Local-only handler to serve games from the bundled static JSON.
  *
@@ -9,7 +8,6 @@ import { GamesPayloadSchema } from '../../src/lib/validation/game';
  */
 export const onRequestGet = async () => {
 	try {
-		// In Vite/SvelteKit dev, static assets are served from /.
 		const res = await fetch('http://localhost:5173/games.json');
 
 		if (!res.ok) {

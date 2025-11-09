@@ -2,7 +2,6 @@
 	let isVisible = $state(false);
 	let buttonElement = $state<HTMLButtonElement | undefined>();
 
-	// Show/hide button based on scroll position
 	$effect(() => {
 		const handleScroll = () => {
 			isVisible = window.scrollY > 300;
@@ -14,17 +13,14 @@
 		};
 	});
 
-	// Scroll to top function
 	function scrollToTop() {
-		// Account for fixed header by scrolling a bit past the top
-		const headerHeight = 110; // Approximate height of header + filter section
+		const headerHeight = 110;
 		window.scrollTo({
 			top: -headerHeight,
 			behavior: 'smooth'
 		});
 	}
 
-	// Handle keyboard navigation
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
@@ -91,7 +87,6 @@
 		line-height: 1;
 	}
 
-	/* Light mode styles */
 	:global(.light) .scroll-to-top-button {
 		background-color: #3b82f6;
 		color: white;
@@ -105,14 +100,12 @@
 		outline: 2px solid #60a5fa;
 	}
 
-	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.scroll-to-top-button {
 			transition: none;
 		}
 	}
 
-	/* Mobile responsive */
 	@media (max-width: 768px) {
 		.scroll-to-top-button {
 			bottom: 20px;
@@ -133,7 +126,6 @@
 		}
 	}
 
-	/* Screen reader only text */
 	.sr-only {
 		position: absolute;
 		width: 1px;

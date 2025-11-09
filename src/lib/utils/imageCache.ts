@@ -16,11 +16,9 @@ class ImageCache {
 	isImageCached(src: string): boolean {
 		if (!browser) return false;
 
-		// Check our cache first
 		const entry = this.cache.get(src);
 		if (entry?.isLoaded) return true;
 
-		// Check browser cache synchronously
 		const img = new Image();
 		img.src = src;
 		return img.complete && img.naturalWidth > 0;
@@ -32,7 +30,6 @@ class ImageCache {
 		if (!entry) {
 			const img = new Image();
 
-			// Check if already cached in browser
 			const isCached = this.isImageCached(src);
 
 			entry = {
@@ -42,7 +39,6 @@ class ImageCache {
 			};
 
 			if (!isCached) {
-				// Create load promise
 				entry.loadPromise = new Promise<void>((resolve, reject) => {
 					img.onload = () => {
 						entry!.isLoaded = true;
@@ -61,11 +57,9 @@ class ImageCache {
 
 			this.cache.set(src, entry);
 
-			// Start loading if not cached
 			if (!isCached) {
 				img.src = src;
 			} else {
-				// If cached, set src immediately so it's ready
 				img.src = src;
 			}
 		}
@@ -84,7 +78,6 @@ class ImageCache {
 			entry.isLoaded = true;
 			entry.hasError = false;
 		} else {
-			// If entry doesn't exist, create it (e.g., loaded from browser cache)
 			const img = new Image();
 			img.src = src;
 			entry = {
@@ -93,7 +86,7 @@ class ImageCache {
 				hasError: false
 			};
 		}
-		// Use a new Map to trigger Svelte 5's $derived update
+
 		const newCache = new Map(this.cache);
 		newCache.set(src, entry);
 		this.cache = newCache;
@@ -110,14 +103,13 @@ class ImageCache {
 			entry.isLoaded = false;
 			entry.hasError = true;
 		} else {
-			// If entry doesn't exist, create it
 			entry = {
 				image: new Image(),
 				isLoaded: false,
 				hasError: true
 			};
 		}
-		// Use a new Map to trigger Svelte 5's $derived update
+
 		const newCache = new Map(this.cache);
 		newCache.set(src, entry);
 		this.cache = newCache;
@@ -138,7 +130,7 @@ class ImageCache {
 			if (!src) break;
 
 			this.activePreloads++;
-			// Ensure we use the promise from getImage to process the queue
+
 			const entry = this.getImage(src);
 			if (entry.loadPromise) {
 				entry.loadPromise.finally(() => {
@@ -174,7 +166,7 @@ interface ComponentInstance {
 
 class ComponentCache {
 	private instances = new Map<string, ComponentInstance>();
-	private maxAge = 5 * 60 * 1000; // 5 minutes
+	private maxAge = 5 * 60 * 1000;
 
 	register(gameId: string): void {
 		this.instances.set(gameId, {
@@ -203,5 +195,5 @@ export const componentCache = new ComponentCache();
 if (typeof window !== 'undefined') {
 	setInterval(() => {
 		componentCache.cleanup();
-	}, 60000); // Every minute
+	}, 60000);
 }

@@ -15,12 +15,10 @@ export function getGenreColor(genre: string): string {
 }
 
 export function getTierColor(tier: string): string {
-	// Convert tier letter to full display name before looking up color
 	const fullTierName = getTierDisplayName(tier);
 	return TIER_COLORS[fullTierName] || 'bg-gray-600 text-white';
 }
 
-// Define the correct tier order
 const TIER_ORDER = [
 	'S - Masterpiece',
 	'A - Amazing',

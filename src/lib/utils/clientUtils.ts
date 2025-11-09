@@ -52,7 +52,5 @@ export function setUrlParams(
 		? `${window.location.pathname}?${queryString}`
 		: window.location.pathname;
 
-	// Use SvelteKit navigation helper to avoid interfering with router internals.
-	// `goto` with replaceState: true preserves SPA behavior without full reload.
 	goto(newUrl, { replaceState: true, noScroll: true, keepFocus: true });
 }

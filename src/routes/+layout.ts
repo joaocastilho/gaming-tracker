@@ -1,7 +1,6 @@
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch }) => {
-	// Prefer real API when available (Cloudflare Pages / Wrangler with functions)
 	try {
 		const res = await fetch('/api/games', { headers: { accept: 'application/json' } });
 
@@ -35,7 +34,6 @@ export const load: LayoutLoad = async ({ fetch }) => {
 		// Ignore and fall through
 	}
 
-	// Last resort: empty list to avoid hard crash
 	return {
 		games: [],
 		meta: null,

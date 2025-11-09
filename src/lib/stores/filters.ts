@@ -6,7 +6,6 @@ import type { Game } from '$lib/types/game';
 import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
 import FilterWorker from '$lib/workers/filterWorker?worker';
 
-// Add memoization utility
 function memoize<TArgs extends unknown[], TReturn>(
 	fn: (...args: TArgs) => TReturn
 ): (...args: TArgs) => TReturn {
@@ -88,10 +87,10 @@ function createFiltersStore() {
 			hasInitialized = true;
 			const initialFilters: FilterState = {
 				...baseFilters,
-				platforms: [], // Start with empty selection
-				genres: [], // Start with empty selection
-				statuses: ['Completed', 'Planned'], // Keep default statuses
-				tiers: [], // Start with empty tier selection
+				platforms: [],
+				genres: [],
+				statuses: ['Completed', 'Planned'],
+				tiers: [],
 				sortOption: null
 			};
 
@@ -250,7 +249,6 @@ function createFiltersStore() {
 		searchQuery: derived(filters, ($filters) => $filters?.searchTerm ?? ''),
 
 		createFilteredGamesStore: () => {
-			// Memoize the derived store computation
 			const memoizedDerived = memoize((games: Game[], counts: GameCounts) => ({
 				filteredGames: games,
 				totalCount: counts.total,

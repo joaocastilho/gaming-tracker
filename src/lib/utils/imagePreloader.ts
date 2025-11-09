@@ -18,11 +18,7 @@ export function setupProgressiveImagePreloading(
 ): () => void {
 	if (!browser) return () => {};
 
-	const {
-		rootMargin = '200px', // Start loading 200px before entering viewport
-		threshold = 0.1,
-		preloadCount = 3 // Preload next 3 images
-	} = options;
+	const { rootMargin = '200px', threshold = 0.1, preloadCount = 3 } = options;
 
 	const images = container.querySelectorAll<HTMLImageElement>(imageSelector);
 	const preloadedImages = new Set<string>();
@@ -39,7 +35,6 @@ export function setupProgressiveImagePreloading(
 						imageCache.preload(src);
 					}
 
-					// Preload next N images
 					const currentIndex = Array.from(images).indexOf(img);
 					for (let i = 1; i <= preloadCount && currentIndex + i < images.length; i++) {
 						const nextImg = images[currentIndex + i] as HTMLImageElement;
@@ -59,10 +54,8 @@ export function setupProgressiveImagePreloading(
 		}
 	);
 
-	// Observe all images
 	images.forEach((img) => observer.observe(img));
 
-	// Return cleanup function
 	return () => {
 		observer.disconnect();
 		preloadedImages.clear();

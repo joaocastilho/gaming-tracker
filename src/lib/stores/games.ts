@@ -7,7 +7,6 @@ function createGamesStore() {
 	const loadingStore = writable<boolean>(true);
 	const errorStore = writable<string | null>(null);
 
-	// --- DYNAMIC OPTIONS STORES ---
 	function createDerivedOptions(games: Readable<Game[]>, key: keyof Game): Readable<string[]> {
 		return derived(games, ($games) => {
 			if (!$games || $games.length === 0) return [];
@@ -42,8 +41,6 @@ function createGamesStore() {
 					throw new Error('Invalid games data: expected array');
 				}
 
-				// Normalize all incoming games so UI components (cards, tier list, etc.)
-				// receive consistent shape: ids, titles, tiers, dates, etc.
 				const normalized = rawGames
 					.map((g) => transformGameData(g as Record<string, unknown>))
 					.filter((g) => g && typeof g.id === 'string' && g.title) as unknown as Game[];
