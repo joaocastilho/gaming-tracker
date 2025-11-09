@@ -153,7 +153,7 @@
 		<div
 			class="grid max-w-full grid-cols-1 justify-items-center gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 		>
-			<GameCardSkeleton count={12} />
+			<GameCardSkeleton count={15} />
 		</div>
 	{:else if currentActiveTab === 'tierlist' && TierListViewComponent}
 		<TierListViewComponent filteredGames={tierListGames} />
@@ -175,7 +175,7 @@
 				↻ Reset filters
 			</button>
 		</div>
-	{:else if currentActiveTab !== 'tierlist'}
+	{:else if currentActiveTab !== 'tierlist' && filteredData.filteredGames.length > 0}
 		<GamesView filteredGames={filteredData.filteredGames} />
 	{/if}
 </div>

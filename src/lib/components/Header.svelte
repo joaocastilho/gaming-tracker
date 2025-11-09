@@ -66,7 +66,7 @@
 
 	function handleTabClick(tab: Tab) {
 		if (tab.id !== $activeTab) {
-			activeTab.set(tab.id);
+			appStore.setActiveTab(tab.id);
 			navigateTo(tab.route);
 		}
 	}
@@ -83,7 +83,6 @@
 
 <header class="header header-background">
 	<div class="header-content container mx-auto px-6">
-		<!-- Left section: Logo -->
 		<div class="header-left">
 			<button
 				class="logo"
@@ -97,13 +96,11 @@
 			</button>
 		</div>
 
-		<!-- Right section: Theme Toggle -->
 		<div class="header-right">
 			<ThemeToggle />
 		</div>
 	</div>
 
-	<!-- Navigation Tabs -->
 	<nav class="navigation-tabs" aria-label="Game navigation">
 		<div class="navigation-content">
 			<ul class="tabs-list" role="tablist">
@@ -142,7 +139,6 @@
 	}
 
 	.header-background {
-		/* Dark mode colors */
 		background-color: #0a0d11;
 	}
 
@@ -159,12 +155,11 @@
 		position: relative;
 	}
 
-	/* Left section */
 	.header-left {
 		display: flex;
 		align-items: center;
 		gap: 20px;
-		margin-left: 40px; /* Align with search bar content start (24px container + 16px search bar) */
+		margin-left: 40px;
 	}
 
 	.logo {
@@ -334,7 +329,7 @@
 	@media (max-width: 480px) {
 		.header-left {
 			gap: 8px;
-			margin-left: 32px; /* 24px container + 8px search bar */
+			margin-left: 32px;
 		}
 
 		.tabs-list {
@@ -347,7 +342,6 @@
 		}
 	}
 
-	/* High contrast mode support */
 	@media (prefers-contrast: high) {
 		.tab-button {
 			border: 1px solid transparent;
@@ -364,7 +358,6 @@
 		}
 	}
 
-	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.tab-button {
 			transition: none;

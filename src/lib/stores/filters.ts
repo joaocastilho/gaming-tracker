@@ -35,8 +35,6 @@ export interface FilterState {
 	searchTerm: string;
 	platforms: string[];
 	genres: string[];
-	years: [number, number];
-	ratings: [number, number];
 	statuses: string[];
 	tiers: string[];
 	sortOption: SortOption | null;
@@ -55,10 +53,8 @@ export interface FilteredGameData {
 	plannedCount: number;
 }
 
-const baseFilters: Pick<FilterState, 'searchTerm' | 'years' | 'ratings'> = {
+const baseFilters: Pick<FilterState, 'searchTerm'> = {
 	searchTerm: '',
-	years: [1980, new Date().getFullYear()],
-	ratings: [0, 10]
 };
 
 function createFiltersStore() {
@@ -143,10 +139,10 @@ function createFiltersStore() {
 		resetFilters: () => {
 			const resetFilters: FilterState = {
 				...baseFilters,
-				platforms: [], // Reset to empty selection
-				genres: [], // Reset to empty selection
+				platforms: [],
+				genres: [],
 				statuses: ['Completed', 'Planned'],
-				tiers: [], // Reset to empty tier selection
+				tiers: [],
 				sortOption: null
 			};
 			filters.set(resetFilters);
@@ -224,20 +220,6 @@ function createFiltersStore() {
 			});
 		},
 
-		setYearsRange(years: [number, number]) {
-			filters.update(($filters) => {
-				if (!$filters) return $filters;
-				return { ...$filters, years };
-			});
-		},
-
-		setRatingsRange(ratings: [number, number]) {
-			filters.update(($filters) => {
-				if (!$filters) return $filters;
-				return { ...$filters, ratings };
-			});
-		},
-
 		setSort(sortOption: SortOption | null) {
 			filters.update(($filters) => {
 				if (!$filters) return $filters;
@@ -245,17 +227,6 @@ function createFiltersStore() {
 			});
 		},
 
-		ratingRanges: derived(filters, ($filters) => ({
-			presentation: $filters?.ratings ?? [0, 10],
-			story: $filters?.ratings ?? [0, 10],
-			gameplay: $filters?.ratings ?? [0, 10],
-			total: $filters?.ratings
-				? ([Math.round($filters.ratings[0] * 2), Math.round($filters.ratings[1] * 2)] as [
-						number,
-						number
-					])
-				: [0, 20]
-		})),
 		selectedPlatforms: derived(filters, ($filters) => $filters?.platforms ?? []),
 		selectedGenres: derived(filters, ($filters) => $filters?.genres ?? []),
 		selectedTiers: derived(filters, ($filters) => $filters?.tiers ?? []),
@@ -285,8 +256,6 @@ function createFiltersStore() {
 					platforms: params.platforms ?? currentFilters.platforms,
 					genres: params.genres ?? currentFilters.genres,
 					statuses: params.statuses ?? currentFilters.statuses,
-					ratings: params.ratings ?? currentFilters.ratings,
-					years: params.years ?? currentFilters.years,
 					tiers: params.tiers ?? currentFilters.tiers
 				};
 			});

@@ -73,14 +73,6 @@ function filterGames(games: Game[], filters: FilterState): Game[] {
 			}
 		}
 
-		// Year range filter
-		if (filters.years && filters.years.length === 2) {
-			const [minYear, maxYear] = filters.years;
-			if (game.year < minYear || game.year > maxYear) {
-				return false;
-			}
-		}
-
 		// Status filter
 		if (filters.statuses.length > 0) {
 			if (!filters.statuses.includes(game.status)) {
@@ -95,15 +87,6 @@ function filterGames(games: Game[], filters: FilterState): Game[] {
 			}
 			const gameTierFullName = getTierDisplayName(game.tier);
 			if (!filters.tiers.includes(gameTierFullName)) {
-				return false;
-			}
-		}
-
-		// Rating range filters (only applies to games with ratings)
-		if (filters.ratings[0] > 0 || filters.ratings[1] < 10) {
-			const [minRating, maxRating] = filters.ratings;
-			if (game.ratingPresentation === null) return false;
-			if (game.ratingPresentation < minRating || game.ratingPresentation > maxRating) {
 				return false;
 			}
 		}
