@@ -197,9 +197,34 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
 
 - [x] Ensure `gt_session` cookie is secure (HttpOnly, Secure, SameSite=Lax, exp).
 - [x] Ensure no secrets leak to client.
-- [ ] Add:
-  - [ ] Basic rate limiting on `/api/login`, `/api/games`.
-  - [ ] Logging for auth and writes.
+- [x] Add basic rate limiting and logging:
+  - [x] Shared `functions/utils/rateLimit.ts`:
+    - KV-based sliding window helper: `checkRateLimit(kv, ip, { windowMs, max, prefix })`.
+  - [x] `/api/games` (functions/api/games.ts):
+    - [x] Optional env `ENABLE_RATE_LIMITING === 'true'` enables:
+      - Limit: 30 write requests per IP per 60s with prefix `rl:games`.
+      - On exceed: 429 + JSON `{ error: 'Too many requests' }`.
+      - Logs `rate_limit_denied` events.
+    - [x] Structured logs:
+      - `config_error` when SESSION_SECRET missing.
+      - `auth_failed` for invalid/missing session.
+      - `validation_failed` for bad content-type/payload/schema issues.
+      - `games_write_success` with count + meta.
+      - `games_write_error` on exceptions (error message only, no secrets).
+  - [x] `/api/login` (functions/api/login.ts):
+    - [x] Optional env `ENABLE_RATE_LIMITING === 'true'` and `GAMES_KV`:
+      - Limit: 20 login attempts per IP per 60s with prefix `rl:login`.
+      - On exceed: 429 + JSON `{ error: 'Too many requests' }`.
+      - Logs `rate_limit_denied` events.
+    - [x] Structured logs:
+      - `validation_failed` for invalid content-type or payload.
+      - `config_error` when env missing.
+      - `auth_failed` on bad credentials.
+      - `login_success` on successful login.
+      - `login_error` on unexpected exceptions.
+- Behavior:
+  - Rate limiting is opt-in via `ENABLE_RATE_LIMITING` to keep local/dev simple.
+  - Logging is JSON-structured, safe for Cloudflare logs, and contains no sensitive secrets.
 
 ---
 
@@ -214,3 +239,4 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
   - [ ] Editor-only UI gated by valid session.
   - [ ] POST `/api/games` updates KV + GitHub and reflects in UI.
   - [ ] Unauthorized writes are rejected.
+  - [ ] Rate limiting and logs behave as expected when enabled.

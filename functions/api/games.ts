@@ -1,6 +1,7 @@
 import { z } from 'zod';
 // Minimal Env type for Cloudflare Pages Functions.
 import { GamesPayloadSchema, computeScore } from '../../src/lib/validation/game';
+import { checkRateLimit } from '../utils/rateLimit';
 
 type KV = {
 	get(key: string): Promise<string | null>;
@@ -15,6 +16,8 @@ type Env = {
 	GH_REPO_NAME?: string;
 	GH_FILE_PATH?: string;
 	GH_BRANCH?: string;
+	// Optional rate limit toggle and KV binding reuse:
+	ENABLE_RATE_LIMITING?: string;
 };
 
 type GamesPayload = z.infer<typeof GamesPayloadSchema>;
@@ -143,8 +146,42 @@ export const onRequestGet = async ({ env }: { env: Env }) => {
 
 export const onRequestPost = async ({ request, env }: { request: Request; env: Env }) => {
 	try {
+		// Optional rate limiting for writes to /api/games
+		if (env.ENABLE_RATE_LIMITING === 'true') {
+			const ip =
+				request.headers.get('cf-connecting-ip') ||
+				request.headers.get('x-forwarded-for') ||
+				'unknown';
+			const rl = await checkRateLimit(env.GAMES_KV, ip, {
+				windowMs: 60_000,
+				max: 30,
+				prefix: 'rl:games'
+			});
+			if (!rl.allowed) {
+				console.log(
+					JSON.stringify({
+						event: 'rate_limit_denied',
+						target: 'games_write',
+						ip,
+						remaining: rl.remaining
+					})
+				);
+				return new Response(JSON.stringify({ error: 'Too many requests' }), {
+					status: 429,
+					headers: { 'Content-Type': 'application/json' }
+				});
+			}
+		}
+
 		const secret = env.SESSION_SECRET;
 		if (!secret) {
+			console.error(
+				JSON.stringify({
+					event: 'config_error',
+					target: 'games_write',
+					reason: 'missing_session_secret'
+				})
+			);
 			return new Response(JSON.stringify({ error: 'Session not configured' }), {
 				status: 500,
 				headers: { 'Content-Type': 'application/json' }
@@ -153,6 +190,13 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		const cookieHeader = request.headers.get('cookie');
 		if (!(await verifySession(cookieHeader, secret))) {
+			console.warn(
+				JSON.stringify({
+					event: 'auth_failed',
+					target: 'games_write',
+					reason: 'invalid_session'
+				})
+			);
 			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' }
@@ -161,6 +205,14 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		const contentType = request.headers.get('content-type') || '';
 		if (!contentType.includes('application/json')) {
+			console.warn(
+				JSON.stringify({
+					event: 'validation_failed',
+					target: 'games_write',
+					reason: 'invalid_content_type',
+					contentType
+				})
+			);
 			return new Response(JSON.stringify({ error: 'Expected application/json body' }), {
 				status: 400,
 				headers: { 'Content-Type': 'application/json' }
@@ -169,6 +221,13 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		const body = (await request.json().catch(() => null)) as GamesPayload | null;
 		if (!body || !Array.isArray(body.games)) {
+			console.warn(
+				JSON.stringify({
+					event: 'validation_failed',
+					target: 'games_write',
+					reason: 'missing_or_invalid_games_array'
+				})
+			);
 			return new Response(JSON.stringify({ error: 'Invalid games payload' }), {
 				status: 400,
 				headers: { 'Content-Type': 'application/json' }
@@ -178,6 +237,13 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 		// Use shared Zod schema for full validation and integrity rules.
 		const parsed = GamesPayloadSchema.safeParse(body);
 		if (!parsed.success) {
+			console.warn(
+				JSON.stringify({
+					event: 'validation_failed',
+					target: 'games_write',
+					issues: parsed.error.issues
+				})
+			);
 			return new Response(
 				JSON.stringify({
 					error: 'Validation failed',
@@ -216,16 +282,28 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 		// All-or-nothing: first sync GitHub; only on success write KV.
 		await syncGamesToGitHub(nextData, env);
 		await env.GAMES_KV.put('games', JSON.stringify(nextData));
+		console.log(
+			JSON.stringify({
+				event: 'games_write_success',
+				count: nextData.games.length,
+				meta: nextData.meta
+			})
+		);
 
 		return new Response(JSON.stringify({ ok: true, meta: nextData.meta }), {
 			status: 200,
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
+		console.error(
+			JSON.stringify({
+				event: 'games_write_error',
+				message: error instanceof Error ? error.message : String(error)
+			})
+		);
 		return new Response(
 			JSON.stringify({
-				error: 'Failed to update games',
-				details: error instanceof Error ? error.message : String(error)
+				error: 'Failed to update games'
 			}),
 			{
 				status: 500,
