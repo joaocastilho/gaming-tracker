@@ -5,7 +5,6 @@
 	import { appStore } from '$lib/stores/app.js';
 	import { sortStore } from '$lib/stores/sort.js';
 	import { debounce } from '$lib/utils/debounce.js';
-	import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
 	import GameCardSkeleton from '$lib/components/GameCardSkeleton.svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
 
@@ -123,13 +122,7 @@
 <svelte:head>
 	<title>Gaming Tracker</title>
 	{#each criticalGames as game (game.id)}
-		<link
-			rel="preload"
-			as="image"
-			href={game.coverImage}
-			imagesrcset={generateSrcset(game.coverImage)}
-			imagesizes={generateSizes('gallery')}
-		/>
+		<link rel="preload" as="image" href={game.coverImage} />
 	{/each}
 </svelte:head>
 
