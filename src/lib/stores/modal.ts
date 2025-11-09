@@ -111,6 +111,9 @@ function createModalStore() {
 				validationErrors: {},
 				isSubmitting: false
 			});
+
+			// Ensure URL is updated when modal closes
+			debouncedWriteToURL();
 		},
 
 		toggleModal() {
