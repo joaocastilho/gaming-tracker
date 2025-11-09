@@ -54,7 +54,7 @@ export interface FilteredGameData {
 }
 
 const baseFilters: Pick<FilterState, 'searchTerm'> = {
-	searchTerm: '',
+	searchTerm: ''
 };
 
 function createFiltersStore() {
@@ -135,6 +135,23 @@ function createFiltersStore() {
 		subscribe: filters.subscribe,
 		set: filters.set,
 		update: filters.update,
+
+		isAnyFilterApplied(): boolean {
+			const state = get(filters);
+			if (!state) return false;
+
+			const defaultSearchTerm = baseFilters.searchTerm;
+			const hasSearch = state.searchTerm.trim() !== defaultSearchTerm;
+			const hasPlatforms = state.platforms.length > 0;
+			const hasGenres = state.genres.length > 0;
+			const hasStatuses =
+				state.statuses.length !== 2 ||
+				!state.statuses.includes('Completed') ||
+				!state.statuses.includes('Planned');
+			const hasTiers = state.tiers.length > 0;
+
+			return hasSearch || hasPlatforms || hasGenres || hasStatuses || hasTiers;
+		},
 
 		resetFilters: () => {
 			const resetFilters: FilterState = {

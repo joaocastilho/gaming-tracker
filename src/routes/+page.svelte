@@ -56,21 +56,6 @@
 	});
 
 	$effect(() => {
-		if (typeof window === 'undefined') return;
-
-		const path = window.location.pathname;
-		if (path === '/tierlist') {
-			appStore.setActiveTab('tierlist');
-		} else if (path === '/completed') {
-			appStore.setActiveTab('completed');
-		} else if (path === '/planned') {
-			appStore.setActiveTab('planned');
-		} else {
-			appStore.setActiveTab('all');
-		}
-	});
-
-	$effect(() => {
 		filtersStore.readFromURL(page.url.searchParams);
 		appStore.readFromURL(page.url.searchParams);
 		sortStore.readFromURL(page.url.searchParams);
@@ -97,6 +82,7 @@
 		}
 	});
 
+	let hasActiveFilters = filtersStore.isAnyFilterApplied();
 	let criticalGames = (data.criticalGames || []).slice(0, 15);
 	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
 
@@ -157,7 +143,7 @@
 		</div>
 	{:else if currentActiveTab === 'tierlist' && TierListViewComponent}
 		<TierListViewComponent filteredGames={tierListGames} />
-	{:else if currentActiveTab !== 'tierlist' && filteredData.filteredGames.length === 0}
+	{:else if currentActiveTab !== 'tierlist' && hasActiveFilters && filteredData.filteredGames.length === 0}
 		<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
 			<h2 class="font-semibold">No games match your current filters</h2>
 			<p class="text-gray-600 dark:text-gray-400">
@@ -185,7 +171,7 @@
 		font-size: 1.5rem;
 		color: var(--color-text-primary);
 	}
-	
+
 	.reset-button {
 		color: var(--color-text-primary);
 		font-size: 1rem;

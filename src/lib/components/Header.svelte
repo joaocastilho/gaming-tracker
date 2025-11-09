@@ -1,16 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { goto } from '$app/navigation';
 	import { appStore } from '../stores/app.js';
 	import { filtersStore } from '../stores/filters.js';
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	const { activeTab } = appStore;
-
-	function navigateTo(path: string) {
-		if (typeof window !== 'undefined') {
-			window.history.pushState({}, '', path);
-		}
-	}
 
 	type TabId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -33,28 +28,28 @@
 		{
 			id: 'completed',
 			label: 'Completed',
-			route: 'completed',
+			route: resolve('/completed'),
 			count: $filteredGamesStore.completedCount
 		},
 		{
 			id: 'planned',
 			label: 'Planned',
-			route: 'planned',
+			route: resolve('/planned'),
 			count: $filteredGamesStore.plannedCount
 		},
 		{
 			id: 'tierlist',
 			label: 'Tier List',
-			route: 'tierlist',
+			route: resolve('/tierlist'),
 			count: null
 		}
 	]);
 
 	function handleLogoClick() {
 		filtersStore.resetAllFilters();
-		appStore.activeTab.set('all');
+		appStore.setActiveTab('all');
 		appStore.writeToURLWithFilters(filtersStore);
-
+		goto(resolve('/'));
 		scrollToTop();
 	}
 
@@ -67,7 +62,7 @@
 	function handleTabClick(tab: Tab) {
 		if (tab.id !== $activeTab) {
 			appStore.setActiveTab(tab.id);
-			navigateTo(tab.route);
+			goto(tab.route);
 		}
 	}
 

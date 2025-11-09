@@ -423,7 +423,10 @@
 		{/if}
 
 		<!-- Next Button -->
-		{#if currentGameIndex() < ($currentActiveTab === 'tierlist' ? allTieredGames().length - 1 : currentTabGames().length - 1)}
+		{#if (() => {
+			const games = $currentActiveTab === 'tierlist' ? allTieredGames() : currentTabGames();
+			return currentGameIndex() > -1 && currentGameIndex() < games.length - 1;
+		})()}
 			<button
 				onclick={navigateToNext}
 				class="absolute top-1/2 right-2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/70"

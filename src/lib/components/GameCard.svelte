@@ -478,7 +478,6 @@
 		color: #6b7280;
 	}
 
-	/* Platform/Genre/Year Section */
 	.platform-genre-year-section {
 		display: flex;
 		flex-direction: column;
@@ -503,7 +502,6 @@
 		color: #6b7280;
 	}
 
-	/* Badges Section */
 	.badges-section {
 		display: flex;
 		gap: 6px;
@@ -519,7 +517,6 @@
 		white-space: nowrap;
 	}
 
-	/* Ratings Section */
 	.ratings-section {
 		display: flex;
 		gap: 8px;
@@ -562,10 +559,6 @@
 		gap: 4px;
 	}
 
-	.total-score .rating-icon {
-		font-size: 1.1rem;
-	}
-
 	.total-score .rating-score {
 		font-size: 1.2rem;
 	}
@@ -574,7 +567,6 @@
 		color: #1a1a1a;
 	}
 
-	/* Time/Date Section */
 	.time-date-section {
 		display: flex;
 		justify-content: space-between;
@@ -606,7 +598,6 @@
 		font-weight: 500;
 	}
 
-	/* Responsive Design */
 	@media (max-width: 768px) {
 		.game-year {
 			font-size: 0.75rem;
@@ -631,7 +622,7 @@
 		}
 
 		.title-section {
-			min-height: 1rem; /* Adjusted for smaller screens */
+			min-height: 1rem;
 		}
 
 		.platform-genre-year-section {
@@ -667,7 +658,6 @@
 		}
 	}
 
-	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.game-card {
 			transition: none;

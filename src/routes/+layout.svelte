@@ -116,30 +116,12 @@
 		const platformsParam = currentURL.searchParams.get('platforms') || '';
 		const genresParam = currentURL.searchParams.get('genres') || '';
 		const tiersParam = currentURL.searchParams.get('tiers') || '';
-		const ratingPresentationParam = currentURL.searchParams.get('ratingPresentation') || '';
-		const ratingStoryParam = currentURL.searchParams.get('ratingStory') || '';
-		const ratingGameplayParam = currentURL.searchParams.get('ratingGameplay') || '';
-		const ratingTotalParam = currentURL.searchParams.get('ratingTotal') || '';
 
 		const urlState = {
 			searchQuery: searchParam,
 			selectedPlatforms: platformsParam ? platformsParam.split(',') : [],
 			selectedGenres: genresParam ? genresParam.split(',') : [],
-			selectedTiers: tiersParam ? tiersParam.split(',') : [],
-			ratingRanges: {
-				presentation: ratingPresentationParam
-					? (ratingPresentationParam.split(',').map(Number) as [number, number])
-					: [0, 10],
-				story: ratingStoryParam
-					? (ratingStoryParam.split(',').map(Number) as [number, number])
-					: [0, 10],
-				gameplay: ratingGameplayParam
-					? (ratingGameplayParam.split(',').map(Number) as [number, number])
-					: [0, 10],
-				total: ratingTotalParam
-					? (ratingTotalParam.split(',').map(Number) as [number, number])
-					: [0, 20]
-			}
+			selectedTiers: tiersParam ? tiersParam.split(',') : []
 		};
 
 		const urlStateString = JSON.stringify(urlState);
@@ -187,7 +169,6 @@
 <svelte:head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Gaming Tracker</title>
-
 
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
