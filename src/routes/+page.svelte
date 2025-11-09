@@ -30,7 +30,6 @@
 	let allGamesFromStore = $state<Game[]>([]);
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
-	let isLoadingView = $state(false);
 
 	const debouncedFiltersWriteToURL = debounce(() => filtersStore.writeToURL(), 100);
 	const debouncedAppWriteToURL = debounce(() => appStore.writeToURL(), 100);
@@ -39,8 +38,6 @@
 	filteredGamesStore.subscribe((data) => {
 		filteredData = data;
 	});
-
-	const { loading } = gamesStore;
 
 	gamesStore.subscribe((games) => {
 		allGamesFromStore = games;
@@ -86,14 +83,11 @@
 	async function loadTierListView() {
 		if (TierListViewComponent) return;
 
-		isLoadingView = true;
 		try {
 			const module = await import('$lib/views/TierListView.svelte');
 			TierListViewComponent = module.default;
 		} catch (err) {
 			console.error('Failed to load tier list view:', err);
-		} finally {
-			isLoadingView = false;
 		}
 	}
 

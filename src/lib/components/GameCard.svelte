@@ -7,7 +7,15 @@
 	import { imageCache } from '../utils/imageCache.js';
 	import { browser } from '$app/environment';
 	import { generateSrcset, generateTinySrcset, generateSizes } from '../utils/imageSrcset.js';
-	import { Award, Presentation, NotebookPen, Gamepad2, Timer, CalendarDays, Users } from 'lucide-svelte';
+	import {
+		Award,
+		Presentation,
+		NotebookPen,
+		Gamepad2,
+		Timer,
+		CalendarDays,
+		Users
+	} from 'lucide-svelte';
 
 	interface Props {
 		game: Game;

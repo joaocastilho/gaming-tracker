@@ -1,365 +1,261 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
-	import { appStore } from '../stores/app.js';
-	import { filtersStore } from '../stores/filters.js';
-	import ThemeToggle from './ThemeToggle.svelte';
-
-	const { activeTab } = appStore;
-
-	type TabId = 'all' | 'completed' | 'planned' | 'tierlist';
-
-	interface Tab {
-		id: TabId;
-		label: string;
-		route: string;
-		count: number | null;
-	}
+	import { page } from '$app/state';
+	import { appStore } from '$lib/stores/app';
+	import { filtersStore } from '$lib/stores/filters';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import Logo from '$lib/components/Logo.svelte';
 
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
-	const tabs = $derived<Tab[]>([
-		{
-			id: 'all',
-			label: 'Games',
-			route: resolve('/'),
-			count: $filteredGamesStore.totalCount
-		},
-		{
-			id: 'completed',
-			label: 'Completed',
-			route: resolve('/completed'),
-			count: $filteredGamesStore.completedCount
-		},
-		{
-			id: 'planned',
-			label: 'Planned',
-			route: resolve('/planned'),
-			count: $filteredGamesStore.plannedCount
-		},
-		{
-			id: 'tierlist',
-			label: 'Tier List',
-			route: resolve('/tierlist'),
-			count: null
-		}
-	]);
+	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 
-	function handleLogoClick() {
-		filtersStore.resetAllFilters();
-		appStore.setActiveTab('all');
-		appStore.writeToURLWithFilters(filtersStore);
-		goto(resolve('/'));
-		scrollToTop();
+	type NavItem = {
+		id: NavId;
+		label: string;
+		route: string;
+		count: number | null;
+		active: boolean;
+	};
+
+	let navItems = $state<NavItem[]>([]);
+
+	function updateNavItems() {
+		const pathname = page.url.pathname;
+
+		navItems = [
+			{
+				id: 'all',
+				label: 'Games',
+				route: '/',
+				count: $filteredGamesStore.totalCount,
+				active: pathname === '/' || pathname === '/games'
+			},
+			{
+				id: 'completed',
+				label: 'Completed',
+				route: '/completed',
+				count: $filteredGamesStore.completedCount,
+				active: pathname === '/completed'
+			},
+			{
+				id: 'planned',
+				label: 'Planned',
+				route: '/planned',
+				count: $filteredGamesStore.plannedCount,
+				active: pathname === '/planned'
+			},
+			{
+				id: 'tierlist',
+				label: 'Tier List',
+				route: '/tierlist',
+				count: null,
+				active: pathname === '/tierlist'
+			}
+		];
 	}
+
+	$effect(() => {
+		updateNavItems();
+	});
 
 	function scrollToTop() {
-		if (typeof window === 'undefined') return;
-
-		window.scrollTo({ top: 0, behavior: 'instant' });
-	}
-
-	function handleTabClick(tab: Tab) {
-		if (tab.id !== $activeTab) {
-			appStore.setActiveTab(tab.id);
-			goto(tab.route);
+		if (typeof window !== 'undefined') {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
 
-	function preloadView(tabId: TabId) {
-		// Preload the tier list view component
-		if (tabId === 'tierlist') {
-			import('$lib/views/TierListView.svelte').catch(() => {
-				// Silently fail if preload fails
-			});
+	function handleNavClick(target: NavId) {
+		appStore.writeToURLWithFilters(filtersStore);
+
+		if (target === 'all') {
+			appStore.setActiveTab('all');
+			goto('/');
+		} else if (target === 'completed') {
+			appStore.setActiveTab('completed');
+			goto('/completed');
+		} else if (target === 'planned') {
+			appStore.setActiveTab('planned');
+			goto('/planned');
+		} else if (target === 'tierlist') {
+			appStore.setActiveTab('tierlist');
+			goto('/tierlist');
 		}
+
+		scrollToTop();
 	}
 </script>
 
-<header class="header header-background">
-	<div class="header-content container mx-auto px-6">
-		<div class="header-left">
-			<button
-				class="logo"
-				onclick={handleLogoClick}
-				aria-label="Go to homepage and reset all filters"
-			>
-				<picture class="logo-image">
-					<source srcset="logo.webp" type="image/webp" />
-					<img src="logo.png" alt="Gaming Tracker Logo" />
-				</picture>
-			</button>
-		</div>
+<header class="header-root">
+	<div class="header-inner">
+		<button type="button" class="logo-button" onclick={() => handleNavClick('all')}>
+			<Logo />
+		</button>
 
-		<div class="header-right">
-			<ThemeToggle />
-		</div>
-	</div>
-
-	<nav class="navigation-tabs" aria-label="Game navigation">
-		<div class="navigation-content">
-			<ul class="tabs-list" role="tablist">
-				{#each tabs as tab (tab.id)}
-					<li class="tab-item" role="presentation">
+		<nav class="tabs-nav">
+			<ul class="tabs-list">
+				{#each navItems as item (item.id)}
+					<li>
 						<button
 							type="button"
-							class="tab-button"
-							class:active={$activeTab === tab.id}
-							onclick={() => handleTabClick(tab)}
-							onmouseover={() => preloadView(tab.id)}
-							onfocus={() => preloadView(tab.id)}
-							role="tab"
-							aria-selected={$activeTab === tab.id}
-							tabindex={$activeTab === tab.id ? 0 : -1}
+							class:active={item.active}
+							onclick={() => handleNavClick(item.id)}
 						>
-							<span class="tab-label">{tab.label}</span>
-							{#if tab.count !== null}
-								<span class="tab-count">({tab.count})</span>
+							<span class="label">{item.label}</span>
+							{#if item.count !== null}
+								<span class="count-badge">{item.count}</span>
 							{/if}
 						</button>
 					</li>
 				{/each}
 			</ul>
+		</nav>
+
+		<div class="header-right">
+			<div class="theme-toggle-wrapper">
+				<ThemeToggle />
+			</div>
 		</div>
-	</nav>
+	</div>
 </header>
 
 <style>
-	.header {
-		top: 0;
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		border: none;
+	.header-root {
+		padding: 0.4rem 1.8rem 0.4rem;
 	}
 
-	.header-background {
-		background-color: #0a0d11;
+	.header-inner {
+		max-width: 1200px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: flex-end;
+		column-gap: 1.75rem;
 	}
 
-	:global(.light) .header-background {
-		background-color: #f2ebe1;
-	}
-
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		height: 60px;
-		width: 100%;
-		position: relative;
-	}
-
-	.header-left {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		margin-left: 40px;
-	}
-
-	.logo {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		border: none;
-		background: none;
+	.logo-button {
+		display: inline-flex;
+		align-items: flex-end;
+		justify-content: center;
 		padding: 0;
-		cursor: pointer;
-		transition: opacity 0.2s ease;
-	}
-
-	.logo:hover {
-		opacity: 0.8;
-	}
-
-	.logo:focus {
-		outline: none;
-	}
-
-	.logo:active,
-	.logo:focus:active {
-		outline: none;
 		border: none;
-		box-shadow: none;
+		background: transparent;
+		color: var(--color-foreground);
+		cursor: pointer;
 	}
 
-	.logo-image {
+	.logo-button :global(img) {
+		height: 120px;
 		width: auto;
-		max-height: 55px;
-		max-width: 145px;
-		object-fit: contain;
+		display: block;
 	}
 
-	.navigation-tabs {
-		position: relative;
-	}
-
-	.navigation-content {
-		position: relative;
+	.tabs-nav {
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
 	}
 
 	.tabs-list {
-		display: flex;
-		justify-content: center;
+		display: inline-flex;
+		align-items: flex-end;
+		gap: 1.5rem;
 		list-style: none;
+		padding: 0;
 		margin: 0;
-		padding: 0 6rem;
-		overflow-x: auto;
-		scrollbar-width: none; /* Firefox */
-		-ms-overflow-style: none; /* Internet Explorer 10+ */
 	}
 
-	.tabs-list::-webkit-scrollbar {
-		display: none; /* WebKit */
+	.tabs-list li {
+		list-style: none;
 	}
 
-	@media (min-width: 768px) {
-		.tabs-list {
-			padding: 0 8rem;
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.tabs-list {
-			padding: 0 10rem;
-		}
-	}
-
-	.tab-item {
-		flex-shrink: 0;
-	}
-
-	.tab-button {
-		background: none;
-		border: none;
-		color: var(--color-text-secondary);
-		cursor: pointer;
-		font-family: inherit;
-		font-size: 1.2rem;
-		font-weight: 500;
-		padding: 1rem 1.5rem;
+	.tabs-list button {
 		position: relative;
-		text-decoration: none;
-		transition: all 0.2s ease;
-		white-space: nowrap;
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		border-radius: 0;
-	}
-
-	.tab-button:hover {
-		color: var(--color-text-primary);
-		background-color: rgba(255, 255, 255, 0.05);
-	}
-
-	:global(.light) .tab-button:hover {
-		background-color: rgba(0, 0, 0, 0.05);
-	}
-
-	.tab-button:active {
-		transform: translateY(1px);
-		outline: none;
-		border-color: transparent;
-	}
-
-	.tab-button.active {
-		color: var(--color-accent);
-	}
-
-	.tab-button.active::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 2px;
-		background-color: var(--color-accent);
-		border-radius: 1px;
-	}
-
-	.tab-label {
-		font-weight: 500;
-	}
-
-	.tab-count {
-		color: var(--color-text-tertiary);
+		padding: 0 0 0.15rem;
+		border: none;
+		background: transparent;
+		cursor: pointer;
+		font-size: 1.3rem;
 		font-weight: 600;
-		padding: 0.125rem 0.375rem;
-		line-height: 1;
+		color: #9ca3af;
+		transition:
+			color 0.16s ease,
+			transform 0.12s ease;
+	}
+
+	.tabs-list button .label {
+		letter-spacing: 0;
+		font-size: 1.3rem;
+	}
+
+	.tabs-list button .count-badge {
 		min-width: 1.5rem;
+		padding: 0.08rem 0.5rem;
+		border-radius: 999px;
+		background: rgba(15, 23, 42, 0.98);
+		color: #9ca3af;
+		font-size: 0.7rem;
 		text-align: center;
 	}
 
-	.tab-button.active .tab-count {
-		color: var(--color-accent-foreground);
+	.tabs-list button::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 2px;
+		border-radius: 999px;
+		background: transparent;
+		transform-origin: center;
+		transform: scaleX(0);
+		transition:
+			background-color 0.18s ease,
+			transform 0.18s ease;
 	}
 
-	/* Mobile Responsive */
-	@media (max-width: 768px) {
-		.header-content {
-			height: 56px;
-		}
-
-		.header-left {
-			gap: 12px;
-			margin-left: 36px; /* 24px container + 12px search bar */
-		}
-
-		.tabs-list {
-			padding: 0 4rem; /* Reduced padding on mobile */
-		}
-
-		.tab-button {
-			padding: 0.75rem 1rem;
-			font-size: 0.85rem;
-		}
-
-		.tab-count {
-			font-size: 0.7rem;
-			padding: 0.1rem 0.3rem;
-		}
+	.tabs-list button:hover {
+		color: #e5e7eb;
+		transform: translateY(-1px);
 	}
 
-	@media (max-width: 480px) {
-		.header-left {
-			gap: 8px;
-			margin-left: 32px;
-		}
-
-		.tabs-list {
-			padding: 0 2rem;
-		}
-
-		.tab-button {
-			padding: 0.6rem 0.8rem;
-			font-size: 0.8rem;
-		}
+	.tabs-list button:hover .count-badge {
+		color: #e5e7eb;
 	}
 
-	@media (prefers-contrast: high) {
-		.tab-button {
-			border: 1px solid transparent;
-		}
-
-		.tab-button:hover,
-		.tab-button:focus {
-			border-color: var(--color-accent);
-		}
-
-		.tab-button.active {
-			border-color: var(--color-accent);
-			border-bottom-color: transparent;
-		}
+	.tabs-list button:hover::after {
+		background: rgba(148, 163, 253, 0.55);
+		transform: scaleX(1);
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.tab-button {
-			transition: none;
-		}
+	.tabs-list button.active {
+		color: #e5e7eb;
+	}
 
-		.tab-button:active {
-			transform: none;
-		}
+	.tabs-list button.active .count-badge {
+		background: rgba(37, 99, 235, 0.22);
+		color: #60a5fa;
+	}
+
+	.tabs-list button.active::after {
+		background: #3b82f6;
+		transform: scaleX(1);
+	}
+
+	.header-right {
+		display: flex;
+		align-items: flex-start; /* top-align container */
+		justify-content: flex-end;
+	}
+
+	/* Make theme toggle bigger and pinned visually to top */
+	.theme-toggle-wrapper {
+		display: inline-flex;
+		align-items: flex-start;
+		transform: scale(1.2); /* increase size */
+		transform-origin: top right;
 	}
 </style>

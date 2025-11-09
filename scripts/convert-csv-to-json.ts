@@ -61,10 +61,10 @@ function parseCSV(csvContent: string): GameData[] {
 
 		if (values.length === headers.length) {
 			const game: Partial<GameData> = {};
-	headers.forEach((header, index) => {
-		const key = header.replace(/\s+/g, '_').replace(/-/g, '_');
-		(game as any)[key] = values[index];
-	});
+			headers.forEach((header, index) => {
+				const key = header.replace(/\s+/g, '_').replace(/-/g, '_');
+				(game as any)[key] = values[index];
+			});
 			games.push(game as GameData);
 		}
 	}

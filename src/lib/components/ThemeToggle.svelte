@@ -88,9 +88,6 @@
 		position: relative;
 		overflow: hidden;
 		outline: none;
-
-		/* Dark mode colors - match header background */
-		background-color: #0a0d11;
 		color: #8b92a8;
 	}
 
@@ -99,9 +96,7 @@
 		color: #ffffff;
 	}
 
-	/* Light mode overrides - match header background */
 	:global(.light) .theme-toggle {
-		background-color: #f2ebe1;
 		color: #6b7280;
 	}
 

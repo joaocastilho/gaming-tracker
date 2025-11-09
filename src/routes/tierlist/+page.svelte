@@ -57,14 +57,23 @@
 	const tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
 </script>
 
-<svelte:head>
-	<title>Tier List - Gaming Tracker</title>
-</svelte:head>
-
 <div class="main-content" id="main-content">
 	{#if $loading || isLoadingView || !TierListViewComponent}
-		<p>Loading tier list...</p>
+		<div class="loading">Loading tiers...</div>
 	{:else}
 		<TierListViewComponent filteredGames={tierListGames} />
 	{/if}
 </div>
+
+<style>
+	.loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 50vh;
+		text-align: center;
+		font-weight: 500;
+		color: var(--color-text-primary);
+		font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+	}
+</style>
