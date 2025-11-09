@@ -1,5 +1,6 @@
 import { writable, get, derived, type Readable } from 'svelte/store';
 import type { Game } from '$lib/types/game';
+import { transformGameData } from '$lib/utils/dataTransformer';
 
 function createGamesStore() {
 	const { subscribe, set, update } = writable<Game[]>([]);
@@ -33,17 +34,23 @@ function createGamesStore() {
 		allPlatforms,
 		allGenres,
 
-		initializeGames(games: Game[]): void {
+		initializeGames(rawGames: unknown[]): void {
 			loadingStore.set(true);
 			errorStore.set(null);
 			try {
-				if (!Array.isArray(games)) {
+				if (!Array.isArray(rawGames)) {
 					throw new Error('Invalid games data: expected array');
 				}
 
-				set(games);
+				// Normalize all incoming games so UI components (cards, tier list, etc.)
+				// receive consistent shape: ids, titles, tiers, dates, etc.
+				const normalized = rawGames
+					.map((g) => transformGameData(g as Record<string, unknown>))
+					.filter((g) => g && typeof g.id === 'string' && g.title) as unknown as Game[];
 
-				if (games.length === 0) {
+				set(normalized);
+
+				if (normalized.length === 0) {
 					errorStore.set('No valid games found from pre-loaded data.');
 				}
 			} catch (err) {

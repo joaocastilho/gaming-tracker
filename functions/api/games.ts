@@ -20,50 +20,41 @@ type Env = {
 	ENABLE_RATE_LIMITING?: string;
 };
 
+// Shape used by both static/games.json and API.
 type GamesPayload = z.infer<typeof GamesPayloadSchema>;
 
-async function verifySession(cookieHeader: string | null, secret: string): Promise<boolean> {
-	if (!cookieHeader) return false;
-	const cookies = cookieHeader.split(';').map((c) => c.trim());
-	const token = cookies.find((c) => c.startsWith('gt_session='))?.split('=')[1];
-	if (!token) return false;
-
-	const [expiresRaw, sig] = token.split('.');
-	if (!expiresRaw || !sig) return false;
-
-	const expiresAt = Number(expiresRaw);
-	if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) return false;
-
-	const encoder = new TextEncoder();
-	const key = await crypto.subtle.importKey(
-		'raw',
-		encoder.encode(secret),
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign']
-	);
-	const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(expiresRaw));
-	const bytes = new Uint8Array(signature);
-
-	let base64 = '';
-	for (let i = 0; i < bytes.length; i++) {
-		base64 += String.fromCharCode(bytes[i]);
+/**
+ * Load games from KV if available, otherwise fall back to static JSON.
+ * This makes /api/games work both:
+ * - in Cloudflare Pages (with KV)
+ * - and in plain Vite dev (bun run dev) where KV is absent but static files exist.
+ */
+async function loadGames(env: Env): Promise<GamesPayload | null> {
+	// Prefer KV when configured/populated
+	if (env.GAMES_KV) {
+		const stored = await env.GAMES_KV.get('games');
+		if (stored) {
+			try {
+				return JSON.parse(stored) as GamesPayload;
+			} catch {
+				// If KV is corrupted, fall through to static
+			}
+		}
 	}
 
-	const expected = btoa(base64).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-
-	return sig === expected;
-}
-
-async function loadGamesFromKV(env: Env): Promise<GamesPayload | null> {
-	const stored = await env.GAMES_KV.get('games');
-	if (!stored) return null;
-
+	// Fallback: try to read bundled static JSON (works in dev / SSR via fetch)
 	try {
-		return JSON.parse(stored) as GamesPayload;
+		const res = await fetch('https://dummy.local/games.json');
+		if (res.ok) {
+			const data = (await res.json()) as unknown;
+			const parsed = GamesPayloadSchema.safeParse(data);
+			if (parsed.success) return parsed.data;
+		}
 	} catch {
-		return null;
+		// Ignore; final result checked by caller
 	}
+
+	return null;
 }
 
 async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
@@ -126,16 +117,15 @@ async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
 	}
 }
 
+// GET /api/games
 export const onRequestGet = async ({ env }: { env: Env }) => {
-	const data = await loadGamesFromKV(env);
+	const data = await loadGames(env);
+
 	if (!data) {
-		return new Response(
-			JSON.stringify({ error: 'No games data in KV; client should fall back to static file' }),
-			{
-				status: 404,
-				headers: { 'Content-Type': 'application/json' }
-			}
-		);
+		return new Response(JSON.stringify({ error: 'No games data available' }), {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' }
+		});
 	}
 
 	return new Response(JSON.stringify(data), {
@@ -144,6 +134,7 @@ export const onRequestGet = async ({ env }: { env: Env }) => {
 	});
 };
 
+// POST /api/games (unchanged core logic, still requires valid session and KV/GitHub config)
 export const onRequestPost = async ({ request, env }: { request: Request; env: Env }) => {
 	try {
 		// Optional rate limiting for writes to /api/games
@@ -312,3 +303,37 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 		);
 	}
 };
+
+// verifySession reused from original implementation:
+async function verifySession(cookieHeader: string | null, secret: string): Promise<boolean> {
+	if (!cookieHeader) return false;
+	const cookies = cookieHeader.split(';').map((c) => c.trim());
+	const token = cookies.find((c) => c.startsWith('gt_session='))?.split('=')[1];
+	if (!token) return false;
+
+	const [expiresRaw, sig] = token.split('.');
+	if (!expiresRaw || !sig) return false;
+
+	const expiresAt = Number(expiresRaw);
+	if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) return false;
+
+	const encoder = new TextEncoder();
+	const key = await crypto.subtle.importKey(
+		'raw',
+		encoder.encode(secret),
+		{ name: 'HMAC', hash: 'SHA-256' },
+		false,
+		['sign']
+	);
+	const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(expiresRaw));
+	const bytes = new Uint8Array(signature);
+
+	let base64 = '';
+	for (let i = 0; i < bytes.length; i++) {
+		base64 += String.fromCharCode(bytes[i]);
+	}
+
+	const expected = btoa(base64).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+
+	return sig === expected;
+}

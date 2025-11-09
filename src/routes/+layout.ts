@@ -1,6 +1,7 @@
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch }) => {
+	// Prefer real API when available (Cloudflare Pages / Wrangler with functions)
 	try {
 		const res = await fetch('/api/games', { headers: { accept: 'application/json' } });
 
@@ -12,22 +13,26 @@ export const load: LayoutLoad = async ({ fetch }) => {
 				source: 'api'
 			};
 		}
-
-		// If API returns 404 or non-ok, fall back to static
 	} catch {
-		// Network/worker failure → fallback below
+		// Ignore and fall through to next strategies
 	}
 
-	// Static fallback: the SvelteKit app still has access to bundled static/games.json via relative fetch.
-	const staticRes = await fetch('/games.json', { headers: { accept: 'application/json' } });
+	// Local dev (bun run dev) compatibility:
+	// Vite does not mount Cloudflare Pages functions, so /api/games 404s.
+	// In that case, fall back to the bundled static JSON file.
+	try {
+		const staticRes = await fetch('/games.json', { headers: { accept: 'application/json' } });
 
-	if (staticRes.ok) {
-		const games = await staticRes.json();
-		return {
-			games,
-			meta: null,
-			source: 'static'
-		};
+		if (staticRes.ok) {
+			const games = await staticRes.json();
+			return {
+				games,
+				meta: null,
+				source: 'static'
+			};
+		}
+	} catch {
+		// Ignore and fall through
 	}
 
 	// Last resort: empty list to avoid hard crash

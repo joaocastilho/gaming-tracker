@@ -29,22 +29,22 @@
 	// 4. This is now a pure function that accepts the games array
 	function buildTierList(games: Game[]): Record<string, Game[]> {
 		const gamesByTier: Record<string, Game[]> = {
-			S: [],
-			A: [],
-			B: [],
-			C: [],
-			D: [],
-			E: [],
-			F: []
+			'S - Masterpiece': [],
+			'A - Amazing': [],
+			'B - Great': [],
+			'C - Good': [],
+			'D - Decent': [],
+			'E - Bad': [],
+			'F - Awful': []
 		};
 
-		// Use the 'games' argument instead of the global store
 		// DO NOT sort - preserve the original filtered order for consistent navigation
 		games
 			.filter((game) => game.tier)
 			.forEach((game) => {
-				if (game.tier && gamesByTier[game.tier]) {
-					gamesByTier[game.tier].push(game);
+				const tier = game.tier!;
+				if (gamesByTier[tier]) {
+					gamesByTier[tier].push(game);
 				}
 			});
 
@@ -55,7 +55,6 @@
 {#if Object.values(tierList).every((games) => games.length === 0)}
 	<div class="empty-state">
 		<h2>No tiered games found</h2>
-		<p>Filter your games or assign tiers to see them here!</p>
 	</div>
 {:else}
 	<div class="tier-list-container max-w-none">

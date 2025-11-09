@@ -25,13 +25,9 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 		transformed.hoursPlayed = `${hours}h ${minutes}m`;
 	}
 
-	// Transform tier: Extract just the letter from "X - Description" format
-	if (transformed.tier && typeof transformed.tier === 'string') {
-		const tierMatch = transformed.tier.match(/^([SABCDE])\s*-\s*.+$/);
-		if (tierMatch) {
-			transformed.tier = tierMatch[1];
-		}
-	}
+	// Keep tier labels as-is (e.g. "S - Masterpiece") so views can bucket correctly.
+	// Do NOT collapse to a single letter here.
+	// (TierListView.svelte expects the full string keys.)
 
 	// Ensure coOp field exists with default value
 	if (!transformed.coOp) {
