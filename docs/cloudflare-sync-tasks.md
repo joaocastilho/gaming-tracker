@@ -51,13 +51,11 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
 
 ### 2.1 Shared Types and Validation
 
-- [ ] Reuse or mirror the existing `Game` type and Zod schema from the app.
-- [ ] Create a validation module for:
-  - [ ] `games` array shape.
-  - [ ] Planned vs Completed field rules.
-  - [ ] Score calculation constraints.
-
-(Current implementation includes minimal structural checks; full Zod validation still to be added.)
+- [x] Reuse or mirror the existing `Game` type and Zod schema from the app.
+- [x] Create a validation module for:
+  - [x] `games` array shape.
+  - [x] Planned vs Completed field rules.
+  - [x] Score calculation constraints.
 
 ### 2.2 Session Utilities
 
@@ -93,11 +91,15 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
 - [x] Require valid session:
   - [x] Validate `gt_session`; if missing/invalid → `401`.
 - [x] Accept JSON body: `{ "games": Game[], "meta"?: {...} }`.
-- [x] Minimal validation:
-  - [x] Ensure `games` is an array and each entry has basic structure (e.g. id/title).
-- [x] If validation fails → `400`.
+- [x] Validation:
+  - [x] Use shared Zod `GamesPayloadSchema` from `src/lib/validation/game.ts`:
+    - [x] Enforce structural shape of `Game`.
+    - [x] Enforce Planned vs Completed rules.
+    - [x] Validate score constraints.
+- [x] If validation fails → `400` with issues.
 - [x] If validation passes:
-  - [x] Prepare `nextData = { games, meta: { lastUpdated: now, ... } }`.
+  - [x] Recompute score for completed games using shared `computeScore`.
+  - [x] Prepare `nextData = { games: normalizedGames, meta: { lastUpdated: now, ... } }`.
   - [x] Call `syncGamesToGitHub(nextData)` (Phase 2.6).
   - [x] If GitHub sync succeeds:
     - [x] Write `nextData` to KV as key `games`.
@@ -142,50 +144,52 @@ Implement Cloudflare Functions/Worker under e.g. `/api/*`.
 
 ### 4.1 Editor State
 
-- [ ] Add `editorMode` boolean to a global store that:
-  - [ ] Is toggled on successful login.
-  - [ ] Resets on logout/expiry (follow-up task).
+- [x] Add `editorMode` boolean to a global store that:
+  - [x] Is toggled on successful login.
+  - [x] Resets on logout/expiry (follow-up task).
 
 ### 4.2 Login UI
 
-- [ ] Add a discreet login trigger (e.g. icon in header).
-- [ ] Implement login modal:
-  - [ ] Submits to `POST /api/login`.
-  - [ ] On 200:
-    - [ ] Set `editorMode = true`.
-  - [ ] On error:
-    - [ ] Show generic error.
+- [x] Add a discreet login trigger (e.g. icon in header).
+- [x] Implement login modal:
+  - [x] Submits to `POST /api/login`.
+  - [x] On 200:
+    - [x] Set `editorMode = true`.
+  - [x] On error:
+    - [x] Show generic error.
 
 ### 4.3 Edit Controls
 
-- [ ] When `editorMode === true`:
-  - [ ] Show “Add Game” entrypoint.
-  - [ ] Show “Edit” controls on cards / detail modal.
+- [x] When `editorMode === true`:
+  - [x] Show “Add Game” entrypoint.
+  - [x] Show “Edit” controls on cards / detail modal.
 
 ### 4.4 Save Flow
 
-- [ ] On save:
-  - [ ] Build updated `games` array on client.
-  - [ ] POST `/api/games` with `{ games }` (cookie sent automatically).
-  - [ ] On success:
-    - [ ] Refresh games store with response.
-    - [ ] Show success feedback.
-  - [ ] On error:
-    - [ ] Show failure feedback.
-    - [ ] Do not commit local optimistic changes.
+- [x] On save:
+  - [x] Build updated `games` array on client.
+  - [x] POST `/api/games` with `{ games }` (cookie sent automatically).
+  - [x] On success:
+    - [x] Refresh games store with response.
+    - [x] Show success feedback.
+  - [x] On error:
+    - [x] Show failure feedback.
+    - [x] Do not commit local optimistic changes.
 
 ---
 
 ## Phase 5 – Data Integrity and Rules
 
-- [ ] Implement shared utilities for:
-  - [ ] Score calculation: `(P + S + G) / 3 × 2`.
-  - [ ] Planned: enforce null rating/score/tier fields.
-  - [ ] Completed: enforce all required fields.
-- [ ] Ensure:
-  - [ ] Frontend uses these utilities.
-  - [ ] Worker validates and rejects invalid payloads.
-- [ ] Keep Zod schemas shared/synced.
+- [x] Implement shared utilities for:
+  - [x] Score calculation: `(P + S + G) / 3 × 2` via `computeScore`.
+  - [x] Planned: enforce null rating/score/tier/completion fields.
+  - [x] Completed: enforce required ratings/score/tier/completion fields.
+- [x] Ensure:
+  - [x] Frontend uses these utilities / rules:
+    - [x] `GameEditorModal.svelte` mirrors integrity rules and uses `GameSchema` client-side.
+  - [x] Worker validates and rejects invalid payloads:
+    - [x] `functions/api/games.ts` uses `GamesPayloadSchema` + recomputes score.
+- [x] Keep Zod schemas shared/synced (`src/lib/validation/game.ts` as single source of truth).
 
 ---
 

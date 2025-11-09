@@ -1,4 +1,7 @@
+import { z } from 'zod';
 // Minimal Env type for Cloudflare Pages Functions.
+import { GamesPayloadSchema, computeScore } from '../../src/lib/validation/game';
+
 type KV = {
 	get(key: string): Promise<string | null>;
 	put(key: string, value: string): Promise<void>;
@@ -14,32 +17,7 @@ type Env = {
 	GH_BRANCH?: string;
 };
 
-type Game = {
-	id: string;
-	title: string;
-	platform: string;
-	year: number;
-	genre: string;
-	coOp: string;
-	status: 'Planned' | 'Completed';
-	coverImage: string;
-	timeToBeat: string;
-	hoursPlayed: string | null;
-	finishedDate: string | null;
-	ratingPresentation: number | null;
-	ratingStory: number | null;
-	ratingGameplay: number | null;
-	score: number | null;
-	tier: 'S' | 'A' | 'B' | 'C' | 'D' | 'E' | null;
-};
-
-type GamesPayload = {
-	games: Game[];
-	meta?: {
-		lastUpdated?: string;
-		[key: string]: unknown;
-	};
-};
+type GamesPayload = z.infer<typeof GamesPayloadSchema>;
 
 async function verifySession(cookieHeader: string | null, secret: string): Promise<boolean> {
 	if (!cookieHeader) return false;
@@ -197,20 +175,40 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			});
 		}
 
-		// Minimal structural validation; full Zod validation can be added later.
-		for (const g of body.games) {
-			if (!g || typeof g.id !== 'string' || typeof g.title !== 'string') {
-				return new Response(JSON.stringify({ error: 'Invalid game entry in payload' }), {
+		// Use shared Zod schema for full validation and integrity rules.
+		const parsed = GamesPayloadSchema.safeParse(body);
+		if (!parsed.success) {
+			return new Response(
+				JSON.stringify({
+					error: 'Validation failed',
+					issues: parsed.error.issues
+				}),
+				{
 					status: 400,
 					headers: { 'Content-Type': 'application/json' }
-				});
-			}
+				}
+			);
 		}
 
+		// Recompute scores on the server as source of truth for Completed games.
+		const normalizedGames = parsed.data.games.map((g) => {
+			if (g.status === 'Completed') {
+				if (g.ratingPresentation != null && g.ratingStory != null && g.ratingGameplay != null) {
+					const score = computeScore({
+						ratingPresentation: g.ratingPresentation,
+						ratingStory: g.ratingStory,
+						ratingGameplay: g.ratingGameplay
+					});
+					return { ...g, score };
+				}
+			}
+			return g;
+		});
+
 		const nextData: GamesPayload = {
-			games: body.games,
+			games: normalizedGames,
 			meta: {
-				...(body.meta || {}),
+				...(parsed.data.meta || {}),
 				lastUpdated: new Date().toISOString()
 			}
 		};

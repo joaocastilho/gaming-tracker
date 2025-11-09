@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Game } from '$lib/types/game';
+	import { GameSchema, computeScore } from '$lib/validation/game';
 	import { gamesStore } from '$lib/stores/games';
 	import { editorStore } from '$lib/stores/editor';
 
@@ -23,14 +24,14 @@
 		if (mode === 'edit' && initialGame) {
 			working = structuredClone(initialGame);
 		} else {
-			// Basic new game template; matches existing shape, Phase 5 will tighten rules.
+			// Basic new game template aligned with canonical Game + validation rules.
 			const now = new Date();
 			const id = `game-${now.getTime()}-${Math.random().toString(36).slice(2, 8)}`;
 			working = {
 				id,
 				title: '',
 				mainTitle: '',
-				subtitle: '',
+				subtitle: null,
 				platform: '',
 				genre: '',
 				status: 'Planned',
@@ -43,43 +44,80 @@
 				score: null,
 				tier: null,
 				hoursPlayed: null,
-				timeToBeat: null,
+				timeToBeat: '0h 0m',
 				finishedDate: null
 			} as Game;
 		}
 	});
 
 	function validateGame(game: Game): string | null {
-		if (!game.title && !game.mainTitle) return 'Title is required.';
+		// Normalize title fields
+		if (!game.title && game.mainTitle) {
+			game.title = game.mainTitle;
+		}
+		if (!game.mainTitle && game.title) {
+			game.mainTitle = game.title;
+		}
+
+		// Basic requireds
+		if (!game.title) return 'Title is required.';
+		if (!game.mainTitle) return 'Main title is required.';
 		if (!game.platform) return 'Platform is required.';
 		if (!game.genre) return 'Genre is required.';
 		if (!game.coverImage) return 'Cover image path is required.';
+		if (!game.timeToBeat) return 'Time to beat is required in "Xh Ym" format.';
+
+		// Client-side mirror of core integrity rules.
+		if (game.status === 'Planned') {
+			if (
+				game.hoursPlayed !== null ||
+				game.finishedDate !== null ||
+				game.ratingPresentation !== null ||
+				game.ratingStory !== null ||
+				game.ratingGameplay !== null ||
+				game.score !== null ||
+				game.tier !== null
+			) {
+				return 'Planned games cannot have completion data, ratings, score, or tier.';
+			}
+		}
 
 		if (game.status === 'Completed') {
+			if (game.hoursPlayed === null) {
+				return 'Completed games must have hours played.';
+			}
+			if (!/^\d+h \d+m$/.test(String(game.hoursPlayed))) {
+				return 'Hours played must be in "Xh Ym" format.';
+			}
+			if (!game.finishedDate) {
+				return 'Completed games must have a finished date.';
+			}
 			if (
 				game.ratingPresentation == null ||
 				game.ratingStory == null ||
 				game.ratingGameplay == null
 			) {
-				return 'Completed games must have all ratings filled.';
+				return 'Completed games must have all three ratings.';
 			}
 			if (game.tier == null) {
 				return 'Completed games must have a tier.';
 			}
+
+			// Compute expected score and ensure it matches what we will send.
+			const expectedScore = computeScore({
+				ratingPresentation: game.ratingPresentation,
+				ratingStory: game.ratingStory,
+				ratingGameplay: game.ratingGameplay
+			});
+			game.score = expectedScore;
 		}
 
-		if (game.status === 'Planned') {
-			if (
-				game.ratingPresentation != null ||
-				game.ratingStory != null ||
-				game.ratingGameplay != null ||
-				game.score != null ||
-				game.tier != null ||
-				game.hoursPlayed != null ||
-				game.finishedDate != null
-			) {
-				return 'Planned games should not have ratings, score, tier, hours played, or finished date.';
-			}
+		// Run shared Zod schema as final gate on the client to stay in sync with backend.
+		const result = GameSchema.safeParse(game);
+		if (!result.success) {
+			// Surface the first error message for UX; backend will still enforce full details.
+			const first = result.error.issues[0];
+			return first?.message || 'Invalid game data.';
 		}
 
 		return null;
@@ -259,12 +297,16 @@
 
 			<label>
 				<span>Hours Played</span>
-				<input type="number" min="0" step="0.1" bind:value={working.hoursPlayed} />
+				<input
+					type="text"
+					bind:value={working.hoursPlayed}
+					placeholder="e.g. 20h 30m (required for Completed)"
+				/>
 			</label>
 
 			<label>
 				<span>Time to Beat</span>
-				<input type="text" bind:value={working.timeToBeat} placeholder="e.g. 20h, 10-12h" />
+				<input type="text" bind:value={working.timeToBeat} placeholder="e.g. 20h 0m" />
 			</label>
 
 			<label>
