@@ -7,10 +7,7 @@ id = "a77aa7a697de43be858e54891a0e9721"
 
 [vars]
 EDITOR_USERNAME = "joaocastilho"
-EDITOR_PASSWORD = ""
-SESSION_SECRET = ""
 ENABLE_RATE_LIMITING = "true"
-GITHUB_TOKEN = ""
 GH_REPO_OWNER = "joaocastilho"
 GH_REPO_NAME = "gaming-tracker"
 GH_FILE_PATH = "static/games.json"
