@@ -64,6 +64,10 @@
 
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 			appStore.writeToURLWithFilters(filtersStore);
+		} else {
+			// Ensure filters are available for non-tierlist views
+			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
+			appStore.writeToURLWithFilters(filtersStore);
 		}
 	});
 
@@ -105,32 +109,35 @@
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 			urlUpdateTimeout = setTimeout(() => {
 				appStore.writeToURLWithFilters(filtersStore);
-			}, 300);
+			}, 150);
 		}
 	});
 
 	$effect(() => {
 		const currentURL = page.url;
-		const searchParam = currentURL.searchParams.get('search') || '';
-		const platformsParam = currentURL.searchParams.get('platforms') || '';
-		const genresParam = currentURL.searchParams.get('genres') || '';
-		const tiersParam = currentURL.searchParams.get('tiers') || '';
+		const tab = get(appStore.activeTab);
+		
+		// Only read filters from URL for non-tierlist tabs
+		if (tab !== 'tierlist') {
+			const searchParam = currentURL.searchParams.get('search') || '';
+			const platformsParam = currentURL.searchParams.get('platforms') || '';
+			const genresParam = currentURL.searchParams.get('genres') || '';
+			const tiersParam = currentURL.searchParams.get('tiers') || '';
 
-		const urlState = {
-			searchQuery: searchParam,
-			selectedPlatforms: platformsParam ? platformsParam.split(',') : [],
-			selectedGenres: genresParam ? genresParam.split(',') : [],
-			selectedTiers: tiersParam ? tiersParam.split(',') : []
-		};
+			const urlState = {
+				searchQuery: searchParam,
+				selectedPlatforms: platformsParam ? platformsParam.split(',') : [],
+				selectedGenres: genresParam ? genresParam.split(',') : [],
+				selectedTiers: tiersParam ? tiersParam.split(',') : []
+			};
 
-		const urlStateString = JSON.stringify(urlState);
-		const currentStateString = JSON.stringify(currentFilterState);
+			const urlStateString = JSON.stringify(urlState);
+			const currentStateString = JSON.stringify(currentFilterState);
 
-		if (initialized && urlStateString !== currentStateString) {
-			filtersStore.readFromURL(page.url.searchParams);
+			if (initialized && urlStateString !== currentStateString) {
+				filtersStore.readFromURL(page.url.searchParams);
+			}
 		}
-
-		filtersStore.readFromURL(page.url.searchParams);
 	});
 
 	let selectedPlatforms: string[] = $state([]);

@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { appStore } from '$lib/stores/app';
-	import { filtersStore } from '$lib/stores/filters';
+	import { navigateTo } from '$lib/utils/navigationUtils';
+	import { goto } from '$app/navigation';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Logo from '$lib/components/Logo.svelte';
 	import LoginModal from '$lib/components/LoginModal.svelte';
+
+	import { filtersStore } from '$lib/stores/filters';
+	import { appStore } from '$lib/stores/app';
 
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
@@ -75,23 +77,28 @@
 	}
 
 	function handleNavClick(target: NavId) {
-		appStore.writeToURLWithFilters(filtersStore);
-
+		// Logo click should clear filters
 		if (target === 'all') {
+			// Clear filters and navigate to Games tab
+			filtersStore.resetAllFilters();
+			filtersStore.setSearchTerm('');
 			appStore.setActiveTab('all');
-			goto('/');
-		} else if (target === 'completed') {
-			appStore.setActiveTab('completed');
-			goto('/completed');
-		} else if (target === 'planned') {
-			appStore.setActiveTab('planned');
-			goto('/planned');
-		} else if (target === 'tierlist') {
-			appStore.setActiveTab('tierlist');
-			goto('/tierlist');
+			
+			// Navigate to Games tab
+			const route = '/';
+			goto(route, {
+				replaceState: false,
+				noScroll: false,
+				keepFocus: true
+			});
+			
+			// Scroll to top
+			if (typeof window !== 'undefined') {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			}
+		} else {
+			navigateTo(target);
 		}
-
-		scrollToTop();
 	}
 </script>
 
