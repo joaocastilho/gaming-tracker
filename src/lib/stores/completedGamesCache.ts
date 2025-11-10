@@ -1,0 +1,128 @@
+import { writable, get } from 'svelte/store';
+import type { Game } from '$lib/types/game';
+
+interface CompletedGamesCache {
+	// Cache the sorted completed games
+	sortedCompletedGames: Game[];
+	// Track when we last updated the cache
+	lastUpdated: number;
+	// Track the games data version to know when to invalidate
+	gamesVersion: string;
+}
+
+/**
+ * Cache for completed games sorted by finished date
+ * This prevents re-sorting on every tab switch to the completed view
+ */
+function createCompletedGamesCache() {
+	const cache = writable<CompletedGamesCache | null>(null);
+
+	/**
+	 * Sort completed games by finished date (most recent first)
+	 * Games without finished dates are placed at the end
+	 */
+	function sortCompletedGamesByDate(games: Game[]): Game[] {
+		return games
+			.filter(game => game.status === 'Completed')
+			.toSorted((a, b) => {
+				if (!a.finishedDate && !b.finishedDate) return 0;
+				if (!a.finishedDate) return 1;
+				if (!b.finishedDate) return -1;
+				return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+			});
+	}
+
+	/**
+	 * Generate a version hash for the games data
+	 * This helps us detect when games have been added/modified/deleted
+	 */
+	function generateGamesVersion(games: Game[]): string {
+		// Create a simple hash based on game IDs, statuses, and finished dates
+		const versionData = games
+			.filter(game => game.status === 'Completed')
+			.map(game => `${game.id}-${game.status}-${game.finishedDate || 'null'}`)
+			.sort()
+			.join('|');
+		
+		// Simple hash function
+		let hash = 0;
+		for (let i = 0; i < versionData.length; i++) {
+			const char = versionData.charCodeAt(i);
+			hash = ((hash << 5) - hash) + char;
+			hash = hash & hash; // Convert to 32bit integer
+		}
+		return hash.toString();
+	}
+
+	/**
+	 * Update the cache if games data has changed
+	 */
+	function updateCache(games: Game[]) {
+		const gamesVersion = generateGamesVersion(games);
+		const currentCache = get(cache);
+		
+		// Only update if we don't have a cache or the games data has changed
+		if (!currentCache || currentCache.gamesVersion !== gamesVersion) {
+			const sortedCompletedGames = sortCompletedGamesByDate(games);
+			cache.set({
+				sortedCompletedGames,
+				lastUpdated: Date.now(),
+				gamesVersion
+			});
+		}
+	}
+
+	/**
+	 * Get the cached sorted completed games
+	 * Returns null if cache is empty or needs updating
+	 */
+	function getCachedCompletedGames(games: Game[]): Game[] | null {
+		const currentCache = get(cache);
+		if (!currentCache) return null;
+
+		const currentVersion = generateGamesVersion(games);
+		if (currentCache.gamesVersion !== currentVersion) {
+			// Cache is stale, trigger update
+			updateCache(games);
+			return get(cache)?.sortedCompletedGames || null;
+		}
+
+		return currentCache.sortedCompletedGames;
+	}
+
+	/**
+	 * Check if the cache needs to be updated
+	 */
+	function needsUpdate(games: Game[]): boolean {
+		const currentCache = get(cache);
+		if (!currentCache) return true;
+
+		const currentVersion = generateGamesVersion(games);
+		return currentCache.gamesVersion !== currentVersion;
+	}
+
+	return {
+		subscribe: cache.subscribe,
+		
+		// Update the cache when games change
+		updateCache,
+		
+		// Get cached sorted completed games
+		getCachedCompletedGames,
+		
+		// Check if cache needs updating
+		needsUpdate,
+		
+		// Clear the cache (useful for testing or when resetting)
+		clearCache() {
+			cache.set(null);
+		},
+		
+		// Get current cache info (for debugging)
+		getCacheInfo() {
+			return get(cache);
+		}
+	};
+}
+
+export const completedGamesCache = createCompletedGamesCache();

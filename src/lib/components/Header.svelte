@@ -76,29 +76,29 @@
 		}
 	}
 
-	function handleNavClick(target: NavId) {
+	function handleLogoClick() {
 		// Logo click should clear filters
-		if (target === 'all') {
-			// Clear filters and navigate to Games tab
-			filtersStore.resetAllFilters();
-			filtersStore.setSearchTerm('');
-			appStore.setActiveTab('all');
-			
-			// Navigate to Games tab
-			const route = '/';
-			goto(route, {
-				replaceState: false,
-				noScroll: false,
-				keepFocus: true
-			});
-			
-			// Scroll to top
-			if (typeof window !== 'undefined') {
-				window.scrollTo({ top: 0, behavior: 'smooth' });
-			}
-		} else {
-			navigateTo(target);
+		filtersStore.resetAllFilters();
+		filtersStore.setSearchTerm('');
+		appStore.setActiveTab('all');
+		
+		// Navigate to Games tab
+		const route = '/';
+		goto(route, {
+			replaceState: false,
+			noScroll: false,
+			keepFocus: true
+		});
+		
+		// Scroll to top
+		if (typeof window !== 'undefined') {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
+	}
+
+	function handleNavClick(target: NavId) {
+		// Tab navigation should preserve filters
+		navigateTo(target);
 	}
 </script>
 
@@ -106,7 +106,7 @@
 
 <header class="header-root">
 	<div class="header-inner">
-		<button type="button" class="logo-button" onclick={() => handleNavClick('all')}>
+		<button type="button" class="logo-button" onclick={handleLogoClick}>
 			<Logo />
 		</button>
 

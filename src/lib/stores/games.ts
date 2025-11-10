@@ -1,6 +1,7 @@
 import { writable, get, derived, type Readable } from 'svelte/store';
 import type { Game } from '$lib/types/game';
 import { transformGameData } from '$lib/utils/dataTransformer';
+import { completedGamesCache } from './completedGamesCache';
 
 function createGamesStore() {
 	const { subscribe, set, update } = writable<Game[]>([]);
@@ -49,6 +50,9 @@ function createGamesStore() {
 
 				if (normalized.length === 0) {
 					errorStore.set('No valid games found from pre-loaded data.');
+				} else {
+					// Update the completed games cache when games are initialized
+					completedGamesCache.updateCache(normalized);
 				}
 			} catch (err) {
 				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -75,13 +79,21 @@ function createGamesStore() {
 		},
 
 		addGame(newGame: Game): void {
-			update(($games) => [...$games, newGame]);
+			update(($games) => {
+				const newGames = [...$games, newGame];
+				// Update the completed games cache when a new game is added
+				completedGamesCache.updateCache(newGames);
+				return newGames;
+			});
 		},
 
 		updateGame(id: string, updatedGame: Partial<Game>): void {
-			update(($games) =>
-				$games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game))
-			);
+			update(($games) => {
+				const updatedGames = $games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
+				// Update the completed games cache when a game is modified
+				completedGamesCache.updateCache(updatedGames);
+				return updatedGames;
+			});
 		}
 	};
 }

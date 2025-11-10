@@ -42,9 +42,6 @@
 		filtersStore.readFromURL(page.url.searchParams);
 		appStore.readFromURL(page.url.searchParams);
 
-		filtersStore.resetAllFilters();
-		filtersStore.setSearchTerm('');
-
 		appStore.setActiveTab('tierlist');
 
 		loadTierListView();

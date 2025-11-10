@@ -39,14 +39,14 @@
 		filtersStore.readFromURL(page.url.searchParams);
 	});
 
-	const plannedGames: Game[] = $derived.by(() => {
-		// Choose source: if filters have produced a list, use it; otherwise, use all games
-		const source =
-			filteredData.filteredGames && filteredData.filteredGames.length
-				? filteredData.filteredGames
-				: allGamesFromStore;
+	const plannedGames = $derived.by(() => {
+		// Use the filtered games from the worker, then filter by status
+		// This ensures all filters (search, platform, genre, etc.) are applied
+		const source = filteredData.filteredGames.length 
+			? filteredData.filteredGames 
+			: allGamesFromStore;
 
-		return source.filter((game) => game.status?.toLowerCase() === 'planned');
+		return source.filter((game) => game.status === 'Planned');
 	});
 </script>
 

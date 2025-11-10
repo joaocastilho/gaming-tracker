@@ -2,6 +2,7 @@ import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { gamesStore } from './games';
 import { appStore } from './app';
+import { completedGamesCache } from './completedGamesCache';
 import type { Game } from '$lib/types/game';
 import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
 import FilterWorker from '$lib/workers/filterWorker?worker';
@@ -105,6 +106,11 @@ function createFiltersStore() {
 				});
 			}
 		}
+		
+		// Update the completed games cache when games change
+		if (games.length > 0) {
+			completedGamesCache.updateCache(games);
+		}
 	});
 
 	if (worker) {
@@ -123,10 +129,42 @@ function createFiltersStore() {
 
 		const allGames = get(gamesStore);
 		if (allGames.length > 0 && worker) {
-			worker.postMessage({
-				type: 'APPLY_FILTERS',
-				payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
-			});
+			// Check if we should use cache for completed tab (only when no custom filters and not sorting)
+			const shouldUseCompletedCache = (
+				activeTab === 'completed' && 
+				!currentFilters.searchTerm.trim() && 
+				currentFilters.platforms.length === 0 && 
+				currentFilters.genres.length === 0 && 
+				currentFilters.tiers.length === 0 &&
+				currentFilters.statuses.length === 2 &&
+				currentFilters.statuses.includes('Completed') &&
+				currentFilters.statuses.includes('Planned') &&
+				!currentFilters.sortOption
+			);
+
+			if (shouldUseCompletedCache) {
+				// Use cached completed games for optimal performance
+				const cachedGames = completedGamesCache.getCachedCompletedGames(allGames);
+				if (cachedGames) {
+					filteredGames.set(cachedGames);
+					const totalCount = cachedGames.length;
+					const completedCount = cachedGames.length;
+					const plannedCount = allGames.filter(g => g.status === 'Planned').length;
+					gameCounts.set({ total: totalCount, completed: completedCount, planned: plannedCount });
+				} else {
+					// Fallback to worker if cache is not available
+					worker.postMessage({
+						type: 'APPLY_FILTERS',
+						payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
+					});
+				}
+			} else {
+				// For all other cases (including planned tab), use worker
+				worker.postMessage({
+					type: 'APPLY_FILTERS',
+					payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
+				});
+			}
 		}
 	});
 

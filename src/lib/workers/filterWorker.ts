@@ -124,20 +124,19 @@ function filterAndSortForTab(
 ): Game[] {
 	let base = games;
 
-	// Only apply tab-specific filtering if no status filters are applied
-	// This allows users to see filtered results across different tabs
-	if (!base.some(game => ['Completed', 'Planned'].includes(game.status))) {
-		switch (tab) {
-			case 'completed':
-				base = base.filter((game) => game.status === 'Completed');
-				break;
-			case 'planned':
-				base = base.filter((game) => game.status === 'Planned');
-				break;
-			case 'all':
-			default:
-				break;
-		}
+	// Apply tab-specific filtering to show only games for the current tab
+	// This is done AFTER general filtering to allow users to see filtered results within the tab
+	switch (tab) {
+		case 'completed':
+			base = base.filter((game) => game.status === 'Completed');
+			break;
+		case 'planned':
+			base = base.filter((game) => game.status === 'Planned');
+			break;
+		case 'all':
+		default:
+			// For 'all' tab, show all filtered games regardless of status
+			break;
 	}
 
 	if (sortOption) {
@@ -145,6 +144,8 @@ function filterAndSortForTab(
 	}
 
 	if (tab === 'completed') {
+		// Sort completed games by finished date (most recent first)
+		// Games without finished dates are placed at the end
 		return base.toSorted((a, b) => {
 			if (!a.finishedDate && !b.finishedDate) return 0;
 			if (!a.finishedDate) return 1;

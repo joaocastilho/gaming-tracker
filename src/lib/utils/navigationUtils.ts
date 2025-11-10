@@ -28,6 +28,12 @@ export function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
 	// Update active tab state
 	appStore.setActiveTab(target);
 	
+	// Clear filters for routes that require it (currently only tierlist)
+	if (requiresFilterReset(target)) {
+		filtersStore.resetAllFilters();
+		filtersStore.setSearchTerm('');
+	}
+	
 	// Navigate to route
 	const route = target === 'all' ? '/' : `/${target}`;
 	goto(route, {
