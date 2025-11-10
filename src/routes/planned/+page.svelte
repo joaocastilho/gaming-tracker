@@ -23,10 +23,17 @@
 	const { loading } = gamesStore;
 
 	filteredGamesStore.subscribe((value) => {
+		console.log(`🎮 Planned page: Received filtered data:`, value);
 		filteredData = value;
 	});
 
 	gamesStore.subscribe((games) => {
+		// Debounce rapid updates to avoid excessive processing
+		if (!games || games.length === 0) {
+			allGamesFromStore = games;
+			return;
+		}
+
 		allGamesFromStore = games;
 	});
 
@@ -35,18 +42,29 @@
 		if (data.games && data.games.length) {
 			gamesStore.initializeGames(data.games);
 		}
-		// Apply filters from URL
+	});
+
+	$effect(() => {
+		// Apply filters from URL when page loads
+		console.log(`🎮 Planned page: Reading URL parameters on page load`);
 		filtersStore.readFromURL(page.url.searchParams);
 	});
 
 	const plannedGames = $derived.by(() => {
 		// Use the filtered games from the worker, then filter by status
 		// This ensures all filters (search, platform, genre, etc.) are applied
-		const source = filteredData.filteredGames.length 
-			? filteredData.filteredGames 
+		const source = filteredData.filteredGames.length
+			? filteredData.filteredGames
 			: allGamesFromStore;
 
-		return source.filter((game) => game.status === 'Planned');
+		const plannedOnly = source.filter((game) => game.status === 'Planned');
+		
+		// Debug: Log what we're getting
+		console.log(`🎮 Planned page: source.length = ${source.length}, plannedOnly.length = ${plannedOnly.length}`);
+		console.log(`🎮 Planned page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`);
+		console.log(`🎮 Planned page: allGamesFromStore.length = ${allGamesFromStore.length}`);
+
+		return plannedOnly;
 	});
 </script>
 

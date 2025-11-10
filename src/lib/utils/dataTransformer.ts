@@ -1,10 +1,12 @@
 export function transformGameData(game: Record<string, unknown>): Record<string, unknown> {
 	const transformed = { ...game };
 
-	if (!transformed.id || !isValidUUID(String(transformed.id))) {
+	// Only generate UUID if title exists and no valid ID
+	if ((!transformed.id || !isValidUUID(String(transformed.id))) && transformed.title) {
 		transformed.id = generateDeterministicUUID(String(transformed.title));
 	}
 
+	// Only process date if it exists and is not already in ISO format
 	if (transformed.finishedDate && !isValidISODateTime(String(transformed.finishedDate))) {
 		const dateStr = String(transformed.finishedDate);
 		const dateMatch = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
@@ -14,24 +16,28 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 		}
 	}
 
+	// Only format hours if it's a number
 	if (transformed.hoursPlayed && typeof transformed.hoursPlayed === 'number') {
 		const hours = Math.floor(transformed.hoursPlayed);
 		const minutes = Math.round((transformed.hoursPlayed - hours) * 60);
 		transformed.hoursPlayed = `${hours}h ${minutes}m`;
 	}
 
+	// Set default coOp value only if it doesn't exist
 	if (!transformed.coOp) {
 		transformed.coOp = 'No';
 	}
 
+	// Only process title if it exists
 	if (transformed.title) {
-		const titleMatch = String(transformed.title).match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+		const titleStr = String(transformed.title);
+		const titleMatch = titleStr.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
 
 		if (titleMatch) {
 			transformed.mainTitle = titleMatch[1].trim();
 			transformed.subtitle = `(${titleMatch[2]})`;
 		} else {
-			transformed.mainTitle = String(transformed.title);
+			transformed.mainTitle = titleStr;
 			transformed.subtitle = null;
 		}
 	} else {

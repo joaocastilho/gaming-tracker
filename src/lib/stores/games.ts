@@ -89,7 +89,9 @@ function createGamesStore() {
 
 		updateGame(id: string, updatedGame: Partial<Game>): void {
 			update(($games) => {
-				const updatedGames = $games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
+				const updatedGames = $games.map((game) =>
+					game.id === id ? { ...game, ...updatedGame } : game
+				);
 				// Update the completed games cache when a game is modified
 				completedGamesCache.updateCache(updatedGames);
 				return updatedGames;

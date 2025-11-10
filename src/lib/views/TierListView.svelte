@@ -17,7 +17,7 @@
 	});
 
 	const memoizedBuildTierList = memoize(buildTierList, {
-		key: (games: Game[]) => games.map(g => g.id).join(',')
+		key: (games: Game[]) => games.map((g) => g.id).join(',')
 	});
 
 	let tierList = $derived(memoizedBuildTierList(filteredGames));

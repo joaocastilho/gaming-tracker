@@ -70,18 +70,12 @@
 		}
 	}
 
-	function scrollToTop() {
-		if (typeof window !== 'undefined') {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		}
-	}
-
 	function handleLogoClick() {
 		// Logo click should clear filters
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
 		appStore.setActiveTab('all');
-		
+
 		// Navigate to Games tab
 		const route = '/';
 		goto(route, {
@@ -89,7 +83,7 @@
 			noScroll: false,
 			keepFocus: true
 		});
-		
+
 		// Scroll to top
 		if (typeof window !== 'undefined') {
 			window.scrollTo({ top: 0, behavior: 'smooth' });

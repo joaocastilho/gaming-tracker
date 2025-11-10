@@ -40,6 +40,12 @@
 	});
 
 	gamesStore.subscribe((games) => {
+		// Debounce rapid updates to avoid excessive processing
+		if (!games || games.length === 0) {
+			allGamesFromStore = games;
+			return;
+		}
+
 		allGamesFromStore = games;
 	});
 
@@ -79,6 +85,56 @@
 	let hasActiveFilters = filtersStore.isAnyFilterApplied();
 	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
 
+	// Filter games based on active tab (similar to individual tab pages)
+	let displayedGames = $derived.by(() => {
+		console.log(`🎮 Main page: currentActiveTab = ${currentActiveTab}, hasActiveFilters = ${hasActiveFilters}`);
+		console.log(`🎮 Main page: allGamesFromStore.length = ${allGamesFromStore.length}`);
+		console.log(`🎮 Main page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`);
+		
+		// For "all" tab with no custom filters, show all games directly
+		if (currentActiveTab === 'all' && !hasActiveFilters) {
+			console.log(`🎮 Main page: Showing all games directly (${allGamesFromStore.length} games)`);
+			return allGamesFromStore;
+		}
+
+		// When filters are applied, use the worker's filtered results
+		if (hasActiveFilters && filteredData.filteredGames.length > 0) {
+			console.log(`🎮 Main page: Using worker filtered results (${filteredData.filteredGames.length} games)`);
+			// For tab-specific filtering when filters are active, we need to further filter
+			// the worker results by the current tab's status requirement
+			switch (currentActiveTab) {
+				case 'completed':
+					const completedGames = filteredData.filteredGames.filter((game) => game.status === 'Completed');
+					console.log(`🎮 Main page: Completed tab - ${completedGames.length} games after filtering`);
+					return completedGames;
+				case 'planned':
+					const plannedGames = filteredData.filteredGames.filter((game) => game.status === 'Planned');
+					console.log(`🎮 Main page: Planned tab - ${plannedGames.length} games after filtering`);
+					return plannedGames;
+				case 'all':
+				default:
+					console.log(`🎮 Main page: All tab with filters - ${filteredData.filteredGames.length} games`);
+					return filteredData.filteredGames;
+			}
+		}
+
+		// When no filters are applied, apply tab-specific filtering
+		switch (currentActiveTab) {
+			case 'completed':
+				const completedOnly = allGamesFromStore.filter((game) => game.status === 'Completed');
+				console.log(`🎮 Main page: Completed tab - ${completedOnly.length} completed games`);
+				return completedOnly;
+			case 'planned':
+				const plannedOnly = allGamesFromStore.filter((game) => game.status === 'Planned');
+				console.log(`🎮 Main page: Planned tab - ${plannedOnly.length} planned games`);
+				return plannedOnly;
+			case 'all':
+			default:
+				console.log(`🎮 Main page: All tab - showing ${allGamesFromStore.length} games`);
+				return allGamesFromStore;
+		}
+	});
+
 	async function loadTierListView() {
 		if (TierListViewComponent) return;
 
@@ -117,7 +173,7 @@
 <div class="main-content" id="main-content">
 	{#if currentActiveTab === 'tierlist' && TierListViewComponent}
 		<TierListViewComponent filteredGames={tierListGames} />
-	{:else if currentActiveTab !== 'tierlist' && hasActiveFilters && filteredData.filteredGames.length === 0}
+	{:else if currentActiveTab !== 'tierlist' && hasActiveFilters && displayedGames.length === 0}
 		<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
 			<h2 class="font-semibold">No games match your current filters</h2>
 			<p class="text-gray-600 dark:text-gray-400">
@@ -135,8 +191,10 @@
 				↻ Reset filters
 			</button>
 		</div>
-	{:else if currentActiveTab !== 'tierlist' && filteredData.filteredGames.length > 0}
-		<GamesView filteredGames={filteredData.filteredGames} />
+	{:else if currentActiveTab !== 'tierlist' && allGamesFromStore.length > 0}
+		<GamesView filteredGames={displayedGames} />
+	{:else if currentActiveTab !== 'tierlist'}
+		<div class="loading">Loading games...</div>
 	{/if}
 </div>
 

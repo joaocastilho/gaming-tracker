@@ -7,7 +7,6 @@
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';
 	import { getTierClass } from '../utils/tierUtils.js';
-	import { imageCache } from '../utils/imageCache.js';
 	import { generateSrcset, generateSizes } from '../utils/imageSrcset.js';
 	import {
 		Presentation,

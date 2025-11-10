@@ -96,15 +96,17 @@ function runTests() {
 	console.log('Test 1: Initial cache update and retrieval');
 	completedGamesCache.updateCache(mockGames);
 	const cachedGames = completedGamesCache.getCachedCompletedGames(mockGames);
-	
+
 	if (cachedGames && cachedGames.length === 3) {
 		console.log('✅ Cache correctly stores completed games');
 		console.log(`   Found ${cachedGames.length} completed games`);
-		
+
 		// Verify sorting (most recent first)
-		const dates = cachedGames.map(g => g.finishedDate);
-		const isSorted = dates.every((date, i) => i === 0 || new Date(date!) >= new Date(dates[i - 1]!));
-		
+		const dates = cachedGames.map((g) => g.finishedDate);
+		const isSorted = dates.every(
+			(date, i) => i === 0 || new Date(date!) >= new Date(dates[i - 1]!)
+		);
+
 		if (isSorted) {
 			console.log('✅ Games are correctly sorted by finished date (most recent first)');
 		} else {
@@ -137,7 +139,7 @@ function runTests() {
 		score: 7.7,
 		tier: 'A' as const
 	});
-	
+
 	const newCachedGames = completedGamesCache.getCachedCompletedGames(modifiedGames);
 	if (newCachedGames && newCachedGames.length === 4) {
 		console.log('✅ Cache correctly updated when games data changed');
@@ -147,11 +149,11 @@ function runTests() {
 
 	// Test 3: Performance comparison simulation
 	console.log('\nTest 3: Performance comparison simulation');
-	
+
 	// Simulate sorting without cache (old method)
 	const startTime1 = performance.now();
 	const oldMethodResult = mockGames
-		.filter(game => game.status === 'Completed')
+		.filter((game) => game.status === 'Completed')
 		.toSorted((a, b) => {
 			if (!a.finishedDate && !b.finishedDate) return 0;
 			if (!a.finishedDate) return 1;
@@ -160,18 +162,18 @@ function runTests() {
 		});
 	const endTime1 = performance.now();
 	const oldMethodTime = endTime1 - startTime1;
-	
+
 	// Simulate sorting with cache (new method)
 	const startTime2 = performance.now();
 	const cachedResult = completedGamesCache.getCachedCompletedGames(mockGames);
 	const endTime2 = performance.now();
 	const cachedMethodTime = endTime2 - startTime2;
-	
+
 	console.log(`   Old method (sorting every time): ${oldMethodTime.toFixed(4)}ms`);
 	console.log(`   New method (using cache): ${cachedMethodTime.toFixed(4)}ms`);
-	
+
 	if (cachedMethodTime < oldMethodTime) {
-		const improvement = ((oldMethodTime - cachedMethodTime) / oldMethodTime * 100).toFixed(1);
+		const improvement = (((oldMethodTime - cachedMethodTime) / oldMethodTime) * 100).toFixed(1);
 		console.log(`✅ Cache method is ${improvement}% faster`);
 	} else {
 		console.log('⚠️  Cache method performance similar (may be due to small dataset)');
@@ -179,9 +181,10 @@ function runTests() {
 
 	// Test 4: Verify results are identical
 	console.log('\nTest 4: Verify cached and direct sorting results are identical');
-	const resultsMatch = JSON.stringify(oldMethodResult.map(g => g.id)) === 
-		JSON.stringify(cachedResult?.map(g => g.id) || []);
-	
+	const resultsMatch =
+		JSON.stringify(oldMethodResult.map((g) => g.id)) ===
+		JSON.stringify(cachedResult?.map((g) => g.id) || []);
+
 	if (resultsMatch) {
 		console.log('✅ Cached results match direct sorting results');
 	} else {
@@ -193,7 +196,7 @@ function runTests() {
 	console.log('   - Cache invalidates when data changes');
 	console.log('   - Performance is improved (especially with larger datasets)');
 	console.log('   - Results are consistent with original sorting method');
-	
+
 	console.log('\n✨ Completed games caching optimization is working correctly!');
 }
 

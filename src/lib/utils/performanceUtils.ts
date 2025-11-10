@@ -54,7 +54,7 @@ const performanceLogs = new Map<string, number>();
 export function debouncedPerfLog(label: string, duration: number, cooldown = 1000) {
 	const now = Date.now();
 	const lastLog = performanceLogs.get(label) || 0;
-	
+
 	if (now - lastLog > cooldown) {
 		console.log(`⏱️ ${label}: ${duration.toFixed(2)}ms`);
 		performanceLogs.set(label, now);

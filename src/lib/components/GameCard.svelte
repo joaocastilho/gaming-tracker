@@ -4,8 +4,6 @@
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
 	import { getTierClass } from '../utils/tierUtils.js';
-	import { imageCache } from '../utils/imageCache.js';
-	import { browser } from '$app/environment';
 	import { generateSrcset, generateTinySrcset, generateSizes } from '../utils/imageSrcset.js';
 	import {
 		Award,
@@ -96,7 +94,6 @@
 	}
 
 	function preloadDetailImage() {}
-
 
 	onMount(() => {});
 </script>
@@ -245,7 +242,6 @@
 		height: var(--cover-height, 450px);
 		margin: 0 auto;
 	}
-
 
 	.cover-image {
 		width: 100%;

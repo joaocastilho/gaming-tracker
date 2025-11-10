@@ -99,14 +99,10 @@ function createFiltersStore() {
 			filters.set(loadedFilters);
 			if (worker) {
 				worker.postMessage({ type: 'LOAD_GAMES', payload: games });
-				const initialTab = get(appStore.activeTab);
-				worker.postMessage({
-					type: 'APPLY_FILTERS',
-					payload: { filters: loadedFilters, allGames: games, activeTab: initialTab }
-				});
+				// Don't send APPLY_FILTERS here - let filtersAndTab handle it
 			}
 		}
-		
+
 		// Update the completed games cache when games change
 		if (games.length > 0) {
 			completedGamesCache.updateCache(games);
@@ -123,49 +119,95 @@ function createFiltersStore() {
 		};
 	}
 
+	// Track last processing to prevent duplicate calls
+	let lastProcessedKey = '';
+	let filterUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	filtersAndTab.subscribe((currentData) => {
 		const { filters: currentFilters, activeTab } = currentData;
 		if (!currentFilters) return;
 
-		const allGames = get(gamesStore);
-		if (allGames.length > 0 && worker) {
-			// Check if we should use cache for completed tab (only when no custom filters and not sorting)
-			const shouldUseCompletedCache = (
-				activeTab === 'completed' && 
-				!currentFilters.searchTerm.trim() && 
-				currentFilters.platforms.length === 0 && 
-				currentFilters.genres.length === 0 && 
-				currentFilters.tiers.length === 0 &&
-				currentFilters.statuses.length === 2 &&
-				currentFilters.statuses.includes('Completed') &&
-				currentFilters.statuses.includes('Planned') &&
-				!currentFilters.sortOption
-			);
+		// Create a unique key for this filter/tab combination
+		const processingKey = `${activeTab}-${JSON.stringify({
+			searchTerm: currentFilters.searchTerm,
+			platforms: currentFilters.platforms,
+			genres: currentFilters.genres,
+			statuses: currentFilters.statuses,
+			tiers: currentFilters.tiers,
+			sortOption: currentFilters.sortOption
+		})}`;
 
-			if (shouldUseCompletedCache) {
-				// Use cached completed games for optimal performance
-				const cachedGames = completedGamesCache.getCachedCompletedGames(allGames);
-				if (cachedGames) {
-					filteredGames.set(cachedGames);
-					const totalCount = cachedGames.length;
-					const completedCount = cachedGames.length;
-					const plannedCount = allGames.filter(g => g.status === 'Planned').length;
-					gameCounts.set({ total: totalCount, completed: completedCount, planned: plannedCount });
+		// Clear previous timeout to debounce rapid updates
+		if (filterUpdateTimeout) {
+			clearTimeout(filterUpdateTimeout);
+		}
+
+		// Debounce filter processing to avoid excessive worker calls
+		filterUpdateTimeout = setTimeout(() => {
+			// Skip processing if this is an exact duplicate of the last call
+			if (processingKey === lastProcessedKey) {
+				return;
+			}
+
+			lastProcessedKey = processingKey;
+			const allGames = get(gamesStore);
+			if (allGames.length > 0 && worker) {
+				// Check if we should use cache for completed tab (only when no custom filters and not sorting)
+				const shouldUseCompletedCache =
+					activeTab === 'completed' &&
+					!currentFilters.searchTerm.trim() &&
+					currentFilters.platforms.length === 0 &&
+					currentFilters.genres.length === 0 &&
+					currentFilters.tiers.length === 0 &&
+					currentFilters.statuses.length === 2 &&
+					currentFilters.statuses.includes('Completed') &&
+					currentFilters.statuses.includes('Planned') &&
+					!currentFilters.sortOption;
+
+				// NEW: Skip worker entirely for "all" tab with no custom filters
+				// This prevents unnecessary worker calls when just switching to the main page
+				const shouldSkipWorker = 
+					activeTab === 'all' &&
+					!currentFilters.searchTerm.trim() &&
+					currentFilters.platforms.length === 0 &&
+					currentFilters.genres.length === 0 &&
+					currentFilters.tiers.length === 0 &&
+					currentFilters.statuses.length === 2 &&
+					currentFilters.statuses.includes('Completed') &&
+					currentFilters.statuses.includes('Planned') &&
+					!currentFilters.sortOption;
+
+				if (shouldSkipWorker) {
+					// Don't call worker for "all" tab with default filters
+					// The main page will handle this case directly
+					return;
+				}
+
+				if (shouldUseCompletedCache) {
+					// Use cached completed games for optimal performance
+					const cachedGames = completedGamesCache.getCachedCompletedGames(allGames);
+					if (cachedGames) {
+						filteredGames.set(cachedGames);
+						const totalCount = cachedGames.length;
+						const completedCount = cachedGames.length;
+						const plannedCount = allGames.filter((g) => g.status === 'Planned').length;
+						gameCounts.set({ total: totalCount, completed: completedCount, planned: plannedCount });
+					} else {
+						// Fallback to worker if cache is not available
+						worker.postMessage({
+							type: 'APPLY_FILTERS',
+							payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
+						});
+					}
 				} else {
-					// Fallback to worker if cache is not available
+					// For all other cases (including planned tab), use worker
 					worker.postMessage({
 						type: 'APPLY_FILTERS',
 						payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
 					});
 				}
-			} else {
-				// For all other cases (including planned tab), use worker
-				worker.postMessage({
-					type: 'APPLY_FILTERS',
-					payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
-				});
 			}
-		}
+		}, 100); // Increased debounce to 100ms for better deduplication
 	});
 
 	return {

@@ -17,6 +17,20 @@
 	const { loading } = gamesStore;
 
 	gamesStore.subscribe((games) => {
+		// Debounce rapid updates to avoid excessive processing
+		if (!games || games.length === 0) {
+			console.log(`🎮 Tierlist page: gamesStore subscription triggered with empty games array`);
+			allGamesFromStore = games;
+			return;
+		}
+
+		// Only log when the count actually changes to avoid spam
+		if (allGamesFromStore.length !== games.length) {
+			console.log(
+				`🎮 Tierlist page: gamesStore subscription triggered, games.length = ${games.length}`
+			);
+		}
+
 		allGamesFromStore = games;
 	});
 
@@ -47,7 +61,12 @@
 		loadTierListView();
 	});
 
-	const tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
+	const tierListGames = $derived.by(() => {
+		const gamesWithTiers = allGamesFromStore.filter((game) => game.tier);
+		console.log(`🎮 Tierlist page: allGamesFromStore.length = ${allGamesFromStore.length}`);
+		console.log(`🎮 Tierlist page: games with tiers = ${gamesWithTiers.length}`);
+		return gamesWithTiers;
+	});
 </script>
 
 <div class="main-content" id="main-content">

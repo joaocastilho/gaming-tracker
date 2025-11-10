@@ -1,11 +1,10 @@
 import { transformGameData } from './dataTransformer';
 import { goto } from '$app/navigation';
+import type { FilterState } from '$lib/stores/filters';
 
 export function transformGamesData(games: Record<string, unknown>[]): Record<string, unknown>[] {
 	return games.map(transformGameData);
 }
-
-import type { FilterState } from '$lib/stores/filters';
 
 export function getUrlParams(searchParams: URLSearchParams): Partial<FilterState> {
 	const params: Partial<FilterState> = {};

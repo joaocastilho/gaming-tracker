@@ -33,15 +33,25 @@ export function extractFilterOptions(games: Game[]): {
 	genres: string[];
 	tiers: string[];
 } {
+	// Return empty arrays if no games to avoid blocking
+	if (!games || games.length === 0) {
+		return {
+			platforms: [],
+			genres: [],
+			tiers: []
+		};
+	}
+
 	const platforms = new Set<string>();
 	const genres = new Set<string>();
 	const tiers = new Set<string>();
 
-	games.forEach((game) => {
+	// Use for...of loop instead of forEach for better performance with large arrays
+	for (const game of games) {
 		if (game.platform) platforms.add(game.platform);
 		if (game.genre) genres.add(game.genre);
 		if (game.tier) tiers.add(getTierDisplayName(game.tier));
-	});
+	}
 
 	return {
 		platforms: Array.from(platforms).sort(),

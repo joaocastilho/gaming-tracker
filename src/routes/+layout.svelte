@@ -52,7 +52,14 @@
 		}
 	});
 
-	let filterOptions = $derived(extractFilterOptions($gamesStore));
+	// Use a more efficient derived that doesn't block on empty games
+	let filterOptions = $derived(() => {
+		const games = $gamesStore;
+		if (!games || games.length === 0) {
+			return { platforms: [], genres: [], tiers: [] };
+		}
+		return extractFilterOptions(games);
+	});
 	let currentActiveTab = $derived(get(appStore.activeTab));
 
 	$effect(() => {
@@ -116,7 +123,7 @@
 	$effect(() => {
 		const currentURL = page.url;
 		const tab = get(appStore.activeTab);
-		
+
 		// Only read filters from URL for non-tierlist tabs
 		if (tab !== 'tierlist') {
 			const searchParam = currentURL.searchParams.get('search') || '';
@@ -197,19 +204,19 @@
 						<FilterDropdown
 							type="platforms"
 							label="Platforms"
-							options={filterOptions.platforms}
+							options={filterOptions().platforms}
 							selectedOptions={selectedPlatforms}
 						/>
 						<FilterDropdown
 							type="genres"
 							label="Genres"
-							options={filterOptions.genres}
+							options={filterOptions().genres}
 							selectedOptions={selectedGenres}
 						/>
 						<FilterDropdown
 							type="tiers"
 							label="Tiers"
-							options={filterOptions.tiers}
+							options={filterOptions().tiers}
 							selectedOptions={selectedTiers}
 						/>
 						<span class="pipe-separator">|</span>

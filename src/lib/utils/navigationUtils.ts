@@ -24,16 +24,16 @@ const DEFAULT_OPTIONS: NavigationOptions = {
  */
 export function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
-	
+
 	// Update active tab state
 	appStore.setActiveTab(target);
-	
+
 	// Clear filters for routes that require it (currently only tierlist)
 	if (requiresFilterReset(target)) {
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
 	}
-	
+
 	// Navigate to route
 	const route = target === 'all' ? '/' : `/${target}`;
 	goto(route, {
@@ -41,7 +41,7 @@ export function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
 		noScroll: opts.noScroll,
 		keepFocus: true
 	});
-	
+
 	// Scroll to top if requested
 	if (opts.scrollToTop) {
 		scrollToTop();
@@ -52,16 +52,19 @@ export function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
  * Simple navigation without filter preservation (for cases where filters should be reset)
  * This function also bypasses URL writing to avoid synchronization issues
  */
-export function navigateToAndReset(target: NavTarget, options: Omit<NavigationOptions, 'preserveFilters'> = {}) {
+export function navigateToAndReset(
+	target: NavTarget,
+	options: Omit<NavigationOptions, 'preserveFilters'> = {}
+) {
 	const opts = { ...DEFAULT_OPTIONS, ...options, preserveFilters: false };
-	
+
 	// Reset filters immediately without URL sync
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
-	
+
 	// Update active tab state
 	appStore.setActiveTab(target);
-	
+
 	// Navigate to route
 	const route = target === 'all' ? '/' : `/${target}`;
 	goto(route, {
@@ -69,7 +72,7 @@ export function navigateToAndReset(target: NavTarget, options: Omit<NavigationOp
 		noScroll: opts.noScroll,
 		keepFocus: true
 	});
-	
+
 	// Scroll to top if requested
 	if (opts.scrollToTop) {
 		scrollToTop();
@@ -91,10 +94,10 @@ export function navigateToAllAndClearFilters() {
 	// Reset filters immediately
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
-	
+
 	// Update active tab
 	appStore.setActiveTab('all');
-	
+
 	// Navigate without filter preservation
 	const route = '/';
 	goto(route, {
@@ -102,7 +105,7 @@ export function navigateToAllAndClearFilters() {
 		noScroll: false,
 		keepFocus: true
 	});
-	
+
 	// Scroll to top
 	scrollToTop();
 }
@@ -112,9 +115,9 @@ export function navigateToAllAndClearFilters() {
  */
 export function scrollToTop() {
 	if (typeof window !== 'undefined') {
-		window.scrollTo({ 
-			top: 0, 
-			behavior: 'smooth' 
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
 		});
 	}
 }
@@ -124,9 +127,9 @@ export function scrollToTop() {
  */
 export function scrollToTopInstant() {
 	if (typeof window !== 'undefined') {
-		window.scrollTo({ 
-			top: 0, 
-			behavior: 'auto' 
+		window.scrollTo({
+			top: 0,
+			behavior: 'auto'
 		});
 	}
 }
