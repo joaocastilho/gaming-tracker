@@ -16,7 +16,9 @@
 		easing: quintOut
 	});
 
-	const memoizedBuildTierList = memoize(buildTierList);
+	const memoizedBuildTierList = memoize(buildTierList, {
+		key: (games: Game[]) => games.map(g => g.id).join(',')
+	});
 
 	let tierList = $derived(memoizedBuildTierList(filteredGames));
 
@@ -27,8 +29,7 @@
 			'B - Great': [],
 			'C - Good': [],
 			'D - Decent': [],
-			'E - Bad': [],
-			'F - Awful': []
+			'E - Bad': []
 		};
 
 		games

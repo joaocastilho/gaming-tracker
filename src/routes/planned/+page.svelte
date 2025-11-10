@@ -39,7 +39,7 @@
 
 	const plannedGames = $derived(
 		(filteredData.filteredGames.length ? filteredData.filteredGames : allGamesFromStore).filter(
-			(game) => game.status === 'Planned'
+			(game) => game.status?.toLowerCase() === 'planned'
 		)
 	);
 </script>

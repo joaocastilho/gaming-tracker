@@ -6,6 +6,7 @@
 export interface MemoizeOptions {
 	maxSize?: number;
 	ttl?: number;
+	key?: (...args: unknown[]) => string;
 }
 
 /**
@@ -19,7 +20,7 @@ export function memoize<TArgs extends unknown[], TReturn>(
 	const cache = new Map<string, { value: TReturn; timestamp: number }>();
 
 	return (...args: TArgs): TReturn => {
-		const key = JSON.stringify(args);
+		const key = options.key ? options.key(...args) : JSON.stringify(args);
 
 		const cached = cache.get(key);
 		if (cached) {
