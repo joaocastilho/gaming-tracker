@@ -1,12 +1,17 @@
 name = "gaming-tracker"
-compatibility_date = "2024-09-01"
-
-# Cloudflare Pages configuration:
-# Use pages_build_output_dir for the static client bundle.
-# Do NOT set "main" here; Pages + Functions will auto-discover ./functions.
 pages_build_output_dir = "build/"
 
-# KV namespace binding for games data (must match your Cloudflare dashboard config)
 [[kv_namespaces]]
 binding = "GAMES_KV"
 id = "a77aa7a697de43be858e54891a0e9721"
+
+[vars]
+EDITOR_USERNAME = "joaocastilho"
+EDITOR_PASSWORD = ""
+SESSION_SECRET = ""
+ENABLE_RATE_LIMITING = "true"
+GITHUB_TOKEN = ""
+GH_REPO_OWNER = "joaocastilho"
+GH_REPO_NAME = "gaming-tracker"
+GH_FILE_PATH = "static/games.json"
+GH_BRANCH = "main"
