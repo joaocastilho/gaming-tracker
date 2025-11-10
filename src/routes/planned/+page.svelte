@@ -31,17 +31,23 @@
 	});
 
 	$effect(() => {
-		if (data.games) {
+		// Initialize games from server data once
+		if (data.games && data.games.length) {
 			gamesStore.initializeGames(data.games);
 		}
+		// Apply filters from URL
 		filtersStore.readFromURL(page.url.searchParams);
 	});
 
-	const plannedGames = $derived(
-		(filteredData.filteredGames.length ? filteredData.filteredGames : allGamesFromStore).filter(
-			(game) => game.status?.toLowerCase() === 'planned'
-		)
-	);
+	const plannedGames: Game[] = $derived.by(() => {
+		// Choose source: if filters have produced a list, use it; otherwise, use all games
+		const source =
+			filteredData.filteredGames && filteredData.filteredGames.length
+				? filteredData.filteredGames
+				: allGamesFromStore;
+
+		return source.filter((game) => game.status?.toLowerCase() === 'planned');
+	});
 </script>
 
 <div class="main-content" id="main-content">

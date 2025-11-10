@@ -40,11 +40,6 @@
 		return generateSizes(isAboveFold ? 'card' : 'gallery');
 	});
 
-	const imageEntry = $derived.by(() => imageCache.getImage(game.coverImage));
-
-	let isImageLoaded = $derived(imageEntry.isLoaded);
-	let hasImageError = $derived(imageEntry.hasError);
-	let isActive = $derived(isAboveFold || isImageLoaded);
 	let imageElement = $state<HTMLImageElement>();
 
 	let totalScore = $derived(
@@ -89,13 +84,9 @@
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	}
 
-	function handleImageLoad() {
-		imageCache.setLoaded(game.coverImage);
-	}
+	function handleImageLoad() {}
 
-	function handleImageError() {
-		imageCache.setError(game.coverImage);
-	}
+	function handleImageError() {}
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
@@ -104,56 +95,10 @@
 		}
 	}
 
-	function preloadDetailImage() {
-		const detailImageSrc = game.coverImage.replace('.webp', '-detail.webp');
-		imageCache.preload(detailImageSrc);
-	}
+	function preloadDetailImage() {}
 
-	$effect(() => {
-		if (!browser || !imageElement || isAboveFold) return;
 
-		const element = imageElement;
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						isActive = true;
-
-						if (imageCache.isImageCached(game.coverImage)) {
-							isImageLoaded = true;
-						}
-
-						if (element) {
-							observer.unobserve(element);
-						}
-						break;
-					}
-				}
-			},
-			{
-				rootMargin: '150px',
-				threshold: 0.15
-			}
-		);
-
-		if (element) {
-			observer.observe(element);
-		}
-
-		return () => {
-			observer.disconnect();
-		};
-	});
-
-	onMount(() => {
-		if (isAboveFold && imageElement?.complete) {
-			if (imageElement.naturalWidth > 0) {
-				handleImageLoad();
-			} else {
-				handleImageError();
-			}
-		}
-	});
+	onMount(() => {});
 </script>
 
 <button
@@ -175,19 +120,14 @@
 	aria-label="View details for {game.title}"
 >
 	<div class="cover-container">
-		{#if !isImageLoaded && !hasImageError}
-			<div class="image-placeholder"></div>
-		{/if}
 		<img
 			bind:this={imageElement}
 			src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
-			srcset={isActive ? imageSrcset() : undefined}
-			sizes={isActive ? imageSizes() : undefined}
+			srcset={imageSrcset()}
+			sizes={imageSizes()}
 			alt=""
 			class="cover-image"
-			class:loaded={isImageLoaded}
-			class:error={hasImageError}
-			loading={isAboveFold ? 'eager' : 'lazy'}
+			loading="eager"
 			fetchpriority={isAboveFold ? 'high' : 'low'}
 			decoding="async"
 			onload={handleImageLoad}
@@ -306,57 +246,12 @@
 		margin: 0 auto;
 	}
 
-	.image-placeholder {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(135deg, #2a2d3a 0%, #1a1f27 100%);
-		animation-name: strongPulse;
-		animation-duration: 1.5s;
-		animation-timing-function: ease-in-out;
-		animation-iteration-count: infinite;
-		animation-fill-mode: forwards;
-		overflow: hidden;
-	}
-
-	.image-placeholder::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			rgba(255, 255, 255, 0.1) 50%,
-			transparent 100%
-		);
-		animation: shimmer 2s ease-in-out infinite;
-	}
-
-	:global(.light) .image-placeholder {
-		background: linear-gradient(135deg, #ede3d3 0%, #f7f2eb 100%);
-	}
-
-	:global(.light) .image-placeholder::before {
-		background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 50%, transparent 100%);
-	}
 
 	.cover-image {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		display: block;
-		opacity: 0;
-		transition: opacity 0.3s ease;
-	}
-
-	.cover-image.loaded {
-		opacity: 1;
-	}
-
-	.cover-image.error {
-		display: none;
 	}
 
 	.co-op-badge {

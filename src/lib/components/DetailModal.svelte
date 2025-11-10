@@ -46,9 +46,6 @@
 
 	let modalElement = $state<HTMLDivElement>();
 
-	let isImageLoaded = $state(false);
-	let hasImageError = $state(false);
-
 	const detailImageSrc = $derived(
 		$modalStore.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
 	);
@@ -57,38 +54,6 @@
 		detailImageSrc ? generateSrcset(detailImageSrc.replace('-detail.webp', '')) : ''
 	);
 	const detailImageSizes = $derived(generateSizes('modal'));
-	const detailImageEntry = $derived(detailImageSrc ? imageCache.getImage(detailImageSrc) : null);
-
-	$effect(() => {
-		const entry = detailImageEntry;
-
-		if (!entry) {
-			isImageLoaded = false;
-			hasImageError = false;
-			return;
-		}
-
-		if (entry.isLoaded) {
-			isImageLoaded = true;
-			hasImageError = false;
-			return;
-		}
-
-		isImageLoaded = false;
-		hasImageError = false;
-
-		if (entry.loadPromise) {
-			entry.loadPromise
-				.then(() => {
-					isImageLoaded = true;
-					hasImageError = false;
-				})
-				.catch(() => {
-					isImageLoaded = false;
-					hasImageError = true;
-				});
-		}
-	});
 
 	let shareFeedback = $state('');
 	let focusableElements = $state<HTMLElement[]>([]);
@@ -308,15 +273,9 @@
 		}
 	}
 
-	function handleImageLoad() {
-		isImageLoaded = true;
-		hasImageError = false;
-	}
+	function handleImageLoad() {}
 
-	function handleImageError() {
-		isImageLoaded = false;
-		hasImageError = true;
-	}
+	function handleImageError() {}
 
 	function formatDate(dateString: string | null): string {
 		if (!dateString) return 'Not completed';
@@ -436,17 +395,12 @@
 		>
 			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
 				<div class="relative overflow-hidden rounded-l-lg">
-					{#if !isImageLoaded && !hasImageError}
-						<div class="image-placeholder"></div>
-					{/if}
 					<img
 						src={detailImageSrc}
 						srcset={detailImageSrcset}
 						sizes={detailImageSizes}
 						alt="{$modalStore.activeGame.title} cover"
 						class="cover-image h-full w-full object-cover"
-						class:loaded={isImageLoaded}
-						class:error={hasImageError}
 						style="width: 400px; height: 600px;"
 						loading="eager"
 						fetchpriority="high"
@@ -761,52 +715,7 @@
 {/if}
 
 <style>
-	.image-placeholder {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(135deg, #2a2d3a 0%, #1a1f27 100%);
-		animation-name: strongPulse;
-		animation-duration: 1.5s;
-		animation-timing-function: ease-in-out;
-		animation-iteration-count: infinite;
-		animation-fill-mode: forwards;
-		overflow: hidden;
-	}
-
-	.image-placeholder::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			rgba(255, 255, 255, 0.1) 50%,
-			transparent 100%
-		);
-		animation: shimmer 2s ease-in-out infinite;
-	}
-
-	:global(.light) .image-placeholder {
-		background: linear-gradient(135deg, #ede3d3 0%, #f7f2eb 100%);
-	}
-
-	:global(.light) .image-placeholder::before {
-		background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 50%, transparent 100%);
-	}
-
 	.cover-image {
-		opacity: 0;
-		transition: opacity 0.3s ease;
-	}
-
-	.cover-image.loaded {
 		opacity: 1;
-	}
-
-	.cover-image.error {
-		display: none;
 	}
 </style>
