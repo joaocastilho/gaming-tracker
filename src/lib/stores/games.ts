@@ -39,10 +39,17 @@ function createGamesStore() {
 			const currentGames = get({ subscribe });
 			if (currentGames && currentGames.length > 0) {
 				if (rawGames && Array.isArray(rawGames) && rawGames.length === currentGames.length) {
-					console.log('🎮 GamesStore: Skipping initialization - games already loaded (same length)');
+					console.log(
+						'🎮 GamesStore: Skipping initialization - games already loaded (same length)'
+					);
 					return;
 				} else if (rawGames && Array.isArray(rawGames) && rawGames.length !== currentGames.length) {
-					console.log('🎮 GamesStore: Re-initializing with different game count - old:', currentGames.length, 'new:', rawGames.length);
+					console.log(
+						'🎮 GamesStore: Re-initializing with different game count - old:',
+						currentGames.length,
+						'new:',
+						rawGames.length
+					);
 				}
 			}
 

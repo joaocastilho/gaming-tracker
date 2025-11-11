@@ -46,8 +46,10 @@
 
 	const completedGames = $derived.by(() => {
 		console.log(`🎮 Completed page: allGamesFromStore.length = ${allGamesFromStore.length}`);
-		console.log(`🎮 Completed page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`);
-		
+		console.log(
+			`🎮 Completed page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`
+		);
+
 		const hasCustomFilters = filtersStore.isAnyFilterApplied();
 		console.log(`🎮 Completed page: hasCustomFilters = ${hasCustomFilters}`);
 

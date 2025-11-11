@@ -1,6 +1,5 @@
 <script lang="ts">
 	import GamesView from '$lib/views/GamesView.svelte';
-	import { page } from '$app/state';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';

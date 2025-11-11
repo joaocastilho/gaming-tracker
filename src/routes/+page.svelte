@@ -41,14 +41,12 @@
 	});
 
 	gamesStore.subscribe((games) => {
-		console.log('🎮 Main page: GamesStore subscription triggered, games length:', games?.length);
-		console.log('🎮 Main page: First few games:', games?.slice(0, 3).map(g => ({ id: g.id, title: g.title })));
-		// Debounce rapid updates to avoid excessive processing
+		// Skip the initial empty array subscription trigger
 		if (!games || games.length === 0) {
-			console.log('🎮 Main page: Skipping empty games array');
 			return;
 		}
 
+		console.log('🎮 Main page: GamesStore subscription triggered, games length:', games?.length);
 		console.log('🎮 Main page: Setting allGamesFromStore to', games.length, 'games');
 		allGamesFromStore = games;
 	});
@@ -91,46 +89,65 @@
 
 	// Filter games based on active tab (similar to individual tab pages)
 	let displayedGames = $derived.by(() => {
-		console.log(`🎮 Main page: currentActiveTab = ${currentActiveTab}, hasActiveFilters = ${hasActiveFilters}`);
+		console.log(
+			`🎮 Main page: currentActiveTab = ${currentActiveTab}, hasActiveFilters = ${hasActiveFilters}`
+		);
 		console.log(`🎮 Main page: allGamesFromStore.length = ${allGamesFromStore.length}`);
-		console.log(`🎮 Main page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`);
-		
+		console.log(
+			`🎮 Main page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`
+		);
+
 		// Wait for games to be loaded before processing
 		if (allGamesFromStore.length === 0) {
 			console.log(`🎮 Main page: Waiting for games to load (${allGamesFromStore.length} games)`);
 			return [];
 		}
-		
+
 		// For "all" tab with no custom filters, show all games directly, sorted alphabetically by title
 		if (currentActiveTab === 'all' && !hasActiveFilters) {
-			console.log(`🎮 Main page: Showing all games directly (${allGamesFromStore.length} games), sorted alphabetically by title`);
+			console.log(
+				`🎮 Main page: Showing all games directly (${allGamesFromStore.length} games), sorted alphabetically by title`
+			);
 			return allGamesFromStore.toSorted((a, b) => a.title.localeCompare(b.title));
 		}
 
 		// When filters are applied, use the worker's filtered results
 		if (hasActiveFilters && filteredData.filteredGames.length > 0) {
-			console.log(`🎮 Main page: Using worker filtered results (${filteredData.filteredGames.length} games)`);
+			console.log(
+				`🎮 Main page: Using worker filtered results (${filteredData.filteredGames.length} games)`
+			);
 			// For tab-specific filtering when filters are active, we need to further filter
 			// the worker results by the current tab's status requirement
 			switch (currentActiveTab) {
-				case 'completed':
-					const completedGames = filteredData.filteredGames.filter((game) => game.status === 'Completed');
-					console.log(`🎮 Main page: Completed tab - ${completedGames.length} games after filtering`);
+				case 'completed': {
+					const completedGames = filteredData.filteredGames.filter(
+						(game) => game.status === 'Completed'
+					);
+					console.log(
+						`🎮 Main page: Completed tab - ${completedGames.length} games after filtering`
+					);
 					return completedGames;
-				case 'planned':
-					const plannedGames = filteredData.filteredGames.filter((game) => game.status === 'Planned');
+				}
+				case 'planned': {
+					const plannedGames = filteredData.filteredGames.filter(
+						(game) => game.status === 'Planned'
+					);
 					console.log(`🎮 Main page: Planned tab - ${plannedGames.length} games after filtering`);
 					return plannedGames;
+				}
 				case 'all':
-				default:
-					console.log(`🎮 Main page: All tab with filters - ${filteredData.filteredGames.length} games`);
+				default: {
+					console.log(
+						`🎮 Main page: All tab with filters - ${filteredData.filteredGames.length} games`
+					);
 					return filteredData.filteredGames;
+				}
 			}
 		}
 
 		// When no filters are applied, apply tab-specific filtering
 		switch (currentActiveTab) {
-			case 'completed':
+			case 'completed': {
 				const completedOnly = allGamesFromStore
 					.filter((game) => game.status === 'Completed')
 					.toSorted((a, b) => {
@@ -144,7 +161,8 @@
 					`🎮 Main page: Completed tab - ${completedOnly.length} completed games, sorted by finished date desc`
 				);
 				return completedOnly;
-			case 'planned':
+			}
+			case 'planned': {
 				const plannedOnly = allGamesFromStore
 					.filter((game) => game.status === 'Planned')
 					.toSorted((a, b) => a.title.localeCompare(b.title));
@@ -152,10 +170,12 @@
 					`🎮 Main page: Planned tab - ${plannedOnly.length} planned games, sorted alphabetically by title`
 				);
 				return plannedOnly;
+			}
 			case 'all':
-			default:
+			default: {
 				console.log(`🎮 Main page: All tab - showing ${allGamesFromStore.length} games`);
 				return allGamesFromStore;
+			}
 		}
 	});
 

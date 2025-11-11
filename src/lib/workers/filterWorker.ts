@@ -173,7 +173,9 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 			}
 		} else if (type === 'APPLY_FILTERS') {
 			filterCallCount++;
-			console.log(`🔧 Worker [Call #${filterCallCount}]: Processing filters for tab: ${payload.activeTab}`);
+			console.log(
+				`🔧 Worker [Call #${filterCallCount}]: Processing filters for tab: ${payload.activeTab}`
+			);
 			const { filters, allGames, activeTab } = payload;
 			let gamesToFilter = loadedGames;
 

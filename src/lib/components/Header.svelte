@@ -6,11 +6,10 @@
 	import Logo from '$lib/components/Logo.svelte';
 	import LoginModal from '$lib/components/LoginModal.svelte';
 
-	import { filtersStore } from '$lib/stores/filters';
 	import { appStore } from '$lib/stores/app';
+	import { filtersStore } from '$lib/stores/filters';
 	import { gamesStore } from '$lib/stores/games';
-
-	const filteredGamesStore = filtersStore.createFilteredGamesStore();
+	import type { Game } from '$lib/types/game';
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -23,14 +22,14 @@
 	};
 
 	let navItems = $state<NavItem[]>([]);
-	let allGames = $state<any[]>([]);
+	let allGames = $state<Game[]>([]);
 
 	// Calculate counts for each tab based on all games, not filtered games
-	function calculateTabCounts(games: any[]) {
+	function calculateTabCounts(games: Game[]) {
 		const total = games.length;
-		const completed = games.filter((game: any) => game.status === 'Completed').length;
-		const planned = games.filter((game: any) => game.status === 'Planned').length;
-		
+		const completed = games.filter((game: Game) => game.status === 'Completed').length;
+		const planned = games.filter((game: Game) => game.status === 'Planned').length;
+
 		return { total, completed, planned };
 	}
 

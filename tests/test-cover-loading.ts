@@ -12,19 +12,21 @@ import { generateSrcset, generateTinySrcset, generateSizes } from '../src/lib/ut
 
 // Mock imageCache for testing without SvelteKit dependencies
 const mockImageCache = {
-	preload: (src: string) => Promise.resolve(),
-	setLoaded: (src: string) => {},
-	setError: (src: string) => {},
-	getImage: (src: string) => ({
-		isLoaded: false,
-		hasError: false
-	})
+	preload: (_src: string) => Promise.resolve(), // eslint-disable-line @typescript-eslint/no-unused-vars
+	setLoaded: (_src: string) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
+	setError: (_src: string) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
+	getImage: (_src: string) => ({ isLoaded: false, hasError: false }) // eslint-disable-line @typescript-eslint/no-unused-vars
 };
 
 // Mock IntersectionObserver for our tests
 class MockIntersectionObserver {
 	private readonly callback: IntersectionObserverCallback;
 	private readonly elements: Set<Element> = new Set();
+
+	// Required IntersectionObserver properties
+	readonly root: Element | null = null;
+	readonly rootMargin: string = '0px';
+	readonly thresholds: number[] = [0];
 
 	constructor(callback: IntersectionObserverCallback) {
 		this.callback = callback;
@@ -41,6 +43,11 @@ class MockIntersectionObserver {
 	disconnect = () => {
 		this.elements.clear();
 	};
+
+	// Required method
+	takeRecords(): IntersectionObserverEntry[] {
+		return [];
+	}
 
 	// Helper to simulate intersection in tests
 	triggerIntersect(isIntersecting = true) {
@@ -63,36 +70,36 @@ declare global {
 	interface Window {
 		IntersectionObserver: typeof IntersectionObserver;
 	}
-	interface Global {
-		document: Document;
-		window: Window;
-	}
 }
 
 // Mock DOM environment for testing
 const setupMocks = () => {
 	// Install mock IntersectionObserver
-	(global as any).IntersectionObserver = MockIntersectionObserver;
+	(global as unknown as Window).IntersectionObserver = MockIntersectionObserver;
 
 	// Basic document mock where needed
 	if (!global.document) {
-		(global as any).document = {
-			createElement: (tag: string) =>
-				({
-					tagName: tag.toUpperCase(),
-					getBoundingClientRect: () => ({
-						top: 0,
-						left: 0,
-						bottom: 100,
-						right: 100,
-						width: 100,
-						height: 100,
-						x: 0,
-						y: 0,
-						toJSON: () => ({})
-					})
-				}) as unknown as HTMLElement
-		} as Document;
+		Object.defineProperty(global, 'document', {
+			value: {
+				createElement: (tag: string) =>
+					({
+						tagName: tag.toUpperCase(),
+						getBoundingClientRect: () => ({
+							top: 0,
+							left: 0,
+							bottom: 100,
+							right: 100,
+							width: 100,
+							height: 100,
+							x: 0,
+							y: 0,
+							toJSON: () => ({})
+						})
+					}) as HTMLElement
+			},
+			writable: false,
+			configurable: true
+		});
 	}
 };
 
@@ -101,10 +108,10 @@ function runTests() {
 
 	// Test 1: imageSrcset utilities
 	console.log('Test 1: Image Srcset Utilities');
-	
+
 	try {
 		setupMocks();
-		
+
 		const srcset = generateSrcset('covers/test-game.webp');
 		const expectedSrcset = 'covers/test-game.webp 300w, covers/test-game-detail.webp 400w';
 		if (srcset === expectedSrcset) {
@@ -159,7 +166,7 @@ function runTests() {
 
 	// Test 2: imageCache behavior (mocked)
 	console.log('\nTest 2: Image Cache Behavior (Mocked)');
-	
+
 	try {
 		const src = 'covers/sample.webp';
 
@@ -194,7 +201,7 @@ function runTests() {
 
 	// Test 3: GameCard cover loading configuration
 	console.log('\nTest 3: GameCard Cover Loading Configuration');
-	
+
 	try {
 		setupMocks();
 
@@ -236,7 +243,7 @@ function runTests() {
 		// Test hover detail preloading
 		const detail = base.replace('.webp', '-detail.webp');
 		let preloadCalled = false;
-		
+
 		// Mock the preload method to track calls
 		const originalPreload = mockImageCache.preload;
 		mockImageCache.preload = (src: string) => {
@@ -263,23 +270,23 @@ function runTests() {
 
 	// Test 4: Performance simulation
 	console.log('\nTest 4: Performance Simulation');
-	
+
 	try {
 		const startTime = performance.now();
-		
+
 		// Simulate multiple srcset generations
 		for (let i = 0; i < 1000; i++) {
 			generateSrcset(`covers/game${i}.webp`);
 			generateTinySrcset(`covers/game${i}.webp`);
 			generateSizes('card');
 		}
-		
+
 		const endTime = performance.now();
 		const duration = endTime - startTime;
-		
+
 		console.log(`✅ Generated 3000 srcset/sizes in ${duration.toFixed(2)}ms`);
 		console.log(`   Average: ${(duration / 3000).toFixed(4)}ms per operation`);
-		
+
 		if (duration < 100) {
 			console.log('✅ Performance is excellent (< 100ms for 3000 operations)');
 		} else if (duration < 500) {

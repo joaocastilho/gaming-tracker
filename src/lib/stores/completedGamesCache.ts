@@ -16,6 +16,8 @@ interface CompletedGamesCache {
  */
 function createCompletedGamesCache() {
 	const cache = writable<CompletedGamesCache | null>(null);
+	let lastUpdateId = '';
+	let updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	/**
 	 * Sort completed games by finished date (most recent first)
@@ -61,28 +63,50 @@ function createCompletedGamesCache() {
 		const gamesVersion = generateGamesVersion(games);
 		const currentCache = get(cache);
 
-		// Only update if we don't have a cache or the games data has changed
-		if (!currentCache || currentCache.gamesVersion !== gamesVersion) {
-			const previousVersion = currentCache?.gamesVersion;
-			const sortedCompletedGames = sortCompletedGamesByDate(games);
-			cache.set({
-				sortedCompletedGames,
-				lastUpdated: Date.now(),
-				gamesVersion
-			});
-			
-			console.log(`💾 CompletedGamesCache: Updated cache`, {
-				previousVersion,
-				newVersion: gamesVersion,
-				completedCount: sortedCompletedGames.length,
-				cacheHit: !!previousVersion
-			});
-		} else {
-			console.log(`💾 CompletedGamesCache: Skipping update - cache is current`, {
-				version: gamesVersion,
-				completedCount: currentCache.sortedCompletedGames.length
-			});
+		// Create a unique update ID to prevent duplicate calls with same data
+		const updateId = `${gamesVersion}-${games.length}`;
+
+		// Clear any existing timeout
+		if (updateTimeout) {
+			clearTimeout(updateTimeout);
 		}
+
+		// Debounce rapid duplicate calls (same data within 50ms)
+		updateTimeout = setTimeout(() => {
+			// Check if this is still the latest call
+			if (lastUpdateId === updateId) {
+				console.log(`💾 CompletedGamesCache: Skipping duplicate update - same data`, {
+					version: gamesVersion,
+					gameCount: games.length
+				});
+				return;
+			}
+
+			// Only update if we don't have a cache or the games data has changed
+			if (!currentCache || currentCache.gamesVersion !== gamesVersion) {
+				const previousVersion = currentCache?.gamesVersion;
+				const sortedCompletedGames = sortCompletedGamesByDate(games);
+				cache.set({
+					sortedCompletedGames,
+					lastUpdated: Date.now(),
+					gamesVersion
+				});
+
+				lastUpdateId = updateId;
+				console.log(`💾 CompletedGamesCache: Updated cache`, {
+					previousVersion,
+					newVersion: gamesVersion,
+					completedCount: sortedCompletedGames.length,
+					cacheHit: !!previousVersion
+				});
+			} else {
+				lastUpdateId = updateId;
+				console.log(`💾 CompletedGamesCache: Skipping update - cache is current`, {
+					version: gamesVersion,
+					completedCount: currentCache.sortedCompletedGames.length
+				});
+			}
+		}, 50); // 50ms debounce to handle rapid duplicate calls
 	}
 
 	/**

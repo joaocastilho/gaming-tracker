@@ -154,20 +154,33 @@ function createFiltersStore() {
 			if (allGames.length > 0 && worker) {
 				// Log filter state when filters are applied
 				const activeFilters = [];
-				if (currentFilters.searchTerm.trim()) activeFilters.push(`search:"${currentFilters.searchTerm}"`);
-				if (currentFilters.platforms.length > 0) activeFilters.push(`platforms:[${currentFilters.platforms.join(',')}]`);
-				if (currentFilters.genres.length > 0) activeFilters.push(`genres:[${currentFilters.genres.join(',')}]`);
-				if (currentFilters.statuses.length > 0) activeFilters.push(`statuses:[${currentFilters.statuses.join(',')}]`);
-				if (currentFilters.tiers.length > 0) activeFilters.push(`tiers:[${currentFilters.tiers.join(',')}]`);
-				if (currentFilters.sortOption) activeFilters.push(`sort:${currentFilters.sortOption.key}_${currentFilters.sortOption.direction}`);
+				if (currentFilters.searchTerm.trim())
+					activeFilters.push(`search:"${currentFilters.searchTerm}"`);
+				if (currentFilters.platforms.length > 0)
+					activeFilters.push(`platforms:[${currentFilters.platforms.join(',')}]`);
+				if (currentFilters.genres.length > 0)
+					activeFilters.push(`genres:[${currentFilters.genres.join(',')}]`);
+				if (currentFilters.statuses.length > 0)
+					activeFilters.push(`statuses:[${currentFilters.statuses.join(',')}]`);
+				if (currentFilters.tiers.length > 0)
+					activeFilters.push(`tiers:[${currentFilters.tiers.join(',')}]`);
+				if (currentFilters.sortOption)
+					activeFilters.push(
+						`sort:${currentFilters.sortOption.key}_${currentFilters.sortOption.direction}`
+					);
 
 				console.log(`🔍 Filters: Applying filters for tab "${activeTab}"`, {
 					activeFilters: activeFilters.length > 0 ? activeFilters : 'none',
 					gameCount: allGames.length,
-					cacheUsed: activeTab === 'completed' && !currentFilters.searchTerm.trim() && 
-						currentFilters.platforms.length === 0 && currentFilters.genres.length === 0 && 
-						currentFilters.tiers.length === 0 && currentFilters.statuses.length === 1 && 
-						currentFilters.statuses.includes('Completed') && !currentFilters.sortOption
+					cacheUsed:
+						activeTab === 'completed' &&
+						!currentFilters.searchTerm.trim() &&
+						currentFilters.platforms.length === 0 &&
+						currentFilters.genres.length === 0 &&
+						currentFilters.tiers.length === 0 &&
+						currentFilters.statuses.length === 1 &&
+						currentFilters.statuses.includes('Completed') &&
+						!currentFilters.sortOption
 				});
 
 				// Check if we should use cache for completed tab (only when no custom filters and not sorting)
@@ -183,10 +196,8 @@ function createFiltersStore() {
 
 				// For "all" tab with no filters, we don't need to call the worker at all
 				// The main page will handle this case directly
-				const shouldSkipWorkerForAllTab = 
-					activeTab === 'all' && 
-					activeFilters.length === 0 && 
-					!currentFilters.sortOption;
+				const shouldSkipWorkerForAllTab =
+					activeTab === 'all' && activeFilters.length === 0 && !currentFilters.sortOption;
 
 				if (shouldSkipWorkerForAllTab) {
 					console.log(`🔍 Filters: Skipping worker for "all" tab with no filters`);
