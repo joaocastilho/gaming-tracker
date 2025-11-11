@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
+	import { appStore } from '$lib/stores/app.js';
 	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
 	import type { PageData } from '../$types';
@@ -23,7 +24,7 @@
 	const { loading } = gamesStore;
 
 	filteredGamesStore.subscribe((value) => {
-		console.log(`🎮 Planned page: Received filtered data:`, value);
+		console.log('🎮 Planned page: Received filtered data from worker store:', value);
 		filteredData = value;
 	});
 
@@ -45,26 +46,35 @@
 	});
 
 	$effect(() => {
-		// Apply filters from URL when page loads
-		console.log(`🎮 Planned page: Reading URL parameters on page load`);
-		filtersStore.readFromURL(page.url.searchParams);
+		// Ensure active tab is correctly set when visiting /planned directly,
+		// so the filter worker uses the planned-tab logic.
+		appStore.setActiveTab('planned');
 	});
 
 	const plannedGames = $derived.by(() => {
-		// Use the filtered games from the worker, then filter by status
-		// This ensures all filters (search, platform, genre, etc.) are applied
-		const source = filteredData.filteredGames.length
-			? filteredData.filteredGames
-			: allGamesFromStore;
+		// Worker already:
+		// - runs with activeTab === 'planned'
+		// - applies all filters
+		// - restricts to status === 'Planned'
+		// - sorts alphabetically by title
+		//
+		// So when filteredData.filteredGames is present, it is already the
+		// correct, fully-processed list for the planned tab.
+		if (filteredData.filteredGames && filteredData.filteredGames.length > 0) {
+			console.log(
+				`🎮 Planned page: using worker results: ${filteredData.filteredGames.length} planned games`
+			);
+			return filteredData.filteredGames;
+		}
 
-		const plannedOnly = source.filter((game) => game.status === 'Planned');
-		
-		// Debug: Log what we're getting
-		console.log(`🎮 Planned page: source.length = ${source.length}, plannedOnly.length = ${plannedOnly.length}`);
-		console.log(`🎮 Planned page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`);
-		console.log(`🎮 Planned page: allGamesFromStore.length = ${allGamesFromStore.length}`);
+		// Fallback: mirror worker behavior on initial load or if worker not yet ready
+		const plannedOnly = allGamesFromStore.filter((game) => game.status === 'Planned');
+		const sortedPlanned = plannedOnly.toSorted((a, b) => a.title.localeCompare(b.title));
 
-		return plannedOnly;
+		console.log(
+			`🎮 Planned page: fallback computed list: ${sortedPlanned.length} planned games from store`
+		);
+		return sortedPlanned;
 	});
 </script>
 

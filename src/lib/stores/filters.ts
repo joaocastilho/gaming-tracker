@@ -90,7 +90,7 @@ function createFiltersStore() {
 				...baseFilters,
 				platforms: [],
 				genres: [],
-				statuses: ['Completed', 'Planned'],
+				statuses: [],
 				tiers: [],
 				sortOption: null
 			};
@@ -152,6 +152,24 @@ function createFiltersStore() {
 			lastProcessedKey = processingKey;
 			const allGames = get(gamesStore);
 			if (allGames.length > 0 && worker) {
+				// Log filter state when filters are applied
+				const activeFilters = [];
+				if (currentFilters.searchTerm.trim()) activeFilters.push(`search:"${currentFilters.searchTerm}"`);
+				if (currentFilters.platforms.length > 0) activeFilters.push(`platforms:[${currentFilters.platforms.join(',')}]`);
+				if (currentFilters.genres.length > 0) activeFilters.push(`genres:[${currentFilters.genres.join(',')}]`);
+				if (currentFilters.statuses.length > 0) activeFilters.push(`statuses:[${currentFilters.statuses.join(',')}]`);
+				if (currentFilters.tiers.length > 0) activeFilters.push(`tiers:[${currentFilters.tiers.join(',')}]`);
+				if (currentFilters.sortOption) activeFilters.push(`sort:${currentFilters.sortOption.key}_${currentFilters.sortOption.direction}`);
+
+				console.log(`🔍 Filters: Applying filters for tab "${activeTab}"`, {
+					activeFilters: activeFilters.length > 0 ? activeFilters : 'none',
+					gameCount: allGames.length,
+					cacheUsed: activeTab === 'completed' && !currentFilters.searchTerm.trim() && 
+						currentFilters.platforms.length === 0 && currentFilters.genres.length === 0 && 
+						currentFilters.tiers.length === 0 && currentFilters.statuses.length === 1 && 
+						currentFilters.statuses.includes('Completed') && !currentFilters.sortOption
+				});
+
 				// Check if we should use cache for completed tab (only when no custom filters and not sorting)
 				const shouldUseCompletedCache =
 					activeTab === 'completed' &&
@@ -159,27 +177,19 @@ function createFiltersStore() {
 					currentFilters.platforms.length === 0 &&
 					currentFilters.genres.length === 0 &&
 					currentFilters.tiers.length === 0 &&
-					currentFilters.statuses.length === 2 &&
+					currentFilters.statuses.length === 1 &&
 					currentFilters.statuses.includes('Completed') &&
-					currentFilters.statuses.includes('Planned') &&
 					!currentFilters.sortOption;
 
-				// NEW: Skip worker entirely for "all" tab with no custom filters
-				// This prevents unnecessary worker calls when just switching to the main page
-				const shouldSkipWorker = 
-					activeTab === 'all' &&
-					!currentFilters.searchTerm.trim() &&
-					currentFilters.platforms.length === 0 &&
-					currentFilters.genres.length === 0 &&
-					currentFilters.tiers.length === 0 &&
-					currentFilters.statuses.length === 2 &&
-					currentFilters.statuses.includes('Completed') &&
-					currentFilters.statuses.includes('Planned') &&
+				// For "all" tab with no filters, we don't need to call the worker at all
+				// The main page will handle this case directly
+				const shouldSkipWorkerForAllTab = 
+					activeTab === 'all' && 
+					activeFilters.length === 0 && 
 					!currentFilters.sortOption;
 
-				if (shouldSkipWorker) {
-					// Don't call worker for "all" tab with default filters
-					// The main page will handle this case directly
+				if (shouldSkipWorkerForAllTab) {
+					console.log(`🔍 Filters: Skipping worker for "all" tab with no filters`);
 					return;
 				}
 
@@ -223,10 +233,7 @@ function createFiltersStore() {
 			const hasSearch = state.searchTerm.trim() !== defaultSearchTerm;
 			const hasPlatforms = state.platforms.length > 0;
 			const hasGenres = state.genres.length > 0;
-			const hasStatuses =
-				state.statuses.length !== 2 ||
-				!state.statuses.includes('Completed') ||
-				!state.statuses.includes('Planned');
+			const hasStatuses = state.statuses.length > 0;
 			const hasTiers = state.tiers.length > 0;
 
 			return hasSearch || hasPlatforms || hasGenres || hasStatuses || hasTiers;
@@ -237,7 +244,7 @@ function createFiltersStore() {
 				...baseFilters,
 				platforms: [],
 				genres: [],
-				statuses: ['Completed', 'Planned'],
+				statuses: [],
 				tiers: [],
 				sortOption: null
 			};

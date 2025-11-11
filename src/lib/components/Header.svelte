@@ -8,6 +8,7 @@
 
 	import { filtersStore } from '$lib/stores/filters';
 	import { appStore } from '$lib/stores/app';
+	import { gamesStore } from '$lib/stores/games';
 
 	const filteredGamesStore = filtersStore.createFilteredGamesStore();
 
@@ -22,30 +23,41 @@
 	};
 
 	let navItems = $state<NavItem[]>([]);
+	let allGames = $state<any[]>([]);
+
+	// Calculate counts for each tab based on all games, not filtered games
+	function calculateTabCounts(games: any[]) {
+		const total = games.length;
+		const completed = games.filter((game: any) => game.status === 'Completed').length;
+		const planned = games.filter((game: any) => game.status === 'Planned').length;
+		
+		return { total, completed, planned };
+	}
 
 	function updateNavItems() {
 		const pathname = page.url.pathname;
+		const { total, completed, planned } = calculateTabCounts(allGames);
 
 		navItems = [
 			{
 				id: 'all',
 				label: 'Games',
 				route: '/',
-				count: $filteredGamesStore.totalCount,
+				count: total,
 				active: pathname === '/' || pathname === '/games'
 			},
 			{
 				id: 'completed',
 				label: 'Completed',
 				route: '/completed',
-				count: $filteredGamesStore.completedCount,
+				count: completed,
 				active: pathname === '/completed'
 			},
 			{
 				id: 'planned',
 				label: 'Planned',
 				route: '/planned',
-				count: $filteredGamesStore.plannedCount,
+				count: planned,
 				active: pathname === '/planned'
 			},
 			{
@@ -60,6 +72,14 @@
 
 	$effect(() => {
 		updateNavItems();
+	});
+
+	// Subscribe to games store to get updated counts when games change
+	gamesStore.subscribe((games) => {
+		if (games && games.length >= 0) {
+			allGames = games;
+			updateNavItems();
+		}
 	});
 
 	let loginModalRef: InstanceType<typeof LoginModal> | null = null;

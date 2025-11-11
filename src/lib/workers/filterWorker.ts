@@ -41,6 +41,7 @@ interface LoadResponse {
 }
 
 let loadedGames: Game[] = [];
+let filterCallCount = 0;
 
 function filterGames(games: Game[], filters: FilterState): Game[] {
 	return games.filter((game) => {
@@ -171,7 +172,8 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 				self.postMessage(response);
 			}
 		} else if (type === 'APPLY_FILTERS') {
-			console.log(`🔧 Worker: Processing filters for tab: ${payload.activeTab}`);
+			filterCallCount++;
+			console.log(`🔧 Worker [Call #${filterCallCount}]: Processing filters for tab: ${payload.activeTab}`);
 			const { filters, allGames, activeTab } = payload;
 			let gamesToFilter = loadedGames;
 

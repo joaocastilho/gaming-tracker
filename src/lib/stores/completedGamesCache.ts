@@ -63,11 +63,24 @@ function createCompletedGamesCache() {
 
 		// Only update if we don't have a cache or the games data has changed
 		if (!currentCache || currentCache.gamesVersion !== gamesVersion) {
+			const previousVersion = currentCache?.gamesVersion;
 			const sortedCompletedGames = sortCompletedGamesByDate(games);
 			cache.set({
 				sortedCompletedGames,
 				lastUpdated: Date.now(),
 				gamesVersion
+			});
+			
+			console.log(`💾 CompletedGamesCache: Updated cache`, {
+				previousVersion,
+				newVersion: gamesVersion,
+				completedCount: sortedCompletedGames.length,
+				cacheHit: !!previousVersion
+			});
+		} else {
+			console.log(`💾 CompletedGamesCache: Skipping update - cache is current`, {
+				version: gamesVersion,
+				completedCount: currentCache.sortedCompletedGames.length
 			});
 		}
 	}

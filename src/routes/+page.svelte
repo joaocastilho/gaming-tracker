@@ -30,6 +30,7 @@
 	let allGamesFromStore = $state<Game[]>([]);
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
+	let hasInitializedGames = $state(false);
 
 	const debouncedFiltersWriteToURL = debounce(() => filtersStore.writeToURL(), 100);
 	const debouncedAppWriteToURL = debounce(() => appStore.writeToURL(), 100);
@@ -40,12 +41,15 @@
 	});
 
 	gamesStore.subscribe((games) => {
+		console.log('🎮 Main page: GamesStore subscription triggered, games length:', games?.length);
+		console.log('🎮 Main page: First few games:', games?.slice(0, 3).map(g => ({ id: g.id, title: g.title })));
 		// Debounce rapid updates to avoid excessive processing
 		if (!games || games.length === 0) {
-			allGamesFromStore = games;
+			console.log('🎮 Main page: Skipping empty games array');
 			return;
 		}
 
+		console.log('🎮 Main page: Setting allGamesFromStore to', games.length, 'games');
 		allGamesFromStore = games;
 	});
 
@@ -82,8 +86,8 @@
 		}
 	});
 
-	let hasActiveFilters = filtersStore.isAnyFilterApplied();
 	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
+	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 
 	// Filter games based on active tab (similar to individual tab pages)
 	let displayedGames = $derived.by(() => {
@@ -91,10 +95,16 @@
 		console.log(`🎮 Main page: allGamesFromStore.length = ${allGamesFromStore.length}`);
 		console.log(`🎮 Main page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`);
 		
-		// For "all" tab with no custom filters, show all games directly
+		// Wait for games to be loaded before processing
+		if (allGamesFromStore.length === 0) {
+			console.log(`🎮 Main page: Waiting for games to load (${allGamesFromStore.length} games)`);
+			return [];
+		}
+		
+		// For "all" tab with no custom filters, show all games directly, sorted alphabetically by title
 		if (currentActiveTab === 'all' && !hasActiveFilters) {
-			console.log(`🎮 Main page: Showing all games directly (${allGamesFromStore.length} games)`);
-			return allGamesFromStore;
+			console.log(`🎮 Main page: Showing all games directly (${allGamesFromStore.length} games), sorted alphabetically by title`);
+			return allGamesFromStore.toSorted((a, b) => a.title.localeCompare(b.title));
 		}
 
 		// When filters are applied, use the worker's filtered results
@@ -121,12 +131,26 @@
 		// When no filters are applied, apply tab-specific filtering
 		switch (currentActiveTab) {
 			case 'completed':
-				const completedOnly = allGamesFromStore.filter((game) => game.status === 'Completed');
-				console.log(`🎮 Main page: Completed tab - ${completedOnly.length} completed games`);
+				const completedOnly = allGamesFromStore
+					.filter((game) => game.status === 'Completed')
+					.toSorted((a, b) => {
+						// Sort by finishedDate descending (most recent first), missing dates last
+						if (!a.finishedDate && !b.finishedDate) return 0;
+						if (!a.finishedDate) return 1;
+						if (!b.finishedDate) return -1;
+						return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+					});
+				console.log(
+					`🎮 Main page: Completed tab - ${completedOnly.length} completed games, sorted by finished date desc`
+				);
 				return completedOnly;
 			case 'planned':
-				const plannedOnly = allGamesFromStore.filter((game) => game.status === 'Planned');
-				console.log(`🎮 Main page: Planned tab - ${plannedOnly.length} planned games`);
+				const plannedOnly = allGamesFromStore
+					.filter((game) => game.status === 'Planned')
+					.toSorted((a, b) => a.title.localeCompare(b.title));
+				console.log(
+					`🎮 Main page: Planned tab - ${plannedOnly.length} planned games, sorted alphabetically by title`
+				);
 				return plannedOnly;
 			case 'all':
 			default:
@@ -160,8 +184,15 @@
 	}
 
 	$effect(() => {
-		if (data.games) {
+		console.log('🎮 Main page: Received data.games:', data?.games?.length, 'games');
+		if (data.games && !hasInitializedGames) {
+			console.log('🎮 Main page: Initializing games store with data...');
+			hasInitializedGames = true;
 			gamesStore.initializeGames(data.games);
+		} else if (data.games && hasInitializedGames) {
+			console.log('🎮 Main page: Skipping duplicate initialization - games already initialized');
+		} else {
+			console.log('🎮 Main page: No games data received');
 		}
 	});
 </script>

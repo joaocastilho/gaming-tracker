@@ -51,7 +51,9 @@ function createAppStore() {
 		},
 
 		setActiveTab(tab: 'all' | 'completed' | 'planned' | 'tierlist') {
+			const previousTab = get(activeTab);
 			activeTab.set(tab);
+			console.log(`📋 Tab Navigation: Changed from "${previousTab}" to "${tab}"`);
 		},
 
 		readFromURL(searchParams: URLSearchParams) {

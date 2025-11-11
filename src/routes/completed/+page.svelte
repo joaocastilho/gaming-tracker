@@ -48,45 +48,47 @@
 		console.log(`🎮 Completed page: allGamesFromStore.length = ${allGamesFromStore.length}`);
 		console.log(`🎮 Completed page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`);
 		
-		// Use cached completed games for optimal performance when no custom filters
 		const hasCustomFilters = filtersStore.isAnyFilterApplied();
 		console.log(`🎮 Completed page: hasCustomFilters = ${hasCustomFilters}`);
-		
-		if (!hasCustomFilters && filteredData.filteredGames.length === 0) {
-			// Use cached sorted completed games when no filters are applied
-			console.log(`🎮 Completed page: Using cached completed games`);
-			const cachedGames = completedGamesCache.getCachedCompletedGames(allGamesFromStore);
-			if (cachedGames) {
-				console.log(`🎮 Completed page: Cached games returned: ${cachedGames.length} games`);
-				return cachedGames;
-			} else {
-				console.log(`🎮 Completed page: No cached games available`);
-			}
-		}
-		
-		// Use filtered games from worker when filters are active
+
+		// Base source: worker-filtered games when available, otherwise all games
 		const source = filteredData.filteredGames.length
 			? filteredData.filteredGames
 			: allGamesFromStore;
-		
-		// Filter to only completed games
+
+		// Always filter to only completed games first
 		const completedOnly = source.filter((game) => game.status === 'Completed');
-		console.log(`🎮 Completed page: source.length = ${source.length}, completedOnly.length = ${completedOnly.length}`);
-		
-		// If we have filtered games but no custom filters, sort by finished date
-		if (filteredData.filteredGames.length > 0 && !hasCustomFilters) {
-			const sortedGames = completedOnly.toSorted((a, b) => {
-				if (!a.finishedDate && !b.finishedDate) return 0;
-				if (!a.finishedDate) return 1;
-				if (!b.finishedDate) return -1;
-				return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
-			});
-			console.log(`🎮 Completed page: Sorted games returned: ${sortedGames.length} games`);
-			return sortedGames;
+		console.log(
+			`🎮 Completed page: source.length = ${source.length}, completedOnly.length = ${completedOnly.length}`
+		);
+
+		// When there are no custom filters, prefer cached sorted completed games if available
+		if (!hasCustomFilters && filteredData.filteredGames.length === 0) {
+			console.log(`🎮 Completed page: Attempting to use cached completed games`);
+			const cachedGames = completedGamesCache.getCachedCompletedGames(allGamesFromStore);
+			if (cachedGames && cachedGames.length) {
+				console.log(
+					`🎮 Completed page: Using cached completed games (${cachedGames.length}), already sorted by finished date`
+				);
+				return cachedGames;
+			}
+			console.log(`🎮 Completed page: No cached games available, falling back to computed list`);
 		}
-		
-		console.log(`🎮 Completed page: Returning ${completedOnly.length} completed games`);
-		return completedOnly;
+
+		// Sort completed games by finished date (desc) when:
+		// - No custom filters (default view), or
+		// - Sort behavior should prioritize recency
+		const sortedByFinishedDate = completedOnly.toSorted((a, b) => {
+			if (!a.finishedDate && !b.finishedDate) return 0;
+			if (!a.finishedDate) return 1;
+			if (!b.finishedDate) return -1;
+			return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+		});
+
+		console.log(
+			`🎮 Completed page: Returning ${sortedByFinishedDate.length} completed games sorted by finished date desc`
+		);
+		return sortedByFinishedDate;
 	});
 </script>
 
