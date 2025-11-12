@@ -18,39 +18,22 @@
 		filteredGames: Game[];
 	}
 
-	const filteredGamesStore = filtersStore.createFilteredGamesStore();
-
-	let filteredData = $state<FilteredGameData>({
-		filteredGames: [],
-		totalCount: 0,
-		completedCount: 0,
-		plannedCount: 0
-	});
-
-	let allGamesFromStore = $state<Game[]>([]);
+	// Simple state management - no complex derived stores
+	let allGames = $state<Game[]>([]);
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
 	let hasInitializedGames = $state(false);
 
-	const debouncedFiltersWriteToURL = debounce(() => filtersStore.writeToURL(), 100);
-	const debouncedAppWriteToURL = debounce(() => appStore.writeToURL(), 100);
-	const debouncedSortWriteToURL = debounce(() => sortStore.writeToURL(), 100);
+	const { loading } = gamesStore;
 
-	filteredGamesStore.subscribe((data) => {
-		filteredData = data;
-	});
-
+	// Subscribe to games store
 	gamesStore.subscribe((games) => {
-		// Skip the initial empty array subscription trigger
-		if (!games || games.length === 0) {
-			return;
+		if (games && games.length > 0) {
+			allGames = games;
 		}
-
-		console.log('🎮 Main page: GamesStore subscription triggered, games length:', games?.length);
-		console.log('🎮 Main page: Setting allGamesFromStore to', games.length, 'games');
-		allGamesFromStore = games;
 	});
 
+	// Subscribe to active tab
 	appStore.activeTab.subscribe((activeTab) => {
 		currentActiveTab = activeTab;
 		if (activeTab === 'tierlist') {
@@ -58,18 +41,20 @@
 		}
 	});
 
+	// Initialize URL reading
 	$effect(() => {
 		filtersStore.readFromURL(page.url.searchParams);
 		appStore.readFromURL(page.url.searchParams);
 		sortStore.readFromURL(page.url.searchParams);
 	});
 
+	// Handle URL writing
 	$effect(() => {
 		const updateURLs = () => {
 			try {
-				debouncedFiltersWriteToURL();
-				debouncedAppWriteToURL();
-				debouncedSortWriteToURL();
+				filtersStore.writeToURL();
+				appStore.writeToURL();
+				sortStore.writeToURL();
 			} catch (error) {
 				if (error instanceof Error && error.message.includes('router is initialized')) {
 					setTimeout(updateURLs, 10);
@@ -84,101 +69,82 @@
 		}
 	});
 
-	let tierListGames = $derived(allGamesFromStore.filter((game) => game.tier));
+	// Initialize games from server data
+	$effect(() => {
+		if (data.games && !hasInitializedGames) {
+			gamesStore.initializeGames(data.games);
+			hasInitializedGames = true;
+		}
+	});
+
+	// Simple derived values for each tab
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 
-	// Filter games based on active tab (similar to individual tab pages)
+	// Main display logic - simple and direct
 	let displayedGames = $derived.by(() => {
-		console.log(
-			`🎮 Main page: currentActiveTab = ${currentActiveTab}, hasActiveFilters = ${hasActiveFilters}`
-		);
-		console.log(`🎮 Main page: allGamesFromStore.length = ${allGamesFromStore.length}`);
-		console.log(
-			`🎮 Main page: filteredData.filteredGames.length = ${filteredData.filteredGames.length}`
-		);
-
-		// Wait for games to be loaded before processing
-		if (allGamesFromStore.length === 0) {
-			console.log(`🎮 Main page: Waiting for games to load (${allGamesFromStore.length} games)`);
+		// Wait for games to load
+		if (allGames.length === 0) {
 			return [];
 		}
 
-		// For "all" tab with no custom filters, show all games directly, sorted alphabetically by title
-		if (currentActiveTab === 'all' && !hasActiveFilters) {
-			console.log(
-				`🎮 Main page: Showing all games directly (${allGamesFromStore.length} games), sorted alphabetically by title`
-			);
-			return allGamesFromStore.toSorted((a, b) => a.title.localeCompare(b.title));
-		}
+		// Apply filters if any exist
+		if (hasActiveFilters) {
+			const filteredGamesStore = filtersStore.createFilteredGamesStore();
+			let filteredData: FilteredGameData = {
+				filteredGames: [],
+				totalCount: 0,
+				completedCount: 0,
+				plannedCount: 0
+			};
 
-		// When filters are applied, use the worker's filtered results
-		if (hasActiveFilters && filteredData.filteredGames.length > 0) {
-			console.log(
-				`🎮 Main page: Using worker filtered results (${filteredData.filteredGames.length} games)`
-			);
-			// For tab-specific filtering when filters are active, we need to further filter
-			// the worker results by the current tab's status requirement
+			// Subscribe to filtered data
+			const unsubscribe = filteredGamesStore.subscribe((data) => {
+				filteredData = data;
+			});
+			
+			// For filtered results, apply tab-specific filtering
+			const baseGames = filteredData.filteredGames.length > 0 ? filteredData.filteredGames : allGames;
+			
 			switch (currentActiveTab) {
-				case 'completed': {
-					const completedGames = filteredData.filteredGames.filter(
-						(game) => game.status === 'Completed'
-					);
-					console.log(
-						`🎮 Main page: Completed tab - ${completedGames.length} games after filtering`
-					);
-					return completedGames;
-				}
-				case 'planned': {
-					const plannedGames = filteredData.filteredGames.filter(
-						(game) => game.status === 'Planned'
-					);
-					console.log(`🎮 Main page: Planned tab - ${plannedGames.length} games after filtering`);
-					return plannedGames;
-				}
-				case 'all':
-				default: {
-					console.log(
-						`🎮 Main page: All tab with filters - ${filteredData.filteredGames.length} games`
-					);
-					return filteredData.filteredGames;
-				}
+				case 'completed':
+					return baseGames.filter(game => game.status === 'Completed')
+						.toSorted((a, b) => {
+							if (!a.finishedDate && !b.finishedDate) return 0;
+							if (!a.finishedDate) return 1;
+							if (!b.finishedDate) return -1;
+							return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+						});
+				case 'planned':
+					return baseGames.filter(game => game.status === 'Planned')
+						.toSorted((a, b) => a.title.localeCompare(b.title));
+				case 'tierlist':
+					return baseGames.filter(game => game.tier);
+				default:
+					return baseGames.toSorted((a, b) => a.title.localeCompare(b.title));
 			}
 		}
 
-		// When no filters are applied, apply tab-specific filtering
+		// No filters - simple tab-based logic
 		switch (currentActiveTab) {
-			case 'completed': {
-				const completedOnly = allGamesFromStore
-					.filter((game) => game.status === 'Completed')
+			case 'completed':
+				return allGames.filter(game => game.status === 'Completed')
 					.toSorted((a, b) => {
-						// Sort by finishedDate descending (most recent first), missing dates last
 						if (!a.finishedDate && !b.finishedDate) return 0;
 						if (!a.finishedDate) return 1;
 						if (!b.finishedDate) return -1;
 						return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
 					});
-				console.log(
-					`🎮 Main page: Completed tab - ${completedOnly.length} completed games, sorted by finished date desc`
-				);
-				return completedOnly;
-			}
-			case 'planned': {
-				const plannedOnly = allGamesFromStore
-					.filter((game) => game.status === 'Planned')
+			case 'planned':
+				return allGames.filter(game => game.status === 'Planned')
 					.toSorted((a, b) => a.title.localeCompare(b.title));
-				console.log(
-					`🎮 Main page: Planned tab - ${plannedOnly.length} planned games, sorted alphabetically by title`
-				);
-				return plannedOnly;
-			}
-			case 'all':
-			default: {
-				console.log(`🎮 Main page: All tab - showing ${allGamesFromStore.length} games`);
-				return allGamesFromStore;
-			}
+			case 'tierlist':
+				return allGames.filter(game => game.tier);
+			default:
+				return allGames.toSorted((a, b) => a.title.localeCompare(b.title));
 		}
 	});
 
+	// Tier list view loading
 	async function loadTierListView() {
 		if (TierListViewComponent) return;
 
@@ -190,6 +156,7 @@
 		}
 	}
 
+	// Preload tier list view
 	function preloadTierListView() {
 		if (!TierListViewComponent) {
 			loadTierListView();
@@ -202,19 +169,6 @@
 		};
 		(window as WindowWithPreload).__preloadTierListView = preloadTierListView;
 	}
-
-	$effect(() => {
-		console.log('🎮 Main page: Received data.games:', data?.games?.length, 'games');
-		if (data.games && !hasInitializedGames) {
-			console.log('🎮 Main page: Initializing games store with data...');
-			hasInitializedGames = true;
-			gamesStore.initializeGames(data.games);
-		} else if (data.games && hasInitializedGames) {
-			console.log('🎮 Main page: Skipping duplicate initialization - games already initialized');
-		} else {
-			console.log('🎮 Main page: No games data received');
-		}
-	});
 </script>
 
 <svelte:head>
@@ -223,7 +177,7 @@
 
 <div class="main-content" id="main-content">
 	{#if currentActiveTab === 'tierlist' && TierListViewComponent}
-		<TierListViewComponent filteredGames={tierListGames} />
+		<TierListViewComponent filteredGames={displayedGames} />
 	{:else if currentActiveTab !== 'tierlist' && hasActiveFilters && displayedGames.length === 0}
 		<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
 			<h2 class="font-semibold">No games match your current filters</h2>
@@ -236,16 +190,15 @@
 				onclick={() => {
 					filtersStore.resetAllFilters();
 					filtersStore.setSearchTerm('');
-					appStore.writeToURLWithFilters(filtersStore);
 				}}
 			>
 				↻ Reset filters
 			</button>
 		</div>
-	{:else if currentActiveTab !== 'tierlist' && allGamesFromStore.length > 0}
-		<GamesView filteredGames={displayedGames} />
 	{:else if currentActiveTab !== 'tierlist'}
-		<div class="loading">Loading games...</div>
+		<GamesView filteredGames={displayedGames} />
+	{:else}
+		<div class="loading">Loading tier list...</div>
 	{/if}
 </div>
 

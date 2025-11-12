@@ -1,79 +1,66 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';
+	import { get } from 'svelte/store';
 	import type { Game } from '$lib/types/game.js';
 	import type { PageData } from '../$types';
+	import type { Component } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
 
-	let allGamesFromStore: Game[] = [];
-	let isLoadingView = $state(false);
-	let TierListViewComponent = $state<
-		typeof import('$lib/views/TierListView.svelte').default | null
-	>(null);
+	let allGames: Game[] = [];
+	let isLoading = $state(true);
+	let TierListViewComponent = $state<Component<{ filteredGames: Game[] }> | null>(null);
 
 	const { loading } = gamesStore;
 
+	// Subscribe to games store
 	gamesStore.subscribe((games) => {
-		// Debounce rapid updates to avoid excessive processing
-		if (!games || games.length === 0) {
-			console.log(`🎮 Tierlist page: gamesStore subscription triggered with empty games array`);
-			allGamesFromStore = games;
-			return;
+		if (games && games.length > 0) {
+			allGames = games;
+			isLoading = false;
 		}
-
-		// Only log when the count actually changes to avoid spam
-		if (allGamesFromStore.length !== games.length) {
-			console.log(
-				`🎮 Tierlist page: gamesStore subscription triggered, games.length = ${games.length}`
-			);
-		}
-
-		allGamesFromStore = games;
 	});
 
-	async function loadTierListView() {
-		if (TierListViewComponent) return;
-
-		isLoadingView = true;
-		try {
-			const module = await import('$lib/views/TierListView.svelte');
-			TierListViewComponent = module.default;
-		} catch (err) {
-			console.error('Failed to load tier list view:', err);
-		} finally {
-			isLoadingView = false;
-		}
-	}
-
+	// Set active tab when navigating to this page
 	$effect(() => {
 		if (data.games) {
 			gamesStore.initializeGames(data.games);
 		}
+		
+		const currentTab = get(appStore.activeTab);
+		if (currentTab !== 'tierlist') {
+			appStore.setActiveTab('tierlist', true);
+		}
 
-		filtersStore.readFromURL(page.url.searchParams);
-		appStore.readFromURL(page.url.searchParams);
-
-		appStore.setActiveTab('tierlist');
-
-		loadTierListView();
+		// Load tier list view component
+		if (!TierListViewComponent) {
+			import('$lib/views/TierListView.svelte')
+				.then((module) => {
+					TierListViewComponent = module.default;
+				})
+				.catch((err) => {
+					console.error('Failed to load tier list view:', err);
+				});
+		}
 	});
 
-	const tierListGames = $derived.by(() => {
-		const gamesWithTiers = allGamesFromStore.filter((game) => game.tier);
-		console.log(`🎮 Tierlist page: allGamesFromStore.length = ${allGamesFromStore.length}`);
-		console.log(`🎮 Tierlist page: games with tiers = ${gamesWithTiers.length}`);
-		return gamesWithTiers;
-	});
+	// Function to get tiered games
+	function getTieredGames(): Game[] {
+		if (allGames.length === 0) return [];
+		
+		return allGames.filter(game => game.tier);
+	}
+
+	// Simple derived for tiered games
+	let tieredGames = $derived(getTieredGames());
 </script>
 
 <div class="main-content" id="main-content">
-	{#if $loading || isLoadingView || !TierListViewComponent}
+	{#if $loading || isLoading || !TierListViewComponent}
 		<div class="loading">Loading tiers...</div>
 	{:else}
-		<TierListViewComponent filteredGames={tierListGames} />
+		<TierListViewComponent filteredGames={tieredGames} />
 	{/if}
 </div>
 

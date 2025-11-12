@@ -93,7 +93,7 @@
 		// Logo click should clear filters
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
-		appStore.setActiveTab('all');
+		appStore.setActiveTab('all', true);
 
 		// Navigate to Games tab
 		const route = '/';

@@ -50,10 +50,13 @@ function createAppStore() {
 			theme.set(newTheme);
 		},
 
-		setActiveTab(tab: 'all' | 'completed' | 'planned' | 'tierlist') {
+		setActiveTab(tab: 'all' | 'completed' | 'planned' | 'tierlist', force = false) {
 			const previousTab = get(activeTab);
-			activeTab.set(tab);
-			console.log(`📋 Tab Navigation: Changed from "${previousTab}" to "${tab}"`);
+			// Only log and update if the tab is actually changing or if forced
+			if (force || previousTab !== tab) {
+				activeTab.set(tab);
+				console.log(`📋 Tab Navigation: Changed from "${previousTab}" to "${tab}"`);
+			}
 		},
 
 		readFromURL(searchParams: URLSearchParams) {

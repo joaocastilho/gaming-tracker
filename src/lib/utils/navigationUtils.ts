@@ -25,8 +25,8 @@ const DEFAULT_OPTIONS: NavigationOptions = {
 export function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
-	// Update active tab state
-	appStore.setActiveTab(target);
+	// Update active tab state with force to ensure it's set
+	appStore.setActiveTab(target, true);
 
 	// Clear filters for routes that require it (currently only tierlist)
 	if (requiresFilterReset(target)) {
@@ -62,8 +62,8 @@ export function navigateToAndReset(
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
 
-	// Update active tab state
-	appStore.setActiveTab(target);
+	// Update active tab state with force to ensure it's set
+	appStore.setActiveTab(target, true);
 
 	// Navigate to route
 	const route = target === 'all' ? '/' : `/${target}`;
@@ -95,8 +95,8 @@ export function navigateToAllAndClearFilters() {
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
 
-	// Update active tab
-	appStore.setActiveTab('all');
+	// Update active tab with force to ensure it's set
+	appStore.setActiveTab('all', true);
 
 	// Navigate without filter preservation
 	const route = '/';
