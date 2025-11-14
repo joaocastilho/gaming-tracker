@@ -21,6 +21,17 @@ export interface ModalState {
 	formData: Partial<Game>;
 	validationErrors: Record<string, string>;
 	isSubmitting: boolean;
+	displayedGames: Game[];
+	pendingGameFromURL: Game | null;
+	filterContext: {
+		searchTerm: string;
+		platforms: string[];
+		genres: string[];
+		statuses: string[];
+		tiers: string[];
+		sortOption: import('../stores/filters').SortOption | null;
+		activeTab: 'all' | 'completed' | 'planned' | 'tierlist';
+	};
 }
 
 function createModalStore() {
@@ -30,7 +41,18 @@ function createModalStore() {
 		mode: 'view',
 		formData: {},
 		validationErrors: {},
-		isSubmitting: false
+		isSubmitting: false,
+		displayedGames: [],
+		pendingGameFromURL: null,
+		filterContext: {
+			searchTerm: '',
+			platforms: [],
+			genres: [],
+			statuses: [],
+			tiers: [],
+			sortOption: null,
+			activeTab: 'all'
+		}
 	});
 
 	const debouncedWriteToURL = debounce(() => {
@@ -60,30 +82,47 @@ function createModalStore() {
 			return get(modalState);
 		},
 
-		openViewModal(game: Game) {
-			modalState.set({
+		openViewModal(
+			game: Game,
+			displayedGames: Game[] = [],
+			filterContext?: Partial<ModalState['filterContext']>
+		) {
+			modalState.update((state) => ({
+				...state,
 				isOpen: true,
 				activeGame: game,
 				mode: 'view',
 				formData: {},
 				validationErrors: {},
-				isSubmitting: false
-			});
+				isSubmitting: false,
+				displayedGames,
+				pendingGameFromURL: null,
+				filterContext: filterContext
+					? { ...state.filterContext, ...filterContext }
+					: state.filterContext
+			}));
 		},
 
-		openEditModal(game: Game) {
-			modalState.set({
+		openEditModal(game: Game, filterContext?: Partial<ModalState['filterContext']>) {
+			modalState.update((state) => ({
+				...state,
 				isOpen: true,
 				activeGame: game,
 				mode: 'edit',
 				formData: { ...game },
 				validationErrors: {},
-				isSubmitting: false
-			});
+				isSubmitting: false,
+				displayedGames: [],
+				pendingGameFromURL: null,
+				filterContext: filterContext
+					? { ...state.filterContext, ...filterContext }
+					: state.filterContext
+			}));
 		},
 
-		openAddModal() {
-			modalState.set({
+		openAddModal(filterContext?: Partial<ModalState['filterContext']>) {
+			modalState.update((state) => ({
+				...state,
 				isOpen: true,
 				activeGame: null,
 				mode: 'add',
@@ -92,19 +131,27 @@ function createModalStore() {
 					coOp: 'No'
 				},
 				validationErrors: {},
-				isSubmitting: false
-			});
+				isSubmitting: false,
+				displayedGames: [],
+				pendingGameFromURL: null,
+				filterContext: filterContext
+					? { ...state.filterContext, ...filterContext }
+					: state.filterContext
+			}));
 		},
 
 		closeModal() {
-			modalState.set({
+			modalState.update((state) => ({
+				...state,
 				isOpen: false,
 				activeGame: null,
 				mode: 'view',
 				formData: {},
 				validationErrors: {},
-				isSubmitting: false
-			});
+				isSubmitting: false,
+				displayedGames: [],
+				pendingGameFromURL: null
+			}));
 
 			debouncedWriteToURL();
 		},
@@ -128,6 +175,134 @@ function createModalStore() {
 				...state,
 				mode
 			}));
+		},
+
+		updateFilterContext(context: Partial<ModalState['filterContext']>) {
+			modalState.update((state) => ({
+				...state,
+				filterContext: { ...state.filterContext, ...context }
+			}));
+		},
+
+		getReactiveNavigationGames(allGames: Game[]): Game[] {
+			const state = get(modalState);
+			if (!state.filterContext) return allGames;
+
+			let filteredGames = [...allGames];
+
+			// Apply search filter
+			if (state.filterContext.searchTerm.trim()) {
+				const query = state.filterContext.searchTerm.toLowerCase().trim();
+				filteredGames = filteredGames.filter((game) => {
+					const titleMatch = game.title.toLowerCase().includes(query);
+					const genreMatch = game.genre.toLowerCase().includes(query);
+					const platformMatch = game.platform.toLowerCase().includes(query);
+					return titleMatch || genreMatch || platformMatch;
+				});
+			}
+
+			// Apply platform filter
+			if (state.filterContext.platforms.length > 0) {
+				filteredGames = filteredGames.filter((game) =>
+					state.filterContext.platforms.includes(game.platform)
+				);
+			}
+
+			// Apply genre filter
+			if (state.filterContext.genres.length > 0) {
+				filteredGames = filteredGames.filter((game) =>
+					state.filterContext.genres.includes(game.genre)
+				);
+			}
+
+			// Apply tier filter
+			if (state.filterContext.tiers.length > 0) {
+				filteredGames = filteredGames.filter((game) => {
+					if (!game.tier) return false;
+					const gameTierFullName = this.getTierDisplayName(game.tier);
+					return state.filterContext.tiers.includes(gameTierFullName);
+				});
+			}
+
+			// Apply tab-specific filtering
+			switch (state.filterContext.activeTab) {
+				case 'completed':
+					filteredGames = filteredGames.filter((game) => game.status === 'Completed');
+					break;
+				case 'planned':
+					filteredGames = filteredGames.filter((game) => game.status === 'Planned');
+					break;
+				case 'tierlist':
+					filteredGames = filteredGames.filter((game) => game.tier);
+					break;
+				default:
+					// For 'all' tab, no additional filtering
+					break;
+			}
+
+			// Apply sorting based on sortOption
+			if (state.filterContext.sortOption) {
+				const { key, direction } = state.filterContext.sortOption;
+				const dir = direction === 'asc' ? 1 : -1;
+
+				filteredGames = filteredGames.toSorted((a, b) => {
+					const aVal =
+						key === 'presentation'
+							? (a.ratingPresentation ?? 0)
+							: key === 'story'
+								? (a.ratingStory ?? 0)
+								: key === 'gameplay'
+									? (a.ratingGameplay ?? 0)
+									: (a.score ?? 0);
+
+					const bVal =
+						key === 'presentation'
+							? (b.ratingPresentation ?? 0)
+							: key === 'story'
+								? (b.ratingStory ?? 0)
+								: key === 'gameplay'
+									? (b.ratingGameplay ?? 0)
+									: (b.score ?? 0);
+
+					if (aVal === bVal) return 0;
+					return aVal > bVal ? dir : -dir;
+				});
+			} else {
+				// Default sorting when no sortOption is selected
+				switch (state.filterContext.activeTab) {
+					case 'completed':
+						// Sort completed games by finished date (most recent first)
+						filteredGames = filteredGames.toSorted((a, b) => {
+							if (!a.finishedDate && !b.finishedDate) return 0;
+							if (!a.finishedDate) return 1;
+							if (!b.finishedDate) return -1;
+							return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+						});
+						break;
+					case 'planned':
+						// Sort planned games alphabetically
+						filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+						break;
+					default:
+						// Sort 'all' tab alphabetically
+						filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+						break;
+				}
+			}
+
+			return filteredGames;
+		},
+
+		getTierDisplayName(tier: string): string {
+			const tierMapping: Record<string, string> = {
+				S: 'S - Masterpiece',
+				A: 'A - Amazing',
+				B: 'B - Great',
+				C: 'C - Good',
+				D: 'D - Decent',
+				E: 'E - Bad'
+			};
+			return tierMapping[tier] || tier;
 		},
 
 		updateFormData(field: string, value: unknown) {
@@ -337,19 +512,28 @@ function createModalStore() {
 					game = games.find((g) => g.id === gameSlug);
 				}
 				if (game) {
-					modalState.set({
-						isOpen: true,
-						activeGame: game,
-						mode: 'view',
-						formData: {},
-						validationErrors: {},
-						isSubmitting: false
-					});
+					modalState.update((state) => ({
+						...state,
+						pendingGameFromURL: game
+					}));
 				}
 			}
 		},
 
 		writeToURL: debouncedWriteToURL,
+
+		openPendingGameFromURL(
+			displayedGames: Game[],
+			filterContext?: Partial<ModalState['filterContext']>
+		) {
+			const state = get(modalState);
+			if (
+				state.pendingGameFromURL &&
+				displayedGames.some((g) => g.id === state.pendingGameFromURL!.id)
+			) {
+				this.openViewModal(state.pendingGameFromURL, displayedGames, filterContext);
+			}
+		},
 
 		handleEscape() {
 			modalState.update((state) => {

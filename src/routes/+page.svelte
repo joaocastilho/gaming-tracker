@@ -4,6 +4,7 @@
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { appStore } from '$lib/stores/app.js';
 	import { sortStore } from '$lib/stores/sort.js';
+	import { modalStore } from '$lib/stores/modal.js';
 	import GamesView from '$lib/views/GamesView.svelte';
 
 	import type { Game } from '$lib/types/game.js';
@@ -16,6 +17,7 @@
 
 	interface TierListViewProps {
 		filteredGames: Game[];
+		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
 	// Simple state management - no complex derived stores
@@ -23,6 +25,7 @@
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
 	let hasInitializedGames = $state(false);
+	let isLoadingGames = $state(true);
 
 	// Subscribe to games store
 	gamesStore.subscribe((games) => {
@@ -72,8 +75,32 @@
 		if (data.games && !hasInitializedGames) {
 			gamesStore.initializeGames(data.games);
 			hasInitializedGames = true;
+			isLoadingGames = false;
+		} else if (!data.games && !hasInitializedGames) {
+			// Handle case where no games data is available
+			isLoadingGames = false;
 		}
 	});
+
+	// Handle URL reading for modal
+	$effect(() => {
+		if (allGames.length > 0) {
+			modalStore.readFromURL(page.url.searchParams, allGames);
+		}
+	});
+
+	// Handle pending modal from URL
+	$effect(() => {
+		if (displayedGames.length > 0 && $modalStore.pendingGameFromURL) {
+			modalStore.openPendingGameFromURL(displayedGames);
+		}
+	});
+
+	// Function to open modal with reactive filter context
+	function openModalWithFilterContext(game: Game) {
+		// Pass the current filter state to the modal store
+		modalStore.openViewModal(game, displayedGames);
+	}
 
 	// Simple derived values for each tab
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
@@ -115,7 +142,7 @@
 	// Main display logic - apply filters directly for reliability
 	let displayedGames = $derived.by(() => {
 		// Wait for games to load
-		if (allGames.length === 0) {
+		if (isLoadingGames || allGames.length === 0) {
 			return [];
 		}
 
@@ -257,7 +284,10 @@
 
 <div class="main-content" id="main-content">
 	{#if currentActiveTab === 'tierlist' && TierListViewComponent}
-		<TierListViewComponent filteredGames={displayedGames} />
+		<TierListViewComponent
+			filteredGames={displayedGames}
+			onOpenModal={openModalWithFilterContext}
+		/>
 	{:else if currentActiveTab !== 'tierlist' && hasActiveFilters && displayedGames.length === 0}
 		<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
 			<h2 class="font-semibold">No games match your current filters</h2>
@@ -275,8 +305,10 @@
 				↻ Reset filters
 			</button>
 		</div>
+	{:else if currentActiveTab !== 'tierlist' && isLoadingGames}
+		<div class="loading">Loading games...</div>
 	{:else if currentActiveTab !== 'tierlist'}
-		<GamesView filteredGames={displayedGames} />
+		<GamesView filteredGames={displayedGames} onOpenModal={openModalWithFilterContext} />
 	{:else}
 		<div class="loading">Loading tier list...</div>
 	{/if}

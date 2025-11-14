@@ -7,9 +7,10 @@
 
 	interface Props {
 		filteredGames: Game[];
+		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
-	let { filteredGames }: Props = $props();
+	let { filteredGames, onOpenModal }: Props = $props();
 
 	const [send, receive] = crossfade({
 		duration: 300,
@@ -53,7 +54,7 @@
 	<div class="tier-list-container max-w-none">
 		{#each Object.entries(tierList) as [tierName, games] (tierName)}
 			{#if games.length > 0}
-				<TierRow {tierName} {games} {send} {receive} />
+				<TierRow {tierName} {games} {send} {receive} {onOpenModal} />
 			{/if}
 		{/each}
 	</div>

@@ -2,7 +2,6 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { modalStore } from '../stores/modal.js';
-	import { filtersStore } from '../stores/filters.js';
 	import { appStore } from '../stores/app.js';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';
@@ -21,10 +20,23 @@
 
 	let currentActiveTab = $derived(appStore.activeTab);
 
-	const filteredGamesStore = filtersStore.createFilteredGamesStore();
-	let filteredGamesData = $derived($filteredGamesStore);
 	import { gamesStore } from '../stores/games.js';
 	let allGames = $derived($gamesStore);
+
+	// Use reactive navigation data from the modal store
+	let displayedGames = $derived(() => {
+		// If modal has displayed games, use them (for proper navigation context)
+		if ($modalStore.displayedGames.length > 0) {
+			return $modalStore.displayedGames;
+		}
+
+		// Otherwise, use the reactive navigation method from modal store
+		const allGames = $gamesStore;
+		if (allGames.length === 0) return [];
+
+		// Use the modal store's reactive navigation method
+		return modalStore.getReactiveNavigationGames(allGames);
+	});
 
 	$effect(() => {
 		if ($modalStore.isOpen) {
@@ -98,15 +110,15 @@
 	}
 
 	let currentTabGames = $derived(() => {
-		const filteredGames = filteredGamesData.filteredGames;
+		const games = displayedGames();
 
 		switch ($currentActiveTab) {
 			case 'all': {
-				return filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+				return games.toSorted((a, b) => a.title.localeCompare(b.title));
 			}
 
 			case 'completed': {
-				return filteredGames
+				return games
 					.filter((game) => game.status === 'Completed')
 					.toSorted((a, b) => {
 						if (!a.finishedDate && !b.finishedDate) return 0;
@@ -117,7 +129,7 @@
 			}
 
 			case 'planned': {
-				return filteredGames
+				return games
 					.filter((game) => game.status === 'Planned')
 					.toSorted((a, b) => a.title.localeCompare(b.title));
 			}
@@ -142,7 +154,7 @@
 				];
 
 				const gamesByTier: Record<string, Game[]> = {};
-				filteredGames
+				games
 					.filter((game) => game.status === 'Completed' && game.tier)
 					.forEach((game) => {
 						const tierKey = tierMapping[game.tier!] || game.tier!;
@@ -163,14 +175,13 @@
 			}
 
 			default: {
-				return filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+				return games.toSorted((a, b) => a.title.localeCompare(b.title));
 			}
 		}
 	});
 
 	let allTieredGames = $derived(() => {
-		const sourceGames =
-			$currentActiveTab === 'tierlist' ? allGames : filteredGamesData.filteredGames;
+		const sourceGames = $currentActiveTab === 'tierlist' ? allGames : displayedGames();
 
 		const tierOrder = [
 			'S - Masterpiece',
@@ -213,28 +224,53 @@
 	let currentGameIndex = $derived(() => {
 		if (!$modalStore.activeGame) return -1;
 
-		if ($currentActiveTab === 'tierlist') {
-			return allTieredGames().findIndex((game) => game.id === $modalStore.activeGame?.id);
+		// Use displayedGames from modal store if available (for proper navigation context)
+		if ($modalStore.displayedGames.length > 0) {
+			return $modalStore.displayedGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 		}
 
-		return currentTabGames().findIndex((game) => game.id === $modalStore.activeGame?.id);
+		// For tier list tab, use the tier-specific navigation
+		if ($currentActiveTab === 'tierlist') {
+			const tierGames = allTieredGames();
+			return tierGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
+		}
+
+		// For other tabs, use the current tab games
+		const tabGames = currentTabGames();
+		return tabGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 	});
 
 	function navigateToPrevious() {
 		const index = currentGameIndex();
-		const games = $currentActiveTab === 'tierlist' ? allTieredGames() : currentTabGames();
+
+		// Use appropriate games array based on current tab
+		let games;
+		if ($currentActiveTab === 'tierlist') {
+			games = allTieredGames();
+		} else {
+			games = displayedGames();
+		}
+
 		if (index > 0) {
 			const prevGame = games[index - 1];
-			modalStore.openViewModal(prevGame);
+			modalStore.openViewModal(prevGame, games);
 		}
 	}
 
 	function navigateToNext() {
 		const index = currentGameIndex();
-		const games = $currentActiveTab === 'tierlist' ? allTieredGames() : currentTabGames();
+
+		// Use appropriate games array based on current tab
+		let games;
+		if ($currentActiveTab === 'tierlist') {
+			games = allTieredGames();
+		} else {
+			games = displayedGames();
+		}
+
 		if (index < games.length - 1) {
 			const nextGame = games[index + 1];
-			modalStore.openViewModal(nextGame);
+			modalStore.openViewModal(nextGame, games);
 		}
 	}
 
@@ -377,7 +413,7 @@
 		{/if}
 
 		{#if (() => {
-			const games = $currentActiveTab === 'tierlist' ? allTieredGames() : currentTabGames();
+			const games = displayedGames();
 			return currentGameIndex() > -1 && currentGameIndex() < games.length - 1;
 		})()}
 			<button

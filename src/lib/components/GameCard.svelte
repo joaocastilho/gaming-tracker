@@ -20,9 +20,18 @@
 		size?: 'small' | 'large' | 'tiny';
 		showTierBadge?: boolean;
 		isAboveFold?: boolean;
+		displayedGames?: Game[];
+		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
-	let { game, size = 'small', showTierBadge = true, isAboveFold = false }: Props = $props();
+	let {
+		game,
+		size = 'small',
+		showTierBadge = true,
+		isAboveFold = false,
+		displayedGames = [],
+		onOpenModal
+	}: Props = $props();
 
 	const imageSrcset = $derived(() => {
 		if (size === 'tiny') {
@@ -97,7 +106,11 @@
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
-			modalStore.openViewModal(game);
+			if (onOpenModal) {
+				onOpenModal(game, displayedGames);
+			} else {
+				modalStore.openViewModal(game, displayedGames);
+			}
 		}
 	}
 
@@ -118,7 +131,13 @@
 		: size === 'tiny'
 			? '300px'
 			: '450px'};"
-	onclick={() => modalStore.openViewModal(game)}
+	onclick={() => {
+		if (onOpenModal) {
+			onOpenModal(game, displayedGames);
+		} else {
+			modalStore.openViewModal(game, displayedGames);
+		}
+	}}
 	onkeydown={handleKeyDown}
 	onmouseover={preloadDetailImage}
 	onfocus={preloadDetailImage}

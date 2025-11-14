@@ -9,9 +9,10 @@
 		games: Game[];
 		send: (node: Element, params: CrossfadeParams & { key: string }) => () => TransitionConfig;
 		receive: (node: Element, params: CrossfadeParams & { key: string }) => () => TransitionConfig;
+		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
-	let { tierName, games, send, receive }: Props = $props();
+	let { tierName, games, send, receive, onOpenModal }: Props = $props();
 </script>
 
 <div class="tier-section">
@@ -22,7 +23,7 @@
 	<div class="tier-games-grid">
 		{#each games as game (game.id)}
 			<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
-				<GameCard {game} size="tiny" showTierBadge={false} />
+				<GameCard {game} size="tiny" showTierBadge={false} {onOpenModal} />
 			</div>
 		{/each}
 	</div>

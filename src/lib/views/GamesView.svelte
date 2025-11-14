@@ -7,9 +7,11 @@
 
 	interface Props {
 		filteredGames: Game[];
+		displayedGames?: Game[];
+		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
-	let { filteredGames }: Props = $props();
+	let { filteredGames, displayedGames = filteredGames, onOpenModal }: Props = $props();
 
 	const [send, receive] = crossfade({
 		duration: 200,
@@ -33,7 +35,7 @@
 	{#if filteredGames.length > 0}
 		{#each filteredGames as game (game.id)}
 			<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
-				<GameCard {game} />
+				<GameCard {game} {displayedGames} {onOpenModal} />
 			</div>
 		{/each}
 	{:else if isEditor}

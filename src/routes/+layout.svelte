@@ -76,20 +76,7 @@
 		}
 	});
 
-	$effect(() => {
-		if (!initialized) {
-			const gameSlug = page.url.searchParams.get('game');
-			if (gameSlug) {
-				setTimeout(() => {
-					const game = gamesStore.getGameBySlug(gameSlug);
-					if (game) {
-						modalStore.openViewModal(game);
-					}
-				}, 100);
-			}
-			initialized = true;
-		}
-	});
+	// Modal URL handling is done in individual pages
 
 	$effect(() => {
 		if ($modalStore.isOpen && !DetailModalComponent) {
