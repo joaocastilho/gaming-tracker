@@ -101,7 +101,7 @@ function applySortOption(games: Game[], sortOption: FilterState['sortOption']): 
 					? (a.ratingStory ?? 0)
 					: key === 'gameplay'
 						? (a.ratingGameplay ?? 0)
-						: (a.ratingPresentation ?? 0) + (a.ratingStory ?? 0) + (a.ratingGameplay ?? 0);
+						: (a.score ?? 0);
 
 		const bVal =
 			key === 'presentation'
@@ -110,7 +110,7 @@ function applySortOption(games: Game[], sortOption: FilterState['sortOption']): 
 					? (b.ratingStory ?? 0)
 					: key === 'gameplay'
 						? (b.ratingGameplay ?? 0)
-						: (b.ratingPresentation ?? 0) + (b.ratingStory ?? 0) + (b.ratingGameplay ?? 0);
+						: (b.score ?? 0);
 
 		if (aVal === bVal) return 0;
 		return aVal > bVal ? dir : -dir;

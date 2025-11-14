@@ -158,27 +158,67 @@
 		// Apply tab-specific filtering
 		switch (currentActiveTab) {
 			case 'completed':
-				filteredGames = filteredGames
-					.filter((game) => game.status === 'Completed')
-					.toSorted((a, b) => {
-						if (!a.finishedDate && !b.finishedDate) return 0;
-						if (!a.finishedDate) return 1;
-						if (!b.finishedDate) return -1;
-						return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
-					});
+				filteredGames = filteredGames.filter((game) => game.status === 'Completed');
 				break;
 			case 'planned':
-				filteredGames = filteredGames
-					.filter((game) => game.status === 'Planned')
-					.toSorted((a, b) => a.title.localeCompare(b.title));
+				filteredGames = filteredGames.filter((game) => game.status === 'Planned');
 				break;
 			case 'tierlist':
 				filteredGames = filteredGames.filter((game) => game.tier);
 				break;
 			default:
-				// Sort alphabetically for 'all' tab
-				filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+				// For 'all' tab, no additional filtering
 				break;
+		}
+
+		// Apply sorting based on sortOption
+		if (currentFilterState.sortOption) {
+			const { key, direction } = currentFilterState.sortOption;
+			const dir = direction === 'asc' ? 1 : -1;
+
+			filteredGames = filteredGames.toSorted((a, b) => {
+				const aVal =
+					key === 'presentation'
+						? (a.ratingPresentation ?? 0)
+						: key === 'story'
+							? (a.ratingStory ?? 0)
+							: key === 'gameplay'
+								? (a.ratingGameplay ?? 0)
+								: (a.score ?? 0);
+
+				const bVal =
+					key === 'presentation'
+						? (b.ratingPresentation ?? 0)
+						: key === 'story'
+							? (b.ratingStory ?? 0)
+							: key === 'gameplay'
+								? (b.ratingGameplay ?? 0)
+								: (b.score ?? 0);
+
+				if (aVal === bVal) return 0;
+				return aVal > bVal ? dir : -dir;
+			});
+		} else {
+			// Default sorting when no sortOption is selected
+			switch (currentActiveTab) {
+				case 'completed':
+					// Sort completed games by finished date (most recent first)
+					filteredGames = filteredGames.toSorted((a, b) => {
+						if (!a.finishedDate && !b.finishedDate) return 0;
+						if (!a.finishedDate) return 1;
+						if (!b.finishedDate) return -1;
+						return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+					});
+					break;
+				case 'planned':
+					// Sort planned games alphabetically
+					filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+					break;
+				default:
+					// Sort 'all' tab alphabetically
+					filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+					break;
+			}
 		}
 
 		return filteredGames;
