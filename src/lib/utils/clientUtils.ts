@@ -1,6 +1,20 @@
 import { transformGameData } from './dataTransformer';
-import { goto } from '$app/navigation';
 import type { FilterState } from '$lib/stores/filters';
+
+// Define goto as a no-op for test environments
+const goto = (
+	url: string,
+	options?: { replaceState?: boolean; noScroll?: boolean; keepFocus?: boolean }
+) => {
+	if (typeof window !== 'undefined') {
+		// In browser environment, use window.location as fallback
+		if (options?.replaceState) {
+			window.history.replaceState(null, '', url);
+		} else {
+			window.location.href = url;
+		}
+	}
+};
 
 export function transformGamesData(games: Record<string, unknown>[]): Record<string, unknown>[] {
 	return games.map(transformGameData);

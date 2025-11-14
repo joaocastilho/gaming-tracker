@@ -248,6 +248,7 @@
 			}
 		}
 
+		console.log(`[+page] displayedGames length for tab ${currentActiveTab}:`, filteredGames.length);
 		return filteredGames;
 	});
 

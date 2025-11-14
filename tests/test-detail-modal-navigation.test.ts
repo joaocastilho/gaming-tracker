@@ -16,7 +16,7 @@ const mockGames: Game[] = [
 		genre: 'RPG',
 		year: 2015,
 		status: 'Completed',
-		hoursPlayed: 120,
+		hoursPlayed: '120',
 		timeToBeat: '50 hours',
 		finishedDate: '2023-01-15',
 		coOp: 'No',
@@ -36,7 +36,7 @@ const mockGames: Game[] = [
 		genre: 'RPG',
 		year: 2020,
 		status: 'Completed',
-		hoursPlayed: 80,
+		hoursPlayed: '80',
 		timeToBeat: '30 hours',
 		finishedDate: '2023-02-20',
 		coOp: 'No',
@@ -56,7 +56,7 @@ const mockGames: Game[] = [
 		genre: 'Action RPG',
 		year: 2022,
 		status: 'Completed',
-		hoursPlayed: 150,
+		hoursPlayed: '150',
 		timeToBeat: '60 hours',
 		finishedDate: '2023-03-10',
 		coOp: 'Yes',
@@ -89,14 +89,14 @@ const mockGames: Game[] = [
 	},
 	{
 		id: '5',
-		title: 'Baldur\'s Gate 3',
-		mainTitle: 'Baldur\'s Gate 3',
+		title: "Baldur's Gate 3",
+		mainTitle: "Baldur's Gate 3",
 		subtitle: '',
 		platform: 'PC',
 		genre: 'RPG',
 		year: 2023,
 		status: 'Completed',
-		hoursPlayed: 200,
+		hoursPlayed: '200',
 		timeToBeat: '100 hours',
 		finishedDate: '2023-04-05',
 		coOp: 'Yes',
@@ -112,7 +112,7 @@ const mockGames: Game[] = [
 describe('DetailModal Navigation Fix', () => {
 	beforeEach(() => {
 		// Reset stores before each test
-		gamesStore.setGames(mockGames);
+		gamesStore.initializeGames(mockGames);
 		modalStore.closeModal();
 		filtersStore.resetFilters();
 		appStore.setActiveTab('all');
@@ -128,17 +128,23 @@ describe('DetailModal Navigation Fix', () => {
 	describe('1. Open modal with filters applied', () => {
 		it('should open modal with correct filter context', () => {
 			// Apply filters
-			filtersStore.setSearchTerm('witcher');
-			filtersStore.addPlatform('PC');
-			filtersStore.addGenre('RPG');
-			
+			filtersStore.set({
+				searchTerm: 'witcher',
+				platforms: ['PC'],
+				genres: ['RPG'],
+				statuses: [],
+				tiers: [],
+				sortOption: null
+			});
+
 			// Get filtered games
-			const filteredGames = mockGames.filter(game => 
-				game.title.toLowerCase().includes('witcher') &&
-				game.platform === 'PC' &&
-				game.genre === 'RPG'
+			const filteredGames = mockGames.filter(
+				(game) =>
+					game.title.toLowerCase().includes('witcher') &&
+					game.platform === 'PC' &&
+					game.genre === 'RPG'
 			);
-			
+
 			// Open modal with filter context
 			modalStore.openViewModal(mockGames[0], filteredGames, {
 				searchTerm: 'witcher',
@@ -149,7 +155,7 @@ describe('DetailModal Navigation Fix', () => {
 				sortOption: null,
 				activeTab: 'all'
 			});
-			
+
 			// Verify modal is open with correct context
 			expect(modalStore.getState().isOpen).toBe(true);
 			expect(modalStore.getState().activeGame?.id).toBe('1');
@@ -161,22 +167,29 @@ describe('DetailModal Navigation Fix', () => {
 
 		it('should navigate within filtered games', () => {
 			// Apply platform filter
-			filtersStore.addPlatform('PC');
-			const pcGames = mockGames.filter(game => game.platform === 'PC');
-			
+			filtersStore.set({
+				searchTerm: '',
+				platforms: ['PC'],
+				genres: [],
+				statuses: [],
+				tiers: [],
+				sortOption: null
+			});
+			const pcGames = mockGames.filter((game) => game.platform === 'PC');
+
 			// Open modal with filtered games
 			modalStore.openViewModal(mockGames[0], pcGames);
-			
+
 			// Test navigation to next game
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(g => g.id === '1');
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === '1');
 			const nextGame = state.displayedGames[currentIndex + 1];
-			
+
 			expect(nextGame?.id).toBe('2'); // Cyberpunk 2077
-			
+
 			// Navigate to next game
 			modalStore.openViewModal(nextGame!, state.displayedGames);
-			
+
 			expect(modalStore.getState().activeGame?.id).toBe('2');
 		});
 	});
@@ -185,15 +198,15 @@ describe('DetailModal Navigation Fix', () => {
 		it('should update navigation when filters change', () => {
 			// Start with no filters
 			modalStore.openViewModal(mockGames[0], mockGames);
-			
+
 			// Initially should have all games
 			expect(modalStore.getState().displayedGames.length).toBe(5);
-			
+
 			// Add genre filter while modal is open
 			modalStore.updateFilterContext({ genres: ['RPG'] });
-			
+
 			// Should update displayed games based on new filter
-			const filteredGames = mockGames.filter(game => game.genre === 'RPG');
+			const filteredGames = mockGames.filter((game) => game.genre === 'RPG');
 			expect(modalStore.getState().displayedGames).toEqual(filteredGames);
 			expect(modalStore.getState().displayedGames.length).toBe(3);
 		});
@@ -201,12 +214,12 @@ describe('DetailModal Navigation Fix', () => {
 		it('should maintain current game when filters change', () => {
 			// Open modal with a specific game
 			modalStore.openViewModal(mockGames[0], mockGames);
-			
+
 			const currentGame = modalStore.getState().activeGame;
-			
+
 			// Change filters
 			modalStore.updateFilterContext({ genres: ['RPG'] });
-			
+
 			// Current game should still be active if it matches new filters
 			expect(modalStore.getState().activeGame?.id).toBe(currentGame?.id);
 		});
@@ -214,19 +227,19 @@ describe('DetailModal Navigation Fix', () => {
 		it('should handle current game being filtered out', () => {
 			// Open modal with a specific game
 			modalStore.openViewModal(mockGames[0], mockGames);
-			
+
 			// Apply filters that exclude the current game
-			modalStore.updateFilterContext({ 
-				genres: ['Roguelike'], 
-				platforms: ['PC'] 
+			modalStore.updateFilterContext({
+				genres: ['Roguelike'],
+				platforms: ['PC']
 			});
-			
+
 			// Current game should be null if it's filtered out
 			const state = modalStore.getState();
-			const filteredGames = mockGames.filter(game => 
-				game.genre === 'Roguelike' && game.platform === 'PC'
+			const filteredGames = mockGames.filter(
+				(game) => game.genre === 'Roguelike' && game.platform === 'PC'
 			);
-			
+
 			expect(state.displayedGames).toEqual(filteredGames);
 			expect(state.activeGame).toBeNull();
 		});
@@ -235,22 +248,29 @@ describe('DetailModal Navigation Fix', () => {
 	describe('3. Verify navigation respects new filters', () => {
 		it('should navigate within filtered results', () => {
 			// Apply platform filter
-			filtersStore.addPlatform('PC');
-			const pcGames = mockGames.filter(game => game.platform === 'PC');
-			
+			filtersStore.set({
+				searchTerm: '',
+				platforms: ['PC'],
+				genres: [],
+				statuses: [],
+				tiers: [],
+				sortOption: null
+			});
+			const pcGames = mockGames.filter((game) => game.platform === 'PC');
+
 			// Open modal with first PC game
 			modalStore.openViewModal(mockGames[0], pcGames);
-			
+
 			// Navigate to next game
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(g => g.id === '1');
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === '1');
 			const nextGame = state.displayedGames[currentIndex + 1];
-			
+
 			modalStore.openViewModal(nextGame!, state.displayedGames);
-			
+
 			// Should be within PC games only
 			expect(modalStore.getState().activeGame?.platform).toBe('PC');
-			expect(modalStore.getState().displayedGames.every(g => g.platform === 'PC')).toBe(true);
+			expect(modalStore.getState().displayedGames.every((g) => g.platform === 'PC')).toBe(true);
 		});
 
 		it('should update navigation when sort changes', () => {
@@ -258,16 +278,16 @@ describe('DetailModal Navigation Fix', () => {
 			modalStore.openViewModal(mockGames[0], mockGames, {
 				sortOption: { key: 'score', direction: 'desc' }
 			});
-			
+
 			const state = modalStore.getState();
 			const sortedGames = [...mockGames].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-			
+
 			expect(state.displayedGames).toEqual(sortedGames);
-			
+
 			// Navigate to next game (should be highest rated)
-			const currentIndex = state.displayedGames.findIndex(g => g.id === '1');
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === '1');
 			const nextGame = state.displayedGames[currentIndex + 1];
-			
+
 			expect(nextGame?.id).toBe('5'); // Baldur's Gate 3 (highest score)
 		});
 	});
@@ -276,71 +296,73 @@ describe('DetailModal Navigation Fix', () => {
 		it('should navigate within tier list tab', () => {
 			// Set to tier list tab
 			appStore.setActiveTab('tierlist');
-			
+
 			// Get tiered games only
-			const tieredGames = mockGames.filter(game => game.tier);
-			
+			const tieredGames = mockGames.filter((game) => game.tier);
+
 			// Open modal with first tiered game
 			modalStore.openViewModal(mockGames[0], tieredGames, {
 				activeTab: 'tierlist'
 			});
-			
+
 			const state = modalStore.getState();
-			
+
 			// Should only show tiered games
-			expect(state.displayedGames.every(g => g.tier)).toBe(true);
+			expect(state.displayedGames.every((g) => g.tier)).toBe(true);
 			expect(state.displayedGames.length).toBe(4);
-			
+
 			// Navigate to next game
-			const currentIndex = state.displayedGames.findIndex(g => g.id === '1');
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === '1');
 			const nextGame = state.displayedGames[currentIndex + 1];
-			
+
 			modalStore.openViewModal(nextGame!, state.displayedGames);
-			
+
 			expect(modalStore.getState().activeGame?.id).toBe('2');
 		});
 
 		it('should respect tier ordering in navigation', () => {
 			// Set to tier list tab
 			appStore.setActiveTab('tierlist');
-			
+
 			// Get tiered games
-			const tieredGames = mockGames.filter(game => game.tier);
-			
+			const tieredGames = mockGames.filter((game) => game.tier);
+
 			// Open modal
 			modalStore.openViewModal(mockGames[0], tieredGames, {
 				activeTab: 'tierlist'
 			});
-			
+
 			const state = modalStore.getState();
-			
+
 			// Games should be ordered by tier (S, A, B, C, D, E)
-			const expectedOrder = ['S', 'A', 'S', 'S']; // Witcher3(S), Cyberpunk(A), EldenRing(S), Baldur'sGate3(S)
-			const actualOrder = state.displayedGames.map(g => g.tier);
-			
+			const expectedOrder: ('S' | 'A' | 'B' | 'C' | 'D' | 'E')[] = ['S', 'A', 'S', 'S']; // Witcher3(S), Cyberpunk(A), EldenRing(S), Baldur'sGate3(S)
+			const actualOrder = state.displayedGames.map(
+				(g) => g.tier as 'S' | 'A' | 'B' | 'C' | 'D' | 'E'
+			);
+
 			expect(actualOrder).toEqual(expectedOrder);
 		});
 
 		it('should navigate between different tiers', () => {
 			// Set to tier list tab
 			appStore.setActiveTab('tierlist');
-			
+
 			// Get tiered games
-			const tieredGames = mockGames.filter(game => game.tier);
-			
+			const tieredGames = mockGames.filter((game) => game.tier);
+
 			// Open modal with S tier game
 			modalStore.openViewModal(mockGames[0], tieredGames, {
 				activeTab: 'tierlist'
 			});
-			
+
 			const state = modalStore.getState();
-			
+
 			// Navigate to next game (should stay within tier list context)
-			const currentIndex = state.displayedGames.findIndex(g => g.id === '1');
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === '1');
 			const nextGame = state.displayedGames[currentIndex + 1];
-			
+
 			modalStore.openViewModal(nextGame!, state.displayedGames);
-			
+
 			// Should still be in tier list tab
 			expect(modalStore.getState().filterContext.activeTab).toBe('tierlist');
 		});
@@ -350,7 +372,7 @@ describe('DetailModal Navigation Fix', () => {
 		it('should work without filter context (legacy behavior)', () => {
 			// Open modal without explicit filter context
 			modalStore.openViewModal(mockGames[0]);
-			
+
 			// Should still work and use all games
 			expect(modalStore.getState().isOpen).toBe(true);
 			expect(modalStore.getState().activeGame?.id).toBe('1');
@@ -360,7 +382,7 @@ describe('DetailModal Navigation Fix', () => {
 		it('should handle empty displayedGames array', () => {
 			// Open modal with empty displayed games
 			modalStore.openViewModal(mockGames[0], []);
-			
+
 			// Should still open modal
 			expect(modalStore.getState().isOpen).toBe(true);
 			expect(modalStore.getState().activeGame?.id).toBe('1');
@@ -369,8 +391,8 @@ describe('DetailModal Navigation Fix', () => {
 
 		it('should handle null activeGame gracefully', () => {
 			// Open modal with null active game
-			modalStore.openViewModal(null as any, mockGames);
-			
+			modalStore.openViewModal(null, mockGames);
+
 			// Should handle gracefully
 			expect(modalStore.getState().isOpen).toBe(true);
 			expect(modalStore.getState().activeGame).toBeNull();
@@ -380,15 +402,15 @@ describe('DetailModal Navigation Fix', () => {
 			// Simulate URL-based game opening
 			const urlSearchParams = new URLSearchParams();
 			urlSearchParams.set('game', 'witcher-3');
-			
+
 			modalStore.readFromURL(urlSearchParams, mockGames);
-			
+
 			// Should set up pending game
 			expect(modalStore.getState().pendingGameFromURL?.id).toBe('1');
-			
+
 			// Open pending game with displayed games
 			modalStore.openPendingGameFromURL(mockGames);
-			
+
 			expect(modalStore.getState().isOpen).toBe(true);
 			expect(modalStore.getState().activeGame?.id).toBe('1');
 		});
@@ -398,33 +420,33 @@ describe('DetailModal Navigation Fix', () => {
 		it('should handle navigation at boundaries', () => {
 			// Open modal with first game
 			modalStore.openViewModal(mockGames[0], mockGames);
-			
+
 			// Try to navigate previous (should stay at first)
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(g => g.id === '1');
-			
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === '1');
+
 			// Simulate navigation to previous
 			if (currentIndex > 0) {
 				const prevGame = state.displayedGames[currentIndex - 1];
 				modalStore.openViewModal(prevGame, state.displayedGames);
 			}
-			
+
 			// Should still be at first game
 			expect(modalStore.getState().activeGame?.id).toBe('1');
-			
+
 			// Navigate to last game
 			const lastGame = state.displayedGames[state.displayedGames.length - 1];
 			modalStore.openViewModal(lastGame, state.displayedGames);
-			
+
 			// Try to navigate next (should stay at last)
 			const finalState = modalStore.getState();
-			const finalIndex = finalState.displayedGames.findIndex(g => g.id === lastGame.id);
-			
+			const finalIndex = finalState.displayedGames.findIndex((g) => g.id === lastGame.id);
+
 			if (finalIndex < finalState.displayedGames.length - 1) {
 				const nextGame = finalState.displayedGames[finalIndex + 1];
 				modalStore.openViewModal(nextGame, finalState.displayedGames);
 			}
-			
+
 			expect(modalStore.getState().activeGame?.id).toBe(lastGame.id);
 		});
 
@@ -450,10 +472,10 @@ describe('DetailModal Navigation Fix', () => {
 				score: null,
 				tier: null
 			};
-			
+
 			// Open modal with incomplete game
 			modalStore.openViewModal(incompleteGame, [incompleteGame]);
-			
+
 			// Should handle gracefully
 			expect(modalStore.getState().isOpen).toBe(true);
 			expect(modalStore.getState().activeGame?.id).toBe('999');
@@ -462,19 +484,17 @@ describe('DetailModal Navigation Fix', () => {
 		it('should handle concurrent filter changes', () => {
 			// Open modal
 			modalStore.openViewModal(mockGames[0], mockGames);
-			
+
 			// Apply multiple filter changes rapidly
 			modalStore.updateFilterContext({ genres: ['RPG'] });
 			modalStore.updateFilterContext({ platforms: ['PC'] });
 			modalStore.updateFilterContext({ statuses: ['Completed'] });
-			
+
 			const state = modalStore.getState();
-			const filteredGames = mockGames.filter(game => 
-				game.genre === 'RPG' && 
-				game.platform === 'PC' && 
-				game.status === 'Completed'
+			const filteredGames = mockGames.filter(
+				(game) => game.genre === 'RPG' && game.platform === 'PC' && game.status === 'Completed'
 			);
-			
+
 			// Should apply all filters correctly
 			expect(state.displayedGames).toEqual(filteredGames);
 			expect(state.displayedGames.length).toBe(2); // Witcher 3 and Cyberpunk 2077

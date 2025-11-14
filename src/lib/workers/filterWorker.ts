@@ -87,6 +87,45 @@ function filterGames(games: Game[], filters: FilterState): Game[] {
 	});
 }
 
+function filterGamesWithoutStatus(games: Game[], filters: FilterState): Game[] {
+	return games.filter((game) => {
+		if (filters.searchTerm.trim()) {
+			const query = filters.searchTerm.toLowerCase().trim();
+			const titleMatch = game.title.toLowerCase().includes(query);
+			const genreMatch = game.genre.toLowerCase().includes(query);
+			const platformMatch = game.platform.toLowerCase().includes(query);
+
+			if (!titleMatch && !genreMatch && !platformMatch) {
+				return false;
+			}
+		}
+
+		if (filters.platforms.length > 0) {
+			if (!filters.platforms.includes(game.platform)) {
+				return false;
+			}
+		}
+
+		if (filters.genres.length > 0) {
+			if (!filters.genres.includes(game.genre)) {
+				return false;
+			}
+		}
+
+		if (filters.tiers.length > 0) {
+			if (!game.tier) {
+				return false;
+			}
+			const gameTierFullName = getTierDisplayName(game.tier);
+			if (!filters.tiers.includes(gameTierFullName)) {
+				return false;
+			}
+		}
+
+		return true;
+	});
+}
+
 function applySortOption(games: Game[], sortOption: FilterState['sortOption']): Game[] {
 	if (!sortOption) return games;
 
@@ -180,10 +219,15 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 
 			if (filters && gamesToFilter.length > 0 && activeTab) {
 				const baseFilteredGames = filterGames(gamesToFilter, filters);
+				const baseFilteredGamesWithoutStatus = filterGamesWithoutStatus(gamesToFilter, filters);
 
-				const totalCount = baseFilteredGames.length;
-				const completedCount = baseFilteredGames.filter((g) => g.status === 'Completed').length;
-				const plannedCount = baseFilteredGames.filter((g) => g.status === 'Planned').length;
+				const totalCount = baseFilteredGamesWithoutStatus.length;
+				const completedCount = baseFilteredGamesWithoutStatus.filter(
+					(g) => g.status === 'Completed'
+				).length;
+				const plannedCount = baseFilteredGamesWithoutStatus.filter(
+					(g) => g.status === 'Planned'
+				).length;
 
 				const finalFilteredGames =
 					activeTab === 'tierlist'

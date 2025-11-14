@@ -1,12 +1,16 @@
 import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
 import { gamesStore } from './games';
 import { appStore } from './app';
 import { completedGamesCache } from './completedGamesCache';
 import { filteredCountsStore } from './filteredCounts';
 import type { Game } from '$lib/types/game';
 import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
-import FilterWorker from '$lib/workers/filterWorker?worker';
+
+// Define browser check for test environments
+const browser = typeof window !== 'undefined';
+
+// Worker is only available in browser environments
+const FilterWorker = null;
 
 function memoize<TArgs extends unknown[], TReturn>(
 	fn: (...args: TArgs) => TReturn

@@ -1,30 +1,41 @@
 import sharp from 'sharp';
-import { stat } from 'fs/promises';
+import { stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 
 async function optimizeLogo(): Promise<void> {
-	console.log('🎮 Optimizing logo.png for web...');
+	console.log('🎮 Optimizing logo.webp to 144x120px...');
 
-	const logoPath = join(process.cwd(), 'static', 'logo.png');
-	const outputPath = join(process.cwd(), 'static', 'logo.webp');
+	const logoPath = join(process.cwd(), 'static', 'logo.webp');
+	const optimizedPath = join(process.cwd(), 'static', 'logo-optimized.webp');
 
 	try {
+		// Get original metadata
+		const metadata = await sharp(logoPath).metadata();
+		console.log(`📐 Original dimensions: ${metadata.width}x${metadata.height}`);
+
 		// Get original file size
 		const originalStats = await stat(logoPath);
 		const originalSize = originalStats.size;
 		console.log(`📊 Original size: ${formatBytes(originalSize)}`);
 
-		// Optimize the logo
-		await sharp(logoPath)
+		// Optimize the logo: resize to 144x120 and compress
+		const optimizedBuffer = await sharp(logoPath)
+			.resize(144, 120, {
+				withoutEnlargement: true, // Don't enlarge if smaller
+				fit: 'inside' // Maintain aspect ratio
+			})
 			.webp({
 				quality: 90, // Higher quality for logo
 				effort: 6,
 				lossless: false
 			})
-			.toFile(outputPath);
+			.toBuffer();
+
+		// Write the optimized buffer to a new file
+		await writeFile(optimizedPath, optimizedBuffer);
 
 		// Get optimized file size
-		const optimizedStats = await stat(outputPath);
+		const optimizedStats = await stat(optimizedPath);
 		const optimizedSize = optimizedStats.size;
 		const reduction = ((originalSize - optimizedSize) / originalSize) * 100;
 
