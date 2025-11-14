@@ -26,7 +26,7 @@
 		if (data.games) {
 			gamesStore.initializeGames(data.games);
 		}
-		
+
 		const currentTab = get(appStore.activeTab);
 		if (currentTab !== 'completed') {
 			appStore.setActiveTab('completed', true);
@@ -36,9 +36,9 @@
 	// Function to get completed games
 	function getCompletedGames(): Game[] {
 		if (allGames.length === 0) return [];
-		
+
 		return allGames
-			.filter(game => game.status === 'Completed')
+			.filter((game) => game.status === 'Completed')
 			.toSorted((a, b) => {
 				if (!a.finishedDate && !b.finishedDate) return 0;
 				if (!a.finishedDate) return 1;

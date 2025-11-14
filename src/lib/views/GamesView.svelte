@@ -41,10 +41,5 @@
 			<p>No games found for this view.</p>
 			<p class="sub">Use the editor tools to add entries.</p>
 		</div>
-	{:else}
-		<div class="empty-state">
-			<h2>No games found</h2>
-			<p>Try adjusting your filters or add new games</p>
-		</div>
 	{/if}
 </div>

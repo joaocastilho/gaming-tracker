@@ -26,7 +26,7 @@
 		if (data.games) {
 			gamesStore.initializeGames(data.games);
 		}
-		
+
 		const currentTab = get(appStore.activeTab);
 		if (currentTab !== 'planned') {
 			appStore.setActiveTab('planned', true);
@@ -36,9 +36,9 @@
 	// Function to get planned games
 	function getPlannedGames(): Game[] {
 		if (allGames.length === 0) return [];
-		
+
 		return allGames
-			.filter(game => game.status === 'Planned')
+			.filter((game) => game.status === 'Planned')
 			.toSorted((a, b) => a.title.localeCompare(b.title));
 	}
 

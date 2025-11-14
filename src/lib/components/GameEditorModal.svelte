@@ -159,8 +159,8 @@
 					gamesStore.initializeGames(data.games as Game[]);
 				}
 			}
-		} catch (err) {
-			console.warn('Post-save refresh failed', err);
+		} catch {
+			// Ignore post-save refresh errors
 		}
 
 		onClose();

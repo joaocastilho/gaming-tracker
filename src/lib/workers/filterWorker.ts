@@ -41,7 +41,6 @@ interface LoadResponse {
 }
 
 let loadedGames: Game[] = [];
-let filterCallCount = 0;
 
 function filterGames(games: Game[], filters: FilterState): Game[] {
 	return games.filter((game) => {
@@ -172,10 +171,6 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 				self.postMessage(response);
 			}
 		} else if (type === 'APPLY_FILTERS') {
-			filterCallCount++;
-			console.log(
-				`🔧 Worker [Call #${filterCallCount}]: Processing filters for tab: ${payload.activeTab}`
-			);
 			const { filters, allGames, activeTab } = payload;
 			let gamesToFilter = loadedGames;
 
@@ -183,32 +178,17 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 				gamesToFilter = allGames;
 			}
 
-			console.log(`🔧 Worker: Starting with ${gamesToFilter.length} games`);
-
 			if (filters && gamesToFilter.length > 0 && activeTab) {
-				console.log(
-					`🔧 Worker: Applying filters - search: "${filters.searchTerm}", platforms: [${filters.platforms.join(', ')}], genres: [${filters.genres.join(', ')}], statuses: [${filters.statuses.join(', ')}]`
-				);
-
 				const baseFilteredGames = filterGames(gamesToFilter, filters);
-				console.log(`🔧 Worker: After general filtering: ${baseFilteredGames.length} games`);
 
 				const totalCount = baseFilteredGames.length;
 				const completedCount = baseFilteredGames.filter((g) => g.status === 'Completed').length;
 				const plannedCount = baseFilteredGames.filter((g) => g.status === 'Planned').length;
 
-				console.log(
-					`🔧 Worker: Status counts - Total: ${totalCount}, Completed: ${completedCount}, Planned: ${plannedCount}`
-				);
-
 				const finalFilteredGames =
 					activeTab === 'tierlist'
 						? []
 						: filterAndSortForTab(baseFilteredGames, activeTab, filters.sortOption);
-
-				console.log(
-					`🔧 Worker: Final result for ${activeTab} tab: ${finalFilteredGames.length} games`
-				);
 
 				const response: FilterResponse = {
 					type: 'FILTER_RESULTS',
@@ -225,8 +205,7 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 				self.postMessage(response);
 			}
 		}
-	} catch (error) {
-		console.error('Worker filtering error:', error);
+	} catch {
 		self.postMessage({
 			type: 'FILTER_RESULTS',
 			payload: {

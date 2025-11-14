@@ -169,20 +169,6 @@ function createFiltersStore() {
 						`sort:${currentFilters.sortOption.key}_${currentFilters.sortOption.direction}`
 					);
 
-				console.log(`🔍 Filters: Applying filters for tab "${activeTab}"`, {
-					activeFilters: activeFilters.length > 0 ? activeFilters : 'none',
-					gameCount: allGames.length,
-					cacheUsed:
-						activeTab === 'completed' &&
-						!currentFilters.searchTerm.trim() &&
-						currentFilters.platforms.length === 0 &&
-						currentFilters.genres.length === 0 &&
-						currentFilters.tiers.length === 0 &&
-						currentFilters.statuses.length === 1 &&
-						currentFilters.statuses.includes('Completed') &&
-						!currentFilters.sortOption
-				});
-
 				// Check if we should use cache for completed tab (only when no custom filters and not sorting)
 				const shouldUseCompletedCache =
 					activeTab === 'completed' &&
@@ -200,7 +186,6 @@ function createFiltersStore() {
 					activeTab === 'all' && activeFilters.length === 0 && !currentFilters.sortOption;
 
 				if (shouldSkipWorkerForAllTab) {
-					console.log(`🔍 Filters: Skipping worker for "all" tab with no filters`);
 					return;
 				}
 

@@ -46,9 +46,7 @@
 
 					setInterval(checkForUpdates, 60000);
 				})
-				.catch((error) => {
-					console.warn('Service Worker registration failed:', error);
-				});
+				.catch(() => {});
 		}
 	});
 

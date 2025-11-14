@@ -13,7 +13,6 @@ export class PerformanceTimer {
 
 	end(): number {
 		const duration = performance.now() - this.startTime;
-		console.log(`⏱️ ${this.label}: ${duration.toFixed(2)}ms`);
 		return duration;
 	}
 }
@@ -56,7 +55,6 @@ export function debouncedPerfLog(label: string, duration: number, cooldown = 100
 	const lastLog = performanceLogs.get(label) || 0;
 
 	if (now - lastLog > cooldown) {
-		console.log(`⏱️ ${label}: ${duration.toFixed(2)}ms`);
 		performanceLogs.set(label, now);
 	}
 }
@@ -72,7 +70,6 @@ export async function measureAsync<T>(label: string, fn: () => Promise<T>): Prom
 		return result;
 	} catch (error) {
 		timer.end();
-		console.error(`❌ ${label} failed:`, error);
 		throw error;
 	}
 }

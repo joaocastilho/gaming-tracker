@@ -4,14 +4,13 @@
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { appStore } from '$lib/stores/app.js';
 	import { sortStore } from '$lib/stores/sort.js';
-	import { debounce } from '$lib/utils/debounce.js';
 	import GamesView from '$lib/views/GamesView.svelte';
 
-	import type { FilteredGameData } from '$lib/stores/filters.js';
 	import type { Game } from '$lib/types/game.js';
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
 	import { getTierDisplayName } from '$lib/utils/colorConstants.js';
+	import type { SortOption } from '$lib/stores/filters.js';
 
 	let { data }: { data: PageData } = $props();
 
@@ -24,8 +23,6 @@
 	let currentActiveTab = $state<'all' | 'completed' | 'planned' | 'tierlist'>('all');
 	let TierListViewComponent = $state<Component<TierListViewProps> | null>(null);
 	let hasInitializedGames = $state(false);
-
-	const { loading } = gamesStore;
 
 	// Subscribe to games store
 	gamesStore.subscribe((games) => {
@@ -88,7 +85,7 @@
 		genres: string[];
 		statuses: string[];
 		tiers: string[];
-		sortOption: any;
+		sortOption: SortOption | null;
 	}>({
 		searchTerm: '',
 		platforms: [],
@@ -127,7 +124,7 @@
 		// Apply search filter
 		if (currentFilterState.searchTerm.trim()) {
 			const query = currentFilterState.searchTerm.toLowerCase().trim();
-			filteredGames = filteredGames.filter(game => {
+			filteredGames = filteredGames.filter((game) => {
 				const titleMatch = game.title.toLowerCase().includes(query);
 				const genreMatch = game.genre.toLowerCase().includes(query);
 				const platformMatch = game.platform.toLowerCase().includes(query);
@@ -137,21 +134,21 @@
 
 		// Apply platform filter
 		if (currentFilterState.platforms.length > 0) {
-			filteredGames = filteredGames.filter(game => 
+			filteredGames = filteredGames.filter((game) =>
 				currentFilterState.platforms.includes(game.platform)
 			);
 		}
 
 		// Apply genre filter
 		if (currentFilterState.genres.length > 0) {
-			filteredGames = filteredGames.filter(game => 
+			filteredGames = filteredGames.filter((game) =>
 				currentFilterState.genres.includes(game.genre)
 			);
 		}
 
 		// Apply tier filter
 		if (currentFilterState.tiers.length > 0) {
-			filteredGames = filteredGames.filter(game => {
+			filteredGames = filteredGames.filter((game) => {
 				if (!game.tier) return false;
 				const gameTierFullName = getTierDisplayName(game.tier);
 				return currentFilterState.tiers.includes(gameTierFullName);
@@ -161,7 +158,8 @@
 		// Apply tab-specific filtering
 		switch (currentActiveTab) {
 			case 'completed':
-				filteredGames = filteredGames.filter(game => game.status === 'Completed')
+				filteredGames = filteredGames
+					.filter((game) => game.status === 'Completed')
 					.toSorted((a, b) => {
 						if (!a.finishedDate && !b.finishedDate) return 0;
 						if (!a.finishedDate) return 1;
@@ -170,11 +168,12 @@
 					});
 				break;
 			case 'planned':
-				filteredGames = filteredGames.filter(game => game.status === 'Planned')
+				filteredGames = filteredGames
+					.filter((game) => game.status === 'Planned')
 					.toSorted((a, b) => a.title.localeCompare(b.title));
 				break;
 			case 'tierlist':
-				filteredGames = filteredGames.filter(game => game.tier);
+				filteredGames = filteredGames.filter((game) => game.tier);
 				break;
 			default:
 				// Sort alphabetically for 'all' tab
@@ -192,8 +191,8 @@
 		try {
 			const module = await import('$lib/views/TierListView.svelte');
 			TierListViewComponent = module.default;
-		} catch (err) {
-			console.error('Failed to load tier list view:', err);
+		} catch {
+			// Silently ignore tier list component loading errors
 		}
 	}
 
@@ -253,5 +252,16 @@
 		color: var(--color-text-primary);
 		font-size: 1rem;
 		cursor: pointer;
+	}
+
+	.loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 50vh;
+		text-align: center;
+		font-weight: 500;
+		color: var(--color-text-primary);
+		font-size: clamp(1.1rem, 2.5vw, 1.6rem);
 	}
 </style>

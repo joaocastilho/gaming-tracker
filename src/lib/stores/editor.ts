@@ -58,8 +58,7 @@ function createEditorStore() {
 			}));
 
 			return true;
-		} catch (error) {
-			console.error('Login error', error);
+		} catch {
 			state.update((s) => ({
 				...s,
 				loginPending: false,
@@ -108,8 +107,7 @@ function createEditorStore() {
 			});
 
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				console.error('Save failed', res.status, text);
+				await res.text().catch(() => '');
 				state.update((s) => ({
 					...s,
 					savePending: false,
@@ -133,8 +131,7 @@ function createEditorStore() {
 			}
 
 			return true;
-		} catch (error) {
-			console.error('Save error', error);
+		} catch {
 			state.update((s) => ({
 				...s,
 				savePending: false,

@@ -44,6 +44,7 @@
 	});
 
 	let modalElement = $state<HTMLDivElement>();
+	let modalImageElement = $state<HTMLImageElement>();
 
 	const detailImageSrc = $derived(
 		$modalStore.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
@@ -272,9 +273,17 @@
 		}
 	}
 
-	function handleImageLoad() {}
+	function handleImageLoad() {
+		if (modalImageElement) {
+			modalImageElement.classList.add('loaded');
+		}
+	}
 
-	function handleImageError() {}
+	function handleImageError() {
+		if (modalImageElement) {
+			modalImageElement.classList.add('loaded');
+		}
+	}
 
 	function formatDate(dateString: string | null): string {
 		if (!dateString) return 'Not completed';
@@ -394,19 +403,23 @@
 		>
 			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
 				<div class="relative overflow-hidden rounded-l-lg">
-					<img
-						src={detailImageSrc}
-						srcset={detailImageSrcset}
-						sizes={detailImageSizes}
-						alt="{$modalStore.activeGame.title} cover"
-						class="cover-image h-full w-full object-cover"
-						style="width: 400px; height: 600px;"
-						loading="eager"
-						fetchpriority="high"
-						decoding="async"
-						onload={handleImageLoad}
-						onerror={handleImageError}
-					/>
+					<div class="modal-image-wrapper">
+						<div class="modal-skeleton-loader"></div>
+						<img
+							bind:this={modalImageElement}
+							src={detailImageSrc}
+							srcset={detailImageSrcset}
+							sizes={detailImageSizes}
+							alt="{$modalStore.activeGame.title} cover"
+							class="modal-cover-image h-full w-full object-cover"
+							style="width: 400px; height: 600px;"
+							loading="eager"
+							fetchpriority="high"
+							decoding="async"
+							onload={handleImageLoad}
+							onerror={handleImageError}
+						/>
+					</div>
 
 					{#if $modalStore.activeGame.coOp === 'Yes'}
 						<div
@@ -714,7 +727,64 @@
 {/if}
 
 <style>
-	.cover-image {
+	.modal-image-wrapper {
+		position: relative;
+		width: 400px;
+		height: 600px;
+		overflow: hidden;
+		border-radius: 12px 0 0 12px;
+	}
+
+	.modal-skeleton-loader {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			90deg,
+			var(--color-surface) 0%,
+			var(--color-surface) 25%,
+			#2a2a2a 50%,
+			var(--color-surface) 75%,
+			var(--color-surface) 100%
+		);
+		background-size: 200% 100%;
+		animation: skeleton-shimmer 3s ease-in-out infinite;
+		z-index: 1;
+		opacity: 0.8;
+	}
+
+	:global(.light) .modal-skeleton-loader {
+		background: linear-gradient(
+			90deg,
+			#f8f9fa 0%,
+			#f8f9fa 25%,
+			#e9ecef 50%,
+			#f8f9fa 75%,
+			#f8f9fa 100%
+		);
+	}
+
+	.modal-cover-image {
+		position: relative;
+		z-index: 2;
+		opacity: 0;
+		transition: opacity 0.5s ease-in-out;
+		filter: blur(2px);
+	}
+
+	.modal-cover-image.loaded {
 		opacity: 1;
+		filter: blur(0px);
+	}
+
+	@keyframes skeleton-shimmer {
+		0% {
+			background-position: -200% 0;
+		}
+		100% {
+			background-position: 200% 0;
+		}
 	}
 </style>

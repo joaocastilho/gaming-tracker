@@ -27,7 +27,7 @@
 		if (data.games) {
 			gamesStore.initializeGames(data.games);
 		}
-		
+
 		const currentTab = get(appStore.activeTab);
 		if (currentTab !== 'tierlist') {
 			appStore.setActiveTab('tierlist', true);
@@ -39,8 +39,8 @@
 				.then((module) => {
 					TierListViewComponent = module.default;
 				})
-				.catch((err) => {
-					console.error('Failed to load tier list view:', err);
+				.catch(() => {
+					// Silently ignore component loading errors
 				});
 		}
 	});
@@ -48,8 +48,8 @@
 	// Function to get tiered games
 	function getTieredGames(): Game[] {
 		if (allGames.length === 0) return [];
-		
-		return allGames.filter(game => game.tier);
+
+		return allGames.filter((game) => game.tier);
 	}
 
 	// Simple derived for tiered games

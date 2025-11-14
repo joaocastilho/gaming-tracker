@@ -82,9 +82,17 @@
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	}
 
-	function handleImageLoad() {}
+	function handleImageLoad() {
+		if (imageElement) {
+			imageElement.classList.add('loaded');
+		}
+	}
 
-	function handleImageError() {}
+	function handleImageError() {
+		if (imageElement) {
+			imageElement.classList.add('loaded');
+		}
+	}
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
@@ -117,19 +125,22 @@
 	aria-label="View details for {game.title}"
 >
 	<div class="cover-container">
-		<img
-			bind:this={imageElement}
-			src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
-			srcset={imageSrcset()}
-			sizes={imageSizes()}
-			alt=""
-			class="cover-image"
-			loading="eager"
-			fetchpriority={isAboveFold ? 'high' : 'low'}
-			decoding="async"
-			onload={handleImageLoad}
-			onerror={handleImageError}
-		/>
+		<div class="image-wrapper">
+			<div class="skeleton-loader"></div>
+			<img
+				bind:this={imageElement}
+				src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
+				srcset={imageSrcset()}
+				sizes={imageSizes()}
+				alt=""
+				class="cover-image"
+				loading="eager"
+				fetchpriority={isAboveFold ? 'high' : 'low'}
+				decoding="async"
+				onload={handleImageLoad}
+				onerror={handleImageError}
+			/>
+		</div>
 
 		{#if game.coOp === 'Yes'}
 			<div class="co-op-badge">
@@ -243,11 +254,69 @@
 		margin: 0 auto;
 	}
 
+	.image-wrapper {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		border-radius: 6px 6px 0 0;
+	}
+
+	.skeleton-loader {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			90deg,
+			var(--color-surface) 0%,
+			var(--color-surface) 25%,
+			#4a4a4a 50%,
+			var(--color-surface) 75%,
+			var(--color-surface) 100%
+		);
+		background-size: 200% 100%;
+		animation: skeleton-shimmer 3s ease-in-out infinite;
+		z-index: 1;
+		opacity: 0.6;
+	}
+
+	:global(.light) .skeleton-loader {
+		background: linear-gradient(
+			90deg,
+			#f8f9fa 0%,
+			#f8f9fa 25%,
+			#d1d5db 50%,
+			#f8f9fa 75%,
+			#f8f9fa 100%
+		);
+	}
+
 	.cover-image {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		display: block;
+		position: relative;
+		z-index: 2;
+		opacity: 0;
+		transition: opacity 0.5s ease-in-out;
+		filter: blur(2px);
+	}
+
+	.cover-image.loaded {
+		opacity: 1;
+		filter: blur(0px);
+	}
+
+	@keyframes skeleton-shimmer {
+		0% {
+			background-position: -200% 0;
+		}
+		100% {
+			background-position: 200% 0;
+		}
 	}
 
 	.co-op-badge {
@@ -264,6 +333,7 @@
 		font-size: 0.7rem;
 		font-weight: 500;
 		backdrop-filter: blur(4px);
+		z-index: 10; /* Ensure co-op badge appears above skeleton loader and cover image */
 	}
 
 	.co-op-icon {
@@ -283,6 +353,7 @@
 		backdrop-filter: blur(4px);
 		min-width: 24px;
 		justify-content: center;
+		z-index: 10; /* Ensure tier badge appears above skeleton loader and cover image */
 	}
 
 	.tier-text {

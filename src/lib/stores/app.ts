@@ -55,7 +55,6 @@ function createAppStore() {
 			// Only log and update if the tab is actually changing or if forced
 			if (force || previousTab !== tab) {
 				activeTab.set(tab);
-				console.log(`📋 Tab Navigation: Changed from "${previousTab}" to "${tab}"`);
 			}
 		},
 
@@ -100,10 +99,8 @@ function createAppStore() {
 				url.searchParams.delete('view');
 
 				replaceState(url.toString(), {});
-			} catch (error) {
-				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
-					console.warn('Failed to update URL:', error);
-				}
+			} catch {
+				// Ignore router initialization errors
 			}
 		},
 

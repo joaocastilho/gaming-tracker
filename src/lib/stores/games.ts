@@ -39,21 +39,12 @@ function createGamesStore() {
 			const currentGames = get({ subscribe });
 			if (currentGames && currentGames.length > 0) {
 				if (rawGames && Array.isArray(rawGames) && rawGames.length === currentGames.length) {
-					console.log(
-						'🎮 GamesStore: Skipping initialization - games already loaded (same length)'
-					);
 					return;
 				} else if (rawGames && Array.isArray(rawGames) && rawGames.length !== currentGames.length) {
-					console.log(
-						'🎮 GamesStore: Re-initializing with different game count - old:',
-						currentGames.length,
-						'new:',
-						rawGames.length
-					);
+					// Re-initialize with different game count
 				}
 			}
 
-			console.log('🎮 GamesStore: Initializing games with raw data length:', rawGames?.length);
 			loadingStore.set(true);
 			errorStore.set(null);
 			try {
@@ -69,12 +60,11 @@ function createGamesStore() {
 					.filter((g) => {
 						const isValid = g && typeof g.id === 'string' && typeof g.title === 'string';
 						if (!isValid) {
-							console.log('🎮 GamesStore: Filtering out invalid game:', g);
+							return false;
 						}
 						return isValid;
 					}) as unknown as Game[];
 
-				console.log('🎮 GamesStore: Final normalized games length:', normalized.length);
 				set(normalized);
 
 				if (normalized.length === 0) {
@@ -86,7 +76,6 @@ function createGamesStore() {
 			} catch (err) {
 				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 				errorStore.set(`Failed to initialize games: ${errorMessage}`);
-				console.error('🎮 GamesStore: Error initializing games:', err);
 				set([]);
 			} finally {
 				loadingStore.set(false);

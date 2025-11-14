@@ -91,10 +91,8 @@ function createSortStore() {
 				}
 
 				replaceState(url.toString(), {});
-			} catch (error) {
-				if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
-					console.warn('Failed to update URL:', error);
-				}
+			} catch {
+				// Ignore router initialization errors
 			}
 		},
 

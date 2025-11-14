@@ -48,10 +48,8 @@ function createModalStore() {
 			}
 
 			replaceState(url.toString(), {});
-		} catch (error) {
-			if (!(error instanceof Error) || !error.message.includes('router is initialized')) {
-				console.warn('Failed to update URL:', error);
-			}
+		} catch {
+			// Ignore router initialization errors
 		}
 	}, 100);
 
@@ -310,8 +308,7 @@ function createModalStore() {
 
 				this.closeModal();
 				return true;
-			} catch (error) {
-				console.error('Error submitting form:', error);
+			} catch {
 				modalState.update((currentState) => ({
 					...currentState,
 					isSubmitting: false,
