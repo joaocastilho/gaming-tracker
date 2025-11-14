@@ -3,6 +3,7 @@ import { browser } from '$app/environment';
 import { gamesStore } from './games';
 import { appStore } from './app';
 import { completedGamesCache } from './completedGamesCache';
+import { filteredCountsStore } from './filteredCounts';
 import type { Game } from '$lib/types/game';
 import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
 import FilterWorker from '$lib/workers/filterWorker?worker';
@@ -101,6 +102,17 @@ function createFiltersStore() {
 				worker.postMessage({ type: 'LOAD_GAMES', payload: games });
 				// Don't send APPLY_FILTERS here - let filtersAndTab handle it
 			}
+
+			// Initialize filtered counts with total counts when no filters are applied
+			const total = games.length;
+			const completed = games.filter((game) => game.status === 'Completed').length;
+			const planned = games.filter((game) => game.status === 'Planned').length;
+			filteredCountsStore.setCounts({
+				all: total,
+				completed,
+				planned,
+				tierlist: null
+			});
 		}
 
 		// Update the completed games cache when games change
@@ -115,6 +127,14 @@ function createFiltersStore() {
 			if (type === 'FILTER_RESULTS') {
 				filteredGames.set(payload.filteredGames);
 				gameCounts.set(payload.counts);
+
+				// Update filtered counts for all tabs
+				filteredCountsStore.setCounts({
+					all: payload.counts.total,
+					completed: payload.counts.completed,
+					planned: payload.counts.planned,
+					tierlist: null
+				});
 			}
 		};
 	}
@@ -186,6 +206,16 @@ function createFiltersStore() {
 					activeTab === 'all' && activeFilters.length === 0 && !currentFilters.sortOption;
 
 				if (shouldSkipWorkerForAllTab) {
+					// Update filtered counts with total counts when skipping worker for 'all' tab
+					const total = allGames.length;
+					const completed = allGames.filter((game) => game.status === 'Completed').length;
+					const planned = allGames.filter((game) => game.status === 'Planned').length;
+					filteredCountsStore.setCounts({
+						all: total,
+						completed,
+						planned,
+						tierlist: null
+					});
 					return;
 				}
 

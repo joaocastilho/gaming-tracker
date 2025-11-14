@@ -8,8 +8,7 @@
 
 	import { appStore } from '$lib/stores/app';
 	import { filtersStore } from '$lib/stores/filters';
-	import { gamesStore } from '$lib/stores/games';
-	import type { Game } from '$lib/types/game';
+	import { filteredCountsStore } from '$lib/stores/filteredCounts';
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -22,41 +21,31 @@
 	};
 
 	let navItems = $state<NavItem[]>([]);
-	let allGames = $state<Game[]>([]);
-
-	// Calculate counts for each tab based on all games, not filtered games
-	function calculateTabCounts(games: Game[]) {
-		const total = games.length;
-		const completed = games.filter((game: Game) => game.status === 'Completed').length;
-		const planned = games.filter((game: Game) => game.status === 'Planned').length;
-
-		return { total, completed, planned };
-	}
+	let filteredCounts = $state({ all: 0, completed: 0, planned: 0, tierlist: null });
 
 	function updateNavItems() {
 		const pathname = page.url.pathname;
-		const { total, completed, planned } = calculateTabCounts(allGames);
 
 		navItems = [
 			{
 				id: 'all',
 				label: 'Games',
 				route: '/',
-				count: total,
+				count: filteredCounts.all,
 				active: pathname === '/' || pathname === '/games'
 			},
 			{
 				id: 'completed',
 				label: 'Completed',
 				route: '/completed',
-				count: completed,
+				count: filteredCounts.completed,
 				active: pathname === '/completed'
 			},
 			{
 				id: 'planned',
 				label: 'Planned',
 				route: '/planned',
-				count: planned,
+				count: filteredCounts.planned,
 				active: pathname === '/planned'
 			},
 			{
@@ -73,12 +62,10 @@
 		updateNavItems();
 	});
 
-	// Subscribe to games store to get updated counts when games change
-	gamesStore.subscribe((games) => {
-		if (games && games.length >= 0) {
-			allGames = games;
-			updateNavItems();
-		}
+	// Subscribe to filtered counts store to get updated counts when filters change
+	filteredCountsStore.subscribe((counts) => {
+		filteredCounts = counts;
+		updateNavItems();
 	});
 
 	let loginModalRef: InstanceType<typeof LoginModal> | null = null;

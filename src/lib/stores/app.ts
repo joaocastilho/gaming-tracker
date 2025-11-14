@@ -98,6 +98,12 @@ function createAppStore() {
 				url.searchParams.delete('tab');
 				url.searchParams.delete('view');
 
+				// Set current tab in URL
+				const currentTab = get(activeTab);
+				if (currentTab && currentTab !== 'all') {
+					url.searchParams.set('tab', currentTab);
+				}
+
 				replaceState(url.toString(), {});
 			} catch {
 				// Ignore router initialization errors
