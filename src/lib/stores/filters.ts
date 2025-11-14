@@ -5,12 +5,10 @@ import { completedGamesCache } from './completedGamesCache';
 import { filteredCountsStore } from './filteredCounts';
 import type { Game } from '$lib/types/game';
 import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
+import FilterWorker from '$lib/workers/filterWorker.ts?worker';
 
 // Define browser check for test environments
 const browser = typeof window !== 'undefined';
-
-// Worker is only available in browser environments
-const FilterWorker = null;
 
 function memoize<TArgs extends unknown[], TReturn>(
 	fn: (...args: TArgs) => TReturn
