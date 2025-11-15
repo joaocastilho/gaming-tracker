@@ -121,16 +121,7 @@
 
 <button
 	class="game-card"
-	style="background-color: var(--color-surface); color: var(--color-text-primary); --card-width: {size ===
-	'large'
-		? '250px'
-		: size === 'tiny'
-			? '200px'
-			: '300px'}; --cover-height: {size === 'large'
-		? '375px'
-		: size === 'tiny'
-			? '300px'
-			: '450px'};"
+	style="background-color: var(--color-surface); color: var(--color-text-primary);"
 	onclick={() => {
 		if (onOpenModal) {
 			onOpenModal(game, displayedGames);
@@ -246,6 +237,26 @@
 </button>
 
 <style>
+	/* Responsive card sizing using custom breakpoints */
+	.game-card {
+		--card-width: 160px; /* Mobile default (<480px) */
+		--cover-height: 240px; /* 1.5 aspect ratio */
+	}
+
+	@media (min-width: 768px) {
+		.game-card {
+			--card-width: 200px; /* Tablet (768px+) */
+			--cover-height: 300px; /* 1.5 aspect ratio */
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.game-card {
+			--card-width: 260px; /* Desktop (1280px+) */
+			--cover-height: 390px; /* 1.5 aspect ratio */
+		}
+	}
+
 	.game-card {
 		display: flex;
 		flex-direction: column;

@@ -437,7 +437,7 @@
 			class="relative h-[600px] w-full max-w-4xl rounded-xl shadow-2xl"
 			style="background-color: var(--color-surface);"
 		>
-			<div class="grid grid-cols-1 gap-0 lg:grid-cols-[400px_1fr]">
+			<div class="grid grid-cols-1 gap-0 md:grid-cols-[350px_1fr] lg:grid-cols-[400px_1fr]">
 				<div class="relative overflow-hidden rounded-l-lg">
 					<div class="modal-image-wrapper">
 						<div class="modal-skeleton-loader"></div>

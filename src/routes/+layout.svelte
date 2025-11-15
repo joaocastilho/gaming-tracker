@@ -6,6 +6,7 @@
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 	import RatingsSort from '$lib/components/RatingsSort.svelte';
 	import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
+	import BottomNavigation from '$lib/components/BottomNavigation.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { gamesStore } from '$lib/stores/games.js';
@@ -229,6 +230,7 @@
 		<DetailModalComponent />
 	{/if}
 
+	<BottomNavigation />
 	<ScrollToTopButton />
 </div>
 

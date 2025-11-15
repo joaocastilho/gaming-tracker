@@ -259,3 +259,6 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 		});
 	}
 });
+
+// Export for module compatibility (required for ?worker imports)
+export default {};

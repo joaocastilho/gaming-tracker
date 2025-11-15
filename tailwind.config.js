@@ -83,6 +83,14 @@ export default {
 				'card-hover': '0 8px 30px rgba(0,0,0,0.5)',
 				modal: '0 20px 60px rgba(0,0,0,0.5)',
 				badge: '0 2px 8px rgba(0,0,0,0.3)'
+			},
+			// Custom screen sizes for responsive design
+			screens: {
+				sm: '640px',
+				md: '768px',
+				lg: '1024px',
+				xl: '1280px',
+				'2xl': '1536px'
 			}
 		}
 	},
