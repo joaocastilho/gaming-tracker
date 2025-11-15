@@ -171,6 +171,9 @@ function createFiltersStore() {
 				return;
 			}
 
+			// Performance Guard - Start timing
+			const start = performance.now();
+
 			lastProcessedKey = processingKey;
 			const allGames = get(gamesStore);
 			if (allGames.length > 0 && worker) {
@@ -244,6 +247,12 @@ function createFiltersStore() {
 						payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
 					});
 				}
+			}
+
+			// Performance Guard - Check if filtering took too long
+			if (performance.now() - start > 50) {
+				document.body.classList.add('disable-animations');
+				setTimeout(() => document.body.classList.remove('disable-animations'), 300);
 			}
 		}, 100); // Increased debounce to 100ms for better deduplication
 	});

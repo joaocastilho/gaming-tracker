@@ -299,7 +299,40 @@ This workflow MUST be completed in full before:
 
 ---
 
-#### ✓ Step 2: TypeScript Type Checking
+#### ✓ Step 2: Formatting and Linting Validation
+
+**COMMANDS**:
+
+```bash
+bun run format
+```
+
+```bash
+bun run lint
+# or
+bunx eslint . --fix
+```
+
+**ACTIONS**:
+
+- [ ] Run Format
+- [ ] Run ESLint
+- [ ] Fix all reported errors
+- [ ] Address all warnings (unless explicitly waived by the user)
+- [ ] Re-run to confirm all issues are resolved
+- [ ] Do not disable ESLint rules without justification
+
+**VERIFICATION QUESTIONS**:
+
+- Are there ANY ESLint errors remaining?
+- Are there ANY ESLint warnings remaining (unless waived)?
+- Does the output show "0 errors, 0 warnings"?
+
+**FAILURE CONSEQUENCE**: If ANY errors or warnings remain (unless waived), STOP. Do not proceed to Step 4. Fix all linting issues, then restart from Step 3.
+
+---
+
+#### ✓ Step 3: TypeScript Type Checking
 
 **COMMAND**:
 
@@ -323,34 +356,6 @@ bunx tsc --noEmit
 - Are generics properly constrained?
 
 **FAILURE CONSEQUENCE**: If ANY type errors remain, STOP. Do not proceed to Step 3. Fix all type errors, then restart from Step 2.
-
----
-
-#### ✓ Step 3: Linting Validation
-
-**COMMANDS**:
-
-```bash
-bun run lint
-# or
-bunx eslint . --fix
-```
-
-**ACTIONS**:
-
-- [ ] Run ESLint
-- [ ] Fix all reported errors
-- [ ] Address all warnings (unless explicitly waived by the user)
-- [ ] Re-run to confirm all issues are resolved
-- [ ] Do not disable ESLint rules without justification
-
-**VERIFICATION QUESTIONS**:
-
-- Are there ANY ESLint errors remaining?
-- Are there ANY ESLint warnings remaining (unless waived)?
-- Does the output show "0 errors, 0 warnings"?
-
-**FAILURE CONSEQUENCE**: If ANY errors or warnings remain (unless waived), STOP. Do not proceed to Step 4. Fix all linting issues, then restart from Step 3.
 
 ---
 

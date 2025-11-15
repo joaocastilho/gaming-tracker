@@ -25,7 +25,18 @@
 	// Set active tab when navigating to this page
 	$effect(() => {
 		if (data.games) {
-			gamesStore.initializeGames(data.games);
+			// Handle both promise and direct array data
+			if (data.games instanceof Promise) {
+				data.games
+					.then((resolvedGames) => {
+						gamesStore.initializeGames(resolvedGames);
+					})
+					.catch((error) => {
+						console.error('Failed to load games:', error);
+					});
+			} else {
+				gamesStore.initializeGames(data.games);
+			}
 		}
 
 		const currentTab = get(appStore.activeTab);

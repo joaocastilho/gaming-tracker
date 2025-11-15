@@ -37,7 +37,16 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			output: {
-				manualChunks(id: string) {
+				manualChunks(id) {
+					// Application-specific chunks
+					if (id.includes('$lib/components/FilterDropdown.svelte')) {
+						return 'filters';
+					}
+					if (id.includes('$lib/components/DetailModal.svelte')) {
+						return 'modals';
+					}
+
+					// Vendor chunks
 					if (id.includes('node_modules')) {
 						if (id.includes('lucide-svelte')) {
 							return 'vendor-ui';

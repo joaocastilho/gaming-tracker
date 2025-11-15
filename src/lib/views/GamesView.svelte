@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { crossfade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
 	import { editorStore } from '$lib/stores/editor';
@@ -13,16 +11,6 @@
 
 	let { filteredGames, displayedGames = filteredGames, onOpenModal }: Props = $props();
 
-	const [send, receive] = crossfade({
-		duration: 200,
-		easing: quintOut,
-		fallback() {
-			return {
-				duration: 0
-			};
-		}
-	});
-
 	let gridContainer = $state<HTMLDivElement>();
 
 	const isEditor = $derived($editorStore.editorMode);
@@ -34,7 +22,7 @@
 >
 	{#if filteredGames.length > 0}
 		{#each filteredGames as game (game.id)}
-			<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
+			<div>
 				<GameCard {game} {displayedGames} {onOpenModal} />
 			</div>
 		{/each}

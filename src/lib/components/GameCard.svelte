@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { modalStore } from '../stores/modal.js';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
@@ -33,6 +32,9 @@
 		onOpenModal
 	}: Props = $props();
 
+	console.log('GameCard props:', { game: game.title, coverImage: game.coverImage, size });
+	console.log('GameCard rendering for:', game.title, 'coverImage:', game.coverImage);
+
 	const imageSrcset = $derived(() => {
 		if (size === 'tiny') {
 			return generateTinySrcset(game.coverImage);
@@ -48,6 +50,7 @@
 	});
 
 	let imageElement = $state<HTMLImageElement>();
+	let isVisible = $state(isAboveFold);
 
 	let totalScore = $derived(
 		game.status === 'Completed' &&
@@ -94,12 +97,20 @@
 	function handleImageLoad() {
 		if (imageElement) {
 			imageElement.classList.add('loaded');
+			const skeleton = imageElement.previousElementSibling as HTMLElement;
+			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
+				skeleton.style.opacity = '0';
+			}
 		}
 	}
 
 	function handleImageError() {
 		if (imageElement) {
 			imageElement.classList.add('loaded');
+			const skeleton = imageElement.previousElementSibling as HTMLElement;
+			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
+				skeleton.style.opacity = '0';
+			}
 		}
 	}
 
@@ -116,7 +127,26 @@
 
 	function preloadDetailImage() {}
 
-	onMount(() => {});
+	$effect(() => {
+		// Progressive loading: observe images only for below-fold items
+		if (!isAboveFold && imageElement) {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							isVisible = true;
+							observer.disconnect();
+						}
+					});
+				},
+				{
+					rootMargin: '200px' // Start loading 200px before visible
+				}
+			);
+
+			observer.observe(imageElement);
+		}
+	});
 </script>
 
 <button
@@ -137,19 +167,21 @@
 	<div class="cover-container">
 		<div class="image-wrapper">
 			<div class="skeleton-loader"></div>
-			<img
-				bind:this={imageElement}
-				src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
-				srcset={imageSrcset()}
-				sizes={imageSizes()}
-				alt=""
-				class="cover-image"
-				loading="eager"
-				fetchpriority={isAboveFold ? 'high' : 'low'}
-				decoding="async"
-				onload={handleImageLoad}
-				onerror={handleImageError}
-			/>
+			{#if isVisible}
+				<img
+					bind:this={imageElement}
+					src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
+					srcset={imageSrcset()}
+					sizes={imageSizes()}
+					alt=""
+					class="cover-image"
+					loading={isAboveFold ? 'eager' : 'lazy'}
+					fetchpriority={isAboveFold ? 'high' : 'auto'}
+					decoding="async"
+					onload={handleImageLoad}
+					onerror={handleImageError}
+				/>
+			{/if}
 		</div>
 
 		{#if game.coOp === 'Yes'}
@@ -310,6 +342,7 @@
 		animation: skeleton-shimmer 3s ease-in-out infinite;
 		z-index: 1;
 		opacity: 0.6;
+		transition: opacity 0.5s ease-in-out;
 	}
 
 	:global(.light) .skeleton-loader {

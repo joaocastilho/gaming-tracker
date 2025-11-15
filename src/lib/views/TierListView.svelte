@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { Game } from '$lib/types/game';
 	import TierRow from '$lib/components/TierRow.svelte';
-	import { crossfade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
 	import { memoize } from '$lib/utils/memoize';
 
 	interface Props {
@@ -11,11 +9,6 @@
 	}
 
 	let { filteredGames, onOpenModal }: Props = $props();
-
-	const [send, receive] = crossfade({
-		duration: 300,
-		easing: quintOut
-	});
 
 	const memoizedBuildTierList = memoize(buildTierList, {
 		key: (games: Game[]) => games.map((g) => g.id).join(',')
@@ -54,7 +47,7 @@
 	<div class="tier-list-container max-w-none">
 		{#each Object.entries(tierList) as [tierName, games] (tierName)}
 			{#if games.length > 0}
-				<TierRow {tierName} {games} {send} {receive} {onOpenModal} />
+				<TierRow {tierName} {games} {onOpenModal} />
 			{/if}
 		{/each}
 	</div>

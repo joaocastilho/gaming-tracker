@@ -73,9 +73,23 @@
 	// Initialize games from server data
 	$effect(() => {
 		if (data.games && !hasInitializedGames) {
-			gamesStore.initializeGames(data.games);
-			hasInitializedGames = true;
-			isLoadingGames = false;
+			// Handle both promise and direct array data
+			if (data.games instanceof Promise) {
+				data.games
+					.then((resolvedGames) => {
+						gamesStore.initializeGames(resolvedGames);
+						hasInitializedGames = true;
+						isLoadingGames = false;
+					})
+					.catch((error) => {
+						console.error('Failed to load games:', error);
+						isLoadingGames = false;
+					});
+			} else {
+				gamesStore.initializeGames(data.games);
+				hasInitializedGames = true;
+				isLoadingGames = false;
+			}
 		} else if (!data.games && !hasInitializedGames) {
 			// Handle case where no games data is available
 			isLoadingGames = false;

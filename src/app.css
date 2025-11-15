@@ -179,3 +179,8 @@ html {
 		left: 100%;
 	}
 }
+
+/* Performance Guard - Disable animations when filtering is slow */
+.disable-animations * {
+	animation-duration: 0.01ms !important;
+}

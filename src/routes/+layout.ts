@@ -8,9 +8,8 @@ export const load: LayoutLoad = async ({ fetch }) => {
 		const staticRes = await fetch('/games.json', { headers: { accept: 'application/json' } });
 
 		if (staticRes.ok) {
-			const games = await staticRes.json();
 			return {
-				games,
+				games: fetch('/games.json').then((r) => r.json()),
 				meta: null,
 				source: 'static'
 			};
@@ -25,10 +24,11 @@ export const load: LayoutLoad = async ({ fetch }) => {
 			const res = await fetch('/api/games', { headers: { accept: 'application/json' } });
 
 			if (res.ok) {
-				const data = await res.json();
 				return {
-					games: data.games,
-					meta: data.meta ?? null,
+					games: fetch('/api/games')
+						.then((r) => r.json())
+						.then((data) => data.games),
+					meta: null,
 					source: 'api'
 				};
 			}

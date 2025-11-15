@@ -2,17 +2,14 @@
 	import type { Game } from '$lib/types/game';
 	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
 	import GameCard from '$lib/components/GameCard.svelte';
-	import type { TransitionConfig, CrossfadeParams } from 'svelte/transition';
 
 	interface Props {
 		tierName: string;
 		games: Game[];
-		send: (node: Element, params: CrossfadeParams & { key: string }) => () => TransitionConfig;
-		receive: (node: Element, params: CrossfadeParams & { key: string }) => () => TransitionConfig;
 		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
-	let { tierName, games, send, receive, onOpenModal }: Props = $props();
+	let { tierName, games, onOpenModal }: Props = $props();
 </script>
 
 <div class="tier-section">
@@ -22,7 +19,7 @@
 	</h3>
 	<div class="tier-games-grid">
 		{#each games as game (game.id)}
-			<div in:receive={{ key: game.id }} out:send={{ key: game.id }}>
+			<div>
 				<GameCard {game} size="tiny" showTierBadge={false} {onOpenModal} />
 			</div>
 		{/each}

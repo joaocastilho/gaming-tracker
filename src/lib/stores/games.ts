@@ -33,7 +33,6 @@ function createGamesStore() {
 		error: errorStore,
 		allPlatforms,
 		allGenres,
-
 		initializeGames(rawGames: unknown[]): void {
 			// Check if games are already loaded to prevent duplicate initialization
 			const currentGames = get({ subscribe });
@@ -51,10 +50,10 @@ function createGamesStore() {
 				if (!Array.isArray(rawGames)) {
 					throw new Error('Invalid games data: expected array');
 				}
-
 				const normalized = rawGames
 					.map((g) => {
 						const transformed = transformGameData(g as Record<string, unknown>);
+						console.log('Transformed game:', transformed.title, transformed.coverImage);
 						return transformed;
 					})
 					.filter((g) => {
