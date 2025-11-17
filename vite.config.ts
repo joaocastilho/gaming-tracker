@@ -48,6 +48,15 @@ export default defineConfig({
 					if (id.includes('$lib/components/GameEditorModal.svelte')) {
 						return 'editor';
 					}
+					if (id.includes('$lib/stores/filteredGamesStore.ts')) {
+						return 'games-store';
+					}
+					if (id.includes('$lib/views/GamesView.svelte')) {
+						return 'games-view';
+					}
+					if (id.includes('$lib/components/VirtualList.svelte')) {
+						return 'virtual-list';
+					}
 
 					// Vendor chunks
 					if (id.includes('node_modules')) {

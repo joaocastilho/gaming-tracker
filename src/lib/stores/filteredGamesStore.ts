@@ -1,0 +1,234 @@
+import { derived, type Readable } from 'svelte/store';
+import type { Game } from '$lib/types/game';
+import { gamesStore } from './games';
+import { filtersStore } from './filters';
+import { appStore } from './app';
+import { sortStore } from './sort';
+import { getTierDisplayName } from '$lib/utils/colorConstants';
+
+// Memoization cache for filtered results
+interface FilterCacheKey {
+	searchTerm: string;
+	platforms: string[];
+	genres: string[];
+	tiers: string[];
+	activeTab: string;
+	sortKey: string;
+	sortDirection: string;
+}
+
+class FilteredGamesStore {
+	private cache = new Map<string, Game[]>();
+	private lastCacheKey: string | null = null;
+	private lastCachedResult: Game[] = [];
+
+	createFilteredGamesStore(): Readable<Game[]> {
+		return derived(
+			[gamesStore, filtersStore, appStore.activeTab, sortStore],
+			([$games, $filters, $activeTab, $sort]) => {
+				// Early return if no games
+				if (!$games || $games.length === 0) {
+					return [];
+				}
+
+				// Create cache key
+				const cacheKey = this.createCacheKey($filters, $activeTab, $sort);
+
+				// Return cached result if key hasn't changed
+				if (this.lastCacheKey === cacheKey && this.lastCachedResult.length > 0) {
+					return this.lastCachedResult;
+				}
+
+				// Filter games
+				const filteredGames = this.filterGames($games, $filters, $activeTab);
+
+				// Sort games
+				const sortedGames = this.sortGames(filteredGames, $sort, $activeTab);
+
+				// Update cache
+				this.updateCache(cacheKey, sortedGames);
+
+				return sortedGames;
+			}
+		);
+	}
+
+	private createCacheKey(
+		filters: {
+			searchTerm?: string;
+			platforms?: string[];
+			genres?: string[];
+			tiers?: string[];
+		} | null,
+		activeTab: string,
+		sort: { sortBy: string; sortDirection: 'asc' | 'desc' } | null
+	): string {
+		const key: FilterCacheKey = {
+			searchTerm: filters?.searchTerm || '',
+			platforms: filters?.platforms || [],
+			genres: filters?.genres || [],
+			tiers: filters?.tiers || [],
+			activeTab,
+			sortKey: sort?.sortBy || '',
+			sortDirection: sort?.sortDirection || ''
+		};
+
+		return JSON.stringify(key);
+	}
+
+	private filterGames(
+		games: Game[],
+		filters: {
+			searchTerm?: string;
+			platforms?: string[];
+			genres?: string[];
+			tiers?: string[];
+		} | null,
+		activeTab: string
+	): Game[] {
+		let filteredGames = games;
+
+		// Apply search filter
+		if (filters?.searchTerm?.trim()) {
+			const query = filters.searchTerm.toLowerCase().trim();
+
+			// Use a single pass filter with optimized matching
+			filteredGames = filteredGames.filter((game) => {
+				// Check if any searchable field contains the query
+				return (
+					game.title.toLowerCase().includes(query) ||
+					game.genre.toLowerCase().includes(query) ||
+					game.platform.toLowerCase().includes(query)
+				);
+			});
+		}
+
+		// Apply platform filter
+		if (filters?.platforms?.length > 0) {
+			filteredGames = filteredGames.filter((game) => filters.platforms.includes(game.platform));
+		}
+
+		// Apply genre filter
+		if (filters?.genres?.length > 0) {
+			filteredGames = filteredGames.filter((game) => filters.genres.includes(game.genre));
+		}
+
+		// Apply tier filter
+		if (filters?.tiers?.length > 0) {
+			filteredGames = filteredGames.filter((game) => {
+				if (!game.tier) return false;
+				const gameTierFullName = getTierDisplayName(game.tier);
+				return filters.tiers.includes(gameTierFullName);
+			});
+		}
+
+		// Apply tab-specific filtering
+		switch (activeTab) {
+			case 'completed':
+				filteredGames = filteredGames.filter((game) => game.status === 'Completed');
+				break;
+			case 'planned':
+				filteredGames = filteredGames.filter((game) => game.status === 'Planned');
+				break;
+			case 'tierlist':
+				filteredGames = filteredGames.filter((game) => game.tier);
+				break;
+			default:
+				// For 'all' tab, no additional filtering
+				break;
+		}
+
+		return filteredGames;
+	}
+
+	private sortGames(
+		games: Game[],
+		sort: { sortBy: string; sortDirection: 'asc' | 'desc' } | null,
+		activeTab: string
+	): Game[] {
+		// Use pre-defined sort functions for better performance
+		const sortFunctions = {
+			// Rating-based sorts
+			presentation: (a: Game, b: Game) =>
+				this.compareRatings(a.ratingPresentation, b.ratingPresentation),
+			story: (a: Game, b: Game) => this.compareRatings(a.ratingStory, b.ratingStory),
+			gameplay: (a: Game, b: Game) => this.compareRatings(a.ratingGameplay, b.ratingGameplay),
+			score: (a: Game, b: Game) => this.compareScores(a.score, b.score),
+
+			// Default sorts by tab
+			default: (a: Game, b: Game) => a.title.localeCompare(b.title),
+			completed: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
+			planned: (a: Game, b: Game) => a.title.localeCompare(b.title)
+		};
+
+		let sortFunction = sortFunctions.default;
+
+		// Determine sort function based on context
+		if (sort?.sortBy && sortFunctions[sort.sortBy]) {
+			sortFunction = sortFunctions[sort.sortBy];
+		} else if (activeTab === 'completed') {
+			sortFunction = sortFunctions.completed;
+		} else if (activeTab === 'planned') {
+			sortFunction = sortFunctions.planned;
+		}
+
+		// Clone array to avoid mutating original
+		const sortedGames = [...games];
+
+		// Apply sorting with direction
+		const direction = sort?.sortDirection === 'asc' ? 1 : -1;
+
+		return sortedGames.sort((a, b) => {
+			const result = sortFunction(a, b);
+			return result * direction;
+		});
+	}
+
+	private compareRatings(a: number | null | undefined, b: number | null | undefined): number {
+		const valA = a ?? 0;
+		const valB = b ?? 0;
+		return valA > valB ? 1 : valA < valB ? -1 : 0;
+	}
+
+	private compareScores(a: number | null | undefined, b: number | null | undefined): number {
+		const valA = a ?? 0;
+		const valB = b ?? 0;
+		return valA > valB ? 1 : valA < valB ? -1 : 0;
+	}
+
+	private compareDates(a: string | null | undefined, b: string | null | undefined): number {
+		if (!a && !b) return 0;
+		if (!a) return 1;
+		if (!b) return -1;
+		return new Date(b).getTime() - new Date(a).getTime();
+	}
+
+	private updateCache(key: string, result: Game[]): void {
+		this.lastCacheKey = key;
+		this.lastCachedResult = result;
+
+		// Limit cache size to prevent memory leaks
+		if (this.cache.size >= 10) {
+			const firstKey = this.cache.keys().next().value;
+			this.cache.delete(firstKey);
+		}
+
+		this.cache.set(key, result);
+	}
+
+	// Clear cache when needed (e.g., when games are updated)
+	clearCache(): void {
+		this.cache.clear();
+		this.lastCacheKey = null;
+		this.lastCachedResult = [];
+	}
+}
+
+// Create singleton instance
+const filteredGamesStore = new FilteredGamesStore();
+
+// Export the readable store
+export const filteredGames = filteredGamesStore.createFilteredGamesStore();
+
+// Export utility functions
+export { filteredGamesStore };
