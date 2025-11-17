@@ -19,6 +19,7 @@
 		size?: 'small' | 'large' | 'tiny' | 'tierlist';
 		showTierBadge?: boolean;
 		isAboveFold?: boolean;
+		isPriority?: boolean;
 		displayedGames?: Game[];
 		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
@@ -28,6 +29,7 @@
 		size = 'small',
 		showTierBadge = true,
 		isAboveFold = false,
+		isPriority = false,
 		displayedGames = [],
 		onOpenModal
 	}: Props = $props();
@@ -157,8 +159,8 @@
 				alt=""
 				class="cover-image"
 				class:visible={isVisible}
-				loading="lazy"
-				fetchpriority="auto"
+				loading={isPriority ? 'eager' : 'lazy'}
+				fetchpriority={isPriority ? 'high' : 'auto'}
 				decoding="async"
 				onload={handleImageLoad}
 				onerror={handleImageError}
@@ -257,21 +259,21 @@
 	}
 
 	.game-card {
-		--card-width: 200px; /* Tablet (768px+) */
-		--cover-height: 300px; /* 1.5 aspect ratio */
+		--card-width: clamp(160px, 20vw, 200px); /* Mobile: allow 2 columns */
+		--cover-height: clamp(240px, 30vw, 300px); /* Match aspect ratio */
 	}
 
 	@media (min-width: 768px) {
 		.game-card {
-			--card-width: 200px; /* Tablet (768px+) */
-			--cover-height: 300px; /* 1.5 aspect ratio */
+			--card-width: clamp(200px, 18vw, 250px); /* Tablet: smaller desktop size */
+			--cover-height: clamp(300px, 27vw, 375px); /* Match aspect ratio */
 		}
 	}
 
 	@media (min-width: 1280px) {
 		.game-card {
-			--card-width: 300px; /* Desktop (1280px+) */
-			--cover-height: 450px; /* 1.5 aspect ratio */
+			--card-width: clamp(300px, 15vw, 250px); /* Desktop: smaller for more columns */
+			--cover-height: clamp(450px, 22.5vw, 375px); /* Match aspect ratio */
 		}
 	}
 

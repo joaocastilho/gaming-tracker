@@ -6,9 +6,10 @@
 		itemHeight: number;
 		containerHeight: number;
 		overscan?: number;
-		renderItem: Snippet<[item: T, index: number]>;
+		renderItem: Snippet<[item: T, isPriority: boolean]>;
 		keyExtractor: (item: T, index: number) => string | number;
 		className?: string;
+		priorityCount?: number;
 	}
 
 	let {
@@ -18,7 +19,8 @@
 		overscan = 5,
 		renderItem,
 		keyExtractor,
-		className = ''
+		className = '',
+		priorityCount = 6
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	}: Props<any> = $props();
 
@@ -70,7 +72,7 @@
 	>
 		{#each visibleItems() as { item, index } (keyExtractor(item, index))}
 			<div class="virtual-item" style="height: {itemHeight}px; overflow: hidden;">
-				{@render renderItem(item, index)}
+				{@render renderItem(item, index < priorityCount)}
 			</div>
 		{/each}
 	</div>

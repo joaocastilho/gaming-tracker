@@ -12,17 +12,17 @@
 	let { filteredGames, displayedGames = filteredGames, onOpenModal }: Props = $props();
 
 	const isEditor = $derived($editorStore.editorMode);
+
+	function handleOpenModal(game: Game) {
+		onOpenModal?.(game, displayedGames);
+	}
 </script>
 
-<div class="game-grid-container">
+<div class="game-gallery">
 	{#if filteredGames.length > 0}
-		<div class="game-grid">
-			{#each filteredGames as game (game.id)}
-				<div class="game-card-wrapper">
-					<GameCard {game} {displayedGames} {onOpenModal} />
-				</div>
-			{/each}
-		</div>
+		{#each filteredGames as game, index (game.id)}
+			<GameCard {game} {displayedGames} isPriority={index < 8} onOpenModal={handleOpenModal} />
+		{/each}
 	{:else if isEditor}
 		<div class="empty-editor-hint">
 			<p>No games found for this view.</p>
@@ -32,39 +32,30 @@
 </div>
 
 <style>
-	.game-grid-container {
-		width: 100%;
-	}
-
-	.game-grid {
+	.game-gallery {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 		gap: 1rem;
 		padding: 1rem;
 		justify-items: center;
-	}
-
-	@media (min-width: 640px) {
-		.game-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
-
-	@media (min-width: 768px) {
-		.game-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.game-grid {
-			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		}
-	}
-
-	.game-card-wrapper {
-		display: flex;
-		justify-content: center;
 		width: 100%;
+	}
+
+	/* Ensure cards are centered within their grid cells */
+	.game-gallery > :global(.game-card) {
+		margin-bottom: 0;
+	}
+
+	.empty-editor-hint {
+		grid-column: 1 / -1;
+		text-align: center;
+		color: var(--color-text-secondary);
+		padding: 2rem;
+	}
+
+	.empty-editor-hint .sub {
+		font-size: 0.875rem;
+		color: var(--color-text-tertiary);
+		margin-top: 0.5rem;
 	}
 </style>
