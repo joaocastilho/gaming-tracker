@@ -1,15 +1,19 @@
 import { transformGameData } from './dataTransformer';
 import type { FilterState } from '$lib/stores/filters';
+import { replaceState } from '$app/navigation';
 
 // Define goto as a no-op for test environments
-const goto = (
+const goto = async (
 	url: string,
 	options?: { replaceState?: boolean; noScroll?: boolean; keepFocus?: boolean }
 ) => {
 	if (typeof window !== 'undefined') {
-		// In browser environment, use window.location as fallback
+		// In browser environment, use SvelteKit navigation
 		if (options?.replaceState) {
-			window.history.replaceState(null, '', url);
+			await replaceState(url, {
+				noscroll: options.noScroll ?? false,
+				keepFocus: options.keepFocus ?? false
+			});
 		} else {
 			window.location.href = url;
 		}
@@ -43,11 +47,11 @@ export function getUrlParams(searchParams: URLSearchParams): Partial<FilterState
  * Note: Status parameters are intentionally excluded from URL to avoid
  * conflicts with tier list view which shows all tiered games regardless of status
  */
-export function setUrlParams(
+export async function setUrlParams(
 	filters: FilterState,
 	allPlatforms: string[],
 	allGenres: string[]
-): void {
+): Promise<void> {
 	const searchParams = new URLSearchParams();
 
 	if (filters.searchTerm) searchParams.set('searchTerm', filters.searchTerm);
@@ -65,5 +69,5 @@ export function setUrlParams(
 		? `${window.location.pathname}?${queryString}`
 		: window.location.pathname;
 
-	goto(newUrl, { replaceState: true, noScroll: true, keepFocus: true });
+	await goto(newUrl, { replaceState: true, noScroll: true, keepFocus: true });
 }

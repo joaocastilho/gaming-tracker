@@ -1,18 +1,6 @@
 import { writable, derived, get } from 'svelte/store';
 import type { filtersStore as FiltersStoreType } from './filters.js';
-
-// Define replaceState as a no-op for test environments
-const replaceState = (url: string) => {
-	if (typeof window !== 'undefined') {
-		// In browser environment, try to use SvelteKit's replaceState
-		try {
-			// We can't import here due to module resolution, so we'll use a fallback
-			window.history.replaceState(null, '', url);
-		} catch {
-			// Fallback if SvelteKit's replaceState is not available
-		}
-	}
-};
+import { replaceState } from '$app/navigation';
 
 export interface AppState {
 	theme: 'dark' | 'light';
@@ -89,7 +77,7 @@ function createAppStore() {
 			}
 		},
 
-		writeToURL() {
+		async writeToURL() {
 			if (typeof window === 'undefined') return;
 
 			try {
@@ -99,19 +87,19 @@ function createAppStore() {
 				url.searchParams.delete('tab');
 				url.searchParams.delete('view');
 
-				replaceState(url.toString());
+				await replaceState(url.toString(), { noscroll: true });
 			} catch {
 				// Ignore router initialization errors
 			}
 		},
 
-		writeToURLWithFilters(filtersStore: typeof FiltersStoreType) {
+		async writeToURLWithFilters(filtersStore: typeof FiltersStoreType) {
 			if (typeof window === 'undefined') return;
 
-			this.writeToURL();
+			await this.writeToURL();
 
 			if (filtersStore && typeof filtersStore.writeToURL === 'function') {
-				filtersStore.writeToURL();
+				await filtersStore.writeToURL();
 			}
 		}
 	};

@@ -134,14 +134,12 @@ function createFiltersStore() {
 				gameCounts.set(payload.counts);
 
 				// Update filtered counts for all tabs
-				console.log('[FILTERS] Worker response counts:', payload.counts);
 				filteredCountsStore.setCounts({
 					all: payload.counts.total,
 					completed: payload.counts.completed,
 					planned: payload.counts.planned,
 					tierlist: null
 				});
-				console.log('[FILTERS] filteredCountsStore updated from worker');
 			}
 		};
 	}
@@ -217,7 +215,6 @@ function createFiltersStore() {
 
 				if (shouldSkipWorkerForAllTab) {
 					// Update filtered counts with total counts when skipping worker for 'all' tab
-					console.log('[FILTERS] Skipping worker for all tab, using totals');
 					const total = allGames.length;
 					const completed = allGames.filter((game) => game.status === 'Completed').length;
 					const planned = allGames.filter((game) => game.status === 'Planned').length;
@@ -227,7 +224,6 @@ function createFiltersStore() {
 						planned,
 						tierlist: null
 					});
-					console.log('[FILTERS] filteredCountsStore updated (skipped worker)');
 					return;
 				}
 
@@ -242,18 +238,12 @@ function createFiltersStore() {
 						gameCounts.set({ total: totalCount, completed: completedCount, planned: plannedCount });
 
 						// Update filtered counts store for header tabs
-						console.log('[FILTERS] Cache hit counts:', {
-							total: totalCount,
-							completed: completedCount,
-							planned: plannedCount
-						});
 						filteredCountsStore.setCounts({
 							all: totalCount,
 							completed: completedCount,
 							planned: plannedCount,
 							tierlist: null
 						});
-						console.log('[FILTERS] filteredCountsStore updated from cache');
 					} else {
 						// Fallback to worker if cache is not available
 						worker.postMessage({

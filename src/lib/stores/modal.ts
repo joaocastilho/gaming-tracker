@@ -2,19 +2,7 @@ import { writable, get } from 'svelte/store';
 import { debounce } from '../utils/debounce.js';
 import type { Game } from '../types/game.js';
 import { gamesStore } from './games.js';
-
-// Define replaceState as a no-op for test environments
-const replaceState = (url: string) => {
-	if (typeof window !== 'undefined') {
-		// In browser environment, try to use SvelteKit's replaceState
-		try {
-			// We can't import here due to module resolution, so we'll use a fallback
-			window.history.replaceState(null, '', url);
-		} catch {
-			// Fallback if SvelteKit's replaceState is not available
-		}
-	}
-};
+import { replaceState } from '$app/navigation';
 
 function createGameSlug(title: string): string {
 	return title
@@ -67,7 +55,7 @@ function createModalStore() {
 		}
 	});
 
-	const debouncedWriteToURL = debounce(() => {
+	const debouncedWriteToURL = debounce(async () => {
 		if (typeof window === 'undefined') return;
 
 		try {
@@ -81,7 +69,7 @@ function createModalStore() {
 				url.searchParams.delete('game');
 			}
 
-			replaceState(url.toString());
+			await replaceState(url.toString(), { noscroll: true });
 		} catch {
 			// Ignore router initialization errors
 		}
