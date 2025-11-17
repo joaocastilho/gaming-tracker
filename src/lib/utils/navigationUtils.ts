@@ -1,20 +1,9 @@
 import { appStore } from '$lib/stores/app';
 import { filtersStore } from '$lib/stores/filters';
+import { get } from 'svelte/store';
 
 // Define goto as a no-op for test environments
-const goto = (
-	url: string,
-	options?: { replaceState?: boolean; noScroll?: boolean; keepFocus?: boolean }
-) => {
-	if (typeof window !== 'undefined') {
-		// In browser environment, use window.location as fallback
-		if (options?.replaceState) {
-			window.history.replaceState(null, '', url);
-		} else {
-			window.location.href = url;
-		}
-	}
-};
+import { goto } from '$app/navigation';
 
 export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -33,26 +22,48 @@ const DEFAULT_OPTIONS: NavigationOptions = {
 };
 
 /**
- * Navigate to a target page with optional filter preservation and scroll behavior
- * Note: This function does NOT write filters to URL to avoid synchronization issues
+ * Navigate to tab with proper URL update and filter preservation
  */
-export function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
+export async function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
-	// Update active tab state with force to ensure it's set
-	appStore.setActiveTab(target, true);
+	// Build target URL with current filters
+	const route = getRoutePath(target);
+	const url = new URL(
+		route,
+		typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
+	);
 
-	// Clear filters for routes that require it (currently only tierlist)
-	if (requiresFilterReset(target)) {
-		filtersStore.resetAllFilters();
-		filtersStore.setSearchTerm('');
+	// Always preserve filters for dedicated pages - serialize to URL params
+	const currentFilters = get(filtersStore);
+	if (currentFilters) {
+		const searchParams = new URLSearchParams();
+		if (currentFilters.searchTerm) searchParams.set('searchTerm', currentFilters.searchTerm);
+
+		if (currentFilters.platforms.length > 0) {
+			currentFilters.platforms.forEach((p) => searchParams.append('platforms', p));
+		}
+
+		if (currentFilters.genres.length > 0) {
+			currentFilters.genres.forEach((g) => searchParams.append('genres', g));
+		}
+
+		if (currentFilters.tiers.length > 0) {
+			currentFilters.tiers.forEach((t) => searchParams.append('tiers', t));
+		}
+
+		searchParams.forEach((value, key) => {
+			url.searchParams.append(key, value);
+		});
 	}
 
-	// Navigate to route
-	const route = target === 'all' ? '/' : `/${target}`;
-	goto(route, {
-		replaceState: opts.replaceState,
-		noScroll: opts.noScroll,
+	// Update active tab state
+	appStore.setActiveTab(target, true);
+
+	// Navigate using SvelteKit goto
+	await goto(url.toString(), {
+		replaceState: opts.replaceState ?? false,
+		noScroll: opts.noScroll ?? false,
 		keepFocus: true
 	});
 
@@ -63,31 +74,30 @@ export function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
 }
 
 /**
- * Simple navigation without filter preservation (for cases where filters should be reset)
- * This function also bypasses URL writing to avoid synchronization issues
+ * Navigate to tab and reset filters (e.g. tierlist)
  */
-export function navigateToAndReset(
+export async function navigateToAndReset(
 	target: NavTarget,
 	options: Omit<NavigationOptions, 'preserveFilters'> = {}
 ) {
 	const opts = { ...DEFAULT_OPTIONS, ...options, preserveFilters: false };
 
-	// Reset filters immediately without URL sync
+	// Reset filters first
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
 
-	// Update active tab state with force to ensure it's set
+	// Update active tab state
 	appStore.setActiveTab(target, true);
 
-	// Navigate to route
-	const route = target === 'all' ? '/' : `/${target}`;
-	goto(route, {
-		replaceState: opts.replaceState,
-		noScroll: opts.noScroll,
+	// Navigate to clean URL (no filter params)
+	const route = getRoutePath(target);
+	await goto(route, {
+		replaceState: opts.replaceState ?? false,
+		noScroll: opts.noScroll ?? false,
 		keepFocus: true
 	});
 
-	// Scroll to top if requested
+	// Scroll to top
 	if (opts.scrollToTop) {
 		scrollToTop();
 	}
@@ -96,32 +106,15 @@ export function navigateToAndReset(
 /**
  * Navigate to 'all' tab while preserving filters (for logo click)
  */
-export function navigateToAllWithFilters() {
-	navigateTo('all');
+export async function navigateToAllWithFilters() {
+	await navigateTo('all');
 }
 
 /**
  * Navigate to 'all' tab and clear all filters (for logo click)
- * This should immediately reset filters without URL synchronization
  */
-export function navigateToAllAndClearFilters() {
-	// Reset filters immediately
-	filtersStore.resetAllFilters();
-	filtersStore.setSearchTerm('');
-
-	// Update active tab with force to ensure it's set
-	appStore.setActiveTab('all', true);
-
-	// Navigate without filter preservation
-	const route = '/';
-	goto(route, {
-		replaceState: false,
-		noScroll: false,
-		keepFocus: true
-	});
-
-	// Scroll to top
-	scrollToTop();
+export async function navigateToAllAndClearFilters() {
+	await navigateToAndReset('all', { scrollToTop: true });
 }
 
 /**

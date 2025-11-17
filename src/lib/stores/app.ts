@@ -72,22 +72,11 @@ function createAppStore() {
 
 		readFromURL(searchParams: URLSearchParams) {
 			const themeParam = searchParams.get('theme');
-			const tab = searchParams.get('tab');
 
 			if (themeParam && (themeParam === 'dark' || themeParam === 'light')) {
 				const currentTheme = get(theme);
 				if (themeParam !== currentTheme) {
 					theme.set(themeParam);
-				}
-			}
-
-			if (
-				tab &&
-				(tab === 'all' || tab === 'completed' || tab === 'planned' || tab === 'tierlist')
-			) {
-				const currentTab = get(activeTab);
-				if (tab !== currentTab) {
-					activeTab.set(tab);
 				}
 			}
 		},
@@ -109,12 +98,6 @@ function createAppStore() {
 				url.searchParams.delete('theme');
 				url.searchParams.delete('tab');
 				url.searchParams.delete('view');
-
-				// Set current tab in URL
-				const currentTab = get(activeTab);
-				if (currentTab && currentTab !== 'all') {
-					url.searchParams.set('tab', currentTab);
-				}
 
 				replaceState(url.toString());
 			} catch {

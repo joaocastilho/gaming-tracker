@@ -44,9 +44,12 @@
 
 	// Initialize URL reading
 	$effect(() => {
-		filtersStore.readFromURL(page.url.searchParams);
-		appStore.readFromURL(page.url.searchParams);
-		sortStore.readFromURL(page.url.searchParams);
+		if (typeof window !== 'undefined') {
+			const searchParams = new URLSearchParams(window.location.search);
+			filtersStore.readFromURL(searchParams);
+			appStore.readFromURL(searchParams);
+			sortStore.readFromURL(searchParams);
+		}
 	});
 
 	// Handle URL writing

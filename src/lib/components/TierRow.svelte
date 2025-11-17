@@ -20,7 +20,7 @@
 	<div class="tier-games-grid">
 		{#each games as game (game.id)}
 			<div>
-				<GameCard {game} size="tiny" showTierBadge={false} {onOpenModal} />
+				<GameCard {game} size="tierlist" showTierBadge={false} {onOpenModal} />
 			</div>
 		{/each}
 	</div>
@@ -51,9 +51,9 @@
 
 	.tier-games-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		gap: 1rem;
-		max-width: none;
+		max-width: 100%;
 		width: 100%;
 	}
 </style>

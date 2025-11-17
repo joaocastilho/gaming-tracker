@@ -235,12 +235,6 @@
 		}
 	});
 
-	let currentFilterState: import('$lib/stores/filters').FilterState | null = null;
-
-	filtersStore.subscribe(($filters) => {
-		currentFilterState = $filters;
-	});
-
 	$effect(() => {
 		if (initialized) {
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
@@ -251,30 +245,19 @@
 	});
 
 	$effect(() => {
-		const currentURL = page.url;
-		const tab = get(appStore.activeTab);
+		// Sync activeTab with URL pathname changes
+		const pathname = page.url.pathname;
+		let targetTab: 'all' | 'completed' | 'planned' | 'tierlist' = 'all';
 
-		// Only read filters from URL for non-tierlist tabs
-		if (tab !== 'tierlist') {
-			const searchParam = currentURL.searchParams.get('search') || '';
-			const platformsParam = currentURL.searchParams.get('platforms') || '';
-			const genresParam = currentURL.searchParams.get('genres') || '';
-			const tiersParam = currentURL.searchParams.get('tiers') || '';
-
-			const urlState = {
-				searchQuery: searchParam,
-				selectedPlatforms: platformsParam ? platformsParam.split(',') : [],
-				selectedGenres: genresParam ? genresParam.split(',') : [],
-				selectedTiers: tiersParam ? tiersParam.split(',') : []
-			};
-
-			const urlStateString = JSON.stringify(urlState);
-			const currentStateString = JSON.stringify(currentFilterState);
-
-			if (initialized && urlStateString !== currentStateString) {
-				filtersStore.readFromURL(page.url.searchParams);
-			}
+		if (pathname === '/completed') {
+			targetTab = 'completed';
+		} else if (pathname === '/planned') {
+			targetTab = 'planned';
+		} else if (pathname === '/tierlist') {
+			targetTab = 'tierlist';
 		}
+
+		appStore.setActiveTab(targetTab);
 	});
 
 	let selectedPlatforms: string[] = $state([]);

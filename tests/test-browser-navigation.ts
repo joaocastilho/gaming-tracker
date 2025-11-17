@@ -237,10 +237,10 @@ class BrowserNavigationTester {
 		// tab=all is not written to URL (empty search)
 		// tab=completed is written to URL
 		const allTabURL = 'http://localhost:5173/';
-		const completedTabURL = 'http://localhost:5173/?tab=completed';
+		const completedTabURL = 'http://localhost:5173/completed';
 
 		expect(allTabURL).not.toContain('tab='); // 'all' tab not in URL
-		expect(completedTabURL).toContain('tab=completed'); // Other tabs are in URL
+		expect(completedTabURL).toContain('completed'); // Other tabs are in URL
 
 		this.results.navigationValidation.viewModePersistence = true;
 		return true;

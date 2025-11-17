@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { navigateTo } from '$lib/utils/navigationUtils';
+	import { navigateTo, navigateToAndReset } from '$lib/utils/navigationUtils';
 	import { goto } from '$app/navigation';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Logo from '$lib/components/Logo.svelte';
@@ -23,9 +22,7 @@
 	let navItems = $state<NavItem[]>([]);
 	let filteredCounts = $state({ all: 0, completed: 0, planned: 0, tierlist: null });
 
-	function updateNavItems() {
-		const pathname = page.url.pathname;
-
+	function updateNavItems(pathname: string) {
 		navItems = [
 			{
 				id: 'all',
@@ -59,13 +56,15 @@
 	}
 
 	$effect(() => {
-		updateNavItems();
+		updateNavItems(window.location.pathname);
 	});
 
 	// Subscribe to filtered counts store to get updated counts when filters change
 	filteredCountsStore.subscribe((counts) => {
 		filteredCounts = counts;
-		updateNavItems();
+		if (typeof window !== 'undefined') {
+			updateNavItems(window.location.pathname);
+		}
 	});
 
 	let loginModalRef: InstanceType<typeof LoginModal> | null = null;
@@ -96,9 +95,13 @@
 		}
 	}
 
-	function handleNavClick(target: NavId) {
-		// Tab navigation should preserve filters
-		navigateTo(target);
+	async function handleNavClick(target: NavId) {
+		// Tab navigation should preserve filters (or reset for tierlist)
+		if (target === 'tierlist') {
+			await navigateToAndReset(target);
+		} else {
+			await navigateTo(target);
+		}
 	}
 </script>
 

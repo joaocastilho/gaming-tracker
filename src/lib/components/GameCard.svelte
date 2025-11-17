@@ -16,7 +16,7 @@
 
 	interface Props {
 		game: Game;
-		size?: 'small' | 'large' | 'tiny';
+		size?: 'small' | 'large' | 'tiny' | 'tierlist';
 		showTierBadge?: boolean;
 		isAboveFold?: boolean;
 		displayedGames?: Game[];
@@ -31,9 +31,6 @@
 		displayedGames = [],
 		onOpenModal
 	}: Props = $props();
-
-	console.log('GameCard props:', { game: game.title, coverImage: game.coverImage, size });
-	console.log('GameCard rendering for:', game.title, 'coverImage:', game.coverImage);
 
 	const imageSrcset = $derived(() => {
 		if (size === 'tiny') {
@@ -127,8 +124,8 @@
 
 	function preloadDetailImage() {}
 
+	// Progressive loading: observe images only for below-fold items
 	$effect(() => {
-		// Progressive loading: observe images only for below-fold items
 		if (!isAboveFold && imageElement) {
 			const observer = new IntersectionObserver(
 				(entries) => {
@@ -140,17 +137,21 @@
 					});
 				},
 				{
-					rootMargin: '200px' // Start loading 200px before visible
+					rootMargin: '200px'
 				}
 			);
 
 			observer.observe(imageElement);
+
+			return () => {
+				observer.disconnect();
+			};
 		}
 	});
 </script>
 
 <button
-	class="game-card"
+	class="game-card {size === 'tierlist' ? 'tierlist-size' : ''}"
 	style="background-color: var(--color-surface); color: var(--color-text-primary);"
 	onclick={() => {
 		if (onOpenModal) {
@@ -167,21 +168,20 @@
 	<div class="cover-container">
 		<div class="image-wrapper">
 			<div class="skeleton-loader"></div>
-			{#if isVisible}
-				<img
-					bind:this={imageElement}
-					src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
-					srcset={imageSrcset()}
-					sizes={imageSizes()}
-					alt=""
-					class="cover-image"
-					loading={isAboveFold ? 'eager' : 'lazy'}
-					fetchpriority={isAboveFold ? 'high' : 'auto'}
-					decoding="async"
-					onload={handleImageLoad}
-					onerror={handleImageError}
-				/>
-			{/if}
+			<img
+				bind:this={imageElement}
+				src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
+				srcset={imageSrcset()}
+				sizes={imageSizes()}
+				alt=""
+				class="cover-image"
+				class:visible={isVisible}
+				loading={isAboveFold ? 'eager' : 'lazy'}
+				fetchpriority={isAboveFold ? 'high' : 'auto'}
+				decoding="async"
+				onload={handleImageLoad}
+				onerror={handleImageError}
+			/>
 		</div>
 
 		{#if game.coOp === 'Yes'}
@@ -201,7 +201,7 @@
 	<div class="game-info">
 		<div class="title-section">
 			<h3 class="game-title" style="font-size: {titleFontSize()}rem;">
-				{game.mainTitle}
+				{game.mainTitle || game.title}
 				{#if game.subtitle}
 					<br />
 					<span class="game-subtitle" style="font-size: {subtitleFontSize()}rem;"
@@ -270,9 +270,14 @@
 
 <style>
 	/* Responsive card sizing using custom breakpoints */
+	.game-card.tierlist-size {
+		--card-width: 200px;
+		--cover-height: 300px; /* 1.5 aspect ratio */
+	}
+
 	.game-card {
-		--card-width: 160px; /* Mobile default (<480px) */
-		--cover-height: 240px; /* 1.5 aspect ratio */
+		--card-width: 200px; /* Tablet (768px+) */
+		--cover-height: 300px; /* 1.5 aspect ratio */
 	}
 
 	@media (min-width: 768px) {
@@ -284,15 +289,15 @@
 
 	@media (min-width: 1280px) {
 		.game-card {
-			--card-width: 260px; /* Desktop (1280px+) */
-			--cover-height: 390px; /* 1.5 aspect ratio */
+			--card-width: 300px; /* Desktop (1280px+) */
+			--cover-height: 450px; /* 1.5 aspect ratio */
 		}
 	}
 
 	.game-card {
 		display: flex;
 		flex-direction: column;
-		width: var(--card-width, 300px);
+		width: var(--card-width);
 		border-radius: 6px;
 		overflow: hidden;
 		margin-top: 8px;

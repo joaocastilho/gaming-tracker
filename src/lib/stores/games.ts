@@ -34,35 +34,16 @@ function createGamesStore() {
 		allPlatforms,
 		allGenres,
 		initializeGames(rawGames: unknown[]): void {
-			// Check if games are already loaded to prevent duplicate initialization
-			const currentGames = get({ subscribe });
-			if (currentGames && currentGames.length > 0) {
-				if (rawGames && Array.isArray(rawGames) && rawGames.length === currentGames.length) {
-					return;
-				} else if (rawGames && Array.isArray(rawGames) && rawGames.length !== currentGames.length) {
-					// Re-initialize with different game count
-				}
-			}
-
 			loadingStore.set(true);
 			errorStore.set(null);
 			try {
 				if (!Array.isArray(rawGames)) {
 					throw new Error('Invalid games data: expected array');
 				}
-				const normalized = rawGames
-					.map((g) => {
-						const transformed = transformGameData(g as Record<string, unknown>);
-						console.log('Transformed game:', transformed.title, transformed.coverImage);
-						return transformed;
-					})
-					.filter((g) => {
-						const isValid = g && typeof g.id === 'string' && typeof g.title === 'string';
-						if (!isValid) {
-							return false;
-						}
-						return isValid;
-					}) as unknown as Game[];
+				const normalized = rawGames.map((gameRaw): Game => {
+					const transformed = transformGameData(gameRaw as Record<string, unknown>);
+					return transformed as unknown as Game;
+				});
 
 				set(normalized);
 

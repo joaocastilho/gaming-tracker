@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/state';
+	import { browser } from '$app/environment';
 	import { navigateTo } from '$lib/utils/navigationUtils';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts';
 
@@ -18,7 +18,10 @@
 	let filteredCounts = $state({ all: 0, completed: 0, planned: 0, tierlist: null });
 
 	function updateNavItems() {
-		const pathname = page.url.pathname;
+		let pathname = '/';
+		if (browser) {
+			pathname = window.location.pathname;
+		}
 
 		navItems = [
 			{
