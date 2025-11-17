@@ -9,9 +9,6 @@
 	$effect(() => {
 		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
 			searchTerm = value;
-			if (inputElement && inputElement.value !== value) {
-				inputElement.value = value;
-			}
 		});
 		return unsubscribe;
 	});
@@ -39,7 +36,10 @@
 	function clearSearch() {
 		if (inputElement) {
 			inputElement.value = '';
-			inputElement.focus();
+			// Defer focus to next animation frame to avoid forced reflow
+			requestAnimationFrame(() => {
+				inputElement?.focus();
+			});
 		}
 		filtersStore.setSearchTerm('');
 		filtersStore.writeToURL();
@@ -61,13 +61,17 @@
 			event.preventDefault();
 			event.stopPropagation();
 
+			// Batch DOM operations to avoid forced reflows
 			inputElement.focus();
 			inputElement.select();
 
-			const headerHeight = 110;
-			window.scrollTo({
-				top: -headerHeight,
-				behavior: 'smooth'
+			// Defer scroll to next frame to avoid layout thrashing
+			requestAnimationFrame(() => {
+				const headerHeight = 110;
+				window.scrollTo({
+					top: -headerHeight,
+					behavior: 'smooth'
+				});
 			});
 		}
 	}
@@ -84,6 +88,7 @@
 	<div class="search-bar">
 		<span class="search-icon" aria-hidden="true">🔍</span>
 		<input
+			id="search-input"
 			bind:this={inputElement}
 			bind:value={searchTerm}
 			type="text"
