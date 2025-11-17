@@ -190,7 +190,7 @@
 		}
 		return extractFilterOptions(games);
 	});
-	let currentActiveTab = $derived(get(appStore.activeTab));
+	let isTierlistPage = $derived(page.url.pathname === '/tierlist');
 
 	$effect(() => {
 		const tab = get(appStore.activeTab);
@@ -309,9 +309,8 @@
 	<Header />
 	<section class="filter-section top-[104px] z-30 md:top-[110px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
-			<SearchBar />
-
-			{#if currentActiveTab !== 'tierlist'}
+			{#if !isTierlistPage}
+				<SearchBar />
 				<div class="flex flex-col items-center gap-4">
 					<div class="flex flex-wrap items-center justify-center gap-3">
 						{#if FilterDropdownComponent}
