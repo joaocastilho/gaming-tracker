@@ -26,8 +26,7 @@
 	},
 	"dependencies": {
 		"html2canvas": "^1.4.1",
-		"string-similarity": "^4.0.4",
-		"web-vitals": "^5.1.0"
+		"string-similarity": "^4.0.4"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.1",

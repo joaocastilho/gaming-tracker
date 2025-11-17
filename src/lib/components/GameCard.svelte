@@ -47,7 +47,7 @@
 	});
 
 	let imageElement = $state<HTMLImageElement>();
-	let isVisible = $state(isAboveFold);
+	let isVisible = $state(true); // Always visible - remove lazy loading overhead
 
 	let totalScore = $derived(
 		game.status === 'Completed' &&
@@ -122,32 +122,13 @@
 		}
 	}
 
-	function preloadDetailImage() {}
-
-	// Progressive loading: observe images only for below-fold items
-	$effect(() => {
-		if (!isAboveFold && imageElement) {
-			const observer = new IntersectionObserver(
-				(entries) => {
-					entries.forEach((entry) => {
-						if (entry.isIntersecting) {
-							isVisible = true;
-							observer.disconnect();
-						}
-					});
-				},
-				{
-					rootMargin: '200px'
-				}
-			);
-
-			observer.observe(imageElement);
-
-			return () => {
-				observer.disconnect();
-			};
+	function preloadDetailImage() {
+		// Preload detail image on hover for faster modal opening
+		if (game.coverImage) {
+			const detailImg = new Image();
+			detailImg.src = game.coverImage.replace('.webp', '-detail.webp');
 		}
-	});
+	}
 </script>
 
 <button
@@ -176,8 +157,8 @@
 				alt=""
 				class="cover-image"
 				class:visible={isVisible}
-				loading={isAboveFold ? 'eager' : 'lazy'}
-				fetchpriority={isAboveFold ? 'high' : 'auto'}
+				loading="lazy"
+				fetchpriority="auto"
 				decoding="async"
 				onload={handleImageLoad}
 				onerror={handleImageError}

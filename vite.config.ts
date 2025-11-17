@@ -45,11 +45,17 @@ export default defineConfig({
 					if (id.includes('$lib/components/DetailModal.svelte')) {
 						return 'modals';
 					}
+					if (id.includes('$lib/components/GameEditorModal.svelte')) {
+						return 'editor';
+					}
 
 					// Vendor chunks
 					if (id.includes('node_modules')) {
 						if (id.includes('lucide-svelte')) {
 							return 'vendor-ui';
+						}
+						if (id.includes('html2canvas')) {
+							return 'vendor-canvas';
 						}
 						if (
 							id.includes('date-fns') ||
@@ -71,9 +77,18 @@ export default defineConfig({
 		minify: 'esbuild',
 		sourcemap: false,
 		assetsInlineLimit: 4096,
-		chunkSizeWarningLimit: 1000
+		chunkSizeWarningLimit: 1000,
+		modulePreload: {
+			polyfill: false
+		}
 	},
 	optimizeDeps: {
-		include: ['lucide-svelte', 'date-fns']
+		include: ['lucide-svelte', 'date-fns'],
+		exclude: ['web-vitals']
+	},
+	server: {
+		fs: {
+			strict: false
+		}
 	}
 });
