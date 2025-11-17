@@ -18,7 +18,6 @@ export const load: LayoutLoad = async ({ fetch }) => {
 		// Silently ignore static JSON fetch errors
 	}
 
-	// Only try API if not in development
 	if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
 		try {
 			const res = await fetch('/api/games', { headers: { accept: 'application/json' } });
