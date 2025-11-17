@@ -180,6 +180,16 @@ html {
 	}
 }
 
+/* Safari compatibility for backdrop-filter */
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+	.backdrop-blur-\[8px\] {
+		-webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,)
+			var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
+			var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,)
+			var(--tw-backdrop-sepia,);
+	}
+}
+
 /* Performance Guard - Disable animations when filtering is slow */
 .disable-animations * {
 	animation-duration: 0.01ms !important;
