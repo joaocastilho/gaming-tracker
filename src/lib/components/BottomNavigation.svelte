@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { navigateTo } from '$lib/utils/navigationUtils';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts';
+	import { appStore } from '$lib/stores/app.js';
+	import { get } from 'svelte/store';
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -18,10 +19,7 @@
 	let filteredCounts = $state({ all: 0, completed: 0, planned: 0, tierlist: null });
 
 	function updateNavItems() {
-		let pathname = '/';
-		if (browser) {
-			pathname = window.location.pathname;
-		}
+		const activeTab = get(appStore.activeTab);
 
 		navItems = [
 			{
@@ -29,7 +27,7 @@
 				label: 'Games',
 				route: '/',
 				count: filteredCounts.all,
-				active: pathname === '/' || pathname === '/games',
+				active: activeTab === 'all',
 				icon: '🎮'
 			},
 			{
@@ -37,7 +35,7 @@
 				label: 'Completed',
 				route: '/completed',
 				count: filteredCounts.completed,
-				active: pathname === '/completed',
+				active: activeTab === 'completed',
 				icon: '✓'
 			},
 			{
@@ -45,7 +43,7 @@
 				label: 'Planned',
 				route: '/planned',
 				count: filteredCounts.planned,
-				active: pathname === '/planned',
+				active: activeTab === 'planned',
 				icon: '📝'
 			},
 			{
@@ -53,7 +51,7 @@
 				label: 'Tier List',
 				route: '/tierlist',
 				count: null,
-				active: pathname === '/tierlist',
+				active: activeTab === 'tierlist',
 				icon: '🏆'
 			}
 		];

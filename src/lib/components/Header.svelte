@@ -5,6 +5,7 @@
 	import Logo from '$lib/components/Logo.svelte';
 	import LoginModal from '$lib/components/LoginModal.svelte';
 
+	import { get } from 'svelte/store';
 	import { appStore } from '$lib/stores/app';
 	import { filtersStore } from '$lib/stores/filters';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts';
@@ -22,49 +23,49 @@
 	let navItems = $state<NavItem[]>([]);
 	let filteredCounts = $state({ all: 0, completed: 0, planned: 0, tierlist: null });
 
-	function updateNavItems(pathname: string) {
+	function updateNavItems() {
+		const activeTab = get(appStore.activeTab);
+
 		navItems = [
 			{
 				id: 'all',
 				label: 'Games',
 				route: '/',
 				count: filteredCounts.all,
-				active: pathname === '/' || pathname === '/games'
+				active: activeTab === 'all'
 			},
 			{
 				id: 'completed',
 				label: 'Completed',
 				route: '/completed',
 				count: filteredCounts.completed,
-				active: pathname === '/completed'
+				active: activeTab === 'completed'
 			},
 			{
 				id: 'planned',
 				label: 'Planned',
 				route: '/planned',
 				count: filteredCounts.planned,
-				active: pathname === '/planned'
+				active: activeTab === 'planned'
 			},
 			{
 				id: 'tierlist',
 				label: 'Tier List',
 				route: '/tierlist',
 				count: null,
-				active: pathname === '/tierlist'
+				active: activeTab === 'tierlist'
 			}
 		];
 	}
 
 	$effect(() => {
-		updateNavItems(window.location.pathname);
+		updateNavItems();
 	});
 
 	// Subscribe to filtered counts store to get updated counts when filters change
 	filteredCountsStore.subscribe((counts) => {
 		filteredCounts = counts;
-		if (typeof window !== 'undefined') {
-			updateNavItems(window.location.pathname);
-		}
+		updateNavItems();
 	});
 
 	let loginModalRef: InstanceType<typeof LoginModal> | null = null;
