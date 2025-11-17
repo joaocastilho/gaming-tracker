@@ -11,7 +11,7 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';
 	import { modalStore } from '$lib/stores/modal.js';
-	import { browser } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import type { Game } from '$lib/types/game.js';
@@ -124,15 +124,25 @@
 	});
 
 	$effect(() => {
-		// Load FilterDropdown component if not already loaded and needed
+		// Load FilterDropdown component after initial render to reduce critical path
 		if (!FilterDropdownComponent && browser) {
-			import('$lib/components/FilterDropdown.svelte')
-				.then((module) => {
-					FilterDropdownComponent = module.default;
-				})
-				.catch(() => {
-					// Silently handle FilterDropdown loading errors
-				});
+			// Defer loading until after initial paint
+			const loadFilterDropdown = () => {
+				import('$lib/components/FilterDropdown.svelte')
+					.then((module) => {
+						FilterDropdownComponent = module.default;
+					})
+					.catch(() => {
+						// Silently handle FilterDropdown loading errors
+					});
+			};
+
+			// Use requestIdleCallback if available, fallback to setTimeout
+			if ('requestIdleCallback' in window) {
+				requestIdleCallback(loadFilterDropdown, { timeout: 2000 });
+			} else {
+				setTimeout(loadFilterDropdown, 100);
+			}
 		}
 	});
 
@@ -193,8 +203,13 @@
 </script>
 
 <svelte:head>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Gaming Tracker</title>
+	<!-- Preload critical resources to reduce critical path latency -->
+	<link rel="modulepreload" href="/@vite/client" />
+	{#if !dev}
+		<link rel="modulepreload" href="/client/entry.js" />
+		<link rel="preload" href="/client/client.js" as="script" />
+	{/if}
 </svelte:head>
 
 <div

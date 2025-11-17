@@ -30,32 +30,27 @@ export default defineConfig(
 	prettier,
 	...svelte.configs.prettier,
 	{
-		files: ['**/*.{ts,tsx,svelte}'],
+		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
 			globals: {
 				...globals.browser,
-				...globals.node,
-				URL: 'readonly'
+				...globals.node
 			},
-			parserOptions: {
-				project: './tsconfig.json'
-			}
-		},
-		rules: {
-			'no-undef': 'off',
-			'svelte/no-navigation-without-resolve': 'off',
-			'@typescript-eslint/no-deprecated': 'warn'
-		}
-	},
-	{
-		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
-		languageOptions: {
 			parserOptions: {
 				projectService: true,
 				extraFileExtensions: ['.svelte'],
 				parser: ts.parser,
 				svelteConfig
 			}
+		},
+		rules: {
+			'no-undef': 'off' // We're using projectService with globals
+		}
+	},
+	{
+		files: ['src/lib/**/*.ts', 'src/lib/**/*.js', '**/*.svelte'],
+		rules: {
+			'svelte/no-navigation-without-resolve': 'off' // Allow navigation calls in components and utilities
 		}
 	},
 	{
