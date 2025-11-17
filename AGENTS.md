@@ -64,7 +64,7 @@
 
 - **Scope:** All files and sub-directories within the `/static/` directory (e.g., `static/games.json`, all images in `static/covers/`).
 - **Allowed Operation:** **Read-only**.
-- **Prohibited Operations:** **Write, modify, or delete.**
+- **Prohibited Operations:** **Write, modify, or delete UNLESS user explicitly authorizes it**
 - **Rationale:** These files are the project's static data source. Your code MUST be written to consume this data as-is.
 
 ---

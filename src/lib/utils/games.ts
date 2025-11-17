@@ -1,10 +1,10 @@
 import gamesData from '../../../static/games.json';
 
-export type Game = (typeof gamesData)[number];
+export type Game = (typeof gamesData.games)[number];
 
 export function extractUniquePlatforms(): string[] {
 	const platforms = new Set<string>();
-	gamesData.forEach((game) => {
+	gamesData.games.forEach((game) => {
 		if (game.platform) {
 			platforms.add(game.platform);
 		}
@@ -14,7 +14,7 @@ export function extractUniquePlatforms(): string[] {
 
 export function extractUniqueGenres(): string[] {
 	const genres = new Set<string>();
-	gamesData.forEach((game) => {
+	gamesData.games.forEach((game) => {
 		if (game.genre) {
 			genres.add(game.genre);
 		}
@@ -32,7 +32,7 @@ export function extractTierCounts(): Record<string, number> {
 		E: 0
 	};
 
-	gamesData.forEach((game) => {
+	gamesData.games.forEach((game) => {
 		if (game.status === 'Completed' && game.tier && tierCounts[game.tier] !== undefined) {
 			tierCounts[game.tier] += 1;
 		}

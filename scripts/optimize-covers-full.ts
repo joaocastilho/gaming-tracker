@@ -116,22 +116,6 @@ async function processImage(
 		const originalStats = await stat(inputPath);
 		const originalSize = originalStats.size;
 
-		// If all optimized variants already exist, skip expensive work
-		const has200 = await fileExists(cover200Path);
-		const has300 = await fileExists(cover300Path);
-		const has400 = await fileExists(detail400Path);
-
-		if (has200 && has300 && has400) {
-			return {
-				originalFilename: filename,
-				gameId,
-				gameTitle: matchingGame.title,
-				status: 'skipped',
-				originalSize,
-				processingTime: Date.now() - startTime
-			};
-		}
-
 		// 1) 200w x 300h -> tier list / small usage
 		await sharp(inputPath)
 			.resize(200, 300, {
@@ -140,7 +124,7 @@ async function processImage(
 				background: { r: 0, g: 0, b: 0, alpha: 0 }
 			})
 			.webp({
-				quality: 80,
+				quality: 70,
 				effort: 6
 			})
 			.toFile(cover200Path);
@@ -153,7 +137,7 @@ async function processImage(
 				background: { r: 0, g: 0, b: 0, alpha: 0 }
 			})
 			.webp({
-				quality: 85,
+				quality: 72,
 				effort: 6
 			})
 			.toFile(cover300Path);
@@ -166,7 +150,7 @@ async function processImage(
 				background: { r: 0, g: 0, b: 0, alpha: 0 }
 			})
 			.webp({
-				quality: 90,
+				quality: 75,
 				effort: 6
 			})
 			.toFile(detail400Path);

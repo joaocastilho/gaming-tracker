@@ -9,7 +9,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 
 		if (staticRes.ok) {
 			return {
-				games: fetch('/games.json').then((r) => r.json()),
+				games: fetch('/games.json').then((r) => r.json()).then((data) => data.games),
 				meta: null,
 				source: 'static'
 			};
