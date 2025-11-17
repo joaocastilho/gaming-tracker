@@ -20,7 +20,13 @@
 	<div class="tier-games-grid">
 		{#each games as game (game.id)}
 			<div>
-				<GameCard {game} size="tierlist" showTierBadge={false} {onOpenModal} />
+				<GameCard
+					{game}
+					size="tierlist"
+					showTierBadge={false}
+					{onOpenModal}
+					displayedGames={games}
+				/>
 			</div>
 		{/each}
 	</div>

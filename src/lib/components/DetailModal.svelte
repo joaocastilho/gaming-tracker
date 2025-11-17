@@ -242,14 +242,7 @@
 
 	function navigateToPrevious() {
 		const index = currentGameIndex();
-
-		// Use appropriate games array based on current tab
-		let games;
-		if ($currentActiveTab === 'tierlist') {
-			games = allTieredGames();
-		} else {
-			games = displayedGames();
-		}
+		const games = displayedGames();
 
 		if (index > 0) {
 			const prevGame = games[index - 1];
@@ -259,14 +252,7 @@
 
 	function navigateToNext() {
 		const index = currentGameIndex();
-
-		// Use appropriate games array based on current tab
-		let games;
-		if ($currentActiveTab === 'tierlist') {
-			games = allTieredGames();
-		} else {
-			games = displayedGames();
-		}
+		const games = displayedGames();
 
 		if (index < games.length - 1) {
 			const nextGame = games[index + 1];
