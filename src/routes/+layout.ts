@@ -8,13 +8,14 @@ export const load: LayoutLoad = async ({ fetch }) => {
 		const staticRes = await fetch('/games.json', { headers: { accept: 'application/json' } });
 
 		if (staticRes.ok) {
-			return {
-				games: fetch('/games.json')
-					.then((r) => r.json())
-					.then((data) => data.games),
-				meta: null,
-				source: 'static'
-			};
+			if (staticRes.ok) {
+				const data = await staticRes.json();
+				return {
+					games: data.games,
+					meta: null,
+					source: 'static'
+				};
+			}
 		}
 	} catch {
 		// Silently ignore static JSON fetch errors
@@ -25,13 +26,14 @@ export const load: LayoutLoad = async ({ fetch }) => {
 			const res = await fetch('/api/games', { headers: { accept: 'application/json' } });
 
 			if (res.ok) {
-				return {
-					games: fetch('/api/games')
-						.then((r) => r.json())
-						.then((data) => data.games),
-					meta: null,
-					source: 'api'
-				};
+				if (res.ok) {
+					const data = await res.json();
+					return {
+						games: data.games,
+						meta: null,
+						source: 'api'
+					};
+				}
 			}
 		} catch {
 			// Silently ignore API errors in development

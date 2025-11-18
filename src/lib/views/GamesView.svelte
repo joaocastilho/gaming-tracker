@@ -81,6 +81,24 @@
 				</div>
 			{/snippet}
 		</VirtualList>
+	{:else if filteredGames.length > 0}
+		<!-- SSR / Initial Render Fallback: Render first few rows statically for fast LCP -->
+		<div class="game-gallery-virtual">
+			{#each rows().slice(0, 4) as row (row.id)}
+				<div class="game-row">
+					{#each row.games as game, i (game.id)}
+						<div class="game-card-wrapper">
+							<GameCard {game} {displayedGames} isPriority={i < 4} onOpenModal={handleOpenModal} />
+						</div>
+					{/each}
+					{#if row.games.length < columns}
+						{#each Array(columns - row.games.length) as _}
+							<div class="game-card-wrapper empty"></div>
+						{/each}
+					{/if}
+				</div>
+			{/each}
+		</div>
 	{:else if isEditor}
 		<div class="empty-editor-hint">
 			<p>No games found for this view.</p>

@@ -36,21 +36,29 @@
 	// Simplified loading state - no progressive loading
 	let isLoading = $state(true);
 
+	// Initialize games immediately if available (SSR support)
+	if (data.games && Array.isArray(data.games)) {
+		gamesStore.initializeGames(data.games);
+		isLoading = false;
+	}
+
 	onMount(() => {
 		if (data.games) {
-			// Handle both promise and already resolved cases
-			const gamesPromise = data.games instanceof Promise ? data.games : Promise.resolve(data.games);
-
-			gamesPromise
-				.then((resolvedGames) => {
-					// Load all games at once - simpler and faster
-					gamesStore.initializeGames(resolvedGames);
-					isLoading = false;
-				})
-				.catch((error) => {
-					console.error('Failed to load games:', error);
-					isLoading = false;
-				});
+			// Handle promise case (client-side only)
+			if (data.games instanceof Promise) {
+				data.games
+					.then((resolvedGames) => {
+						gamesStore.initializeGames(resolvedGames);
+						isLoading = false;
+					})
+					.catch((error) => {
+						console.error('Failed to load games:', error);
+						isLoading = false;
+					});
+			} else if (!Array.isArray(data.games)) {
+				// Handle edge case where it might be something else or already handled
+				isLoading = false;
+			}
 		} else {
 			isLoading = false;
 		}
