@@ -72,27 +72,12 @@
 	});
 
 	// Initialize games from server data
+	// Games initialization is now handled in +layout.svelte to prevent double initialization
 	$effect(() => {
-		if (data.games && !hasInitializedGames) {
-			// Handle both promise and direct array data
-			if (data.games instanceof Promise) {
-				data.games
-					.then((resolvedGames) => {
-						gamesStore.initializeGames(resolvedGames);
-						hasInitializedGames = true;
-						isLoadingGames = false;
-					})
-					.catch((error) => {
-						console.error('Failed to load games:', error);
-						isLoadingGames = false;
-					});
-			} else {
-				gamesStore.initializeGames(data.games);
-				hasInitializedGames = true;
-				isLoadingGames = false;
-			}
+		if (!hasInitializedGames && $gamesStore.length > 0) {
+			hasInitializedGames = true;
+			isLoadingGames = false;
 		} else if (!data.games && !hasInitializedGames) {
-			// Handle case where no games data is available
 			isLoadingGames = false;
 		}
 	});

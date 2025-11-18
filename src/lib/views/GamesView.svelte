@@ -2,6 +2,8 @@
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
 	import { editorStore } from '$lib/stores/editor';
+	import VirtualList from '$lib/components/VirtualList.svelte';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		filteredGames: Game[];
@@ -12,17 +14,73 @@
 	let { filteredGames, displayedGames = filteredGames, onOpenModal }: Props = $props();
 
 	const isEditor = $derived($editorStore.editorMode);
+	let mounted = $state(false);
+	let containerWidth = $state(1200); // Default width
+	let containerHeight = $state(800); // Default height
+
+	// Calculate columns based on container width and card minimum width (300px + gap)
+	let columns = $derived(Math.max(1, Math.floor(containerWidth / 320)));
+
+	// Chunk games into rows for the virtual list
+	let rows = $derived(() => {
+		const result = [];
+		for (let i = 0; i < filteredGames.length; i += columns) {
+			result.push({
+				id: `row-${i}`,
+				games: filteredGames.slice(i, i + columns),
+				startIndex: i
+			});
+		}
+		return result;
+	});
+
+	onMount(() => {
+		mounted = true;
+	});
 
 	function handleOpenModal(game: Game) {
 		onOpenModal?.(game, displayedGames);
 	}
 </script>
 
-<div class="game-gallery">
-	{#if filteredGames.length > 0}
-		{#each filteredGames as game, index (game.id)}
-			<GameCard {game} {displayedGames} isPriority={index < 8} onOpenModal={handleOpenModal} />
-		{/each}
+<div
+	class="game-gallery-container"
+	bind:clientWidth={containerWidth}
+	bind:clientHeight={containerHeight}
+>
+	{#if mounted && filteredGames.length > 0}
+		<VirtualList
+			items={rows()}
+			itemHeight={750}
+			{containerHeight}
+			overscan={2}
+			keyExtractor={(row) => row.id}
+			className="game-gallery-virtual"
+		>
+			{#snippet renderItem(
+				row: { id: string; games: Game[]; startIndex: number },
+				isPriority: boolean
+			)}
+				<div class="game-row">
+					{#each row.games as game, i (game.id)}
+						<div class="game-card-wrapper">
+							<GameCard
+								{game}
+								{displayedGames}
+								isPriority={isPriority && i < 4}
+								onOpenModal={handleOpenModal}
+							/>
+						</div>
+					{/each}
+					<!-- Fill empty spots in the last row to maintain alignment -->
+					{#if row.games.length < columns}
+						{#each Array(columns - row.games.length) as _}
+							<div class="game-card-wrapper empty"></div>
+						{/each}
+					{/if}
+				</div>
+			{/snippet}
+		</VirtualList>
 	{:else if isEditor}
 		<div class="empty-editor-hint">
 			<p>No games found for this view.</p>
@@ -32,17 +90,47 @@
 </div>
 
 <style>
-	.game-gallery {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 1rem;
+	.game-gallery-container {
+		width: 100%;
+		height: calc(100vh - 200px); /* Adjust based on header/footer */
+		min-height: 600px;
+	}
+
+	/* Virtual list container styles */
+	:global(.game-gallery-virtual) {
+		width: 100%;
 		padding: 1rem;
-		justify-items: center;
+	}
+
+	/* Wrapper to center cards in the virtual list items */
+	.game-row {
+		display: flex;
+		justify-content: flex-start;
+		gap: 1rem;
+		padding-bottom: 1rem;
 		width: 100%;
 	}
 
+	.game-card-wrapper {
+		flex: 1;
+		display: flex;
+		justify-content: center;
+		min-width: 0; /* Prevent flex overflow */
+	}
+
+	.game-card-wrapper.empty {
+		visibility: hidden;
+	}
+
 	/* Ensure cards are centered within their grid cells */
-	.game-gallery > :global(.game-card) {
+	.game-gallery-container :global(.game-card) {
+		margin-bottom: 0;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	/* Ensure cards are centered within their grid cells */
+	.game-gallery-container :global(.game-card) {
 		margin-bottom: 0;
 	}
 

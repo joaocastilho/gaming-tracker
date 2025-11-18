@@ -47,7 +47,7 @@
 	});
 
 	// Total height of the virtual list
-	let totalHeight = $derived(() => items.length * itemHeight);
+	let totalHeight = $derived(items.length * itemHeight);
 
 	// Handle scroll events
 	function handleScroll(event: Event) {
@@ -71,7 +71,7 @@
 		style="position: absolute; top: {visibleRange().start * itemHeight}px; left: 0; right: 0;"
 	>
 		{#each visibleItems() as { item, index } (keyExtractor(item, index))}
-			<div class="virtual-item" style="height: {itemHeight}px; overflow: hidden;">
+			<div class="virtual-item" style="height: {itemHeight}px;">
 				{@render renderItem(item, index < priorityCount)}
 			</div>
 		{/each}

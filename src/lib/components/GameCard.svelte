@@ -272,8 +272,8 @@
 
 	@media (min-width: 1280px) {
 		.game-card {
-			--card-width: clamp(300px, 15vw, 250px); /* Desktop: smaller for more columns */
-			--cover-height: clamp(450px, 22.5vw, 375px); /* Match aspect ratio */
+			--card-width: clamp(250px, 15vw, 300px); /* Desktop: smaller for more columns */
+			--cover-height: clamp(375px, 22.5vw, 450px); /* Match aspect ratio */
 		}
 	}
 
