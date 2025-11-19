@@ -43,7 +43,7 @@ export function getUrlParams(searchParams: URLSearchParams): Partial<FilterState
 	const sortDir = searchParams.get('sortDir');
 	if (sortBy && (sortDir === 'asc' || sortDir === 'desc')) {
 		params.sortOption = {
-			key: sortBy as any,
+			key: sortBy as 'presentation' | 'story' | 'gameplay' | 'score',
 			direction: sortDir as 'asc' | 'desc'
 		};
 	}

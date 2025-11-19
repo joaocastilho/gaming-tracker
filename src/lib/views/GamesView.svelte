@@ -16,7 +16,6 @@
 	const isEditor = $derived($editorStore.editorMode);
 	let mounted = $state(false);
 	let containerWidth = $state(1200); // Default width
-	let containerHeight = $state(800); // Default height
 
 	// Calculate columns based on container width and card minimum width (300px + gap)
 	let columns = $derived(Math.max(1, Math.floor(containerWidth / 320)));
@@ -70,7 +69,7 @@
 					{/each}
 					<!-- Fill empty spots in the last row to maintain alignment -->
 					{#if row.games.length < columns}
-						{#each Array(columns - row.games.length) as _}
+						{#each Array(columns - row.games.length) as i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
 					{/if}
@@ -88,7 +87,7 @@
 						</div>
 					{/each}
 					{#if row.games.length < columns}
-						{#each Array(columns - row.games.length) as _}
+						{#each Array(columns - row.games.length) as i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
 					{/if}

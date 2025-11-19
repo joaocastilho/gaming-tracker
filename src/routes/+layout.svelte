@@ -11,7 +11,7 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';
 	import { modalStore } from '$lib/stores/modal.js';
-	import { browser, dev } from '$app/environment';
+	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import type { Game } from '$lib/types/game.js';
