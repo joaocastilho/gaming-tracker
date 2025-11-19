@@ -1,15 +1,17 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	interface Props<T> {
 		items: T[];
 		itemHeight: number;
-		containerHeight: number;
+		containerHeight?: number; // Optional now
 		overscan?: number;
 		renderItem: Snippet<[item: T, isPriority: boolean]>;
 		keyExtractor: (item: T, index: number) => string | number;
 		className?: string;
 		priorityCount?: number;
+		useWindowScroll?: boolean;
 	}
 
 	let {
@@ -20,19 +22,22 @@
 		renderItem,
 		keyExtractor,
 		className = '',
-		priorityCount = 6
+		priorityCount = 6,
+		useWindowScroll = false
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	}: Props<any> = $props();
 
 	let container = $state<HTMLDivElement>();
 	let scrollTop = $state(0);
+	let windowHeight = $state(0);
 
 	// Calculate visible range
 	let visibleRange = $derived(() => {
+		const effectiveHeight = useWindowScroll ? windowHeight : containerHeight;
 		const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
 		const end = Math.min(
 			items.length,
-			Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan
+			Math.ceil((scrollTop + effectiveHeight) / itemHeight) + overscan
 		);
 		return { start, end };
 	});
@@ -51,19 +56,65 @@
 
 	// Handle scroll events
 	function handleScroll(event: Event) {
-		const target = event.target as HTMLDivElement;
-		scrollTop = target.scrollTop;
+		if (useWindowScroll) {
+			// For window scroll, we need to account for the container's offset from the top
+			if (container) {
+				const rect = container.getBoundingClientRect();
+				// Calculate how far we've scrolled past the start of the container
+				// rect.top is negative when we've scrolled past the start
+				// We want scrollTop relative to the container
+				const offset = -rect.top;
+				scrollTop = Math.max(0, offset);
+				console.log('Scroll debug:', {
+					rectTop: rect.top,
+					offset,
+					scrollTop,
+					windowHeight,
+					totalHeight
+				});
+			}
+		} else {
+			const target = event.target as HTMLDivElement;
+			scrollTop = target.scrollTop;
+		}
 	}
+
+	function updateWindowHeight() {
+		if (typeof window !== 'undefined') {
+			windowHeight = window.innerHeight;
+		}
+	}
+
+	onMount(() => {
+		if (useWindowScroll) {
+			window.addEventListener('scroll', handleScroll, { passive: true });
+			window.addEventListener('resize', updateWindowHeight);
+			updateWindowHeight();
+			// Initial calculation
+			handleScroll({} as Event);
+		}
+	});
+
+	onDestroy(() => {
+		if (typeof window !== 'undefined') {
+			window.removeEventListener('scroll', handleScroll);
+			window.removeEventListener('resize', updateWindowHeight);
+		}
+	});
 </script>
 
 <div
 	bind:this={container}
 	class="virtual-list-container {className}"
-	style="height: {containerHeight}px; overflow-y: auto; position: relative;"
-	onscroll={handleScroll}
+	style={useWindowScroll
+		? `height: ${totalHeight}px; position: relative;`
+		: `height: ${containerHeight}px; overflow-y: auto; position: relative;`}
+	onscroll={!useWindowScroll ? handleScroll : undefined}
 >
-	<!-- Spacer for virtual positioning -->
-	<div class="virtual-spacer" style="height: {totalHeight}px; position: relative;"></div>
+	{#if !useWindowScroll}
+		<!-- Spacer for virtual positioning in internal scroll mode -->
+		<div class="virtual-spacer" style="height: {totalHeight}px; position: relative;"></div>
+	{/if}
 
 	<!-- Visible items -->
 	<div
@@ -80,7 +131,7 @@
 
 <style>
 	.virtual-list-container {
-		contain: strict;
+		contain: layout paint; /* strict breaks window scroll sometimes */
 		will-change: scroll-position;
 	}
 

@@ -43,16 +43,12 @@
 	}
 </script>
 
-<div
-	class="game-gallery-container"
-	bind:clientWidth={containerWidth}
-	bind:clientHeight={containerHeight}
->
+<div class="game-gallery-container" bind:clientWidth={containerWidth}>
 	{#if mounted && filteredGames.length > 0}
 		<VirtualList
 			items={rows()}
 			itemHeight={750}
-			{containerHeight}
+			useWindowScroll={true}
 			overscan={2}
 			keyExtractor={(row) => row.id}
 			className="game-gallery-virtual"
@@ -110,7 +106,6 @@
 <style>
 	.game-gallery-container {
 		width: 100%;
-		height: calc(100vh - 200px); /* Adjust based on header/footer */
 		min-height: 600px;
 	}
 

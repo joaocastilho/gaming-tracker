@@ -222,7 +222,7 @@
 
 <div
 	style="background-color: var(--color-background);"
-	class="bg-background text-foreground h-full min-h-screen"
+	class="bg-background text-foreground min-h-screen"
 >
 	<Header />
 	<section class="filter-section top-[104px] z-30 md:top-[110px]">
