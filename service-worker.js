@@ -1,3 +1,12 @@
+const CACHE_NAME = 'gaming-tracker-v2';
+const STATIC_CACHE_NAME = 'gaming-tracker-static-v2';
+const IMAGE_CACHE_NAME = 'gaming-tracker-images-v2';
+
+// Assets to cache on install
+const STATIC_ASSETS = [
+	'/',
+	'/games.json',
+	'/app.css'
 ];
 
 // Install event - cache static assets with optimized strategy
