@@ -3,7 +3,6 @@ import type { Game } from '$lib/types/game';
 import { gamesStore } from './games';
 import { filtersStore } from './filters';
 import { appStore } from './app';
-import { sortStore } from './sort';
 import { getTierDisplayName } from '$lib/utils/colorConstants';
 
 // Memoization cache for filtered results
@@ -24,15 +23,15 @@ class FilteredGamesStore {
 
 	createFilteredGamesStore(): Readable<Game[]> {
 		return derived(
-			[gamesStore, filtersStore, appStore.activeTab, sortStore],
-			([$games, $filters, $activeTab, $sort]) => {
+			[gamesStore, filtersStore, appStore.activeTab],
+			([$games, $filters, $activeTab]) => {
 				// Early return if no games
 				if (!$games || $games.length === 0) {
 					return [];
 				}
 
 				// Create cache key
-				const cacheKey = this.createCacheKey($filters, $activeTab, $sort);
+				const cacheKey = this.createCacheKey($filters, $activeTab);
 
 				// Return cached result if key hasn't changed
 				if (this.lastCacheKey === cacheKey && this.lastCachedResult.length > 0) {
@@ -43,7 +42,7 @@ class FilteredGamesStore {
 				const filteredGames = this.filterGames($games, $filters, $activeTab);
 
 				// Sort games
-				const sortedGames = this.sortGames(filteredGames, $sort, $activeTab);
+				const sortedGames = this.sortGames(filteredGames, $filters?.sortOption ?? null, $activeTab);
 
 				// Update cache
 				this.updateCache(cacheKey, sortedGames);
@@ -59,9 +58,9 @@ class FilteredGamesStore {
 			platforms?: string[];
 			genres?: string[];
 			tiers?: string[];
+			sortOption?: { key: string; direction: 'asc' | 'desc' } | null;
 		} | null,
-		activeTab: string,
-		sort: { sortBy: string; sortDirection: 'asc' | 'desc' } | null
+		activeTab: string
 	): string {
 		const key: FilterCacheKey = {
 			searchTerm: filters?.searchTerm || '',
@@ -69,8 +68,8 @@ class FilteredGamesStore {
 			genres: filters?.genres || [],
 			tiers: filters?.tiers || [],
 			activeTab,
-			sortKey: sort?.sortBy || '',
-			sortDirection: sort?.sortDirection || ''
+			sortKey: filters?.sortOption?.key || '',
+			sortDirection: filters?.sortOption?.direction || ''
 		};
 
 		return JSON.stringify(key);
@@ -143,7 +142,7 @@ class FilteredGamesStore {
 
 	private sortGames(
 		games: Game[],
-		sort: { sortBy: string; sortDirection: 'asc' | 'desc' } | null,
+		sort: { key: string; direction: 'asc' | 'desc' } | null,
 		activeTab: string
 	): Game[] {
 		// Use pre-defined sort functions for better performance
@@ -164,8 +163,8 @@ class FilteredGamesStore {
 		let sortFunction = sortFunctions.default;
 
 		// Determine sort function based on context
-		if (sort?.sortBy && sortFunctions[sort.sortBy]) {
-			sortFunction = sortFunctions[sort.sortBy];
+		if (sort?.key && sortFunctions[sort.key as keyof typeof sortFunctions]) {
+			sortFunction = sortFunctions[sort.key as keyof typeof sortFunctions];
 		} else if (activeTab === 'completed') {
 			sortFunction = sortFunctions.completed;
 		} else if (activeTab === 'planned') {
@@ -176,7 +175,7 @@ class FilteredGamesStore {
 		const sortedGames = [...games];
 
 		// Apply sorting with direction
-		const direction = sort?.sortDirection === 'asc' ? 1 : -1;
+		const direction = sort?.direction === 'desc' ? -1 : 1;
 
 		return sortedGames.sort((a, b) => {
 			const result = sortFunction(a, b);

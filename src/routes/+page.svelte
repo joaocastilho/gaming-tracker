@@ -3,7 +3,6 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { appStore } from '$lib/stores/app.js';
-	import { sortStore } from '$lib/stores/sort.js';
 	import { modalStore } from '$lib/stores/modal.js';
 	import { filteredGames } from '$lib/stores/filteredGamesStore.js';
 	import GamesView from '$lib/views/GamesView.svelte';
@@ -42,6 +41,11 @@
 		}
 	});
 
+	// Force active tab to all
+	$effect(() => {
+		appStore.setActiveTab('all', true);
+	});
+
 	// Consolidated effect for all URL operations to reduce re-renders
 	$effect(() => {
 		if (typeof window !== 'undefined') {
@@ -50,20 +54,17 @@
 			// Read from URL
 			filtersStore.readFromURL(searchParams);
 			appStore.readFromURL(searchParams);
-			sortStore.readFromURL(searchParams);
 
 			// Write to URL in next frame to avoid conflicts
 			requestAnimationFrame(() => {
 				try {
 					filtersStore.writeToURL();
 					appStore.writeToURL();
-					sortStore.writeToURL();
 				} catch (error) {
 					if (error instanceof Error && error.message.includes('router is initialized')) {
 						setTimeout(() => {
 							filtersStore.writeToURL();
 							appStore.writeToURL();
-							sortStore.writeToURL();
 						}, 10);
 					}
 				}

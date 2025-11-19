@@ -2,7 +2,6 @@
 	import { gamesStore } from '$lib/stores/games';
 	import { filtersStore } from '$lib/stores/filters';
 	import { appStore } from '$lib/stores/app';
-	import { sortStore } from '$lib/stores/sort';
 	import { modalStore } from '$lib/stores/modal';
 	import GamesView from '$lib/views/GamesView.svelte';
 	import type { Game } from '$lib/types/game';
@@ -31,7 +30,6 @@
 			const searchParams = new URLSearchParams(window.location.search);
 			filtersStore.readFromURL(searchParams);
 			appStore.readFromURL(searchParams);
-			sortStore.readFromURL(searchParams);
 		}
 	});
 
@@ -41,7 +39,6 @@
 			try {
 				filtersStore.writeToURL();
 				appStore.writeToURL();
-				sortStore.writeToURL();
 			} catch (error) {
 				if (error instanceof Error && error.message.includes('router is initialized')) {
 					setTimeout(updateURLs, 10);

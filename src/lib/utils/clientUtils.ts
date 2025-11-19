@@ -39,6 +39,15 @@ export function getUrlParams(searchParams: URLSearchParams): Partial<FilterState
 	const statuses = searchParams.getAll('statuses');
 	if (statuses.length > 0) params.statuses = statuses;
 
+	const sortBy = searchParams.get('sortBy');
+	const sortDir = searchParams.get('sortDir');
+	if (sortBy && (sortDir === 'asc' || sortDir === 'desc')) {
+		params.sortOption = {
+			key: sortBy as any,
+			direction: sortDir as 'asc' | 'desc'
+		};
+	}
+
 	return params;
 }
 
@@ -62,6 +71,11 @@ export async function setUrlParams(
 
 	if (filters.genres.length !== allGenres.length) {
 		filters.genres.forEach((g) => searchParams.append('genres', g));
+	}
+
+	if (filters.sortOption) {
+		searchParams.set('sortBy', filters.sortOption.key);
+		searchParams.set('sortDir', filters.sortOption.direction);
 	}
 
 	const queryString = searchParams.toString();

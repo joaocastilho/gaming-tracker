@@ -402,11 +402,12 @@ function createFiltersStore() {
 				if (!currentFilters) return null;
 				return {
 					...currentFilters,
-					searchTerm: params.searchTerm ?? currentFilters.searchTerm,
-					platforms: params.platforms ?? currentFilters.platforms,
-					genres: params.genres ?? currentFilters.genres,
-					statuses: params.statuses ?? currentFilters.statuses,
-					tiers: params.tiers ?? currentFilters.tiers
+					searchTerm: params.searchTerm ?? '',
+					platforms: params.platforms ?? [],
+					genres: params.genres ?? [],
+					statuses: params.statuses ?? [],
+					tiers: params.tiers ?? [],
+					sortOption: params.sortOption ?? null
 				};
 			});
 		},
