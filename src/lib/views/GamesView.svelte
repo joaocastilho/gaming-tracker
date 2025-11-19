@@ -19,7 +19,7 @@
 	let containerHeight = $state(800); // Default height
 
 	// Calculate columns based on container width and card minimum width (300px + gap)
-	let columns = $derived(Math.max(1, Math.floor(containerWidth / 300)));
+	let columns = $derived(Math.max(1, Math.floor(containerWidth / 320)));
 
 	// Chunk games into rows for the virtual list
 	let rows = $derived(() => {
@@ -140,6 +140,11 @@
 		margin-bottom: 0;
 		margin-left: auto;
 		margin-right: auto;
+	}
+
+	/* Ensure cards are centered within their grid cells */
+	.game-gallery-container :global(.game-card) {
+		margin-bottom: 0;
 	}
 
 	.empty-editor-hint {
