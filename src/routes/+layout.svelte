@@ -214,10 +214,6 @@
 	<title>Gaming Tracker</title>
 	<!-- Preload critical resources to reduce critical path latency -->
 	<link rel="modulepreload" href="/@vite/client" />
-	{#if !dev}
-		<link rel="modulepreload" href="/client/entry.js" />
-		<link rel="preload" href="/client/client.js" as="script" />
-	{/if}
 </svelte:head>
 
 <div

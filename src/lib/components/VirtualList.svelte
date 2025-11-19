@@ -65,13 +65,6 @@
 				// We want scrollTop relative to the container
 				const offset = -rect.top;
 				scrollTop = Math.max(0, offset);
-				console.log('Scroll debug:', {
-					rectTop: rect.top,
-					offset,
-					scrollTop,
-					windowHeight,
-					totalHeight
-				});
 			}
 		} else {
 			const target = event.target as HTMLDivElement;

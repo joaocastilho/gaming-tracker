@@ -83,5 +83,9 @@ export async function setUrlParams(
 		? `${window.location.pathname}?${queryString}`
 		: window.location.pathname;
 
-	await goto(newUrl, { replaceState: true, noScroll: true, keepFocus: true });
+	try {
+		await goto(newUrl, { replaceState: true, noScroll: true, keepFocus: true });
+	} catch {
+		// Ignore router initialization errors during early page load
+	}
 }

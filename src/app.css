@@ -16,6 +16,7 @@ html {
 		sans-serif;
 	/* Support for both modern and legacy browsers */
 	-webkit-text-size-adjust: 100%;
+	-moz-text-size-adjust: 100%;
 	text-size-adjust: 100%;
 }
 
@@ -115,7 +116,8 @@ html {
 
 /* Filter section table toggle button colors for theme support */
 .filter-section .view-toggle-button {
-	color: #ffffff !important; /* White text on accent background */
+	color: #ffffff !important;
+	/* White text on accent background */
 }
 
 /* Tier Badge Classes */
@@ -131,7 +133,8 @@ html {
 
 .tier-badge.tier-b {
 	background-color: var(--color-tier-b);
-	color: black; /* Yellow shows better with black text */
+	color: black;
+	/* Yellow shows better with black text */
 }
 
 .tier-badge.tier-c {
@@ -155,18 +158,22 @@ html {
 		opacity: 1;
 		transform: scale(1);
 	}
+
 	25% {
 		opacity: 0.7;
 		transform: scale(1.01);
 	}
+
 	50% {
 		opacity: 0.4;
 		transform: scale(1.02);
 	}
+
 	75% {
 		opacity: 0.7;
 		transform: scale(1.01);
 	}
+
 	100% {
 		opacity: 1;
 		transform: scale(1);
@@ -177,6 +184,7 @@ html {
 	0% {
 		transform: translateX(-100%);
 	}
+
 	100% {
 		transform: translateX(100%);
 	}
