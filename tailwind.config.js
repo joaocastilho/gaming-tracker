@@ -29,10 +29,7 @@ export default {
 				modal: '0 20px 60px rgba(0,0,0,0.5)',
 				badge: '0 2px 8px rgba(0,0,0,0.3)'
 			},
-			backdropBlur: {
-				'8px': 'blur(8px)'
-			},
-			// Custom screen sizes for responsive design
+						// Custom screen sizes for responsive design
 			screens: {
 				sm: '640px',
 				md: '768px',
