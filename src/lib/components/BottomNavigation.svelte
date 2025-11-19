@@ -163,7 +163,7 @@
 	}
 
 	/* High contrast mode support */
-	@media (prefers-contrast: high) {
+	@media (prefers-contrast: more) {
 		.nav-button {
 			border: 1px solid transparent;
 		}

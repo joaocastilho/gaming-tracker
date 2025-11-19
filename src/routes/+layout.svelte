@@ -213,7 +213,6 @@
 <svelte:head>
 	<title>Gaming Tracker</title>
 	<!-- Preload critical resources to reduce critical path latency -->
-	<link rel="modulepreload" href="/@vite/client" />
 </svelte:head>
 
 <div
@@ -292,13 +291,6 @@
 </div>
 
 <style>
-	:global(.h-15) {
-		height: 60px;
-	}
-	:global(.h-12\.5) {
-		height: 50px;
-	}
-
 	.filter-section {
 		background-color: var(--color-background);
 		border-color: var(--color-border);
@@ -308,10 +300,6 @@
 		color: var(--color-text-primary);
 		font-size: 0.85rem;
 		cursor: pointer;
-	}
-
-	:global(.pt-\[calc\(60px\+50px\+100px\)\]) {
-		padding-top: calc(60px + 50px + 100px);
 	}
 
 	.pipe-separator {

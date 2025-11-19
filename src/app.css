@@ -1,29 +1,7 @@
 @import 'tailwindcss';
 
-html,
-body {
-	min-height: 100%;
-	margin: 0;
-	padding: 0;
-	overflow-x: hidden;
-	background-color: var(--color-background) !important;
-}
-
-html {
-	font-size: 110%;
-	font-family:
-		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, 'Helvetica Neue', Arial,
-		sans-serif;
-	/* Support for both modern and legacy browsers */
-	-webkit-text-size-adjust: 100%;
-	-moz-text-size-adjust: 100%;
-	text-size-adjust: 100%;
-}
-
-/* Theme Variables - Dark Mode (Default) - Pastel Theme */
 :root {
-	/* Background Colors */
-	--color-background: #0f1419;
+	--color-background: #020817;
 	--color-surface: #1a1f27;
 	--color-border: #2a2f3a;
 
@@ -66,6 +44,13 @@ html {
 	--color-genre-puzzle-text: #e879f9;
 	--color-genre-metroidvania-bg: #4c1d95;
 	--color-genre-metroidvania-text: #a78bfa;
+}
+
+html,
+body {
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
 }
 
 /* Light Mode */
@@ -187,14 +172,6 @@ html {
 
 	100% {
 		transform: translateX(100%);
-	}
-}
-
-/* Safari compatibility for backdrop-filter */
-@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-	.backdrop-blur-\[8px\] {
-		-webkit-backdrop-filter: blur(8px);
-		backdrop-filter: blur(8px);
 	}
 }
 
