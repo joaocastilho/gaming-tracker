@@ -3,9 +3,6 @@ import type { Game } from '$lib/types/game';
 import { transformGameData } from '$lib/utils/dataTransformer';
 import { completedGamesCache } from './completedGamesCache';
 
-// Production optimization flag
-const IS_PRODUCTION = import.meta.env?.PROD || false;
-
 function createGamesStore() {
 	const { subscribe, set, update } = writable<Game[]>([]);
 	const loadingStore = writable<boolean>(true);
@@ -44,25 +41,6 @@ function createGamesStore() {
 					throw new Error('Invalid games data: expected array');
 				}
 
-				// Production optimization: skip transformation and validation
-				if (IS_PRODUCTION && rawGames.length > 0) {
-					const firstGame = rawGames[0] as Record<string, unknown>;
-					if (firstGame && typeof firstGame.id === 'string') {
-						// Assume data is already in correct format for production
-						const games = rawGames as Game[];
-						set(games);
-
-						if (games.length === 0) {
-							errorStore.set('No valid games found from pre-loaded data.');
-						} else {
-							// Update the completed games cache when games are initialized
-							completedGamesCache.updateCache(games);
-						}
-						return;
-					}
-				}
-
-				// Development mode: transform and validate data
 				const normalized = rawGames.map((gameRaw): Game => {
 					const transformed = transformGameData(gameRaw as Record<string, unknown>);
 					return transformed as unknown as Game;

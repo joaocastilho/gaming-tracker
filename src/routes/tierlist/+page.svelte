@@ -190,9 +190,9 @@
 		return filteredGames;
 	});
 
-function openModalWithFilterContext(game: Game, navGames: Game[] = displayedGames) {
-	modalStore.openViewModal(game, navGames);
-}
+	function openModalWithFilterContext(game: Game, navGames: Game[] = displayedGames) {
+		modalStore.openViewModal(game, navGames);
+	}
 
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 </script>
