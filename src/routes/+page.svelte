@@ -99,8 +99,7 @@
 
 	// Function to open modal with reactive filter context
 	function openModalWithFilterContext(game: Game) {
-		// Pass the current filter state to the modal store
-		modalStore.openViewModal(game, allGames);
+		modalStore.openViewModal(game, filteredGamesArray);
 	}
 
 	// Subscribe to filtered games store
