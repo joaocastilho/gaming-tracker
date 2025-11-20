@@ -436,7 +436,6 @@
 							class="modal-cover-image h-full w-full object-cover"
 							style="width: 400px; height: 600px;"
 							loading="eager"
-							fetchpriority="high"
 							decoding="async"
 							onload={handleImageLoad}
 							onerror={handleImageError}

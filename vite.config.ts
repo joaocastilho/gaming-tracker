@@ -37,8 +37,11 @@ export default defineConfig({
 			name: 'fix-mjs-content-type',
 			configureServer(server) {
 				server.middlewares.use((req, res, next) => {
-					if (req.url?.endsWith('.mjs')) {
-						res.setHeader('Content-Type', 'application/javascript');
+					const url = req.url;
+					if (url?.endsWith('.mjs') || url?.endsWith('.js')) {
+						res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+					} else if (url?.endsWith('.ts')) {
+						res.setHeader('Content-Type', 'text/x-typescript; charset=utf-8');
 					}
 					next();
 				});

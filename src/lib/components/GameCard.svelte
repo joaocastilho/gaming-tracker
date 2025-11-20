@@ -160,7 +160,6 @@
 				class="cover-image"
 				class:visible={isVisible}
 				loading={isPriority ? 'eager' : 'lazy'}
-				fetchpriority={isPriority ? 'high' : 'auto'}
 				decoding="async"
 				onload={handleImageLoad}
 				onerror={handleImageError}

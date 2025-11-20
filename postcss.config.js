@@ -16,6 +16,18 @@ export default {
 					decl.remove();
 				}
 			}
+		},
+		{
+			postcssPlugin: 'remove-prefixed-text-size-adjust',
+			Declaration(decl) {
+				if (
+					['-webkit-text-size-adjust', '-moz-text-size-adjust', '-ms-text-size-adjust'].includes(
+						decl.prop
+					)
+				) {
+					decl.remove();
+				}
+			}
 		}
 	]
 };

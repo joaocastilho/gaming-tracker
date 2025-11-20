@@ -14,12 +14,6 @@ html {
 	font-family:
 		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, 'Helvetica Neue', Arial,
 		sans-serif;
-	/* Support for both modern and legacy browsers */
-	-webkit-text-size-adjust: 100%;
-
-	@supports (text-size-adjust: 100%) {
-		text-size-adjust: 100%;
-	}
 }
 
 /* Theme Variables - Dark Mode (Default) - Pastel Theme */
@@ -192,7 +186,6 @@ html {
 	}
 }
 
-/* Safari compatibility for backdrop-filter */
 /* Safari compatibility for backdrop-filter */
 @supports (-webkit-backdrop-filter: none) {
 	.backdrop-blur-sm,

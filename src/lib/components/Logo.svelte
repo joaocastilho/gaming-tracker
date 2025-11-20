@@ -2,7 +2,7 @@
 </script>
 
 <span class="logo">
-	<img src="/logo.webp" alt="Gaming Tracker" fetchpriority="high" />
+	<img src="/logo.webp" alt="Gaming Tracker" />
 </span>
 
 <style>
