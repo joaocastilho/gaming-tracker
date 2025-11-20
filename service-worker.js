@@ -32,12 +32,8 @@ self.addEventListener('install', (event) => {
 						});
 				})
 			).then((results) => {
-				// Log results for debugging
-				const successful = results.filter((r) => r.status === 'fulfilled').length;
 				const failed = results.filter((r) => r.status === 'rejected').length;
-				if (successful > 0) {
-					console.log(`Service Worker: Cached ${successful} essential assets`);
-				}
+
 				if (failed > 0) {
 					console.warn(`Service Worker: Failed to cache ${failed} assets`);
 				}
