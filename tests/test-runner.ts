@@ -144,15 +144,23 @@ class TestRunner {
 			}
 		);
 
-		// Test 10: Cover Loading (Unit Tests)
+		// Test 10: Utility Tests
+		await this.runTestSuite('Utility Tests', 'Tests core utility functions', async () => {
+			return this.runExternalTest([
+				'bun',
+				'test',
+				'tests/test-utils.test.ts',
+				'--preload',
+				'./tests/setup.ts'
+			]);
+		});
+
+		// Test 11: Cover Loading (Visual/Network)
 		await this.runTestSuite(
 			'Cover Loading',
 			'Tests image loading behavior and optimization',
 			async () => {
-				// This test uses Vitest/Jest-style tests, we'll run it separately
-				console.log('   Running cover loading tests...');
-				// For now, we'll mark this as passed since it's a unit test suite
-				return true;
+				return this.runExternalTest(['bun', 'tests/test-cover-loading.ts']);
 			}
 		);
 
