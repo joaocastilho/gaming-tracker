@@ -5,7 +5,13 @@ export default {
 	plugins: [
 		tailwindcss(),
 		autoprefixer({
-			overrideBrowserslist: ['> 1%', 'last 2 versions', 'Firefox ESR', 'not dead', 'Safari >= 15.1'],
+			overrideBrowserslist: [
+				'> 1%',
+				'last 2 versions',
+				'Firefox ESR',
+				'not dead',
+				'Safari >= 15.1'
+			],
 			grid: true,
 			flexbox: 'no-2009'
 		}),
