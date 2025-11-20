@@ -144,8 +144,13 @@
 	/* Optimize scrolling performance */
 	:global(.virtual-list-container) {
 		scroll-behavior: smooth;
-		scrollbar-width: thin;
-		scrollbar-color: var(--color-accent) transparent;
+	}
+
+	@supports (scrollbar-width: thin) {
+		:global(.virtual-list-container) {
+			scrollbar-width: thin;
+			scrollbar-color: var(--color-accent) transparent;
+		}
 	}
 
 	:global(.virtual-list-container)::-webkit-scrollbar {

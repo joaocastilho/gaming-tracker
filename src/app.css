@@ -16,8 +16,10 @@ html {
 		sans-serif;
 	/* Support for both modern and legacy browsers */
 	-webkit-text-size-adjust: 100%;
-	-moz-text-size-adjust: 100%;
-	text-size-adjust: 100%;
+
+	@supports (text-size-adjust: 100%) {
+		text-size-adjust: 100%;
+	}
 }
 
 /* Theme Variables - Dark Mode (Default) - Pastel Theme */
@@ -191,10 +193,11 @@ html {
 }
 
 /* Safari compatibility for backdrop-filter */
-@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+/* Safari compatibility for backdrop-filter */
+@supports (-webkit-backdrop-filter: none) {
+	.backdrop-blur-sm,
 	.backdrop-blur-\[8px\] {
 		-webkit-backdrop-filter: blur(8px);
-		backdrop-filter: blur(8px);
 	}
 }
 

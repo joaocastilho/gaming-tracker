@@ -216,10 +216,7 @@
 	<link rel="modulepreload" href="/@vite/client" />
 </svelte:head>
 
-<div
-	style="background-color: var(--color-background);"
-	class="bg-background text-foreground min-h-screen"
->
+<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
 	<Header />
 	<section class="filter-section top-[104px] z-30 md:top-[110px]">
 		<div class="container mx-auto space-y-4 px-6 py-4">
@@ -267,7 +264,7 @@
 		</div>
 	</section>
 
-	<main style="background-color: var(--color-background);" class="px-6 pt-0 pb-6">
+	<main class="bg-[var(--color-background)] px-6 pt-0 pb-6">
 		<div class="container mx-auto">
 			{#if isLoading}
 				<!-- Simplified skeleton loading state -->

@@ -32,6 +32,17 @@ export default defineConfig({
 					console.warn('⚠️  Failed to exclude large dataset from build:', error);
 				}
 			}
+		},
+		{
+			name: 'fix-mjs-content-type',
+			configureServer(server) {
+				server.middlewares.use((req, res, next) => {
+					if (req.url?.endsWith('.mjs')) {
+						res.setHeader('Content-Type', 'application/javascript');
+					}
+					next();
+				});
+			}
 		}
 	],
 	build: {
