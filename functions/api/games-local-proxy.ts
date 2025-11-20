@@ -13,7 +13,10 @@ export const onRequestGet = async () => {
 		if (!res.ok) {
 			return new Response(JSON.stringify({ error: 'Failed to load games.json' }), {
 				status: 500,
-				headers: { 'Content-Type': 'application/json' }
+				headers: {
+					'Content-Type': 'application/json',
+					'Cache-Control': 'no-cache'
+				}
 			});
 		}
 
@@ -23,19 +26,28 @@ export const onRequestGet = async () => {
 		if (!parsed.success) {
 			return new Response(JSON.stringify({ error: 'Invalid games.json format' }), {
 				status: 500,
-				headers: { 'Content-Type': 'application/json' }
+				headers: {
+					'Content-Type': 'application/json',
+					'Cache-Control': 'no-cache'
+				}
 			});
 		}
 
 		return new Response(JSON.stringify(parsed.data), {
 			status: 200,
-			headers: { 'Content-Type': 'application/json' }
+			headers: {
+				'Content-Type': 'application/json',
+				'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
+			}
 		});
 	} catch (error) {
 		console.error('games-local-proxy failed', error);
 		return new Response(JSON.stringify({ error: 'Failed to load games locally' }), {
 			status: 500,
-			headers: { 'Content-Type': 'application/json' }
+			headers: {
+				'Content-Type': 'application/json',
+				'Cache-Control': 'no-cache'
+			}
 		});
 	}
 };

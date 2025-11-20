@@ -120,13 +120,19 @@ export const onRequestGet = async ({ env }: { env: Env }) => {
 	if (!data) {
 		return new Response(JSON.stringify({ error: 'No games data available' }), {
 			status: 500,
-			headers: { 'Content-Type': 'application/json' }
+			headers: {
+				'Content-Type': 'application/json',
+				'Cache-Control': 'no-cache'
+			}
 		});
 	}
 
 	return new Response(JSON.stringify(data), {
 		status: 200,
-		headers: { 'Content-Type': 'application/json' }
+		headers: {
+			'Content-Type': 'application/json',
+			'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
+		}
 	});
 };
 
