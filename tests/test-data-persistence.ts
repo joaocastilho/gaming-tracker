@@ -455,6 +455,83 @@ class DataPersistenceTester {
 		}
 	}
 
+	// Test complex JSON export (nested objects)
+	async testComplexJSONExport(): Promise<boolean> {
+		try {
+			const complexData = {
+				settings: {
+					theme: 'dark',
+					notifications: {
+						email: true,
+						push: false
+					}
+				},
+				history: [
+					{ id: 1, action: 'login', timestamp: 123456789 },
+					{ id: 2, action: 'view_game', details: { gameId: 'g1' } }
+				]
+			};
+
+			const jsonString = JSON.stringify(complexData);
+			const parsed = JSON.parse(jsonString);
+
+			expect(parsed.settings.theme).toBe('dark');
+			expect(parsed.settings.notifications.email).toBe(true);
+			expect(parsed.history.length).toBe(2);
+			expect(parsed.history[1].details.gameId).toBe('g1');
+
+			return true;
+		} catch (error) {
+			throw new Error(`Complex JSON export test failed: ${error}`);
+		}
+	}
+
+	// Test corrupted JSON import
+	async testCorruptedJSONImport(): Promise<boolean> {
+		try {
+			const corruptedJSON = '{"games": [{"id": 1, "title": "Test Game"'; // Missing closing braces
+
+			try {
+				JSON.parse(corruptedJSON);
+				return false; // Should have thrown
+			} catch {
+				// Expected error
+				return true;
+			}
+		} catch (error) {
+			throw new Error(`Corrupted JSON import test failed: ${error}`);
+		}
+	}
+
+	// Test large data persistence (simulated)
+	async testLargeDataPersistence(): Promise<boolean> {
+		try {
+			// Generate large array of games
+			const largeGames = Array.from({ length: 1000 }, (_, i) => ({
+				id: `game-${i}`,
+				title: `Game ${i}`,
+				platform: i % 2 === 0 ? 'PC' : 'Console',
+				year: 2000 + (i % 20)
+			}));
+
+			const exportData = { games: largeGames };
+			const jsonString = JSON.stringify(exportData);
+
+			// Verify string length is substantial
+			if (jsonString.length < 10000) {
+				throw new Error('Generated JSON is too small for stress test');
+			}
+
+			const parsed = JSON.parse(jsonString);
+			expect(parsed.games.length).toBe(1000);
+			expect(parsed.games[999].title).toBe('Game 999');
+
+			return true;
+		} catch (error) {
+			throw new Error(`Large data persistence test failed: ${error}`);
+		}
+	}
+
 	// Run all persistence tests
 	async runAllTests(): Promise<PersistenceResults> {
 		this.setupMocks();
@@ -506,6 +583,24 @@ class DataPersistenceTester {
 				name: 'Storage Limits',
 				description: 'Test localStorage operations and error handling',
 				testFn: () => this.testStorageLimits(),
+				expectedResult: true
+			},
+			{
+				name: 'Complex JSON Export',
+				description: 'Test export of complex nested data structures',
+				testFn: () => this.testComplexJSONExport(),
+				expectedResult: true
+			},
+			{
+				name: 'Corrupted JSON Import',
+				description: 'Test handling of malformed JSON data',
+				testFn: () => this.testCorruptedJSONImport(),
+				expectedResult: true
+			},
+			{
+				name: 'Large Data Persistence',
+				description: 'Test persistence of large datasets',
+				testFn: () => this.testLargeDataPersistence(),
 				expectedResult: true
 			}
 		];

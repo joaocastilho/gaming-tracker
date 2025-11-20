@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import './setup.ts'; // Ensure mocks are loaded first
 
 /**
  * Test Runner for Gaming Tracker Application
@@ -99,7 +100,51 @@ class TestRunner {
 			}
 		);
 
-		// Test 6: Cover Loading (Unit Tests)
+		// Test 6: Title Transforms (Unit Tests)
+		await this.runTestSuite('Title Transforms', 'Tests data transformation utilities', async () => {
+			return this.runExternalTest(['bun', 'tests/test-title-transforms.ts']);
+		});
+
+		// Test 7: Sorting and Filtering (Integration Tests)
+		await this.runTestSuite(
+			'Sorting and Filtering',
+			'Tests filtering and sorting logic with mocked stores',
+			async () => {
+				return this.runExternalTest([
+					'bun',
+					'test',
+					'tests/test-sorting-filtering.test.ts',
+					'--preload',
+					'./tests/setup.ts'
+				]);
+			}
+		);
+
+		// Test 8: Loading Speeds (Benchmarks)
+		await this.runTestSuite(
+			'Loading Speeds',
+			'Benchmarks performance of critical operations',
+			async () => {
+				return this.runExternalTest(['bun', 'tests/test-loading-speeds.ts']);
+			}
+		);
+
+		// Test 9: Detail Modal Navigation (Unit Tests)
+		await this.runTestSuite(
+			'Detail Modal Navigation',
+			'Tests modal state and deep linking',
+			async () => {
+				return this.runExternalTest([
+					'bun',
+					'test',
+					'tests/test-detail-modal-navigation.test.ts',
+					'--preload',
+					'./tests/setup.ts'
+				]);
+			}
+		);
+
+		// Test 10: Cover Loading (Unit Tests)
 		await this.runTestSuite(
 			'Cover Loading',
 			'Tests image loading behavior and optimization',
@@ -172,6 +217,20 @@ class TestRunner {
 
 		this.suites.push(suite);
 		console.log('');
+	}
+
+	private async runExternalTest(command: string[]): Promise<boolean> {
+		try {
+			const proc = Bun.spawn(command, {
+				stdout: 'inherit',
+				stderr: 'inherit'
+			});
+			const exitCode = await proc.exited;
+			return exitCode === 0;
+		} catch (e) {
+			console.error('Failed to run external test:', e);
+			return false;
+		}
 	}
 
 	private printFinalReport(): void {

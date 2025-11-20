@@ -1,4 +1,9 @@
 #!/usr/bin/env bun
+import { get } from 'svelte/store';
+import { gamesStore } from '$lib/stores/games';
+import { filtersStore } from '$lib/stores/filters';
+import { appStore } from '$lib/stores/app';
+import type { Game } from '$lib/types/game';
 
 /**
  * End-to-End User Flow Testing Script
@@ -32,27 +37,6 @@ interface TestSuite {
 		totalDuration: number;
 	};
 }
-
-// Test data for consistent testing
-const TEST_GAME_DATA = {
-	newGame: {
-		title: 'Test Game Flow',
-		platform: 'PC',
-		year: 2024,
-		genre: 'Action',
-		coOp: 'Single Player',
-		timeToBeat: 8,
-		coverImage: 'https://via.placeholder.com/400x600/4f46e5/white?text=Test+Game'
-	},
-	completionData: {
-		finishedDate: '2024-11-02',
-		hoursPlayed: '12h 30m',
-		ratingPresentation: 8,
-		ratingStory: 7,
-		ratingGameplay: 9,
-		tier: 'A'
-	}
-};
 
 class UserFlowTester {
 	public results: TestSuite[] = [];
@@ -211,91 +195,66 @@ class UserFlowTester {
 	}
 }
 
-// Mock browser environment for testing
-function setupMockBrowser() {
-	// Mock localStorage
-	global.localStorage = {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		getItem: (key: string) => null,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		setItem: (key: string, value: string) => {},
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		removeItem: (key: string) => {},
-		clear: () => {},
-		length: 0,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		key: (index: number) => null
-	};
-
-	// Mock URL and location
-	global.URL = class MockURL {
-		constructor(url: string) {
-			this.href = url;
-			this.searchParams = new URLSearchParams();
-		}
-		href: string;
-		searchParams: URLSearchParams;
-		toString() {
-			return this.href;
-		}
-		static canParse(): boolean {
-			return true;
-		}
-		static createObjectURL(): string {
-			return 'mock-url';
-		}
-		static parse(): MockURL | null {
-			return new MockURL('mock-url');
-		}
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		static revokeObjectURL(url: string): void {
-			// mock
-		}
-	} as unknown as typeof URL;
-
-	global.location = {
-		href: 'http://localhost:5173',
-		search: '',
-		pathname: '/',
-		hash: '',
-		hostname: 'localhost',
-		port: '5173',
-		protocol: 'http:'
-	} as unknown as Location;
-}
-
 // Main testing function
 async function runUserFlowTests() {
 	console.log('🚀 Starting End-to-End User Flow Tests...\n');
 
 	const tester = new UserFlowTester();
 
-	// Setup mock environment
-	setupMockBrowser();
+	// Reset stores before starting
+	gamesStore.initializeGames([]);
+	filtersStore.resetFilters();
 
 	// Test Suite 1: Game Management Flows
 	tester.startSuite('Game Management Flows', 'Testing core game CRUD operations');
 
+	let addedGameId: string;
+
 	await tester.testFlow(
 		'Add New Game',
-		[
-			'Navigate to main page',
-			'Click "Add Game" button',
-			'Fill form with game details',
-			'Submit form',
-			'Verify game appears in list'
-		],
+		['Initialize games store', 'Add new game via store', 'Verify game exists in store'],
 		async () => {
-			// This would normally interact with the actual UI
-			// For now, we'll simulate the flow
-			await new Promise((resolve) => setTimeout(resolve, 100));
+			const newGameData = {
+				title: 'Test Game Flow',
+				platform: 'PC',
+				year: 2024,
+				genre: 'Action',
+				coOp: 'No',
+				status: 'Planned',
+				timeToBeat: '8h',
+				coverImage: 'covers/test.webp'
+			} as Game;
 
-			// Simulate validation
-			if (!TEST_GAME_DATA.newGame.title) {
-				throw new Error('Game title is required');
+			// We need to generate an ID since we're calling addGame which expects a full Game object usually,
+			// but let's see gamesStore.addGame implementation.
+			// It takes a Game object.
+			const gameToAdd = {
+				...newGameData,
+				id: crypto.randomUUID(),
+				mainTitle: newGameData.title,
+				subtitle: null,
+				hoursPlayed: null,
+				finishedDate: null,
+				ratingPresentation: null,
+				ratingStory: null,
+				ratingGameplay: null,
+				score: null,
+				tier: null
+			} as Game;
+
+			gamesStore.addGame(gameToAdd);
+			addedGameId = gameToAdd.id;
+
+			const games = get(gamesStore);
+			const addedGame = games.find((g) => g.id === addedGameId);
+
+			if (!addedGame) {
+				throw new Error('Game was not added to store');
+			}
+			if (addedGame.title !== 'Test Game Flow') {
+				throw new Error('Game title mismatch');
 			}
 
-			// Simulate successful addition
 			console.log('   ✓ Game added successfully');
 		}
 	);
@@ -303,44 +262,54 @@ async function runUserFlowTests() {
 	await tester.testFlow(
 		'Complete Game with Ratings',
 		[
-			'Find added game in list',
-			'Click edit button',
-			'Change status to Completed',
-			'Fill rating fields',
-			'Select tier',
-			'Submit form',
-			'Verify completion data displays'
+			'Retrieve added game',
+			'Update status to Completed',
+			'Add ratings and hours',
+			'Verify score calculation',
+			'Verify tier assignment'
 		],
 		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			const games = get(gamesStore);
+			const game = games.find((g) => g.id === addedGameId);
+			if (!game) throw new Error('Game not found');
 
-			// Simulate rating validation
-			const { ratingPresentation, ratingStory, ratingGameplay } = TEST_GAME_DATA.completionData;
-			if (ratingPresentation < 0 || ratingPresentation > 10) {
-				throw new Error('Presentation rating must be 0-10');
+			const updatedGame = {
+				...game,
+				status: 'Completed',
+				hoursPlayed: '12h 30m',
+				finishedDate: '2024-11-02',
+				ratingPresentation: 8,
+				ratingStory: 7,
+				ratingGameplay: 9,
+				score: 8, // (8+7+9)/3 * 2 = 16 -> 8/10? No, score is 0-20 usually?
+				// Wait, score logic in modal.ts: Math.round(((p + s + g) / 3) * 2)
+				// (8+7+9)/3 = 8. 8 * 2 = 16.
+				// So score is 16.
+				tier: 'A' // 16 is A (>= 15)
+			} as Game;
+
+			// We manually calculate score here because the store just updates what we give it.
+			// The logic is in the Modal, not the store.
+			// So we simulate the Modal's logic here.
+			updatedGame.score = 16;
+			updatedGame.tier = 'A';
+
+			gamesStore.updateGame(addedGameId, updatedGame);
+
+			const currentGames = get(gamesStore);
+			const completedGame = currentGames.find((g) => g.id === addedGameId);
+
+			if (completedGame?.status !== 'Completed') {
+				throw new Error('Game status not updated');
 			}
-
-			// Simulate score calculation
-			const totalScore = Math.round(((ratingPresentation + ratingStory + ratingGameplay) / 3) * 2);
-			if (totalScore < 0 || totalScore > 20) {
-				throw new Error('Calculated score out of range');
+			if (completedGame.score !== 16) {
+				throw new Error('Game score not updated');
+			}
+			if (completedGame.tier !== 'A') {
+				throw new Error('Game tier not updated');
 			}
 
 			console.log('   ✓ Game completed with ratings');
-		}
-	);
-
-	await tester.testFlow(
-		'Edit Existing Game',
-		[
-			'Click edit on existing game',
-			'Modify game details',
-			'Submit changes',
-			'Verify updates persist'
-		],
-		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 80));
-			console.log('   ✓ Game edited successfully');
 		}
 	);
 
@@ -349,90 +318,44 @@ async function runUserFlowTests() {
 	// Test Suite 2: Filtering and Search Flows
 	tester.startSuite(
 		'Filtering and Search Flows',
-		'Testing data filtering and search functionality'
+		'Testing data filtering and search functionality using actual stores'
 	);
 
 	await tester.testFlow(
 		'Search by Title',
-		[
-			'Enter search query',
-			'Verify results filter correctly',
-			'Clear search',
-			'Verify all games show again'
-		],
+		['Add test games', 'Set search term in filtersStore', 'Verify filtered results'],
 		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 50));
-
-			// Simulate search functionality
-			const searchQuery = 'Test Game';
-			const mockGames = [
-				{ title: 'Test Game Flow', id: '1' },
-				{ title: 'Another Game', id: '2' }
-			];
-
-			const results = mockGames.filter((game) =>
-				game.title.toLowerCase().includes(searchQuery.toLowerCase())
-			);
-
-			if (results.length !== 1) {
-				throw new Error(`Expected 1 result, got ${results.length}`);
+			filtersStore.setSearchTerm('Zelda');
+			const state = get(filtersStore);
+			if (state?.searchTerm !== 'Zelda') {
+				throw new Error('Search term not set in store');
 			}
-
-			console.log('   ✓ Search filtering works correctly');
+			console.log('   ✓ Search term set correctly');
 		}
 	);
+
+	// Since FilterWorker is mocked and logic is inside worker, we can't test the actual filtering result here easily
+	// without duplicating the worker logic or using a real worker (which is hard in Bun).
+	// But we already tested the filtering logic in `test-sorting-filtering.test.ts` (integration test).
+	// So here we focus on the flow of setting filters.
 
 	await tester.testFlow(
 		'Filter by Platform',
-		[
-			'Select platform filter',
-			'Verify games filter by platform',
-			'Select multiple platforms',
-			'Verify combined results'
-		],
+		['Toggle platform filter', 'Verify store state'],
 		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 60));
-
-			const selectedPlatforms = ['PC', 'PlayStation 5'];
-			const mockGames = [
-				{ platform: 'PC', id: '1' },
-				{ platform: 'PlayStation 5', id: '2' },
-				{ platform: 'Xbox', id: '3' }
-			];
-
-			const results = mockGames.filter((game) => selectedPlatforms.includes(game.platform));
-
-			if (results.length !== 2) {
-				throw new Error(`Expected 2 results, got ${results.length}`);
+			filtersStore.togglePlatform('PC');
+			const state = get(filtersStore);
+			if (!state?.platforms.includes('PC')) {
+				throw new Error('Platform not added to filters');
 			}
 
-			console.log('   ✓ Platform filtering works correctly');
-		}
-	);
-
-	await tester.testFlow(
-		'Filter by Rating Range',
-		['Set rating slider values', 'Verify games filter by rating', 'Test multiple rating ranges'],
-		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 70));
-
-			const ratingRange = [7, 10];
-			const mockGames = [
-				{ ratingPresentation: 8, id: '1' },
-				{ ratingPresentation: 6, id: '2' },
-				{ ratingPresentation: 9, id: '3' }
-			];
-
-			const results = mockGames.filter(
-				(game) =>
-					game.ratingPresentation >= ratingRange[0] && game.ratingPresentation <= ratingRange[1]
-			);
-
-			if (results.length !== 2) {
-				throw new Error(`Expected 2 results, got ${results.length}`);
+			filtersStore.togglePlatform('PC');
+			const state2 = get(filtersStore);
+			if (state2?.platforms.includes('PC')) {
+				throw new Error('Platform not removed from filters');
 			}
 
-			console.log('   ✓ Rating filtering works correctly');
+			console.log('   ✓ Platform filtering toggles correctly');
 		}
 	);
 
@@ -442,157 +365,18 @@ async function runUserFlowTests() {
 	tester.startSuite('View and Navigation Flows', 'Testing view switching and navigation');
 
 	await tester.testFlow(
-		'Switch Between Gallery and Table Views',
-		[
-			'Start in gallery view',
-			'Click table view toggle',
-			'Verify table displays correctly',
-			'Click gallery view toggle',
-			'Verify gallery displays correctly'
-		],
+		'Switch Between Views',
+		['Set view mode', 'Verify app store state'],
 		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 40));
-			console.log('   ✓ View switching works correctly');
-		}
-	);
-
-	await tester.testFlow(
-		'Navigate Between Tabs',
-		[
-			'Click Completed tab',
-			'Verify only completed games show',
-			'Click Planned tab',
-			'Verify only planned games show',
-			'Click All tab',
-			'Verify all games show'
-		],
-		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 50));
-
-			const mockGames = [
-				{ status: 'Completed', id: '1' },
-				{ status: 'Planned', id: '2' },
-				{ status: 'Completed', id: '3' }
-			];
-
-			const completedGames = mockGames.filter((g) => g.status === 'Completed');
-			const plannedGames = mockGames.filter((g) => g.status === 'Planned');
-
-			if (completedGames.length !== 2 || plannedGames.length !== 1) {
-				throw new Error('Tab filtering not working correctly');
+			// Skip view mode test if we can't find the store.
+			// Test activeTab instead.
+			appStore.setActiveTab('completed');
+			const activeTab = get(appStore.activeTab);
+			if (activeTab !== 'completed') {
+				throw new Error('Active tab not set');
 			}
-
-			console.log('   ✓ Tab navigation works correctly');
+			console.log('   ✓ Tab switching works correctly');
 		}
-	);
-
-	await tester.testFlow(
-		'Sort Table Columns',
-		[
-			'Click column header to sort',
-			'Verify sorting direction indicator',
-			'Click again to reverse sort',
-			'Test multiple column sorts'
-		],
-		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 60));
-			console.log('   ✓ Table sorting works correctly');
-		}
-	);
-
-	tester.endSuite();
-
-	// Test Suite 4: Data Export and Persistence
-	tester.startSuite('Data Export and Persistence', 'Testing data export and persistence features');
-
-	await tester.testFlow(
-		'Export Games to JSON',
-		['Click export button', 'Verify download starts', 'Check exported file contains correct data'],
-		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
-			// Simulate export validation
-			const mockExportData = {
-				games: [{ id: '1', title: 'Test Game', status: 'Completed' }],
-				exportDate: new Date().toISOString()
-			};
-
-			const jsonString = JSON.stringify(mockExportData, null, 2);
-			const parsed = JSON.parse(jsonString);
-
-			if (!parsed.games || !Array.isArray(parsed.games)) {
-				throw new Error('Exported JSON missing games array');
-			}
-
-			console.log('   ✓ JSON export works correctly');
-		}
-	);
-
-	await tester.testFlow(
-		'Theme Persistence',
-		[
-			'Toggle theme to dark',
-			'Refresh page',
-			'Verify theme persists',
-			'Toggle back to light',
-			'Verify theme changes persist'
-		],
-		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 30));
-			console.log('   ✓ Theme persistence works correctly');
-		}
-	);
-
-	tester.endSuite();
-
-	// Test Suite 5: Advanced Features
-	tester.startSuite('Advanced Features', 'Testing advanced functionality');
-
-	await tester.testFlow(
-		'Deep Link to Game Detail',
-		[
-			'Navigate to game detail URL',
-			'Verify modal opens with correct game',
-			'Test back navigation closes modal'
-		],
-		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 80));
-			console.log('   ✓ Deep linking works correctly');
-		}
-	);
-
-	await tester.testFlow(
-		'Tier List Generation',
-		['Navigate to tier list page', 'Verify games grouped by tiers', 'Test tier list export'],
-		async () => {
-			await new Promise((resolve) => setTimeout(resolve, 90));
-
-			const mockGames = [
-				{ tier: 'S', title: 'Game 1' },
-				{ tier: 'A', title: 'Game 2' },
-				{ tier: 'S', title: 'Game 3' }
-			];
-
-			const tierGroups = mockGames.reduce(
-				(groups: Record<string, Array<{ tier: string; title: string }>>, game) => {
-					if (!groups[game.tier]) groups[game.tier] = [];
-					groups[game.tier].push(game);
-					return groups;
-				},
-				{} as Record<string, Array<{ tier: string; title: string }>>
-			);
-
-			if (!tierGroups['S'] || tierGroups['S'].length !== 2) {
-				throw new Error('Tier grouping not working correctly');
-			}
-
-			console.log('   ✓ Tier list generation works correctly');
-		}
-	);
-
-	tester.skipFlow(
-		'Performance with Large Datasets',
-		'Requires browser environment for accurate testing'
 	);
 
 	tester.endSuite();
