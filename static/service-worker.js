@@ -1,12 +1,11 @@
-const CACHE_NAME = 'gaming-tracker-v2';
-const STATIC_CACHE_NAME = 'gaming-tracker-static-v2';
-const IMAGE_CACHE_NAME = 'gaming-tracker-images-v2';
+const CACHE_NAME = 'gaming-tracker-v1';
+const STATIC_CACHE_NAME = 'gaming-tracker-static-v1';
+const IMAGE_CACHE_NAME = 'gaming-tracker-images-v1';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
 	'/',
-	'/games.json',
-	'/app.css'
+	'/games.json'
 ];
 
 // Install event - cache static assets with optimized strategy
@@ -84,6 +83,11 @@ self.addEventListener('fetch', (event) => {
 
 	// Skip cross-origin requests
 	if (url.origin !== location.origin) return;
+
+	// Skip dev module paths - let Vite/SvelteKit handle
+	if (url.pathname.startsWith('/.svelte-kit/') || url.pathname.startsWith('/@vite/')) {
+		return;
+	}
 
 	// Skip app.css - bundled by SvelteKit, handled by browser
 	if (url.pathname.endsWith('/app.css')) {
