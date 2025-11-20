@@ -11,7 +11,7 @@
 	import { gamesStore } from '$lib/stores/games.js';
 	import { appStore } from '$lib/stores/app.js';
 	import { modalStore } from '$lib/stores/modal.js';
-	import { browser } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import type { Game } from '$lib/types/game.js';
@@ -213,7 +213,9 @@
 <svelte:head>
 	<title>Gaming Tracker</title>
 	<!-- Preload critical resources to reduce critical path latency -->
-	<link rel="modulepreload" href="/@vite/client" />
+	{#if dev}
+		<link rel="modulepreload" href="/@vite/client" />
+	{/if}
 </svelte:head>
 
 <div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
