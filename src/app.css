@@ -21,6 +21,7 @@ html {
 	/* Background Colors */
 	--color-background: #0f1419;
 	--color-surface: #1a1f27;
+	--color-surface-completed: #212f4d;
 	--color-border: #2a2f3a;
 
 	/* Text Colors */
@@ -68,7 +69,8 @@ html {
 .light {
 	/* Background Colors */
 	--color-background: #f2ebe1;
-	--color-surface: #f7f2eb;
+	--color-surface: #f7eded;
+	--color-surface-completed: #ece5dc;
 	--color-border: #ede3d3;
 
 	/* Text Colors */
@@ -188,6 +190,7 @@ html {
 
 /* Safari compatibility for backdrop-filter */
 @supports (-webkit-backdrop-filter: none) {
+
 	.backdrop-blur-sm,
 	.backdrop-blur-\[8px\] {
 		-webkit-backdrop-filter: blur(8px);

@@ -135,7 +135,9 @@
 
 <button
 	class="game-card {size === 'tierlist' ? 'tierlist-size' : ''}"
-	style="background-color: var(--color-surface); color: var(--color-text-primary);"
+	style="background-color: {game.status === 'Completed'
+		? 'var(--color-surface-completed)'
+		: 'var(--color-surface)'}; color: var(--color-text-primary);"
 	onclick={() => {
 		if (onOpenModal) {
 			onOpenModal(game, displayedGames);
