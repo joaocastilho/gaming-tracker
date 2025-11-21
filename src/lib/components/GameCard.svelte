@@ -261,8 +261,8 @@
 	}
 
 	.game-card {
-		--card-width: clamp(160px, 20vw, 200px); /* Mobile: allow 2 columns */
-		--cover-height: clamp(240px, 30vw, 300px); /* Match aspect ratio */
+		--card-width: calc(50vw - 12px); /* Mobile: 2 columns */
+		--cover-height: calc(75vw - 18px); /* 16:9 aspect ratio */
 	}
 
 	@media (min-width: 768px) {
@@ -285,17 +285,16 @@
 		width: var(--card-width);
 		border-radius: 6px;
 		overflow: hidden;
-		margin-top: 8px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 		transition:
-			transform 0.2s ease,
-			box-shadow 0.2s ease;
+			transform 0.3s ease-in-out,
+			box-shadow 0.3s ease-in-out;
 		cursor: pointer;
 	}
 
 	.game-card:hover,
 	.game-card:focus {
-		transform: translateY(-4px);
+		transform: translateY(-4px) scale(1.02);
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 	}
 
@@ -407,6 +406,10 @@
 		min-width: 24px;
 		justify-content: center;
 		z-index: 10; /* Ensure tier badge appears above skeleton loader and cover image */
+		max-width: calc(100% - 16px);
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	.tier-text {
@@ -601,8 +604,6 @@
 		}
 
 		.platform-genre-year-section {
-			flex-direction: column;
-			align-items: flex-start;
 			gap: 4px;
 		}
 
@@ -617,19 +618,30 @@
 		}
 
 		.ratings-section {
-			flex-direction: column;
-			gap: 4px;
+			gap: 8px;
+			justify-content: space-between;
 		}
 
 		.rating-item {
 			font-size: 0.65rem;
 			justify-content: flex-start;
+			flex: 0 1 auto; /* Allow shrinking/growing but don't force equal width */
 		}
 
 		.time-date-section {
-			flex-direction: column;
-			align-items: flex-start;
 			gap: 2px;
+			/* Keep row layout (default) */
+		}
+
+		.tier-badge {
+			padding: 2px 6px;
+			min-width: 20px;
+			top: 4px;
+			right: 4px;
+		}
+
+		.tier-text {
+			font-size: 0.75rem;
 		}
 	}
 

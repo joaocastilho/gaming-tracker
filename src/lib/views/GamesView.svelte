@@ -18,7 +18,8 @@
 	let containerWidth = $state(1200); // Default width
 
 	// Calculate columns based on container width and card minimum width (300px + gap)
-	let columns = $derived(Math.max(1, Math.floor(containerWidth / 320)));
+	// For mobile (< 768px), force 2 columns
+	let columns = $derived(containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320)));
 
 	// Chunk games into rows for the virtual list
 	let rows = $derived(() => {
@@ -111,15 +112,15 @@
 	/* Virtual list container styles */
 	:global(.game-gallery-virtual) {
 		width: 100%;
-		padding: 1rem;
+		padding: 0.5rem;
 	}
 
 	/* Wrapper to center cards in the virtual list items */
 	.game-row {
 		display: flex;
 		justify-content: flex-start;
-		gap: 1rem;
-		padding-bottom: 1rem;
+		gap: 0.5rem;
+		padding-bottom: 0.25rem;
 		width: 100%;
 	}
 

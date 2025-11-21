@@ -32,6 +32,8 @@ html {
 	/* Accent Colors */
 	--color-accent: #3b82f6;
 	--color-accent-foreground: #989292;
+	--color-primary: var(--color-accent);
+	--color-primary-rgb: 59, 130, 246;
 
 	/* Tier Colors */
 	--color-tier-s: #dc2626;
@@ -80,6 +82,8 @@ html {
 
 	/* Accent Colors */
 	--color-accent: #3b82f6;
+	--color-primary: var(--color-accent);
+	--color-primary-rgb: 59, 130, 246;
 
 	/* Tier Colors (same for both modes) */
 	--color-tier-s: #dc2626;

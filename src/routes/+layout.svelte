@@ -164,6 +164,12 @@
 	});
 
 	$effect(() => {
+		if (isSearchOpen && searchInput) {
+			searchInput.focus();
+		}
+	});
+
+	$effect(() => {
 		// Sync activeTab with URL pathname changes
 		const pathname = page.url.pathname;
 		let targetTab: 'all' | 'completed' | 'planned' | 'tierlist' = 'all';
@@ -182,6 +188,10 @@
 	let selectedPlatforms: string[] = $state([]);
 	let selectedGenres: string[] = $state([]);
 	let selectedTiers: string[] = $state([]);
+
+	let isSearchOpen = $state(false);
+	let isFiltersOpen = $state(false);
+	let searchInput = $state<HTMLInputElement | null>(null);
 
 	$effect(() => {
 		const unsubPlatforms = filtersStore.selectedPlatforms.subscribe((platforms) => {
@@ -208,6 +218,20 @@
 		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 		appStore.writeToURLWithFilters(filtersStore);
 	}
+
+	function onSearchToggle() {
+		isSearchOpen = !isSearchOpen;
+		if (isSearchOpen) {
+			isFiltersOpen = false; // Close filters if opening search
+		}
+	}
+
+	function onFiltersToggle() {
+		isFiltersOpen = !isFiltersOpen;
+		if (isFiltersOpen) {
+			isSearchOpen = false; // Close search if opening filters
+		}
+	}
 </script>
 
 <svelte:head>
@@ -220,7 +244,7 @@
 
 <div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
 	<Header />
-	<section class="filter-section top-[104px] z-30 md:top-[110px]">
+	<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
 		<div class="container mx-auto space-y-4 px-6 py-4">
 			{#if !isTierlistPage}
 				<SearchBar />
@@ -286,7 +310,132 @@
 		<DetailModalComponent />
 	{/if}
 
-	<BottomNavigation />
+	<!-- Mobile Search Input -->
+	{#if isSearchOpen}
+		<div
+			class="mobile-search-overlay fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+			onclick={(e) => {
+				if (e.target === e.currentTarget) onSearchToggle();
+			}}
+			role="button"
+			tabindex="0"
+			onkeydown={(e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					if (e.target === e.currentTarget) onSearchToggle();
+				}
+			}}
+		>
+			<div class="mobile-search-container absolute right-4 bottom-[80px] left-4">
+				<div class="bg-background border-border rounded-lg border p-4 shadow-lg">
+					<div class="relative">
+						<input
+							bind:this={searchInput}
+							type="text"
+							placeholder="Search games..."
+							class="bg-surface border-border text-foreground placeholder:text-muted-foreground focus:ring-primary w-full rounded-md border py-2 pr-10 pl-4 focus:ring-2 focus:outline-none"
+							bind:value={$filtersStore.searchTerm}
+							onkeydown={(e) => {
+								if (e.key === 'Enter') {
+									onSearchToggle();
+								} else if (e.key === 'Escape') {
+									onSearchToggle();
+								}
+							}}
+						/>
+						<button
+							type="button"
+							class="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+							onclick={() => {
+								$filtersStore.searchTerm = '';
+								onSearchToggle();
+							}}
+							aria-label="Clear search"
+						>
+							✕
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<!-- Mobile Filters Modal -->
+	{#if isFiltersOpen}
+		<div
+			class="mobile-filters-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden"
+			onclick={(e) => {
+				if (e.target === e.currentTarget) onFiltersToggle();
+			}}
+			role="button"
+			tabindex="0"
+			onkeydown={(e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					if (e.target === e.currentTarget) onFiltersToggle();
+				}
+			}}
+		>
+			<div
+				class="mobile-filters-container bg-background absolute right-0 bottom-0 left-0 max-h-[95vh] overflow-hidden rounded-t-lg shadow-lg"
+			>
+				<div class="border-border flex items-center justify-between border-b p-4">
+					<h2 class="text-lg font-semibold">Filters & Sorts</h2>
+					<button type="button" onclick={onFiltersToggle} aria-label="Close filters"> ✕ </button>
+				</div>
+				<div class="max-h-[calc(95vh-120px)] space-y-4 overflow-y-auto p-4">
+					<!-- Platforms -->
+					{#if FilterDropdownComponent}
+						<FilterDropdownComponent
+							type="platforms"
+							label="Platforms"
+							options={filterOptions().platforms}
+							selectedOptions={selectedPlatforms}
+						/>
+					{/if}
+					<!-- Genres -->
+					{#if FilterDropdownComponent}
+						<FilterDropdownComponent
+							type="genres"
+							label="Genres"
+							options={filterOptions().genres}
+							selectedOptions={selectedGenres}
+						/>
+					{/if}
+					<!-- Tiers -->
+					{#if FilterDropdownComponent}
+						<FilterDropdownComponent
+							type="tiers"
+							label="Tiers"
+							options={filterOptions().tiers}
+							selectedOptions={selectedTiers}
+						/>
+					{/if}
+					<!-- Ratings Sort -->
+					<RatingsSort />
+				</div>
+				<div class="border-border flex items-center justify-between border-t p-4">
+					<button
+						type="button"
+						class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-3 py-2 text-xs transition-colors"
+						onclick={resetFilters}
+					>
+						↻ Reset filters
+					</button>
+					<button
+						type="button"
+						class="apply-button bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+						onclick={() => {
+							// Apply filters - they are already bound
+							onFiltersToggle();
+						}}
+					>
+						✓ Apply
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<BottomNavigation {onSearchToggle} {onFiltersToggle} />
 	<ScrollToTopButton />
 </div>
 

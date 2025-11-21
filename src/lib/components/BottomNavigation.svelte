@@ -3,16 +3,25 @@
 	import { filteredCountsStore } from '$lib/stores/filteredCounts';
 	import { appStore } from '$lib/stores/app.js';
 	import { get } from 'svelte/store';
+	import { Gamepad, CheckCircle, Calendar, List, Search, Filter } from 'lucide-svelte';
 
-	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
+	interface Props {
+		onSearchToggle?: () => void;
+		onFiltersToggle?: () => void;
+	}
+
+	let { onSearchToggle, onFiltersToggle }: Props = $props();
+
+	type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search' | 'filters';
 
 	type NavItem = {
 		id: NavId;
 		label: string;
-		route: string;
+		route?: string;
 		count: number | null;
 		active: boolean;
-		icon: string;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		icon: any; // Lucide icon component
 	};
 
 	let navItems = $state<NavItem[]>([]);
@@ -28,7 +37,7 @@
 				route: '/',
 				count: filteredCounts.all,
 				active: activeTab === 'all',
-				icon: '🎮'
+				icon: Gamepad
 			},
 			{
 				id: 'completed',
@@ -36,7 +45,7 @@
 				route: '/completed',
 				count: filteredCounts.completed,
 				active: activeTab === 'completed',
-				icon: '✓'
+				icon: CheckCircle
 			},
 			{
 				id: 'planned',
@@ -44,7 +53,7 @@
 				route: '/planned',
 				count: filteredCounts.planned,
 				active: activeTab === 'planned',
-				icon: '📝'
+				icon: Calendar
 			},
 			{
 				id: 'tierlist',
@@ -52,7 +61,21 @@
 				route: '/tierlist',
 				count: null,
 				active: activeTab === 'tierlist',
-				icon: '🏆'
+				icon: List
+			},
+			{
+				id: 'search',
+				label: 'Search',
+				count: null,
+				active: false,
+				icon: Search
+			},
+			{
+				id: 'filters',
+				label: 'Filters',
+				count: null,
+				active: false,
+				icon: Filter
 			}
 		];
 	}
@@ -68,7 +91,13 @@
 	});
 
 	function handleNavClick(target: NavId) {
-		navigateTo(target);
+		if (target === 'search') {
+			onSearchToggle?.();
+		} else if (target === 'filters') {
+			onFiltersToggle?.();
+		} else {
+			navigateTo(target as 'all' | 'completed' | 'planned' | 'tierlist');
+		}
 	}
 
 	function handleKeyDown(event: KeyboardEvent, target: NavId) {
@@ -86,23 +115,27 @@
 >
 	<ul class="flex items-stretch">
 		{#each navItems as item (item.id)}
+			{@const Icon = item.icon}
 			<li class="flex-1">
 				<button
 					type="button"
 					class="nav-button focus:ring-primary active:bg-accent flex min-h-[60px] flex-col items-center justify-center px-1 py-2 text-xs font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
 					class:active={item.active}
+					class:font-bold={item.active}
 					onclick={() => handleNavClick(item.id)}
 					onkeydown={(e) => handleKeyDown(e, item.id)}
 					aria-current={item.active ? 'page' : undefined}
 					aria-label={`${item.label}${item.count !== null ? ` (${item.count})` : ''}`}
 				>
-					<span class="icon mb-1 text-lg" aria-hidden="true">{item.icon}</span>
-					<span class="label max-w-full truncate">{item.label}</span>
+					<div class="icon-wrapper mb-1">
+						<Icon size={24} fill={item.active ? 'currentColor' : undefined} />
+					</div>
+					<span class="label max-w-full truncate text-[0.75rem]">{item.label}</span>
 					{#if item.count !== null && item.count > 0}
 						<span
-							class="count-badge bg-primary text-primary-foreground absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-xs font-semibold"
+							class="count-badge absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-xs font-semibold text-white"
 						>
-							{item.count > 99 ? '99+' : item.count}
+							{item.count}
 						</span>
 					{/if}
 				</button>
@@ -121,7 +154,7 @@
 	}
 
 	.nav-button {
-		color: var(--color-muted-foreground);
+		color: var(--color-text-secondary);
 		position: relative;
 		touch-action: manipulation;
 		-webkit-tap-highlight-color: transparent;
@@ -136,13 +169,16 @@
 		background-color: rgba(var(--color-primary-rgb), 0.1);
 	}
 
-	.nav-button.active .icon {
+	.nav-button.active .icon-wrapper {
 		transform: scale(1.1);
 	}
 
-	.icon {
+	.icon-wrapper {
 		transition: transform 0.2s ease;
 		line-height: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.label {
@@ -175,7 +211,7 @@
 
 	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
-		.icon {
+		.icon-wrapper {
 			transition: none;
 		}
 

@@ -108,9 +108,13 @@
 
 <LoginModal bind:this={loginModalRef} />
 
-<header class="header-root">
+<header class="header-root px-4 py-3 md:px-7 md:py-1">
 	<div class="header-inner">
-		<button type="button" class="logo-button" onclick={handleLogoClick}>
+		<button
+			type="button"
+			class="logo-button relative z-10 mx-auto md:mx-0"
+			onclick={handleLogoClick}
+		>
 			<Logo />
 		</button>
 
@@ -133,14 +137,16 @@
 			</ul>
 		</nav>
 
-		<div class="header-right">
+		<div
+			class="header-right absolute top-1/2 right-6 flex -translate-y-1/2 items-center gap-2 md:static md:translate-y-0 md:items-start md:justify-self-end"
+		>
 			<div class="theme-toggle-wrapper">
 				<ThemeToggle />
 			</div>
 
 			<button
 				type="button"
-				class="owner-login-button"
+				class="owner-login-button hidden md:block"
 				onclick={openOwnerLogin}
 				aria-label="Owner login"
 			>
@@ -357,6 +363,37 @@
 		.tabs-list button {
 			min-height: 44px;
 			padding: 0.5rem 0 0.15rem;
+		}
+
+		/* Hide tabs navigation on mobile */
+		.tabs-nav {
+			display: none;
+		}
+
+		/* Mobile layout: logo center, theme toggle right */
+		.header-inner {
+			grid-template-columns: auto auto;
+			grid-template-rows: auto;
+			gap: 1rem;
+			justify-content: center;
+		}
+
+		.logo-button {
+			grid-row: 1;
+			grid-column: 1;
+			margin: 0;
+		}
+
+		.header-right {
+			grid-row: 1;
+			grid-column: 2;
+			position: static;
+			transform: none;
+			justify-self: auto;
+		}
+
+		.theme-toggle-wrapper {
+			transform: none;
 		}
 	}
 </style>
