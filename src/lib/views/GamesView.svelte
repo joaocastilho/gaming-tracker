@@ -34,6 +34,28 @@
 		return result;
 	});
 
+	// Calculate item height based on container width to match GameCard responsiveness
+	let itemHeight = $derived(() => {
+		// Base info height (title + metadata + padding)
+		// Increased to 300 to prevent overlapping on mobile/smaller screens where titles wrap
+		const infoHeight = 300;
+
+		// Calculate exact column width based on container padding and gaps
+		// Container padding: 0.5rem (8px) on each side = 16px
+		// Gap: 0.75rem (12px)
+		const containerPadding = 16;
+		const gap = 12;
+
+		const totalGapWidth = (columns - 1) * gap;
+		const availableWidth = containerWidth - containerPadding - totalGapWidth;
+		const columnWidth = availableWidth / columns;
+
+		// Aspect ratio for cover is 1.5 (2:3)
+		const coverHeight = columnWidth * 1.5;
+
+		return coverHeight + infoHeight;
+	});
+
 	onMount(() => {
 		mounted = true;
 	});
@@ -47,7 +69,7 @@
 	{#if mounted && filteredGames.length > 0}
 		<VirtualList
 			items={rows()}
-			itemHeight={750}
+			itemHeight={itemHeight()}
 			useWindowScroll={true}
 			overscan={2}
 			keyExtractor={(row) => row.id}
@@ -119,7 +141,7 @@
 	.game-row {
 		display: flex;
 		justify-content: flex-start;
-		gap: 0.5rem;
+		gap: clamp(0.5rem, 0.5rem + 2vw, 2.5rem);
 		padding-bottom: 0.25rem;
 		width: 100%;
 	}

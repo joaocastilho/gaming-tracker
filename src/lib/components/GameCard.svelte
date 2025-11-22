@@ -63,14 +63,15 @@
 	let titleFontSize = $derived(() => {
 		const title = game.mainTitle || game.title || '';
 		const baseSize = 1.25;
-		const minSize = 0.65;
-		const maxLength = 25;
+		const minSize = 0.75; // Decreased min size to allow fitting long titles
+		const maxLength = 18; // Reduced max length further
 
 		if (!title || title.length <= maxLength) {
 			return baseSize;
 		}
 
-		const reduction = Math.min((title.length - maxLength) * 0.015, baseSize - minSize);
+		// More aggressive reduction: 0.03 per char over limit
+		const reduction = Math.min((title.length - maxLength) * 0.03, baseSize - minSize);
 		return Math.max(baseSize - reduction, minSize);
 	});
 
@@ -254,35 +255,16 @@
 </button>
 
 <style>
-	/* Responsive card sizing using custom breakpoints */
+	/* Responsive card sizing */
 	.game-card.tierlist-size {
-		--card-width: 200px;
-		--cover-height: 300px; /* 1.5 aspect ratio */
-	}
-
-	.game-card {
-		--card-width: calc(50vw - 12px); /* Mobile: 2 columns */
-		--cover-height: calc(75vw - 18px); /* 16:9 aspect ratio */
-	}
-
-	@media (min-width: 768px) {
-		.game-card {
-			--card-width: clamp(200px, 18vw, 250px); /* Tablet: smaller desktop size */
-			--cover-height: clamp(300px, 27vw, 375px); /* Match aspect ratio */
-		}
-	}
-
-	@media (min-width: 1280px) {
-		.game-card {
-			--card-width: clamp(250px, 15vw, 300px); /* Desktop: smaller for more columns */
-			--cover-height: clamp(375px, 22.5vw, 450px); /* Match aspect ratio */
-		}
+		width: 200px;
+		--cover-height: 300px;
 	}
 
 	.game-card {
 		display: flex;
 		flex-direction: column;
-		width: var(--card-width);
+		width: 100%; /* Fluid width to fill container */
 		border-radius: 6px;
 		overflow: hidden;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -290,6 +272,7 @@
 			transform 0.3s ease-in-out,
 			box-shadow 0.3s ease-in-out;
 		cursor: pointer;
+		height: 100%; /* Fill height */
 	}
 
 	.game-card:hover,
@@ -300,8 +283,8 @@
 
 	.cover-container {
 		position: relative;
-		width: var(--card-width, 300px);
-		height: var(--cover-height, 450px);
+		width: 100%;
+		aspect-ratio: 2 / 3;
 		margin: 0 auto;
 	}
 
@@ -438,18 +421,28 @@
 		margin: 0;
 		line-height: 1.2;
 		word-wrap: break-word;
-		height: 45px;
+		height: 50px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		text-align: center;
 		width: 100%;
+		/* Limit to 2 lines max as a fallback, but font scaling should keep it to 1-2 */
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	.game-subtitle {
 		font-weight: 500;
 		color: #8b92a8;
 		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: block;
+		width: 100%;
 	}
 
 	:global(.light) .game-subtitle {
@@ -560,7 +553,8 @@
 	.time-item,
 	.date-item {
 		display: flex;
-		gap: 6px;
+		gap: 5px;
+		align-items: flex-end;
 	}
 
 	.time-icon {
@@ -574,6 +568,7 @@
 	.time-text,
 	.date-text {
 		font-weight: 500;
+		line-height: 1.1;
 	}
 
 	@media (max-width: 768px) {
@@ -590,7 +585,7 @@
 		}
 
 		.time-date-section {
-			font-size: 0.7rem;
+			font-size: 0.65rem;
 		}
 	}
 
@@ -625,12 +620,12 @@
 		.rating-item {
 			font-size: 0.65rem;
 			justify-content: flex-start;
-			flex: 0 1 auto; /* Allow shrinking/growing but don't force equal width */
+			flex: 0 1 auto;
 		}
 
 		.time-date-section {
 			gap: 2px;
-			/* Keep row layout (default) */
+			font-size: 0.65rem;
 		}
 
 		.tier-badge {
