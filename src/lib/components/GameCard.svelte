@@ -49,7 +49,7 @@
 	});
 
 	let imageElement = $state<HTMLImageElement>();
-	let isVisible = $state(true); // Always visible - remove lazy loading overhead
+	let isVisible = $state(true);
 
 	let totalScore = $derived(
 		game.status === 'Completed' &&
@@ -63,8 +63,8 @@
 	let titleFontSize = $derived(() => {
 		const title = game.mainTitle || game.title || '';
 		const baseSize = 1.25;
-		const minSize = 0.75; // Decreased min size to allow fitting long titles
-		const maxLength = 18; // Reduced max length further
+		const minSize = 0.75; 
+		const maxLength = 18;
 
 		if (!title || title.length <= maxLength) {
 			return baseSize;
@@ -368,7 +368,7 @@
 		font-size: 0.7rem;
 		font-weight: 500;
 		backdrop-filter: blur(4px);
-		z-index: 10; /* Ensure co-op badge appears above skeleton loader and cover image */
+		z-index: 10;
 	}
 
 	.co-op-icon {
@@ -388,7 +388,7 @@
 		backdrop-filter: blur(4px);
 		min-width: 24px;
 		justify-content: center;
-		z-index: 10; /* Ensure tier badge appears above skeleton loader and cover image */
+		z-index: 10;
 		max-width: calc(100% - 16px);
 		overflow: hidden;
 		white-space: nowrap;
@@ -427,9 +427,9 @@
 		justify-content: center;
 		text-align: center;
 		width: 100%;
-		/* Limit to 2 lines max as a fallback, but font scaling should keep it to 1-2 */
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

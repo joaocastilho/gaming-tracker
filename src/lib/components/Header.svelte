@@ -108,8 +108,8 @@
 
 <LoginModal bind:this={loginModalRef} />
 
-<header class="header-root px-4 py-3 md:px-7 md:py-1">
-	<div class="header-inner">
+<header class="header-root px-6 py-3 md:py-1">
+	<div class="header-inner container mx-auto">
 		<button
 			type="button"
 			class="logo-button relative z-10 mx-auto md:mx-0"
@@ -163,8 +163,6 @@
 	}
 
 	.header-inner {
-		max-width: 1200px;
-		margin: 0 auto;
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-template-rows: auto auto;
