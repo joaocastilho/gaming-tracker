@@ -194,7 +194,6 @@ html {
 
 /* Safari compatibility for backdrop-filter */
 @supports (-webkit-backdrop-filter: none) {
-
 	.backdrop-blur-sm,
 	.backdrop-blur-\[8px\] {
 		-webkit-backdrop-filter: blur(8px);
