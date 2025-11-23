@@ -146,7 +146,6 @@
 		grid-template-columns: 1fr;
 		grid-template-rows: auto auto;
 		gap: 0.5rem;
-		align-items: flex-end;
 	}
 
 	.logo-button {
@@ -273,11 +272,11 @@
 		transform-origin: top right;
 	}
 
-	@media (min-width: 768px) {
+	@media (min-width: 835px) {
 		.header-inner {
 			grid-template-columns: auto 1fr auto;
 			grid-template-rows: auto;
-			gap: 1.75rem;
+			gap: 1rem;
 		}
 
 		.logo-button {
@@ -297,7 +296,7 @@
 		}
 	}
 
-	@media (max-width: 767px) {
+	@media (max-width: 834px) {
 		.tabs-list button {
 			min-height: 44px;
 			padding: 0.5rem 0 0.15rem;
@@ -308,30 +307,42 @@
 			display: none;
 		}
 
-		/* Mobile layout: logo center, theme toggle right */
+		/* Mobile layout: logo center, theme toggle right and top */
 		.header-inner {
-			grid-template-columns: auto auto;
+			position: relative;
+			grid-template-columns: 1fr;
 			grid-template-rows: auto;
-			gap: 1rem;
+			gap: 0;
 			justify-content: center;
+		}
+
+		.header-root {
+			padding: 0.4rem 1.8rem 0.4rem;
 		}
 
 		.logo-button {
 			grid-row: 1;
 			grid-column: 1;
-			margin: 0;
+			margin: 0 auto;
+			justify-self: center;
 		}
 
 		.header-right {
-			grid-row: 1;
-			grid-column: 2;
-			position: static;
+			position: absolute;
+			top: 0.4rem;
+			right: 0;
+			grid-row: unset;
+			grid-column: unset;
 			transform: none;
 			justify-self: auto;
 		}
 
 		.theme-toggle-wrapper {
 			transform: none;
+		}
+
+		.theme-toggle {
+			margin-top: 30px;
 		}
 	}
 </style>

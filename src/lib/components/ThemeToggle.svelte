@@ -155,4 +155,10 @@
 			transform: none;
 		}
 	}
+
+	@media (max-width: 765px) {
+		.theme-toggle {
+			margin-top: 30px;
+		}
+	}
 </style>
