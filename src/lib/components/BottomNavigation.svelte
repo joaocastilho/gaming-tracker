@@ -8,9 +8,10 @@
 	interface Props {
 		onSearchToggle?: () => void;
 		onFiltersToggle?: () => void;
+		onCloseSearchAndFilters?: () => void;
 	}
 
-	let { onSearchToggle, onFiltersToggle }: Props = $props();
+	let { onSearchToggle, onFiltersToggle, onCloseSearchAndFilters }: Props = $props();
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search' | 'filters';
 
@@ -96,6 +97,8 @@
 		} else if (target === 'filters') {
 			onFiltersToggle?.();
 		} else {
+			// Close search and filters when navigating to any tab
+			onCloseSearchAndFilters?.();
 			navigateTo(target as 'all' | 'completed' | 'planned' | 'tierlist');
 		}
 	}
@@ -119,7 +122,7 @@
 			<li class="flex-1">
 				<button
 					type="button"
-					class="nav-button focus:ring-primary active:bg-accent flex min-h-[60px] flex-col items-center justify-center px-1 py-2 text-xs font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
+					class="nav-button flex h-full flex-col items-center justify-center gap-1 px-1 py-2 text-xs font-medium transition-colors outline-none"
 					class:active={item.active}
 					class:font-bold={item.active}
 					onclick={() => handleNavClick(item.id)}
@@ -127,14 +130,12 @@
 					aria-current={item.active ? 'page' : undefined}
 					aria-label={`${item.label}${item.count !== null ? ` (${item.count})` : ''}`}
 				>
-					<div class="icon-wrapper mb-1">
-						<Icon size={24} fill={item.active ? 'currentColor' : undefined} />
+					<div class="icon-wrapper">
+						<Icon size={24} />
 					</div>
 					<span class="label max-w-full truncate text-[0.75rem]">{item.label}</span>
 					{#if item.count !== null && item.count > 0}
-						<span
-							class="count-badge absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-xs font-semibold text-white"
-						>
+						<span class="count-badge text-[0.65rem]">
 							{item.count}
 						</span>
 					{/if}
@@ -161,16 +162,17 @@
 	}
 
 	.nav-button:hover {
-		color: var(--color-foreground);
+		color: var(--color-text-primary);
+		background-color: rgba(255, 255, 255, 0.03);
 	}
 
 	.nav-button.active {
-		color: var(--color-primary);
-		background-color: rgba(var(--color-primary-rgb), 0.1);
+		color: var(--color-text-primary);
+		background-color: transparent;
 	}
 
 	.nav-button.active .icon-wrapper {
-		transform: scale(1.1);
+		transform: scale(1.05);
 	}
 
 	.icon-wrapper {
@@ -187,8 +189,10 @@
 	}
 
 	.count-badge {
-		font-size: 0.625rem;
+		color: var(--color-text-secondary);
 		line-height: 1;
+		font-weight: 500;
+		opacity: 0.8;
 	}
 
 	/* Ensure proper spacing for safe areas on devices with notches */

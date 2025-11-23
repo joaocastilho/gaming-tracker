@@ -232,6 +232,11 @@
 			isSearchOpen = false; // Close search if opening filters
 		}
 	}
+
+	function onCloseSearchAndFilters() {
+		isSearchOpen = false;
+		isFiltersOpen = false;
+	}
 </script>
 
 <svelte:head>
@@ -435,7 +440,7 @@
 		</div>
 	{/if}
 
-	<BottomNavigation {onSearchToggle} {onFiltersToggle} />
+	<BottomNavigation {onSearchToggle} {onFiltersToggle} {onCloseSearchAndFilters} />
 	<ScrollToTopButton />
 </div>
 
