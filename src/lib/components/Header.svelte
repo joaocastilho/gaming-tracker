@@ -3,7 +3,6 @@
 	import { goto } from '$app/navigation';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Logo from '$lib/components/Logo.svelte';
-	import LoginModal from '$lib/components/LoginModal.svelte';
 
 	import { get } from 'svelte/store';
 	import { appStore } from '$lib/stores/app';
@@ -68,14 +67,6 @@
 		updateNavItems();
 	});
 
-	let loginModalRef: InstanceType<typeof LoginModal> | null = null;
-
-	function openOwnerLogin() {
-		if (loginModalRef && typeof loginModalRef.openModal === 'function') {
-			loginModalRef.openModal();
-		}
-	}
-
 	function handleLogoClick() {
 		// Logo click should clear filters
 		filtersStore.resetAllFilters();
@@ -105,8 +96,6 @@
 		}
 	}
 </script>
-
-<LoginModal bind:this={loginModalRef} />
 
 <header class="header-root px-6 py-3 md:py-1">
 	<div class="header-inner container mx-auto">
@@ -143,16 +132,6 @@
 			<div class="theme-toggle-wrapper">
 				<ThemeToggle />
 			</div>
-
-			<button
-				type="button"
-				class="owner-login-button hidden md:block"
-				onclick={openOwnerLogin}
-				aria-label="Owner login"
-			>
-				<span class="dot"></span>
-				<span class="label">Owner</span>
-			</button>
 		</div>
 	</div>
 </header>
@@ -292,45 +271,6 @@
 		align-items: flex-start;
 		transform: scale(1.2);
 		transform-origin: top right;
-	}
-
-	.owner-login-button {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3rem;
-		padding: 0.25rem 0.55rem;
-		border-radius: 999px;
-		border: none;
-		background: transparent;
-		color: #6b7280;
-		font-size: 0.7rem;
-		cursor: pointer;
-		transition:
-			color 0.15s ease,
-			background-color 0.15s ease,
-			transform 0.12s ease,
-			box-shadow 0.12s ease;
-	}
-
-	.owner-login-button .dot {
-		width: 6px;
-		height: 6px;
-		border-radius: 999px;
-		background: #22c55e;
-		box-shadow: 0 0 6px rgba(34, 197, 94, 0.9);
-	}
-
-	.owner-login-button .label {
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		font-weight: 500;
-	}
-
-	.owner-login-button:hover {
-		color: #9ca3af;
-		background: rgba(15, 23, 42, 0.9);
-		transform: translateY(-1px);
-		box-shadow: 0 6px 14px rgba(15, 23, 42, 0.6);
 	}
 
 	@media (min-width: 768px) {
