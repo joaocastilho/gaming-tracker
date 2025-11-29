@@ -131,9 +131,9 @@
 					aria-label={`${item.label}${item.count !== null ? ` (${item.count})` : ''}`}
 				>
 					<div class="icon-wrapper">
-						<Icon size={24} />
+						<Icon size={20} />
 					</div>
-					<span class="label max-w-full truncate text-[0.75rem]">{item.label}</span>
+					<span class="label max-w-full truncate text-[0.65rem]">{item.label}</span>
 					{#if item.count !== null && item.count > 0}
 						<span class="count-badge text-[0.65rem]">
 							{item.count}
@@ -147,7 +147,7 @@
 
 <style>
 	.bottom-navigation {
-		height: 80px;
+		height: 60px;
 		padding-bottom: env(safe-area-inset-bottom, 0);
 		background-color: var(--color-background);
 		border-color: var(--color-border);
@@ -185,7 +185,7 @@
 
 	.label {
 		line-height: 1.2;
-		font-size: 0.75rem;
+		font-size: 0.65rem;
 	}
 
 	.count-badge {
@@ -198,7 +198,7 @@
 	/* Ensure proper spacing for safe areas on devices with notches */
 	@supports (padding-bottom: env(safe-area-inset-bottom)) {
 		.bottom-navigation {
-			padding-bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
+			padding-bottom: calc(env(safe-area-inset-bottom, 0) + 4px);
 		}
 	}
 
