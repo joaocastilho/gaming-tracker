@@ -496,11 +496,24 @@
 								onerror={handleImageError}
 							/>
 						</button>
+						<button
+							onclick={shareGame}
+							class="absolute bottom-3 left-3 z-20 flex items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-black/70 md:hidden {shareFeedback
+								? 'px-3 py-1'
+								: 'h-8 w-8'}"
+							aria-label="Share game"
+						>
+							{#if shareFeedback}
+								<span class="text-xs font-medium">{shareFeedback}</span>
+							{:else}
+								<Share2 size={18} />
+							{/if}
+						</button>
 					</div>
 				</div>
 
 				<div
-					class="flex-1 overflow-y-auto pt-2 pr-6 pb-6 pl-6 md:pt-4 lg:pt-6 lg:pr-8 lg:pb-8 lg:pl-8"
+					class="flex-1 overflow-y-auto pt-2 pr-6 pb-6 pl-6 md:pt-4 lg:pt-6 lg:pr-8 lg:pb-5 lg:pl-8"
 				>
 					<div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
 						<h1
@@ -522,7 +535,7 @@
 
 						<button
 							onclick={shareGame}
-							class="mr-10 flex h-5 cursor-pointer items-center justify-center rounded-full bg-transparent px-2 transition-colors hover:bg-black/5 dark:bg-transparent dark:hover:bg-black/20"
+							class="mr-10 hidden h-5 cursor-pointer items-center justify-center rounded-full bg-transparent px-2 transition-colors hover:bg-black/5 md:flex dark:bg-transparent dark:hover:bg-black/20"
 							aria-label="Share game"
 							style="min-width: 40px;"
 						>
@@ -871,15 +884,16 @@
 		overflow: hidden;
 	}
 
+	#modal-title {
+		min-height: 50px;
+	}
+
 	@media (min-width: 768px) {
 		.modal-image-wrapper {
 			width: 400px;
 			height: auto;
 			aspect-ratio: 2/3;
 			max-height: 80vh;
-		}
-		#modal-title {
-			min-height: 50px;
 		}
 	}
 
@@ -888,6 +902,7 @@
 			width: 100%;
 			aspect-ratio: 2/3;
 		}
+
 		#modal-title {
 			min-height: 65px;
 		}

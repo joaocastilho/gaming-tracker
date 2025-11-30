@@ -63,7 +63,7 @@
 	let titleFontSize = $derived(() => {
 		const title = game.mainTitle || game.title || '';
 		const baseSize = 1.25;
-		const minSize = 0.75;
+		const minSize = 0.65;
 		const maxLength = 18;
 
 		if (!title || title.length <= maxLength) {
