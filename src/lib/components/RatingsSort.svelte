@@ -6,10 +6,12 @@
 		NotebookPen,
 		Gamepad2,
 		Award,
-		ChevronUp,
-		ChevronDown
+		ArrowUp,
+		ArrowDown,
+		Calendar
 	} from 'lucide-svelte';
 	import { derived } from 'svelte/store';
+	import { appStore } from '$lib/stores/app.js';
 
 	type SortDirection = 'asc' | 'desc';
 
@@ -18,162 +20,159 @@
 		($filters): SortOption | null => $filters?.sortOption ?? null
 	);
 
-	function setSort(key: SortKey, direction: SortDirection) {
-		filtersStore.setSort({ key, direction });
+	const activeTabStore = appStore.activeTab;
+
+	function handleSort(key: SortKey) {
+		const currentSort = $sortOptionStore;
+		if (currentSort?.key === key) {
+			// Toggle direction
+			const newDirection = currentSort.direction === 'asc' ? 'desc' : 'asc';
+			filtersStore.setSort({ key, direction: newDirection });
+		} else {
+			// Default to descending for new sort key (higher score/rating is usually better/more relevant)
+			filtersStore.setSort({ key, direction: 'desc' });
+		}
 	}
 </script>
 
 <div class="ratings-sort">
-	<div class="sort-group">
-		<Presentation class="sort-icon text-cyan-500" aria-hidden="true" />
-		<span class="sort-field-label">Presentation</span>
+	{#if $activeTabStore !== 'planned'}
 		<button
 			type="button"
-			class="sort-arrow"
-			class:selected={$sortOptionStore?.key === 'presentation' &&
-				$sortOptionStore?.direction === 'asc'}
-			on:click={() => setSort('presentation', 'asc')}
-			aria-label="Sort by Presentation ascending"
+			class="sort-button"
+			class:active={$sortOptionStore?.key === 'presentation'}
+			onclick={() => handleSort('presentation')}
+			aria-label="Sort by Presentation"
 		>
-			<ChevronUp size={12} />
+			<Presentation class="sort-icon text-cyan-500" aria-hidden="true" />
+			<span class="sort-field-label">Presentation</span>
+			{#if $sortOptionStore?.key === 'presentation'}
+				{#if $sortOptionStore.direction === 'asc'}
+					<ArrowUp size={14} class="sort-direction-icon" />
+				{:else}
+					<ArrowDown size={14} class="sort-direction-icon" />
+				{/if}
+			{/if}
 		</button>
-		<button
-			type="button"
-			class="sort-arrow"
-			class:selected={$sortOptionStore?.key === 'presentation' &&
-				$sortOptionStore?.direction === 'desc'}
-			on:click={() => setSort('presentation', 'desc')}
-			aria-label="Sort by Presentation descending"
-		>
-			<ChevronDown size={12} />
-		</button>
-	</div>
 
-	<div class="sort-group">
-		<NotebookPen class="sort-icon text-amber-600" aria-hidden="true" />
-		<span class="sort-field-label">Story</span>
 		<button
 			type="button"
-			class="sort-arrow"
-			class:selected={$sortOptionStore?.key === 'story' && $sortOptionStore?.direction === 'asc'}
-			on:click={() => setSort('story', 'asc')}
-			aria-label="Sort by Story ascending"
+			class="sort-button"
+			class:active={$sortOptionStore?.key === 'story'}
+			onclick={() => handleSort('story')}
+			aria-label="Sort by Story"
 		>
-			<ChevronUp size={12} />
+			<NotebookPen class="sort-icon text-amber-600" aria-hidden="true" />
+			<span class="sort-field-label">Story</span>
+			{#if $sortOptionStore?.key === 'story'}
+				{#if $sortOptionStore.direction === 'asc'}
+					<ArrowUp size={14} class="sort-direction-icon" />
+				{:else}
+					<ArrowDown size={14} class="sort-direction-icon" />
+				{/if}
+			{/if}
 		</button>
-		<button
-			type="button"
-			class="sort-arrow"
-			class:selected={$sortOptionStore?.key === 'story' && $sortOptionStore?.direction === 'desc'}
-			on:click={() => setSort('story', 'desc')}
-			aria-label="Sort by Story descending"
-		>
-			<ChevronDown size={12} />
-		</button>
-	</div>
 
-	<div class="sort-group">
-		<Gamepad2 class="sort-icon text-pink-500" aria-hidden="true" />
-		<span class="sort-field-label">Gameplay</span>
 		<button
 			type="button"
-			class="sort-arrow"
-			class:selected={$sortOptionStore?.key === 'gameplay' && $sortOptionStore?.direction === 'asc'}
-			on:click={() => setSort('gameplay', 'asc')}
-			aria-label="Sort by Gameplay ascending"
+			class="sort-button"
+			class:active={$sortOptionStore?.key === 'gameplay'}
+			onclick={() => handleSort('gameplay')}
+			aria-label="Sort by Gameplay"
 		>
-			<ChevronUp size={12} />
+			<Gamepad2 class="sort-icon text-pink-500" aria-hidden="true" />
+			<span class="sort-field-label">Gameplay</span>
+			{#if $sortOptionStore?.key === 'gameplay'}
+				{#if $sortOptionStore.direction === 'asc'}
+					<ArrowUp size={14} class="sort-direction-icon" />
+				{:else}
+					<ArrowDown size={14} class="sort-direction-icon" />
+				{/if}
+			{/if}
 		</button>
-		<button
-			type="button"
-			class="sort-arrow"
-			class:selected={$sortOptionStore?.key === 'gameplay' &&
-				$sortOptionStore?.direction === 'desc'}
-			on:click={() => setSort('gameplay', 'desc')}
-			aria-label="Sort by Gameplay descending"
-		>
-			<ChevronDown size={12} />
-		</button>
-	</div>
 
-	<div class="sort-group">
-		<Award class="sort-icon text-yellow-400" aria-hidden="true" />
-		<span class="sort-field-label">Score</span>
 		<button
 			type="button"
-			class="sort-arrow"
-			class:selected={$sortOptionStore?.key === 'score' && $sortOptionStore?.direction === 'asc'}
-			on:click={() => setSort('score', 'asc')}
-			aria-label="Sort by Score ascending"
+			class="sort-button"
+			class:active={$sortOptionStore?.key === 'score'}
+			onclick={() => handleSort('score')}
+			aria-label="Sort by Score"
 		>
-			<ChevronUp size={12} />
+			<Award class="sort-icon text-yellow-400" aria-hidden="true" />
+			<span class="sort-field-label">Score</span>
+			{#if $sortOptionStore?.key === 'score'}
+				{#if $sortOptionStore.direction === 'asc'}
+					<ArrowUp size={14} class="sort-direction-icon" />
+				{:else}
+					<ArrowDown size={14} class="sort-direction-icon" />
+				{/if}
+			{/if}
 		</button>
+
 		<button
 			type="button"
-			class="sort-arrow"
-			class:selected={$sortOptionStore?.key === 'score' && $sortOptionStore?.direction === 'desc'}
-			on:click={() => setSort('score', 'desc')}
-			aria-label="Sort by Score descending"
+			class="sort-button"
+			class:active={$sortOptionStore?.key === 'finishedDate'}
+			onclick={() => handleSort('finishedDate')}
+			aria-label="Sort by Finishing Date"
 		>
-			<ChevronDown size={12} />
+			<Calendar class="sort-icon text-green-500" aria-hidden="true" />
+			<span class="sort-field-label">Finished Date</span>
+			{#if $sortOptionStore?.key === 'finishedDate'}
+				{#if $sortOptionStore.direction === 'asc'}
+					<ArrowUp size={14} class="sort-direction-icon" />
+				{:else}
+					<ArrowDown size={14} class="sort-direction-icon" />
+				{/if}
+			{/if}
 		</button>
-	</div>
+	{/if}
 </div>
 
 <style>
 	.ratings-sort {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
+		gap: 0.5rem;
 		flex-wrap: wrap;
 	}
 
-	.sort-group {
+	.sort-button {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.2rem;
+		gap: 0.35rem;
+		padding: 0.35rem 0.6rem;
+		border-radius: 0.375rem;
+		border: 1px solid transparent;
+		background-color: transparent;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		color: var(--color-text-secondary);
+	}
+
+	.sort-button:hover {
+		background-color: var(--color-surface);
+		color: var(--color-text-primary);
+	}
+
+	.sort-button.active {
+		background-color: var(--color-surface);
+		border-color: var(--color-border);
+		color: var(--color-text-primary);
+		font-weight: 500;
 	}
 
 	.sort-field-label {
 		font-size: 0.9rem;
-		color: var(--color-text-primary, #e5e7eb);
-		margin-right: 0.1rem;
 	}
 
-	.sort-arrow {
-		width: 18px;
-		height: 18px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 0.6rem;
-		border-radius: 4px;
-		border: 1px solid var(--color-border, #374151);
-		background-color: var(--color-surface, #111827);
-		color: var(--color-text-primary, #e5e7eb);
-		cursor: pointer;
-		padding: 0;
-		transition:
-			background-color 0.15s ease,
-			color 0.15s ease,
-			border-color 0.15s ease,
-			transform 0.05s ease;
+	/* Adjust icon sizes */
+	:global(.sort-icon) {
+		width: 16px;
+		height: 16px;
 	}
 
-	.sort-arrow.selected {
-		font-weight: 700;
-		background-color: #51596c;
-		color: var(--color-accent-foreground, #ffffff);
-		border-color: var(--color-accent, #2563eb);
-	}
-
-	.sort-arrow:hover {
-		background-color: #51596c;
-		color: var(--color-accent-foreground, #ffffff);
-		border-color: var(--color-accent, #2563eb);
-	}
-
-	.sort-arrow:active {
-		transform: scale(0.95);
+	:global(.sort-direction-icon) {
+		opacity: 0.7;
 	}
 </style>

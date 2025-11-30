@@ -4,6 +4,7 @@ import { gamesStore } from './games';
 import { filtersStore } from './filters';
 import { appStore } from './app';
 import { getTierDisplayName } from '$lib/utils/colorConstants';
+import { parseDate } from '$lib/utils/dateUtils';
 
 // Memoization cache for filtered results
 interface FilterCacheKey {
@@ -162,6 +163,7 @@ class FilteredGamesStore {
 			story: (a: Game, b: Game) => this.compareRatings(a.ratingStory, b.ratingStory),
 			gameplay: (a: Game, b: Game) => this.compareRatings(a.ratingGameplay, b.ratingGameplay),
 			score: (a: Game, b: Game) => this.compareScores(a.score, b.score),
+			finishedDate: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
 
 			// Default sorts by tab
 			default: (a: Game, b: Game) => a.title.localeCompare(b.title),
@@ -187,6 +189,20 @@ class FilteredGamesStore {
 		const direction = sort?.direction === 'desc' ? -1 : 1;
 
 		return sortedGames.sort((a, b) => {
+			// Special handling for finishedDate to ensure nulls are always last
+			if (sort?.key === 'finishedDate' || (activeTab === 'completed' && !sort?.key)) {
+				const aTime = parseDate(a.finishedDate);
+				const bTime = parseDate(b.finishedDate);
+
+				if (aTime === null && bTime === null) return 0;
+				if (aTime === null) return 1; // Always last
+				if (bTime === null) return -1; // Always last
+
+				// Both valid, apply direction
+				// Default compare (Ascending): aTime - bTime
+				return (aTime - bTime) * direction;
+			}
+
 			const result = sortFunction(a, b);
 			return result * direction;
 		});
@@ -205,10 +221,13 @@ class FilteredGamesStore {
 	}
 
 	private compareDates(a: string | null | undefined, b: string | null | undefined): number {
-		if (!a && !b) return 0;
-		if (!a) return 1;
-		if (!b) return -1;
-		return new Date(b).getTime() - new Date(a).getTime();
+		const aTime = parseDate(a);
+		const bTime = parseDate(b);
+
+		if (aTime === null && bTime === null) return 0;
+		if (aTime === null) return 1;
+		if (bTime === null) return -1;
+		return bTime - aTime;
 	}
 
 	private updateCache(key: string, result: Game[]): void {

@@ -6,6 +6,7 @@
 import type { Game } from '../types/game.js';
 import type { FilterState } from '../stores/filters.js';
 import { getTierDisplayName } from '../utils/colorConstants.js';
+import { parseDate } from '../utils/dateUtils.js';
 
 interface FilterMessage {
 	type: 'LOAD_GAMES' | 'APPLY_FILTERS' | 'FILTER';
@@ -138,6 +139,8 @@ function filterGamesWithoutStatus(games: Game[], filters: FilterState): Game[] {
 	});
 }
 
+
+
 function applySortOption(games: Game[], sortOption: FilterState['sortOption']): Game[] {
 	if (!sortOption) return games;
 
@@ -145,6 +148,21 @@ function applySortOption(games: Game[], sortOption: FilterState['sortOption']): 
 	const dir = direction === 'asc' ? 1 : -1;
 
 	return games.toSorted((a, b) => {
+		if (key === 'finishedDate') {
+			const aTime = parseDate(a.finishedDate);
+			const bTime = parseDate(b.finishedDate);
+
+			// Always put games without dates at the bottom
+			if (aTime === null && bTime === null) return 0;
+			if (aTime === null) return 1;
+			if (bTime === null) return -1;
+
+			// For dates, we want to respect the direction for the valid dates
+			// asc: oldest first (smaller timestamp first)
+			// desc: newest first (larger timestamp first)
+			return direction === 'asc' ? aTime - bTime : bTime - aTime;
+		}
+
 		const aVal =
 			key === 'presentation'
 				? (a.ratingPresentation ?? 0)
@@ -198,10 +216,13 @@ function filterAndSortForTab(
 		// Sort completed games by finished date (most recent first)
 		// Games without finished dates are placed at the end
 		return base.toSorted((a, b) => {
-			if (!a.finishedDate && !b.finishedDate) return 0;
-			if (!a.finishedDate) return 1;
-			if (!b.finishedDate) return -1;
-			return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+			const aTime = parseDate(a.finishedDate);
+			const bTime = parseDate(b.finishedDate);
+
+			if (aTime === null && bTime === null) return 0;
+			if (aTime === null) return 1;
+			if (bTime === null) return -1;
+			return bTime - aTime;
 		});
 	}
 

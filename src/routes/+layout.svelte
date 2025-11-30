@@ -443,7 +443,7 @@
 						class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-3 py-2 text-xs transition-colors"
 						onclick={resetFilters}
 					>
-						↻ Reset filters
+						↻ Reset
 					</button>
 					<button
 						type="button"

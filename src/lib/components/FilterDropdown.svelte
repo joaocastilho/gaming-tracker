@@ -7,7 +7,7 @@
 		getCoOpColor
 	} from '$lib/utils/filterOptions.js';
 	import { getTierDisplayName } from '$lib/utils/colorConstants.js';
-	import { Monitor, Tag, Trophy, ChevronDown, Users } from 'lucide-svelte';
+	import { Monitor, Tag, Trophy, ChevronDown, Users, RotateCcw } from 'lucide-svelte';
 
 	interface Props {
 		type: 'platforms' | 'genres' | 'tiers' | 'coOp';
@@ -128,7 +128,7 @@
 		{:else if type === 'coOp'}
 			<Users size={16} class="text-gray-600 dark:text-gray-400" />
 		{/if}
-		<span class="filter-label">Filter by {label}</span>
+		<span class="filter-label">{label}</span>
 		<ChevronDown
 			size={16}
 			class="dropdown-arrow text-gray-600 transition-transform duration-200 dark:text-gray-400"
@@ -161,13 +161,15 @@
 					<div class="filter-actions mt-3 flex justify-center">
 						<button
 							type="button"
-							class="cursor-pointer text-xs text-blue-400 transition-colors hover:text-blue-300"
+							class="flex cursor-pointer items-center gap-1 text-xs text-blue-400 transition-colors hover:text-blue-300"
 							onclick={(event) => {
 								event.stopPropagation();
 								selectAll();
 							}}
+							aria-label="Clear all filters"
+							title="Clear all"
 						>
-							Clear all
+							<RotateCcw size={18} />
 						</button>
 					</div>
 				{/if}

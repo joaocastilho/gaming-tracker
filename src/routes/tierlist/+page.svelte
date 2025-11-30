@@ -207,19 +207,6 @@
 	{:else if hasActiveFilters && displayedGames.length === 0}
 		<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
 			<h2 class="font-semibold">No games match your current filters</h2>
-			<p class="text-gray-600 dark:text-gray-400">
-				Try adjusting or clearing your filters to see your tiered games.
-			</p>
-			<button
-				class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
-				type="button"
-				onclick={() => {
-					filtersStore.resetAllFilters();
-					filtersStore.setSearchTerm('');
-				}}
-			>
-				↻ Reset filters
-			</button>
 		</div>
 	{:else}
 		<TierListView filteredGames={displayedGames} onOpenModal={openModalWithFilterContext} />

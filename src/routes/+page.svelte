@@ -6,6 +6,7 @@
 	import { modalStore } from '$lib/stores/modal.js';
 	import { filteredGames } from '$lib/stores/filteredGamesStore.js';
 	import GamesView from '$lib/views/GamesView.svelte';
+	import { parseDate } from '$lib/utils/dateUtils';
 
 	import type { Game } from '$lib/types/game.js';
 	import type { Component } from 'svelte';
@@ -167,7 +168,7 @@
 					filtersStore.setSearchTerm('');
 				}}
 			>
-				↻ Reset filters
+				↻ Reset
 			</button>
 		</div>
 	{:else if currentActiveTab !== 'tierlist' && isLoadingGames}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { filtersStore } from '$lib/stores/filters';
+	import { RotateCcw } from 'lucide-svelte';
 
 	let inputElement: HTMLInputElement | undefined;
 	let debounceTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -102,7 +103,7 @@
 		/>
 		{#if searchTerm}
 			<button type="button" class="clear-button" onclick={clearSearch} aria-label="Clear search">
-				<span aria-hidden="true">×</span>
+				<RotateCcw size={18} />
 			</button>
 		{/if}
 	</div>

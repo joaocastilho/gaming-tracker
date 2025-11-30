@@ -6,6 +6,7 @@
 	import GamesView from '$lib/views/GamesView.svelte';
 	import type { Game } from '$lib/types/game';
 	import { getTierDisplayName } from '$lib/utils/colorConstants';
+	import { parseDate } from '$lib/utils/dateUtils';
 	import type { SortOption } from '$lib/stores/filters';
 
 	let allGames = $state<Game[]>([]);
@@ -92,13 +93,18 @@
 	$effect(() => {
 		const unsubscribe = filtersStore.subscribe(($filters) => {
 			if ($filters) {
+				// Default to finished date descending if no sort option is set
+				if (!$filters.sortOption) {
+					filtersStore.setSort({ key: 'finishedDate', direction: 'desc' });
+				}
+
 				currentFilterState = {
 					searchTerm: $filters.searchTerm,
 					platforms: $filters.platforms,
 					genres: $filters.genres,
 					statuses: $filters.statuses,
 					tiers: $filters.tiers,
-					sortOption: $filters.sortOption
+					sortOption: $filters.sortOption || { key: 'finishedDate', direction: 'desc' }
 				};
 			}
 		});
@@ -149,10 +155,13 @@
 
 		// Sort by finished date (most recent first) - default for completed tab
 		filteredGames = filteredGames.toSorted((a, b) => {
-			if (!a.finishedDate && !b.finishedDate) return 0;
-			if (!a.finishedDate) return 1;
-			if (!b.finishedDate) return -1;
-			return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+			const aTime = parseDate(a.finishedDate);
+			const bTime = parseDate(b.finishedDate);
+
+			if (aTime === null && bTime === null) return 0;
+			if (aTime === null) return 1;
+			if (bTime === null) return -1;
+			return bTime - aTime;
 		});
 
 		// Override with custom sort if specified
@@ -161,6 +170,16 @@
 			const dir = direction === 'asc' ? 1 : -1;
 
 			filteredGames = filteredGames.toSorted((a, b) => {
+				if (key === 'finishedDate') {
+					const aTime = parseDate(a.finishedDate);
+					const bTime = parseDate(b.finishedDate);
+
+					if (aTime === null && bTime === null) return 0;
+					if (aTime === null) return 1;
+					if (bTime === null) return -1;
+					return direction === 'asc' ? aTime - bTime : bTime - aTime;
+				}
+
 				const aVal =
 					key === 'presentation'
 						? (a.ratingPresentation ?? 0)
@@ -215,7 +234,7 @@
 					filtersStore.setSearchTerm('');
 				}}
 			>
-				↻ Reset filters
+				↻ Reset
 			</button>
 		</div>
 	{:else}
