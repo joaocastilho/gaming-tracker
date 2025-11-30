@@ -22,39 +22,46 @@
 	let columns = $derived(containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320)));
 
 	// Chunk games into rows for the virtual list
-	let rows = $derived(() => {
-		const result = [];
-		for (let i = 0; i < filteredGames.length; i += columns) {
-			result.push({
-				id: `row-${i}`,
-				games: filteredGames.slice(i, i + columns),
-				startIndex: i
-			});
-		}
-		return result;
-	});
+	let rows = $derived(
+		(() => {
+			if (!filteredGames) return [];
+
+			const result = [];
+			for (let i = 0; i < filteredGames.length; i += columns) {
+				const chunk = filteredGames.slice(i, i + columns);
+				result.push({
+					id: `row-${i}`,
+					games: chunk,
+					startIndex: i
+				});
+			}
+			return result;
+		})()
+	);
 
 	// Calculate item height based on container width to match GameCard responsiveness
-	let itemHeight = $derived(() => {
-		// Base info height (title + metadata + padding)
-		// Increased to 300 to prevent overlapping on mobile/smaller screens where titles wrap
-		const infoHeight = 300;
+	let itemHeight = $derived(
+		(() => {
+			// Base info height (title + metadata + padding)
+			// Increased to 300 to prevent overlapping on mobile/smaller screens where titles wrap
+			const infoHeight = 300;
 
-		// Calculate exact column width based on container padding and gaps
-		// Container padding: 0.5rem (8px) on each side = 16px
-		// Gap: 0.75rem (12px)
-		const containerPadding = 16;
-		const gap = 12;
+			// Calculate exact column width based on container padding and gaps
+			// Container padding: 0.5rem (8px) on each side = 16px
+			// Gap: 0.75rem (12px)
+			const containerPadding = 16;
+			const gap = 12;
 
-		const totalGapWidth = (columns - 1) * gap;
-		const availableWidth = containerWidth - containerPadding - totalGapWidth;
-		const columnWidth = availableWidth / columns;
+			const totalGapWidth = (columns - 1) * gap;
+			const availableWidth = containerWidth - containerPadding - totalGapWidth;
+			const columnWidth = availableWidth / columns;
 
-		// Aspect ratio for cover is 1.5 (2:3)
-		const coverHeight = columnWidth * 1.5;
+			// Aspect ratio for cover is 1.5 (2:3)
+			const coverHeight = columnWidth * 1.5;
 
-		return coverHeight + infoHeight;
-	});
+			return coverHeight + infoHeight;
+		})()
+	);
 
 	onMount(() => {
 		mounted = true;
@@ -68,11 +75,11 @@
 <div class="game-gallery-container" bind:clientWidth={containerWidth}>
 	{#if mounted && filteredGames.length > 0}
 		<VirtualList
-			items={rows()}
-			itemHeight={itemHeight()}
+			items={rows}
+			{itemHeight}
 			useWindowScroll={true}
 			overscan={2}
-			keyExtractor={(row) => row.id}
+			keyExtractor={(row, i) => row?.id ?? `row-${i}`}
 			className="game-gallery-virtual"
 		>
 			{#snippet renderItem(
@@ -102,7 +109,7 @@
 	{:else if filteredGames.length > 0}
 		<!-- SSR / Initial Render Fallback: Render first few rows statically for fast LCP -->
 		<div class="game-gallery-virtual">
-			{#each rows().slice(0, 4) as row (row.id)}
+			{#each rows.slice(0, 4) as row (row.id)}
 				<div class="game-row">
 					{#each row.games as game, i (game.id)}
 						<div class="game-card-wrapper">
