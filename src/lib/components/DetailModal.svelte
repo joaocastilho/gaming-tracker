@@ -600,6 +600,22 @@
 								{$modalStore.activeGame.year}
 							</div>
 						</div>
+
+						<!-- Spacer to push Hours/Time to the bottom row next to Date -->
+						<div></div>
+
+						<div>
+							<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
+								Finished Date
+							</div>
+							<div
+								class="text-sm font-semibold md:text-base"
+								style="color: var(--color-text-primary);"
+							>
+								{formatDate($modalStore.activeGame.finishedDate)}
+							</div>
+						</div>
+
 						{#if $modalStore.activeGame.status === 'Completed'}
 							<div>
 								<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
@@ -625,17 +641,6 @@
 								</div>
 							</div>
 						{/if}
-						<div>
-							<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
-								Finished Date
-							</div>
-							<div
-								class="text-sm font-semibold md:text-base"
-								style="color: var(--color-text-primary);"
-							>
-								{formatDate($modalStore.activeGame.finishedDate)}
-							</div>
-						</div>
 					</div>
 
 					{#if $modalStore.activeGame.status === 'Completed' && $modalStore.activeGame.ratingPresentation !== null && $modalStore.activeGame.ratingStory !== null && $modalStore.activeGame.ratingGameplay !== null}
@@ -646,7 +651,6 @@
 							>
 								Ratings
 							</h3>
-
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
 									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
