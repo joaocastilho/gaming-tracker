@@ -2,6 +2,7 @@ import { writable, get, derived, type Readable } from 'svelte/store';
 import type { Game } from '$lib/types/game';
 import { transformGameData } from '$lib/utils/dataTransformer';
 import { completedGamesCache } from './completedGamesCache';
+import { createGameSlug } from './modal';
 
 function createGamesStore() {
 	const { subscribe, set, update } = writable<Game[]>([]);
@@ -69,13 +70,7 @@ function createGamesStore() {
 
 		getGameBySlug(slug: string): Game | undefined {
 			const games = get({ subscribe });
-			return games.find(
-				(game) =>
-					game.title
-						.toLowerCase()
-						.replace(/[^a-z0-9\s-]/g, '')
-						.replace(/\s+/g, '-') === slug
-			);
+			return games.find((game) => createGameSlug(game.title) === slug);
 		},
 
 		addGame(newGame: Game): void {

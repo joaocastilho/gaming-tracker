@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import { modalStore } from '../stores/modal.js';
+	import { modalStore, createGameSlug } from '../stores/modal.js';
 	import { appStore } from '../stores/app.js';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';
@@ -16,7 +16,8 @@
 		X,
 		ChevronLeft,
 		ChevronRight,
-		Share2
+		Share2,
+		Users
 	} from 'lucide-svelte';
 
 	let currentActiveTab = $derived(appStore.activeTab);
@@ -371,13 +372,7 @@
 
 		try {
 			const url = new URL(window.location.href);
-			const slug = $modalStore.activeGame.title
-				.toLowerCase()
-				.replace(/[^a-z0-9\s-]/g, '')
-				.replace(/\s+/g, '-')
-				.replace(/-+/g, '-')
-				.trim()
-				.replace(/^-|-$/g, '');
+			const slug = createGameSlug($modalStore.activeGame.title);
 			url.searchParams.set('game', slug);
 
 			await navigator.clipboard.writeText(url.toString());
@@ -572,6 +567,14 @@
 							>
 								{$modalStore.activeGame.genre}
 							</span>
+							{#if $modalStore.activeGame.coOp === 'Yes'}
+								<div
+									class="flex items-center justify-center rounded-md bg-blue-500/10 px-2 text-blue-500 dark:text-blue-400"
+									title="Co-op Available"
+								>
+									<Users size={18} />
+								</div>
+							{/if}
 						</div>
 
 						{#if $modalStore.activeGame.tier}
@@ -631,17 +634,6 @@
 								style="color: var(--color-text-primary);"
 							>
 								{formatDate($modalStore.activeGame.finishedDate)}
-							</div>
-						</div>
-						<div>
-							<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
-								Co-op
-							</div>
-							<div
-								class="text-sm font-semibold md:text-base"
-								style="color: var(--color-text-primary);"
-							>
-								{$modalStore.activeGame.coOp === 'Yes' ? 'Yes' : 'No'}
 							</div>
 						</div>
 					</div>

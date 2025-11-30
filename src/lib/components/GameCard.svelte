@@ -211,13 +211,6 @@
 			/>
 		</div>
 
-		{#if game.coOp === 'Yes'}
-			<div class="co-op-badge">
-				<Users class="co-op-icon" aria-hidden="true" size={14} />
-				<span class="co-op-text">Co-op</span>
-			</div>
-		{/if}
-
 		{#if showTierBadge && game.status === 'Completed' && game.tier}
 			<div class="tier-badge {getTierClass(game.tier)}">
 				<span class="tier-text">{getTierDisplayName(game.tier)}</span>
@@ -250,9 +243,14 @@
 					<span class="game-year">{game.year}</span>
 				</div>
 				<div class="second-line">
-					<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
-						{game.genre}
-					</span>
+					<div class="flex items-center gap-2">
+						<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
+							{game.genre}
+						</span>
+						{#if game.coOp === 'Yes'}
+							<Users size={16} class="text-blue-400" aria-label="Co-op available" />
+						{/if}
+					</div>
 					<div class="total-score">
 						<Award class="rating-icon text-yellow-400" aria-label="Total score" />
 						<span class="rating-score">{totalScore ?? '-'}</span>
@@ -396,27 +394,6 @@
 		100% {
 			background-position: 200% 0;
 		}
-	}
-
-	.co-op-badge {
-		position: absolute;
-		top: 8px;
-		left: 8px;
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		padding: 4px 8px;
-		border-radius: 4px;
-		background-color: rgba(59, 130, 246, 0.9);
-		color: white;
-		font-size: 0.7rem;
-		font-weight: 500;
-		backdrop-filter: blur(4px);
-		z-index: 10;
-	}
-
-	.co-op-icon {
-		font-size: 0.8rem;
 	}
 
 	.tier-badge {
