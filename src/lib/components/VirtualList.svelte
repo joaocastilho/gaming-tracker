@@ -105,7 +105,6 @@
 	onscroll={!useWindowScroll ? handleScroll : undefined}
 >
 	{#if !useWindowScroll}
-		<!-- Spacer for virtual positioning in internal scroll mode -->
 		<div class="virtual-spacer" style="height: {totalHeight}px; position: relative;"></div>
 	{/if}
 
@@ -115,7 +114,7 @@
 		style="position: absolute; top: {visibleRange().start * itemHeight}px; left: 0; right: 0;"
 	>
 		{#each visibleItems() as { item, index } (keyExtractor(item, index))}
-			<div class="virtual-item" style="height: {itemHeight}px;">
+			<div class="virtual-item pb-5">
 				{@render renderItem(item, index < priorityCount)}
 			</div>
 		{/each}
@@ -124,7 +123,7 @@
 
 <style>
 	.virtual-list-container {
-		contain: layout paint; /* strict breaks window scroll sometimes */
+		contain: layout paint;
 		will-change: scroll-position;
 	}
 
