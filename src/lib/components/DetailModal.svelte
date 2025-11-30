@@ -368,6 +368,20 @@
 	onDestroy(() => {
 		if (browser) {
 			document.removeEventListener('keydown', handleKeydown, true);
+			document.body.style.overflow = '';
+			document.documentElement.style.overflow = '';
+		}
+	});
+
+	$effect(() => {
+		if (browser) {
+			if ($modalStore.isOpen) {
+				document.body.style.overflow = 'hidden';
+				document.documentElement.style.overflow = 'hidden';
+			} else {
+				document.body.style.overflow = '';
+				document.documentElement.style.overflow = '';
+			}
 		}
 	});
 </script>
@@ -837,15 +851,17 @@
 
 	@media (min-width: 768px) {
 		.modal-image-wrapper {
-			width: 350px;
-			height: 600px;
+			width: 400px;
+			height: auto;
+			aspect-ratio: 2/3;
+			max-height: 80vh;
 		}
 	}
 
 	@media (min-width: 1024px) {
 		.modal-image-wrapper {
-			width: 400px;
-			height: 600px;
+			width: 100%;
+			aspect-ratio: 2/3;
 		}
 	}
 

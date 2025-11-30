@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { modalStore } from '../stores/modal.js';
+
 	let isVisible = $state(false);
 	let buttonElement = $state<HTMLButtonElement | undefined>();
 
@@ -29,7 +31,7 @@
 	}
 </script>
 
-{#if isVisible}
+{#if isVisible && !$modalStore.isOpen}
 	<button
 		bind:this={buttonElement}
 		type="button"

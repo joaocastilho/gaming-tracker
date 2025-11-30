@@ -340,9 +340,5 @@
 		.theme-toggle-wrapper {
 			transform: none;
 		}
-
-		.theme-toggle {
-			margin-top: 30px;
-		}
 	}
 </style>
