@@ -95,7 +95,7 @@
 	let filterOptions = $derived(() => {
 		const games = $gamesStore;
 		if (!games || games.length === 0) {
-			return { platforms: [], genres: [], tiers: [] };
+			return { platforms: [], genres: [], tiers: [], coOp: [] };
 		}
 		return extractFilterOptions(games);
 	});
@@ -188,6 +188,7 @@
 	let selectedPlatforms: string[] = $state([]);
 	let selectedGenres: string[] = $state([]);
 	let selectedTiers: string[] = $state([]);
+	let selectedCoOp: string[] = $state([]);
 
 	let isSearchOpen = $state(false);
 	let isFiltersOpen = $state(false);
@@ -203,11 +204,15 @@
 		const unsubTiers = filtersStore.selectedTiers.subscribe((tiers) => {
 			selectedTiers = tiers;
 		});
+		const unsubCoOp = filtersStore.selectedCoOp.subscribe((coOp) => {
+			selectedCoOp = coOp;
+		});
 
 		return () => {
 			unsubPlatforms();
 			unsubGenres();
 			unsubTiers();
+			unsubCoOp();
 		};
 	});
 
@@ -273,6 +278,12 @@
 								label="Tiers"
 								options={filterOptions().tiers}
 								selectedOptions={selectedTiers}
+							/>
+							<FilterDropdownComponent
+								type="coOp"
+								label="Co-op"
+								options={filterOptions().coOp}
+								selectedOptions={selectedCoOp}
 							/>
 						{:else}
 							<!-- Loading placeholder for FilterDropdown -->
@@ -412,6 +423,15 @@
 							label="Tiers"
 							options={filterOptions().tiers}
 							selectedOptions={selectedTiers}
+						/>
+					{/if}
+					<!-- Co-op -->
+					{#if FilterDropdownComponent}
+						<FilterDropdownComponent
+							type="coOp"
+							label="Co-op"
+							options={filterOptions().coOp}
+							selectedOptions={selectedCoOp}
 						/>
 					{/if}
 					<!-- Ratings Sort -->

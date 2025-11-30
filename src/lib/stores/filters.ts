@@ -40,6 +40,7 @@ export interface FilterState {
 	genres: string[];
 	statuses: string[];
 	tiers: string[];
+	coOp: string[];
 	sortOption: SortOption | null;
 }
 
@@ -109,6 +110,7 @@ function createFiltersStore() {
 				genres: [],
 				statuses: [],
 				tiers: [],
+				coOp: [],
 				sortOption: null
 			};
 
@@ -159,6 +161,7 @@ function createFiltersStore() {
 			genres: currentFilters.genres,
 			statuses: currentFilters.statuses,
 			tiers: currentFilters.tiers,
+			coOp: currentFilters.coOp,
 			sortOption: currentFilters.sortOption
 		})}`;
 
@@ -192,6 +195,8 @@ function createFiltersStore() {
 					activeFilters.push(`statuses:[${currentFilters.statuses.join(',')}]`);
 				if (currentFilters.tiers.length > 0)
 					activeFilters.push(`tiers:[${currentFilters.tiers.join(',')}]`);
+				if (currentFilters.coOp.length > 0)
+					activeFilters.push(`coOp:[${currentFilters.coOp.join(',')}]`);
 				if (currentFilters.sortOption)
 					activeFilters.push(
 						`sort:${currentFilters.sortOption.key}_${currentFilters.sortOption.direction}`
@@ -204,6 +209,7 @@ function createFiltersStore() {
 					currentFilters.platforms.length === 0 &&
 					currentFilters.genres.length === 0 &&
 					currentFilters.tiers.length === 0 &&
+					currentFilters.coOp.length === 0 &&
 					currentFilters.statuses.length === 1 &&
 					currentFilters.statuses.includes('Completed') &&
 					!currentFilters.sortOption;
@@ -283,8 +289,9 @@ function createFiltersStore() {
 			const hasGenres = state.genres.length > 0;
 			const hasStatuses = state.statuses.length > 0;
 			const hasTiers = state.tiers.length > 0;
+			const hasCoOp = state.coOp.length > 0;
 
-			return hasSearch || hasPlatforms || hasGenres || hasStatuses || hasTiers;
+			return hasSearch || hasPlatforms || hasGenres || hasStatuses || hasTiers || hasCoOp;
 		},
 
 		resetFilters: () => {
@@ -294,6 +301,7 @@ function createFiltersStore() {
 				genres: [],
 				statuses: [],
 				tiers: [],
+				coOp: [],
 				sortOption: null
 			};
 			filters.set(resetFilters);
@@ -339,6 +347,16 @@ function createFiltersStore() {
 			});
 		},
 
+		toggleCoOp(coOpValue: string) {
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				const coOp = $filters.coOp.includes(coOpValue)
+					? $filters.coOp.filter((c) => c !== coOpValue)
+					: [...$filters.coOp, coOpValue];
+				return { ...$filters, coOp };
+			});
+		},
+
 		removePlatform(platform: string) {
 			filters.update(($filters) => {
 				if (!$filters) return null;
@@ -357,6 +375,13 @@ function createFiltersStore() {
 			filters.update(($filters) => {
 				if (!$filters) return null;
 				return { ...$filters, tiers: $filters.tiers.filter((t) => t !== tier) };
+			});
+		},
+
+		removeCoOp(coOpValue: string) {
+			filters.update(($filters) => {
+				if (!$filters) return null;
+				return { ...$filters, coOp: $filters.coOp.filter((c) => c !== coOpValue) };
 			});
 		},
 
@@ -381,6 +406,7 @@ function createFiltersStore() {
 		selectedPlatforms: derived(filters, ($filters) => $filters?.platforms ?? []),
 		selectedGenres: derived(filters, ($filters) => $filters?.genres ?? []),
 		selectedTiers: derived(filters, ($filters) => $filters?.tiers ?? []),
+		selectedCoOp: derived(filters, ($filters) => $filters?.coOp ?? []),
 		searchQuery: derived(filters, ($filters) => $filters?.searchTerm ?? ''),
 
 		createFilteredGamesStore: () => {
@@ -407,6 +433,7 @@ function createFiltersStore() {
 					genres: params.genres ?? [],
 					statuses: params.statuses ?? [],
 					tiers: params.tiers ?? [],
+					coOp: params.coOp ?? [],
 					sortOption: params.sortOption ?? null
 				};
 			});

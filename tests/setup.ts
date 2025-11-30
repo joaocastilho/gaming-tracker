@@ -31,3 +31,49 @@ mock.module('$app/stores', () => ({
 	navigating: { subscribe: () => {} },
 	updated: { subscribe: () => {} }
 }));
+
+// Mock window and document globally for all tests
+if (typeof global.window === 'undefined') {
+	global.window = {
+		location: {
+			origin: 'http://localhost',
+			href: 'http://localhost/',
+			pathname: '/',
+			search: ''
+		},
+		scrollTo: () => {},
+		localStorage: {
+			getItem: () => null,
+			setItem: () => {}
+		}
+	} as unknown as Window & typeof globalThis;
+}
+
+if (typeof global.localStorage === 'undefined') {
+	global.localStorage = {
+		getItem: () => null,
+		setItem: () => {},
+		removeItem: () => {},
+		clear: () => {},
+		key: () => null,
+		length: 0
+	} as unknown as Storage;
+}
+
+if (typeof global.document === 'undefined') {
+	global.document = {
+		documentElement: {
+			classList: {
+				add: () => {},
+				remove: () => {}
+			}
+		},
+		body: {
+			classList: {
+				add: () => {},
+				remove: () => {}
+			},
+			style: {}
+		}
+	} as unknown as Document;
+}

@@ -11,6 +11,7 @@ interface FilterCacheKey {
 	platforms: string[];
 	genres: string[];
 	tiers: string[];
+	coOp: string[];
 	activeTab: string;
 	sortKey: string;
 	sortDirection: string;
@@ -58,6 +59,7 @@ class FilteredGamesStore {
 			platforms?: string[];
 			genres?: string[];
 			tiers?: string[];
+			coOp?: string[];
 			sortOption?: { key: string; direction: 'asc' | 'desc' } | null;
 		} | null,
 		activeTab: string
@@ -67,6 +69,7 @@ class FilteredGamesStore {
 			platforms: filters?.platforms || [],
 			genres: filters?.genres || [],
 			tiers: filters?.tiers || [],
+			coOp: filters?.coOp || [],
 			activeTab,
 			sortKey: filters?.sortOption?.key || '',
 			sortDirection: filters?.sortOption?.direction || ''
@@ -82,6 +85,7 @@ class FilteredGamesStore {
 			platforms?: string[];
 			genres?: string[];
 			tiers?: string[];
+			coOp?: string[];
 		} | null,
 		activeTab: string
 	): Game[] {
@@ -119,6 +123,11 @@ class FilteredGamesStore {
 				const gameTierFullName = getTierDisplayName(game.tier);
 				return filters.tiers.includes(gameTierFullName);
 			});
+		}
+
+		// Apply co-op filter
+		if (filters?.coOp?.length > 0) {
+			filteredGames = filteredGames.filter((game) => filters.coOp.includes(game.coOp));
 		}
 
 		// Apply tab-specific filtering

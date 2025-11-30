@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { filtersStore } from '$lib/stores/filters.js';
-	import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions.js';
+	import {
+		getPlatformColor,
+		getGenreColor,
+		getTierColor,
+		getCoOpColor
+	} from '$lib/utils/filterOptions.js';
 	import { getTierDisplayName } from '$lib/utils/colorConstants.js';
-	import { Monitor, Tag, Trophy, ChevronDown } from 'lucide-svelte';
+	import { Monitor, Tag, Trophy, ChevronDown, Users } from 'lucide-svelte';
 
 	interface Props {
-		type: 'platforms' | 'genres' | 'tiers';
+		type: 'platforms' | 'genres' | 'tiers' | 'coOp';
 		label: string;
 		options: string[];
 		selectedOptions: string[];
@@ -44,6 +49,8 @@
 			filtersStore.toggleGenre(option);
 		} else if (type === 'tiers') {
 			filtersStore.toggleTier(option);
+		} else if (type === 'coOp') {
+			filtersStore.toggleCoOp(option);
 		}
 	}
 
@@ -55,6 +62,8 @@
 				filtersStore.removeGenre(option);
 			} else if (type === 'tiers') {
 				filtersStore.removeTier(option);
+			} else if (type === 'coOp') {
+				filtersStore.removeCoOp(option);
 			}
 		});
 	}
@@ -66,6 +75,8 @@
 			return getGenreColor(option);
 		} else if (type === 'tiers') {
 			return getTierColor(option);
+		} else if (type === 'coOp') {
+			return getCoOpColor(option);
 		}
 		return 'bg-gray-600 text-white';
 	}
@@ -114,6 +125,8 @@
 			<Tag size={16} class="text-gray-600 dark:text-gray-400" />
 		{:else if type === 'tiers'}
 			<Trophy size={16} class="text-gray-600 dark:text-gray-400" />
+		{:else if type === 'coOp'}
+			<Users size={16} class="text-gray-600 dark:text-gray-400" />
 		{/if}
 		<span class="filter-label">Filter by {label}</span>
 		<ChevronDown

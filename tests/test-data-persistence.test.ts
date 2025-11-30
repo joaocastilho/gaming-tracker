@@ -30,25 +30,6 @@ class MockLocalStorage {
 	}
 }
 
-// Mock URL and location for testing
-class MockURL {
-	constructor(private url: string) {}
-
-	get searchParams(): URLSearchParams {
-		const search = this.url.split('?')[1] || '';
-		return new URLSearchParams(search);
-	}
-
-	set searchParams(params: URLSearchParams) {
-		const base = this.url.split('?')[0];
-		this.url = `${base}?${params.toString()}`;
-	}
-
-	toString(): string {
-		return this.url;
-	}
-}
-
 class MockLocation {
 	href: string = 'http://localhost:5173';
 	search: string = '';
@@ -111,8 +92,6 @@ describe('Data Persistence', () => {
 		(global as any).localStorage = localStorage;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).location = location;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(global as any).URL = MockURL;
 	});
 
 	test('Theme Persistence', () => {

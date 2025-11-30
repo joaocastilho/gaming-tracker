@@ -52,6 +52,10 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 			currentFilters.tiers.forEach((t) => searchParams.append('tiers', t));
 		}
 
+		if (currentFilters.coOp.length > 0) {
+			currentFilters.coOp.forEach((c) => searchParams.append('coOp', c));
+		}
+
 		searchParams.forEach((value, key) => {
 			url.searchParams.append(key, value);
 		});

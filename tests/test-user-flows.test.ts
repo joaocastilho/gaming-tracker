@@ -122,6 +122,16 @@ describe('User Flows', () => {
 			state = get(filtersStore);
 			expect(state?.platforms.includes('PC')).toBe(false);
 		});
+
+		test('Filter by Co-op', () => {
+			filtersStore.toggleCoOp('Yes');
+			let state = get(filtersStore);
+			expect(state?.coOp.includes('Yes')).toBe(true);
+
+			filtersStore.toggleCoOp('Yes');
+			state = get(filtersStore);
+			expect(state?.coOp.includes('Yes')).toBe(false);
+		});
 	});
 
 	describe('View and Navigation Flows', () => {

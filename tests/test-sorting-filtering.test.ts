@@ -18,7 +18,8 @@ const mockGames = [
 		ratingStory: 9,
 		ratingGameplay: 10,
 		score: 9.7,
-		finishedDate: '2023-01-01T00:00:00.000Z'
+		finishedDate: '2023-01-01T00:00:00.000Z',
+		coOp: 'No'
 	},
 	{
 		id: '2',
@@ -31,7 +32,8 @@ const mockGames = [
 		ratingStory: 10,
 		ratingGameplay: 9,
 		score: 9.3,
-		finishedDate: '2023-02-01T00:00:00.000Z'
+		finishedDate: '2023-02-01T00:00:00.000Z',
+		coOp: 'No'
 	},
 	{
 		id: '3',
@@ -44,7 +46,8 @@ const mockGames = [
 		ratingStory: null,
 		ratingGameplay: null,
 		score: null,
-		finishedDate: null
+		finishedDate: null,
+		coOp: 'Yes'
 	},
 	{
 		id: '4',
@@ -57,7 +60,8 @@ const mockGames = [
 		ratingStory: 8,
 		ratingGameplay: 9,
 		score: 8.3,
-		finishedDate: '2022-12-01T00:00:00.000Z'
+		finishedDate: '2022-12-01T00:00:00.000Z',
+		coOp: 'No'
 	}
 ];
 
@@ -132,5 +136,14 @@ describe('Sorting and Filtering Logic', () => {
 		const results = get(filteredGames);
 		expect(results.length).toBe(2);
 		expect(results.every((g) => g.tier === 'S')).toBe(true);
+		expect(results.every((g) => g.tier === 'S')).toBe(true);
+	});
+
+	it('filters by co-op', () => {
+		filtersStore.toggleCoOp('Yes');
+		const results = get(filteredGames);
+		expect(results.length).toBe(1);
+		expect(results[0].title).toBe('Elden Ring');
+		expect(results[0].coOp).toBe('Yes');
 	});
 });

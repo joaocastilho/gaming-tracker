@@ -61,6 +61,12 @@ export const TIER_COLORS: Record<string, string> = {
 	'E - Bad': 'bg-[#6b7280] text-white'
 };
 
+// Co-op color mappings
+export const COOP_COLORS: Record<string, string> = {
+	Yes: 'bg-[#15803d] text-white', // Green
+	No: 'bg-[#b91c1c] text-white' // Red
+};
+
 // Platform display names
 export const PLATFORM_LABELS: Record<string, string> = {
 	PC: 'PC',

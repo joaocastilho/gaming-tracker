@@ -11,6 +11,12 @@ describe('Browser Navigation', () => {
 		expect(expectedURL).toContain('genres=Adventure');
 	});
 
+	test('Co-op Filter Persistence', () => {
+		const coopURL = 'http://localhost:5173/?coOp=Yes&coOp=No';
+		expect(coopURL).toContain('coOp=Yes');
+		expect(coopURL).toContain('coOp=No');
+	});
+
 	test('Sort State Persistence', () => {
 		const sortURL = 'http://localhost:5173/?sortBy=score&sortDir=desc';
 

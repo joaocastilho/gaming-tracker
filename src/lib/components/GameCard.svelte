@@ -61,16 +61,19 @@
 	);
 
 	function fitTitle(node: HTMLElement, params: { title: string; subtitle?: string }) {
+		let currentParams = params;
+
 		const resizeObserver = new ResizeObserver(() => {
-			adjustTitleSize(node);
+			adjustTitleSize(node, !!currentParams.subtitle);
 		});
 		resizeObserver.observe(node);
 
-		adjustTitleSize(node);
+		adjustTitleSize(node, !!currentParams.subtitle);
 
 		return {
 			update(newParams: { title: string; subtitle?: string }) {
-				adjustTitleSize(node);
+				currentParams = newParams;
+				adjustTitleSize(node, !!newParams.subtitle);
 			},
 			destroy() {
 				resizeObserver.disconnect();

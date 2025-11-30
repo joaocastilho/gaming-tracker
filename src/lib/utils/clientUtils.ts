@@ -39,6 +39,12 @@ export function getUrlParams(searchParams: URLSearchParams): Partial<FilterState
 	const statuses = searchParams.getAll('statuses');
 	if (statuses.length > 0) params.statuses = statuses;
 
+	const tiers = searchParams.getAll('tiers');
+	if (tiers.length > 0) params.tiers = tiers;
+
+	const coOp = searchParams.getAll('coOp');
+	if (coOp.length > 0) params.coOp = coOp;
+
 	const sortBy = searchParams.get('sortBy');
 	const sortDir = searchParams.get('sortDir');
 	if (sortBy && (sortDir === 'asc' || sortDir === 'desc')) {
@@ -71,6 +77,14 @@ export async function setUrlParams(
 
 	if (filters.genres.length !== allGenres.length) {
 		filters.genres.forEach((g) => searchParams.append('genres', g));
+	}
+
+	if (filters.tiers.length > 0) {
+		filters.tiers.forEach((t) => searchParams.append('tiers', t));
+	}
+
+	if (filters.coOp.length > 0) {
+		filters.coOp.forEach((c) => searchParams.append('coOp', c));
 	}
 
 	if (filters.sortOption) {

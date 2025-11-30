@@ -83,6 +83,12 @@ function filterGames(games: Game[], filters: FilterState): Game[] {
 			}
 		}
 
+		if (filters.coOp.length > 0) {
+			if (!filters.coOp.includes(game.coOp)) {
+				return false;
+			}
+		}
+
 		return true;
 	});
 }
@@ -118,6 +124,12 @@ function filterGamesWithoutStatus(games: Game[], filters: FilterState): Game[] {
 			}
 			const gameTierFullName = getTierDisplayName(game.tier);
 			if (!filters.tiers.includes(gameTierFullName)) {
+				return false;
+			}
+		}
+
+		if (filters.coOp.length > 0) {
+			if (!filters.coOp.includes(game.coOp)) {
 				return false;
 			}
 		}
