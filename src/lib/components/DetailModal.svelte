@@ -437,10 +437,10 @@
 		{#if currentGameIndex() > 0}
 			<button
 				onclick={navigateToPrevious}
-				class="absolute top-1/2 left-2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/40 md:h-16 md:w-16"
+				class="absolute top-1/2 left-2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/40 md:h-16 md:w-16"
 				aria-label="Previous game"
 			>
-				<ChevronLeft size={32} class="h-6 w-6 md:h-8 md:w-8" />
+				<ChevronLeft size={32} class="h-4 w-4 md:h-8 md:w-8" />
 			</button>
 		{/if}
 
@@ -450,10 +450,10 @@
 		})()}
 			<button
 				onclick={navigateToNext}
-				class="absolute top-1/2 right-2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/40 md:h-16 md:w-16"
+				class="absolute top-1/2 right-2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/40 md:h-16 md:w-16"
 				aria-label="Next game"
 			>
-				<ChevronRight size={32} class="h-6 w-6 md:h-8 md:w-8" />
+				<ChevronRight size={32} class="h-4 w-4 md:h-8 md:w-8" />
 			</button>
 		{/if}
 
