@@ -69,10 +69,45 @@
 	);
 	const detailImageSizes = $derived(generateSizes('modal'));
 
+	let titleSizeClass = $derived(() => {
+		const len = $modalStore.activeGame?.mainTitle?.length ?? 0;
+		if (len <= 20) return 'text-lg md:text-3xl';
+		if (len <= 30) return 'text-base md:text-2xl';
+		if (len <= 38) return 'text-sm md:text-xl';
+		return 'text-xs md:text-lg';
+	});
+
 	let shareFeedback = $state('');
 	let focusableElements = $state<HTMLElement[]>([]);
 	let firstFocusableElement = $state<HTMLElement>();
 	let lastFocusableElement = $state<HTMLElement>();
+
+	// Swipe gesture state
+	let touchStartX = 0;
+	let touchEndX = 0;
+	const SWIPE_THRESHOLD = 50;
+
+	function handleTouchStart(e: TouchEvent) {
+		touchStartX = e.changedTouches[0].screenX;
+	}
+
+	function handleTouchEnd(e: TouchEvent) {
+		touchEndX = e.changedTouches[0].screenX;
+		handleSwipe();
+	}
+
+	function handleSwipe() {
+		const diff = touchStartX - touchEndX;
+		if (Math.abs(diff) > SWIPE_THRESHOLD) {
+			if (diff > 0) {
+				// Swiped left -> Next
+				navigateToNext();
+			} else {
+				// Swiped right -> Previous
+				navigateToPrevious();
+			}
+		}
+	}
 
 	function getFocusableElements(): HTMLElement[] {
 		if (!modalElement) return [];
@@ -389,7 +424,7 @@
 {#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}
 	<div
 		bind:this={modalElement}
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
+		class="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-5 md:items-center md:pt-4"
 		style="background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);"
 		transition:fade={{ duration: 200 }}
 		onclick={handleOverlayClick}
@@ -402,10 +437,10 @@
 		{#if currentGameIndex() > 0}
 			<button
 				onclick={navigateToPrevious}
-				class="absolute top-1/2 left-2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/70"
+				class="absolute top-1/2 left-2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/40 md:h-16 md:w-16"
 				aria-label="Previous game"
 			>
-				<ChevronLeft size={32} />
+				<ChevronLeft size={32} class="h-6 w-6 md:h-8 md:w-8" />
 			</button>
 		{/if}
 
@@ -415,26 +450,27 @@
 		})()}
 			<button
 				onclick={navigateToNext}
-				class="absolute top-1/2 right-2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/70"
+				class="absolute top-1/2 right-2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/40 md:h-16 md:w-16"
 				aria-label="Next game"
 			>
-				<ChevronRight size={32} />
+				<ChevronRight size={32} class="h-6 w-6 md:h-8 md:w-8" />
 			</button>
 		{/if}
 
-		<button
-			onclick={() => modalStore.closeModal()}
-			class="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-			aria-label="Close modal"
-		>
-			<X size={20} class="text-gray-600 dark:text-gray-300" />
-		</button>
-
 		<div
-			class="relative flex h-auto max-h-[85dvh] w-[95vw] max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
+			class="relative flex h-auto max-h-[95dvh] w-[95vw] max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
 			style="background-color: var(--color-surface);"
 			role="document"
+			ontouchstart={handleTouchStart}
+			ontouchend={handleTouchEnd}
 		>
+			<button
+				onclick={() => modalStore.closeModal()}
+				class="absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/70 md:top-4 md:right-4 md:bg-gray-200 md:text-gray-600 md:hover:bg-gray-300 md:dark:bg-gray-700 md:dark:text-gray-300 md:dark:hover:bg-gray-600"
+				aria-label="Close modal"
+			>
+				<X size={20} />
+			</button>
 			<div class="flex h-full flex-col md:grid md:grid-cols-[350px_1fr] lg:grid-cols-[400px_1fr]">
 				<div
 					class="relative shrink-0 overflow-hidden rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
@@ -452,7 +488,7 @@
 								srcset={detailImageSrcset}
 								sizes={detailImageSizes}
 								alt="{$modalStore.activeGame.title} cover"
-								class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform hover:scale-105"
+								class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
 								loading="eager"
 								fetchpriority="high"
 								decoding="async"
@@ -461,30 +497,23 @@
 							/>
 						</button>
 					</div>
-
-					{#if $modalStore.activeGame.coOp === 'Yes'}
-						<div
-							class="absolute top-4 right-4 rounded-md bg-blue-600 px-3 py-1 text-xs font-semibold text-white md:text-sm"
-						>
-							👥 Co-op
-						</div>
-					{/if}
 				</div>
 
 				<div
 					class="flex-1 overflow-y-auto pt-2 pr-6 pb-6 pl-6 md:pt-4 lg:pt-6 lg:pr-8 lg:pb-8 lg:pl-8"
 				>
-					<div class="mb-4 flex items-start justify-between gap-4">
+					<div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
 						<h1
 							id="modal-title"
-							class="flex flex-1 flex-col justify-start overflow-visible text-base font-bold md:text-3xl"
-							style="color: var(--color-text-primary); min-height: 60px; white-space: normal;"
+							class="flex min-w-0 flex-1 flex-col justify-start"
+							style="color: var(--color-text-primary);"
 						>
-							{$modalStore.activeGame.mainTitle}
+							<span class="w-full truncate font-bold {titleSizeClass()}">
+								{$modalStore.activeGame.mainTitle}
+							</span>
 							{#if $modalStore.activeGame.subtitle}
-								<br />
 								<span
-									class="text-sm font-semibold md:text-lg"
+									class="w-full truncate text-xs font-semibold md:text-lg"
 									style="line-height: 1.2; color: var(--color-text-secondary);"
 									>{$modalStore.activeGame.subtitle}</span
 								>
@@ -493,7 +522,7 @@
 
 						<button
 							onclick={shareGame}
-							class="flex h-10 cursor-pointer items-center justify-center rounded-full bg-transparent px-3 transition-colors hover:bg-black/5 dark:bg-transparent dark:hover:bg-black/20"
+							class="mr-10 flex h-5 cursor-pointer items-center justify-center rounded-full bg-transparent px-2 transition-colors hover:bg-black/5 dark:bg-transparent dark:hover:bg-black/20"
 							aria-label="Share game"
 							style="min-width: 40px;"
 						>
@@ -514,7 +543,7 @@
 						</button>
 					</div>
 
-					<div class="mb-6 flex items-center justify-between">
+					<div class="mb-4 flex items-center justify-between md:mb-6">
 						<div class="flex flex-wrap gap-2">
 							<span
 								class="rounded-md px-3 py-1 text-xs font-medium text-white md:text-sm {getPlatformColor(
@@ -530,13 +559,6 @@
 							>
 								{$modalStore.activeGame.genre}
 							</span>
-							{#if $modalStore.activeGame.coOp === 'Yes'}
-								<span
-									class="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white md:text-sm"
-								>
-									Co-op
-								</span>
-							{/if}
 						</div>
 
 						{#if $modalStore.activeGame.tier}
@@ -550,7 +572,7 @@
 						{/if}
 					</div>
 
-					<div class="mb-2 grid grid-cols-2 gap-4 md:mb-8">
+					<div class="mb-2 grid grid-cols-2 gap-2 md:mb-8">
 						<div>
 							<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
 								Year Released
@@ -629,7 +651,7 @@
 									>
 								</div>
 								<span
-									class="min-w-0 text-xs font-semibold md:text-sm"
+									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
 									style="color: var(--color-text-primary);"
 								>
 									{$modalStore.activeGame.ratingPresentation}/10
@@ -653,7 +675,7 @@
 									>
 								</div>
 								<span
-									class="min-w-0 text-xs font-semibold md:text-sm"
+									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
 									style="color: var(--color-text-primary);"
 								>
 									{$modalStore.activeGame.ratingStory}/10
@@ -677,7 +699,7 @@
 									>
 								</div>
 								<span
-									class="min-w-0 text-xs font-semibold md:text-sm"
+									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
 									style="color: var(--color-text-primary);"
 								>
 									{$modalStore.activeGame.ratingGameplay}/10
@@ -694,7 +716,7 @@
 
 							{#if $modalStore.activeGame.score !== null}
 								<div
-									class="mt-2 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-6 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
+									class="mt-4 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-10 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
 								>
 									<div class="flex items-center justify-center gap-2">
 										<Award size={24} class="text-yellow-500" />
@@ -726,7 +748,7 @@
 									>
 								</div>
 								<span
-									class="min-w-0 text-xs font-semibold md:text-sm"
+									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
 									style="color: var(--color-text-primary);"
 								>
 									Not rated
@@ -748,7 +770,7 @@
 									>
 								</div>
 								<span
-									class="min-w-0 text-xs font-semibold md:text-sm"
+									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
 									style="color: var(--color-text-primary);"
 								>
 									Not rated
@@ -770,7 +792,7 @@
 									>
 								</div>
 								<span
-									class="min-w-0 text-xs font-semibold md:text-sm"
+									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
 									style="color: var(--color-text-primary);"
 								>
 									Not rated
@@ -784,12 +806,12 @@
 							</div>
 
 							<div
-								class="mt-4 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-6 dark:border-gray-700"
+								class="mt-4 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-10 dark:border-gray-700"
 							>
 								<div class="flex items-center justify-center gap-2">
 									<Award size={24} class="text-gray-400" />
 									<span
-										class="text-base font-bold md:text-lg"
+										class="text-sm font-bold md:text-lg"
 										style="color: var(--color-text-primary);"
 									>
 										Game to be completed
@@ -843,8 +865,8 @@
 	.modal-image-wrapper {
 		position: relative;
 		width: 100%;
-		height: 35vh;
-		min-height: 220px;
+		height: 40vh;
+		min-height: 150px;
 		max-height: 50vh;
 		overflow: hidden;
 	}
@@ -856,12 +878,18 @@
 			aspect-ratio: 2/3;
 			max-height: 80vh;
 		}
+		#modal-title {
+			min-height: 50px;
+		}
 	}
 
 	@media (min-width: 1024px) {
 		.modal-image-wrapper {
 			width: 100%;
 			aspect-ratio: 2/3;
+		}
+		#modal-title {
+			min-height: 65px;
 		}
 	}
 
