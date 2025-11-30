@@ -8,12 +8,11 @@
 		Award,
 		ArrowUp,
 		ArrowDown,
-		Calendar
+		Calendar,
+		AArrowDown
 	} from 'lucide-svelte';
 	import { derived } from 'svelte/store';
 	import { appStore } from '$lib/stores/app.js';
-
-	type SortDirection = 'asc' | 'desc';
 
 	const sortOptionStore = derived(
 		filtersStore,
@@ -30,12 +29,32 @@
 			filtersStore.setSort({ key, direction: newDirection });
 		} else {
 			// Default to descending for new sort key (higher score/rating is usually better/more relevant)
-			filtersStore.setSort({ key, direction: 'desc' });
+			// Exception: Alphabetical should default to ascending (A-Z)
+			const direction = key === 'alphabetical' ? 'asc' : 'desc';
+			filtersStore.setSort({ key, direction });
 		}
 	}
 </script>
 
 <div class="ratings-sort">
+	<button
+		type="button"
+		class="sort-button"
+		class:active={$sortOptionStore?.key === 'alphabetical'}
+		onclick={() => handleSort('alphabetical')}
+		aria-label="Sort Alphabetically"
+	>
+		<AArrowDown class="sort-icon text-gray-500" aria-hidden="true" />
+		<span class="sort-field-label">Alphabetical</span>
+		{#if $sortOptionStore?.key === 'alphabetical'}
+			{#if $sortOptionStore.direction === 'asc'}
+				<ArrowDown size={14} class="sort-direction-icon" />
+			{:else}
+				<ArrowUp size={14} class="sort-direction-icon" />
+			{/if}
+		{/if}
+	</button>
+
 	{#if $activeTabStore !== 'planned'}
 		<button
 			type="button"

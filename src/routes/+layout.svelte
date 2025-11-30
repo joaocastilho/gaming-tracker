@@ -220,6 +220,13 @@
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
 
+		const pathname = page.url.pathname;
+		if (pathname === '/' || pathname === '/planned') {
+			filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
+		} else if (pathname === '/completed') {
+			filtersStore.setSort({ key: 'finishedDate', direction: 'desc' });
+		}
+
 		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 		appStore.writeToURLWithFilters(filtersStore);
 	}
@@ -439,7 +446,6 @@
 				</div>
 				<div class="border-border flex items-center justify-between border-t p-4">
 					<button
-						type="button"
 						class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-3 py-2 text-xs transition-colors"
 						onclick={resetFilters}
 					>

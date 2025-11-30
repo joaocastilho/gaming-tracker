@@ -25,7 +25,13 @@ function memoize<TArgs extends unknown[], TReturn>(
 	};
 }
 
-export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishedDate';
+export type SortKey =
+	| 'presentation'
+	| 'story'
+	| 'gameplay'
+	| 'score'
+	| 'finishedDate'
+	| 'alphabetical';
 
 export type SortDirection = 'asc' | 'desc';
 

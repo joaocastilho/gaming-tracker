@@ -180,6 +180,10 @@
 					return direction === 'asc' ? aTime - bTime : bTime - aTime;
 				}
 
+				if (key === 'alphabetical') {
+					return a.title.localeCompare(b.title) * dir;
+				}
+
 				const aVal =
 					key === 'presentation'
 						? (a.ratingPresentation ?? 0)
@@ -232,6 +236,7 @@
 				onclick={() => {
 					filtersStore.resetAllFilters();
 					filtersStore.setSearchTerm('');
+					filtersStore.setSort({ key: 'finishedDate', direction: 'desc' });
 				}}
 			>
 				↻ Reset

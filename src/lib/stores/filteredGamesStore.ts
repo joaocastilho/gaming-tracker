@@ -164,6 +164,7 @@ class FilteredGamesStore {
 			gameplay: (a: Game, b: Game) => this.compareRatings(a.ratingGameplay, b.ratingGameplay),
 			score: (a: Game, b: Game) => this.compareScores(a.score, b.score),
 			finishedDate: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
+			alphabetical: (a: Game, b: Game) => a.title.localeCompare(b.title),
 
 			// Default sorts by tab
 			default: (a: Game, b: Game) => a.title.localeCompare(b.title),

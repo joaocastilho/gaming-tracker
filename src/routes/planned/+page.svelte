@@ -92,13 +92,18 @@
 	$effect(() => {
 		const unsubscribe = filtersStore.subscribe(($filters) => {
 			if ($filters) {
+				// Default to alphabetical ascending if no sort option is set
+				if (!$filters.sortOption) {
+					filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
+				}
+
 				currentFilterState = {
 					searchTerm: $filters.searchTerm,
 					platforms: $filters.platforms,
 					genres: $filters.genres,
 					statuses: $filters.statuses,
 					tiers: $filters.tiers,
-					sortOption: $filters.sortOption
+					sortOption: $filters.sortOption || { key: 'alphabetical', direction: 'asc' }
 				};
 			}
 		});
@@ -156,6 +161,10 @@
 			const dir = direction === 'asc' ? 1 : -1;
 
 			filteredGames = filteredGames.toSorted((a, b) => {
+				if (key === 'alphabetical') {
+					return a.title.localeCompare(b.title) * dir;
+				}
+
 				const aVal =
 					key === 'presentation'
 						? (a.ratingPresentation ?? 0)
@@ -208,9 +217,10 @@
 				onclick={() => {
 					filtersStore.resetAllFilters();
 					filtersStore.setSearchTerm('');
+					filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
 				}}
 			>
-				↻ Reset filters
+				↻ Reset
 			</button>
 		</div>
 	{:else}

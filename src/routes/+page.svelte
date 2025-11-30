@@ -6,7 +6,6 @@
 	import { modalStore } from '$lib/stores/modal.js';
 	import { filteredGames } from '$lib/stores/filteredGamesStore.js';
 	import GamesView from '$lib/views/GamesView.svelte';
-	import { parseDate } from '$lib/utils/dateUtils';
 
 	import type { Game } from '$lib/types/game.js';
 	import type { Component } from 'svelte';
@@ -111,6 +110,22 @@
 		return unsubscribe;
 	});
 
+	// Subscribe to filters store to ensure default sort is set
+	$effect(() => {
+		const unsubscribe = filtersStore.subscribe(($filters) => {
+			if ($filters) {
+				// Default to alphabetical ascending if no sort option is set
+				// OR if the current sort is 'finishedDate' (likely leftover from Completed tab)
+				// AND there is no explicit sort in the URL
+				const urlSort = page.url.searchParams.get('sortBy');
+				if ((!$filters.sortOption || $filters.sortOption.key === 'finishedDate') && !urlSort) {
+					filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
+				}
+			}
+		});
+		return unsubscribe;
+	});
+
 	// Simple derived values for each tab
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 
@@ -166,6 +181,7 @@
 				onclick={() => {
 					filtersStore.resetAllFilters();
 					filtersStore.setSearchTerm('');
+					filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
 				}}
 			>
 				↻ Reset

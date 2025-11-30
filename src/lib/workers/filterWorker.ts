@@ -139,8 +139,6 @@ function filterGamesWithoutStatus(games: Game[], filters: FilterState): Game[] {
 	});
 }
 
-
-
 function applySortOption(games: Game[], sortOption: FilterState['sortOption']): Game[] {
 	if (!sortOption) return games;
 
