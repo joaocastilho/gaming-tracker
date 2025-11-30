@@ -187,7 +187,12 @@ class FilteredGamesStore {
 		const sortedGames = [...games];
 
 		// Apply sorting with direction
-		const direction = sort?.direction === 'desc' ? -1 : 1;
+		let direction = sort?.direction === 'desc' ? -1 : 1;
+
+		// Default to descending for completed tab if no sort option provided
+		if (activeTab === 'completed' && !sort) {
+			direction = -1;
+		}
 
 		return sortedGames.sort((a, b) => {
 			// Special handling for finishedDate to ensure nulls are always last
