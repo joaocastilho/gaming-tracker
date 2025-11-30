@@ -32,6 +32,9 @@
 	let FilterDropdownComponent = $state<
 		typeof import('$lib/components/FilterDropdown.svelte').default | null
 	>(null);
+	let FilterToggleComponent = $state<
+		typeof import('$lib/components/FilterToggle.svelte').default | null
+	>(null);
 
 	// Simplified loading state - no progressive loading
 	let isLoading = $state(true);
@@ -150,6 +153,25 @@
 				requestIdleCallback(loadFilterDropdown, { timeout: 2000 });
 			} else {
 				setTimeout(loadFilterDropdown, 100);
+			}
+		}
+
+		// Load FilterToggle component
+		if (!FilterToggleComponent && browser) {
+			const loadFilterToggle = () => {
+				import('$lib/components/FilterToggle.svelte')
+					.then((module) => {
+						FilterToggleComponent = module.default;
+					})
+					.catch(() => {
+						// Silently handle FilterToggle loading errors
+					});
+			};
+
+			if ('requestIdleCallback' in window) {
+				requestIdleCallback(loadFilterToggle, { timeout: 2000 });
+			} else {
+				setTimeout(loadFilterToggle, 100);
 			}
 		}
 	});
@@ -287,16 +309,26 @@
 								selectedOptions={selectedTiers}
 							/>
 							<FilterDropdownComponent
-								type="coOp"
-								label="Co-op"
-								options={filterOptions().coOp}
-								selectedOptions={selectedCoOp}
+								type="tiers"
+								label="Tiers"
+								options={filterOptions().tiers}
+								selectedOptions={selectedTiers}
 							/>
 						{:else}
 							<!-- Loading placeholder for FilterDropdown -->
 							<div class="bg-surface flex h-11 w-24 animate-pulse rounded-md"></div>
 							<div class="bg-surface flex h-11 w-20 animate-pulse rounded-md"></div>
 							<div class="bg-surface flex h-11 w-16 animate-pulse rounded-md"></div>
+						{/if}
+
+						{#if FilterToggleComponent}
+							<FilterToggleComponent
+								label="Co-op"
+								value="Yes"
+								isSelected={selectedCoOp.includes('Yes')}
+							/>
+						{:else}
+							<div class="bg-surface flex h-11 w-20 animate-pulse rounded-md"></div>
 						{/if}
 						<span class="pipe-separator">|</span>
 						<RatingsSort />
@@ -433,12 +465,11 @@
 						/>
 					{/if}
 					<!-- Co-op -->
-					{#if FilterDropdownComponent}
-						<FilterDropdownComponent
-							type="coOp"
+					{#if FilterToggleComponent}
+						<FilterToggleComponent
 							label="Co-op"
-							options={filterOptions().coOp}
-							selectedOptions={selectedCoOp}
+							value="Yes"
+							isSelected={selectedCoOp.includes('Yes')}
 						/>
 					{/if}
 					<!-- Ratings Sort -->

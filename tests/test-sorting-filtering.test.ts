@@ -141,7 +141,7 @@ describe('Sorting and Filtering Logic', () => {
 
 		const results = get(filteredGames);
 		// Should be sorted alphabetically by default
-		// We only have one planned game in mock data (Elden Ring), so let's check if we can add another or just verify the sort option if accessible, 
+		// We only have one planned game in mock data (Elden Ring), so let's check if we can add another or just verify the sort option if accessible,
 		// but filteredGamesStore doesn't expose the sort option directly, only the results.
 		// Let's rely on the fact that the worker defaults to alphabetical for non-completed tabs.
 
