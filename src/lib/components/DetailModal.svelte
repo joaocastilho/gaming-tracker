@@ -56,8 +56,8 @@
 		}
 	});
 
-	let modalElement: HTMLDivElement;
-	let modalImageElement: HTMLImageElement;
+	let modalElement = $state<HTMLDivElement>();
+	let modalImageElement = $state<HTMLImageElement>();
 	let isImageFullScreen = $state(false);
 
 	const detailImageSrc = $derived(
@@ -290,13 +290,6 @@
 		}
 	}
 
-	function handleOverlayKeydown(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			modalStore.closeModal();
-		}
-	}
-
 	function handleImageLoad() {
 		if (modalImageElement) {
 			modalImageElement.classList.add('loaded');
@@ -382,13 +375,15 @@
 {#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}
 	<div
 		bind:this={modalElement}
-		class="fixed inset-0 z-50 flex items-start justify-center p-4 pt-6 md:items-center md:p-4"
+		class="fixed inset-0 z-50 flex items-center justify-center p-4"
 		style="background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);"
 		transition:fade={{ duration: 200 }}
 		onclick={handleOverlayClick}
+		onkeydown={(e) => e.key === 'Escape' && modalStore.closeModal()}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="modal-title"
+		tabindex="-1"
 	>
 		{#if currentGameIndex() > 0}
 			<button
@@ -422,8 +417,9 @@
 		</button>
 
 		<div
-			class="relative flex max-h-[90vh] w-[90vw] max-w-[350px] flex-col overflow-hidden rounded-xl shadow-2xl md:block md:h-[600px] md:w-full md:max-w-4xl"
+			class="relative flex h-auto max-h-[85dvh] w-[95vw] max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
 			style="background-color: var(--color-surface);"
+			role="document"
 		>
 			<div class="flex h-full flex-col md:grid md:grid-cols-[350px_1fr] lg:grid-cols-[400px_1fr]">
 				<div
@@ -431,23 +427,25 @@
 				>
 					<div class="modal-image-wrapper">
 						<div class="modal-skeleton-loader"></div>
-						<img
-							bind:this={modalImageElement}
-							src={detailImageSrc}
-							srcset={detailImageSrcset}
-							sizes={detailImageSizes}
-							alt="{$modalStore.activeGame.title} cover"
-							class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform hover:scale-105"
-							loading="eager"
-							fetchpriority="high"
-							decoding="async"
+						<button
+							class="contents"
 							onclick={() => (isImageFullScreen = true)}
-							onkeydown={(e) => e.key === 'Enter' && (isImageFullScreen = true)}
-							onload={handleImageLoad}
-							onerror={handleImageError}
-							role="button"
-							tabindex="0"
-						/>
+							aria-label="View full screen cover"
+						>
+							<img
+								bind:this={modalImageElement}
+								src={detailImageSrc}
+								srcset={detailImageSrcset}
+								sizes={detailImageSizes}
+								alt="{$modalStore.activeGame.title} cover"
+								class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform hover:scale-105"
+								loading="eager"
+								fetchpriority="high"
+								decoding="async"
+								onload={handleImageLoad}
+								onerror={handleImageError}
+							/>
+						</button>
 					</div>
 
 					{#if $modalStore.activeGame.coOp === 'Yes'}
@@ -811,16 +809,18 @@
 			>
 				<X size={32} />
 			</button>
-			<img
-				src={detailImageSrc}
-				srcset={detailImageSrcset}
-				alt="{$modalStore.activeGame.title} full cover"
-				class="max-h-full max-w-full cursor-zoom-out object-contain shadow-2xl"
+			<button
+				class="contents"
 				onclick={() => (isImageFullScreen = false)}
-				onkeydown={(e) => e.key === 'Enter' && (isImageFullScreen = false)}
-				role="button"
-				tabindex="0"
-			/>
+				aria-label="Close full screen view"
+			>
+				<img
+					src={detailImageSrc}
+					srcset={detailImageSrcset}
+					alt="{$modalStore.activeGame.title} full cover"
+					class="max-h-full max-w-full cursor-zoom-out object-contain shadow-2xl"
+				/>
+			</button>
 		</div>
 	{/if}
 {/if}
@@ -829,7 +829,9 @@
 	.modal-image-wrapper {
 		position: relative;
 		width: 100%;
-		height: 220px;
+		height: 35vh;
+		min-height: 220px;
+		max-height: 50vh;
 		overflow: hidden;
 	}
 
