@@ -60,20 +60,61 @@
 			: null
 	);
 
-	let titleFontSize = $derived(() => {
-		const title = game.mainTitle || game.title || '';
-		const baseSize = 1.25;
-		const minSize = 0.65;
-		const maxLength = 18;
+	function fitTitle(node: HTMLElement, params: { title: string; subtitle?: string }) {
+		const resizeObserver = new ResizeObserver(() => {
+			adjustTitleSize(node);
+		});
+		resizeObserver.observe(node);
 
-		if (!title || title.length <= maxLength) {
-			return baseSize;
+		adjustTitleSize(node);
+
+		return {
+			update(newParams: { title: string; subtitle?: string }) {
+				adjustTitleSize(node);
+			},
+			destroy() {
+				resizeObserver.disconnect();
+			}
+		};
+	}
+
+	function adjustTitleSize(node: HTMLElement, hasSubtitle: boolean) {
+		const minSize = 0.75;
+		const maxSize = 1.25;
+		const singleLineMinSize = 0.85;
+		const step = 0.05;
+
+		// 1. Try to fit on one line (only if no subtitle, to avoid merging lines)
+		if (!hasSubtitle) {
+			node.style.whiteSpace = 'nowrap';
+
+			let currentSize = maxSize;
+			node.style.fontSize = `${currentSize}rem`;
+
+			// Check width
+			while (node.scrollWidth > node.clientWidth && currentSize > singleLineMinSize) {
+				currentSize -= step;
+				node.style.fontSize = `${currentSize}rem`;
+			}
+
+			// If it fits on one line (and didn't shrink below threshold), keep it
+			if (node.scrollWidth <= node.clientWidth && currentSize >= singleLineMinSize) {
+				return;
+			}
 		}
 
-		// More aggressive reduction: 0.03 per char over limit
-		const reduction = Math.min((title.length - maxLength) * 0.03, baseSize - minSize);
-		return Math.max(baseSize - reduction, minSize);
-	});
+		// 2. Fallback to 2 lines (standard wrapping)
+		node.style.whiteSpace = 'normal';
+
+		let currentSize = maxSize;
+		node.style.fontSize = `${currentSize}rem`;
+
+		// Check height (overflow for 2 lines)
+		while (node.scrollHeight > node.clientHeight && currentSize > minSize) {
+			currentSize -= step;
+			node.style.fontSize = `${currentSize}rem`;
+		}
+	}
 
 	let subtitleFontSize = $derived(() => {
 		const title = game.subtitle || '';
@@ -186,7 +227,10 @@
 
 	<div class="game-info">
 		<div class="title-section">
-			<h3 class="game-title" style="font-size: {titleFontSize()}rem;">
+			<h3
+				class="game-title"
+				use:fitTitle={{ title: game.mainTitle || game.title, subtitle: game.subtitle }}
+			>
 				{game.mainTitle || game.title}
 				{#if game.subtitle}
 					<br />
@@ -417,6 +461,7 @@
 	}
 
 	.game-title {
+		font-size: 1.25rem;
 		font-weight: 600;
 		margin: 0;
 		line-height: 1.2;
@@ -427,10 +472,6 @@
 		justify-content: center;
 		text-align: center;
 		width: 100%;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
 
