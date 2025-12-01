@@ -1,9 +1,15 @@
 export function transformGameData(game: Record<string, unknown>): Record<string, unknown> {
 	const transformed = { ...game };
 
-	// Only generate UUID if title exists and no valid ID
-	if ((!transformed.id || !isValidUUID(String(transformed.id))) && transformed.title) {
-		transformed.id = generateDeterministicUUID(String(transformed.title));
+	// Ensure ID exists. If valid UUID exists, keep it.
+	// If title exists, generate deterministic UUID.
+	// Otherwise, generate random UUID to prevent duplicate key errors.
+	if (!transformed.id || !isValidUUID(String(transformed.id))) {
+		if (transformed.title) {
+			transformed.id = generateDeterministicUUID(String(transformed.title));
+		} else {
+			transformed.id = crypto.randomUUID();
+		}
 	}
 
 	// Only process date if it exists and is not already in ISO format

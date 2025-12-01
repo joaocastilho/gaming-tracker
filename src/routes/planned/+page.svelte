@@ -5,8 +5,7 @@
 	import { modalStore } from '$lib/stores/modal';
 	import GamesView from '$lib/views/GamesView.svelte';
 	import type { Game } from '$lib/types/game';
-	import { getTierDisplayName } from '$lib/utils/colorConstants';
-	import type { SortOption } from '$lib/stores/filters';
+	import { RotateCcw } from 'lucide-svelte';
 
 	let allGames = $state<Game[]>([]);
 	let hasInitializedGames = $state(false);
@@ -71,124 +70,23 @@
 		};
 	});
 
-	// Get current filter state
-	let currentFilterState = $state<{
-		searchTerm: string;
-		platforms: string[];
-		genres: string[];
-		statuses: string[];
-		tiers: string[];
-		sortOption: SortOption | null;
-	}>({
-		searchTerm: '',
-		platforms: [],
-		genres: [],
-		statuses: [],
-		tiers: [],
-		sortOption: null
-	});
-
 	// Subscribe to filter changes
 	$effect(() => {
 		const unsubscribe = filtersStore.subscribe(($filters) => {
-			if ($filters) {
-				// Default to alphabetical ascending if no sort option is set
-				if (!$filters.sortOption) {
-					filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
-				}
-
-				currentFilterState = {
-					searchTerm: $filters.searchTerm,
-					platforms: $filters.platforms,
-					genres: $filters.genres,
-					statuses: $filters.statuses,
-					tiers: $filters.tiers,
-					sortOption: $filters.sortOption || { key: 'alphabetical', direction: 'asc' }
-				};
-			}
+			// Logic moved to filteredGamesStore
 		});
 		return unsubscribe;
 	});
 
-	// Filter and display planned games
-	let displayedGames = $derived.by(() => {
-		if (isLoadingGames || allGames.length === 0) {
-			return [];
-		}
+	// Use the shared filtered games store
+	import { filteredGames } from '$lib/stores/filteredGamesStore';
+	let displayedGames = $state<Game[]>([]);
 
-		let filteredGames = allGames.filter((game) => game.status === 'Planned');
-
-		// Apply search filter
-		if (currentFilterState.searchTerm.trim()) {
-			const query = currentFilterState.searchTerm.toLowerCase().trim();
-			filteredGames = filteredGames.filter((game) => {
-				const titleMatch = game.title.toLowerCase().includes(query);
-				const genreMatch = game.genre.toLowerCase().includes(query);
-				const platformMatch = game.platform.toLowerCase().includes(query);
-				return titleMatch || genreMatch || platformMatch;
-			});
-		}
-
-		// Apply platform filter
-		if (currentFilterState.platforms.length > 0) {
-			filteredGames = filteredGames.filter((game) =>
-				currentFilterState.platforms.includes(game.platform)
-			);
-		}
-
-		// Apply genre filter
-		if (currentFilterState.genres.length > 0) {
-			filteredGames = filteredGames.filter((game) =>
-				currentFilterState.genres.includes(game.genre)
-			);
-		}
-
-		// Apply tier filter
-		if (currentFilterState.tiers.length > 0) {
-			filteredGames = filteredGames.filter((game) => {
-				if (!game.tier) return false;
-				const gameTierFullName = getTierDisplayName(game.tier);
-				return currentFilterState.tiers.includes(gameTierFullName);
-			});
-		}
-
-		// Sort alphabetically by default for planned tab
-		filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
-
-		// Override with custom sort if specified
-		if (currentFilterState.sortOption) {
-			const { key, direction } = currentFilterState.sortOption;
-			const dir = direction === 'asc' ? 1 : -1;
-
-			filteredGames = filteredGames.toSorted((a, b) => {
-				if (key === 'alphabetical') {
-					return a.title.localeCompare(b.title) * dir;
-				}
-
-				const aVal =
-					key === 'presentation'
-						? (a.ratingPresentation ?? 0)
-						: key === 'story'
-							? (a.ratingStory ?? 0)
-							: key === 'gameplay'
-								? (a.ratingGameplay ?? 0)
-								: (a.score ?? 0);
-
-				const bVal =
-					key === 'presentation'
-						? (b.ratingPresentation ?? 0)
-						: key === 'story'
-							? (b.ratingStory ?? 0)
-							: key === 'gameplay'
-								? (b.ratingGameplay ?? 0)
-								: (b.score ?? 0);
-
-				if (aVal === bVal) return 0;
-				return aVal > bVal ? dir : -dir;
-			});
-		}
-
-		return filteredGames;
+	$effect(() => {
+		const unsubscribe = filteredGames.subscribe((games) => {
+			displayedGames = games;
+		});
+		return unsubscribe;
 	});
 
 	function openModalWithFilterContext(game: Game) {
@@ -212,7 +110,7 @@
 				Try adjusting or clearing your filters to see your planned games.
 			</p>
 			<button
-				class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
+				class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
 				type="button"
 				onclick={() => {
 					filtersStore.resetAllFilters();
@@ -220,7 +118,8 @@
 					filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
 				}}
 			>
-				↻ Reset
+				<RotateCcw size={18} />
+				Reset
 			</button>
 		</div>
 	{:else}

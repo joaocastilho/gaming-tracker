@@ -176,6 +176,14 @@
 			detailImg.src = game.coverImage.replace('.webp', '-detail.webp');
 		}
 	}
+
+	// Handle images that are already loaded (from cache) when component mounts
+	$effect(() => {
+		if (imageElement && imageElement.complete && imageElement.naturalHeight !== 0) {
+			// Image is already loaded (from cache), trigger the load handler
+			handleImageLoad();
+		}
+	});
 </script>
 
 <button

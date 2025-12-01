@@ -139,7 +139,7 @@ function filterGamesWithoutStatus(games: Game[], filters: FilterState): Game[] {
 	});
 }
 
-function applySortOption(games: Game[], sortOption: FilterState['sortOption']): Game[] {
+export function applySortOption(games: Game[], sortOption: FilterState['sortOption']): Game[] {
 	if (!sortOption) return games;
 
 	const { key, direction } = sortOption;
@@ -161,23 +161,37 @@ function applySortOption(games: Game[], sortOption: FilterState['sortOption']): 
 			return direction === 'asc' ? aTime - bTime : bTime - aTime;
 		}
 
-		const aVal =
-			key === 'presentation'
-				? (a.ratingPresentation ?? 0)
-				: key === 'story'
-					? (a.ratingStory ?? 0)
-					: key === 'gameplay'
-						? (a.ratingGameplay ?? 0)
-						: (a.score ?? 0);
+		const getVal = (g: Game, k: string) => {
+			if (k === 'presentation') return g.ratingPresentation;
+			if (k === 'story') return g.ratingStory;
+			if (k === 'gameplay') return g.ratingGameplay;
+			if (k === 'score') return g.score;
+			return 0;
+		};
 
-		const bVal =
-			key === 'presentation'
-				? (b.ratingPresentation ?? 0)
-				: key === 'story'
-					? (b.ratingStory ?? 0)
-					: key === 'gameplay'
-						? (b.ratingGameplay ?? 0)
-						: (b.score ?? 0);
+		const aRaw = getVal(a, key);
+		const bRaw = getVal(b, key);
+
+		// Treat null/undefined as "no data"
+		// We also treat 0 as "no data" if that's the desired behavior, but usually 0 is a valid score.
+		// However, based on previous logic, it seems we were treating 0 as no data.
+		// Let's stick to checking for null/undefined strictly if possible, but the user said "games without these values".
+		// In the previous code: (a.ratingPresentation ?? 0).
+		// If the data comes as null, it becomes 0.
+		// Let's assume strict null/undefined check is better, but if the data is already 0 for "no rating", we might need to handle that.
+		// Given the types: ratingPresentation: number | null;
+		// It seems null is the "no value" state.
+
+		const aHasData = aRaw !== null && aRaw !== undefined;
+		const bHasData = bRaw !== null && bRaw !== undefined;
+
+		// Always put games without data at the bottom
+		if (aHasData && !bHasData) return -1;
+		if (!aHasData && bHasData) return 1;
+		if (!aHasData && !bHasData) return 0;
+
+		const aVal = aRaw as number;
+		const bVal = bRaw as number;
 
 		if (aVal === bVal) return 0;
 		return aVal > bVal ? dir : -dir;

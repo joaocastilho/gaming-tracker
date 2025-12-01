@@ -175,12 +175,14 @@ class FilteredGamesStore {
 		let sortFunction = sortFunctions.default;
 
 		// Determine sort function based on context
-		if (sort?.key && sortFunctions[sort.key as keyof typeof sortFunctions]) {
+		if (activeTab === 'planned') {
+			// Planned tab ALWAYS sorts alphabetically, regardless of the sort key passed
+			// It only respects the direction
+			sortFunction = sortFunctions.planned;
+		} else if (sort?.key && sortFunctions[sort.key as keyof typeof sortFunctions]) {
 			sortFunction = sortFunctions[sort.key as keyof typeof sortFunctions];
 		} else if (activeTab === 'completed') {
 			sortFunction = sortFunctions.completed;
-		} else if (activeTab === 'planned') {
-			sortFunction = sortFunctions.planned;
 		}
 
 		// Clone array to avoid mutating original
@@ -196,7 +198,11 @@ class FilteredGamesStore {
 
 		return sortedGames.sort((a, b) => {
 			// Special handling for finishedDate to ensure nulls are always last
-			if (sort?.key === 'finishedDate' || (activeTab === 'completed' && !sort?.key)) {
+			// This applies if we are explicitly sorting by finishedDate, OR if we are on the completed tab (default sort)
+			const isFinishedDateSort =
+				sort?.key === 'finishedDate' || (activeTab === 'completed' && !sort?.key);
+
+			if (isFinishedDateSort) {
 				const aTime = parseDate(a.finishedDate);
 				const bTime = parseDate(b.finishedDate);
 
@@ -209,21 +215,78 @@ class FilteredGamesStore {
 				return (aTime - bTime) * direction;
 			}
 
+			// Special handling for ratings/score to ensure no-data is always last
+			// Only apply this if we are NOT on the planned tab (which is always alphabetical)
+			if (
+				activeTab !== 'planned' &&
+				['presentation', 'story', 'gameplay', 'score'].includes(sort?.key || '')
+			) {
+				// Map sort key to actual Game property
+				let key: keyof Game;
+				switch (sort?.key) {
+					case 'presentation':
+						key = 'ratingPresentation';
+						break;
+					case 'story':
+						key = 'ratingStory';
+						break;
+					case 'gameplay':
+						key = 'ratingGameplay';
+						break;
+					case 'score':
+						key = 'score';
+						break;
+					default:
+						key = 'score';
+				}
+
+				const aVal = a[key] as number | null | undefined;
+				const bVal = b[key] as number | null | undefined;
+
+				const aHasData = aVal !== null && aVal !== undefined;
+				const bHasData = bVal !== null && bVal !== undefined;
+
+				// Always put games without data at the bottom
+				if (aHasData && !bHasData) return -1;
+				if (!aHasData && bHasData) return 1;
+				if (!aHasData && !bHasData) return 0;
+
+				// Both have data, compare values
+				// We want standard comparison here:
+				// ASC: Small -> Large
+				// DESC: Large -> Small
+				const valA = aVal as number;
+				const valB = bVal as number;
+
+				if (valA === valB) return 0;
+				return (valA - valB) * direction;
+			}
+
 			const result = sortFunction(a, b);
 			return result * direction;
 		});
 	}
 
 	private compareRatings(a: number | null | undefined, b: number | null | undefined): number {
-		const valA = a ?? 0;
-		const valB = b ?? 0;
-		return valA > valB ? 1 : valA < valB ? -1 : 0;
+		const hasDataA = a !== null && a !== undefined;
+		const hasDataB = b !== null && b !== undefined;
+
+		if (hasDataA && !hasDataB) return 1;
+		if (!hasDataA && hasDataB) return -1;
+		if (!hasDataA && !hasDataB) return 0;
+
+		return (a as number) - (b as number);
 	}
 
 	private compareScores(a: number | null | undefined, b: number | null | undefined): number {
-		const valA = a ?? 0;
-		const valB = b ?? 0;
-		return valA > valB ? 1 : valA < valB ? -1 : 0;
+		const hasDataA = a !== null && a !== undefined;
+		const hasDataB = b !== null && b !== undefined;
+
+		if (hasDataA && !hasDataB) return 1;
+		if (!hasDataA && hasDataB) return -1;
+		if (!hasDataA && !hasDataB) return 0;
+
+		return (a as number) - (b as number);
 	}
 
 	private compareDates(a: string | null | undefined, b: string | null | undefined): number {
@@ -233,7 +296,7 @@ class FilteredGamesStore {
 		if (aTime === null && bTime === null) return 0;
 		if (aTime === null) return 1;
 		if (bTime === null) return -1;
-		return bTime - aTime;
+		return aTime - bTime;
 	}
 
 	private updateCache(key: string, result: Game[]): void {
@@ -249,7 +312,6 @@ class FilteredGamesStore {
 		this.cache.set(key, result);
 	}
 
-	// Clear cache when needed (e.g., when games are updated)
 	clearCache(): void {
 		this.cache.clear();
 		this.lastCacheKey = null;

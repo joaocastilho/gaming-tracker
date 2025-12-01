@@ -21,11 +21,25 @@
 
 	const activeTabStore = appStore.activeTab;
 
+	let activeKey = $derived(
+		$sortOptionStore?.key ??
+			($activeTabStore === 'completed'
+				? 'finishedDate'
+				: $activeTabStore === 'planned'
+					? 'alphabetical'
+					: 'alphabetical')
+	);
+
+	let activeDirection = $derived(
+		$sortOptionStore?.direction ?? ($activeTabStore === 'completed' ? 'desc' : 'asc')
+	);
+
 	function handleSort(key: SortKey) {
 		const currentSort = $sortOptionStore;
-		if (currentSort?.key === key) {
+		// If we are clicking the already active sort (even if it's default), toggle direction
+		if (activeKey === key) {
 			// Toggle direction
-			const newDirection = currentSort.direction === 'asc' ? 'desc' : 'asc';
+			const newDirection = activeDirection === 'asc' ? 'desc' : 'asc';
 			filtersStore.setSort({ key, direction: newDirection });
 		} else {
 			// Default to descending for new sort key (higher score/rating is usually better/more relevant)
@@ -40,14 +54,14 @@
 	<button
 		type="button"
 		class="sort-button"
-		class:active={$sortOptionStore?.key === 'alphabetical'}
+		class:active={activeKey === 'alphabetical'}
 		onclick={() => handleSort('alphabetical')}
 		aria-label="Sort Alphabetically"
 	>
 		<AArrowDown class="sort-icon text-gray-500" aria-hidden="true" />
 		<span class="sort-field-label">Alphabetical</span>
-		{#if $sortOptionStore?.key === 'alphabetical'}
-			{#if $sortOptionStore.direction === 'asc'}
+		{#if activeKey === 'alphabetical'}
+			{#if activeDirection === 'asc'}
 				<ArrowDown size={14} class="sort-direction-icon" />
 			{:else}
 				<ArrowUp size={14} class="sort-direction-icon" />
@@ -59,14 +73,14 @@
 		<button
 			type="button"
 			class="sort-button"
-			class:active={$sortOptionStore?.key === 'presentation'}
+			class:active={activeKey === 'presentation'}
 			onclick={() => handleSort('presentation')}
 			aria-label="Sort by Presentation"
 		>
 			<Presentation class="sort-icon text-cyan-500" aria-hidden="true" />
 			<span class="sort-field-label">Presentation</span>
-			{#if $sortOptionStore?.key === 'presentation'}
-				{#if $sortOptionStore.direction === 'asc'}
+			{#if activeKey === 'presentation'}
+				{#if activeDirection === 'asc'}
 					<ArrowUp size={14} class="sort-direction-icon" />
 				{:else}
 					<ArrowDown size={14} class="sort-direction-icon" />
@@ -77,14 +91,14 @@
 		<button
 			type="button"
 			class="sort-button"
-			class:active={$sortOptionStore?.key === 'story'}
+			class:active={activeKey === 'story'}
 			onclick={() => handleSort('story')}
 			aria-label="Sort by Story"
 		>
 			<NotebookPen class="sort-icon text-amber-600" aria-hidden="true" />
 			<span class="sort-field-label">Story</span>
-			{#if $sortOptionStore?.key === 'story'}
-				{#if $sortOptionStore.direction === 'asc'}
+			{#if activeKey === 'story'}
+				{#if activeDirection === 'asc'}
 					<ArrowUp size={14} class="sort-direction-icon" />
 				{:else}
 					<ArrowDown size={14} class="sort-direction-icon" />
@@ -95,14 +109,14 @@
 		<button
 			type="button"
 			class="sort-button"
-			class:active={$sortOptionStore?.key === 'gameplay'}
+			class:active={activeKey === 'gameplay'}
 			onclick={() => handleSort('gameplay')}
 			aria-label="Sort by Gameplay"
 		>
 			<Gamepad2 class="sort-icon text-pink-500" aria-hidden="true" />
 			<span class="sort-field-label">Gameplay</span>
-			{#if $sortOptionStore?.key === 'gameplay'}
-				{#if $sortOptionStore.direction === 'asc'}
+			{#if activeKey === 'gameplay'}
+				{#if activeDirection === 'asc'}
 					<ArrowUp size={14} class="sort-direction-icon" />
 				{:else}
 					<ArrowDown size={14} class="sort-direction-icon" />
@@ -113,14 +127,14 @@
 		<button
 			type="button"
 			class="sort-button"
-			class:active={$sortOptionStore?.key === 'score'}
+			class:active={activeKey === 'score'}
 			onclick={() => handleSort('score')}
 			aria-label="Sort by Score"
 		>
 			<Award class="sort-icon text-yellow-400" aria-hidden="true" />
 			<span class="sort-field-label">Score</span>
-			{#if $sortOptionStore?.key === 'score'}
-				{#if $sortOptionStore.direction === 'asc'}
+			{#if activeKey === 'score'}
+				{#if activeDirection === 'asc'}
 					<ArrowUp size={14} class="sort-direction-icon" />
 				{:else}
 					<ArrowDown size={14} class="sort-direction-icon" />
@@ -131,14 +145,14 @@
 		<button
 			type="button"
 			class="sort-button"
-			class:active={$sortOptionStore?.key === 'finishedDate'}
+			class:active={activeKey === 'finishedDate'}
 			onclick={() => handleSort('finishedDate')}
 			aria-label="Sort by Finishing Date"
 		>
 			<Calendar class="sort-icon text-green-500" aria-hidden="true" />
 			<span class="sort-field-label">Finished Date</span>
-			{#if $sortOptionStore?.key === 'finishedDate'}
-				{#if $sortOptionStore.direction === 'asc'}
+			{#if activeKey === 'finishedDate'}
+				{#if activeDirection === 'asc'}
 					<ArrowUp size={14} class="sort-direction-icon" />
 				{:else}
 					<ArrowDown size={14} class="sort-direction-icon" />

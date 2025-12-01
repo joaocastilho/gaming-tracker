@@ -26,9 +26,12 @@
 		(() => {
 			if (!filteredGames) return [];
 
+			// Filter out any undefined/null games and games without IDs
+			const validGames = filteredGames.filter((game) => game && game.id);
+
 			const result = [];
-			for (let i = 0; i < filteredGames.length; i += columns) {
-				const chunk = filteredGames.slice(i, i + columns);
+			for (let i = 0; i < validGames.length; i += columns) {
+				const chunk = validGames.slice(i, i + columns);
 				result.push({
 					id: `row-${i}`,
 					games: chunk,

@@ -15,6 +15,7 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import type { Game } from '$lib/types/game.js';
+	import { RotateCcw } from 'lucide-svelte';
 
 	let {
 		children,
@@ -205,6 +206,14 @@
 		}
 
 		appStore.setActiveTab(targetTab);
+
+		// Reset sort to default if not specified in URL
+		// This ensures that switching tabs applies the tab's default sort
+		// unless the user specifically navigated to a sorted URL
+		const hasSortInUrl = page.url.searchParams.has('sortBy');
+		if (!hasSortInUrl) {
+			filtersStore.setSort(null);
+		}
 	});
 
 	let selectedPlatforms: string[] = $state([]);
@@ -308,12 +317,6 @@
 								options={filterOptions().tiers}
 								selectedOptions={selectedTiers}
 							/>
-							<FilterDropdownComponent
-								type="tiers"
-								label="Tiers"
-								options={filterOptions().tiers}
-								selectedOptions={selectedTiers}
-							/>
 						{:else}
 							<!-- Loading placeholder for FilterDropdown -->
 							<div class="bg-surface flex h-11 w-24 animate-pulse rounded-md"></div>
@@ -333,11 +336,12 @@
 						<span class="pipe-separator">|</span>
 						<RatingsSort />
 						<button
-							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
+							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
 							title="Reset all filters"
 							onclick={resetFilters}
 						>
-							↻ Reset filters
+							<RotateCcw size={18} />
+							Reset
 						</button>
 					</div>
 				</div>

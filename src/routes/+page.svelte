@@ -10,6 +10,7 @@
 	import type { Game } from '$lib/types/game.js';
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
+	import { RotateCcw } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -110,18 +111,10 @@
 		return unsubscribe;
 	});
 
-	// Subscribe to filters store to ensure default sort is set
+	// Subscribe to filters store (no longer enforcing default sort here)
 	$effect(() => {
 		const unsubscribe = filtersStore.subscribe(($filters) => {
-			if ($filters) {
-				// Default to alphabetical ascending if no sort option is set
-				// OR if the current sort is 'finishedDate' (likely leftover from Completed tab)
-				// AND there is no explicit sort in the URL
-				const urlSort = page.url.searchParams.get('sortBy');
-				if ((!$filters.sortOption || $filters.sortOption.key === 'finishedDate') && !urlSort) {
-					filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
-				}
-			}
+			// Logic moved to filteredGamesStore
 		});
 		return unsubscribe;
 	});
@@ -176,7 +169,7 @@
 				Try adjusting or clearing your filters to see more games.
 			</p>
 			<button
-				class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center rounded-md px-3 py-2 text-xs transition-colors"
+				class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
 				type="button"
 				onclick={() => {
 					filtersStore.resetAllFilters();
@@ -184,7 +177,8 @@
 					filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
 				}}
 			>
-				↻ Reset
+				<RotateCcw size={18} />
+				Reset
 			</button>
 		</div>
 	{:else if currentActiveTab !== 'tierlist' && isLoadingGames}
