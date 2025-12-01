@@ -429,28 +429,32 @@
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		{#if currentGameIndex() > 0}
-			<button
-				onclick={navigateToPrevious}
-				class="absolute top-1/2 left-2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/40 md:h-16 md:w-16"
-				aria-label="Previous game"
-			>
-				<ChevronLeft size={32} class="h-4 w-4 md:h-8 md:w-8" />
-			</button>
-		{/if}
+		<div class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+			<div class="relative w-full max-w-[1250px]">
+				{#if currentGameIndex() > 0}
+					<button
+						onclick={navigateToPrevious}
+						class="pointer-events-auto absolute top-1/2 left-2 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none md:h-16 md:w-16"
+						aria-label="Previous game"
+					>
+						<ChevronLeft size={32} class="h-4 w-4 md:h-8 md:w-8" />
+					</button>
+				{/if}
 
-		{#if (() => {
-			const games = displayedGames();
-			return currentGameIndex() > -1 && currentGameIndex() < games.length - 1;
-		})()}
-			<button
-				onclick={navigateToNext}
-				class="absolute top-1/2 right-2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/40 md:h-16 md:w-16"
-				aria-label="Next game"
-			>
-				<ChevronRight size={32} class="h-4 w-4 md:h-8 md:w-8" />
-			</button>
-		{/if}
+				{#if (() => {
+					const games = displayedGames();
+					return currentGameIndex() > -1 && currentGameIndex() < games.length - 1;
+				})()}
+					<button
+						onclick={navigateToNext}
+						class="pointer-events-auto absolute top-1/2 right-2 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none md:h-16 md:w-16"
+						aria-label="Next game"
+					>
+						<ChevronRight size={32} class="h-4 w-4 md:h-8 md:w-8" />
+					</button>
+				{/if}
+			</div>
+		</div>
 
 		<div
 			class="relative flex h-auto max-h-[95dvh] w-[95vw] max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
@@ -461,7 +465,7 @@
 		>
 			<button
 				onclick={() => modalStore.closeModal()}
-				class="absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/70 md:top-4 md:right-4 md:bg-gray-200 md:text-gray-600 md:hover:bg-gray-300 md:dark:bg-gray-700 md:dark:text-gray-300 md:dark:hover:bg-gray-600"
+				class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/30 focus:outline-none md:top-4 md:right-4 md:bg-black/10 md:text-white md:hover:bg-black/30"
 				aria-label="Close modal"
 			>
 				<X size={20} />

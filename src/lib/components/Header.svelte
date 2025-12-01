@@ -138,7 +138,7 @@
 
 <style>
 	.header-root {
-		padding: 0.4rem 1.8rem 0.4rem;
+		padding: 0.4rem 16px 0.4rem;
 	}
 
 	.header-inner {
@@ -146,6 +146,9 @@
 		grid-template-columns: 1fr;
 		grid-template-rows: auto auto;
 		gap: 0.5rem;
+		max-width: 1000px;
+		width: 100%;
+		margin: 0 auto;
 	}
 
 	.logo-button {
