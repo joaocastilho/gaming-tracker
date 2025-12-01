@@ -28,7 +28,6 @@
 		"validate": "bun run format && bun run lint && bun run check && bun run test"
 	},
 	"dependencies": {
-		"html2canvas": "^1.4.1",
 		"string-similarity": "^4.0.4"
 	},
 	"devDependencies": {

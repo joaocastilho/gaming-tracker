@@ -77,9 +77,7 @@ export default defineConfig({
 						if (id.includes('lucide-svelte')) {
 							return 'vendor-ui';
 						}
-						if (id.includes('html2canvas')) {
-							return 'vendor-canvas';
-						}
+
 						if (
 							id.includes('date-fns') ||
 							id.includes('zod') ||
