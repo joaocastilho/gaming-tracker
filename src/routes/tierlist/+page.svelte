@@ -219,12 +219,6 @@
 		color: var(--color-text-primary);
 	}
 
-	.reset-button {
-		color: var(--color-text-primary);
-		font-size: 1rem;
-		cursor: pointer;
-	}
-
 	.loading {
 		display: flex;
 		align-items: center;
