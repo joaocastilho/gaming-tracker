@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { modalStore } from '../stores/modal.js';
+	import { filtersStore } from '../stores/filters.js';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
 	import { getTierClass } from '../utils/tierUtils.js';
@@ -158,14 +159,18 @@
 		}
 	}
 
+	function handleCardClick() {
+		if (onOpenModal) {
+			onOpenModal(game, displayedGames);
+		} else {
+			modalStore.openViewModal(game, displayedGames);
+		}
+	}
+
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
-			if (onOpenModal) {
-				onOpenModal(game, displayedGames);
-			} else {
-				modalStore.openViewModal(game, displayedGames);
-			}
+			handleCardClick();
 		}
 	}
 
@@ -174,6 +179,60 @@
 		if (game.coverImage) {
 			const detailImg = new Image();
 			detailImg.src = game.coverImage.replace('.webp', '-detail.webp');
+		}
+	}
+
+	function handlePlatformClick(event: MouseEvent | KeyboardEvent) {
+		event.stopPropagation();
+		if (
+			event instanceof KeyboardEvent &&
+			event.key !== 'Enter' &&
+			event.key !== ' ' &&
+			event.key !== undefined
+		) {
+			return;
+		}
+		filtersStore.togglePlatform(game.platform);
+	}
+
+	function handleGenreClick(event: MouseEvent | KeyboardEvent) {
+		event.stopPropagation();
+		if (
+			event instanceof KeyboardEvent &&
+			event.key !== 'Enter' &&
+			event.key !== ' ' &&
+			event.key !== undefined
+		) {
+			return;
+		}
+		filtersStore.toggleGenre(game.genre);
+	}
+
+	function handleCoOpClick(event: MouseEvent | KeyboardEvent) {
+		event.stopPropagation();
+		if (
+			event instanceof KeyboardEvent &&
+			event.key !== 'Enter' &&
+			event.key !== ' ' &&
+			event.key !== undefined
+		) {
+			return;
+		}
+		filtersStore.toggleCoOp('Yes');
+	}
+
+	function handleTierClick(event: MouseEvent | KeyboardEvent) {
+		event.stopPropagation();
+		if (
+			event instanceof KeyboardEvent &&
+			event.key !== 'Enter' &&
+			event.key !== ' ' &&
+			event.key !== undefined
+		) {
+			return;
+		}
+		if (game.tier) {
+			filtersStore.toggleTier(game.tier);
 		}
 	}
 
@@ -186,18 +245,14 @@
 	});
 </script>
 
-<button
+<div
 	class="game-card {size === 'tierlist' ? 'tierlist-size' : ''}"
 	style="background-color: {game.status === 'Completed'
 		? 'var(--color-surface-completed)'
 		: 'var(--color-surface)'}; color: var(--color-text-primary);"
-	onclick={() => {
-		if (onOpenModal) {
-			onOpenModal(game, displayedGames);
-		} else {
-			modalStore.openViewModal(game, displayedGames);
-		}
-	}}
+	role="button"
+	tabindex="0"
+	onclick={handleCardClick}
 	onkeydown={handleKeyDown}
 	onmouseover={preloadDetailImage}
 	onfocus={preloadDetailImage}
@@ -223,9 +278,14 @@
 		</div>
 
 		{#if showTierBadge && game.status === 'Completed' && game.tier}
-			<div class="tier-badge {getTierClass(game.tier)}">
+			<button
+				class="tier-badge {getTierClass(game.tier)}"
+				onclick={handleTierClick}
+				onkeydown={handleTierClick}
+				aria-label="Filter by Tier {game.tier}"
+			>
 				<span class="tier-text">{getTierDisplayName(game.tier)}</span>
-			</div>
+			</button>
 		{/if}
 	</div>
 
@@ -248,18 +308,35 @@
 		{#if size === 'small'}
 			<div class="platform-genre-year-section">
 				<div class="first-line">
-					<span class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}">
+					<button
+						class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}"
+						onclick={handlePlatformClick}
+						onkeydown={handlePlatformClick}
+						aria-label="Filter by {game.platform}"
+					>
 						{game.platform}
-					</span>
+					</button>
 					<span class="game-year">{game.year}</span>
 				</div>
 				<div class="second-line">
 					<div class="flex items-center gap-2">
-						<span class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}">
+						<button
+							class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}"
+							onclick={handleGenreClick}
+							onkeydown={handleGenreClick}
+							aria-label="Filter by {game.genre}"
+						>
 							{game.genre}
-						</span>
+						</button>
 						{#if game.coOp === 'Yes'}
-							<Users size={16} class="text-blue-400" aria-label="Co-op available" />
+							<button
+								class="coop-badge"
+								onclick={handleCoOpClick}
+								onkeydown={handleCoOpClick}
+								aria-label="Filter by Co-op"
+							>
+								<Users size={16} class="text-blue-400" aria-label="Co-op available" />
+							</button>
 						{/if}
 					</div>
 					<div class="total-score">
@@ -305,7 +382,7 @@
 			</div>
 		{/if}
 	</div>
-</button>
+</div>
 
 <style>
 	/* Responsive card sizing */
@@ -326,12 +403,16 @@
 			box-shadow 0.3s ease-in-out;
 		cursor: pointer;
 		height: 100%; /* Fill height */
+		border: none;
+		padding: 0;
+		text-align: left;
 	}
 
 	.game-card:hover,
-	.game-card:focus {
+	.game-card:focus-visible {
 		transform: translateY(-4px) scale(1.02);
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+		outline: none;
 	}
 
 	.cover-container {
@@ -425,6 +506,13 @@
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		border: none;
+		cursor: pointer;
+		transition: transform 0.2s;
+	}
+
+	.tier-badge:hover {
+		transform: scale(1.1);
 	}
 
 	.tier-text {
@@ -515,6 +603,25 @@
 		font-size: 0.8rem;
 		font-weight: 500;
 		white-space: nowrap;
+		border: none;
+		cursor: pointer;
+		transition: opacity 0.2s;
+	}
+
+	.platform-badge:hover,
+	.genre-badge:hover,
+	.coop-badge:hover {
+		opacity: 0.8;
+	}
+
+	.coop-badge {
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		transition: opacity 0.2s;
 	}
 
 	.ratings-section {
