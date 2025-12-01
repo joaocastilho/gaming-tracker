@@ -16,6 +16,8 @@
 	import { get } from 'svelte/store';
 	import type { Game } from '$lib/types/game.js';
 	import { RotateCcw } from 'lucide-svelte';
+	import GamesView from '$lib/views/GamesView.svelte';
+	import { filteredGames } from '$lib/stores/filteredGamesStore.js';
 
 	let {
 		children,
@@ -103,6 +105,13 @@
 		}
 		return extractFilterOptions(games);
 	});
+
+	let isGamesPage = $derived(
+		page.url.pathname === '/' ||
+			page.url.pathname === '/completed' ||
+			page.url.pathname === '/planned'
+	);
+
 	let isTierlistPage = $derived(page.url.pathname === '/tierlist');
 
 	$effect(() => {
@@ -280,6 +289,12 @@
 		isSearchOpen = false;
 		isFiltersOpen = false;
 	}
+
+	function openModalWithFilterContext(game: Game) {
+		modalStore.openViewModal(game, $filteredGames);
+	}
+
+	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 </script>
 
 <svelte:head>
@@ -351,13 +366,37 @@
 
 	<main class="bg-[var(--color-background)] px-6 pt-0 pb-6">
 		<div class="container mx-auto">
-			{#if isLoading}
-				<!-- Simplified skeleton loading state -->
-				<div class="skeleton-grid">
-					<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
-					{#each Array(12) as _, index (index)}
-						<div class="skeleton-card"></div>
-					{/each}
+			{#if isGamesPage}
+				{#if isLoading}
+					<!-- Simplified skeleton loading state -->
+					<div class="skeleton-grid">
+						<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+						{#each Array(12) as _, index (index)}
+							<div class="skeleton-card"></div>
+						{/each}
+					</div>
+				{:else if hasActiveFilters && $filteredGames.length === 0}
+					<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
+						<h2 class="font-semibold">No games match your current filters</h2>
+						<p class="text-gray-600 dark:text-gray-400">
+							Try adjusting or clearing your filters to see more games.
+						</p>
+						<button
+							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+							type="button"
+							onclick={resetFilters}
+						>
+							<RotateCcw size={18} />
+							Reset
+						</button>
+					</div>
+				{:else}
+					<GamesView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
+				{/if}
+
+				<!-- Keep children rendered but hidden for games pages to allow page logic to run -->
+				<div style="display: none;">
+					{@render children?.()}
 				</div>
 			{:else}
 				{@render children?.()}
@@ -561,5 +600,10 @@
 		100% {
 			background-position: 200% 0;
 		}
+	}
+
+	.no-results {
+		font-size: 1.5rem;
+		color: var(--color-text-primary);
 	}
 </style>
