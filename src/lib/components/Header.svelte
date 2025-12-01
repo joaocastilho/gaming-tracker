@@ -67,7 +67,10 @@
 		updateNavItems();
 	});
 
-	function handleLogoClick() {
+	function handleLogoClick(event: MouseEvent) {
+		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+		event.preventDefault();
+
 		// Logo click should clear filters
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
@@ -99,13 +102,9 @@
 
 <header class="header-root px-6 py-3 md:py-1">
 	<div class="header-inner container mx-auto">
-		<button
-			type="button"
-			class="logo-button relative z-10 mx-auto md:mx-0"
-			onclick={handleLogoClick}
-		>
+		<a href="/" class="logo-button relative z-10 mx-auto md:mx-0" onclick={handleLogoClick}>
 			<Logo />
-		</button>
+		</a>
 
 		<nav class="tabs-nav">
 			<ul class="tabs-list">
