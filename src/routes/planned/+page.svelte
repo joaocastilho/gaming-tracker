@@ -7,16 +7,8 @@
 	import type { Game } from '$lib/types/game';
 	import { RotateCcw } from 'lucide-svelte';
 
-	let allGames = $state<Game[]>([]);
 	let hasInitializedGames = $state(false);
 	let isLoadingGames = $state(true);
-
-	// Subscribe to games store
-	gamesStore.subscribe((games) => {
-		if (games && games.length > 0) {
-			allGames = games;
-		}
-	});
 
 	// Force active tab to planned
 	$effect(() => {
@@ -68,14 +60,6 @@
 			unsubscribe();
 			gamesUnsubscribe();
 		};
-	});
-
-	// Subscribe to filter changes
-	$effect(() => {
-		const unsubscribe = filtersStore.subscribe(($filters) => {
-			// Logic moved to filteredGamesStore
-		});
-		return unsubscribe;
 	});
 
 	// Use the shared filtered games store

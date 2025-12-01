@@ -35,7 +35,6 @@
 	);
 
 	function handleSort(key: SortKey) {
-		const currentSort = $sortOptionStore;
 		// If we are clicking the already active sort (even if it's default), toggle direction
 		if (activeKey === key) {
 			// Toggle direction
@@ -77,7 +76,7 @@
 			onclick={() => handleSort('presentation')}
 			aria-label="Sort by Presentation"
 		>
-			<Presentation class="sort-icon text-cyan-500" aria-hidden="true" />
+			<Presentation class="sort-icon text-rose-500" aria-hidden="true" />
 			<span class="sort-field-label">Presentation</span>
 			{#if activeKey === 'presentation'}
 				{#if activeDirection === 'asc'}
@@ -95,7 +94,7 @@
 			onclick={() => handleSort('story')}
 			aria-label="Sort by Story"
 		>
-			<NotebookPen class="sort-icon text-amber-600" aria-hidden="true" />
+			<NotebookPen class="sort-icon text-sky-500" aria-hidden="true" />
 			<span class="sort-field-label">Story</span>
 			{#if activeKey === 'story'}
 				{#if activeDirection === 'asc'}
@@ -113,7 +112,7 @@
 			onclick={() => handleSort('gameplay')}
 			aria-label="Sort by Gameplay"
 		>
-			<Gamepad2 class="sort-icon text-pink-500" aria-hidden="true" />
+			<Gamepad2 class="sort-icon text-emerald-500" aria-hidden="true" />
 			<span class="sort-field-label">Gameplay</span>
 			{#if activeKey === 'gameplay'}
 				{#if activeDirection === 'asc'}
@@ -201,8 +200,8 @@
 
 	/* Adjust icon sizes */
 	:global(.sort-icon) {
-		width: 16px;
-		height: 16px;
+		width: 20px;
+		height: 20px;
 	}
 
 	:global(.sort-direction-icon) {

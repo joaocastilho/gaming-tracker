@@ -657,7 +657,7 @@
 							</h3>
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
+									<Presentation size={20} class="flex-shrink-0 text-rose-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Presentation</span
@@ -681,7 +681,7 @@
 
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
+									<NotebookPen size={20} class="flex-shrink-0 text-sky-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Story</span
@@ -705,7 +705,7 @@
 
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
+									<Gamepad2 size={20} class="flex-shrink-0 text-emerald-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Gameplay</span
@@ -754,7 +754,7 @@
 
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<Presentation size={20} class="flex-shrink-0 text-cyan-500" />
+									<Presentation size={20} class="flex-shrink-0 text-rose-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Presentation</span
@@ -776,7 +776,7 @@
 
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<NotebookPen size={20} class="flex-shrink-0 text-amber-600" />
+									<NotebookPen size={20} class="flex-shrink-0 text-sky-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Story</span
@@ -798,7 +798,7 @@
 
 							<div class="flex items-center gap-3">
 								<div class="flex min-w-0 flex-1 items-center gap-2">
-									<Gamepad2 size={20} class="flex-shrink-0 text-pink-500" />
+									<Gamepad2 size={20} class="flex-shrink-0 text-emerald-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Gameplay</span

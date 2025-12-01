@@ -349,18 +349,18 @@
 			<div class="ratings-section">
 				<div class="rating-item">
 					<Presentation
-						class="rating-icon text-cyan-500"
+						class="rating-icon text-rose-500"
 						aria-label="Presentation rating"
 						size={20}
 					/>
 					<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
 				</div>
 				<div class="rating-item">
-					<NotebookPen class="rating-icon text-amber-600" aria-label="Story rating" size={20} />
+					<NotebookPen class="rating-icon text-sky-500" aria-label="Story rating" size={20} />
 					<span class="rating-score">{game.ratingStory ?? '-'}</span>
 				</div>
 				<div class="rating-item">
-					<Gamepad2 class="rating-icon text-pink-500" aria-label="Gameplay rating" size={20} />
+					<Gamepad2 class="rating-icon text-emerald-500" aria-label="Gameplay rating" size={20} />
 					<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
 				</div>
 			</div>
@@ -410,8 +410,8 @@
 
 	.game-card:hover,
 	.game-card:focus-visible {
-		transform: translateY(-4px) scale(1.02);
-		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+		transform: translateY(-2px) scale(1.01);
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 		outline: none;
 	}
 

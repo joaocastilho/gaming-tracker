@@ -111,14 +111,6 @@
 		return unsubscribe;
 	});
 
-	// Subscribe to filters store (no longer enforcing default sort here)
-	$effect(() => {
-		const unsubscribe = filtersStore.subscribe(($filters) => {
-			// Logic moved to filteredGamesStore
-		});
-		return unsubscribe;
-	});
-
 	// Simple derived values for each tab
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 
