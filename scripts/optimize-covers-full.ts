@@ -213,8 +213,25 @@ async function main(): Promise<void> {
 	// Get all PNG files
 	console.log('🔍 Scanning covers_raw directory...');
 	const allFiles = await readdir(COVERS_RAW_DIR);
-	const pngFiles = allFiles.filter((f) => f.toLowerCase().endsWith('.png'));
+	let pngFiles = allFiles.filter((f) => f.toLowerCase().endsWith('.png'));
 	console.log(`✅ Found ${pngFiles.length} PNG files`);
+
+	// Filter by command line arguments if provided
+	const specificGames = process.argv.slice(2);
+	if (specificGames.length > 0) {
+		console.log(`🎯 Filtering for ${specificGames.length} specific games:`, specificGames);
+		pngFiles = pngFiles.filter((file) => {
+			const nameWithoutExt = file.replace(/\.[^/.]+$/, '');
+			// Check if the filename matches any of the provided IDs (exact or partial)
+			return specificGames.some(
+				(id) =>
+					nameWithoutExt === id ||
+					nameWithoutExt.toLowerCase().includes(id.toLowerCase()) ||
+					id.toLowerCase().includes(nameWithoutExt.toLowerCase())
+			);
+		});
+		console.log(`✅ Filtered down to ${pngFiles.length} files to process`);
+	}
 
 	// Create output directory
 	await mkdir(COVERS_DIR, { recursive: true });
