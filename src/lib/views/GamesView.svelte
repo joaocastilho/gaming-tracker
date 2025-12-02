@@ -101,7 +101,7 @@
 						</div>
 					{/each}
 					{#if row.games.length < columns}
-						{#each Array.from({ length: columns - row.games.length }) as i (i)}
+						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
 					{/if}
@@ -118,7 +118,7 @@
 						</div>
 					{/each}
 					{#if row.games.length < columns}
-						{#each Array.from({ length: columns - row.games.length }) as i (i)}
+						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
 					{/if}
