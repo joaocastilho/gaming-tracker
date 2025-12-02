@@ -197,10 +197,6 @@
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 </script>
 
-<svelte:head>
-	<title>Tier List - Gaming Tracker</title>
-</svelte:head>
-
 <div class="main-content" id="main-content">
 	{#if isLoadingGames}
 		<div class="loading">Loading tier list...</div>

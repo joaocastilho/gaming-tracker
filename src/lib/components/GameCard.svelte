@@ -236,12 +236,20 @@
 		}
 	}
 
-	// Handle images that are already loaded (from cache) when component mounts
+	// Handle images that are already loaded (from cache) when component mounts or when game changes
 	$effect(() => {
-		if (imageElement && imageElement.complete && imageElement.naturalHeight !== 0) {
-			// Image is already loaded (from cache), trigger the load handler
-			handleImageLoad();
-		}
+		// Track game.id to ensure effect runs when switching between games (e.g., during filtering)
+		const gameId = game.id;
+
+		if (!imageElement) return;
+
+		// Use a microtask to ensure the image src has been set before checking
+		queueMicrotask(() => {
+			if (imageElement && imageElement.complete && imageElement.naturalHeight !== 0) {
+				// Image is already loaded (from cache), trigger the load handler
+				handleImageLoad();
+			}
+		});
 	});
 </script>
 

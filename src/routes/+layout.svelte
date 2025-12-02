@@ -27,7 +27,7 @@
 		data: { games: Promise<Game[]> | Game[] };
 	} = $props();
 
-	let initialized = false;
+	let initialized = $state(false);
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
 	let DetailModalComponent = $state<
 		typeof import('$lib/components/DetailModal.svelte').default | null
@@ -115,6 +115,8 @@
 	let isTierlistPage = $derived(page.url.pathname === '/tierlist');
 
 	$effect(() => {
+		if (!initialized) return;
+
 		const tab = get(appStore.activeTab);
 
 		if (tab === 'tierlist') {
@@ -127,6 +129,16 @@
 			// Ensure filters are available for non-tierlist views
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 			appStore.writeToURLWithFilters(filtersStore);
+		}
+	});
+
+	// Initialize URL reading
+	$effect(() => {
+		if (typeof window !== 'undefined' && !initialized) {
+			const searchParams = new URLSearchParams(window.location.search);
+			filtersStore.readFromURL(searchParams);
+			appStore.readFromURL(searchParams);
+			initialized = true;
 		}
 	});
 
@@ -575,9 +587,15 @@
 	/* Simplified skeleton loading styles */
 	.skeleton-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 1rem;
 		padding-top: 2rem;
+	}
+
+	@media (max-width: 768px) {
+		.skeleton-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.skeleton-card {

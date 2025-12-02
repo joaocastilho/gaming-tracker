@@ -113,7 +113,7 @@
 		class="virtual-items"
 		style="position: absolute; top: {visibleRange().start * itemHeight}px; left: 0; right: 0;"
 	>
-		{#each visibleItems() as { item, index } (keyExtractor(item, index))}
+		{#each visibleItems() as { item, index } (keyExtractor(item, index) ?? `fallback-key-${index}`)}
 			<div class="virtual-item pb-5">
 				{@render renderItem(item, index < priorityCount)}
 			</div>

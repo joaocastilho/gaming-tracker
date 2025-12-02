@@ -19,7 +19,10 @@
 
 	// Calculate columns based on container width and card minimum width (300px + gap)
 	// For mobile (< 768px), force 2 columns
-	let columns = $derived(containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320)));
+	// Handle 0/undefined width by defaulting to 2 columns (mobile-first safe bet)
+	let columns = $derived(
+		!containerWidth || containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320))
+	);
 
 	// Chunk games into rows for the virtual list
 	let rows = $derived(
@@ -27,7 +30,17 @@
 			if (!filteredGames) return [];
 
 			// Filter out any undefined/null games and games without IDs
-			const validGames = filteredGames.filter((game) => game && game.id);
+			// Also deduplicate by ID to prevent key errors
+			const uniqueGames = new Map();
+			filteredGames.forEach((game) => {
+				if (game && typeof game.id === 'string' && game.id.length > 0) {
+					if (!uniqueGames.has(game.id)) {
+						uniqueGames.set(game.id, game);
+					}
+				}
+			});
+
+			const validGames = Array.from(uniqueGames.values());
 
 			const result = [];
 			for (let i = 0; i < validGames.length; i += columns) {
@@ -90,7 +103,7 @@
 				isPriority: boolean
 			)}
 				<div class="game-row">
-					{#each row.games as game, i (game.id)}
+					{#each row.games as game, i (game.id || `fallback-${row.id}-${i}`)}
 						<div class="game-card-wrapper">
 							<GameCard
 								{game}
@@ -102,7 +115,7 @@
 					{/each}
 					<!-- Fill empty spots in the last row to maintain alignment -->
 					{#if row.games.length < columns}
-						{#each Array.from({ length: columns - row.games.length }) as i (i)}
+						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
 					{/if}
@@ -114,13 +127,13 @@
 		<div class="game-gallery-virtual">
 			{#each rows.slice(0, 4) as row (row.id)}
 				<div class="game-row">
-					{#each row.games as game, i (game.id)}
+					{#each row.games as game, i (game.id || `fallback-ssr-${row.id}-${i}`)}
 						<div class="game-card-wrapper">
 							<GameCard {game} {displayedGames} isPriority={i < 4} onOpenModal={handleOpenModal} />
 						</div>
 					{/each}
 					{#if row.games.length < columns}
-						{#each Array.from({ length: columns - row.games.length }) as i (i)}
+						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
 					{/if}
@@ -172,11 +185,6 @@
 		margin-bottom: 0;
 		margin-left: auto;
 		margin-right: auto;
-	}
-
-	/* Ensure cards are centered within their grid cells */
-	.game-gallery-container :global(.game-card) {
-		margin-bottom: 0;
 	}
 
 	.empty-editor-hint {

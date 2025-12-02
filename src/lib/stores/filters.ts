@@ -10,20 +10,7 @@ import FilterWorker from '$lib/workers/filterWorker.ts?worker';
 // Define browser check for test environments
 const browser = typeof window !== 'undefined';
 
-function memoize<TArgs extends unknown[], TReturn>(
-	fn: (...args: TArgs) => TReturn
-): (...args: TArgs) => TReturn {
-	const cache = new Map<string, TReturn>();
-	return (...args: TArgs) => {
-		const key = JSON.stringify(args);
-		if (cache.has(key)) {
-			return cache.get(key)!;
-		}
-		const result = fn(...args);
-		cache.set(key, result);
-		return result;
-	};
-}
+import { memoize } from '$lib/utils/memoize';
 
 export type SortKey =
 	| 'presentation'
