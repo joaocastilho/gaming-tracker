@@ -27,16 +27,13 @@
 		data: { games: Promise<Game[]> | Game[] };
 	} = $props();
 
+	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
+	import FilterToggle from '$lib/components/FilterToggle.svelte';
+
 	let initialized = $state(false);
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
 	let DetailModalComponent = $state<
 		typeof import('$lib/components/DetailModal.svelte').default | null
-	>(null);
-	let FilterDropdownComponent = $state<
-		typeof import('$lib/components/FilterDropdown.svelte').default | null
-	>(null);
-	let FilterToggleComponent = $state<
-		typeof import('$lib/components/FilterToggle.svelte').default | null
 	>(null);
 
 	// Simplified loading state - no progressive loading
@@ -146,48 +143,6 @@
 				.catch(() => {
 					// Silently handle DetailModal loading errors
 				});
-		}
-	});
-
-	$effect(() => {
-		// Load FilterDropdown component after initial render to reduce critical path
-		if (!FilterDropdownComponent && browser) {
-			// Defer loading until after initial paint
-			const loadFilterDropdown = () => {
-				import('$lib/components/FilterDropdown.svelte')
-					.then((module) => {
-						FilterDropdownComponent = module.default;
-					})
-					.catch(() => {
-						// Silently handle FilterDropdown loading errors
-					});
-			};
-
-			// Use requestIdleCallback if available, fallback to setTimeout
-			if ('requestIdleCallback' in window) {
-				requestIdleCallback(loadFilterDropdown, { timeout: 2000 });
-			} else {
-				setTimeout(loadFilterDropdown, 100);
-			}
-		}
-
-		// Load FilterToggle component
-		if (!FilterToggleComponent && browser) {
-			const loadFilterToggle = () => {
-				import('$lib/components/FilterToggle.svelte')
-					.then((module) => {
-						FilterToggleComponent = module.default;
-					})
-					.catch(() => {
-						// Silently handle FilterToggle loading errors
-					});
-			};
-
-			if ('requestIdleCallback' in window) {
-				requestIdleCallback(loadFilterToggle, { timeout: 2000 });
-			} else {
-				setTimeout(loadFilterToggle, 100);
-			}
 		}
 	});
 
@@ -313,44 +268,29 @@
 				<SearchBar />
 				<div class="flex flex-col items-center gap-4">
 					<div class="flex flex-wrap items-center justify-center gap-3">
-						{#if FilterDropdownComponent}
-							<FilterDropdownComponent
-								type="platforms"
-								label="Platforms"
-								options={filterOptions().platforms}
-								selectedOptions={selectedPlatforms}
+						<FilterDropdown
+							type="platforms"
+							label="Platforms"
+							options={filterOptions().platforms}
+							selectedOptions={selectedPlatforms}
+						/>
+						<FilterDropdown
+							type="genres"
+							label="Genres"
+							options={filterOptions().genres}
+							selectedOptions={selectedGenres}
+						/>
+						{#if showTiersFilter}
+							<FilterDropdown
+								type="tiers"
+								label="Tiers"
+								options={filterOptions().tiers}
+								selectedOptions={selectedTiers}
 							/>
-							<FilterDropdownComponent
-								type="genres"
-								label="Genres"
-								options={filterOptions().genres}
-								selectedOptions={selectedGenres}
-							/>
-							{#if showTiersFilter}
-								<FilterDropdownComponent
-									type="tiers"
-									label="Tiers"
-									options={filterOptions().tiers}
-									selectedOptions={selectedTiers}
-								/>
-							{/if}
-						{:else}
-							<!-- Loading placeholder for FilterDropdown -->
-							<div class="bg-surface flex h-11 w-24 animate-pulse rounded-md"></div>
-							<div class="bg-surface flex h-11 w-20 animate-pulse rounded-md"></div>
-							<div class="bg-surface flex h-11 w-16 animate-pulse rounded-md"></div>
 						{/if}
 
-						{#if FilterToggleComponent}
-							{#if showCoOpFilter}
-								<FilterToggleComponent
-									label="Co-op"
-									value="Yes"
-									isSelected={selectedCoOp.includes('Yes')}
-								/>
-							{/if}
-						{:else}
-							<div class="bg-surface flex h-11 w-20 animate-pulse rounded-md"></div>
+						{#if showCoOpFilter}
+							<FilterToggle label="Co-op" value="Yes" isSelected={selectedCoOp.includes('Yes')} />
 						{/if}
 						<span class="pipe-separator">|</span>
 						<RatingsSort />
@@ -376,7 +316,10 @@
 					<div class="skeleton-grid">
 						<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
 						{#each Array(12) as _, index (index)}
-							<div class="skeleton-card"></div>
+							<div class="skeleton-card">
+								<div class="skeleton-image"></div>
+								<div class="skeleton-info"></div>
+							</div>
 						{/each}
 					</div>
 				{:else if hasActiveFilters && $filteredGames.length === 0}
@@ -485,26 +428,22 @@
 				</div>
 				<div class="max-h-[calc(95vh-120px)] space-y-4 overflow-y-auto p-4">
 					<!-- Platforms -->
-					{#if FilterDropdownComponent}
-						<FilterDropdownComponent
-							type="platforms"
-							label="Platforms"
-							options={filterOptions().platforms}
-							selectedOptions={selectedPlatforms}
-						/>
-					{/if}
+					<FilterDropdown
+						type="platforms"
+						label="Platforms"
+						options={filterOptions().platforms}
+						selectedOptions={selectedPlatforms}
+					/>
 					<!-- Genres -->
-					{#if FilterDropdownComponent}
-						<FilterDropdownComponent
-							type="genres"
-							label="Genres"
-							options={filterOptions().genres}
-							selectedOptions={selectedGenres}
-						/>
-					{/if}
+					<FilterDropdown
+						type="genres"
+						label="Genres"
+						options={filterOptions().genres}
+						selectedOptions={selectedGenres}
+					/>
 					<!-- Tiers -->
-					{#if FilterDropdownComponent && showTiersFilter}
-						<FilterDropdownComponent
+					{#if showTiersFilter}
+						<FilterDropdown
 							type="tiers"
 							label="Tiers"
 							options={filterOptions().tiers}
@@ -512,12 +451,8 @@
 						/>
 					{/if}
 					<!-- Co-op -->
-					{#if FilterToggleComponent && showCoOpFilter}
-						<FilterToggleComponent
-							label="Co-op"
-							value="Yes"
-							isSelected={selectedCoOp.includes('Yes')}
-						/>
+					{#if showCoOpFilter}
+						<FilterToggle label="Co-op" value="Yes" isSelected={selectedCoOp.includes('Yes')} />
 					{/if}
 					<!-- Ratings Sort -->
 					<RatingsSort />
@@ -579,9 +514,38 @@
 	/* Simplified skeleton loading styles */
 	.skeleton-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 1rem;
-		padding-top: 2rem;
+		grid-template-columns: repeat(2, 1fr);
+		gap: clamp(0.5rem, 0.5rem + 2vw, 2.5rem);
+		padding: 0.5rem;
+		width: 100%;
+	}
+
+	@media (min-width: 1008px) {
+		/* 960px + 48px padding */
+		.skeleton-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (min-width: 1328px) {
+		/* 1280px + 48px padding */
+		.skeleton-grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	@media (min-width: 1648px) {
+		/* 1600px + 48px padding */
+		.skeleton-grid {
+			grid-template-columns: repeat(5, 1fr);
+		}
+	}
+
+	@media (min-width: 1968px) {
+		/* 1920px + 48px padding */
+		.skeleton-grid {
+			grid-template-columns: repeat(6, 1fr);
+		}
 	}
 
 	@media (max-width: 768px) {
@@ -591,6 +555,18 @@
 	}
 
 	.skeleton-card {
+		display: flex;
+		flex-direction: column;
+		height: auto;
+		border-radius: 6px;
+		overflow: hidden;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+		background-color: var(--color-surface);
+	}
+
+	.skeleton-image {
+		width: 100%;
+		aspect-ratio: 2 / 3;
 		background: linear-gradient(
 			90deg,
 			var(--color-surface) 0%,
@@ -599,8 +575,12 @@
 		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s ease-in-out infinite;
-		height: 400px;
-		border-radius: 0.5rem;
+	}
+
+	.skeleton-info {
+		height: 300px;
+		background-color: var(--color-surface);
+		border-top: 1px solid var(--color-border);
 	}
 
 	@keyframes shimmer {
