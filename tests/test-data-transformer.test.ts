@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'bun:test';
 import { transformGameData } from '$lib/utils/dataTransformer';
 
-describe('Title Transforms & Data Normalization', () => {
+describe('Data Transformer', () => {
 	test('Title Parsing', () => {
 		const gameWithSubtitle = { title: 'The Legend of Zelda: Breath of the Wild (Switch)' };
 		const transformed1 = transformGameData(gameWithSubtitle);
@@ -46,6 +46,20 @@ describe('Title Transforms & Data Normalization', () => {
 		const transformed9 = transformGameData(gameWithId);
 		// 'existing-id' is NOT a valid UUID, so it SHOULD be replaced.
 		expect(transformed9.id).not.toBe('existing-id');
+	});
+
+	test('ID Generation Edge Cases', () => {
+		const gameNoTitle = { genre: 'RPG' }; // No title
+		const transformed = transformGameData(gameNoTitle);
+		expect(transformed.id).toBeDefined();
+		expect(typeof transformed.id).toBe('string');
+	});
+
+	test('Preserve Valid UUID', () => {
+		const id = '12345678-1234-4234-8234-1234567890ab';
+		const game = { id, title: 'Test Game' };
+		const transformed = transformGameData(game);
+		expect(transformed.id).toBe(id);
 	});
 
 	test('Co-op Defaults', () => {

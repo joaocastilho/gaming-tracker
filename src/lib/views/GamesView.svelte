@@ -101,6 +101,7 @@
 						</div>
 					{/each}
 					{#if row.games.length < columns}
+						<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
 						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
@@ -118,6 +119,7 @@
 						</div>
 					{/each}
 					{#if row.games.length < columns}
+						<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
 						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}

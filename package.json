@@ -17,7 +17,7 @@
 		"generate-favicons": "bun scripts/generate-favicons.ts",
 		"optimize-covers": "bun scripts/optimize-covers-full.ts",
 		"optimize-logo": "bun scripts/optimize-logo.ts",
-		"test:user-flows": "bun test tests/test-user-flows.test.ts",
+		"test:game-management": "bun test tests/test-game-management.test.ts",
 		"test:data-persistence": "bun test tests/test-data-persistence.test.ts",
 		"test:browser-navigation": "bun test tests/test-browser-navigation.test.ts",
 		"test:theme-switching": "bun test tests/test-theme-switching.test.ts",

@@ -2,6 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import { onMount, onDestroy } from 'svelte';
 
+	import { safeKeyExtractor } from '$lib/utils/safeKeyExtractor';
+
 	interface Props<T> {
 		items: T[];
 		itemHeight: number;
@@ -112,7 +114,7 @@
 		class="virtual-items"
 		style="position: absolute; top: {visibleRange().start * itemHeight}px; left: 0; right: 0;"
 	>
-		{#each visibleItems() as { item, index } (keyExtractor(item, index) ?? `fallback-key-${index}`)}
+		{#each visibleItems() as { item, index } (safeKeyExtractor(item, index, keyExtractor))}
 			<div class="virtual-item">
 				{@render renderItem(item, index < priorityCount)}
 			</div>

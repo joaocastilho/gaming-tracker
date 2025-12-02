@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'bun:test';
 import { applySortOption } from '../src/lib/workers/filterWorker';
-import { transformGameData } from '../src/lib/utils/dataTransformer';
 import type { Game } from '../src/lib/types/game';
 
 const mockGames: Game[] = [
@@ -50,7 +49,7 @@ const mockGames: Game[] = [
 	} as Game
 ];
 
-describe('Sorting Logic', () => {
+describe('Filter Worker Sorting Logic', () => {
 	it('should put games with data first when sorting by score ASC', () => {
 		const sorted = applySortOption([...mockGames], { key: 'score', direction: 'asc' });
 		// Expected order: Game C (80), Game A (90), then Game B/D (no data)
@@ -76,28 +75,5 @@ describe('Sorting Logic', () => {
 		expect(sorted[1].id).toBe('1');
 		expect(['2', '4']).toContain(sorted[2].id);
 		expect(['2', '4']).toContain(sorted[3].id);
-	});
-});
-
-describe('Data Transformer', () => {
-	it('should generate ID for game without ID but with title', () => {
-		const game = { title: 'Test Game' };
-		const transformed = transformGameData(game);
-		expect(transformed.id).toBeDefined();
-		expect(typeof transformed.id).toBe('string');
-	});
-
-	it('should generate ID for game without ID and without title', () => {
-		const game = { genre: 'RPG' }; // No title
-		const transformed = transformGameData(game);
-		expect(transformed.id).toBeDefined();
-		expect(typeof transformed.id).toBe('string');
-	});
-
-	it('should preserve existing valid UUID', () => {
-		const id = '12345678-1234-4234-8234-1234567890ab';
-		const game = { id, title: 'Test Game' };
-		const transformed = transformGameData(game);
-		expect(transformed.id).toBe(id);
 	});
 });
