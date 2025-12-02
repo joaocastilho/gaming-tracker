@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteMap } from 'svelte/reactivity';
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
 	import { editorStore } from '$lib/stores/editor';
@@ -25,10 +26,7 @@
 		(() => {
 			if (!filteredGames) return [];
 
-			// Filter out any undefined/null games and games without IDs
-			// Also deduplicate by ID to prevent key errors
-			// eslint-disable-next-line svelte/prefer-svelte-reactivity
-			const uniqueGames = new Map();
+			const uniqueGames = new SvelteMap();
 			filteredGames.forEach((game) => {
 				if (game && typeof game.id === 'string' && game.id.length > 0) {
 					if (!uniqueGames.has(game.id)) {
@@ -141,10 +139,8 @@
 		min-height: 600px;
 	}
 
-	/* Virtual list container styles */
 	:global(.game-gallery-virtual) {
 		width: 100%;
-		/* padding removed to prevent layout shift */
 	}
 
 	.game-row {
@@ -160,7 +156,7 @@
 		flex: 1;
 		display: flex;
 		justify-content: center;
-		min-width: 0; /* Prevent flex overflow */
+		min-width: 0;
 	}
 
 	.game-card-wrapper.empty {
