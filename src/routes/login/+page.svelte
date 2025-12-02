@@ -4,13 +4,8 @@
 	import LoginModal from '$lib/components/LoginModal.svelte';
 	import { editorStore } from '$lib/stores/editor';
 
-	let loginModalRef: InstanceType<typeof LoginModal> | null = null;
-	let editorMode = false;
-
-	// Subscribe to editor store to check login status
-	const unsubscribe = editorStore.subscribe(($s) => {
-		editorMode = $s.editorMode;
-	});
+	let loginModalRef = $state<InstanceType<typeof LoginModal> | null>(null);
+	let editorMode = $derived($editorStore.editorMode);
 
 	onMount(() => {
 		// If already logged in, redirect to home
@@ -23,16 +18,14 @@
 		if (loginModalRef && typeof loginModalRef.openModal === 'function') {
 			loginModalRef.openModal();
 		}
-
-		return () => {
-			unsubscribe();
-		};
 	});
 
 	// Watch for successful login and redirect
-	$: if (editorMode) {
-		goto('/');
-	}
+	$effect(() => {
+		if (editorMode) {
+			goto('/');
+		}
+	});
 </script>
 
 <LoginModal bind:this={loginModalRef} />

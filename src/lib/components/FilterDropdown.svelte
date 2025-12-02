@@ -23,10 +23,6 @@
 
 	function handleClickOutside(event: MouseEvent) {
 		const target = event.target as Node;
-		const dropdown = document.querySelector('.filter-options-dropdown');
-		if (dropdown && dropdown.contains(target)) {
-			return;
-		}
 
 		if (dropdownElement && !dropdownElement.contains(target)) {
 			isOpen = false;

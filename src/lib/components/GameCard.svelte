@@ -52,14 +52,7 @@
 	let imageElement = $state<HTMLImageElement>();
 	let isVisible = $state(true);
 
-	let totalScore = $derived(
-		game.status === 'Completed' &&
-			game.ratingPresentation !== null &&
-			game.ratingStory !== null &&
-			game.ratingGameplay !== null
-			? Math.round(((game.ratingPresentation + game.ratingStory + game.ratingGameplay) / 3) * 2)
-			: null
-	);
+	let totalScore = $derived(game.score);
 
 	function fitTitle(node: HTMLElement, params: { title: string; subtitle?: string }) {
 		let currentParams = params;
