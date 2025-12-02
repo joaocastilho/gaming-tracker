@@ -438,7 +438,6 @@ function createFiltersStore() {
 				// Ignore router initialization errors
 			}
 		}, 500)
-
 	};
 }
 

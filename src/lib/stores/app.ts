@@ -1,6 +1,4 @@
 import { writable, derived, get } from 'svelte/store';
-import type { filtersStore as FiltersStoreType } from './filters.js';
-import { replaceState } from '$app/navigation';
 
 export interface AppState {
 	theme: 'dark' | 'light';
@@ -56,8 +54,7 @@ function createAppStore() {
 			if (force || previousTab !== tab) {
 				activeTab.set(tab);
 			}
-		},
-
+		}
 	};
 }
 

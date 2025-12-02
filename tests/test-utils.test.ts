@@ -7,7 +7,7 @@ import {
 	getGenreColor,
 	getTierColor
 } from '$lib/utils/filterOptions';
-import { getUrlParams } from '$lib/utils/clientUtils';
+
 import type { Game } from '$lib/types/game';
 
 describe('Utility Tests', () => {
@@ -108,23 +108,6 @@ describe('Utility Tests', () => {
 			expect(getGenreColor('RPG')).toBeDefined();
 			expect(getTierColor('S')).toBeDefined();
 			expect(getPlatformColor('Unknown')).toContain('bg-gray-600');
-		});
-	});
-
-	describe('Client Utils', () => {
-		it('parses URL params correctly', () => {
-			const params = new URLSearchParams();
-			params.set('searchTerm', 'test');
-			params.append('platforms', 'PC');
-			params.append('platforms', 'PS5');
-			params.set('sortBy', 'score');
-			params.set('sortDir', 'desc');
-
-			const parsed = getUrlParams(params);
-
-			expect(parsed.searchTerm).toBe('test');
-			expect(parsed.platforms).toEqual(['PC', 'PS5']);
-			expect(parsed.sortOption).toEqual({ key: 'score', direction: 'desc' });
 		});
 	});
 });

@@ -17,20 +17,17 @@
 	let mounted = $state(false);
 	let containerWidth = $state(1200); // Default width
 
-	// Calculate columns based on container width and card minimum width (300px + gap)
-	// For mobile (< 768px), force 2 columns
-	// Handle 0/undefined width by defaulting to 2 columns (mobile-first safe bet)
 	let columns = $derived(
 		!containerWidth || containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320))
 	);
 
-	// Chunk games into rows for the virtual list
 	let rows = $derived(
 		(() => {
 			if (!filteredGames) return [];
 
 			// Filter out any undefined/null games and games without IDs
 			// Also deduplicate by ID to prevent key errors
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity
 			const uniqueGames = new Map();
 			filteredGames.forEach((game) => {
 				if (game && typeof game.id === 'string' && game.id.length > 0) {
@@ -55,24 +52,14 @@
 		})()
 	);
 
-	// Calculate item height based on container width to match GameCard responsiveness
 	let itemHeight = $derived(
 		(() => {
-			// Base info height (title + metadata + padding)
-			// Increased to 300 to prevent overlapping on mobile/smaller screens where titles wrap
 			const infoHeight = 300;
-
-			// Calculate exact column width based on container padding and gaps
-			// Container padding: 0.5rem (8px) on each side = 16px
-			// Gap: 0.75rem (12px)
 			const containerPadding = 16;
 			const gap = 12;
-
 			const totalGapWidth = (columns - 1) * gap;
 			const availableWidth = containerWidth - containerPadding - totalGapWidth;
 			const columnWidth = availableWidth / columns;
-
-			// Aspect ratio for cover is 1.5 (2:3)
 			const coverHeight = columnWidth * 1.5;
 
 			return coverHeight + infoHeight;
@@ -113,9 +100,8 @@
 							/>
 						</div>
 					{/each}
-					<!-- Fill empty spots in the last row to maintain alignment -->
 					{#if row.games.length < columns}
-						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
+						{#each Array.from({ length: columns - row.games.length }) as i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
 					{/if}
@@ -123,7 +109,6 @@
 			{/snippet}
 		</VirtualList>
 	{:else if filteredGames.length > 0}
-		<!-- SSR / Initial Render Fallback: Render first few rows statically for fast LCP -->
 		<div class="game-gallery-virtual">
 			{#each rows.slice(0, 4) as row (row.id)}
 				<div class="game-row">
@@ -133,7 +118,7 @@
 						</div>
 					{/each}
 					{#if row.games.length < columns}
-						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
+						{#each Array.from({ length: columns - row.games.length }) as i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
 					{/if}

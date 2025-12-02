@@ -17,6 +17,7 @@
 	import type { Game } from '$lib/types/game.js';
 	import { RotateCcw } from 'lucide-svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
+	import TierListView from '$lib/views/TierListView.svelte';
 	import { filteredGames } from '$lib/stores/filteredGamesStore.js';
 
 	let {
@@ -182,6 +183,22 @@
 		}
 	});
 
+	// Handle URL reading for modal (Global)
+	$effect(() => {
+		const games = $gamesStore;
+		if (games.length > 0) {
+			modalStore.readFromURL(page.url.searchParams, games);
+		}
+	});
+
+	// Handle pending modal from URL (Global)
+	$effect(() => {
+		const games = $gamesStore;
+		if (games.length > 0) {
+			modalStore.openPendingGameFromURL(games);
+		}
+	});
+
 	let selectedPlatforms: string[] = $state([]);
 	let selectedGenres: string[] = $state([]);
 	let selectedTiers: string[] = $state([]);
@@ -312,10 +329,9 @@
 		<div class="container mx-auto">
 			{#if isGamesPage}
 				{#if isLoading}
-					<!-- Simplified skeleton loading state -->
 					<div class="skeleton-grid">
 						<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
-						{#each Array(12) as _, index (index)}
+						{#each Array.from({ length: 15 }) as _, i (i)}
 							<div class="skeleton-card">
 								<div class="skeleton-image"></div>
 								<div class="skeleton-info"></div>
@@ -341,7 +357,35 @@
 					<GamesView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
 				{/if}
 
-				<!-- Keep children rendered but hidden for games pages to allow page logic to run -->
+				<div style="display: none;">
+					{@render children?.()}
+				</div>
+			{:else if isTierlistPage}
+				{#if isLoading}
+					<div
+						class="loading flex min-h-[50vh] items-center justify-center text-center text-xl font-medium text-[var(--color-text-primary)]"
+					>
+						Loading tier list...
+					</div>
+				{:else if hasActiveFilters && $filteredGames.length === 0}
+					<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
+						<h2 class="font-semibold">No games match your current filters</h2>
+						<p class="text-gray-600 dark:text-gray-400">
+							Try adjusting or clearing your filters to see more games.
+						</p>
+						<button
+							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+							type="button"
+							onclick={resetFilters}
+						>
+							<RotateCcw size={18} />
+							Reset
+						</button>
+					</div>
+				{:else}
+					<TierListView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
+				{/if}
+
 				<div style="display: none;">
 					{@render children?.()}
 				</div>
@@ -511,13 +555,18 @@
 		color: var(--color-text-primary);
 	}
 
-	/* Simplified skeleton loading styles */
 	.skeleton-grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(5, 1fr);
 		gap: clamp(0.5rem, 0.5rem + 2vw, 2.5rem);
 		padding: 0.5rem;
 		width: 100%;
+	}
+
+	@media (max-width: 768px) {
+		.skeleton-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (min-width: 1008px) {
@@ -545,12 +594,6 @@
 		/* 1920px + 48px padding */
 		.skeleton-grid {
 			grid-template-columns: repeat(6, 1fr);
-		}
-	}
-
-	@media (max-width: 768px) {
-		.skeleton-grid {
-			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 

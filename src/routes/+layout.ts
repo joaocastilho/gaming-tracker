@@ -1,21 +1,16 @@
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch }) => {
-	// Local dev (bun run dev) compatibility:
-	// Vite does not mount Cloudflare Pages functions, so /api/games 404s.
-	// In that case, fall back to the bundled static JSON file.
 	try {
 		const staticRes = await fetch('/games.json', { headers: { accept: 'application/json' } });
 
 		if (staticRes.ok) {
-			if (staticRes.ok) {
-				const data = await staticRes.json();
-				return {
-					games: data.games,
-					meta: null,
-					source: 'static'
-				};
-			}
+			const data = await staticRes.json();
+			return {
+				games: data.games,
+				meta: null,
+				source: 'static'
+			};
 		}
 	} catch {
 		// Silently ignore static JSON fetch errors
@@ -26,14 +21,12 @@ export const load: LayoutLoad = async ({ fetch }) => {
 			const res = await fetch('/api/games', { headers: { accept: 'application/json' } });
 
 			if (res.ok) {
-				if (res.ok) {
-					const data = await res.json();
-					return {
-						games: data.games,
-						meta: null,
-						source: 'api'
-					};
-				}
+				const data = await res.json();
+				return {
+					games: data.games,
+					meta: null,
+					source: 'api'
+				};
 			}
 		} catch {
 			// Silently ignore API errors in development

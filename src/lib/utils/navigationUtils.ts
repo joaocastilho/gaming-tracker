@@ -1,8 +1,6 @@
 import { appStore } from '$lib/stores/app';
 import { filtersStore } from '$lib/stores/filters';
-import { get } from 'svelte/store';
 
-// Define goto as a no-op for test environments
 import { goto } from '$app/navigation';
 
 export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist';
@@ -34,23 +32,14 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 		typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
 	);
 
-	// Filters are preserved in the store but NOT in the URL
-	// const currentFilters = get(filtersStore);
-	// if (currentFilters) {
-	// 	// ... filter serialization removed ...
-	// }
-
-	// Update active tab state
 	appStore.setActiveTab(target, true);
 
-	// Navigate using SvelteKit goto
 	await goto(url.toString(), {
 		replaceState: opts.replaceState ?? false,
 		noScroll: opts.noScroll ?? false,
 		keepFocus: true
 	});
 
-	// Scroll to top if requested
 	if (opts.scrollToTop) {
 		scrollToTop();
 	}
@@ -65,14 +54,11 @@ export async function navigateToAndReset(
 ) {
 	const opts = { ...DEFAULT_OPTIONS, ...options, preserveFilters: false };
 
-	// Reset filters first
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
 
-	// Update active tab state
 	appStore.setActiveTab(target, true);
 
-	// Navigate to clean URL (no filter params)
 	const route = getRoutePath(target);
 	await goto(route, {
 		replaceState: opts.replaceState ?? false,
@@ -80,7 +66,6 @@ export async function navigateToAndReset(
 		keepFocus: true
 	});
 
-	// Scroll to top
 	if (opts.scrollToTop) {
 		scrollToTop();
 	}

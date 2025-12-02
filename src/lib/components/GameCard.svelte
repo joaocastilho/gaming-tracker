@@ -238,15 +238,10 @@
 
 	// Handle images that are already loaded (from cache) when component mounts or when game changes
 	$effect(() => {
-		// Track game.id to ensure effect runs when switching between games (e.g., during filtering)
-		const gameId = game.id;
-
 		if (!imageElement) return;
 
-		// Use a microtask to ensure the image src has been set before checking
 		queueMicrotask(() => {
 			if (imageElement && imageElement.complete && imageElement.naturalHeight !== 0) {
-				// Image is already loaded (from cache), trigger the load handler
 				handleImageLoad();
 			}
 		});
@@ -402,7 +397,7 @@
 	.game-card {
 		display: flex;
 		flex-direction: column;
-		width: 100%; /* Fluid width to fill container */
+		width: 100%;
 		border-radius: 6px;
 		overflow: hidden;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -410,7 +405,7 @@
 			transform 0.3s ease-in-out,
 			box-shadow 0.3s ease-in-out;
 		cursor: pointer;
-		height: 100%; /* Fill height */
+		height: 100%;
 		border: none;
 		padding: 0;
 		text-align: left;
