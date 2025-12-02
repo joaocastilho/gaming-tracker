@@ -89,7 +89,7 @@
 				row: { id: string; games: Game[]; startIndex: number },
 				isPriority: boolean
 			)}
-				<div class="game-row">
+				<div class="game-row pb-5">
 					{#each row.games as game, i (game.id || `fallback-${row.id}-${i}`)}
 						<div class="game-card-wrapper">
 							<GameCard
@@ -111,7 +111,7 @@
 	{:else if filteredGames.length > 0}
 		<div class="game-gallery-virtual">
 			{#each rows.slice(0, 4) as row (row.id)}
-				<div class="game-row">
+				<div class="game-row pb-5">
 					{#each row.games as game, i (game.id || `fallback-ssr-${row.id}-${i}`)}
 						<div class="game-card-wrapper">
 							<GameCard {game} {displayedGames} isPriority={i < 4} onOpenModal={handleOpenModal} />
@@ -145,12 +145,10 @@
 		padding: 0.5rem;
 	}
 
-	/* Wrapper to center cards in the virtual list items */
 	.game-row {
 		display: flex;
 		justify-content: flex-start;
 		gap: clamp(0.5rem, 0.5rem + 2vw, 2.5rem);
-		padding-bottom: 0.25rem;
 		width: 100%;
 	}
 
@@ -165,7 +163,6 @@
 		visibility: hidden;
 	}
 
-	/* Ensure cards are centered within their grid cells */
 	.game-gallery-container :global(.game-card) {
 		margin-bottom: 0;
 		margin-left: auto;

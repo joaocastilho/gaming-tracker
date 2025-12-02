@@ -37,13 +37,9 @@
 		typeof import('$lib/components/DetailModal.svelte').default | null
 	>(null);
 
-	// Simplified loading state - no progressive loading
-	let isLoading = $state(true);
-
 	// Initialize games immediately if available (SSR support)
 	if (data.games && Array.isArray(data.games)) {
 		gamesStore.initializeGames(data.games);
-		isLoading = false;
 	}
 
 	onMount(() => {
@@ -53,18 +49,11 @@
 				data.games
 					.then((resolvedGames) => {
 						gamesStore.initializeGames(resolvedGames);
-						isLoading = false;
 					})
 					.catch((error) => {
 						console.error('Failed to load games:', error);
-						isLoading = false;
 					});
-			} else if (!Array.isArray(data.games)) {
-				// Handle edge case where it might be something else or already handled
-				isLoading = false;
 			}
-		} else {
-			isLoading = false;
 		}
 	});
 
@@ -331,17 +320,7 @@
 	<main class="bg-[var(--color-background)] px-6 pt-0 pb-6">
 		<div class="container mx-auto">
 			{#if isGamesPage}
-				{#if isLoading}
-					<div class="skeleton-grid">
-						<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
-						{#each Array.from({ length: 15 }) as _, i (i)}
-							<div class="skeleton-card">
-								<div class="skeleton-image"></div>
-								<div class="skeleton-info"></div>
-							</div>
-						{/each}
-					</div>
-				{:else if hasActiveFilters && $filteredGames.length === 0}
+				{#if hasActiveFilters && $filteredGames.length === 0}
 					<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
 						<h2 class="font-semibold">No games match your current filters</h2>
 						<p class="text-gray-600 dark:text-gray-400">
@@ -364,13 +343,7 @@
 					{@render children?.()}
 				</div>
 			{:else if isTierlistPage}
-				{#if isLoading}
-					<div
-						class="loading flex min-h-[50vh] items-center justify-center text-center text-xl font-medium text-[var(--color-text-primary)]"
-					>
-						Loading tier list...
-					</div>
-				{:else if hasActiveFilters && $filteredGames.length === 0}
+				{#if hasActiveFilters && $filteredGames.length === 0}
 					<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
 						<h2 class="font-semibold">No games match your current filters</h2>
 						<p class="text-gray-600 dark:text-gray-400">
@@ -547,95 +520,6 @@
 		color: var(--color-text-primary);
 		font-size: 0.85rem;
 		cursor: pointer;
-	}
-
-	:global(.pt-\[calc\(60px\+50px\+100px\)\]) {
-		padding-top: calc(60px + 50px + 100px);
-	}
-
-	.pipe-separator {
-		font-weight: 500;
-		color: var(--color-text-primary);
-	}
-
-	.skeleton-grid {
-		display: grid;
-		grid-template-columns: repeat(5, 1fr);
-		gap: clamp(0.5rem, 0.5rem + 2vw, 2.5rem);
-		padding: 0.5rem;
-		width: 100%;
-	}
-
-	@media (max-width: 768px) {
-		.skeleton-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media (min-width: 1008px) {
-		/* 960px + 48px padding */
-		.skeleton-grid {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-
-	@media (min-width: 1328px) {
-		/* 1280px + 48px padding */
-		.skeleton-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
-	}
-
-	@media (min-width: 1648px) {
-		/* 1600px + 48px padding */
-		.skeleton-grid {
-			grid-template-columns: repeat(5, 1fr);
-		}
-	}
-
-	@media (min-width: 1968px) {
-		/* 1920px + 48px padding */
-		.skeleton-grid {
-			grid-template-columns: repeat(6, 1fr);
-		}
-	}
-
-	.skeleton-card {
-		display: flex;
-		flex-direction: column;
-		height: auto;
-		border-radius: 6px;
-		overflow: hidden;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-		background-color: var(--color-surface);
-	}
-
-	.skeleton-image {
-		width: 100%;
-		aspect-ratio: 2 / 3;
-		background: linear-gradient(
-			90deg,
-			var(--color-surface) 0%,
-			var(--color-border) 50%,
-			var(--color-surface) 100%
-		);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s ease-in-out infinite;
-	}
-
-	.skeleton-info {
-		height: 300px;
-		background-color: var(--color-surface);
-		border-top: 1px solid var(--color-border);
-	}
-
-	@keyframes shimmer {
-		0% {
-			background-position: -200% 0;
-		}
-		100% {
-			background-position: 200% 0;
-		}
 	}
 
 	.no-results {
