@@ -144,7 +144,7 @@
 	/* Virtual list container styles */
 	:global(.game-gallery-virtual) {
 		width: 100%;
-		padding: 0.5rem;
+		/* padding removed to prevent layout shift */
 	}
 
 	.game-row {
@@ -152,6 +152,8 @@
 		justify-content: flex-start;
 		gap: clamp(0.5rem, 0.5rem + 2vw, 2.5rem);
 		width: 100%;
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
 	}
 
 	.game-card-wrapper {
