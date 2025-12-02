@@ -54,17 +54,43 @@
 
 	let totalScore = $derived(game.score);
 
+	let canvas: HTMLCanvasElement;
+	let context: CanvasRenderingContext2D | null;
+	let cachedFont: string = '';
+
+	function getFont(node: HTMLElement) {
+		if (cachedFont) return cachedFont;
+		if (typeof getComputedStyle === 'undefined') return '600 1rem sans-serif';
+		const style = getComputedStyle(node);
+		// Cache it. We assume all titles have same font family.
+		cachedFont = `600 1rem ${style.fontFamily}`;
+		return cachedFont;
+	}
+
+	function getTextWidth(text: string, font: string): number {
+		if (typeof document === 'undefined') return 0;
+		if (!canvas) {
+			canvas = document.createElement('canvas');
+			context = canvas.getContext('2d');
+		}
+		if (context) {
+			context.font = font;
+			return context.measureText(text).width;
+		}
+		return 0;
+	}
+
 	function fitTitle(node: HTMLElement, params: { title: string; subtitle?: string }) {
 		if (size === 'tierlist') return;
 
 		let currentParams = params;
 
-		const resizeObserver = new ResizeObserver(() => {
-			adjustTitleSize(node, !!currentParams.subtitle);
+		const resizeObserver = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				adjustTitleSize(node, !!currentParams.subtitle, entry.contentRect.width);
+			}
 		});
 		resizeObserver.observe(node);
-
-		adjustTitleSize(node, !!currentParams.subtitle);
 
 		return {
 			update(newParams: { title: string; subtitle?: string }) {
@@ -77,42 +103,36 @@
 		};
 	}
 
-	function adjustTitleSize(node: HTMLElement, hasSubtitle: boolean) {
+	function adjustTitleSize(node: HTMLElement, hasSubtitle: boolean, width?: number) {
 		const minSize = 0.75;
 		const maxSize = 1.25;
 		const singleLineMinSize = 0.85;
-		const step = 0.05;
 
-		// 1. Try to fit on one line (only if no subtitle, to avoid merging lines)
+		const containerWidth = width ?? node.clientWidth;
+		if (containerWidth === 0) return;
+
+		const text = node.textContent || '';
+		const font = getFont(node);
+		const textWidthAt1Rem = getTextWidth(text, font);
+
 		if (!hasSubtitle) {
-			node.style.whiteSpace = 'nowrap';
+			let newSize = containerWidth / textWidthAt1Rem;
+			if (newSize > maxSize) newSize = maxSize;
 
-			let currentSize = maxSize;
-			node.style.fontSize = `${currentSize}rem`;
-
-			// Check width
-			while (node.scrollWidth > node.clientWidth && currentSize > singleLineMinSize) {
-				currentSize -= step;
-				node.style.fontSize = `${currentSize}rem`;
-			}
-
-			// If it fits on one line (and didn't shrink below threshold), keep it
-			if (node.scrollWidth <= node.clientWidth && currentSize >= singleLineMinSize) {
+			if (newSize >= singleLineMinSize) {
+				node.style.whiteSpace = 'nowrap';
+				node.style.fontSize = `${newSize}rem`;
 				return;
 			}
 		}
 
-		// 2. Fallback to 2 lines (standard wrapping)
 		node.style.whiteSpace = 'normal';
+		let newSize = (1.9 * containerWidth) / textWidthAt1Rem;
 
-		let currentSize = maxSize;
-		node.style.fontSize = `${currentSize}rem`;
+		if (newSize > maxSize) newSize = maxSize;
+		if (newSize < minSize) newSize = minSize;
 
-		// Check height (overflow for 2 lines)
-		while (node.scrollHeight > node.clientHeight && currentSize > minSize) {
-			currentSize -= step;
-			node.style.fontSize = `${currentSize}rem`;
-		}
+		node.style.fontSize = `${newSize}rem`;
 	}
 
 	let subtitleFontSize = $derived(() => {
@@ -170,7 +190,6 @@
 	}
 
 	function preloadDetailImage() {
-		// Preload detail image on hover for faster modal opening
 		if (game.coverImage) {
 			const detailImg = new Image();
 			detailImg.src = game.coverImage.replace('.webp', '-detail.webp');
@@ -231,7 +250,6 @@
 		}
 	}
 
-	// Handle images that are already loaded (from cache) when component mounts or when game changes
 	$effect(() => {
 		if (!imageElement) return;
 
