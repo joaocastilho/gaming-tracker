@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Game } from '$lib/types/game';
 	import TierRow from '$lib/components/TierRow.svelte';
-	import { memoize } from '$lib/utils/memoize';
 
 	interface Props {
 		filteredGames: Game[];
@@ -10,11 +9,7 @@
 
 	let { filteredGames, onOpenModal }: Props = $props();
 
-	const memoizedBuildTierList = memoize(buildTierList, {
-		key: (games: Game[]) => games.map((g) => g.id).join(',')
-	});
-
-	let tierList = $derived(memoizedBuildTierList(filteredGames));
+	let tierList = $derived(buildTierList(filteredGames));
 
 	function buildTierList(games: Game[]): Record<string, Game[]> {
 		const gamesByTier: Record<string, Game[]> = {

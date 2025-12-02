@@ -104,13 +104,16 @@
 		return extractFilterOptions(games);
 	});
 
+	const activeTab = appStore.activeTab;
+
 	let isGamesPage = $derived(
-		page.url.pathname === '/' ||
+		(page.url.pathname === '/' ||
 			page.url.pathname === '/completed' ||
-			page.url.pathname === '/planned'
+			page.url.pathname === '/planned') &&
+			$activeTab !== 'tierlist'
 	);
 
-	let isTierlistPage = $derived(page.url.pathname === '/tierlist');
+	let isTierlistPage = $derived(page.url.pathname === '/tierlist' || $activeTab === 'tierlist');
 	let isPlannedPage = $derived(page.url.pathname === '/planned');
 
 	let showTiersFilter = $derived(!isTierlistPage && !isPlannedPage);

@@ -55,6 +55,8 @@
 	let totalScore = $derived(game.score);
 
 	function fitTitle(node: HTMLElement, params: { title: string; subtitle?: string }) {
+		if (size === 'tierlist') return;
+
 		let currentParams = params;
 
 		const resizeObserver = new ResizeObserver(() => {
