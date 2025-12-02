@@ -24,21 +24,10 @@
 		appStore.setActiveTab('tierlist', true);
 	});
 
-	// Initialize URL reading
-	$effect(() => {
-		if (typeof window !== 'undefined') {
-			const searchParams = new URLSearchParams(window.location.search);
-			filtersStore.readFromURL(searchParams);
-			appStore.readFromURL(searchParams);
-		}
-	});
-
 	// Handle URL writing
 	$effect(() => {
 		const updateURLs = () => {
 			try {
-				filtersStore.writeToURL();
-				appStore.writeToURL();
 			} catch (error) {
 				if (error instanceof Error && error.message.includes('router is initialized')) {
 					setTimeout(updateURLs, 10);

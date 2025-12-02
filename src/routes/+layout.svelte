@@ -113,6 +113,10 @@
 	);
 
 	let isTierlistPage = $derived(page.url.pathname === '/tierlist');
+	let isPlannedPage = $derived(page.url.pathname === '/planned');
+
+	let showTiersFilter = $derived(!isTierlistPage && !isPlannedPage);
+	let showCoOpFilter = $derived(!isTierlistPage);
 
 	$effect(() => {
 		if (!initialized) return;
@@ -122,27 +126,16 @@
 		if (tab === 'tierlist') {
 			filtersStore.resetAllFilters();
 			filtersStore.setSearchTerm('');
-
-			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
-			appStore.writeToURLWithFilters(filtersStore);
-		} else {
-			// Ensure filters are available for non-tierlist views
-			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
-			appStore.writeToURLWithFilters(filtersStore);
 		}
 	});
 
-	// Initialize URL reading
 	$effect(() => {
 		if (typeof window !== 'undefined' && !initialized) {
-			const searchParams = new URLSearchParams(window.location.search);
-			filtersStore.readFromURL(searchParams);
-			appStore.readFromURL(searchParams);
 			initialized = true;
+			// Initialize search from URL
+			filtersStore.readSearchFromURL(page.url.searchParams);
 		}
 	});
-
-	// Modal URL handling is done in individual pages
 
 	$effect(() => {
 		if ($modalStore.isOpen && !DetailModalComponent) {
@@ -201,9 +194,6 @@
 	$effect(() => {
 		if (initialized) {
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
-			urlUpdateTimeout = setTimeout(() => {
-				appStore.writeToURLWithFilters(filtersStore);
-			}, 150);
 		}
 	});
 
@@ -280,7 +270,6 @@
 		}
 
 		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
-		appStore.writeToURLWithFilters(filtersStore);
 	}
 
 	function onSearchToggle() {
@@ -311,7 +300,6 @@
 
 <svelte:head>
 	<title>Gaming Tracker</title>
-	<!-- Preload critical resources to reduce critical path latency -->
 	{#if dev}
 		<link rel="modulepreload" href="/@vite/client" />
 	{/if}
@@ -338,12 +326,14 @@
 								options={filterOptions().genres}
 								selectedOptions={selectedGenres}
 							/>
-							<FilterDropdownComponent
-								type="tiers"
-								label="Tiers"
-								options={filterOptions().tiers}
-								selectedOptions={selectedTiers}
-							/>
+							{#if showTiersFilter}
+								<FilterDropdownComponent
+									type="tiers"
+									label="Tiers"
+									options={filterOptions().tiers}
+									selectedOptions={selectedTiers}
+								/>
+							{/if}
 						{:else}
 							<!-- Loading placeholder for FilterDropdown -->
 							<div class="bg-surface flex h-11 w-24 animate-pulse rounded-md"></div>
@@ -352,11 +342,13 @@
 						{/if}
 
 						{#if FilterToggleComponent}
-							<FilterToggleComponent
-								label="Co-op"
-								value="Yes"
-								isSelected={selectedCoOp.includes('Yes')}
-							/>
+							{#if showCoOpFilter}
+								<FilterToggleComponent
+									label="Co-op"
+									value="Yes"
+									isSelected={selectedCoOp.includes('Yes')}
+								/>
+							{/if}
 						{:else}
 							<div class="bg-surface flex h-11 w-20 animate-pulse rounded-md"></div>
 						{/if}
@@ -511,7 +503,7 @@
 						/>
 					{/if}
 					<!-- Tiers -->
-					{#if FilterDropdownComponent}
+					{#if FilterDropdownComponent && showTiersFilter}
 						<FilterDropdownComponent
 							type="tiers"
 							label="Tiers"
@@ -520,7 +512,7 @@
 						/>
 					{/if}
 					<!-- Co-op -->
-					{#if FilterToggleComponent}
+					{#if FilterToggleComponent && showCoOpFilter}
 						<FilterToggleComponent
 							label="Co-op"
 							value="Yes"

@@ -58,50 +58,6 @@ function createAppStore() {
 			}
 		},
 
-		readFromURL(searchParams: URLSearchParams) {
-			const themeParam = searchParams.get('theme');
-
-			if (themeParam && (themeParam === 'dark' || themeParam === 'light')) {
-				const currentTheme = get(theme);
-				if (themeParam !== currentTheme) {
-					theme.set(themeParam);
-				}
-			}
-		},
-
-		readFromURLWithFilters(searchParams: URLSearchParams, filtersStore: typeof FiltersStoreType) {
-			this.readFromURL(searchParams);
-
-			if (filtersStore && typeof filtersStore.readFromURL === 'function') {
-				filtersStore.readFromURL(searchParams);
-			}
-		},
-
-		async writeToURL() {
-			if (typeof window === 'undefined') return;
-
-			try {
-				const url = new URL(window.location.href);
-
-				url.searchParams.delete('theme');
-				url.searchParams.delete('tab');
-				url.searchParams.delete('view');
-
-				await replaceState(url.toString(), { noscroll: true });
-			} catch {
-				// Ignore router initialization errors
-			}
-		},
-
-		async writeToURLWithFilters(filtersStore: typeof FiltersStoreType) {
-			if (typeof window === 'undefined') return;
-
-			await this.writeToURL();
-
-			if (filtersStore && typeof filtersStore.writeToURL === 'function') {
-				await filtersStore.writeToURL();
-			}
-		}
 	};
 }
 

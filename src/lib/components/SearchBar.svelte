@@ -29,8 +29,8 @@
 		}
 
 		debounceTimeout = setTimeout(() => {
+			filtersStore.writeSearchToURL();
 			filtersStore.setSearchTerm(newValue);
-			filtersStore.writeToURL();
 		}, 300);
 	}
 
@@ -43,7 +43,6 @@
 			});
 		}
 		filtersStore.setSearchTerm('');
-		filtersStore.writeToURL();
 		if (debounceTimeout) {
 			clearTimeout(debounceTimeout);
 		}

@@ -4,13 +4,14 @@ import { appStore } from './app';
 import { completedGamesCache } from './completedGamesCache';
 import { filteredCountsStore } from './filteredCounts';
 import type { Game } from '$lib/types/game';
-import { getUrlParams, setUrlParams } from '$lib/utils/clientUtils';
 import FilterWorker from '$lib/workers/filterWorker.ts?worker';
 
 // Define browser check for test environments
 const browser = typeof window !== 'undefined';
 
 import { memoize } from '$lib/utils/memoize';
+import { debounce } from '$lib/utils/debounce';
+import { replaceState } from '$app/navigation';
 
 export type SortKey =
 	| 'presentation'
@@ -415,31 +416,29 @@ function createFiltersStore() {
 			});
 		},
 
-		readFromURL: (searchParams: URLSearchParams) => {
-			const params = getUrlParams(searchParams);
-			filters.update((currentFilters) => {
-				if (!currentFilters) return null;
-				return {
-					...currentFilters,
-					searchTerm: params.searchTerm ?? '',
-					platforms: params.platforms ?? [],
-					genres: params.genres ?? [],
-					statuses: params.statuses ?? [],
-					tiers: params.tiers ?? [],
-					coOp: params.coOp ?? [],
-					sortOption: params.sortOption ?? null
-				};
-			});
+		readSearchFromURL(searchParams: URLSearchParams) {
+			const search = searchParams.get('s');
+			if (search) {
+				this.setSearchTerm(search);
+			}
 		},
 
-		writeToURL: () => {
-			const currentFilters = get(filters);
-			const $allPlatforms = get(gamesStore.allPlatforms);
-			const $allGenres = get(gamesStore.allGenres);
-			if (currentFilters && $allPlatforms.length > 0 && $allGenres.length > 0) {
-				setUrlParams(currentFilters, $allPlatforms, $allGenres);
+		writeSearchToURL: debounce(async () => {
+			if (typeof window === 'undefined') return;
+			try {
+				const state = get(filters);
+				const url = new URL(window.location.href);
+				if (state?.searchTerm) {
+					url.searchParams.set('s', state.searchTerm);
+				} else {
+					url.searchParams.delete('s');
+				}
+				await replaceState(url.toString(), { noscroll: true, keepFocus: true });
+			} catch {
+				// Ignore router initialization errors
 			}
-		}
+		}, 500)
+
 	};
 }
 

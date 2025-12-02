@@ -34,32 +34,11 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 		typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
 	);
 
-	// Always preserve filters for dedicated pages - serialize to URL params
-	const currentFilters = get(filtersStore);
-	if (currentFilters) {
-		const searchParams = new URLSearchParams();
-		if (currentFilters.searchTerm) searchParams.set('searchTerm', currentFilters.searchTerm);
-
-		if (currentFilters.platforms.length > 0) {
-			currentFilters.platforms.forEach((p) => searchParams.append('platforms', p));
-		}
-
-		if (currentFilters.genres.length > 0) {
-			currentFilters.genres.forEach((g) => searchParams.append('genres', g));
-		}
-
-		if (currentFilters.tiers.length > 0) {
-			currentFilters.tiers.forEach((t) => searchParams.append('tiers', t));
-		}
-
-		if (currentFilters.coOp.length > 0) {
-			currentFilters.coOp.forEach((c) => searchParams.append('coOp', c));
-		}
-
-		searchParams.forEach((value, key) => {
-			url.searchParams.append(key, value);
-		});
-	}
+	// Filters are preserved in the store but NOT in the URL
+	// const currentFilters = get(filtersStore);
+	// if (currentFilters) {
+	// 	// ... filter serialization removed ...
+	// }
 
 	// Update active tab state
 	appStore.setActiveTab(target, true);

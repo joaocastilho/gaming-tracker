@@ -13,7 +13,6 @@
 
 	function toggle() {
 		filtersStore.toggleCoOp(value);
-		filtersStore.writeToURL();
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
