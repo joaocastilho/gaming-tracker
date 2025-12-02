@@ -15,7 +15,7 @@
 
 	const isEditor = $derived($editorStore.editorMode);
 	let mounted = $state(false);
-	let containerWidth = $state(1200); // Default width
+	let containerWidth = $state(1600);
 
 	let columns = $derived(
 		!containerWidth || containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320))
