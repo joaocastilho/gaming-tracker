@@ -1,35 +1,40 @@
-# Gaming Tracker 🎮
+![Gaming Tracker](static/logo.webp)
 
-A fast, client-side web application for tracking and rating video games, featuring a visual tier list generator and highly optimized cover loading. Designed for dedicated gamers who want a performant, offline-friendly way to organize and review their library.
+A fast personal library for tracking and rating my video game collection. Designed to be a clean, offline-friendly way to organize my played and planned games, complete with visual tier lists and detailed stats.
 
-## ✨ Features
+## ✨ Key Features
 
-- **Game Tracking**: Mark games as "Planned" or "Completed" with rich metadata.
-- **Rating System**: Score games on Presentation, Story, and Gameplay (0–10 scale) with an aggregated total.
-- **Tier Lists**: Automatic tier assignment (S–Masterpiece to E–Bad) with a visual tier list view.
-- **Multiple Views**:
-  - Gallery of cover cards
-  - Sortable, dense table view
-  - Tier list view grouped by final tier
-- **Smart Filtering & Search**:
-  - Search by title
-  - Filter by platform, genre, status, tier, and more
-- **Theme Support**: Light and dark themes with persistence.
-- **Static Site**: 100% client-side, no backend; suitable for static hosting.
-- **Data Handling**:
-  - Ships with curated `games.json`
-  - Local changes can be exported as JSON
-- **Performance-Oriented**:
-  - Optimized WebP covers in multiple resolutions
-  - Responsive `srcset`/`sizes` usage
-  - Lazy loading with IntersectionObserver
-  - Targeted preloading for above-the-fold and detail views
-- **No Tracking**: All logic runs in the browser; no external analytics.
+*   **Track My Collection**: Keep track of games I've completed and ones I plan to play.
+*   **Detailed Ratings**: Rate games on Presentation, Story, and Gameplay to generate an overall score.
+*   **Visual Tier Lists**: Automatically generate tier lists based on my opinion of the game.
+*   **Multiple Views**:
+    *   **Gallery**: Browse my collection with high-quality cover art.
+    *   **Tier List**: Visualize my favorites in a classic tier list format.
+*   **Smart Filtering**: Instantly find games by platform, genre, status, or rating.
+*   **Performance First**: Optimized for speed with instant loading and smooth animations.
+*   **Privacy Focused**: 100% client-side. All data stays in the clients browser.
+*   **Dark & Light Mode**
 
 ## 🛠️ Tech Stack
 
-- **Framework**: SvelteKit (Svelte 5 / Runes) + TypeScript
-- **Styling**: Tailwind CSS + lightweight custom components
-- **Runtime**: Bun
-- **Bundler/Dev**: Vite
-- **Data**: JSON files served from `/static`, stored/used entirely client-side
+Built with modern web technologies for performance and developer experience:
+
+*   **Framework**: [SvelteKit](https://kit.svelte.dev/) (v2.48.5)
+*   **UI Library**: [Svelte 5](https://svelte.dev/) (v5.43.12)
+*   **Language**: [TypeScript](https://www.typescriptlang.org/) (v5.9.3)
+*   **Styling**: [Tailwind CSS](https://tailwindcss.com/) (v4.1.17)
+*   **Icons**: [Lucide Svelte](https://lucide.dev/) (v0.552.0)
+*   **Runtime**: [Bun](https://bun.sh/)
+*   **Testing**: [Vitest](https://vitest.dev/)
+
+## 📂 Project Structure
+
+A quick look at how the project is organized:
+
+*   `src/`: The heart of the application.
+    *   `routes/`: Contains the pages and layout definitions (SvelteKit routing).
+    *   `lib/`: Shared components, utility functions, and stores.
+    *   `app.html`: The main HTML template.
+*   `static/`: Static assets like game covers, icons, and the initial `games.json` data.
+*   `scripts/`: Helper scripts for tasks like optimizing images and converting data.
+*   `tests/`: Unit and integration tests to ensure everything works perfectly.
