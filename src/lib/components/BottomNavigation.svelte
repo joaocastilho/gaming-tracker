@@ -116,29 +116,28 @@
 	class="bottom-navigation bg-background border-border fixed right-0 bottom-0 left-0 z-50 border-t md:hidden"
 	aria-label="Main navigation"
 >
-	<ul class="flex items-stretch">
+	<ul class="flex h-full items-stretch">
 		{#each navItems as item (item.id)}
 			{@const Icon = item.icon}
 			<li class="flex-1">
 				<button
 					type="button"
-					class="nav-button flex h-full flex-col items-center justify-center gap-1 px-1 py-2 text-xs font-medium transition-colors outline-none"
+					class="nav-button flex h-full w-full flex-col items-center justify-center gap-1 px-1 transition-colors outline-none"
 					class:active={item.active}
-					class:font-bold={item.active}
 					onclick={() => handleNavClick(item.id)}
 					onkeydown={(e) => handleKeyDown(e, item.id)}
 					aria-current={item.active ? 'page' : undefined}
 					aria-label={`${item.label}${item.count !== null ? ` (${item.count})` : ''}`}
 				>
-					<div class="icon-wrapper">
-						<Icon size={20} />
+					<div class="icon-wrapper relative">
+						<Icon size={22} strokeWidth={item.active ? 2.5 : 2} />
+						{#if item.count !== null && item.count > 0}
+							<span class="count-badge">
+								{item.count}
+							</span>
+						{/if}
 					</div>
-					<span class="label max-w-full truncate text-[0.65rem]">{item.label}</span>
-					{#if item.count !== null && item.count > 0}
-						<span class="count-badge text-[0.65rem]">
-							{item.count}
-						</span>
-					{/if}
+					<span class="label max-w-full truncate">{item.label}</span>
 				</button>
 			</li>
 		{/each}
@@ -167,38 +166,56 @@
 	}
 
 	.nav-button.active {
-		color: var(--color-text-primary);
+		color: var(--color-primary);
 		background-color: transparent;
-	}
-
-	.nav-button.active .icon-wrapper {
-		transform: scale(1.05);
 	}
 
 	.icon-wrapper {
 		transition: transform 0.2s ease;
-		line-height: 1;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
 
+	.nav-button.active .icon-wrapper {
+		transform: translateY(-2px);
+	}
+
 	.label {
-		line-height: 1.2;
 		font-size: 0.65rem;
+		font-weight: 500;
+		line-height: 1;
+		margin-top: 2px;
+	}
+
+	.nav-button.active .label {
+		font-weight: 700;
 	}
 
 	.count-badge {
-		color: var(--color-text-secondary);
-		line-height: 1;
-		font-weight: 500;
-		opacity: 0.8;
+		position: absolute;
+		top: -6px;
+		right: -10px;
+		background-color: var(--color-surface-completed);
+		color: var(--color-text-primary);
+		font-size: 0.6rem;
+		font-weight: 700;
+		min-width: 16px;
+		height: 16px;
+		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 3px;
+		border: 1px solid var(--color-border);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 	}
 
 	/* Ensure proper spacing for safe areas on devices with notches */
 	@supports (padding-bottom: env(safe-area-inset-bottom)) {
 		.bottom-navigation {
-			padding-bottom: calc(env(safe-area-inset-bottom, 0) + 4px);
+			padding-bottom: calc(env(safe-area-inset-bottom, 0));
+			height: calc(60px + env(safe-area-inset-bottom, 0));
 		}
 	}
 
