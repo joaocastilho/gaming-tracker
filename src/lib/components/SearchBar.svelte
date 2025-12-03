@@ -37,7 +37,6 @@
 	function clearSearch() {
 		if (inputElement) {
 			inputElement.value = '';
-			// Defer focus to next animation frame to avoid forced reflow
 			requestAnimationFrame(() => {
 				inputElement?.focus();
 			});
@@ -61,11 +60,9 @@
 			event.preventDefault();
 			event.stopPropagation();
 
-			// Batch DOM operations to avoid forced reflows
 			inputElement.focus();
 			inputElement.select();
 
-			// Defer scroll to next frame to avoid layout thrashing
 			requestAnimationFrame(() => {
 				const headerHeight = 110;
 				window.scrollTo({

@@ -33,7 +33,6 @@
 	let scrollTop = $state(0);
 	let windowHeight = $state(0);
 
-	// Calculate visible range
 	let visibleRange = $derived(() => {
 		const effectiveHeight = useWindowScroll ? windowHeight : containerHeight;
 		const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
@@ -44,7 +43,6 @@
 		return { start, end };
 	});
 
-	// Get visible items
 	let visibleItems = $derived(() => {
 		const range = visibleRange();
 		return items.slice(range.start, range.end).map((item, index) => ({
@@ -53,18 +51,12 @@
 		}));
 	});
 
-	// Total height of the virtual list
 	let totalHeight = $derived(items.length * itemHeight);
 
-	// Handle scroll events
 	function handleScroll(event: Event) {
 		if (useWindowScroll) {
-			// For window scroll, we need to account for the container's offset from the top
 			if (container) {
 				const rect = container.getBoundingClientRect();
-				// Calculate how far we've scrolled past the start of the container
-				// rect.top is negative when we've scrolled past the start
-				// We want scrollTop relative to the container
 				const offset = -rect.top;
 				scrollTop = Math.max(0, offset);
 			}
@@ -85,7 +77,6 @@
 			window.addEventListener('scroll', handleScroll, { passive: true });
 			window.addEventListener('resize', updateWindowHeight);
 			updateWindowHeight();
-			// Initial calculation
 			handleScroll({} as Event);
 		}
 	});

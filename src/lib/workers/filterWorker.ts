@@ -150,14 +150,10 @@ export function applySortOption(games: Game[], sortOption: FilterState['sortOpti
 			const aTime = parseDate(a.finishedDate);
 			const bTime = parseDate(b.finishedDate);
 
-			// Always put games without dates at the bottom
 			if (aTime === null && bTime === null) return 0;
 			if (aTime === null) return 1;
 			if (bTime === null) return -1;
 
-			// For dates, we want to respect the direction for the valid dates
-			// asc: oldest first (smaller timestamp first)
-			// desc: newest first (larger timestamp first)
 			return direction === 'asc' ? aTime - bTime : bTime - aTime;
 		}
 
@@ -172,20 +168,9 @@ export function applySortOption(games: Game[], sortOption: FilterState['sortOpti
 		const aRaw = getVal(a, key);
 		const bRaw = getVal(b, key);
 
-		// Treat null/undefined as "no data"
-		// We also treat 0 as "no data" if that's the desired behavior, but usually 0 is a valid score.
-		// However, based on previous logic, it seems we were treating 0 as no data.
-		// Let's stick to checking for null/undefined strictly if possible, but the user said "games without these values".
-		// In the previous code: (a.ratingPresentation ?? 0).
-		// If the data comes as null, it becomes 0.
-		// Let's assume strict null/undefined check is better, but if the data is already 0 for "no rating", we might need to handle that.
-		// Given the types: ratingPresentation: number | null;
-		// It seems null is the "no value" state.
-
 		const aHasData = aRaw !== null && aRaw !== undefined;
 		const bHasData = bRaw !== null && bRaw !== undefined;
 
-		// Always put games without data at the bottom
 		if (aHasData && !bHasData) return -1;
 		if (!aHasData && bHasData) return 1;
 		if (!aHasData && !bHasData) return 0;
@@ -205,8 +190,6 @@ function filterAndSortForTab(
 ): Game[] {
 	let base = games;
 
-	// Apply tab-specific filtering to show only games for the current tab
-	// This is done AFTER general filtering to allow users to see filtered results within the tab
 	switch (tab) {
 		case 'completed':
 			base = base.filter((game) => game.status === 'Completed');
@@ -216,7 +199,6 @@ function filterAndSortForTab(
 			break;
 		case 'all':
 		default:
-			// For 'all' tab, show all filtered games regardless of status
 			break;
 	}
 
@@ -225,8 +207,6 @@ function filterAndSortForTab(
 	}
 
 	if (tab === 'completed') {
-		// Sort completed games by finished date (most recent first)
-		// Games without finished dates are placed at the end
 		return base.toSorted((a, b) => {
 			const aTime = parseDate(a.finishedDate);
 			const bTime = parseDate(b.finishedDate);
@@ -305,5 +285,4 @@ self.addEventListener('message', (event: MessageEvent<FilterMessage>) => {
 	}
 });
 
-// Export for module compatibility (required for ?worker imports)
 export default {};

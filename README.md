@@ -38,3 +38,17 @@ A quick look at how the project is organized:
 - `static/`: Static assets like game covers, icons, and the initial `games.json` data.
 - `scripts/`: Helper scripts for tasks like optimizing images and converting data.
 - `tests/`: Unit and integration tests to ensure everything works perfectly.
+
+## ⚡ [Google Lighthouse](https://developers.google.com/web/tools/lighthouse) Results
+
+### Desktop
+
+<div style="width: 800px; height: 180px; overflow: hidden;">
+  <img src="https://raw.githubusercontent.com/joaocastilho/gaming-tracker/refs/heads/main/lighthouse_results/desktop/pagespeed.svg" alt="Desktop Lighthouse Result">
+</div>
+
+### Mobile
+
+<div style="width: 800px; height: 180px; overflow: hidden;">
+  <img src="https://raw.githubusercontent.com/joaocastilho/gaming-tracker/refs/heads/main/lighthouse_results/mobile/pagespeed.svg" alt="Mobile Lighthouse Result">
+</div>

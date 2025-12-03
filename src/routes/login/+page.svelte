@@ -8,19 +8,16 @@
 	let editorMode = $derived($editorStore.editorMode);
 
 	onMount(() => {
-		// If already logged in, redirect to home
 		if (editorMode) {
 			goto('/');
 			return;
 		}
 
-		// Open the login modal automatically
 		if (loginModalRef && typeof loginModalRef.openModal === 'function') {
 			loginModalRef.openModal();
 		}
 	});
 
-	// Watch for successful login and redirect
 	$effect(() => {
 		if (editorMode) {
 			goto('/');

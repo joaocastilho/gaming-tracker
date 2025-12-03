@@ -25,18 +25,12 @@
 	import { gamesStore } from '../stores/games.js';
 	let allGames = $derived($gamesStore);
 
-	// Use reactive navigation data from the modal store
 	let displayedGames = $derived(() => {
-		// If modal has displayed games, use them (for proper navigation context)
 		if ($modalStore.displayedGames.length > 0) {
 			return $modalStore.displayedGames;
 		}
-
-		// Otherwise, use the reactive navigation method from modal store
 		const allGames = $gamesStore;
 		if (allGames.length === 0) return [];
-
-		// Use the modal store's reactive navigation method
 		return modalStore.getReactiveNavigationGames(allGames);
 	});
 
@@ -262,18 +256,13 @@
 	let currentGameIndex = $derived(() => {
 		if (!$modalStore.activeGame) return -1;
 
-		// Use displayedGames from modal store if available (for proper navigation context)
 		if ($modalStore.displayedGames.length > 0) {
 			return $modalStore.displayedGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 		}
-
-		// For tier list tab, use the tier-specific navigation
 		if ($currentActiveTab === 'tierlist') {
 			const tierGames = allTieredGames();
 			return tierGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 		}
-
-		// For other tabs, use the current tab games
 		const tabGames = currentTabGames();
 		return tabGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 	});
@@ -605,7 +594,6 @@
 							</div>
 						</div>
 
-						<!-- Spacer to push Hours/Time to the bottom row next to Date -->
 						<div></div>
 
 						<div>

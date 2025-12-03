@@ -61,7 +61,6 @@
 		updateNavItems();
 	});
 
-	// Subscribe to filtered counts store to get updated counts when filters change
 	filteredCountsStore.subscribe((counts) => {
 		filteredCounts = counts;
 		updateNavItems();
@@ -71,12 +70,9 @@
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 		event.preventDefault();
 
-		// Logo click should clear filters
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
 		appStore.setActiveTab('all', true);
-
-		// Navigate to Games tab
 		const route = '/';
 		goto(route, {
 			replaceState: false,
@@ -84,14 +80,12 @@
 			keepFocus: true
 		});
 
-		// Scroll to top
 		if (typeof window !== 'undefined') {
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
 
 	async function handleNavClick(target: NavId) {
-		// Tab navigation should preserve filters (or reset for tierlist)
 		if (target === 'tierlist') {
 			await navigateToAndReset(target);
 		} else {
@@ -310,12 +304,10 @@
 			padding: 0.5rem 0 0.15rem;
 		}
 
-		/* Hide tabs navigation on mobile */
 		.tabs-nav {
 			display: none;
 		}
 
-		/* Mobile layout: logo center, theme toggle right and top */
 		.header-inner {
 			position: relative;
 			grid-template-columns: 1fr;

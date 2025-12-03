@@ -62,7 +62,6 @@
 		if (cachedFont) return cachedFont;
 		if (typeof getComputedStyle === 'undefined') return '600 1rem sans-serif';
 		const style = getComputedStyle(node);
-		// Cache it. We assume all titles have same font family.
 		cachedFont = `600 1rem ${style.fontFamily}`;
 		return cachedFont;
 	}
@@ -407,7 +406,6 @@
 </div>
 
 <style>
-	/* Responsive card sizing */
 	.game-card.tierlist-size {
 		width: 200px;
 		--cover-height: 300px;

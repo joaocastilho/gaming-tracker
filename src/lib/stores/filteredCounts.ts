@@ -4,7 +4,7 @@ export interface FilteredTabCounts {
 	all: number;
 	completed: number;
 	planned: number;
-	tierlist: number | null; // tierlist doesn't have a count
+	tierlist: number | null;
 }
 
 function createFilteredCountsStore() {

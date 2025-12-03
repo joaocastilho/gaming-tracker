@@ -110,7 +110,7 @@
 
 	@media (max-width: 768px) {
 		.scroll-to-top-button {
-			bottom: 100px; /* Above bottom nav */
+			bottom: 100px;
 			right: 20px;
 			width: 44px;
 			height: 44px;
@@ -120,7 +120,7 @@
 
 	@media (max-width: 480px) {
 		.scroll-to-top-button {
-			bottom: 100px; /* Above bottom nav */
+			bottom: 100px;
 			right: 16px;
 			width: 40px;
 			height: 40px;

@@ -6,7 +6,6 @@ import { appStore } from './app';
 import { getTierDisplayName } from '$lib/utils/colorConstants';
 import { parseDate } from '$lib/utils/dateUtils';
 
-// Memoization cache for filtered results
 interface FilterCacheKey {
 	searchTerm: string;
 	platforms: string[];
@@ -27,26 +26,19 @@ class FilteredGamesStore {
 		return derived(
 			[gamesStore, filtersStore, appStore.activeTab],
 			([$games, $filters, $activeTab]) => {
-				// Early return if no games
 				if (!$games || $games.length === 0) {
 					return [];
 				}
 
-				// Create cache key
 				const cacheKey = this.createCacheKey($filters, $activeTab);
 
-				// Return cached result if key hasn't changed
 				if (this.lastCacheKey === cacheKey && this.lastCachedResult.length > 0) {
 					return this.lastCachedResult;
 				}
 
-				// Filter games
 				const filteredGames = this.filterGames($games, $filters, $activeTab);
-
-				// Sort games
 				const sortedGames = this.sortGames(filteredGames, $filters?.sortOption ?? null, $activeTab);
 
-				// Update cache
 				this.updateCache(cacheKey, sortedGames);
 
 				return sortedGames;
@@ -92,13 +84,10 @@ class FilteredGamesStore {
 	): Game[] {
 		let filteredGames = games;
 
-		// Apply search filter
 		if (filters?.searchTerm?.trim()) {
 			const query = filters.searchTerm.toLowerCase().trim();
 
-			// Use a single pass filter with optimized matching
 			filteredGames = filteredGames.filter((game) => {
-				// Check if any searchable field contains the query
 				return (
 					game.title.toLowerCase().includes(query) ||
 					game.genre.toLowerCase().includes(query) ||
@@ -107,17 +96,13 @@ class FilteredGamesStore {
 			});
 		}
 
-		// Apply platform filter
 		if (filters?.platforms?.length > 0) {
 			filteredGames = filteredGames.filter((game) => filters.platforms.includes(game.platform));
 		}
-
-		// Apply genre filter
 		if (filters?.genres?.length > 0) {
 			filteredGames = filteredGames.filter((game) => filters.genres.includes(game.genre));
 		}
 
-		// Apply tier filter
 		if (filters?.tiers?.length > 0) {
 			filteredGames = filteredGames.filter((game) => {
 				if (!game.tier) return false;
@@ -126,12 +111,9 @@ class FilteredGamesStore {
 			});
 		}
 
-		// Apply co-op filter
 		if (filters?.coOp?.length > 0) {
 			filteredGames = filteredGames.filter((game) => filters.coOp.includes(game.coOp));
 		}
-
-		// Apply tab-specific filtering
 		switch (activeTab) {
 			case 'completed':
 				filteredGames = filteredGames.filter((game) => game.status === 'Completed');
@@ -143,7 +125,6 @@ class FilteredGamesStore {
 				filteredGames = filteredGames.filter((game) => game.tier);
 				break;
 			default:
-				// For 'all' tab, no additional filtering
 				break;
 		}
 
@@ -155,9 +136,7 @@ class FilteredGamesStore {
 		sort: { key: string; direction: 'asc' | 'desc' } | null,
 		activeTab: string
 	): Game[] {
-		// Use pre-defined sort functions for better performance
 		const sortFunctions = {
-			// Rating-based sorts
 			presentation: (a: Game, b: Game) =>
 				this.compareRatings(a.ratingPresentation, b.ratingPresentation),
 			story: (a: Game, b: Game) => this.compareRatings(a.ratingStory, b.ratingStory),
@@ -166,7 +145,6 @@ class FilteredGamesStore {
 			finishedDate: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
 			alphabetical: (a: Game, b: Game) => a.title.localeCompare(b.title),
 
-			// Default sorts by tab
 			default: (a: Game, b: Game) => a.title.localeCompare(b.title),
 			completed: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
 			planned: (a: Game, b: Game) => a.title.localeCompare(b.title)
@@ -174,10 +152,7 @@ class FilteredGamesStore {
 
 		let sortFunction = sortFunctions.default;
 
-		// Determine sort function based on context
 		if (activeTab === 'planned') {
-			// Planned tab ALWAYS sorts alphabetically, regardless of the sort key passed
-			// It only respects the direction
 			sortFunction = sortFunctions.planned;
 		} else if (sort?.key && sortFunctions[sort.key as keyof typeof sortFunctions]) {
 			sortFunction = sortFunctions[sort.key as keyof typeof sortFunctions];
@@ -185,20 +160,15 @@ class FilteredGamesStore {
 			sortFunction = sortFunctions.completed;
 		}
 
-		// Clone array to avoid mutating original
 		const sortedGames = [...games];
 
-		// Apply sorting with direction
 		let direction = sort?.direction === 'desc' ? -1 : 1;
 
-		// Default to descending for completed tab if no sort option provided
 		if (activeTab === 'completed' && !sort) {
 			direction = -1;
 		}
 
 		return sortedGames.sort((a, b) => {
-			// Special handling for finishedDate to ensure nulls are always last
-			// This applies if we are explicitly sorting by finishedDate, OR if we are on the completed tab (default sort)
 			const isFinishedDateSort =
 				sort?.key === 'finishedDate' || (activeTab === 'completed' && !sort?.key);
 
@@ -207,21 +177,16 @@ class FilteredGamesStore {
 				const bTime = parseDate(b.finishedDate);
 
 				if (aTime === null && bTime === null) return 0;
-				if (aTime === null) return 1; // Always last
-				if (bTime === null) return -1; // Always last
+				if (aTime === null) return 1;
+				if (bTime === null) return -1;
 
-				// Both valid, apply direction
-				// Default compare (Ascending): aTime - bTime
 				return (aTime - bTime) * direction;
 			}
 
-			// Special handling for ratings/score to ensure no-data is always last
-			// Only apply this if we are NOT on the planned tab (which is always alphabetical)
 			if (
 				activeTab !== 'planned' &&
 				['presentation', 'story', 'gameplay', 'score'].includes(sort?.key || '')
 			) {
-				// Map sort key to actual Game property
 				let key: keyof Game;
 				switch (sort?.key) {
 					case 'presentation':
@@ -246,15 +211,10 @@ class FilteredGamesStore {
 				const aHasData = aVal !== null && aVal !== undefined;
 				const bHasData = bVal !== null && bVal !== undefined;
 
-				// Always put games without data at the bottom
 				if (aHasData && !bHasData) return -1;
 				if (!aHasData && bHasData) return 1;
 				if (!aHasData && !bHasData) return 0;
 
-				// Both have data, compare values
-				// We want standard comparison here:
-				// ASC: Small -> Large
-				// DESC: Large -> Small
 				const valA = aVal as number;
 				const valB = bVal as number;
 
@@ -319,11 +279,7 @@ class FilteredGamesStore {
 	}
 }
 
-// Create singleton instance
 const filteredGamesStore = new FilteredGamesStore();
-
-// Export the readable store
 export const filteredGames = filteredGamesStore.createFilteredGamesStore();
 
-// Export utility functions
 export { filteredGamesStore };

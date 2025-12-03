@@ -35,14 +35,10 @@
 	);
 
 	function handleSort(key: SortKey) {
-		// If we are clicking the already active sort (even if it's default), toggle direction
 		if (activeKey === key) {
-			// Toggle direction
 			const newDirection = activeDirection === 'asc' ? 'desc' : 'asc';
 			filtersStore.setSort({ key, direction: newDirection });
 		} else {
-			// Default to descending for new sort key (higher score/rating is usually better/more relevant)
-			// Exception: Alphabetical should default to ascending (A-Z)
 			const direction = key === 'alphabetical' ? 'asc' : 'desc';
 			filtersStore.setSort({ key, direction });
 		}
@@ -198,7 +194,6 @@
 		font-size: 0.9rem;
 	}
 
-	/* Adjust icon sizes */
 	:global(.sort-icon) {
 		width: 20px;
 		height: 20px;

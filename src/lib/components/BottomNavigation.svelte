@@ -85,7 +85,6 @@
 		updateNavItems();
 	});
 
-	// Subscribe to filtered counts store to get updated counts when filters change
 	filteredCountsStore.subscribe((counts) => {
 		filteredCounts = counts;
 		updateNavItems();
@@ -97,7 +96,6 @@
 		} else if (target === 'filters') {
 			onFiltersToggle?.();
 		} else {
-			// Close search and filters when navigating to any tab
 			onCloseSearchAndFilters?.();
 			navigateTo(target as 'all' | 'completed' | 'planned' | 'tierlist');
 		}
@@ -111,7 +109,6 @@
 	}
 </script>
 
-<!-- Bottom navigation - only visible on mobile (< 768px) -->
 <nav
 	class="bottom-navigation bg-background border-border fixed right-0 bottom-0 left-0 z-50 border-t md:hidden"
 	aria-label="Main navigation"
@@ -211,7 +208,6 @@
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 	}
 
-	/* Ensure proper spacing for safe areas on devices with notches */
 	@supports (padding-bottom: env(safe-area-inset-bottom)) {
 		.bottom-navigation {
 			padding-bottom: calc(env(safe-area-inset-bottom, 0));
@@ -219,7 +215,6 @@
 		}
 	}
 
-	/* High contrast mode support */
 	@media (prefers-contrast: more) {
 		.nav-button {
 			border: 1px solid transparent;
@@ -230,7 +225,6 @@
 		}
 	}
 
-	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		.icon-wrapper {
 			transition: none;

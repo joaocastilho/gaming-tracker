@@ -1,5 +1,4 @@
 <script lang="ts">
-	// Filter toggle component
 	import { filtersStore } from '$lib/stores/filters.js';
 	import { Users } from 'lucide-svelte';
 

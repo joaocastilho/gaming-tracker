@@ -52,7 +52,6 @@ function createGamesStore() {
 				if (normalized.length === 0) {
 					errorStore.set('No valid games found from pre-loaded data.');
 				} else {
-					// Update the completed games cache when games are initialized
 					completedGamesCache.updateCache(normalized);
 				}
 			} catch (err) {
@@ -76,7 +75,6 @@ function createGamesStore() {
 		addGame(newGame: Game): void {
 			update(($games) => {
 				const newGames = [...$games, newGame];
-				// Update the completed games cache when a new game is added
 				completedGamesCache.updateCache(newGames);
 				return newGames;
 			});
@@ -87,7 +85,6 @@ function createGamesStore() {
 				const updatedGames = $games.map((game) =>
 					game.id === id ? { ...game, ...updatedGame } : game
 				);
-				// Update the completed games cache when a game is modified
 				completedGamesCache.updateCache(updatedGames);
 				return updatedGames;
 			});

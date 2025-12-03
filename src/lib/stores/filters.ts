@@ -6,7 +6,6 @@ import { filteredCountsStore } from './filteredCounts';
 import type { Game } from '$lib/types/game';
 import FilterWorker from '$lib/workers/filterWorker.ts?worker';
 
-// Define browser check for test environments
 const browser = typeof window !== 'undefined';
 
 import { memoize } from '$lib/utils/memoize';
@@ -84,7 +83,6 @@ function createFiltersStore() {
 	gamesAndOptions.subscribe(({ games, platforms, genres }) => {
 		if (typeof window === 'undefined') return;
 
-		// Always update counts when games change, regardless of initialization
 		const total = games.length;
 		const completed = games.filter((game) => game.status === 'Completed').length;
 		const planned = games.filter((game) => game.status === 'Planned').length;
@@ -112,11 +110,9 @@ function createFiltersStore() {
 			filters.set(loadedFilters);
 			if (worker) {
 				worker.postMessage({ type: 'LOAD_GAMES', payload: games });
-				// Don't send APPLY_FILTERS here - let filtersAndTab handle it
 			}
 		}
 
-		// Update the completed games cache when games change
 		if (games.length > 0) {
 			completedGamesCache.updateCache(games);
 		}
@@ -129,7 +125,6 @@ function createFiltersStore() {
 				filteredGames.set(payload.filteredGames);
 				gameCounts.set(payload.counts);
 
-				// Update filtered counts for all tabs
 				filteredCountsStore.setCounts({
 					all: payload.counts.total,
 					completed: payload.counts.completed,
@@ -140,7 +135,6 @@ function createFiltersStore() {
 		};
 	}
 
-	// Track last processing to prevent duplicate calls
 	let lastProcessedKey = '';
 	let filterUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -148,7 +142,6 @@ function createFiltersStore() {
 		const { filters: currentFilters, activeTab } = currentData;
 		if (!currentFilters) return;
 
-		// Create a unique key for this filter/tab combination
 		const processingKey = `${activeTab}-${JSON.stringify({
 			searchTerm: currentFilters.searchTerm,
 			platforms: currentFilters.platforms,
@@ -159,25 +152,18 @@ function createFiltersStore() {
 			sortOption: currentFilters.sortOption
 		})}`;
 
-		// Clear previous timeout to debounce rapid updates
 		if (filterUpdateTimeout) {
 			clearTimeout(filterUpdateTimeout);
 		}
-
-		// Debounce filter processing to avoid excessive worker calls
 		filterUpdateTimeout = setTimeout(() => {
-			// Skip processing if this is an exact duplicate of the last call
 			if (processingKey === lastProcessedKey) {
 				return;
 			}
-
-			// Performance Guard - Start timing
 			const start = performance.now();
 
 			lastProcessedKey = processingKey;
 			const allGames = get(gamesStore);
 			if (allGames.length > 0 && worker) {
-				// Log filter state when filters are applied
 				const activeFilters = [];
 				if (currentFilters.searchTerm.trim())
 					activeFilters.push(`search:"${currentFilters.searchTerm}"`);
@@ -196,7 +182,6 @@ function createFiltersStore() {
 						`sort:${currentFilters.sortOption.key}_${currentFilters.sortOption.direction}`
 					);
 
-				// Check if we should use cache for completed tab (only when no custom filters and not sorting)
 				const shouldUseCompletedCache =
 					activeTab === 'completed' &&
 					!currentFilters.searchTerm.trim() &&
@@ -208,13 +193,10 @@ function createFiltersStore() {
 					currentFilters.statuses.includes('Completed') &&
 					!currentFilters.sortOption;
 
-				// For "all" tab with no filters, we don't need to call the worker at all
-				// The main page will handle this case directly
 				const shouldSkipWorkerForAllTab =
 					activeTab === 'all' && activeFilters.length === 0 && !currentFilters.sortOption;
 
 				if (shouldSkipWorkerForAllTab) {
-					// Update filtered counts with total counts when skipping worker for 'all' tab
 					const total = allGames.length;
 					const completed = allGames.filter((game) => game.status === 'Completed').length;
 					const planned = allGames.filter((game) => game.status === 'Planned').length;
@@ -228,7 +210,6 @@ function createFiltersStore() {
 				}
 
 				if (shouldUseCompletedCache) {
-					// Use cached completed games for optimal performance
 					const cachedGames = completedGamesCache.getCachedCompletedGames(allGames);
 					if (cachedGames) {
 						filteredGames.set(cachedGames);
@@ -237,7 +218,6 @@ function createFiltersStore() {
 						const plannedCount = allGames.filter((g) => g.status === 'Planned').length;
 						gameCounts.set({ total: totalCount, completed: completedCount, planned: plannedCount });
 
-						// Update filtered counts store for header tabs
 						filteredCountsStore.setCounts({
 							all: totalCount,
 							completed: completedCount,
@@ -245,14 +225,12 @@ function createFiltersStore() {
 							tierlist: null
 						});
 					} else {
-						// Fallback to worker if cache is not available
 						worker.postMessage({
 							type: 'APPLY_FILTERS',
 							payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
 						});
 					}
 				} else {
-					// For all other cases (including planned tab), use worker
 					worker.postMessage({
 						type: 'APPLY_FILTERS',
 						payload: { filters: currentFilters, allGames: allGames, activeTab: activeTab }
@@ -260,12 +238,11 @@ function createFiltersStore() {
 				}
 			}
 
-			// Performance Guard - Check if filtering took too long
 			if (performance.now() - start > 50) {
 				document.body.classList.add('disable-animations');
 				setTimeout(() => document.body.classList.remove('disable-animations'), 300);
 			}
-		}, 100); // Increased debounce to 100ms for better deduplication
+		}, 100);
 	});
 
 	return {

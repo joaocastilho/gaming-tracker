@@ -92,7 +92,6 @@ function createModalStore() {
 			modalState.update((state) => {
 				let finalDisplayedGames = displayedGames;
 
-				// Legacy behavior: if no displayedGames provided, fall back to existing or all games
 				if (displayedGames.length === 0 && !filterContext) {
 					finalDisplayedGames =
 						state.displayedGames.length > 0 ? state.displayedGames : get(gamesStore);
@@ -193,13 +192,11 @@ function createModalStore() {
 			modalState.update((state) => {
 				const newFilterContext = { ...state.filterContext, ...context };
 
-				// Always apply filtering from the full games store
 				const updatedDisplayedGames = this.getReactiveNavigationGamesFromContext(
 					get(gamesStore),
 					newFilterContext
 				);
 
-				// Update active game if it's no longer in the filtered results
 				let updatedActiveGame = state.activeGame;
 				if (
 					updatedActiveGame &&
@@ -225,7 +222,6 @@ function createModalStore() {
 
 			let filteredGames = [...allGames];
 
-			// Apply search filter
 			if (filterContext.searchTerm.trim()) {
 				const query = filterContext.searchTerm.toLowerCase().trim();
 				filteredGames = filteredGames.filter((game) => {
@@ -236,26 +232,21 @@ function createModalStore() {
 				});
 			}
 
-			// Apply platform filter
 			if (filterContext.platforms.length > 0) {
 				filteredGames = filteredGames.filter((game) =>
 					filterContext.platforms.includes(game.platform)
 				);
 			}
 
-			// Apply genre filter
 			if (filterContext.genres.length > 0) {
 				filteredGames = filteredGames.filter((game) => filterContext.genres.includes(game.genre));
 			}
-
-			// Apply status filter
 			if (filterContext.statuses.length > 0) {
 				filteredGames = filteredGames.filter((game) =>
 					filterContext.statuses.includes(game.status)
 				);
 			}
 
-			// Apply tier filter
 			if (filterContext.tiers.length > 0) {
 				filteredGames = filteredGames.filter((game) => {
 					if (!game.tier) return false;
@@ -264,7 +255,6 @@ function createModalStore() {
 				});
 			}
 
-			// Apply tab-specific filtering
 			switch (filterContext.activeTab) {
 				case 'completed':
 					filteredGames = filteredGames.filter((game) => game.status === 'Completed');
@@ -276,11 +266,9 @@ function createModalStore() {
 					filteredGames = filteredGames.filter((game) => game.tier);
 					break;
 				default:
-					// For 'all' tab, no additional filtering
 					break;
 			}
 
-			// Apply sorting based on sortOption
 			if (filterContext.sortOption) {
 				const { key, direction } = filterContext.sortOption;
 				const dir = direction === 'asc' ? 1 : -1;
@@ -308,10 +296,8 @@ function createModalStore() {
 					return aVal > bVal ? dir : -dir;
 				});
 			} else {
-				// Default sorting when no sortOption is selected
 				switch (filterContext.activeTab) {
 					case 'completed':
-						// Sort completed games by finished date (most recent first)
 						filteredGames = filteredGames.toSorted((a, b) => {
 							if (!a.finishedDate && !b.finishedDate) return 0;
 							if (!a.finishedDate) return 1;
@@ -320,11 +306,9 @@ function createModalStore() {
 						});
 						break;
 					case 'planned':
-						// Sort planned games alphabetically
 						filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
 						break;
 					default:
-						// Sort 'all' tab alphabetically
 						filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
 						break;
 				}
@@ -339,7 +323,6 @@ function createModalStore() {
 
 			let filteredGames = [...allGames];
 
-			// Apply search filter
 			if (state.filterContext.searchTerm.trim()) {
 				const query = state.filterContext.searchTerm.toLowerCase().trim();
 				filteredGames = filteredGames.filter((game) => {
@@ -350,28 +333,24 @@ function createModalStore() {
 				});
 			}
 
-			// Apply platform filter
 			if (state.filterContext.platforms.length > 0) {
 				filteredGames = filteredGames.filter((game) =>
 					state.filterContext.platforms.includes(game.platform)
 				);
 			}
 
-			// Apply genre filter
 			if (state.filterContext.genres.length > 0) {
 				filteredGames = filteredGames.filter((game) =>
 					state.filterContext.genres.includes(game.genre)
 				);
 			}
 
-			// Apply status filter
 			if (state.filterContext.statuses.length > 0) {
 				filteredGames = filteredGames.filter((game) =>
 					state.filterContext.statuses.includes(game.status)
 				);
 			}
 
-			// Apply tier filter
 			if (state.filterContext.tiers.length > 0) {
 				filteredGames = filteredGames.filter((game) => {
 					if (!game.tier) return false;
@@ -380,7 +359,6 @@ function createModalStore() {
 				});
 			}
 
-			// Apply tab-specific filtering
 			switch (state.filterContext.activeTab) {
 				case 'completed':
 					filteredGames = filteredGames.filter((game) => game.status === 'Completed');
@@ -392,11 +370,9 @@ function createModalStore() {
 					filteredGames = filteredGames.filter((game) => game.tier);
 					break;
 				default:
-					// For 'all' tab, no additional filtering
 					break;
 			}
 
-			// Apply sorting based on sortOption
 			if (state.filterContext.sortOption) {
 				const { key, direction } = state.filterContext.sortOption;
 				const dir = direction === 'asc' ? 1 : -1;
@@ -424,10 +400,8 @@ function createModalStore() {
 					return aVal > bVal ? dir : -dir;
 				});
 			} else {
-				// Default sorting when no sortOption is selected
 				switch (state.filterContext.activeTab) {
 					case 'completed':
-						// Sort completed games by finished date (most recent first)
 						filteredGames = filteredGames.toSorted((a, b) => {
 							if (!a.finishedDate && !b.finishedDate) return 0;
 							if (!a.finishedDate) return 1;
@@ -436,11 +410,9 @@ function createModalStore() {
 						});
 						break;
 					case 'planned':
-						// Sort planned games alphabetically
 						filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
 						break;
 					default:
-						// Sort 'all' tab alphabetically
 						filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
 						break;
 				}
@@ -664,21 +636,17 @@ function createModalStore() {
 			const gameSlug = searchParams.get('game');
 			if (gameSlug) {
 				let game = games.find((g) => {
-					// Try matching exact slug first
 					const exactSlug = createGameSlug(g.title);
 					if (exactSlug === gameSlug) return true;
 
-					// Try matching just the main title (without subtitle)
 					if (g.mainTitle && g.subtitle) {
 						const mainTitleSlug = createGameSlug(g.mainTitle);
 						if (mainTitleSlug === gameSlug) return true;
 					}
 
-					// For backwards compatibility, try different variations
 					const titleLower = g.title.toLowerCase();
 					const slugLower = gameSlug.toLowerCase();
 
-					// Handle "witcher-3" -> "the witcher 3: wild hunt" mapping
 					if (titleLower.includes('witcher') && slugLower === 'witcher-3') return true;
 
 					return false;

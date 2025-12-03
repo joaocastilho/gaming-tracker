@@ -2,11 +2,8 @@ import { writable, get } from 'svelte/store';
 import type { Game } from '$lib/types/game';
 
 interface CompletedGamesCache {
-	// Cache the sorted completed games
 	sortedCompletedGames: Game[];
-	// Track when we last updated the cache
 	lastUpdated: number;
-	// Track the games data version to know when to invalidate
 	gamesVersion: string;
 }
 
@@ -46,12 +43,11 @@ function createCompletedGamesCache() {
 			.sort()
 			.join('|');
 
-		// Simple hash function
 		let hash = 0;
 		for (let i = 0; i < versionData.length; i++) {
 			const char = versionData.charCodeAt(i);
 			hash = (hash << 5) - hash + char;
-			hash = hash & hash; // Convert to 32bit integer
+			hash = hash & hash;
 		}
 		return hash.toString();
 	}
@@ -63,22 +59,16 @@ function createCompletedGamesCache() {
 		const gamesVersion = generateGamesVersion(games);
 		const currentCache = get(cache);
 
-		// Create a unique update ID to prevent duplicate calls with same data
 		const updateId = `${gamesVersion}-${games.length}`;
 
-		// Clear any existing timeout
 		if (updateTimeout) {
 			clearTimeout(updateTimeout);
 		}
 
-		// Debounce rapid duplicate calls (same data within 50ms)
 		updateTimeout = setTimeout(() => {
-			// Check if this is still the latest call
 			if (lastUpdateId === updateId) {
 				return;
 			}
-
-			// Only update if we don't have a cache or the games data has changed
 			if (!currentCache || currentCache.gamesVersion !== gamesVersion) {
 				const sortedCompletedGames = sortCompletedGamesByDate(games);
 				cache.set({
@@ -91,7 +81,7 @@ function createCompletedGamesCache() {
 			} else {
 				lastUpdateId = updateId;
 			}
-		}, 50); // 50ms debounce to handle rapid duplicate calls
+		}, 50);
 	}
 
 	/**
@@ -104,7 +94,6 @@ function createCompletedGamesCache() {
 
 		const currentVersion = generateGamesVersion(games);
 		if (currentCache.gamesVersion !== currentVersion) {
-			// Cache is stale, trigger update
 			updateCache(games);
 			return get(cache)?.sortedCompletedGames || null;
 		}
@@ -125,22 +114,13 @@ function createCompletedGamesCache() {
 
 	return {
 		subscribe: cache.subscribe,
-
-		// Update the cache when games change
 		updateCache,
-
-		// Get cached sorted completed games
 		getCachedCompletedGames,
-
-		// Check if cache needs updating
 		needsUpdate,
 
-		// Clear the cache (useful for testing or when resetting)
 		clearCache() {
 			cache.set(null);
 		},
-
-		// Get current cache info (for debugging)
 		getCacheInfo() {
 			return get(cache);
 		}

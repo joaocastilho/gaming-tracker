@@ -50,7 +50,6 @@ function createAppStore() {
 
 		setActiveTab(tab: 'all' | 'completed' | 'planned' | 'tierlist', force = false) {
 			const previousTab = get(activeTab);
-			// Only log and update if the tab is actually changing or if forced
 			if (force || previousTab !== tab) {
 				activeTab.set(tab);
 			}
