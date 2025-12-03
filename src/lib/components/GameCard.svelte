@@ -104,6 +104,12 @@
 	}
 
 	function adjustTitleSize(node: HTMLElement, hasSubtitle: boolean, width?: number) {
+		if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+			node.style.whiteSpace = '';
+			node.style.fontSize = '';
+			return;
+		}
+
 		const minSize = 0.75;
 		const maxSize = 1.25;
 		const singleLineMinSize = 0.85;
@@ -567,6 +573,10 @@
 		overflow: hidden;
 	}
 
+	.game-card.tierlist-size .game-title {
+		font-size: 1rem;
+	}
+
 	.game-subtitle {
 		font-weight: 500;
 		color: #8b92a8;
@@ -738,6 +748,21 @@
 
 		.time-date-section {
 			font-size: 0.65rem;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.game-card.tierlist-size {
+			width: 100%;
+			--cover-height: auto;
+		}
+
+		.game-title {
+			font-size: 0.9rem;
+		}
+
+		.game-subtitle {
+			font-size: 0.75rem !important;
 		}
 	}
 

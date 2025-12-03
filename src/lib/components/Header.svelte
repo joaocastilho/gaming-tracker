@@ -169,6 +169,12 @@
 		display: block;
 	}
 
+	@media (max-width: 768px) {
+		.logo-button :global(img) {
+			height: 80px;
+		}
+	}
+
 	.tabs-nav {
 		display: flex;
 		align-items: flex-end;

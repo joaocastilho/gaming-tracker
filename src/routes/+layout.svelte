@@ -317,7 +317,7 @@
 		</div>
 	</section>
 
-	<main class="bg-[var(--color-background)] px-6 pt-0 pb-6">
+	<main class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6">
 		<div class="container mx-auto">
 			{#if isGamesPage}
 				{#if hasActiveFilters && $filteredGames.length === 0}
