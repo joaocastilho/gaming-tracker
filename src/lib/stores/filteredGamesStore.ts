@@ -3,6 +3,7 @@ import type { Game } from '$lib/types/game';
 import { gamesStore } from './games';
 import { filtersStore } from './filters';
 import { appStore } from './app';
+import { filteredCountsStore } from './filteredCounts';
 import { getTierDisplayName } from '$lib/utils/colorConstants';
 import { parseDate } from '$lib/utils/dateUtils';
 
@@ -40,6 +41,63 @@ class FilteredGamesStore {
 				const sortedGames = this.sortGames(filteredGames, $filters?.sortOption ?? null, $activeTab);
 
 				this.updateCache(cacheKey, sortedGames);
+
+				// Update counts
+				if (
+					$activeTab === 'all' &&
+					!$filters?.searchTerm &&
+					$filters?.platforms?.length === 0 &&
+					$filters?.genres?.length === 0 &&
+					$filters?.tiers?.length === 0 &&
+					$filters?.coOp?.length === 0 &&
+					$filters?.sortOption === null
+				) {
+					// If no filters are active (except tab), we can use the full counts
+					const total = $games.length;
+					const completed = $games.filter((g) => g.status === 'Completed').length;
+					const planned = $games.filter((g) => g.status === 'Planned').length;
+					filteredCountsStore.setCounts({
+						all: total,
+						completed,
+						planned,
+						tierlist: null
+					});
+				} else {
+					// When filters are active, we might want to update counts based on the filtered result
+					// But typically counts in nav are "total available in that category"
+					// For now, let's keep the behavior simple and consistent with the previous implementation
+					// which seemed to update counts based on the current view context
+
+					// Actually, looking at the previous implementation in filters.ts, it updated counts based on the *result* of the filter worker.
+					// So we should probably update it here too.
+
+					// However, usually nav counts represent "total items in this tab", not "items matching current search".
+					// But if the user wants to see "how many RPGs do I have?", the nav count updating is useful.
+					// Let's replicate the previous behavior: update counts based on the filtered set if we are in a specific context,
+					// or maybe just keep the total counts if we are just searching.
+
+					// The previous worker implementation returned `counts` which were calculated from the filtered results.
+					// Let's calculate them here.
+
+					const total = sortedGames.length;
+					// These counts below might be misleading if we are already filtered by status 'Completed'
+					// e.g. if we are in 'Completed' tab, 'planned' count will be 0.
+					// But that seems to be what the previous implementation did (it returned counts from the filtered set).
+
+					// Wait, the previous implementation in filters.ts:
+					// const completed = games.filter((game) => game.status === 'Completed').length;
+					// This was done on the *filtered* games in the worker.
+
+					const completed = sortedGames.filter((g) => g.status === 'Completed').length;
+					const planned = sortedGames.filter((g) => g.status === 'Planned').length;
+
+					filteredCountsStore.setCounts({
+						all: total,
+						completed,
+						planned,
+						tierlist: null
+					});
+				}
 
 				return sortedGames;
 			}

@@ -19,13 +19,16 @@ A fast personal library for tracking and rating my video game collection. Design
 
 Built with modern web technologies for performance and developer experience:
 
-- **Framework**: [SvelteKit](https://kit.svelte.dev/) (v2.48.5)
-- **UI Library**: [Svelte 5](https://svelte.dev/) (v5.43.12)
-- **Language**: [TypeScript](https://www.typescriptlang.org/) (v5.9.3)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (v4.1.17)
-- **Icons**: [Lucide Svelte](https://lucide.dev/) (v0.552.0)
-- **Runtime**: [Bun](https://bun.sh/)
-- **Testing**: [Vitest](https://vitest.dev/)
+| Category       | Technology                                                                                                                       | Version    |
+| :------------- | :------------------------------------------------------------------------------------------------------------------------------- | :--------- |
+| **Framework**  | [![SvelteKit](https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white)](https://kit.svelte.dev/)               | `v2.48.5`  |
+| **UI Library** | [![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)                         | `v5.43.12` |
+| **Language**   | [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) | `v5.9.3`   |
+| **Styling**    | [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)  | `v4.1.17`  |
+| **Icons**      | [![Lucide](https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white)](https://lucide.dev/)                         | `v0.552.0` |
+| **Runtime**    | [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)                                      | `v1.3.2`   |
+| **Build Tool** | [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vite.dev/)                                 | `v7.2.4`   |
+| **Testing**    | [![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)                         | `v3.2.4`   |
 
 ## 📂 Project Structure
 
@@ -39,16 +42,9 @@ A quick look at how the project is organized:
 - `scripts/`: Helper scripts for tasks like optimizing images and converting data.
 - `tests/`: Unit and integration tests to ensure everything works perfectly.
 
-## ⚡ [Google Lighthouse](https://developers.google.com/web/tools/lighthouse) Results
+## ⚡ Performance
 
-### Desktop
-
-<div style="width: 800px; height: 180px; overflow: hidden;">
-  <img src="https://raw.githubusercontent.com/joaocastilho/gaming-tracker/refs/heads/main/lighthouse_results/desktop/pagespeed.svg" alt="Desktop Lighthouse Result">
-</div>
-
-### Mobile
-
-<div style="width: 800px; height: 180px; overflow: hidden;">
-  <img src="https://raw.githubusercontent.com/joaocastilho/gaming-tracker/refs/heads/main/lighthouse_results/mobile/pagespeed.svg" alt="Mobile Lighthouse Result">
-</div>
+| Platform | Report |
+| :--- | :--- |
+| **Desktop** | [![PageSpeed Insights](https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pagespeed.web.dev/analysis/https-gaming-tracker-pages-dev/4u1fnkdggl?form_factor=desktop) |
+| **Mobile** | [![PageSpeed Insights](https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pagespeed.web.dev/analysis/https-gaming-tracker-pages-dev/4u1fnkdggl?form_factor=mobile) |
