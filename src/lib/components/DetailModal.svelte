@@ -2,7 +2,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import { modalStore, createGameSlug } from '../stores/modal.js';
+	import { modalStore } from '../stores/modal.js';
+	import { createGameSlug } from '../utils/slugUtils.js';
 	import { appStore } from '../stores/app.js';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';

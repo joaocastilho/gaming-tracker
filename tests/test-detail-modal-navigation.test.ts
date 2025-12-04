@@ -79,7 +79,8 @@ describe('Detail Modal Navigation', () => {
 		modalStore.readFromURL(searchParams, mockGames);
 		const state = modalStore.getState();
 
-		expect(state.pendingGameFromURL).toEqual(mockGame);
+		expect(state.activeGame).toEqual(mockGame);
+		expect(state.isOpen).toBe(true);
 	});
 
 	it('opens pending game from URL', () => {

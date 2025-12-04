@@ -2,7 +2,7 @@ import { writable, get, derived, type Readable } from 'svelte/store';
 import type { Game } from '$lib/types/game';
 import { transformGameData } from '$lib/utils/dataTransformer';
 import { completedGamesCache } from './completedGamesCache';
-import { createGameSlug } from './modal';
+import { createGameSlug } from '$lib/utils/slugUtils';
 
 function createGamesStore() {
 	const { subscribe, set, update } = writable<Game[]>([]);

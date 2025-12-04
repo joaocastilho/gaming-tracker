@@ -79,7 +79,7 @@
 			items={rows}
 			{itemHeight}
 			useWindowScroll={true}
-			overscan={2}
+			overscan={5}
 			keyExtractor={(row, i) => row?.id ?? `row-${i}`}
 			className="game-gallery-virtual"
 		>
@@ -87,7 +87,7 @@
 				row: { id: string; games: Game[]; startIndex: number },
 				isPriority: boolean
 			)}
-				<div class="game-row pb-5">
+				<div class="game-row pb-5" style="height: {itemHeight}px;">
 					{#each row.games as game, i (game.id || `fallback-${row.id}-${i}`)}
 						<div class="game-card-wrapper">
 							<GameCard

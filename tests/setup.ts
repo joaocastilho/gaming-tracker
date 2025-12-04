@@ -6,6 +6,7 @@ mock.module('$app/navigation', () => ({
 	invalidate: () => Promise.resolve(),
 	invalidateAll: () => Promise.resolve(),
 	replaceState: () => Promise.resolve(),
+	pushState: () => Promise.resolve(),
 	beforeNavigate: () => {},
 	afterNavigate: () => {},
 	disableScrollHandling: () => {},
