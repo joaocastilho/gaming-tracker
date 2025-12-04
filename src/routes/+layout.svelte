@@ -94,6 +94,7 @@
 	});
 
 	const activeTab = appStore.activeTab;
+	const theme = appStore.theme;
 
 	let isGamesPage = $derived(
 		(page.url.pathname === '/' ||
@@ -264,6 +265,11 @@
 
 <svelte:head>
 	<title>Gaming Tracker</title>
+	<meta name="theme-color" content={$theme === 'dark' ? '#0f1419' : '#f2ebe1'} />
+	<meta
+		name="apple-mobile-web-app-status-bar-style"
+		content={$theme === 'dark' ? 'black-translucent' : 'default'}
+	/>
 	{#if dev}
 		<link rel="modulepreload" href="/@vite/client" />
 	{/if}
