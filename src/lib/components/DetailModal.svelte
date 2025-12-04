@@ -6,8 +6,8 @@
 	import { createGameSlug } from '../utils/slugUtils.js';
 	import { appStore } from '../stores/app.js';
 	import type { Game } from '../types/game.js';
-	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants';
-	import { getTierClass } from '../utils/tierUtils.js';
+	import { PLATFORM_COLORS, GENRE_COLORS } from '../utils/colorConstants';
+	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
 	import { generateSrcset, generateSizes } from '../utils/imageSrcset.js';
 	import {
 		Presentation,

@@ -4,7 +4,7 @@ import { gamesStore } from './games';
 import { filtersStore } from './filters';
 import { appStore } from './app';
 import { filteredCountsStore } from './filteredCounts';
-import { getTierDisplayName } from '$lib/utils/colorConstants';
+import { getTierDisplayName } from '$lib/utils/tierUtils';
 import { parseDate } from '$lib/utils/dateUtils';
 
 interface FilterCacheKey {
@@ -196,10 +196,11 @@ class FilteredGamesStore {
 	): Game[] {
 		const sortFunctions = {
 			presentation: (a: Game, b: Game) =>
-				this.compareRatings(a.ratingPresentation, b.ratingPresentation),
-			story: (a: Game, b: Game) => this.compareRatings(a.ratingStory, b.ratingStory),
-			gameplay: (a: Game, b: Game) => this.compareRatings(a.ratingGameplay, b.ratingGameplay),
-			score: (a: Game, b: Game) => this.compareScores(a.score, b.score),
+				this.compareNullableNumbers(a.ratingPresentation, b.ratingPresentation),
+			story: (a: Game, b: Game) => this.compareNullableNumbers(a.ratingStory, b.ratingStory),
+			gameplay: (a: Game, b: Game) =>
+				this.compareNullableNumbers(a.ratingGameplay, b.ratingGameplay),
+			score: (a: Game, b: Game) => this.compareNullableNumbers(a.score, b.score),
 			finishedDate: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
 			alphabetical: (a: Game, b: Game) => a.title.localeCompare(b.title),
 
@@ -285,18 +286,10 @@ class FilteredGamesStore {
 		});
 	}
 
-	private compareRatings(a: number | null | undefined, b: number | null | undefined): number {
-		const hasDataA = a !== null && a !== undefined;
-		const hasDataB = b !== null && b !== undefined;
-
-		if (hasDataA && !hasDataB) return 1;
-		if (!hasDataA && hasDataB) return -1;
-		if (!hasDataA && !hasDataB) return 0;
-
-		return (a as number) - (b as number);
-	}
-
-	private compareScores(a: number | null | undefined, b: number | null | undefined): number {
+	private compareNullableNumbers(
+		a: number | null | undefined,
+		b: number | null | undefined
+	): number {
 		const hasDataA = a !== null && a !== undefined;
 		const hasDataB = b !== null && b !== undefined;
 

@@ -1,11 +1,6 @@
 import type { Game } from '$lib/types/game';
-import {
-	PLATFORM_COLORS,
-	GENRE_COLORS,
-	TIER_COLORS,
-	COOP_COLORS,
-	getTierDisplayName
-} from './colorConstants.js';
+import { PLATFORM_COLORS, GENRE_COLORS, TIER_COLORS, COOP_COLORS } from './colorConstants.js';
+import { getTierDisplayName } from './tierUtils';
 
 export function getPlatformColor(platform: string): string {
 	return PLATFORM_COLORS[platform] || 'bg-gray-600 text-white';

@@ -5,6 +5,7 @@ import { gamesStore } from './games.js';
 import { replaceState, pushState } from '$app/navigation';
 
 import { createGameSlug } from '$lib/utils/slugUtils';
+import { getTierDisplayName } from '$lib/utils/tierUtils';
 
 export interface ModalState {
 	isOpen: boolean;
@@ -254,7 +255,7 @@ function createModalStore() {
 			if (filterContext.tiers.length > 0) {
 				filteredGames = filteredGames.filter((game) => {
 					if (!game.tier) return false;
-					const gameTierFullName = this.getTierDisplayName(game.tier);
+					const gameTierFullName = getTierDisplayName(game.tier);
 					return filterContext.tiers.includes(gameTierFullName);
 				});
 			}
@@ -324,117 +325,7 @@ function createModalStore() {
 		getReactiveNavigationGames(allGames: Game[]): Game[] {
 			const state = get(modalState);
 			if (!state.filterContext) return allGames;
-
-			let filteredGames = [...allGames];
-
-			if (state.filterContext.searchTerm.trim()) {
-				const query = state.filterContext.searchTerm.toLowerCase().trim();
-				filteredGames = filteredGames.filter((game) => {
-					const titleMatch = game.title.toLowerCase().includes(query);
-					const genreMatch = game.genre.toLowerCase().includes(query);
-					const platformMatch = game.platform.toLowerCase().includes(query);
-					return titleMatch || genreMatch || platformMatch;
-				});
-			}
-
-			if (state.filterContext.platforms.length > 0) {
-				filteredGames = filteredGames.filter((game) =>
-					state.filterContext.platforms.includes(game.platform)
-				);
-			}
-
-			if (state.filterContext.genres.length > 0) {
-				filteredGames = filteredGames.filter((game) =>
-					state.filterContext.genres.includes(game.genre)
-				);
-			}
-
-			if (state.filterContext.statuses.length > 0) {
-				filteredGames = filteredGames.filter((game) =>
-					state.filterContext.statuses.includes(game.status)
-				);
-			}
-
-			if (state.filterContext.tiers.length > 0) {
-				filteredGames = filteredGames.filter((game) => {
-					if (!game.tier) return false;
-					const gameTierFullName = this.getTierDisplayName(game.tier);
-					return state.filterContext.tiers.includes(gameTierFullName);
-				});
-			}
-
-			switch (state.filterContext.activeTab) {
-				case 'completed':
-					filteredGames = filteredGames.filter((game) => game.status === 'Completed');
-					break;
-				case 'planned':
-					filteredGames = filteredGames.filter((game) => game.status === 'Planned');
-					break;
-				case 'tierlist':
-					filteredGames = filteredGames.filter((game) => game.tier);
-					break;
-				default:
-					break;
-			}
-
-			if (state.filterContext.sortOption) {
-				const { key, direction } = state.filterContext.sortOption;
-				const dir = direction === 'asc' ? 1 : -1;
-
-				filteredGames = filteredGames.toSorted((a, b) => {
-					const aVal =
-						key === 'presentation'
-							? (a.ratingPresentation ?? 0)
-							: key === 'story'
-								? (a.ratingStory ?? 0)
-								: key === 'gameplay'
-									? (a.ratingGameplay ?? 0)
-									: (a.score ?? 0);
-
-					const bVal =
-						key === 'presentation'
-							? (b.ratingPresentation ?? 0)
-							: key === 'story'
-								? (b.ratingStory ?? 0)
-								: key === 'gameplay'
-									? (b.ratingGameplay ?? 0)
-									: (b.score ?? 0);
-
-					if (aVal === bVal) return 0;
-					return aVal > bVal ? dir : -dir;
-				});
-			} else {
-				switch (state.filterContext.activeTab) {
-					case 'completed':
-						filteredGames = filteredGames.toSorted((a, b) => {
-							if (!a.finishedDate && !b.finishedDate) return 0;
-							if (!a.finishedDate) return 1;
-							if (!b.finishedDate) return -1;
-							return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
-						});
-						break;
-					case 'planned':
-						filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
-						break;
-					default:
-						filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
-						break;
-				}
-			}
-
-			return filteredGames;
-		},
-
-		getTierDisplayName(tier: string): string {
-			const tierMapping: Record<string, string> = {
-				S: 'S - Masterpiece',
-				A: 'A - Amazing',
-				B: 'B - Great',
-				C: 'C - Good',
-				D: 'D - Decent',
-				E: 'E - Bad'
-			};
-			return tierMapping[tier] || tier;
+			return this.getReactiveNavigationGamesFromContext(allGames, state.filterContext);
 		},
 
 		updateFormData(field: string, value: unknown) {

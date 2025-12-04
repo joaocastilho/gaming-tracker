@@ -121,7 +121,3 @@ export const TIER_LABELS: Record<string, string> = {
 	D: 'D - Decent',
 	E: 'E - Bad'
 };
-
-export const getTierDisplayName = (tierLetter: string): string => {
-	return TIER_LABELS[tierLetter] || tierLetter;
-};

@@ -2,8 +2,8 @@
 	import { modalStore } from '../stores/modal.js';
 	import { filtersStore } from '../stores/filters.js';
 	import type { Game } from '../types/game.js';
-	import { PLATFORM_COLORS, GENRE_COLORS, getTierDisplayName } from '../utils/colorConstants.js';
-	import { getTierClass } from '../utils/tierUtils.js';
+	import { PLATFORM_COLORS, GENRE_COLORS } from '../utils/colorConstants.js';
+	import { getTierClass, getTierDisplayName } from '../utils/tierUtils.js';
 	import { generateSrcset, generateTinySrcset, generateSizes } from '../utils/imageSrcset.js';
 	import {
 		Award,
@@ -201,14 +201,13 @@
 		}
 	}
 
+	function isValidKeyboardAction(event: KeyboardEvent): boolean {
+		return event.key === 'Enter' || event.key === ' ';
+	}
+
 	function handlePlatformClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
-		if (
-			event instanceof KeyboardEvent &&
-			event.key !== 'Enter' &&
-			event.key !== ' ' &&
-			event.key !== undefined
-		) {
+		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
 			return;
 		}
 		filtersStore.togglePlatform(game.platform);
@@ -216,12 +215,7 @@
 
 	function handleGenreClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
-		if (
-			event instanceof KeyboardEvent &&
-			event.key !== 'Enter' &&
-			event.key !== ' ' &&
-			event.key !== undefined
-		) {
+		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
 			return;
 		}
 		filtersStore.toggleGenre(game.genre);
@@ -229,12 +223,7 @@
 
 	function handleCoOpClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
-		if (
-			event instanceof KeyboardEvent &&
-			event.key !== 'Enter' &&
-			event.key !== ' ' &&
-			event.key !== undefined
-		) {
+		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
 			return;
 		}
 		filtersStore.toggleCoOp('Yes');
@@ -242,12 +231,7 @@
 
 	function handleTierClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
-		if (
-			event instanceof KeyboardEvent &&
-			event.key !== 'Enter' &&
-			event.key !== ' ' &&
-			event.key !== undefined
-		) {
+		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
 			return;
 		}
 		if (game.tier) {

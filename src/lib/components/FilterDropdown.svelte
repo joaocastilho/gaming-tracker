@@ -6,7 +6,7 @@
 		getTierColor,
 		getCoOpColor
 	} from '$lib/utils/filterOptions.js';
-	import { getTierDisplayName } from '$lib/utils/colorConstants.js';
+	import { getTierDisplayName } from '$lib/utils/tierUtils';
 	import { Monitor, Tag, Trophy, ChevronDown, Users, RotateCcw } from 'lucide-svelte';
 
 	interface Props {
