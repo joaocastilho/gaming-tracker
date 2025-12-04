@@ -26,7 +26,7 @@
 	import { gamesStore } from '../stores/games.js';
 	let allGames = $derived($gamesStore);
 
-	let displayedGames = $derived(() => {
+	let displayedGames = $derived.by(() => {
 		if ($modalStore.displayedGames.length > 0) {
 			return $modalStore.displayedGames;
 		}
@@ -65,7 +65,7 @@
 	);
 	const detailImageSizes = $derived(generateSizes('modal'));
 
-	let titleSizeClass = $derived(() => {
+	let titleSizeClass = $derived.by(() => {
 		const len = $modalStore.activeGame?.mainTitle?.length ?? 0;
 		if (len <= 20) return 'text-lg md:text-3xl';
 		if (len <= 30) return 'text-base md:text-2xl';
@@ -142,8 +142,8 @@
 		}
 	}
 
-	let currentTabGames = $derived(() => {
-		const games = displayedGames();
+	let currentTabGames = $derived.by(() => {
+		const games = displayedGames;
 
 		switch ($currentActiveTab) {
 			case 'all': {
@@ -213,8 +213,8 @@
 		}
 	});
 
-	let allTieredGames = $derived(() => {
-		const sourceGames = $currentActiveTab === 'tierlist' ? allGames : displayedGames();
+	let allTieredGames = $derived.by(() => {
+		const sourceGames = $currentActiveTab === 'tierlist' ? allGames : displayedGames;
 
 		const tierOrder = [
 			'S - Masterpiece',
@@ -254,23 +254,23 @@
 		return result;
 	});
 
-	let currentGameIndex = $derived(() => {
+	let currentGameIndex = $derived.by(() => {
 		if (!$modalStore.activeGame) return -1;
 
 		if ($modalStore.displayedGames.length > 0) {
 			return $modalStore.displayedGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 		}
 		if ($currentActiveTab === 'tierlist') {
-			const tierGames = allTieredGames();
+			const tierGames = allTieredGames;
 			return tierGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 		}
-		const tabGames = currentTabGames();
+		const tabGames = currentTabGames;
 		return tabGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 	});
 
 	function navigateToPrevious() {
-		const index = currentGameIndex();
-		const games = displayedGames();
+		const index = currentGameIndex;
+		const games = displayedGames;
 
 		if (index > 0) {
 			const prevGame = games[index - 1];
@@ -279,8 +279,8 @@
 	}
 
 	function navigateToNext() {
-		const index = currentGameIndex();
-		const games = displayedGames();
+		const index = currentGameIndex;
+		const games = displayedGames;
 
 		if (index < games.length - 1) {
 			const nextGame = games[index + 1];
@@ -421,7 +421,7 @@
 	>
 		<div class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
 			<div class="relative w-full max-w-[1250px]">
-				{#if currentGameIndex() > 0}
+				{#if currentGameIndex > 0}
 					<button
 						onclick={navigateToPrevious}
 						class="pointer-events-auto absolute top-1/2 left-2 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none md:h-16 md:w-16"
@@ -432,8 +432,8 @@
 				{/if}
 
 				{#if (() => {
-					const games = displayedGames();
-					return currentGameIndex() > -1 && currentGameIndex() < games.length - 1;
+					const games = displayedGames;
+					return currentGameIndex > -1 && currentGameIndex < games.length - 1;
 				})()}
 					<button
 						onclick={navigateToNext}
@@ -508,7 +508,7 @@
 							class="flex min-w-0 flex-1 flex-col justify-start"
 							style="color: var(--color-text-primary);"
 						>
-							<span class="w-full truncate font-bold {titleSizeClass()}">
+							<span class="w-full truncate font-bold {titleSizeClass}">
 								{$modalStore.activeGame.mainTitle}
 							</span>
 							{#if $modalStore.activeGame.subtitle}

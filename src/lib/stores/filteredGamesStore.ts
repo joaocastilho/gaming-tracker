@@ -43,7 +43,7 @@ class FilteredGamesStore {
 				this.updateCache(cacheKey, sortedGames);
 
 				// Update counts
-				// Apply all filters EXCEPT the tab filter, so counts show games in each category  
+				// Apply all filters EXCEPT the tab filter, so counts show games in each category
 				// that match the active filters (search, platform, genre, tier, coOp)
 				const gamesWithFiltersApplied = this.filterGamesWithoutTabFilter($games, $filters);
 

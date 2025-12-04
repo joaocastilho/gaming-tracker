@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { onMount, onDestroy } from 'svelte';
 
 	import { safeKeyExtractor } from '$lib/utils/safeKeyExtractor';
 
@@ -33,7 +32,7 @@
 	let scrollTop = $state(0);
 	let windowHeight = $state(0);
 
-	let visibleRange = $derived(() => {
+	let visibleRange = $derived.by(() => {
 		const effectiveHeight = useWindowScroll ? windowHeight : containerHeight;
 		const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
 		const end = Math.min(
@@ -43,8 +42,8 @@
 		return { start, end };
 	});
 
-	let visibleItems = $derived(() => {
-		const range = visibleRange();
+	let visibleItems = $derived.by(() => {
+		const range = visibleRange;
 		return items.slice(range.start, range.end).map((item, index) => ({
 			item,
 			index: range.start + index
@@ -72,19 +71,17 @@
 		}
 	}
 
-	onMount(() => {
+	$effect(() => {
 		if (useWindowScroll) {
 			window.addEventListener('scroll', handleScroll, { passive: true });
 			window.addEventListener('resize', updateWindowHeight);
 			updateWindowHeight();
 			handleScroll({} as Event);
-		}
-	});
 
-	onDestroy(() => {
-		if (typeof window !== 'undefined') {
-			window.removeEventListener('scroll', handleScroll);
-			window.removeEventListener('resize', updateWindowHeight);
+			return () => {
+				window.removeEventListener('scroll', handleScroll);
+				window.removeEventListener('resize', updateWindowHeight);
+			};
 		}
 	});
 </script>
@@ -103,9 +100,9 @@
 
 	<div
 		class="virtual-items"
-		style="position: absolute; top: {visibleRange().start * itemHeight}px; left: 0; right: 0;"
+		style="position: absolute; top: {visibleRange.start * itemHeight}px; left: 0; right: 0;"
 	>
-		{#each visibleItems() as { item, index } (safeKeyExtractor(item, index, keyExtractor))}
+		{#each visibleItems as { item, index } (safeKeyExtractor(item, index, keyExtractor))}
 			<div class="virtual-item">
 				{@render renderItem(item, index < priorityCount)}
 			</div>

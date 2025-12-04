@@ -85,7 +85,7 @@
 	});
 
 	// Use a more efficient derived that doesn't block on empty games
-	let filterOptions = $derived(() => {
+	let filterOptions = $derived.by(() => {
 		const games = $gamesStore;
 		if (!games || games.length === 0) {
 			return { platforms: [], genres: [], tiers: [], coOp: [] };
@@ -286,20 +286,20 @@
 						<FilterDropdown
 							type="platforms"
 							label="Platforms"
-							options={filterOptions().platforms}
+							options={filterOptions.platforms}
 							selectedOptions={selectedPlatforms}
 						/>
 						<FilterDropdown
 							type="genres"
 							label="Genres"
-							options={filterOptions().genres}
+							options={filterOptions.genres}
 							selectedOptions={selectedGenres}
 						/>
 						{#if showTiersFilter}
 							<FilterDropdown
 								type="tiers"
 								label="Tiers"
-								options={filterOptions().tiers}
+								options={filterOptions.tiers}
 								selectedOptions={selectedTiers}
 							/>
 						{/if}
@@ -457,14 +457,14 @@
 					<FilterDropdown
 						type="platforms"
 						label="Platforms"
-						options={filterOptions().platforms}
+						options={filterOptions.platforms}
 						selectedOptions={selectedPlatforms}
 					/>
 					<!-- Genres -->
 					<FilterDropdown
 						type="genres"
 						label="Genres"
-						options={filterOptions().genres}
+						options={filterOptions.genres}
 						selectedOptions={selectedGenres}
 					/>
 					<!-- Tiers -->
@@ -472,7 +472,7 @@
 						<FilterDropdown
 							type="tiers"
 							label="Tiers"
-							options={filterOptions().tiers}
+							options={filterOptions.tiers}
 							selectedOptions={selectedTiers}
 						/>
 					{/if}
