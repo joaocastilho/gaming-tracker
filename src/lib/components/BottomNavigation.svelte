@@ -2,7 +2,6 @@
 	import { navigateTo } from '$lib/utils/navigationUtils';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts';
 	import { appStore } from '$lib/stores/app.js';
-	import { get } from 'svelte/store';
 	import { Gamepad, CheckCircle, Calendar, List, Search, Filter } from 'lucide-svelte';
 
 	interface Props {
@@ -25,69 +24,61 @@
 		icon: any; // Lucide icon component
 	};
 
-	let navItems = $state<NavItem[]>([]);
-	let filteredCounts = $state({ all: 0, completed: 0, planned: 0, tierlist: null });
+	const activeTab = appStore.activeTab;
 
-	function updateNavItems() {
-		const activeTab = get(appStore.activeTab);
+	// Use $derived to reactively compute navItems whenever activeTab or counts change
+	let navItems = $derived.by(() => {
+		const counts = $filteredCountsStore;
+		const currentTab = $activeTab;
 
-		navItems = [
+		return [
 			{
-				id: 'all',
+				id: 'all' as NavId,
 				label: 'Games',
 				route: '/',
-				count: filteredCounts.all,
-				active: activeTab === 'all',
+				count: counts.all,
+				active: currentTab === 'all',
 				icon: Gamepad
 			},
 			{
-				id: 'completed',
+				id: 'completed' as NavId,
 				label: 'Completed',
 				route: '/completed',
-				count: filteredCounts.completed,
-				active: activeTab === 'completed',
+				count: counts.completed,
+				active: currentTab === 'completed',
 				icon: CheckCircle
 			},
 			{
-				id: 'planned',
+				id: 'planned' as NavId,
 				label: 'Planned',
 				route: '/planned',
-				count: filteredCounts.planned,
-				active: activeTab === 'planned',
+				count: counts.planned,
+				active: currentTab === 'planned',
 				icon: Calendar
 			},
 			{
-				id: 'tierlist',
+				id: 'tierlist' as NavId,
 				label: 'Tier List',
 				route: '/tierlist',
 				count: null,
-				active: activeTab === 'tierlist',
+				active: currentTab === 'tierlist',
 				icon: List
 			},
 			{
-				id: 'search',
+				id: 'search' as NavId,
 				label: 'Search',
 				count: null,
 				active: false,
 				icon: Search
 			},
 			{
-				id: 'filters',
+				id: 'filters' as NavId,
 				label: 'Filters',
 				count: null,
 				active: false,
 				icon: Filter
 			}
-		];
-	}
-
-	$effect(() => {
-		updateNavItems();
-	});
-
-	filteredCountsStore.subscribe((counts) => {
-		filteredCounts = counts;
-		updateNavItems();
+		] as NavItem[];
 	});
 
 	function handleNavClick(target: NavId) {

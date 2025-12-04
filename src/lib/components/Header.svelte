@@ -4,7 +4,6 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Logo from '$lib/components/Logo.svelte';
 
-	import { get } from 'svelte/store';
 	import { appStore } from '$lib/stores/app';
 	import { filtersStore } from '$lib/stores/filters';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts';
@@ -19,51 +18,43 @@
 		active: boolean;
 	};
 
-	let navItems = $state<NavItem[]>([]);
-	let filteredCounts = $state({ all: 0, completed: 0, planned: 0, tierlist: null });
+	const activeTab = appStore.activeTab;
 
-	function updateNavItems() {
-		const activeTab = get(appStore.activeTab);
+	// Use $derived to reactively compute navItems whenever activeTab or counts change
+	let navItems = $derived.by(() => {
+		const counts = $filteredCountsStore;
+		const currentTab = $activeTab;
 
-		navItems = [
+		return [
 			{
-				id: 'all',
+				id: 'all' as NavId,
 				label: 'Games',
 				route: '/',
-				count: filteredCounts.all,
-				active: activeTab === 'all'
+				count: counts.all,
+				active: currentTab === 'all'
 			},
 			{
-				id: 'completed',
+				id: 'completed' as NavId,
 				label: 'Completed',
 				route: '/completed',
-				count: filteredCounts.completed,
-				active: activeTab === 'completed'
+				count: counts.completed,
+				active: currentTab === 'completed'
 			},
 			{
-				id: 'planned',
+				id: 'planned' as NavId,
 				label: 'Planned',
 				route: '/planned',
-				count: filteredCounts.planned,
-				active: activeTab === 'planned'
+				count: counts.planned,
+				active: currentTab === 'planned'
 			},
 			{
-				id: 'tierlist',
+				id: 'tierlist' as NavId,
 				label: 'Tier List',
 				route: '/tierlist',
 				count: null,
-				active: activeTab === 'tierlist'
+				active: currentTab === 'tierlist'
 			}
-		];
-	}
-
-	$effect(() => {
-		updateNavItems();
-	});
-
-	filteredCountsStore.subscribe((counts) => {
-		filteredCounts = counts;
-		updateNavItems();
+		] as NavItem[];
 	});
 
 	function handleLogoClick(event: MouseEvent) {
