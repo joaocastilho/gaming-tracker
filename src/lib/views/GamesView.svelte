@@ -52,15 +52,27 @@
 
 	let itemHeight = $derived(
 		(() => {
-			const infoHeight = 300;
 			const containerPadding = 16;
 			const gap = 12;
 			const totalGapWidth = (columns - 1) * gap;
 			const availableWidth = containerWidth - containerPadding - totalGapWidth;
 			const columnWidth = availableWidth / columns;
 			const coverHeight = columnWidth * 1.5;
+			const minInfoHeight = 195;
+			const maxInfoHeight = 240;
+			const baseInfoHeight = Math.max(minInfoHeight, Math.min(maxInfoHeight, columnWidth * 0.9));
+			const smallScreenBonus =
+				containerWidth < 480
+					? 45
+					: containerWidth < 540
+						? 35
+						: containerWidth < 600
+							? 25
+							: containerWidth < 768
+								? 10
+								: 0;
 
-			return coverHeight + infoHeight;
+			return coverHeight + baseInfoHeight + smallScreenBonus;
 		})()
 	);
 

@@ -545,6 +545,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
+		flex: 1;
 	}
 
 	.title-section {
@@ -704,6 +705,7 @@
 		align-items: flex-end;
 		font-size: 0.8rem;
 		color: #8b92a8;
+		margin-top: auto;
 	}
 
 	:global(.light) .time-date-section {
@@ -745,7 +747,7 @@
 		}
 
 		.time-date-section {
-			font-size: 0.65rem;
+			font-size: 0.75rem;
 		}
 	}
 
@@ -799,8 +801,8 @@
 		}
 
 		.time-date-section {
-			gap: 2px;
-			font-size: 0.65rem;
+			gap: 4px;
+			font-size: 0.7rem;
 		}
 
 		.tier-badge {
