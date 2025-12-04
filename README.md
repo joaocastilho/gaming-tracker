@@ -44,7 +44,7 @@ A quick look at how the project is organized:
 
 ## ⚡ Performance
 
-| Platform | Report |
-| :--- | :--- |
-| **Desktop** | [![PageSpeed Insights](https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pagespeed.web.dev/analysis/https-gaming-tracker-pages-dev/4u1fnkdggl?form_factor=desktop) |
-| **Mobile** | [![PageSpeed Insights](https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pagespeed.web.dev/analysis/https-gaming-tracker-pages-dev/4u1fnkdggl?form_factor=mobile) |
+| Platform    | Report                                                                                                                                                                                                           |
+| :---------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Desktop** | [![PageSpeed Insights](https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=desktop) |
+| **Mobile**  | [![PageSpeed Insights](https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=mobile)  |
