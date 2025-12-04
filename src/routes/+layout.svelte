@@ -192,36 +192,14 @@
 		}
 	});
 
-	let selectedPlatforms: string[] = $state([]);
-	let selectedGenres: string[] = $state([]);
-	let selectedTiers: string[] = $state([]);
-	let selectedCoOp: string[] = $state([]);
+	let selectedPlatforms = $derived($filtersStore?.platforms ?? []);
+	let selectedGenres = $derived($filtersStore?.genres ?? []);
+	let selectedTiers = $derived($filtersStore?.tiers ?? []);
+	let selectedCoOp = $derived($filtersStore?.coOp ?? []);
 
 	let isSearchOpen = $state(false);
 	let isFiltersOpen = $state(false);
 	let searchInput = $state<HTMLInputElement | null>(null);
-
-	$effect(() => {
-		const unsubPlatforms = filtersStore.selectedPlatforms.subscribe((platforms) => {
-			selectedPlatforms = platforms;
-		});
-		const unsubGenres = filtersStore.selectedGenres.subscribe((genres) => {
-			selectedGenres = genres;
-		});
-		const unsubTiers = filtersStore.selectedTiers.subscribe((tiers) => {
-			selectedTiers = tiers;
-		});
-		const unsubCoOp = filtersStore.selectedCoOp.subscribe((coOp) => {
-			selectedCoOp = coOp;
-		});
-
-		return () => {
-			unsubPlatforms();
-			unsubGenres();
-			unsubTiers();
-			unsubCoOp();
-		};
-	});
 
 	function resetFilters() {
 		filtersStore.resetAllFilters();

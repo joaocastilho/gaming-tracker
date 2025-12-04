@@ -5,14 +5,7 @@
 	let inputElement: HTMLInputElement | undefined;
 	let debounceTimeout: ReturnType<typeof setTimeout> | undefined;
 
-	let searchTerm = $state('');
-
-	$effect(() => {
-		const unsubscribe = filtersStore.searchQuery.subscribe((value) => {
-			searchTerm = value;
-		});
-		return unsubscribe;
-	});
+	let searchTerm = $derived($filtersStore?.searchTerm ?? '');
 
 	$effect(() => {
 		if (inputElement) {
