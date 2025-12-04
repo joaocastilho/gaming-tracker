@@ -2,7 +2,7 @@ import { writable, get } from 'svelte/store';
 import { debounce } from '../utils/debounce.js';
 import type { Game } from '../types/game.js';
 import { gamesStore } from './games.js';
-import { replaceState } from '$app/navigation';
+import { replaceState, pushState } from '$app/navigation';
 
 export function createGameSlug(title: string): string {
 	return title
@@ -63,15 +63,29 @@ function createModalStore() {
 		try {
 			const state = get(modalState);
 			const url = new URL(window.location.href);
+			const currentSlug = url.searchParams.get('game');
 
 			if (state.isOpen && state.activeGame) {
 				const slug = createGameSlug(state.activeGame.title);
-				url.searchParams.set('game', slug);
-			} else {
-				url.searchParams.delete('game');
-			}
 
-			await replaceState(url.toString(), { noscroll: true });
+				// If we already have a game slug, we replace (navigation between games)
+				// If we don't, we push (opening modal)
+				if (currentSlug) {
+					url.searchParams.set('game', slug);
+					await replaceState(url.toString(), { noscroll: true });
+				} else {
+					url.searchParams.set('game', slug);
+					await pushState(url.toString(), { noscroll: true });
+				}
+			} else {
+				// Closing modal
+				if (currentSlug) {
+					url.searchParams.delete('game');
+					// We go back if we can, otherwise replace
+					// But for now, let's just replace to be safe and consistent
+					await replaceState(url.toString(), { noscroll: true });
+				}
+			}
 		} catch {
 			// Ignore router initialization errors
 		}
@@ -656,10 +670,17 @@ function createModalStore() {
 					game = games.find((g) => g.id === gameSlug);
 				}
 				if (game) {
-					modalState.update((state) => ({
-						...state,
-						pendingGameFromURL: game
-					}));
+					// If modal is not open or showing a different game, open it
+					const state = get(modalState);
+					if (!state.isOpen || state.activeGame?.id !== game.id) {
+						this.openViewModal(game, games);
+					}
+				}
+			} else {
+				// If no game param but modal is open, close it (handle back button)
+				const state = get(modalState);
+				if (state.isOpen) {
+					this.closeModal();
 				}
 			}
 		},

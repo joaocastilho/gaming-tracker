@@ -16,7 +16,7 @@
 		X,
 		ChevronLeft,
 		ChevronRight,
-		Share2,
+		Link,
 		Users
 	} from 'lucide-svelte';
 
@@ -72,7 +72,7 @@
 		return 'text-xs md:text-lg';
 	});
 
-	let shareFeedback = $state('');
+	let linkToGame = $state('');
 	let focusableElements = $state<HTMLElement[]>([]);
 	let firstFocusableElement = $state<HTMLElement>();
 	let lastFocusableElement = $state<HTMLElement>();
@@ -365,15 +365,15 @@
 			url.searchParams.set('game', slug);
 
 			await navigator.clipboard.writeText(url.toString());
-			shareFeedback = 'Copied!';
+			linkToGame = 'Copied';
 			setTimeout(() => {
-				shareFeedback = '';
+				linkToGame = '';
 			}, 2000);
 		} catch (error) {
 			console.warn('Failed to copy to clipboard:', error);
-			shareFeedback = 'Failed';
+			linkToGame = 'Failed';
 			setTimeout(() => {
-				shareFeedback = '';
+				linkToGame = '';
 			}, 2000);
 		}
 	}
@@ -486,23 +486,21 @@
 						</button>
 						<button
 							onclick={shareGame}
-							class="absolute bottom-3 left-3 z-20 flex items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-black/70 md:hidden {shareFeedback
-								? 'px-3 py-1'
+							class="absolute bottom-3 left-3 z-20 flex items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-black/70 md:hidden {linkToGame
+								? 'px-3 py-3'
 								: 'h-8 w-8'}"
 							aria-label="Share game"
 						>
-							{#if shareFeedback}
-								<span class="text-xs font-medium">{shareFeedback}</span>
+							{#if linkToGame}
+								<span class="text-xs font-medium">{linkToGame}</span>
 							{:else}
-								<Share2 size={18} />
+								<Link size={18} />
 							{/if}
 						</button>
 					</div>
 				</div>
 
-				<div
-					class="flex-1 overflow-y-auto pt-2 pr-6 pb-6 pl-6 md:pt-4 lg:pt-6 lg:pr-8 lg:pb-5 lg:pl-8"
-				>
+				<div class="flex-1 overflow-y-auto pt-2 pr-6 pb-6 pl-6 md:pt-4 lg:pr-8 lg:pb-5 lg:pl-8">
 					<div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
 						<h1
 							id="modal-title"
@@ -523,19 +521,20 @@
 
 						<button
 							onclick={shareGame}
-							class="mr-10 hidden h-5 cursor-pointer items-center justify-center rounded-full bg-transparent px-2 transition-colors hover:bg-black/5 md:flex dark:bg-transparent dark:hover:bg-black/20"
+							class="mr-10 hidden h-8 cursor-pointer items-center justify-center rounded-full bg-transparent transition-colors hover:bg-black/10 md:flex dark:bg-transparent dark:hover:bg-white/10 {linkToGame
+								? 'w-auto px-3'
+								: 'w-8'}"
 							aria-label="Share game"
-							style="min-width: 40px;"
 						>
-							{#if shareFeedback}
+							{#if linkToGame}
 								<span
 									style="color: var(--color-text-primary)"
 									class="text-sm font-medium text-gray-700 dark:text-gray-200"
 								>
-									{shareFeedback}
+									{linkToGame}
 								</span>
 							{:else}
-								<Share2
+								<Link
 									size={18}
 									style="color: var(--color-text-primary)"
 									class="text-gray-700 dark:text-gray-200"
