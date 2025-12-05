@@ -877,7 +877,7 @@
 			<button
 				onclick={navigateToPrevious}
 				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
-				style="left: calc(50% - 500px - 70px);"
+				style="left: calc(50% - 500px - 120px);"
 				aria-label="Previous game"
 			>
 				<ChevronLeft size={28} />
@@ -890,7 +890,7 @@
 			<button
 				onclick={navigateToNext}
 				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
-				style="right: calc(50% - 500px - 70px);"
+				style="right: calc(50% - 500px - 120px);"
 				aria-label="Next game"
 			>
 				<ChevronRight size={28} />
@@ -979,7 +979,7 @@
 						>
 							<span
 								class="modal-title-text w-full font-bold"
-								style="font-size: clamp(1rem, 5vw, 1.25rem);"
+								style="font-size: clamp(1rem, 5vw, 1.85rem);"
 							>
 								{$modalStore.activeGame.mainTitle}
 							</span>
@@ -1344,10 +1344,6 @@
 		overflow: hidden;
 	}
 
-	#modal-title {
-		min-height: 60px;
-	}
-
 	@media (min-width: 768px) {
 		.modal-image-wrapper {
 			width: 400px;
@@ -1364,7 +1360,7 @@
 		}
 
 		#modal-title {
-			min-height: 65px;
+			min-height: 75px;
 		}
 	}
 
@@ -1593,7 +1589,6 @@
 		color: var(--color-text-primary);
 	}
 
-	/* Ratings section */
 	.parallax-ratings {
 		display: flex;
 		flex-direction: column;

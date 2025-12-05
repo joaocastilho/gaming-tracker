@@ -538,7 +538,7 @@
 	}
 
 	.game-info {
-		padding: 5px;
+		padding: 12px;
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
@@ -556,21 +556,21 @@
 
 	.game-title {
 		font-size: 1.2rem;
-		font-weight: 600;
+		font-weight: 550;
 		margin: 0;
 		line-height: 1.2;
 		word-wrap: break-word;
-		height: 70px;
+		height: 50px;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: flex-start;
 		text-align: center;
 		width: 100%;
 		overflow: hidden;
 	}
 
 	.game-subtitle {
-		font-weight: 500;
+		font-weight: 550;
 		color: #8b92a8;
 		line-height: 1.2;
 		white-space: nowrap;
