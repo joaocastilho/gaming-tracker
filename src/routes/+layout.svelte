@@ -230,8 +230,8 @@
 		isFiltersOpen = false;
 	}
 
-	function openModalWithFilterContext(game: Game) {
-		modalStore.openViewModal(game, $filteredGames);
+	function openModalWithFilterContext(game: Game, contextGames?: Game[]) {
+		modalStore.openViewModal(game, contextGames ?? $filteredGames);
 	}
 
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());

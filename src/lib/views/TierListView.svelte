@@ -10,6 +10,7 @@
 	let { filteredGames = [], onOpenModal }: Props = $props();
 
 	let tierList = $derived(buildTierList(filteredGames ?? []));
+	let allGames = $derived(Object.values(tierList).flat());
 
 	function buildTierList(games: Game[]): Record<string, Game[]> {
 		const gamesByTier: Record<string, Game[]> = {
@@ -42,7 +43,7 @@
 	<div class="tier-list-container max-w-none">
 		{#each Object.entries(tierList) as [tierName, games] (tierName)}
 			{#if games.length > 0}
-				<TierRow {tierName} {games} {onOpenModal} />
+				<TierRow {tierName} {games} {allGames} {onOpenModal} />
 			{/if}
 		{/each}
 	</div>

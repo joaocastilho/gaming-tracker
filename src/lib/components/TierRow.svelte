@@ -6,10 +6,11 @@
 	interface Props {
 		tierName: string;
 		games: Game[];
+		allGames: Game[];
 		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
-	let { tierName, games, onOpenModal }: Props = $props();
+	let { tierName, games, allGames, onOpenModal }: Props = $props();
 
 	let displayedCount = $state(20);
 	let displayedGames = $derived(games.slice(0, displayedCount));
@@ -44,7 +45,7 @@
 					size="tierlist"
 					showTierBadge={false}
 					{onOpenModal}
-					displayedGames={games}
+					displayedGames={allGames}
 				/>
 			</div>
 		{/each}
