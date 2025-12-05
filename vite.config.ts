@@ -76,7 +76,8 @@ export default defineConfig({
 	},
 	optimizeDeps: {
 		include: ['lucide-svelte', 'date-fns'],
-		exclude: ['web-vitals']
+		exclude: ['web-vitals'],
+		rolldownOptions: {}
 	},
 	server: {
 		fs: {
