@@ -80,7 +80,7 @@
 	}
 
 	function fitTitle(node: HTMLElement, params: { title: string; subtitle?: string }) {
-		if (size === 'tierlist') return;
+
 
 		let currentParams = params;
 
@@ -109,9 +109,10 @@
 			return;
 		}
 
-		const minSize = 0.75;
-		const maxSize = 1.25;
-		const singleLineMinSize = 0.85;
+		const isTierList = size === 'tierlist';
+		const minSize = isTierList ? 0.6 : 0.65;
+		const maxSize = isTierList ? 1 : 1.25;
+		const singleLineMinSize = isTierList ? 0.9 : 0.95;
 
 		const containerWidth = width ?? node.clientWidth;
 		if (containerWidth === 0) return;
@@ -142,8 +143,8 @@
 
 	let subtitleFontSize = $derived(() => {
 		const title = game.subtitle || '';
-		const baseSize = 0.95;
-		const minSize = 0.55;
+		const baseSize = 0.85;
+		const minSize = 0.5;
 		const maxLength = 25;
 
 		if (!title || title.length <= maxLength) {
@@ -525,7 +526,7 @@
 	}
 
 	.game-info {
-		padding: 12px;
+		padding: 5px;
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
@@ -542,22 +543,18 @@
 	}
 
 	.game-title {
-		font-size: 1.25rem;
+		font-size: 1.2rem;
 		font-weight: 600;
 		margin: 0;
 		line-height: 1.2;
 		word-wrap: break-word;
-		height: 50px;
+		height: 70px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		text-align: center;
 		width: 100%;
 		overflow: hidden;
-	}
-
-	.game-card.tierlist-size .game-title {
-		font-size: 1rem;
 	}
 
 	.game-subtitle {
@@ -637,8 +634,8 @@
 		display: flex;
 		gap: 8px;
 		flex-wrap: wrap;
-		margin-top: 5px;
-		margin-bottom: 5px;
+		margin-top: auto;
+		margin-bottom: auto;
 	}
 
 	.rating-item {
@@ -689,7 +686,6 @@
 		align-items: flex-end;
 		font-size: 0.8rem;
 		color: #8b92a8;
-		margin-top: auto;
 	}
 
 	:global(.light) .time-date-section {
