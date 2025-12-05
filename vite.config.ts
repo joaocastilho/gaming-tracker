@@ -20,7 +20,7 @@ export default defineConfig({
 		}
 	],
 	build: {
-		rolldownOptions: {
+		rollupOptions: {
 			output: {
 				manualChunks(id) {
 					// Application-specific chunks
@@ -76,8 +76,7 @@ export default defineConfig({
 	},
 	optimizeDeps: {
 		include: ['lucide-svelte', 'date-fns'],
-		exclude: ['web-vitals'],
-		rolldownOptions: {}
+		exclude: ['web-vitals']
 	},
 	server: {
 		fs: {
