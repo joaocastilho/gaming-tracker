@@ -80,8 +80,6 @@
 	}
 
 	function fitTitle(node: HTMLElement, params: { title: string; subtitle?: string }) {
-
-
 		let currentParams = params;
 
 		const resizeObserver = new ResizeObserver((entries) => {
@@ -495,19 +493,19 @@
 
 	.tier-badge {
 		position: absolute;
-		top: 8px;
-		right: 8px;
+		top: 6px;
+		right: 6px;
 		display: flex;
 		align-items: center;
-		padding: 4px 8px;
+		padding: 5px 10px;
 		border-radius: 4px;
-		font-size: 0.8rem;
+		font-size: 0.85rem;
 		font-weight: 600;
 		backdrop-filter: blur(4px);
 		min-width: 24px;
 		justify-content: center;
 		z-index: 10;
-		max-width: calc(100% - 16px);
+		max-width: calc(100% - 12px);
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -521,7 +519,7 @@
 	}
 
 	.tier-text {
-		font-size: 0.9rem;
+		font-size: 0.95rem;
 		font-weight: 700;
 	}
 
@@ -738,11 +736,26 @@
 		}
 
 		.game-title {
-			font-size: 0.9rem;
+			font-size: 1.1rem;
+			height: auto;
+			min-height: 50px;
 		}
 
 		.game-subtitle {
-			font-size: 0.75rem !important;
+			font-size: 0.8rem !important;
+		}
+
+		.game-info {
+			gap: 8px;
+		}
+
+		.tier-badge {
+			padding: 6px 12px;
+			font-size: 0.9rem;
+		}
+
+		.tier-text {
+			font-size: 1rem;
 		}
 	}
 
@@ -765,8 +778,8 @@
 
 		.platform-badge,
 		.genre-badge {
-			font-size: 0.65rem;
-			padding: 3px 6px;
+			font-size: 0.75rem;
+			padding: 4px 8px;
 		}
 
 		.ratings-section {
@@ -786,14 +799,14 @@
 		}
 
 		.tier-badge {
-			padding: 2px 6px;
-			min-width: 20px;
-			top: 4px;
-			right: 4px;
+			padding: 5px 10px;
+			min-width: 22px;
+			top: 5px;
+			right: 5px;
 		}
 
 		.tier-text {
-			font-size: 0.75rem;
+			font-size: 0.85rem;
 		}
 	}
 

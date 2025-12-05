@@ -415,32 +415,28 @@
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		<div class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-			<div class="relative w-full max-w-[1250px]">
-				{#if currentGameIndex > 0}
-					<button
-						onclick={navigateToPrevious}
-						class="pointer-events-auto absolute top-1/2 left-2 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none md:h-16 md:w-16"
-						aria-label="Previous game"
-					>
-						<ChevronLeft size={32} class="h-4 w-4 md:h-8 md:w-8" />
-					</button>
-				{/if}
-
-				{#if (() => {
-					const games = displayedGames;
-					return currentGameIndex > -1 && currentGameIndex < games.length - 1;
-				})()}
-					<button
-						onclick={navigateToNext}
-						class="pointer-events-auto absolute top-1/2 right-2 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none md:h-16 md:w-16"
-						aria-label="Next game"
-					>
-						<ChevronRight size={32} class="h-4 w-4 md:h-8 md:w-8" />
-					</button>
-				{/if}
-			</div>
-		</div>
+		<!-- Mobile navigation arrows - on backdrop, outside modal -->
+		{#if currentGameIndex > 0}
+			<button
+				onclick={navigateToPrevious}
+				class="absolute left-1 top-1/2 z-[61] flex h-10 w-8 -translate-y-1/2 items-center justify-center rounded-r-full bg-black/10 text-white/80 transition-all hover:bg-black/25 focus:outline-none md:hidden"
+				aria-label="Previous game"
+			>
+				<ChevronLeft size={24} />
+			</button>
+		{/if}
+		{#if (() => {
+			const games = displayedGames;
+			return currentGameIndex > -1 && currentGameIndex < games.length - 1;
+		})()}
+			<button
+				onclick={navigateToNext}
+				class="absolute right-1 top-1/2 z-[61] flex h-10 w-8 -translate-y-1/2 items-center justify-center rounded-l-full bg-black/10 text-white/80 transition-all hover:bg-black/25 focus:outline-none md:hidden"
+				aria-label="Next game"
+			>
+				<ChevronRight size={24} />
+			</button>
+		{/if}
 
 		<div
 			class="relative flex h-auto max-h-[95dvh] w-[95vw] max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
@@ -449,6 +445,34 @@
 			ontouchstart={handleTouchStart}
 			ontouchend={handleTouchEnd}
 		>
+			<!-- Desktop navigation arrows -->
+			<div
+				class="pointer-events-none absolute inset-0 z-10 hidden items-center justify-center md:flex"
+			>
+				<div class="relative w-full max-w-[1250px]">
+					{#if currentGameIndex > 0}
+						<button
+							onclick={navigateToPrevious}
+							class="pointer-events-auto absolute top-1/2 left-2 flex h-16 w-16 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none"
+							aria-label="Previous game"
+						>
+							<ChevronLeft size={32} />
+						</button>
+					{/if}
+					{#if (() => {
+						const games = displayedGames;
+						return currentGameIndex > -1 && currentGameIndex < games.length - 1;
+					})()}
+						<button
+							onclick={navigateToNext}
+							class="pointer-events-auto absolute top-1/2 right-2 flex h-16 w-16 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none"
+							aria-label="Next game"
+						>
+							<ChevronRight size={32} />
+						</button>
+					{/if}
+				</div>
+			</div>
 			<button
 				onclick={() => modalStore.closeModal()}
 				class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/30 focus:outline-none md:top-4 md:right-4 md:bg-black/10 md:text-white md:hover:bg-black/30"
@@ -497,19 +521,22 @@
 					</div>
 				</div>
 
-				<div class="flex-1 overflow-y-auto pt-2 pr-6 pb-6 pl-6 md:pt-4 lg:pr-8 lg:pb-5 lg:pl-8">
+				<div class="flex-1 overflow-y-auto px-5 pt-4 pb-6 md:pt-4 md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8">
 					<div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
 						<h1
 							id="modal-title"
-							class="flex min-w-0 flex-1 flex-col justify-start"
+							class="flex min-w-0 flex-1 flex-col justify-start h-[60px] md:h-auto"
 							style="color: var(--color-text-primary);"
 						>
-							<span class="w-full truncate font-bold {titleSizeClass}">
+							<span
+								class="modal-title-text w-full font-bold"
+								style="font-size: clamp(1rem, 5vw, 1.25rem);"
+							>
 								{$modalStore.activeGame.mainTitle}
 							</span>
 							{#if $modalStore.activeGame.subtitle}
 								<span
-									class="w-full truncate text-xs font-semibold md:text-lg"
+									class="w-full truncate text-sm font-semibold md:text-lg"
 									style="line-height: 1.2; color: var(--color-text-secondary);"
 									>{$modalStore.activeGame.subtitle}</span
 								>
@@ -540,17 +567,17 @@
 						</button>
 					</div>
 
-					<div class="mb-4 flex items-center justify-between md:mb-6">
+					<div class="mb-3 flex items-center justify-between md:mb-6">
 						<div class="flex flex-wrap gap-2">
 							<span
-								class="rounded-md px-3 py-1 text-xs font-medium text-white md:text-sm {getPlatformColor(
+								class="rounded-md px-3 py-1.5 text-sm font-medium text-white md:text-sm {getPlatformColor(
 									$modalStore.activeGame.platform
 								)}"
 							>
 								{$modalStore.activeGame.platform}
 							</span>
 							<span
-								class="rounded-md px-3 py-1 text-xs font-medium text-white md:text-sm {getGenreColor(
+								class="rounded-md px-3 py-1.5 text-sm font-medium text-white md:text-sm {getGenreColor(
 									$modalStore.activeGame.genre
 								)}"
 							>
@@ -568,7 +595,7 @@
 
 						{#if $modalStore.activeGame.tier}
 							<span
-								class="tier-badge rounded-md px-3 py-1 text-xs font-semibold md:text-sm {getTierClass(
+								class="tier-badge rounded-md px-3 py-1.5 text-sm font-semibold md:text-sm {getTierClass(
 									$modalStore.activeGame.tier
 								)}"
 							>
@@ -577,13 +604,13 @@
 						{/if}
 					</div>
 
-					<div class="mb-2 grid grid-cols-2 gap-2 md:mb-8">
+					<div class="mb-3 grid grid-cols-2 gap-3 md:mb-8">
 						<div>
-							<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
+							<div class="mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
 								Year Released
 							</div>
 							<div
-								class="text-sm font-semibold md:text-base"
+								class="text-base font-semibold md:text-base"
 								style="color: var(--color-text-primary);"
 							>
 								{$modalStore.activeGame.year}
@@ -593,11 +620,11 @@
 						<div></div>
 
 						<div>
-							<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
+							<div class="mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
 								Finished Date
 							</div>
 							<div
-								class="text-sm font-semibold md:text-base"
+								class="text-base font-semibold md:text-base"
 								style="color: var(--color-text-primary);"
 							>
 								{formatDate($modalStore.activeGame.finishedDate)}
@@ -606,11 +633,11 @@
 
 						{#if $modalStore.activeGame.status === 'Completed'}
 							<div>
-								<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
+								<div class="mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
 									Hours Played
 								</div>
 								<div
-									class="text-sm font-semibold md:text-base"
+									class="text-base font-semibold md:text-base"
 									style="color: var(--color-text-primary);"
 								>
 									{$modalStore.activeGame.hoursPlayed || 'Not completed'}
@@ -618,11 +645,11 @@
 							</div>
 						{:else}
 							<div>
-								<div class="mb-1 text-xs md:text-sm" style="color: var(--color-text-tertiary);">
+								<div class="mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
 									Time to Beat
 								</div>
 								<div
-									class="text-sm font-semibold md:text-base"
+									class="text-base font-semibold md:text-base"
 									style="color: var(--color-text-primary);"
 								>
 									{$modalStore.activeGame.timeToBeat}
@@ -632,28 +659,22 @@
 					</div>
 
 					{#if $modalStore.activeGame.status === 'Completed' && $modalStore.activeGame.ratingPresentation !== null && $modalStore.activeGame.ratingStory !== null && $modalStore.activeGame.ratingGameplay !== null}
-						<div class="space-y-1 md:space-y-4">
+						<div class="mt-3 space-y-3 md:space-y-4">
 							<h3
-								class="mb-1 text-sm font-semibold md:mb-4 md:text-xl"
+								class="mb-3 text-base font-semibold md:mb-4 md:text-xl"
 								style="color: var(--color-text-primary);"
 							>
 								Ratings
 							</h3>
-							<div class="flex items-center gap-3">
-								<div class="flex min-w-0 flex-1 items-center gap-2">
+							<div class="flex items-center gap-2">
+								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
 									<Presentation size={20} class="flex-shrink-0 text-rose-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Presentation</span
 									>
 								</div>
-								<span
-									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									{$modalStore.activeGame.ratingPresentation}/10
-								</span>
-								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full {getRatingBarColor(
 											$modalStore.activeGame.ratingPresentation
@@ -661,23 +682,23 @@
 										style="width: {$modalStore.activeGame.ratingPresentation * 10}%"
 									></div>
 								</div>
+								<span
+									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
+									style="color: var(--color-text-primary);"
+								>
+									{$modalStore.activeGame.ratingPresentation}/10
+								</span>
 							</div>
 
-							<div class="flex items-center gap-3">
-								<div class="flex min-w-0 flex-1 items-center gap-2">
+							<div class="flex items-center gap-2">
+								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
 									<NotebookPen size={20} class="flex-shrink-0 text-sky-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Story</span
 									>
 								</div>
-								<span
-									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									{$modalStore.activeGame.ratingStory}/10
-								</span>
-								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full {getRatingBarColor(
 											$modalStore.activeGame.ratingStory
@@ -685,23 +706,23 @@
 										style="width: {$modalStore.activeGame.ratingStory * 10}%"
 									></div>
 								</div>
+								<span
+									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
+									style="color: var(--color-text-primary);"
+								>
+									{$modalStore.activeGame.ratingStory}/10
+								</span>
 							</div>
 
-							<div class="flex items-center gap-3">
-								<div class="flex min-w-0 flex-1 items-center gap-2">
+							<div class="flex items-center gap-2">
+								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
 									<Gamepad2 size={20} class="flex-shrink-0 text-emerald-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Gameplay</span
 									>
 								</div>
-								<span
-									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									{$modalStore.activeGame.ratingGameplay}/10
-								</span>
-								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full {getRatingBarColor(
 											$modalStore.activeGame.ratingGameplay
@@ -709,11 +730,17 @@
 										style="width: {$modalStore.activeGame.ratingGameplay * 10}%"
 									></div>
 								</div>
+								<span
+									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
+									style="color: var(--color-text-primary);"
+								>
+									{$modalStore.activeGame.ratingGameplay}/10
+								</span>
 							</div>
 
 							{#if $modalStore.activeGame.score !== null}
 								<div
-									class="mt-4 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-10 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
+									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-8 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
 								>
 									<div class="flex items-center justify-center gap-2">
 										<Award size={24} class="text-yellow-500" />
@@ -728,82 +755,82 @@
 							{/if}
 						</div>
 					{:else}
-						<div class="space-y-1 md:space-y-4">
+						<div class="mt-3 space-y-3 md:space-y-4">
 							<h3
-								class="mb-1 text-sm font-semibold md:mb-4 md:text-xl"
+								class="mb-3 text-base font-semibold md:mb-4 md:text-xl"
 								style="color: var(--color-text-primary);"
 							>
 								Ratings
 							</h3>
 
-							<div class="flex items-center gap-3">
-								<div class="flex min-w-0 flex-1 items-center gap-2">
+							<div class="flex items-center gap-2">
+								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
 									<Presentation size={20} class="flex-shrink-0 text-rose-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Presentation</span
 									>
 								</div>
-								<span
-									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									Not rated
-								</span>
-								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
 										style="width: 0%"
 									></div>
 								</div>
+								<span
+									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
+									style="color: var(--color-text-primary);"
+								>
+									N/A
+								</span>
 							</div>
 
-							<div class="flex items-center gap-3">
-								<div class="flex min-w-0 flex-1 items-center gap-2">
+							<div class="flex items-center gap-2">
+								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
 									<NotebookPen size={20} class="flex-shrink-0 text-sky-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Story</span
 									>
 								</div>
-								<span
-									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									Not rated
-								</span>
-								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
 										style="width: 0%"
 									></div>
 								</div>
+								<span
+									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
+									style="color: var(--color-text-primary);"
+								>
+									N/A
+								</span>
 							</div>
 
-							<div class="flex items-center gap-3">
-								<div class="flex min-w-0 flex-1 items-center gap-2">
+							<div class="flex items-center gap-2">
+								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
 									<Gamepad2 size={20} class="flex-shrink-0 text-emerald-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
 										style="color: var(--color-text-secondary);">Gameplay</span
 									>
 								</div>
-								<span
-									class="w-20 min-w-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									Not rated
-								</span>
-								<div class="ml-2 h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
 									<div
 										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
 										style="width: 0%"
 									></div>
 								</div>
+								<span
+									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
+									style="color: var(--color-text-primary);"
+								>
+									N/A
+								</span>
 							</div>
 
 							<div
-								class="mt-4 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-10 dark:border-gray-700"
+								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-8 dark:border-gray-700"
 							>
 								<div class="flex items-center justify-center gap-2">
 									<Award size={24} class="text-gray-400" />
@@ -862,14 +889,14 @@
 	.modal-image-wrapper {
 		position: relative;
 		width: 100%;
-		height: 40vh;
-		min-height: 150px;
-		max-height: 50vh;
+		height: 35vh;
+		min-height: 140px;
+		max-height: 38vh;
 		overflow: hidden;
 	}
 
 	#modal-title {
-		min-height: 50px;
+		min-height: 60px;
 	}
 
 	@media (min-width: 768px) {

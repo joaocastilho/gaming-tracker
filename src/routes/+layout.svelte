@@ -360,48 +360,33 @@
 
 		<!-- Mobile Search Input -->
 		{#if isSearchOpen}
-			<div
-				class="mobile-search-overlay fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
-				onclick={(e) => {
-					if (e.target === e.currentTarget) onSearchToggle();
-				}}
-				role="button"
-				tabindex="0"
-				onkeydown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') {
-						if (e.target === e.currentTarget) onSearchToggle();
-					}
-				}}
-			>
-				<div class="mobile-search-container absolute right-4 bottom-[80px] left-4">
-					<div class="bg-background border-border rounded-lg border p-4 shadow-lg">
-						<div class="relative">
-							<input
-								bind:this={searchInput}
-								type="text"
-								placeholder="Search games..."
-								class="bg-surface border-border text-foreground placeholder:text-muted-foreground focus:ring-primary w-full rounded-md border py-2 pr-10 pl-4 focus:ring-2 focus:outline-none"
-								bind:value={$filtersStore.searchTerm}
-								onkeydown={(e) => {
-									if (e.key === 'Enter') {
-										onSearchToggle();
-									} else if (e.key === 'Escape') {
-										onSearchToggle();
-									}
-								}}
-							/>
-							<button
-								type="button"
-								class="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
-								onclick={() => {
-									$filtersStore.searchTerm = '';
+			<div class="mobile-search-overlay fixed inset-x-0 top-0 z-40 md:hidden" role="search">
+				<div class="bg-background border-border border-b p-3 shadow-lg">
+					<div class="relative flex items-center gap-2">
+						<span class="text-muted-foreground text-lg">🔍</span>
+						<input
+							bind:this={searchInput}
+							type="text"
+							placeholder="Search games..."
+							class="bg-surface border-border text-foreground placeholder:text-muted-foreground focus:ring-primary w-full rounded-md border py-3 pr-10 pl-3 text-base focus:ring-2 focus:outline-none"
+							bind:value={$filtersStore.searchTerm}
+							onkeydown={(e) => {
+								if (e.key === 'Escape') {
 									onSearchToggle();
-								}}
-								aria-label="Clear search"
-							>
-								✕
-							</button>
-						</div>
+								}
+							}}
+						/>
+						<button
+							type="button"
+							class="bg-surface hover:bg-accent text-muted-foreground hover:text-foreground flex h-10 w-10 items-center justify-center rounded-md transition-colors"
+							onclick={() => {
+								$filtersStore.searchTerm = '';
+								onSearchToggle();
+							}}
+							aria-label="Close search"
+						>
+							✕
+						</button>
 					</div>
 				</div>
 			</div>
@@ -410,7 +395,7 @@
 		<!-- Mobile Filters Modal -->
 		{#if isFiltersOpen}
 			<div
-				class="mobile-filters-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden"
+				class="mobile-filters-modal fixed inset-0 z-50 md:hidden"
 				onclick={(e) => {
 					if (e.target === e.currentTarget) onFiltersToggle();
 				}}
@@ -422,8 +407,12 @@
 					}
 				}}
 			>
+				<!-- Blurred backdrop -->
+				<div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+				<!-- Opaque content panel -->
 				<div
-					class="mobile-filters-container bg-background absolute right-0 bottom-0 left-0 max-h-[95vh] overflow-hidden rounded-t-lg shadow-lg"
+					class="mobile-filters-container absolute right-0 bottom-0 left-0 max-h-[95vh] overflow-hidden rounded-t-2xl shadow-2xl"
+					style="background-color: var(--color-background);"
 				>
 					<div class="border-border flex items-center justify-between border-b p-4">
 						<h2 class="text-lg font-semibold">Filters & Sorts</h2>
