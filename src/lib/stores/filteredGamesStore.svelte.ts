@@ -213,7 +213,7 @@ class FilteredGamesStore {
 			direction = -1;
 		}
 
-		return sortedGames.sort((a, b) => {
+		return sortedGames.toSorted((a, b) => {
 			const isFinishedDateSort =
 				sort?.key === 'finishedDate' || (activeTab === 'completed' && !sort?.key);
 

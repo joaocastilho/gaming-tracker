@@ -19,7 +19,7 @@
 	let { type, label, options, selectedOptions = [] }: Props = $props();
 
 	let isOpen = $state(false);
-	let dropdownElement: HTMLDivElement | undefined;
+	let dropdownElement = $state<HTMLDivElement | undefined>(undefined);
 
 	function handleClickOutside(event: MouseEvent) {
 		const target = event.target as Node;

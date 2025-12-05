@@ -28,7 +28,7 @@ Built with modern web technologies for performance and developer experience:
 | **Icons**      | <a href="https://lucide.dev/" target="_blank"><img src="https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white" alt="Lucide" /></a>                         | `v0.555.0`      |
 | **Runtime**    | <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" /></a>                                      | `v1.3.3`        |
 | **Build Tool** | <a href="https://vite.dev/" target="_blank"><img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /></a>                                 | `v7.2.6`        |
-| **Code Quality** | <a href="https://biomejs.dev/" target="_blank"><img src="https://img.shields.io/badge/Biome-60A5FA?logo=biome&logoColor=white" alt="Biome" /></a>                           | `v2.3.8`        |
+| **Code Quality** | <a href="https://oxc.rs/" target="_blank"><img src="https://img.shields.io/badge/OxLint-60A5FA?logo=oxc&logoColor=white" alt="OxLint" /></a> <a href="https://oxc.rs/" target="_blank"><img src="https://img.shields.io/badge/OxFmt-60A5FA?logo=oxc&logoColor=white" alt="OxFmt" /></a> | `v1.31.0` / `v0.16.0` |
 | **Testing**    | <a href="https://vitest.dev/" target="_blank"><img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /></a>                         | `v4.0.15`       |
 
 

@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { readdir, readFile, writeFile, mkdir, stat, access } from 'fs/promises';
+import { readdir, readFile, writeFile, mkdir, stat } from 'fs/promises';
 import { join } from 'path';
 
 const COVERS_RAW_DIR = join(process.cwd(), 'static', 'covers_raw');
@@ -72,15 +72,6 @@ async function findMatchingGame(filename: string, games: Game[]): Promise<Game |
 	if (match) return match;
 
 	return null;
-}
-
-async function fileExists(path: string): Promise<boolean> {
-	try {
-		await access(path);
-		return true;
-	} catch {
-		return false;
-	}
 }
 
 async function processImage(

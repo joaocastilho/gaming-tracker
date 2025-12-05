@@ -33,7 +33,7 @@ class GamesStore {
 				optionsSet.add(game.platform);
 			}
 		}
-		return Array.from(optionsSet).sort((a, b) => a.localeCompare(b));
+		return Array.from(optionsSet).toSorted((a, b) => a.localeCompare(b));
 	}
 
 	get allGenres(): string[] {
@@ -44,7 +44,7 @@ class GamesStore {
 				optionsSet.add(game.genre);
 			}
 		}
-		return Array.from(optionsSet).sort((a, b) => a.localeCompare(b));
+		return Array.from(optionsSet).toSorted((a, b) => a.localeCompare(b));
 	}
 
 	initializeGames(rawGames: unknown[]): void {

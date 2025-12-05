@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { stat, writeFile } from 'fs/promises';
+import { stat } from 'fs/promises';
 import { join } from 'path';
 
 async function generateFavicons(): Promise<void> {

@@ -10,9 +10,9 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"format": "biome format --write .",
-		"lint": "biome check .",
-		"lint:fix": "biome check --write .",
+		"format": "oxfmt",
+		"lint": "oxlint .",
+		"lint:fix": "oxlint --fix .",
 		"compare-images": "bun scripts/compare-images-and-games.ts",
 		"convert-csv": "bun scripts/convert-csv-to-json.ts",
 		"generate-favicons": "bun scripts/generate-favicons.ts",
@@ -26,13 +26,12 @@
 		"test:completed-games-caching": "vitest run tests/test-completed-games-caching.test.ts",
 		"test:cover-loading": "vitest run tests/test-cover-loading.test.ts",
 		"test": "vitest run",
-		"validate": "bun run lint:fix && bun run check && bun run test"
+		"validate": "bun run lint:fix && bun run format && bun run check && bun run test"
 	},
 	"dependencies": {
 		"string-similarity": "^4.0.4"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.3.8",
 		"@opentelemetry/api": "^1.9.0",
 		"@sveltejs/adapter-auto": "^7.0.0",
 		"@sveltejs/adapter-static": "^3.0.10",
@@ -46,6 +45,8 @@
 		"date-fns": "^4.1.0",
 		"jsdom": "^27.2.0",
 		"lucide-svelte": "^0.555.0",
+		"oxfmt": "^0.16.0",
+		"oxlint": "^1.31.0",
 		"postcss": "^8.5.6",
 		"postcss-load-config": "^6.0.1",
 		"shadcn-svelte": "^1.0.12",

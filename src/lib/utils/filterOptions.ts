@@ -58,11 +58,11 @@ export function extractFilterOptions(games: Game[]): {
 	}
 
 	return {
-		platforms: Array.from(platforms).sort(),
-		genres: Array.from(genres).sort(),
-		tiers: Array.from(tiers).sort((a, b) => {
+		platforms: Array.from(platforms).toSorted(),
+		genres: Array.from(genres).toSorted(),
+		tiers: Array.from(tiers).toSorted((a, b) => {
 			return TIER_ORDER.indexOf(a) - TIER_ORDER.indexOf(b);
 		}),
-		coOp: Array.from(coOp).sort().reverse() // 'Yes' before 'No'
+		coOp: Array.from(coOp).toSorted().toReversed() // 'Yes' before 'No'
 	};
 }

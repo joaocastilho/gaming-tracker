@@ -60,7 +60,7 @@ function main(): ComparisonResult {
 	console.log(`Images without corresponding game ID: ${orphanedImages.length}`);
 	if (orphanedImages.length > 0) {
 		console.log('\nList of orphaned images:');
-		orphanedImages.sort().forEach((image) => {
+		orphanedImages.toSorted().forEach((image) => {
 			console.log(`- ${image}.png`);
 		});
 	} else {
@@ -73,7 +73,7 @@ function main(): ComparisonResult {
 	console.log(`Game IDs without corresponding images: ${missingCovers.length}`);
 	if (missingCovers.length > 0) {
 		console.log('List of games missing cover images:');
-		missingCovers.sort().forEach((gameId) => {
+		missingCovers.toSorted().forEach((gameId) => {
 			console.log(`- ${gameId}`);
 		});
 	} else {

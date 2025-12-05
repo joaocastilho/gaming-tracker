@@ -43,7 +43,7 @@ class CompletedGamesCacheStore {
 		const versionData = games
 			.filter((game) => game.status === 'Completed')
 			.map((game) => `${game.id}-${game.status}-${game.finishedDate || 'null'}`)
-			.sort()
+			.toSorted()
 			.join('|');
 
 		let hash = 0;

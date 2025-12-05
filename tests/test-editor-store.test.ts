@@ -135,8 +135,7 @@ describe('EditorStore', () => {
 				json: () => Promise.resolve({ games: [] })
 			});
 
-			const buildPayload = () => ({ games: [{ id: '1' }] });
-			const result = await editorStore.saveGames(buildPayload);
+			const result = await editorStore.saveGames(() => ({ games: [{ id: '1' }] }));
 
 			expect(result).toBe(true);
 			expect(editorStore.saveSuccess).toBe(true);
@@ -149,8 +148,7 @@ describe('EditorStore', () => {
 				text: () => Promise.resolve('Error')
 			});
 
-			const buildPayload = () => ({ games: [] });
-			const result = await editorStore.saveGames(buildPayload);
+			const result = await editorStore.saveGames(() => ({ games: [] }));
 
 			expect(result).toBe(false);
 			expect(editorStore.saveError).toBeDefined();
@@ -159,8 +157,7 @@ describe('EditorStore', () => {
 		it('saveGames handles network error', async () => {
 			globalThis.fetch = mockFetchError();
 
-			const buildPayload = () => ({ games: [] });
-			const result = await editorStore.saveGames(buildPayload);
+			const result = await editorStore.saveGames(() => ({ games: [] }));
 
 			expect(result).toBe(false);
 			expect(editorStore.saveError).toBeDefined();

@@ -1,0 +1,26 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "env": {
+        "browser": true,
+        "es2024": true,
+        "node": true
+    },
+    "categories": {
+        "correctness": "warn",
+        "suspicious": "warn",
+        "pedantic": "off",
+        "style": "off",
+        "restriction": "off"
+    },
+    "rules": {
+        "no-unused-vars": "warn",
+        "no-explicit-any": "off",
+        "no-non-null-assertion": "off"
+    },
+    "ignorePatterns": [
+        "node_modules",
+        ".svelte-kit",
+        "build",
+        "dist"
+    ]
+}

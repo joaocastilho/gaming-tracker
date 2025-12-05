@@ -88,7 +88,7 @@ describe('parseDate', () => {
 			{ id: 5, finishedDate: '20/05/2023' }
 		];
 
-		const sortedAsc = [...games].sort((a, b) => {
+		const sortedAsc = [...games].toSorted((a, b) => {
 			const aTime = parseDate(a.finishedDate);
 			const bTime = parseDate(b.finishedDate);
 
@@ -106,7 +106,7 @@ describe('parseDate', () => {
 		expect(sortedAsc[3].finishedDate).toBeFalsy();
 		expect(sortedAsc[4].finishedDate).toBeFalsy();
 
-		const sortedDesc = [...games].sort((a, b) => {
+		const sortedDesc = [...games].toSorted((a, b) => {
 			const aTime = parseDate(a.finishedDate);
 			const bTime = parseDate(b.finishedDate);
 

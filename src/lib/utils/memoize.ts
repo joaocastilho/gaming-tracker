@@ -61,7 +61,7 @@ export function memoizeGameFilter<TGames extends { id: string | number }[], TFil
 	return (games: TGames, filters: TFilters): TReturn => {
 		const gameIds = games
 			.map((g) => g.id)
-			.sort()
+			.toSorted()
 			.join(',');
 		const filterKey = JSON.stringify(filters);
 		const key = `${gameIds}|${filterKey}`;
@@ -103,7 +103,7 @@ export function memoizeGameSort<TGames extends { id: string | number }[], TRetur
 	return (games: TGames, sortBy: string, sortDirection: string): TReturn => {
 		const gameIds = games
 			.map((g) => g.id)
-			.sort()
+			.toSorted()
 			.join(',');
 		const key = `${gameIds}|${sortBy}|${sortDirection}`;
 

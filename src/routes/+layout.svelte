@@ -34,7 +34,7 @@
 
 	let initialized = $state(false);
 	let gamesInitialized = $state(false);
-	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
+	let urlUpdateTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	// Initialize games reactively (SSR support)
 	$effect(() => {

@@ -2,8 +2,8 @@
 	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { X } from 'lucide-svelte';
 
-	let inputElement: HTMLInputElement | undefined;
-	let debounceTimeout: ReturnType<typeof setTimeout> | undefined;
+	let inputElement = $state<HTMLInputElement | undefined>(undefined);
+	let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	let searchTerm = $derived($filtersStore?.searchTerm ?? '');
 

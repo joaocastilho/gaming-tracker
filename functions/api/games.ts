@@ -264,7 +264,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 		const nextData: GamesPayload = {
 			games: normalizedGames,
 			meta: {
-				...(parsed.data.meta || {}),
+				...parsed.data.meta,
 				lastUpdated: new Date().toISOString()
 			}
 		};
