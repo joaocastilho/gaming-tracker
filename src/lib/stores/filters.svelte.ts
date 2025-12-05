@@ -203,9 +203,13 @@ class FiltersStore {
 		// Guard: only update if value changed to prevent effect loops
 		const currentSort = this._state.sortOption;
 		if (currentSort === sortOption) return;
-		if (currentSort && sortOption &&
+		if (
+			currentSort &&
+			sortOption &&
 			currentSort.key === sortOption.key &&
-			currentSort.direction === sortOption.direction) return;
+			currentSort.direction === sortOption.direction
+		)
+			return;
 		this.state = { ...this._state, sortOption };
 	}
 

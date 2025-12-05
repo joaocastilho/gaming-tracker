@@ -359,4 +359,3 @@ class FilteredGamesSubscription {
 }
 
 export const filteredGames = new FilteredGamesSubscription();
-
