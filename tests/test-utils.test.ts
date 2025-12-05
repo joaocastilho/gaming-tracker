@@ -1,4 +1,4 @@
-import { describe, it, expect, mock } from 'bun:test';
+import { describe, it, expect, vi } from 'vitest';
 import { memoize } from '$lib/utils/memoize';
 import { debounce } from '$lib/utils/debounce';
 import {
@@ -13,7 +13,7 @@ import type { Game } from '$lib/types/game';
 describe('Utility Tests', () => {
 	describe('Memoize', () => {
 		it('caches function results', () => {
-			const fn = mock((x: number) => x * 2);
+			const fn = vi.fn((x: number) => x * 2);
 			const memoized = memoize(fn);
 
 			expect(memoized(2)).toBe(4);
@@ -25,7 +25,7 @@ describe('Utility Tests', () => {
 		});
 
 		it('respects TTL', async () => {
-			const fn = mock((x: number) => x * 2);
+			const fn = vi.fn((x: number) => x * 2);
 			const memoized = memoize(fn, { ttl: 10 });
 
 			expect(memoized(2)).toBe(4);
@@ -38,7 +38,7 @@ describe('Utility Tests', () => {
 		});
 
 		it('respects maxSize', () => {
-			const fn = mock((x: number) => x * 2);
+			const fn = vi.fn((x: number) => x * 2);
 			const memoized = memoize(fn, { maxSize: 2 });
 
 			memoized(1);
@@ -57,7 +57,7 @@ describe('Utility Tests', () => {
 
 	describe('Debounce', () => {
 		it('delays execution', async () => {
-			const fn = mock(() => {});
+			const fn = vi.fn(() => {});
 			const debounced = debounce(fn, 20);
 
 			debounced();
@@ -72,7 +72,7 @@ describe('Utility Tests', () => {
 		});
 
 		it('supports immediate execution', async () => {
-			const fn = mock(() => {});
+			const fn = vi.fn(() => {});
 			const debounced = debounce(fn, 20, true);
 
 			debounced();

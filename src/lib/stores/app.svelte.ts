@@ -1,6 +1,6 @@
 /**
- * App Store - Svelte 5 Runes
- * Pure runes-based state with Svelte store compatibility layer
+ * App Store - Svelte 5 Runes with Store Compatibility
+ * Uses class with $state for reactivity, maintains store interface for compatibility
  */
 import { writable, derived, type Readable } from 'svelte/store';
 

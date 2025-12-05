@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { modalStore } from '$lib/stores/modal.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { replaceState } from '$app/navigation';
@@ -47,7 +47,7 @@ describe('Detail Modal Navigation', () => {
 		} as unknown as Window & typeof globalThis;
 
 		// Reset mocks
-		mock(replaceState).mockClear();
+		vi.fn(replaceState).mockClear();
 	});
 
 	afterEach(() => {

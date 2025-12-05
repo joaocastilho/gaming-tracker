@@ -1,13 +1,16 @@
-import { describe, test, expect, beforeEach, mock } from 'bun:test';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { navigateTo } from '$lib/utils/navigationUtils';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { appStore } from '$lib/stores/app.svelte';
 
+import { goto } from '$app/navigation';
+
 // Mock goto
-const mockGoto = mock(() => Promise.resolve());
-mock.module('$app/navigation', () => ({
-	goto: mockGoto
+vi.mock('$app/navigation', () => ({
+	goto: vi.fn(() => Promise.resolve())
 }));
+
+const mockGoto = goto as unknown as ReturnType<typeof vi.fn>;
 
 describe('Navigation Utils', () => {
 	beforeEach(() => {

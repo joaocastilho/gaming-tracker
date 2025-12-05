@@ -1,7 +1,7 @@
-import { mock } from 'bun:test';
+import { vi } from 'vitest';
 
 // Mock SvelteKit navigation
-mock.module('$app/navigation', () => ({
+vi.mock('$app/navigation', () => ({
 	goto: () => Promise.resolve(),
 	invalidate: () => Promise.resolve(),
 	invalidateAll: () => Promise.resolve(),
@@ -15,7 +15,7 @@ mock.module('$app/navigation', () => ({
 }));
 
 // Mock FilterWorker
-mock.module('$lib/workers/filterWorker.ts?worker', () => {
+vi.mock('$lib/workers/filterWorker.ts?worker', () => {
 	return {
 		default: class MockWorker {
 			postMessage() {}
@@ -27,7 +27,7 @@ mock.module('$lib/workers/filterWorker.ts?worker', () => {
 
 // Mock Svelte stores if needed, but they should work natively
 // We might need to mock $app/stores if used
-mock.module('$app/stores', () => ({
+vi.mock('$app/stores', () => ({
 	page: { subscribe: () => {} },
 	navigating: { subscribe: () => {} },
 	updated: { subscribe: () => {} }

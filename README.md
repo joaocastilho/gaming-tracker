@@ -19,16 +19,16 @@ A fast personal library for tracking and rating my video game collection. Design
 
 Built with modern web technologies for performance and developer experience:
 
-| Category       | Technology                                                                                                                                                                  | Version    |
-| :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| **Framework**  | <a href="https://kit.svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white" alt="SvelteKit" /></a>               | `v2.48.5`  |
-| **UI Library** | <a href="https://svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white" alt="Svelte" /></a>                         | `v5.43.12` |
-| **Language**   | <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript" /></a> | `v5.9.3`   |
-| **Styling**    | <a href="https://tailwindcss.com/" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>  | `v4.1.17`  |
-| **Icons**      | <a href="https://lucide.dev/" target="_blank"><img src="https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white" alt="Lucide" /></a>                         | `v0.552.0` |
-| **Runtime**    | <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" /></a>                                      | `v1.3.2`   |
-| **Build Tool** | <a href="https://vite.dev/" target="_blank"><img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /></a>                                 | `v7.2.4`   |
-| **Testing**    | <a href="https://vitest.dev/" target="_blank"><img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /></a>                         | `v3.2.4`   |
+| Category       | Technology                                                                                                                                                                  | Version         |
+| :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------- |
+| **Framework**  | <a href="https://kit.svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white" alt="SvelteKit" /></a>               | `v2.49.1`       |
+| **UI Library** | <a href="https://svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white" alt="Svelte" /></a>                         | `v5.45.5`       |
+| **Language**   | <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript" /></a> | `v5.9.3`        |
+| **Styling**    | <a href="https://tailwindcss.com/" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>  | `v4.1.17`       |
+| **Icons**      | <a href="https://lucide.dev/" target="_blank"><img src="https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white" alt="Lucide" /></a>                         | `v0.555.0`      |
+| **Runtime**    | <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" /></a>                                      | `v1.3.3`        |
+| **Build Tool** | <a href="https://vite.dev/" target="_blank"><img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /></a>                                 | `v8.0.0-beta.0` |
+| **Testing**    | <a href="https://vitest.dev/" target="_blank"><img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /></a>                         | `v4.0.15`       |
 
 ## 📂 Project Structure
 

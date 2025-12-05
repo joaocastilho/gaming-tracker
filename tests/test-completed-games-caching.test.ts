@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'bun:test';
+import { describe, test, expect } from 'vitest';
 import { completedGamesCache } from '$lib/stores/completedGamesCache.svelte';
 import type { Game } from '$lib/types/game';
 

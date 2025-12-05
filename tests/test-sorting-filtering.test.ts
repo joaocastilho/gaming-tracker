@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { get } from 'svelte/store';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';

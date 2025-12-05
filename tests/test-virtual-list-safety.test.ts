@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect } from 'vitest';
 import { safeKeyExtractor } from '../src/lib/utils/safeKeyExtractor';
 
 describe('Safe Key Extractor', () => {

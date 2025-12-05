@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'bun:test';
+import { describe, test, expect } from 'vitest';
 import { transformGameData } from '$lib/utils/dataTransformer';
 
 describe('Data Transformer', () => {

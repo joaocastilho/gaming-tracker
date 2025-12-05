@@ -8,24 +8,26 @@ export interface FilteredTabCounts {
 }
 
 function createFilteredCountsStore() {
-	const counts = writable<FilteredTabCounts>({
+	const initialState: FilteredTabCounts = {
 		all: 0,
 		completed: 0,
 		planned: 0,
 		tierlist: null
-	});
+	};
+
+	const store = writable<FilteredTabCounts>(initialState);
 
 	return {
-		subscribe: counts.subscribe,
-		set: counts.set,
-		update: counts.update,
+		subscribe: store.subscribe,
+		set: store.set,
+		update: store.update,
 
 		setCounts(newCounts: FilteredTabCounts) {
-			counts.set(newCounts);
+			store.set(newCounts);
 		},
 
 		updateCount(tab: keyof FilteredTabCounts, count: number) {
-			counts.update((current) => ({
+			store.update((current) => ({
 				...current,
 				[tab]: count
 			}));

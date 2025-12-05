@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach } from 'bun:test';
+import { describe, test, expect, beforeEach } from 'vitest';
 
 // Mock localStorage for testing
 class MockLocalStorage {
