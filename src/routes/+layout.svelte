@@ -12,7 +12,7 @@
 	import { appStore } from '$lib/stores/app.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { browser, dev } from '$app/environment';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import type { Game } from '$lib/types/game.js';
 	import { RotateCcw } from 'lucide-svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
@@ -167,8 +167,8 @@
 		// This ensures that switching tabs applies the tab's default sort
 		// unless the user specifically navigated to a sorted URL
 		const hasSortInUrl = page.url.searchParams.has('sortBy');
-		if (!hasSortInUrl && filtersStore.state?.sortOption !== null) {
-			filtersStore.setSort(null);
+		if (!hasSortInUrl) {
+			untrack(() => filtersStore.setSort(null));
 		}
 	});
 
