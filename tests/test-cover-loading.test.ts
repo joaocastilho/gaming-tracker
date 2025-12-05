@@ -1,5 +1,5 @@
-import { describe, test, expect, beforeEach } from 'vitest';
-import { generateSrcset, generateTinySrcset, generateSizes } from '$lib/utils/imageSrcset';
+import { beforeEach, describe, expect, test } from 'vitest';
+import { generateSizes, generateSrcset, generateTinySrcset } from '$lib/utils/imageSrcset';
 
 // Mock imageCache for testing without SvelteKit dependencies
 const mockImageCache = {

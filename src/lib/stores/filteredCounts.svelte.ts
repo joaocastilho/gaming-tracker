@@ -1,4 +1,7 @@
-import { writable } from 'svelte/store';
+/**
+ * Filtered Counts Store - Svelte 5 Runes
+ * Tracks count of games in each tab after filters are applied
+ */
 
 export interface FilteredTabCounts {
 	all: number;
@@ -7,32 +10,30 @@ export interface FilteredTabCounts {
 	tierlist: number | null;
 }
 
-function createFilteredCountsStore() {
-	const initialState: FilteredTabCounts = {
-		all: 0,
-		completed: 0,
-		planned: 0,
-		tierlist: null
-	};
+const initialState: FilteredTabCounts = {
+	all: 0,
+	completed: 0,
+	planned: 0,
+	tierlist: null
+};
 
-	const store = writable<FilteredTabCounts>(initialState);
+class FilteredCountsStore {
+	counts = $state<FilteredTabCounts>({ ...initialState });
 
-	return {
-		subscribe: store.subscribe,
-		set: store.set,
-		update: store.update,
+	setCounts(newCounts: FilteredTabCounts) {
+		this.counts = newCounts;
+	}
 
-		setCounts(newCounts: FilteredTabCounts) {
-			store.set(newCounts);
-		},
+	updateCount(tab: keyof FilteredTabCounts, count: number) {
+		this.counts = {
+			...this.counts,
+			[tab]: count
+		};
+	}
 
-		updateCount(tab: keyof FilteredTabCounts, count: number) {
-			store.update((current) => ({
-				...current,
-				[tab]: count
-			}));
-		}
-	};
+	reset() {
+		this.counts = { ...initialState };
+	}
 }
 
-export const filteredCountsStore = createFilteredCountsStore();
+export const filteredCountsStore = new FilteredCountsStore();

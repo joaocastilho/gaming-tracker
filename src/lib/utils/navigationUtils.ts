@@ -1,7 +1,6 @@
+import { goto } from '$app/navigation';
 import { appStore } from '$lib/stores/app.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
-
-import { goto } from '$app/navigation';
 
 export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist';
 

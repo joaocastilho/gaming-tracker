@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 
-import { GamesPayloadSchema, computeScore } from '../../src/lib/validation/game';
+import { computeScore, GamesPayloadSchema } from '../../src/lib/validation/game';
 import { checkRateLimit } from '../utils/rateLimit';
 
 type KV = {

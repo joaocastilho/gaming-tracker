@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { safeKeyExtractor } from '../src/lib/utils/safeKeyExtractor';
 
 describe('Safe Key Extractor', () => {
@@ -33,10 +33,13 @@ describe('Safe Key Extractor', () => {
 	});
 
 	it('should handle errors in extractor function', () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const item = {};
 		const key = safeKeyExtractor(item, 99, () => {
 			throw new Error('Extraction failed');
 		});
 		expect(key).toBe('error-key-99');
+		expect(warnSpy).toHaveBeenCalledOnce();
+		warnSpy.mockRestore();
 	});
 });

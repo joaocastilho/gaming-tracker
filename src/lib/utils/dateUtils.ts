@@ -55,7 +55,7 @@ export function parseDate(dateStr: string | null): number | null {
 	// We only trust this if it looks like ISO to avoid the US/UK format ambiguity of "01/02/2023"
 	if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
 		const timestamp = new Date(dateStr).getTime();
-		if (!isNaN(timestamp)) return timestamp;
+		if (!Number.isNaN(timestamp)) return timestamp;
 	}
 
 	return null;

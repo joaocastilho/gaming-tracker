@@ -1,7 +1,6 @@
-import { describe, test, expect, beforeEach } from 'vitest';
-import { get } from 'svelte/store';
-import { gamesStore } from '$lib/stores/games.svelte';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { appStore } from '$lib/stores/app.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
 import type { Game } from '$lib/types/game';
 
 describe('Game Management Flows', () => {
@@ -41,7 +40,7 @@ describe('Game Management Flows', () => {
 		gamesStore.addGame(gameToAdd);
 		addedGameId = gameToAdd.id;
 
-		const games = get(gamesStore);
+		const games = gamesStore.games;
 		const addedGame = games.find((g) => g.id === addedGameId);
 
 		expect(addedGame).toBeDefined();
@@ -73,7 +72,7 @@ describe('Game Management Flows', () => {
 		gamesStore.addGame(gameToAdd);
 		addedGameId = gameToAdd.id;
 
-		const games = get(gamesStore);
+		const games = gamesStore.games;
 		const game = games.find((g) => g.id === addedGameId);
 		expect(game).toBeDefined();
 
@@ -93,7 +92,7 @@ describe('Game Management Flows', () => {
 
 		gamesStore.updateGame(addedGameId, updatedGame);
 
-		const currentGames = get(gamesStore);
+		const currentGames = gamesStore.games;
 		const completedGame = currentGames.find((g) => g.id === addedGameId);
 
 		expect(completedGame?.status).toBe('Completed');
@@ -103,7 +102,7 @@ describe('Game Management Flows', () => {
 
 	test('Switch Between Views', () => {
 		appStore.setActiveTab('completed');
-		const activeTab = get(appStore.activeTab);
+		const activeTab = appStore.activeTab;
 		expect(activeTab).toBe('completed');
 	});
 });

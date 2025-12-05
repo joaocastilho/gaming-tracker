@@ -12,7 +12,8 @@
 		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
-	let { filteredGames, displayedGames = filteredGames, onOpenModal }: Props = $props();
+	let { filteredGames, displayedGames: displayedGamesProp, onOpenModal }: Props = $props();
+	let displayedGames = $derived(displayedGamesProp ?? filteredGames);
 
 	const isEditor = $derived($editorStore.editorMode);
 	let mounted = $state(false);

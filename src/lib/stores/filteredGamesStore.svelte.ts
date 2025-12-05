@@ -1,11 +1,14 @@
-import { derived, type Readable } from 'svelte/store';
+/**
+ * Filtered Games Store - Svelte 5 Runes
+ * Filters and sorts games based on current filters and active tab
+ */
 import type { Game } from '$lib/types/game';
-import { gamesStore } from './games.svelte';
-import { filtersStore } from './filters.svelte';
+import { parseDate } from '$lib/utils/dateUtils';
+import { getTierDisplayName } from '$lib/utils/tierUtils';
 import { appStore } from './app.svelte';
 import { filteredCountsStore } from './filteredCounts.svelte';
-import { getTierDisplayName } from '$lib/utils/tierUtils';
-import { parseDate } from '$lib/utils/dateUtils';
+import { filtersStore } from './filters.svelte';
+import { gamesStore } from './games.svelte';
 
 interface FilterCacheKey {
 	searchTerm: string;
@@ -23,44 +26,47 @@ class FilteredGamesStore {
 	private lastCacheKey: string | null = null;
 	private lastCachedResult: Game[] = [];
 
-	createFilteredGamesStore(): Readable<Game[]> {
-		return derived(
-			[gamesStore, filtersStore, appStore.activeTab],
-			([$games, $filters, $activeTab]) => {
-				if (!$games || $games.length === 0) {
-					return [];
-				}
+	/**
+	 * Get filtered and sorted games based on current state
+	 * This is now a getter that reads reactive state directly
+	 */
+	get games(): Game[] {
+		const games = gamesStore.games;
+		const filters = filtersStore.state;
+		const activeTab = appStore.activeTab;
 
-				const cacheKey = this.createCacheKey($filters, $activeTab);
+		if (!games || games.length === 0) {
+			return [];
+		}
 
-				if (this.lastCacheKey === cacheKey && this.lastCachedResult.length > 0) {
-					return this.lastCachedResult;
-				}
+		const cacheKey = this.createCacheKey(filters, activeTab);
 
-				const filteredGames = this.filterGames($games, $filters, $activeTab);
-				const sortedGames = this.sortGames(filteredGames, $filters?.sortOption ?? null, $activeTab);
+		if (this.lastCacheKey === cacheKey && this.lastCachedResult.length > 0) {
+			return this.lastCachedResult;
+		}
 
-				this.updateCache(cacheKey, sortedGames);
+		const filteredGames = this.filterGames(games, filters, activeTab);
+		const sortedGames = this.sortGames(filteredGames, filters?.sortOption ?? null, activeTab);
 
-				// Update counts
-				// Apply all filters EXCEPT the tab filter, so counts show games in each category
-				// that match the active filters (search, platform, genre, tier, coOp)
-				const gamesWithFiltersApplied = this.filterGamesWithoutTabFilter($games, $filters);
+		this.updateCache(cacheKey, sortedGames);
 
-				const total = gamesWithFiltersApplied.length;
-				const completed = gamesWithFiltersApplied.filter((g) => g.status === 'Completed').length;
-				const planned = gamesWithFiltersApplied.filter((g) => g.status === 'Planned').length;
+		// Update counts
+		// Apply all filters EXCEPT the tab filter, so counts show games in each category
+		// that match the active filters (search, platform, genre, tier, coOp)
+		const gamesWithFiltersApplied = this.filterGamesWithoutTabFilter(games, filters);
 
-				filteredCountsStore.setCounts({
-					all: total,
-					completed,
-					planned,
-					tierlist: null
-				});
+		const total = gamesWithFiltersApplied.length;
+		const completed = gamesWithFiltersApplied.filter((g) => g.status === 'Completed').length;
+		const planned = gamesWithFiltersApplied.filter((g) => g.status === 'Planned').length;
 
-				return sortedGames;
-			}
-		);
+		filteredCountsStore.setCounts({
+			all: total,
+			completed,
+			planned,
+			tierlist: null
+		});
+
+		return sortedGames;
 	}
 
 	private createCacheKey(
@@ -116,22 +122,22 @@ class FilteredGamesStore {
 		}
 
 		if (filters?.platforms?.length > 0) {
-			filteredGames = filteredGames.filter((game) => filters.platforms.includes(game.platform));
+			filteredGames = filteredGames.filter((game) => filters.platforms!.includes(game.platform));
 		}
 		if (filters?.genres?.length > 0) {
-			filteredGames = filteredGames.filter((game) => filters.genres.includes(game.genre));
+			filteredGames = filteredGames.filter((game) => filters.genres!.includes(game.genre));
 		}
 
 		if (filters?.tiers?.length > 0) {
 			filteredGames = filteredGames.filter((game) => {
 				if (!game.tier) return false;
 				const gameTierFullName = getTierDisplayName(game.tier);
-				return filters.tiers.includes(gameTierFullName);
+				return filters.tiers!.includes(gameTierFullName);
 			});
 		}
 
 		if (filters?.coOp?.length > 0) {
-			filteredGames = filteredGames.filter((game) => filters.coOp.includes(game.coOp));
+			filteredGames = filteredGames.filter((game) => filters.coOp!.includes(game.coOp));
 		}
 
 		return filteredGames;
@@ -310,7 +316,17 @@ class FilteredGamesStore {
 	}
 }
 
-const filteredGamesStore = new FilteredGamesStore();
-export const filteredGames = filteredGamesStore.createFilteredGamesStore();
+export const filteredGamesStore = new FilteredGamesStore();
 
-export { filteredGamesStore };
+// For backwards compatibility with components using $filteredGames
+export const filteredGames = {
+	get value() {
+		return filteredGamesStore.games;
+	},
+	subscribe(fn: (value: Game[]) => void): () => void {
+		// Simple subscription for backwards compatibility
+		// In a full Svelte 5 app, this wouldn't be needed
+		fn(filteredGamesStore.games);
+		return () => {};
+	}
+};

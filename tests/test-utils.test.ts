@@ -1,14 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
-import { memoize } from '$lib/utils/memoize';
+import { describe, expect, it, vi } from 'vitest';
+import type { Game } from '$lib/types/game';
 import { debounce } from '$lib/utils/debounce';
 import {
 	extractFilterOptions,
-	getPlatformColor,
 	getGenreColor,
+	getPlatformColor,
 	getTierColor
 } from '$lib/utils/filterOptions';
-
-import type { Game } from '$lib/types/game';
+import { memoize } from '$lib/utils/memoize';
 
 describe('Utility Tests', () => {
 	describe('Memoize', () => {

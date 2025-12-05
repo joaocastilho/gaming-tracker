@@ -1,4 +1,7 @@
-import { writable, derived, get } from 'svelte/store';
+/**
+ * Filters Store - Svelte 5 Runes
+ * Manages filter state for games filtering
+ */
 import { replaceState } from '$app/navigation';
 import { debounce } from '$lib/utils/debounce';
 
@@ -33,181 +36,183 @@ const baseFilters: Pick<FilterState, 'searchTerm'> = {
 	searchTerm: ''
 };
 
-function createFiltersStore() {
-	const filters = writable<FilterState | null>(null);
+const initialFilters: FilterState = {
+	...baseFilters,
+	platforms: [],
+	genres: [],
+	statuses: [],
+	tiers: [],
+	coOp: [],
+	sortOption: null
+};
 
-	// Initialize filters if needed
-	if (browser && !get(filters)) {
-		const initialFilters: FilterState = {
-			...baseFilters,
-			platforms: [],
-			genres: [],
-			statuses: [],
-			tiers: [],
-			coOp: [],
-			sortOption: null
-		};
-		filters.set(initialFilters);
+class FiltersStore {
+	private _state = $state<FilterState | null>(null);
+
+	constructor() {
+		// Initialize filters if in browser
+		if (browser) {
+			this._state = { ...initialFilters };
+		}
 	}
 
-	return {
-		subscribe: filters.subscribe,
-		set: filters.set,
-		update: filters.update,
+	get state(): FilterState | null {
+		return this._state;
+	}
 
-		isAnyFilterApplied(): boolean {
-			const state = get(filters);
-			if (!state) return false;
+	// For backwards compatibility with $filtersStore subscription
+	subscribe(fn: (value: FilterState | null) => void): () => void {
+		fn(this._state);
+		return () => {};
+	}
 
-			const defaultSearchTerm = baseFilters.searchTerm;
-			const hasSearch = state.searchTerm.trim() !== defaultSearchTerm;
-			const hasPlatforms = state.platforms.length > 0;
-			const hasGenres = state.genres.length > 0;
-			const hasStatuses = state.statuses.length > 0;
-			const hasTiers = state.tiers.length > 0;
-			const hasCoOp = state.coOp.length > 0;
+	// Derived getters for backwards compatibility
+	get selectedPlatforms(): string[] {
+		return this._state?.platforms ?? [];
+	}
 
-			return hasSearch || hasPlatforms || hasGenres || hasStatuses || hasTiers || hasCoOp;
-		},
+	get selectedGenres(): string[] {
+		return this._state?.genres ?? [];
+	}
 
-		resetFilters: () => {
-			const resetFilters: FilterState = {
-				...baseFilters,
-				platforms: [],
-				genres: [],
-				statuses: [],
-				tiers: [],
-				coOp: [],
-				sortOption: null
-			};
-			filters.set(resetFilters);
-		},
+	get selectedTiers(): string[] {
+		return this._state?.tiers ?? [];
+	}
 
-		togglePlatform(platform: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				const platforms = $filters.platforms.includes(platform)
-					? $filters.platforms.filter((p) => p !== platform)
-					: [...$filters.platforms, platform];
-				return { ...$filters, platforms };
-			});
-		},
+	get selectedCoOp(): string[] {
+		return this._state?.coOp ?? [];
+	}
 
-		toggleGenre(genre: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				const genres = $filters.genres.includes(genre)
-					? $filters.genres.filter((g) => g !== genre)
-					: [...$filters.genres, genre];
-				return { ...$filters, genres };
-			});
-		},
+	get searchQuery(): string {
+		return this._state?.searchTerm ?? '';
+	}
 
-		toggleStatus(status: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				const statuses = $filters.statuses.includes(status)
-					? $filters.statuses.filter((s) => s !== status)
-					: [...$filters.statuses, status];
-				return { ...$filters, statuses };
-			});
-		},
+	isAnyFilterApplied(): boolean {
+		const state = this._state;
+		if (!state) return false;
 
-		toggleTier(tier: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				const tiers = $filters.tiers.includes(tier)
-					? $filters.tiers.filter((t) => t !== tier)
-					: [...$filters.tiers, tier];
-				return { ...$filters, tiers };
-			});
-		},
+		const defaultSearchTerm = baseFilters.searchTerm;
+		const hasSearch = state.searchTerm.trim() !== defaultSearchTerm;
+		const hasPlatforms = state.platforms.length > 0;
+		const hasGenres = state.genres.length > 0;
+		const hasStatuses = state.statuses.length > 0;
+		const hasTiers = state.tiers.length > 0;
+		const hasCoOp = state.coOp.length > 0;
 
-		toggleCoOp(coOpValue: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				const coOp = $filters.coOp.includes(coOpValue)
-					? $filters.coOp.filter((c) => c !== coOpValue)
-					: [...$filters.coOp, coOpValue];
-				return { ...$filters, coOp };
-			});
-		},
+		return hasSearch || hasPlatforms || hasGenres || hasStatuses || hasTiers || hasCoOp;
+	}
 
-		removePlatform(platform: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				return { ...$filters, platforms: $filters.platforms.filter((p) => p !== platform) };
-			});
-		},
+	resetFilters(): void {
+		this._state = { ...initialFilters };
+	}
 
-		removeGenre(genre: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				return { ...$filters, genres: $filters.genres.filter((g) => g !== genre) };
-			});
-		},
+	togglePlatform(platform: string): void {
+		if (!this._state) return;
+		const platforms = this._state.platforms.includes(platform)
+			? this._state.platforms.filter((p) => p !== platform)
+			: [...this._state.platforms, platform];
+		this._state = { ...this._state, platforms };
+	}
 
-		removeTier(tier: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				return { ...$filters, tiers: $filters.tiers.filter((t) => t !== tier) };
-			});
-		},
+	toggleGenre(genre: string): void {
+		if (!this._state) return;
+		const genres = this._state.genres.includes(genre)
+			? this._state.genres.filter((g) => g !== genre)
+			: [...this._state.genres, genre];
+		this._state = { ...this._state, genres };
+	}
 
-		removeCoOp(coOpValue: string) {
-			filters.update(($filters) => {
-				if (!$filters) return null;
-				return { ...$filters, coOp: $filters.coOp.filter((c) => c !== coOpValue) };
-			});
-		},
+	toggleStatus(status: string): void {
+		if (!this._state) return;
+		const statuses = this._state.statuses.includes(status)
+			? this._state.statuses.filter((s) => s !== status)
+			: [...this._state.statuses, status];
+		this._state = { ...this._state, statuses };
+	}
 
-		resetAllFilters() {
-			this.resetFilters();
-		},
+	toggleTier(tier: string): void {
+		if (!this._state) return;
+		const tiers = this._state.tiers.includes(tier)
+			? this._state.tiers.filter((t) => t !== tier)
+			: [...this._state.tiers, tier];
+		this._state = { ...this._state, tiers };
+	}
 
-		setSearchTerm(term: string) {
-			filters.update(($filters) => {
-				if (!$filters) return $filters;
-				return { ...$filters, searchTerm: term };
-			});
-		},
+	toggleCoOp(coOpValue: string): void {
+		if (!this._state) return;
+		const coOp = this._state.coOp.includes(coOpValue)
+			? this._state.coOp.filter((c) => c !== coOpValue)
+			: [...this._state.coOp, coOpValue];
+		this._state = { ...this._state, coOp };
+	}
 
-		setSort(sortOption: SortOption | null) {
-			filters.update(($filters) => {
-				if (!$filters) return $filters;
-				return { ...$filters, sortOption };
-			});
-		},
+	removePlatform(platform: string): void {
+		if (!this._state) return;
+		this._state = {
+			...this._state,
+			platforms: this._state.platforms.filter((p) => p !== platform)
+		};
+	}
 
-		selectedPlatforms: derived(filters, ($filters) => $filters?.platforms ?? []),
-		selectedGenres: derived(filters, ($filters) => $filters?.genres ?? []),
-		selectedTiers: derived(filters, ($filters) => $filters?.tiers ?? []),
-		selectedCoOp: derived(filters, ($filters) => $filters?.coOp ?? []),
-		searchQuery: derived(filters, ($filters) => $filters?.searchTerm ?? ''),
+	removeGenre(genre: string): void {
+		if (!this._state) return;
+		this._state = { ...this._state, genres: this._state.genres.filter((g) => g !== genre) };
+	}
 
-		readSearchFromURL(searchParams: URLSearchParams) {
-			const search = searchParams.get('s');
-			if (search) {
-				this.setSearchTerm(search);
+	removeTier(tier: string): void {
+		if (!this._state) return;
+		this._state = { ...this._state, tiers: this._state.tiers.filter((t) => t !== tier) };
+	}
+
+	removeCoOp(coOpValue: string): void {
+		if (!this._state) return;
+		this._state = { ...this._state, coOp: this._state.coOp.filter((c) => c !== coOpValue) };
+	}
+
+	resetAllFilters(): void {
+		this.resetFilters();
+	}
+
+	setSearchTerm(term: string): void {
+		if (!this._state) return;
+		this._state = { ...this._state, searchTerm: term };
+	}
+
+	setSort(sortOption: SortOption | null): void {
+		if (!this._state) return;
+		this._state = { ...this._state, sortOption };
+	}
+
+	set(newState: FilterState | null): void {
+		this._state = newState;
+	}
+
+	update(fn: (state: FilterState | null) => FilterState | null): void {
+		this._state = fn(this._state);
+	}
+
+	readSearchFromURL(searchParams: URLSearchParams): void {
+		const search = searchParams.get('s');
+		if (search) {
+			this.setSearchTerm(search);
+		}
+	}
+
+	writeSearchToURL = debounce(async () => {
+		if (typeof window === 'undefined') return;
+		try {
+			const state = this._state;
+			const url = new URL(window.location.href);
+			if (state?.searchTerm) {
+				url.searchParams.set('s', state.searchTerm);
+			} else {
+				url.searchParams.delete('s');
 			}
-		},
-
-		writeSearchToURL: debounce(async () => {
-			if (typeof window === 'undefined') return;
-			try {
-				const state = get(filters);
-				const url = new URL(window.location.href);
-				if (state?.searchTerm) {
-					url.searchParams.set('s', state.searchTerm);
-				} else {
-					url.searchParams.delete('s');
-				}
-				await replaceState(url.toString(), { noscroll: true, keepFocus: true });
-			} catch {
-				// Ignore router initialization errors
-			}
-		}, 500)
-	};
+			await replaceState(url.toString(), { noscroll: true, keepFocus: true });
+		} catch {
+			// Ignore router initialization errors
+		}
+	}, 500);
 }
 
-export const filtersStore = createFiltersStore();
+export const filtersStore = new FiltersStore();

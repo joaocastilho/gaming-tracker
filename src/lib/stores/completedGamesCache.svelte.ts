@@ -1,26 +1,30 @@
-import { writable, get } from 'svelte/store';
+/**
+ * Completed Games Cache - Svelte 5 Runes
+ * Cache for completed games sorted by finished date
+ * This prevents re-sorting on every tab switch to the completed view
+ */
 import type { Game } from '$lib/types/game';
 
-interface CompletedGamesCache {
+interface CompletedGamesCacheState {
 	sortedCompletedGames: Game[];
 	lastUpdated: number;
 	gamesVersion: string;
 }
 
-/**
- * Cache for completed games sorted by finished date
- * This prevents re-sorting on every tab switch to the completed view
- */
-function createCompletedGamesCache() {
-	const cache = writable<CompletedGamesCache | null>(null);
-	let lastUpdateId = '';
-	let updateTimeout: ReturnType<typeof setTimeout> | null = null;
+class CompletedGamesCacheStore {
+	private _cache = $state<CompletedGamesCacheState | null>(null);
+	private lastUpdateId = '';
+	private updateTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	get cache(): CompletedGamesCacheState | null {
+		return this._cache;
+	}
 
 	/**
 	 * Sort completed games by finished date (most recent first)
 	 * Games without finished dates are placed at the end
 	 */
-	function sortCompletedGamesByDate(games: Game[]): Game[] {
+	private sortCompletedGamesByDate(games: Game[]): Game[] {
 		return games
 			.filter((game) => game.status === 'Completed')
 			.toSorted((a, b) => {
@@ -35,7 +39,7 @@ function createCompletedGamesCache() {
 	 * Generate a version hash for the games data
 	 * This helps us detect when games have been added/modified/deleted
 	 */
-	function generateGamesVersion(games: Game[]): string {
+	private generateGamesVersion(games: Game[]): string {
 		const versionData = games
 			.filter((game) => game.status === 'Completed')
 			.map((game) => `${game.id}-${game.status}-${game.finishedDate || 'null'}`)
@@ -54,31 +58,31 @@ function createCompletedGamesCache() {
 	/**
 	 * Update the cache if games data has changed
 	 */
-	function updateCache(games: Game[]) {
-		const gamesVersion = generateGamesVersion(games);
-		const currentCache = get(cache);
+	updateCache(games: Game[]): void {
+		const gamesVersion = this.generateGamesVersion(games);
+		const currentCache = this._cache;
 
 		const updateId = `${gamesVersion}-${games.length}`;
 
-		if (updateTimeout) {
-			clearTimeout(updateTimeout);
+		if (this.updateTimeout) {
+			clearTimeout(this.updateTimeout);
 		}
 
-		updateTimeout = setTimeout(() => {
-			if (lastUpdateId === updateId) {
+		this.updateTimeout = setTimeout(() => {
+			if (this.lastUpdateId === updateId) {
 				return;
 			}
 			if (!currentCache || currentCache.gamesVersion !== gamesVersion) {
-				const sortedCompletedGames = sortCompletedGamesByDate(games);
-				cache.set({
+				const sortedCompletedGames = this.sortCompletedGamesByDate(games);
+				this._cache = {
 					sortedCompletedGames,
 					lastUpdated: Date.now(),
 					gamesVersion
-				});
+				};
 
-				lastUpdateId = updateId;
+				this.lastUpdateId = updateId;
 			} else {
-				lastUpdateId = updateId;
+				this.lastUpdateId = updateId;
 			}
 		}, 50);
 	}
@@ -87,14 +91,14 @@ function createCompletedGamesCache() {
 	 * Get the cached sorted completed games
 	 * Returns null if cache is empty or needs updating
 	 */
-	function getCachedCompletedGames(games: Game[]): Game[] | null {
-		const currentCache = get(cache);
+	getCachedCompletedGames(games: Game[]): Game[] | null {
+		const currentCache = this._cache;
 		if (!currentCache) return null;
 
-		const currentVersion = generateGamesVersion(games);
+		const currentVersion = this.generateGamesVersion(games);
 		if (currentCache.gamesVersion !== currentVersion) {
-			updateCache(games);
-			return get(cache)?.sortedCompletedGames || null;
+			this.updateCache(games);
+			return this._cache?.sortedCompletedGames || null;
 		}
 
 		return currentCache.sortedCompletedGames;
@@ -103,27 +107,27 @@ function createCompletedGamesCache() {
 	/**
 	 * Check if the cache needs to be updated
 	 */
-	function needsUpdate(games: Game[]): boolean {
-		const currentCache = get(cache);
+	needsUpdate(games: Game[]): boolean {
+		const currentCache = this._cache;
 		if (!currentCache) return true;
 
-		const currentVersion = generateGamesVersion(games);
+		const currentVersion = this.generateGamesVersion(games);
 		return currentCache.gamesVersion !== currentVersion;
 	}
 
-	return {
-		subscribe: cache.subscribe,
-		updateCache,
-		getCachedCompletedGames,
-		needsUpdate,
+	clearCache(): void {
+		this._cache = null;
+	}
 
-		clearCache() {
-			cache.set(null);
-		},
-		getCacheInfo() {
-			return get(cache);
-		}
-	};
+	getCacheInfo(): CompletedGamesCacheState | null {
+		return this._cache;
+	}
+
+	// For backwards compatibility
+	subscribe(fn: (value: CompletedGamesCacheState | null) => void): () => void {
+		fn(this._cache);
+		return () => {};
+	}
 }
 
-export const completedGamesCache = createCompletedGamesCache();
+export const completedGamesCache = new CompletedGamesCacheStore();

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { modalStore } from '$lib/stores/modal.svelte';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { gamesStore } from '$lib/stores/games.svelte';
+import { modalStore } from '$lib/stores/modal.svelte';
 import type { Game } from '$lib/types/game';
 
 /**

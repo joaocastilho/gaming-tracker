@@ -145,7 +145,7 @@
 	let currentTabGames = $derived.by(() => {
 		const games = displayedGames;
 
-		switch ($currentActiveTab) {
+		switch (currentActiveTab) {
 			case 'all': {
 				return games.toSorted((a, b) => a.title.localeCompare(b.title));
 			}
@@ -214,7 +214,7 @@
 	});
 
 	let allTieredGames = $derived.by(() => {
-		const sourceGames = $currentActiveTab === 'tierlist' ? allGames : displayedGames;
+		const sourceGames = currentActiveTab === 'tierlist' ? allGames : displayedGames;
 
 		const tierOrder = [
 			'S - Masterpiece',
@@ -260,7 +260,7 @@
 		if ($modalStore.displayedGames.length > 0) {
 			return $modalStore.displayedGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 		}
-		if ($currentActiveTab === 'tierlist') {
+		if (currentActiveTab === 'tierlist') {
 			const tierGames = allTieredGames;
 			return tierGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
 		}

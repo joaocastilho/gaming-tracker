@@ -11,27 +11,23 @@
 		Calendar,
 		AArrowDown
 	} from 'lucide-svelte';
-	import { derived } from 'svelte/store';
 	import { appStore } from '$lib/stores/app.svelte';
 
-	const sortOptionStore = derived(
-		filtersStore,
-		($filters): SortOption | null => $filters?.sortOption ?? null
-	);
-
-	const activeTabStore = appStore.activeTab;
+	// Get sortOption from filters store state
+	let sortOption = $derived(($filtersStore?.sortOption ?? null) as SortOption | null);
+	let currentTab = $derived(appStore.activeTab);
 
 	let activeKey = $derived(
-		$sortOptionStore?.key ??
-			($activeTabStore === 'completed'
+		sortOption?.key ??
+			(currentTab === 'completed'
 				? 'finishedDate'
-				: $activeTabStore === 'planned'
+				: currentTab === 'planned'
 					? 'alphabetical'
 					: 'alphabetical')
 	);
 
 	let activeDirection = $derived(
-		$sortOptionStore?.direction ?? ($activeTabStore === 'completed' ? 'desc' : 'asc')
+		sortOption?.direction ?? (currentTab === 'completed' ? 'desc' : 'asc')
 	);
 
 	function handleSort(key: SortKey) {
@@ -64,7 +60,7 @@
 		{/if}
 	</button>
 
-	{#if $activeTabStore !== 'planned'}
+	{#if currentTab !== 'planned'}
 		<button
 			type="button"
 			class="sort-button"

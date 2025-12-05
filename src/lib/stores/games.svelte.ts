@@ -1,97 +1,94 @@
-import { writable, get, derived, type Readable } from 'svelte/store';
+/**
+ * Games Store - Svelte 5 Runes
+ * Manages the collection of games
+ */
 import type { Game } from '$lib/types/game';
 import { transformGameData } from '$lib/utils/dataTransformer';
-import { completedGamesCache } from './completedGamesCache.svelte';
 import { createGameSlug } from '$lib/utils/slugUtils';
+import { completedGamesCache } from './completedGamesCache.svelte';
 
-function createGamesStore() {
-	const { subscribe, set, update } = writable<Game[]>([]);
-	const loadingStore = writable<boolean>(true);
-	const errorStore = writable<string | null>(null);
+class GamesStore {
+	games = $state<Game[]>([]);
+	loading = $state<boolean>(true);
+	error = $state<string | null>(null);
 
-	function createDerivedOptions(games: Readable<Game[]>, key: keyof Game): Readable<string[]> {
-		return derived(games, ($games) => {
-			if (!$games || $games.length === 0) return [];
-			// eslint-disable-next-line svelte/prefer-svelte-reactivity -- Set is used for temporary collection, converted to array
-			const optionsSet = new Set<string>();
-			for (const game of $games) {
-				const value = game[key];
-				if (typeof value === 'string' && value) {
-					optionsSet.add(value);
-				} else if (Array.isArray(value)) {
-					value.forEach((item) => typeof item === 'string' && optionsSet.add(item));
-				}
+	get allPlatforms(): string[] {
+		if (!this.games || this.games.length === 0) return [];
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- Set is used for temporary collection, converted to array
+		const optionsSet = new Set<string>();
+		for (const game of this.games) {
+			if (typeof game.platform === 'string' && game.platform) {
+				optionsSet.add(game.platform);
 			}
-			return Array.from(optionsSet).sort((a, b) => a.localeCompare(b));
-		});
+		}
+		return Array.from(optionsSet).sort((a, b) => a.localeCompare(b));
 	}
 
-	const allPlatforms = createDerivedOptions({ subscribe }, 'platform');
-	const allGenres = createDerivedOptions({ subscribe }, 'genre');
-
-	return {
-		subscribe,
-		loading: loadingStore,
-		error: errorStore,
-		allPlatforms,
-		allGenres,
-		initializeGames(rawGames: unknown[]): void {
-			loadingStore.set(true);
-			errorStore.set(null);
-			try {
-				if (!Array.isArray(rawGames)) {
-					throw new Error('Invalid games data: expected array');
-				}
-
-				const normalized = rawGames.map((gameRaw): Game => {
-					const transformed = transformGameData(gameRaw as Record<string, unknown>);
-					return transformed as unknown as Game;
-				});
-
-				set(normalized);
-
-				if (normalized.length === 0) {
-					errorStore.set('No valid games found from pre-loaded data.');
-				} else {
-					completedGamesCache.updateCache(normalized);
-				}
-			} catch (err) {
-				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-				errorStore.set(`Failed to initialize games: ${errorMessage}`);
-				set([]);
-			} finally {
-				loadingStore.set(false);
+	get allGenres(): string[] {
+		if (!this.games || this.games.length === 0) return [];
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- Set is used for temporary collection, converted to array
+		const optionsSet = new Set<string>();
+		for (const game of this.games) {
+			if (typeof game.genre === 'string' && game.genre) {
+				optionsSet.add(game.genre);
 			}
-		},
-
-		getGameById(id: string): Game | undefined {
-			return get({ subscribe }).find((game) => game.id === id);
-		},
-
-		getGameBySlug(slug: string): Game | undefined {
-			const games = get({ subscribe });
-			return games.find((game) => createGameSlug(game.title) === slug);
-		},
-
-		addGame(newGame: Game): void {
-			update(($games) => {
-				const newGames = [...$games, newGame];
-				completedGamesCache.updateCache(newGames);
-				return newGames;
-			});
-		},
-
-		updateGame(id: string, updatedGame: Partial<Game>): void {
-			update(($games) => {
-				const updatedGames = $games.map((game) =>
-					game.id === id ? { ...game, ...updatedGame } : game
-				);
-				completedGamesCache.updateCache(updatedGames);
-				return updatedGames;
-			});
 		}
-	};
+		return Array.from(optionsSet).sort((a, b) => a.localeCompare(b));
+	}
+
+	initializeGames(rawGames: unknown[]): void {
+		this.loading = true;
+		this.error = null;
+		try {
+			if (!Array.isArray(rawGames)) {
+				throw new Error('Invalid games data: expected array');
+			}
+
+			const normalized = rawGames.map((gameRaw): Game => {
+				const transformed = transformGameData(gameRaw as Record<string, unknown>);
+				return transformed as unknown as Game;
+			});
+
+			this.games = normalized;
+
+			if (normalized.length === 0) {
+				this.error = 'No valid games found from pre-loaded data.';
+			} else {
+				completedGamesCache.updateCache(normalized);
+			}
+		} catch (err) {
+			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+			this.error = `Failed to initialize games: ${errorMessage}`;
+			this.games = [];
+		} finally {
+			this.loading = false;
+		}
+	}
+
+	getGameById(id: string): Game | undefined {
+		return this.games.find((game) => game.id === id);
+	}
+
+	getGameBySlug(slug: string): Game | undefined {
+		return this.games.find((game) => createGameSlug(game.title) === slug);
+	}
+
+	addGame(newGame: Game): void {
+		this.games = [...this.games, newGame];
+		completedGamesCache.updateCache(this.games);
+	}
+
+	updateGame(id: string, updatedGame: Partial<Game>): void {
+		this.games = this.games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
+		completedGamesCache.updateCache(this.games);
+	}
+
+	// For backwards compatibility with $gamesStore subscription
+	subscribe(fn: (value: Game[]) => void): () => void {
+		fn(this.games);
+		return () => {};
+	}
 }
 
-export const gamesStore = createGamesStore();
-export type GamesStore = ReturnType<typeof createGamesStore>;
+export const gamesStore = new GamesStore();
+export type { GamesStore };

@@ -18,12 +18,10 @@
 		active: boolean;
 	};
 
-	const activeTab = appStore.activeTab;
-
 	// Use $derived to reactively compute navItems whenever activeTab or counts change
 	let navItems = $derived.by(() => {
-		const counts = $filteredCountsStore;
-		const currentTab = $activeTab;
+		const counts = filteredCountsStore.counts;
+		const currentTab = appStore.activeTab;
 
 		return [
 			{

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { GameStatus, TierValue, CoOpStatus } from '../types/game';
+import type { CoOpStatus, GameStatus, TierValue } from '../types/game';
 
 /**
  * Shared constants

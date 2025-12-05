@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 
 // Mock localStorage for testing
 class MockLocalStorage {
@@ -73,21 +73,19 @@ class MockDOM {
 			},
 
 			classList: {
-				contains: function (className: string) {
-					return element.className.includes(className);
-				},
-				add: function (className: string) {
+				contains: (className: string) => element.className.includes(className),
+				add: (className: string) => {
 					if (!element.className.includes(className)) {
 						element.className += (element.className ? ' ' : '') + className;
 					}
 				},
-				remove: function (className: string) {
+				remove: (className: string) => {
 					element.className = element.className
 						.split(' ')
 						.filter((c) => c !== className)
 						.join(' ');
 				},
-				toggle: function (className: string) {
+				toggle: (className: string) => {
 					if (element.className.includes(className)) {
 						element.classList.remove(className);
 					} else {

@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
@@ -20,7 +20,7 @@ export default defineConfig({
 		}
 	],
 	build: {
-		rollupOptions: {
+		rolldownOptions: {
 			output: {
 				manualChunks(id) {
 					// Application-specific chunks

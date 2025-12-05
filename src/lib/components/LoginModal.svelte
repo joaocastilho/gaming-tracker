@@ -1,32 +1,25 @@
 <script lang="ts">
 	import { editorStore } from '$lib/stores/editor.svelte';
-	import { onMount } from 'svelte';
 
-	let open = false;
-	let username = '';
-	let password = '';
-
-	let loginPending = false;
-	let loginError: string | null = null;
-
-	let unsubscribe: (() => void) | null = null;
-
-	onMount(() => {
-		unsubscribe = editorStore.subscribe(($s) => {
-			loginPending = $s.loginPending;
-			loginError = $s.loginError;
-		});
-
-		return () => {
-			if (unsubscribe) unsubscribe();
-		};
-	});
-
-	export function openModal() {
-		open = true;
-		username = '';
-		password = '';
+	interface Props {
+		open?: boolean;
 	}
+
+	let { open = $bindable(false) }: Props = $props();
+	let username = $state('');
+	let password = $state('');
+
+	// Derive login state from editor store
+	let loginPending = $derived(editorStore.loginPending);
+	let loginError = $derived(editorStore.loginError);
+
+	// Reset form when modal opens
+	$effect(() => {
+		if (open) {
+			username = '';
+			password = '';
+		}
+	});
 
 	function closeModal() {
 		if (loginPending) return;
@@ -48,8 +41,8 @@
 	<div
 		class="login-backdrop"
 		role="presentation"
-		on:click={closeModal}
-		on:keydown={(event) => {
+		onclick={closeModal}
+		onkeydown={(event) => {
 			if (event.key === 'Escape') {
 				event.preventDefault();
 				closeModal();
@@ -62,8 +55,8 @@
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			on:click|stopPropagation
-			on:keydown={(event) => {
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(event) => {
 				if (event.key === 'Escape') {
 					event.preventDefault();
 					closeModal();
@@ -72,7 +65,7 @@
 		>
 			<h2>Owner Login</h2>
 			<p class="hint">Sign in to enable editor mode.</p>
-			<form on:submit|preventDefault={handleSubmit}>
+			<form onsubmit={handleSubmit}>
 				<label>
 					<span>Username</span>
 					<input
@@ -99,7 +92,7 @@
 				{/if}
 
 				<div class="actions">
-					<button type="button" class="secondary" on:click={closeModal} disabled={loginPending}>
+					<button type="button" class="secondary" onclick={closeModal} disabled={loginPending}>
 						Cancel
 					</button>
 					<button type="submit" class="primary" disabled={loginPending}>

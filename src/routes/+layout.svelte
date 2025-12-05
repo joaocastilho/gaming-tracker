@@ -13,7 +13,6 @@
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { browser, dev } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
 	import type { Game } from '$lib/types/game.js';
 	import { RotateCcw } from 'lucide-svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
@@ -32,15 +31,20 @@
 	import FilterToggle from '$lib/components/FilterToggle.svelte';
 
 	let initialized = $state(false);
+	let gamesInitialized = $state(false);
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
 	let DetailModalComponent = $state<
 		typeof import('$lib/components/DetailModal.svelte').default | null
 	>(null);
 
-	// Initialize games immediately if available (SSR support)
-	if (data.games && Array.isArray(data.games)) {
-		gamesStore.initializeGames(data.games);
-	}
+	// Initialize games reactively (SSR support)
+	$effect(() => {
+		if (gamesInitialized) return;
+		if (data.games && Array.isArray(data.games)) {
+			gamesStore.initializeGames(data.games);
+			gamesInitialized = true;
+		}
+	});
 
 	onMount(() => {
 		if (data.games) {
@@ -49,6 +53,7 @@
 				data.games
 					.then((resolvedGames) => {
 						gamesStore.initializeGames(resolvedGames);
+						gamesInitialized = true;
 					})
 					.catch((error) => {
 						console.error('Failed to load games:', error);
@@ -93,17 +98,16 @@
 		return extractFilterOptions(games);
 	});
 
-	const activeTab = appStore.activeTab;
-	const theme = appStore.theme;
-
 	let isGamesPage = $derived(
 		(page.url.pathname === '/' ||
 			page.url.pathname === '/completed' ||
 			page.url.pathname === '/planned') &&
-			$activeTab !== 'tierlist'
+			appStore.activeTab !== 'tierlist'
 	);
 
-	let isTierlistPage = $derived(page.url.pathname === '/tierlist' || $activeTab === 'tierlist');
+	let isTierlistPage = $derived(
+		page.url.pathname === '/tierlist' || appStore.activeTab === 'tierlist'
+	);
 	let isPlannedPage = $derived(page.url.pathname === '/planned');
 
 	let showTiersFilter = $derived(!isTierlistPage && !isPlannedPage);
@@ -112,7 +116,7 @@
 	$effect(() => {
 		if (!initialized) return;
 
-		const tab = get(appStore.activeTab);
+		const tab = appStore.activeTab;
 
 		if (tab === 'tierlist') {
 			filtersStore.resetAllFilters();
@@ -243,10 +247,10 @@
 
 <svelte:head>
 	<title>Gaming Tracker</title>
-	<meta name="theme-color" content={$theme === 'dark' ? '#0f1419' : '#f2ebe1'} />
+	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0f1419' : '#f2ebe1'} />
 	<meta
 		name="apple-mobile-web-app-status-bar-style"
-		content={$theme === 'dark' ? 'black-translucent' : 'default'}
+		content={appStore.theme === 'dark' ? 'black-translucent' : 'default'}
 	/>
 	{#if dev}
 		<link rel="modulepreload" href="/@vite/client" />

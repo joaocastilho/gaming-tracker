@@ -28,7 +28,13 @@ Built with modern web technologies for performance and developer experience:
 | **Icons**      | <a href="https://lucide.dev/" target="_blank"><img src="https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white" alt="Lucide" /></a>                         | `v0.555.0`      |
 | **Runtime**    | <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" /></a>                                      | `v1.3.3`        |
 | **Build Tool** | <a href="https://vite.dev/" target="_blank"><img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /></a>                                 | `v8.0.0-beta.0` |
+| **Code Quality** | <a href="https://biomejs.dev/" target="_blank"><img src="https://img.shields.io/badge/Biome-60A5FA?logo=biome&logoColor=white" alt="Biome" /></a>                           | `v2.3.8`        |
 | **Testing**    | <a href="https://vitest.dev/" target="_blank"><img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /></a>                         | `v4.0.15`       |
+
+
+### ⚡ PageSpeed Insights
+
+<a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=desktop" target="_blank"><img src="https://img.shields.io/badge/Desktop-F16529?logo=lighthouse&logoColor=white" alt="PageSpeed Desktop" /></a> <a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=mobile" target="_blank"><img src="https://img.shields.io/badge/Mobile-F16529?logo=lighthouse&logoColor=white" alt="PageSpeed Mobile" /></a>
 
 ## 📂 Project Structure
 
@@ -41,10 +47,3 @@ A quick look at how the project is organized:
 - `static/`: Static assets like game covers, icons, and the initial `games.json` data.
 - `scripts/`: Helper scripts for tasks like optimizing images and converting data.
 - `tests/`: Unit and integration tests to ensure everything works perfectly.
-
-## ⚡ Performance
-
-| Platform    | Report                                                                                                                                                                                                                                                      |
-| :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Desktop** | <a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=desktop" target="_blank"><img src="https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="PageSpeed Insights" /></a> |
-| **Mobile**  | <a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=mobile" target="_blank"><img src="https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="PageSpeed Insights" /></a>  |

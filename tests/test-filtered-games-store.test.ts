@@ -1,10 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { get } from 'svelte/store';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { appStore } from '$lib/stores/app.svelte';
-import { filteredGames, filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
+import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
 
 /**
  * Comprehensive tests for filteredGamesStore
@@ -70,14 +69,14 @@ describe('FilteredGamesStore Integration', () => {
 	describe('Filtering', () => {
 		it('returns all games when no filters applied', async () => {
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(4);
 		});
 
 		it('filters by search term', async () => {
 			filtersStore.setSearchTerm('Zelda');
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(1);
 			expect(games[0].title).toContain('Zelda');
 		});
@@ -85,7 +84,7 @@ describe('FilteredGamesStore Integration', () => {
 		it('filters by platform', async () => {
 			filtersStore.togglePlatform('PC');
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(2);
 			games.forEach((g) => expect(g.platform).toBe('PC'));
 		});
@@ -93,7 +92,7 @@ describe('FilteredGamesStore Integration', () => {
 		it('filters by genre', async () => {
 			filtersStore.toggleGenre('Adventure');
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(1);
 			expect(games[0].genre).toBe('Adventure');
 		});
@@ -101,7 +100,7 @@ describe('FilteredGamesStore Integration', () => {
 		it('filters by tier', async () => {
 			filtersStore.toggleTier('S - Masterpiece');
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(1);
 			expect(games[0].tier).toBe('S');
 		});
@@ -109,7 +108,7 @@ describe('FilteredGamesStore Integration', () => {
 		it('filters by co-op', async () => {
 			filtersStore.toggleCoOp('Yes');
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(1);
 			expect(games[0].coOp).toBe('Yes');
 		});
@@ -117,7 +116,7 @@ describe('FilteredGamesStore Integration', () => {
 		it('filters by tab - completed', async () => {
 			appStore.setActiveTab('completed');
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(3);
 			games.forEach((g) => expect(g.status).toBe('Completed'));
 		});
@@ -125,7 +124,7 @@ describe('FilteredGamesStore Integration', () => {
 		it('filters by tab - planned', async () => {
 			appStore.setActiveTab('planned');
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(1);
 			expect(games[0].status).toBe('Planned');
 		});
@@ -134,7 +133,7 @@ describe('FilteredGamesStore Integration', () => {
 			filtersStore.togglePlatform('PC');
 			appStore.setActiveTab('completed');
 			await new Promise((resolve) => setTimeout(resolve, 50));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games.length).toBe(1);
 			expect(games[0].platform).toBe('PC');
 			expect(games[0].status).toBe('Completed');
@@ -146,14 +145,14 @@ describe('FilteredGamesStore Integration', () => {
 			appStore.setActiveTab('completed');
 			filtersStore.setSort({ key: 'score', direction: 'desc' });
 			await new Promise((resolve) => setTimeout(resolve, 100));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			expect(games[0].score).toBeGreaterThan(games[1].score!);
 		});
 
 		it('sorts alphabetically', async () => {
 			filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
 			await new Promise((resolve) => setTimeout(resolve, 100));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			// Check first game starts with earlier letter
 			expect(games[0].title.localeCompare(games[1].title)).toBeLessThan(0);
 		});
@@ -162,7 +161,7 @@ describe('FilteredGamesStore Integration', () => {
 			appStore.setActiveTab('completed');
 			filtersStore.setSort({ key: 'finishedDate', direction: 'desc' });
 			await new Promise((resolve) => setTimeout(resolve, 100));
-			const games = get(filteredGames);
+			const games = filteredGamesStore.games;
 			// Most recent should be first
 			expect(games[0].finishedDate).toBeDefined();
 		});
@@ -171,7 +170,7 @@ describe('FilteredGamesStore Integration', () => {
 	describe('Counts Update', () => {
 		it('updates filtered counts store', async () => {
 			await new Promise((resolve) => setTimeout(resolve, 100));
-			const counts = get(filteredCountsStore);
+			const counts = filteredCountsStore.counts;
 			expect(counts.all).toBe(4);
 			expect(counts.completed).toBe(3);
 			expect(counts.planned).toBe(1);
@@ -180,7 +179,7 @@ describe('FilteredGamesStore Integration', () => {
 		it('updates counts when filters change', async () => {
 			filtersStore.togglePlatform('PC');
 			await new Promise((resolve) => setTimeout(resolve, 100));
-			const counts = get(filteredCountsStore);
+			const counts = filteredCountsStore.counts;
 			// PC filter reduces count (Elden Ring + Hollow Knight are PC games)
 			expect(counts.all).toBeGreaterThanOrEqual(1);
 			expect(counts.all).toBeLessThanOrEqual(4);

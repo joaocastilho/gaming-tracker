@@ -1,61 +1,62 @@
 /**
- * App Store - Svelte 5 Runes with Store Compatibility
- * Uses class with $state for reactivity, maintains store interface for compatibility
+ * App Store - Svelte 5 Runes
+ * Manages theme and active tab state for the application
  */
-import { writable, derived, type Readable } from 'svelte/store';
+
+export type ThemeValue = 'dark' | 'light';
+export type TabValue = 'all' | 'completed' | 'planned' | 'tierlist';
 
 export interface AppState {
-	theme: 'dark' | 'light';
-	activeTab: 'all' | 'completed' | 'planned' | 'tierlist';
+	theme: ThemeValue;
+	activeTab: TabValue;
 }
 
-const themeStore = writable<'dark' | 'light'>('dark');
-const activeTabStore = writable<'all' | 'completed' | 'planned' | 'tierlist'>('all');
+class AppStore {
+	theme = $state<ThemeValue>('dark');
+	activeTab = $state<TabValue>('all');
 
-if (typeof window !== 'undefined') {
-	const savedTheme = localStorage.getItem('gaming-tracker-theme') as 'dark' | 'light' | null;
-	if (savedTheme) {
-		themeStore.set(savedTheme);
-		document.documentElement.classList.remove('light', 'dark');
-		document.documentElement.classList.add(savedTheme);
-	}
+	constructor() {
+		// Initialize from localStorage if in browser
+		if (typeof window !== 'undefined') {
+			const savedTheme = localStorage.getItem('gaming-tracker-theme') as ThemeValue | null;
+			if (savedTheme) {
+				this.theme = savedTheme;
+				document.documentElement.classList.remove('light', 'dark');
+				document.documentElement.classList.add(savedTheme);
+			}
 
-	themeStore.subscribe((t) => {
-		localStorage.setItem('gaming-tracker-theme', t);
-		document.documentElement.classList.remove('light', 'dark');
-		document.documentElement.classList.add(t);
-	});
-}
-
-let currentActiveTab: 'all' | 'completed' | 'planned' | 'tierlist' = 'all';
-activeTabStore.subscribe((v) => (currentActiveTab = v));
-
-const appState: Readable<AppState> = derived(
-	[themeStore, activeTabStore],
-	([$theme, $activeTab]) => ({
-		theme: $theme,
-		activeTab: $activeTab
-	})
-);
-
-export const appStore = {
-	theme: themeStore,
-	activeTab: activeTabStore,
-	appState,
-
-	toggleTheme() {
-		themeStore.update((t) => (t === 'dark' ? 'light' : 'dark'));
-	},
-
-	setTheme(newTheme: 'dark' | 'light') {
-		themeStore.set(newTheme);
-	},
-
-	setActiveTab(tab: 'all' | 'completed' | 'planned' | 'tierlist', force = false) {
-		if (force || currentActiveTab !== tab) {
-			activeTabStore.set(tab);
+			// Set up effect to sync theme to localStorage and DOM
+			$effect.root(() => {
+				$effect(() => {
+					localStorage.setItem('gaming-tracker-theme', this.theme);
+					document.documentElement.classList.remove('light', 'dark');
+					document.documentElement.classList.add(this.theme);
+				});
+			});
 		}
 	}
-};
 
-export type AppStore = typeof appStore;
+	get appState(): AppState {
+		return {
+			theme: this.theme,
+			activeTab: this.activeTab
+		};
+	}
+
+	toggleTheme() {
+		this.theme = this.theme === 'dark' ? 'light' : 'dark';
+	}
+
+	setTheme(newTheme: ThemeValue) {
+		this.theme = newTheme;
+	}
+
+	setActiveTab(tab: TabValue, force = false) {
+		if (force || this.activeTab !== tab) {
+			this.activeTab = tab;
+		}
+	}
+}
+
+export const appStore = new AppStore();
+export type { AppStore };

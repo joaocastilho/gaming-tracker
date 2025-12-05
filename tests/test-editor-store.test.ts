@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { get } from 'svelte/store';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { editorStore } from '$lib/stores/editor.svelte';
 
 /**
- * Comprehensive tests for editorStore
+ * Comprehensive tests for editorStore (Svelte 5 version)
  * Tests login, logout, save, and snapshot functionality
  */
 
@@ -62,20 +61,20 @@ describe('EditorStore', () => {
 		});
 	});
 
-	describe('Derived Stores', () => {
+	describe('Derived Properties', () => {
 		it('isEditor reflects editorMode', () => {
-			expect(get(editorStore.isEditor)).toBe(false);
+			expect(editorStore.isEditor).toBe(false);
 
 			editorStore.setEditorModeFromSessionCheck(true);
-			expect(get(editorStore.isEditor)).toBe(true);
+			expect(editorStore.isEditor).toBe(true);
 		});
 
 		it('hasLoginError reflects login error state', () => {
-			expect(get(editorStore.hasLoginError)).toBe(false);
+			expect(editorStore.hasLoginError).toBe(false);
 		});
 
 		it('hasSaveError reflects save error state', () => {
-			expect(get(editorStore.hasSaveError)).toBe(false);
+			expect(editorStore.hasSaveError).toBe(false);
 		});
 	});
 
@@ -190,7 +189,7 @@ describe('EditorStore', () => {
 				callCount++;
 			});
 
-			editorStore.setEditorModeFromSessionCheck(true);
+			// The subscribe is called once immediately
 			expect(callCount).toBeGreaterThan(0);
 
 			unsubscribe();

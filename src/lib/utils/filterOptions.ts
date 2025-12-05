@@ -1,5 +1,5 @@
 import type { Game } from '$lib/types/game';
-import { PLATFORM_COLORS, GENRE_COLORS, TIER_COLORS, COOP_COLORS } from './colorConstants.js';
+import { COOP_COLORS, GENRE_COLORS, PLATFORM_COLORS, TIER_COLORS } from './colorConstants.js';
 import { getTierDisplayName } from './tierUtils';
 
 export function getPlatformColor(platform: string): string {

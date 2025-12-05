@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { get } from 'svelte/store';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { appStore } from '$lib/stores/app.svelte';
-import { filteredGames } from '$lib/stores/filteredGamesStore.svelte';
+import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
 
 // Mock data
 const mockGames = [
@@ -69,58 +68,58 @@ describe('Sorting and Filtering Logic', () => {
 	beforeEach(async () => {
 		// Reset stores
 		gamesStore.initializeGames(mockGames);
-		appStore.activeTab.set('all');
+		appStore.setActiveTab('all');
 		filtersStore.resetFilters();
 		// Wait for stores to update
 		await new Promise((resolve) => setTimeout(resolve, 10));
 	});
 
 	it('returns all games when no filters active', () => {
-		const results = get(filteredGames);
+		const results = filteredGamesStore.games;
 		expect(results.length).toBe(4);
 	});
 
 	it('filters by search term', () => {
 		filtersStore.setSearchTerm('Zelda');
-		let results = get(filteredGames);
+		let results = filteredGamesStore.games;
 		expect(results.length).toBe(1);
 		expect(results[0].title).toBe('The Legend of Zelda: Breath of the Wild');
 
 		filtersStore.setSearchTerm('PC');
-		results = get(filteredGames);
+		results = filteredGamesStore.games;
 		expect(results.length).toBe(2);
 	});
 
 	it('filters by platform', () => {
 		filtersStore.togglePlatform('Nintendo Switch');
-		let results = get(filteredGames);
+		let results = filteredGamesStore.games;
 		expect(results.length).toBe(1);
 		expect(results[0].platform).toBe('Nintendo Switch');
 
 		filtersStore.togglePlatform('PC');
-		results = get(filteredGames);
+		results = filteredGamesStore.games;
 		expect(results.length).toBe(3); // Switch OR PC
 	});
 
 	it('filters by tab', () => {
-		appStore.activeTab.set('completed');
-		let results = get(filteredGames);
+		appStore.setActiveTab('completed');
+		let results = filteredGamesStore.games;
 		expect(results.length).toBe(3);
 		expect(results.every((g) => g.status === 'Completed')).toBe(true);
 
-		appStore.activeTab.set('planned');
-		results = get(filteredGames);
+		appStore.setActiveTab('planned');
+		results = filteredGamesStore.games;
 		expect(results.length).toBe(1);
 		expect(results[0].title).toBe('Elden Ring');
 	});
 
 	it('sorts games correctly', async () => {
-		appStore.activeTab.set('completed');
+		appStore.setActiveTab('completed');
 		// Wait for debounce
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		// Default sort for completed tab: Date Descending
-		let results = get(filteredGames);
+		let results = filteredGamesStore.games;
 		expect(results[0].title).toBe('God of War'); // Feb 2023
 		expect(results[1].title).toBe('The Legend of Zelda: Breath of the Wild'); // Jan 2023
 		expect(results[2].title).toBe('Hollow Knight'); // Dec 2022
@@ -130,16 +129,16 @@ describe('Sorting and Filtering Logic', () => {
 		// Wait for debounce
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
-		results = get(filteredGames);
+		results = filteredGamesStore.games;
 		expect(results[0].title).toBe('The Legend of Zelda: Breath of the Wild'); // 9.7
 		expect(results[1].title).toBe('God of War'); // 9.3
 	});
 
 	it('defaults to alphabetical sort for planned games', async () => {
-		appStore.activeTab.set('planned');
+		appStore.setActiveTab('planned');
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
-		const results = get(filteredGames);
+		const results = filteredGamesStore.games;
 		// Should be sorted alphabetically by default
 		// We only have one planned game in mock data (Elden Ring), so let's check if we can add another or just verify the sort option if accessible,
 		// but filteredGamesStore doesn't expose the sort option directly, only the results.
@@ -151,10 +150,10 @@ describe('Sorting and Filtering Logic', () => {
 	});
 
 	it('defaults to alphabetical sort for all games', async () => {
-		appStore.activeTab.set('all');
+		appStore.setActiveTab('all');
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
-		const results = get(filteredGames);
+		const results = filteredGamesStore.games;
 		// Default: Alphabetical Ascending
 		// Elden Ring, God of War, Hollow Knight, The Legend of Zelda
 		expect(results[0].title).toBe('Elden Ring');
@@ -183,11 +182,11 @@ describe('Sorting and Filtering Logic', () => {
 			}
 		];
 		gamesStore.initializeGames(gamesWithNull);
-		appStore.activeTab.set('completed');
+		appStore.setActiveTab('completed');
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		// Default: Date Descending
-		let results = get(filteredGames);
+		let results = filteredGamesStore.games;
 		// Order: God of War (Feb), Zelda (Jan), Hollow Knight (Dec), Null Date Game
 		expect(results[3].title).toBe('Null Date Game');
 
@@ -195,7 +194,7 @@ describe('Sorting and Filtering Logic', () => {
 		filtersStore.setSort({ key: 'finishedDate', direction: 'asc' });
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
-		results = get(filteredGames);
+		results = filteredGamesStore.games;
 		// Order: Hollow Knight (Dec), Zelda (Jan), God of War (Feb), Null Date Game
 		// Nulls should still be last!
 		expect(results[3].title).toBe('Null Date Game');
@@ -205,14 +204,14 @@ describe('Sorting and Filtering Logic', () => {
 	it('filters by tier', () => {
 		// Assuming 'S Tier' matches getTierDisplayName('S')
 		filtersStore.toggleTier('S - Masterpiece');
-		const results = get(filteredGames);
+		const results = filteredGamesStore.games;
 		expect(results.length).toBe(2);
 		expect(results.every((g) => g.tier === 'S')).toBe(true);
 	});
 
 	it('filters by co-op', () => {
 		filtersStore.toggleCoOp('Yes');
-		const results = get(filteredGames);
+		const results = filteredGamesStore.games;
 		expect(results.length).toBe(1);
 		expect(results[0].title).toBe('Elden Ring');
 		expect(results[0].coOp).toBe('Yes');

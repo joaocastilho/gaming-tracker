@@ -1,22 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import LoginModal from '$lib/components/LoginModal.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
 
-	let loginModalRef = $state<InstanceType<typeof LoginModal> | null>(null);
-	let editorMode = $derived($editorStore.editorMode);
-
-	onMount(() => {
-		if (editorMode) {
-			goto('/');
-			return;
-		}
-
-		if (loginModalRef && typeof loginModalRef.openModal === 'function') {
-			loginModalRef.openModal();
-		}
-	});
+	let isModalOpen = $state(true);
+	let editorMode = $derived(editorStore.editorMode);
 
 	$effect(() => {
 		if (editorMode) {
@@ -25,7 +13,7 @@
 	});
 </script>
 
-<LoginModal bind:this={loginModalRef} />
+<LoginModal bind:open={isModalOpen} />
 
 <div class="login-page">
 	<div class="login-container">

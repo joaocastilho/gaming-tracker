@@ -1,4 +1,7 @@
-import { writable, derived, get } from 'svelte/store';
+/**
+ * Editor Store - Svelte 5 Runes
+ * Manages admin editor state, login, and save operations
+ */
 
 type EditorState = {
 	editorMode: boolean;
@@ -20,15 +23,49 @@ const initialState: EditorState = {
 	lastSnapshot: null
 };
 
-function createEditorStore() {
-	const state = writable<EditorState>({ ...initialState });
+class EditorStore {
+	private _state = $state<EditorState>({ ...initialState });
 
-	const isEditor = derived(state, ($s) => $s.editorMode);
-	const hasSaveError = derived(state, ($s) => Boolean($s.saveError));
-	const hasLoginError = derived(state, ($s) => Boolean($s.loginError));
+	// Direct property getters
+	get editorMode(): boolean {
+		return this._state.editorMode;
+	}
 
-	async function login(username: string, password: string): Promise<boolean> {
-		state.update((s) => ({ ...s, loginPending: true, loginError: null }));
+	get loginPending(): boolean {
+		return this._state.loginPending;
+	}
+
+	get loginError(): string | null {
+		return this._state.loginError;
+	}
+
+	get savePending(): boolean {
+		return this._state.savePending;
+	}
+
+	get saveSuccess(): boolean {
+		return this._state.saveSuccess;
+	}
+
+	get saveError(): string | null {
+		return this._state.saveError;
+	}
+
+	// Derived properties
+	get isEditor(): boolean {
+		return this._state.editorMode;
+	}
+
+	get hasSaveError(): boolean {
+		return Boolean(this._state.saveError);
+	}
+
+	get hasLoginError(): boolean {
+		return Boolean(this._state.loginError);
+	}
+
+	async login(username: string, password: string): Promise<boolean> {
+		this._state = { ...this._state, loginPending: true, loginError: null };
 
 		try {
 			const res = await fetch('/api/login', {
@@ -41,60 +78,59 @@ function createEditorStore() {
 			});
 
 			if (!res.ok) {
-				state.update((s) => ({
-					...s,
+				this._state = {
+					...this._state,
 					loginPending: false,
 					editorMode: false,
 					loginError: 'Login failed. Please try again.'
-				}));
+				};
 				return false;
 			}
 
-			state.update((s) => ({
-				...s,
+			this._state = {
+				...this._state,
 				loginPending: false,
 				loginError: null,
 				editorMode: true
-			}));
+			};
 
 			return true;
 		} catch {
-			state.update((s) => ({
-				...s,
+			this._state = {
+				...this._state,
 				loginPending: false,
 				editorMode: false,
 				loginError: 'Login failed. Please try again.'
-			}));
+			};
 			return false;
 		}
 	}
 
-	function logout() {
-		state.set({ ...initialState, editorMode: false });
+	logout(): void {
+		this._state = { ...initialState, editorMode: false };
 	}
 
-	function setEditorModeFromSessionCheck(enabled: boolean) {
-		state.update((s) => ({ ...s, editorMode: enabled }));
+	setEditorModeFromSessionCheck(enabled: boolean): void {
+		this._state = { ...this._state, editorMode: enabled };
 	}
 
-	function captureSnapshot(snapshot: unknown) {
-		state.update((s) => ({ ...s, lastSnapshot: snapshot }));
+	captureSnapshot(snapshot: unknown): void {
+		this._state = { ...this._state, lastSnapshot: snapshot };
 	}
 
-	function restoreSnapshot() {
-		const s = get(state);
-		return s.lastSnapshot;
+	restoreSnapshot(): unknown {
+		return this._state.lastSnapshot;
 	}
 
-	async function saveGames(buildPayload: () => { games: unknown }): Promise<boolean> {
+	async saveGames(buildPayload: () => { games: unknown }): Promise<boolean> {
 		const snapshot = buildPayload();
-		state.update((s) => ({
-			...s,
+		this._state = {
+			...this._state,
 			savePending: true,
 			saveSuccess: false,
 			saveError: null,
 			lastSnapshot: snapshot
-		}));
+		};
 
 		try {
 			const res = await fetch('/api/games', {
@@ -108,23 +144,23 @@ function createEditorStore() {
 
 			if (!res.ok) {
 				await res.text().catch(() => '');
-				state.update((s) => ({
-					...s,
+				this._state = {
+					...this._state,
 					savePending: false,
 					saveSuccess: false,
 					saveError: 'Save failed. Please try again.'
-				}));
+				};
 				return false;
 			}
 
 			const data = await res.json().catch(() => null);
 
-			state.update((s) => ({
-				...s,
+			this._state = {
+				...this._state,
 				savePending: false,
 				saveSuccess: true,
 				saveError: null
-			}));
+			};
 
 			if (data && typeof data === 'object' && 'games' in data) {
 				return true;
@@ -132,48 +168,22 @@ function createEditorStore() {
 
 			return true;
 		} catch {
-			state.update((s) => ({
-				...s,
+			this._state = {
+				...this._state,
 				savePending: false,
 				saveSuccess: false,
 				saveError: 'Save failed. Please try again.'
-			}));
+			};
 			return false;
 		}
 	}
 
-	return {
-		subscribe: state.subscribe,
-
-		get editorMode() {
-			return get(state).editorMode;
-		},
-		get loginPending() {
-			return get(state).loginPending;
-		},
-		get loginError() {
-			return get(state).loginError;
-		},
-		get savePending() {
-			return get(state).savePending;
-		},
-		get saveSuccess() {
-			return get(state).saveSuccess;
-		},
-		get saveError() {
-			return get(state).saveError;
-		},
-		isEditor,
-		hasSaveError,
-		hasLoginError,
-		login,
-		logout,
-		setEditorModeFromSessionCheck,
-		captureSnapshot,
-		restoreSnapshot,
-		saveGames
-	};
+	// For backwards compatibility
+	subscribe(fn: (value: EditorState) => void): () => void {
+		fn(this._state);
+		return () => {};
+	}
 }
 
-export const editorStore = createEditorStore();
-export type EditorStore = ReturnType<typeof createEditorStore>;
+export const editorStore = new EditorStore();
+export type { EditorStore };

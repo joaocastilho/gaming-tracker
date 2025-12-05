@@ -1,18 +1,8 @@
 <script>
 	import { appStore } from '$lib/stores/app.svelte';
 
-	let theme = $state(
-		typeof document !== 'undefined' && document.documentElement.classList.contains('light')
-			? 'light'
-			: 'dark'
-	);
-
-	$effect(() => {
-		const unsubscribe = appStore.theme.subscribe((value) => {
-			theme = value;
-		});
-		return unsubscribe;
-	});
+	// Directly read theme from the reactive store property
+	let theme = $derived(appStore.theme);
 
 	function toggleTheme() {
 		appStore.toggleTheme();
