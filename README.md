@@ -19,16 +19,16 @@ A fast personal library for tracking and rating my video game collection. Design
 
 Built with modern web technologies for performance and developer experience:
 
-| Category       | Technology                                                                                                                       | Version    |
-| :------------- | :------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| **Framework**  | [![SvelteKit](https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white)](https://kit.svelte.dev/)               | `v2.48.5`  |
-| **UI Library** | [![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)                         | `v5.43.12` |
-| **Language**   | [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) | `v5.9.3`   |
-| **Styling**    | [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)  | `v4.1.17`  |
-| **Icons**      | [![Lucide](https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white)](https://lucide.dev/)                         | `v0.552.0` |
-| **Runtime**    | [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)                                      | `v1.3.2`   |
-| **Build Tool** | [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vite.dev/)                                 | `v7.2.4`   |
-| **Testing**    | [![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)                         | `v3.2.4`   |
+| Category       | Technology                                                                                                                                                                  | Version    |
+| :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
+| **Framework**  | <a href="https://kit.svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white" alt="SvelteKit" /></a>               | `v2.48.5`  |
+| **UI Library** | <a href="https://svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white" alt="Svelte" /></a>                         | `v5.43.12` |
+| **Language**   | <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript" /></a> | `v5.9.3`   |
+| **Styling**    | <a href="https://tailwindcss.com/" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>  | `v4.1.17`  |
+| **Icons**      | <a href="https://lucide.dev/" target="_blank"><img src="https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white" alt="Lucide" /></a>                         | `v0.552.0` |
+| **Runtime**    | <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" /></a>                                      | `v1.3.2`   |
+| **Build Tool** | <a href="https://vite.dev/" target="_blank"><img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /></a>                                 | `v7.2.4`   |
+| **Testing**    | <a href="https://vitest.dev/" target="_blank"><img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /></a>                         | `v3.2.4`   |
 
 ## 📂 Project Structure
 
@@ -44,7 +44,7 @@ A quick look at how the project is organized:
 
 ## ⚡ Performance
 
-| Platform    | Report                                                                                                                                                                                                           |
-| :---------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Desktop** | [![PageSpeed Insights](https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=desktop) |
-| **Mobile**  | [![PageSpeed Insights](https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=mobile)  |
+| Platform    | Report                                                                                                                                                                                                                                                      |
+| :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Desktop** | <a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=desktop" target="_blank"><img src="https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="PageSpeed Insights" /></a> |
+| **Mobile**  | <a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=mobile" target="_blank"><img src="https://img.shields.io/badge/Analyze-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="PageSpeed Insights" /></a>  |
