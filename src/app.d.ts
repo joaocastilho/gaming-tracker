@@ -1,3 +1,7 @@
 declare global {
-	namespace App {}
+	namespace App {
+		interface PageState {
+			showMobileSearch?: boolean;
+		}
+	}
 }

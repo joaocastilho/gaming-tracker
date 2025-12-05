@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { filtersStore } from '$lib/stores/filters.svelte';
+	import { page } from '$app/state';
 	import { X } from 'lucide-svelte';
 
 	let inputElement = $state<HTMLInputElement | undefined>(undefined);
@@ -22,7 +23,7 @@
 		}
 
 		debounceTimeout = setTimeout(() => {
-			filtersStore.writeSearchToURL();
+			filtersStore.writeSearchToURL(page.state);
 			filtersStore.setSearchTerm(newValue);
 		}, 300);
 	}

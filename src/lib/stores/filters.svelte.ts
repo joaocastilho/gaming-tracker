@@ -228,7 +228,7 @@ class FiltersStore {
 		}
 	}
 
-	writeSearchToURL = debounce(async () => {
+	writeSearchToURL = debounce(async (pageState: App.PageState) => {
 		if (typeof window === 'undefined') return;
 		try {
 			const state = this._state;
@@ -238,7 +238,7 @@ class FiltersStore {
 			} else {
 				url.searchParams.delete('s');
 			}
-			await replaceState(url.toString(), { noscroll: true, keepFocus: true });
+			await replaceState(url.toString(), pageState);
 		} catch {
 			// Ignore router initialization errors
 		}

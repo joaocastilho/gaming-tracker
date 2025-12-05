@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { pushState } from '$app/navigation';
 	import '../app.css';
 	import Header from '$lib/components/Header.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
@@ -193,7 +194,7 @@
 	let selectedTiers = $derived($filtersStore?.tiers ?? []);
 	let selectedCoOp = $derived($filtersStore?.coOp ?? []);
 
-	let isSearchOpen = $state(false);
+	let isSearchOpen = $derived(!!(page.state as any).showMobileSearch);
 	let isFiltersOpen = $state(false);
 	let searchInput = $state<HTMLInputElement | null>(null);
 
@@ -212,29 +213,70 @@
 	}
 
 	function onSearchToggle() {
-		isSearchOpen = !isSearchOpen;
 		if (isSearchOpen) {
-			isFiltersOpen = false; // Close filters if opening search
+			history.back();
+		} else {
+			// Open search: push state and reset filters
+			pushState(page.url, { showMobileSearch: true });
+			isFiltersOpen = false;
+			filtersStore.resetAllFilters();
 		}
 	}
 
 	function onFiltersToggle() {
 		isFiltersOpen = !isFiltersOpen;
 		if (isFiltersOpen) {
-			isSearchOpen = false; // Close search if opening filters
+			// Close search if opening filters
+			if (isSearchOpen) history.back();
 		}
 	}
 
 	function onCloseSearchAndFilters() {
-		isSearchOpen = false;
+		if (isSearchOpen) history.back();
 		isFiltersOpen = false;
 	}
+
+	// Clear search term when search closes (e.g. via back button)
+	let wasSearchOpen = false;
+	$effect(() => {
+		if (isSearchOpen) {
+			wasSearchOpen = true;
+		} else if (wasSearchOpen) {
+			wasSearchOpen = false;
+			filtersStore.setSearchTerm('');
+		}
+	});
 
 	function openModalWithFilterContext(game: Game, contextGames?: Game[]) {
 		modalStore.openViewModal(game, contextGames ?? $filteredGames);
 	}
 
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
+
+	// Handle mobile search input with debounce
+	let mobileSearchDebounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+	function handleMobileSearchInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const newValue = target.value;
+
+		if (mobileSearchDebounceTimeout) {
+			clearTimeout(mobileSearchDebounceTimeout);
+		}
+
+		mobileSearchDebounceTimeout = setTimeout(() => {
+			filtersStore.writeSearchToURL(page.state);
+			filtersStore.setSearchTerm(newValue);
+		}, 300);
+	}
+
+	function clearMobileSearch() {
+		filtersStore.setSearchTerm('');
+		if (searchInput) {
+			searchInput.value = '';
+			searchInput.focus();
+		}
+	}
 </script>
 
 <svelte:head>
@@ -360,32 +402,42 @@
 
 		<!-- Mobile Search Input -->
 		{#if isSearchOpen}
-			<div class="mobile-search-overlay fixed inset-x-0 top-0 z-40 md:hidden" role="search">
-				<div class="bg-background border-border border-b p-3 shadow-lg">
-					<div class="relative flex items-center gap-2">
-						<span class="text-muted-foreground text-lg">🔍</span>
+			<div class="mobile-search-container md:hidden" role="search">
+				<div class="mobile-search-bar-container">
+					<div class="mobile-search-bar">
+						<span class="mobile-search-icon" aria-hidden="true">🔍</span>
 						<input
 							bind:this={searchInput}
 							type="text"
 							placeholder="Search games..."
-							class="bg-surface border-border text-foreground placeholder:text-muted-foreground focus:ring-primary w-full rounded-md border py-3 pr-10 pl-3 text-base focus:ring-2 focus:outline-none"
-							bind:value={$filtersStore.searchTerm}
+							class="mobile-search-input"
+							oninput={handleMobileSearchInput}
 							onkeydown={(e) => {
 								if (e.key === 'Escape') {
 									onSearchToggle();
 								}
 							}}
+							aria-label="Search games"
+							autocomplete="off"
+							spellcheck="false"
 						/>
+						{#if $filtersStore?.searchTerm}
+							<button
+								type="button"
+								class="mobile-clear-button"
+								onclick={clearMobileSearch}
+								aria-label="Clear search"
+							>
+								✕
+							</button>
+						{/if}
 						<button
 							type="button"
-							class="bg-surface hover:bg-accent text-muted-foreground hover:text-foreground flex h-10 w-10 items-center justify-center rounded-md transition-colors"
-							onclick={() => {
-								$filtersStore.searchTerm = '';
-								onSearchToggle();
-							}}
+							class="mobile-close-button"
+							onclick={onSearchToggle}
 							aria-label="Close search"
 						>
-							✕
+							Close
 						</button>
 					</div>
 				</div>
@@ -498,5 +550,144 @@
 	.no-results {
 		font-size: 1.5rem;
 		color: var(--color-text-primary);
+	}
+
+	/* Mobile Search Bar - matches desktop SearchBar styling */
+	.mobile-search-container {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 40;
+		background-color: var(--color-background);
+		border-bottom: 1px solid var(--color-border);
+		padding: 12px 16px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	}
+
+	.mobile-search-bar-container {
+		width: 100%;
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+
+	.mobile-search-bar {
+		position: relative;
+		display: flex;
+		align-items: center;
+		width: 100%;
+		border-radius: 8px;
+		padding: 12px 16px;
+		background-color: #1a1f27;
+		border: 1px solid #2a2f3a;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+		gap: 8px;
+	}
+
+	:global(.light) .mobile-search-bar {
+		background-color: #ffffff;
+		border-color: #e5e7eb;
+	}
+
+	.mobile-search-bar:focus-within {
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	:global(.light) .mobile-search-bar:focus-within {
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+	}
+
+	.mobile-search-icon {
+		font-size: 1.1rem;
+		flex-shrink: 0;
+	}
+
+	.mobile-search-input {
+		flex: 1;
+		background: transparent;
+		border: none;
+		outline: none;
+		color: #ffffff;
+		font-size: 1rem;
+		line-height: 1.5;
+		min-width: 0;
+	}
+
+	:global(.light) .mobile-search-input {
+		color: #1a1a1a;
+	}
+
+	.mobile-search-input::placeholder {
+		color: #8b92a8;
+	}
+
+	:global(.light) .mobile-search-input::placeholder {
+		color: #6b7280;
+	}
+
+	.mobile-clear-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		border: none;
+		background: transparent;
+		color: #8b92a8;
+		cursor: pointer;
+		border-radius: 4px;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
+		flex-shrink: 0;
+		font-size: 0.9rem;
+	}
+
+	:global(.light) .mobile-clear-button {
+		color: #6b7280;
+	}
+
+	.mobile-clear-button:hover {
+		background-color: rgba(139, 146, 168, 0.1);
+		color: #ffffff;
+	}
+
+	:global(.light) .mobile-clear-button:hover {
+		background-color: rgba(107, 114, 128, 0.1);
+		color: #1a1a1a;
+	}
+
+	.mobile-close-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 6px 12px;
+		border: none;
+		background: rgba(59, 130, 246, 0.1);
+		color: #60a5fa;
+		cursor: pointer;
+		border-radius: 6px;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
+		flex-shrink: 0;
+		font-size: 0.85rem;
+		font-weight: 500;
+	}
+
+	:global(.light) .mobile-close-button {
+		background: rgba(59, 130, 246, 0.15);
+		color: #3b82f6;
+	}
+
+	.mobile-close-button:hover {
+		background-color: rgba(59, 130, 246, 0.2);
+	}
+
+	:global(.light) .mobile-close-button:hover {
+		background-color: rgba(59, 130, 246, 0.25);
 	}
 </style>
