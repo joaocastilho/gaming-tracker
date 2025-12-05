@@ -85,7 +85,17 @@ class GamesStore {
 
 	// For backwards compatibility with $gamesStore subscription
 	subscribe(fn: (value: Game[]) => void): () => void {
+		// Immediately call with current value for SSR compatibility
 		fn(this.games);
+		// In browser, setup reactive subscription
+		if (typeof window !== 'undefined') {
+			const cleanup = $effect.root(() => {
+				$effect(() => {
+					fn(this.games);
+				});
+			});
+			return cleanup;
+		}
 		return () => {};
 	}
 }

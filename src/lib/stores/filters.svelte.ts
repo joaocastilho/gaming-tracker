@@ -62,7 +62,17 @@ class FiltersStore {
 
 	// For backwards compatibility with $filtersStore subscription
 	subscribe(fn: (value: FilterState | null) => void): () => void {
+		// Immediately call with current value for SSR compatibility
 		fn(this._state);
+		// In browser, setup reactive subscription
+		if (typeof window !== 'undefined') {
+			const cleanup = $effect.root(() => {
+				$effect(() => {
+					fn(this._state);
+				});
+			});
+			return cleanup;
+		}
 		return () => {};
 	}
 

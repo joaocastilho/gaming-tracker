@@ -7,9 +7,9 @@
 		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	}
 
-	let { filteredGames, onOpenModal }: Props = $props();
+	let { filteredGames = [], onOpenModal }: Props = $props();
 
-	let tierList = $derived(buildTierList(filteredGames));
+	let tierList = $derived(buildTierList(filteredGames ?? []));
 
 	function buildTierList(games: Game[]): Record<string, Game[]> {
 		const gamesByTier: Record<string, Game[]> = {

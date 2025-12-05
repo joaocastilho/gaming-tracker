@@ -324,9 +324,17 @@ export const filteredGames = {
 		return filteredGamesStore.games;
 	},
 	subscribe(fn: (value: Game[]) => void): () => void {
-		// Simple subscription for backwards compatibility
-		// In a full Svelte 5 app, this wouldn't be needed
+		// Immediately call with current value for SSR compatibility
 		fn(filteredGamesStore.games);
+		// In browser, setup reactive subscription
+		if (typeof window !== 'undefined') {
+			const cleanup = $effect.root(() => {
+				$effect(() => {
+					fn(filteredGamesStore.games);
+				});
+			});
+			return cleanup;
+		}
 		return () => {};
 	}
 };

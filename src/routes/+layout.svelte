@@ -175,7 +175,7 @@
 		// This ensures that switching tabs applies the tab's default sort
 		// unless the user specifically navigated to a sorted URL
 		const hasSortInUrl = page.url.searchParams.has('sortBy');
-		if (!hasSortInUrl) {
+		if (!hasSortInUrl && filtersStore.state?.sortOption !== null) {
 			filtersStore.setSort(null);
 		}
 	});
