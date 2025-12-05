@@ -36,7 +36,6 @@ function createCompletedGamesCache() {
 	 * This helps us detect when games have been added/modified/deleted
 	 */
 	function generateGamesVersion(games: Game[]): string {
-		// Create a simple hash based on game IDs, statuses, and finished dates
 		const versionData = games
 			.filter((game) => game.status === 'Completed')
 			.map((game) => `${game.id}-${game.status}-${game.finishedDate || 'null'}`)

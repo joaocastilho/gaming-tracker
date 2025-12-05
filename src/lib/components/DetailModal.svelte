@@ -2,9 +2,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import { modalStore } from '../stores/modal.js';
+	import { modalStore } from '$lib/stores/modal.svelte';
 	import { createGameSlug } from '../utils/slugUtils.js';
-	import { appStore } from '../stores/app.js';
+	import { appStore } from '$lib/stores/app.svelte';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS } from '../utils/colorConstants';
 	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
@@ -23,7 +23,7 @@
 
 	let currentActiveTab = $derived(appStore.activeTab);
 
-	import { gamesStore } from '../stores/games.js';
+	import { gamesStore } from '$lib/stores/games.svelte';
 	let allGames = $derived($gamesStore);
 
 	let displayedGames = $derived.by(() => {

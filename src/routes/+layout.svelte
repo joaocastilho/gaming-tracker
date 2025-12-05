@@ -7,10 +7,10 @@
 	import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
 	import BottomNavigation from '$lib/components/BottomNavigation.svelte';
 	import { extractFilterOptions } from '$lib/utils/filterOptions';
-	import { filtersStore } from '$lib/stores/filters.js';
-	import { gamesStore } from '$lib/stores/games.js';
-	import { appStore } from '$lib/stores/app.js';
-	import { modalStore } from '$lib/stores/modal.js';
+	import { filtersStore } from '$lib/stores/filters.svelte';
+	import { gamesStore } from '$lib/stores/games.svelte';
+	import { appStore } from '$lib/stores/app.svelte';
+	import { modalStore } from '$lib/stores/modal.svelte';
 	import { browser, dev } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
@@ -18,7 +18,7 @@
 	import { RotateCcw } from 'lucide-svelte';
 	import GamesView from '$lib/views/GamesView.svelte';
 	import TierListView from '$lib/views/TierListView.svelte';
-	import { filteredGames } from '$lib/stores/filteredGamesStore.js';
+	import { filteredGames } from '$lib/stores/filteredGamesStore.svelte';
 
 	let {
 		children,

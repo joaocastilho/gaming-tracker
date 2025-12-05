@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { filtersStore } from '$lib/stores/filters.js';
-	import type { SortKey, SortOption } from '$lib/stores/filters';
+	import { filtersStore } from '$lib/stores/filters.svelte';
+	import type { SortKey, SortOption } from '$lib/stores/filters.svelte';
 	import {
 		Presentation,
 		NotebookPen,
@@ -12,7 +12,7 @@
 		AArrowDown
 	} from 'lucide-svelte';
 	import { derived } from 'svelte/store';
-	import { appStore } from '$lib/stores/app.js';
+	import { appStore } from '$lib/stores/app.svelte';
 
 	const sortOptionStore = derived(
 		filtersStore,

@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'bun:test';
 import { get } from 'svelte/store';
-import { gamesStore } from '$lib/stores/games';
-import { appStore } from '$lib/stores/app';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { appStore } from '$lib/stores/app.svelte';
 import type { Game } from '$lib/types/game';
 
 describe('Game Management Flows', () => {

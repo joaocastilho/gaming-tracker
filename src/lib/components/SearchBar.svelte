@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { filtersStore } from '$lib/stores/filters';
+	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { RotateCcw } from 'lucide-svelte';
 
 	let inputElement: HTMLInputElement | undefined;

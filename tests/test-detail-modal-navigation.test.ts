@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test';
-import { modalStore } from '$lib/stores/modal';
-import { gamesStore } from '$lib/stores/games';
+import { modalStore } from '$lib/stores/modal.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
 import { replaceState } from '$app/navigation';
 
 // Mock data

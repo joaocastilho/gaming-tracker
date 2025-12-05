@@ -2,8 +2,8 @@
 	import { onMount } from 'svelte';
 	import type { Game } from '$lib/types/game';
 	import { GameSchema, computeScore } from '$lib/validation/game';
-	import { gamesStore } from '$lib/stores/games';
-	import { editorStore } from '$lib/stores/editor';
+	import { gamesStore } from '$lib/stores/games.svelte';
+	import { editorStore } from '$lib/stores/editor.svelte';
 
 	type Mode = 'create' | 'edit';
 

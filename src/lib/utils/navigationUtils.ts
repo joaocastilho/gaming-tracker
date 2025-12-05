@@ -1,5 +1,5 @@
-import { appStore } from '$lib/stores/app';
-import { filtersStore } from '$lib/stores/filters';
+import { appStore } from '$lib/stores/app.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
 
 import { goto } from '$app/navigation';
 

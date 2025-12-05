@@ -1,7 +1,7 @@
 import { writable, get, derived, type Readable } from 'svelte/store';
 import type { Game } from '$lib/types/game';
 import { transformGameData } from '$lib/utils/dataTransformer';
-import { completedGamesCache } from './completedGamesCache';
+import { completedGamesCache } from './completedGamesCache.svelte';
 import { createGameSlug } from '$lib/utils/slugUtils';
 
 function createGamesStore() {
@@ -12,6 +12,7 @@ function createGamesStore() {
 	function createDerivedOptions(games: Readable<Game[]>, key: keyof Game): Readable<string[]> {
 		return derived(games, ($games) => {
 			if (!$games || $games.length === 0) return [];
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity -- Set is used for temporary collection, converted to array
 			const optionsSet = new Set<string>();
 			for (const game of $games) {
 				const value = game[key];

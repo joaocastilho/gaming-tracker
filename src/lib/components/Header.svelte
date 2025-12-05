@@ -4,9 +4,9 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Logo from '$lib/components/Logo.svelte';
 
-	import { appStore } from '$lib/stores/app';
-	import { filtersStore } from '$lib/stores/filters';
-	import { filteredCountsStore } from '$lib/stores/filteredCounts';
+	import { appStore } from '$lib/stores/app.svelte';
+	import { filtersStore } from '$lib/stores/filters.svelte';
+	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 

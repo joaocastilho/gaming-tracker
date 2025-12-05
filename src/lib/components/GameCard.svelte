@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { modalStore } from '../stores/modal.js';
-	import { filtersStore } from '../stores/filters.js';
+	import { modalStore } from '$lib/stores/modal.svelte';
+	import { filtersStore } from '$lib/stores/filters.svelte';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS } from '../utils/colorConstants.js';
 	import { getTierClass, getTierDisplayName } from '../utils/tierUtils.js';

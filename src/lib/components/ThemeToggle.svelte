@@ -1,5 +1,5 @@
 <script>
-	import { appStore } from '../stores/app.js';
+	import { appStore } from '$lib/stores/app.svelte';
 
 	let theme = $state(
 		typeof document !== 'undefined' && document.documentElement.classList.contains('light')

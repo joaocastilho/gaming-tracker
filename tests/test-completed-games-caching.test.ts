@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test';
-import { completedGamesCache } from '$lib/stores/completedGamesCache';
+import { completedGamesCache } from '$lib/stores/completedGamesCache.svelte';
 import type { Game } from '$lib/types/game';
 
 // Mock games data

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
 import { get } from 'svelte/store';
-import { gamesStore } from '$lib/stores/games';
-import { filtersStore } from '$lib/stores/filters';
-import { appStore } from '$lib/stores/app';
-import { filteredGames } from '$lib/stores/filteredGamesStore';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { appStore } from '$lib/stores/app.svelte';
+import { filteredGames } from '$lib/stores/filteredGamesStore.svelte';
 
 // Mock data
 const mockGames = [

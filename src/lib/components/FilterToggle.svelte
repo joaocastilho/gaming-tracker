@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { filtersStore } from '$lib/stores/filters.js';
+	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { Users } from 'lucide-svelte';
 
 	interface Props {

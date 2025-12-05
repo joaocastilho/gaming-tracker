@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { navigateTo } from '$lib/utils/navigationUtils';
-	import { filteredCountsStore } from '$lib/stores/filteredCounts';
-	import { appStore } from '$lib/stores/app.js';
+	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
+	import { appStore } from '$lib/stores/app.svelte';
 	import { Gamepad, CheckCircle, Calendar, List, Search, Filter } from 'lucide-svelte';
 
 	interface Props {

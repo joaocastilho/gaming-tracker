@@ -2,7 +2,7 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
-	import { editorStore } from '$lib/stores/editor';
+	import { editorStore } from '$lib/stores/editor.svelte';
 	import VirtualList from '$lib/components/VirtualList.svelte';
 	import { onMount } from 'svelte';
 

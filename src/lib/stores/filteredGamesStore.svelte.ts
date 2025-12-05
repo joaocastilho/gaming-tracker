@@ -1,9 +1,9 @@
 import { derived, type Readable } from 'svelte/store';
 import type { Game } from '$lib/types/game';
-import { gamesStore } from './games';
-import { filtersStore } from './filters';
-import { appStore } from './app';
-import { filteredCountsStore } from './filteredCounts';
+import { gamesStore } from './games.svelte';
+import { filtersStore } from './filters.svelte';
+import { appStore } from './app.svelte';
+import { filteredCountsStore } from './filteredCounts.svelte';
 import { getTierDisplayName } from '$lib/utils/tierUtils';
 import { parseDate } from '$lib/utils/dateUtils';
 

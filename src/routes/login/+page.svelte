@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import LoginModal from '$lib/components/LoginModal.svelte';
-	import { editorStore } from '$lib/stores/editor';
+	import { editorStore } from '$lib/stores/editor.svelte';
 
 	let loginModalRef = $state<InstanceType<typeof LoginModal> | null>(null);
 	let editorMode = $derived($editorStore.editorMode);

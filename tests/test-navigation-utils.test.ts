@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, mock } from 'bun:test';
 import { navigateTo } from '$lib/utils/navigationUtils';
-import { filtersStore } from '$lib/stores/filters';
-import { appStore } from '$lib/stores/app';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { appStore } from '$lib/stores/app.svelte';
 
 // Mock goto
 const mockGoto = mock(() => Promise.resolve());

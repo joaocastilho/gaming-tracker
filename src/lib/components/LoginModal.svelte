@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { editorStore } from '$lib/stores/editor';
+	import { editorStore } from '$lib/stores/editor.svelte';
 	import { onMount } from 'svelte';
 
 	let open = false;

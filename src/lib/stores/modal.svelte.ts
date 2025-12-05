@@ -1,7 +1,7 @@
 import { writable, get } from 'svelte/store';
 import { debounce } from '../utils/debounce.js';
 import type { Game } from '../types/game.js';
-import { gamesStore } from './games.js';
+import { gamesStore } from './games.svelte';
 import { replaceState, pushState } from '$app/navigation';
 
 import { createGameSlug } from '$lib/utils/slugUtils';
@@ -22,7 +22,7 @@ export interface ModalState {
 		genres: string[];
 		statuses: string[];
 		tiers: string[];
-		sortOption: import('../stores/filters').SortOption | null;
+		sortOption: import('../stores/filters.svelte').SortOption | null;
 		activeTab: 'all' | 'completed' | 'planned' | 'tierlist';
 	};
 }

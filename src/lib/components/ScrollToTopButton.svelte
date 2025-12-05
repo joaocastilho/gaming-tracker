@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { modalStore } from '../stores/modal.js';
+	import { modalStore } from '$lib/stores/modal.svelte';
 
 	let isVisible = $state(false);
 	let buttonElement = $state<HTMLButtonElement | undefined>();
