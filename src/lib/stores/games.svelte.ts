@@ -8,15 +8,27 @@ import { createGameSlug } from '$lib/utils/slugUtils';
 import { completedGamesCache } from './completedGamesCache.svelte';
 
 class GamesStore {
-	games = $state<Game[]>([]);
+	private _games = $state<Game[]>([]);
+	private subscribers = new Set<(value: Game[]) => void>();
 	loading = $state<boolean>(true);
 	error = $state<string | null>(null);
 
+	get games(): Game[] {
+		return this._games;
+	}
+
+	private set games(value: Game[]) {
+		this._games = value;
+		// Notify all subscribers
+		for (const fn of this.subscribers) {
+			fn(value);
+		}
+	}
+
 	get allPlatforms(): string[] {
-		if (!this.games || this.games.length === 0) return [];
-		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- Set is used for temporary collection, converted to array
+		if (!this._games || this._games.length === 0) return [];
 		const optionsSet = new Set<string>();
-		for (const game of this.games) {
+		for (const game of this._games) {
 			if (typeof game.platform === 'string' && game.platform) {
 				optionsSet.add(game.platform);
 			}
@@ -25,10 +37,9 @@ class GamesStore {
 	}
 
 	get allGenres(): string[] {
-		if (!this.games || this.games.length === 0) return [];
-		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- Set is used for temporary collection, converted to array
+		if (!this._games || this._games.length === 0) return [];
 		const optionsSet = new Set<string>();
-		for (const game of this.games) {
+		for (const game of this._games) {
 			if (typeof game.genre === 'string' && game.genre) {
 				optionsSet.add(game.genre);
 			}
@@ -66,39 +77,36 @@ class GamesStore {
 	}
 
 	getGameById(id: string): Game | undefined {
-		return this.games.find((game) => game.id === id);
+		return this._games.find((game) => game.id === id);
 	}
 
 	getGameBySlug(slug: string): Game | undefined {
-		return this.games.find((game) => createGameSlug(game.title) === slug);
+		return this._games.find((game) => createGameSlug(game.title) === slug);
 	}
 
 	addGame(newGame: Game): void {
-		this.games = [...this.games, newGame];
-		completedGamesCache.updateCache(this.games);
+		this.games = [...this._games, newGame];
+		completedGamesCache.updateCache(this._games);
 	}
 
 	updateGame(id: string, updatedGame: Partial<Game>): void {
-		this.games = this.games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
-		completedGamesCache.updateCache(this.games);
+		this.games = this._games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
+		completedGamesCache.updateCache(this._games);
 	}
 
 	// For backwards compatibility with $gamesStore subscription
 	subscribe(fn: (value: Game[]) => void): () => void {
-		// Immediately call with current value for SSR compatibility
-		fn(this.games);
-		// In browser, setup reactive subscription
-		if (typeof window !== 'undefined') {
-			const cleanup = $effect.root(() => {
-				$effect(() => {
-					fn(this.games);
-				});
-			});
-			return cleanup;
-		}
-		return () => {};
+		// Immediately call with current value
+		fn(this._games);
+		// Add to subscribers
+		this.subscribers.add(fn);
+		// Return unsubscribe function
+		return () => {
+			this.subscribers.delete(fn);
+		};
 	}
 }
 
 export const gamesStore = new GamesStore();
 export type { GamesStore };
+

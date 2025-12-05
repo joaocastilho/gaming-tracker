@@ -119,8 +119,13 @@
 		const tab = appStore.activeTab;
 
 		if (tab === 'tierlist') {
-			filtersStore.resetAllFilters();
-			filtersStore.setSearchTerm('');
+			// Only reset if filters are actually applied to avoid infinite loop
+			if (filtersStore.isAnyFilterApplied()) {
+				filtersStore.resetAllFilters();
+			}
+			if (filtersStore.state?.searchTerm) {
+				filtersStore.setSearchTerm('');
+			}
 		}
 	});
 

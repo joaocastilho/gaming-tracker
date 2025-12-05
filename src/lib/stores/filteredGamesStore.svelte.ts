@@ -319,22 +319,44 @@ class FilteredGamesStore {
 export const filteredGamesStore = new FilteredGamesStore();
 
 // For backwards compatibility with components using $filteredGames
-export const filteredGames = {
+class FilteredGamesSubscription {
+	private subscribers = new Set<(value: Game[]) => void>();
+
+	constructor() {
+		// Subscribe to underlying stores to trigger updates
+		gamesStore.subscribe(() => this.notify());
+		filtersStore.subscribe(() => this.notify());
+		// Also listen to appStore changes
+		if (typeof window !== 'undefined') {
+			// Poll appStore since it doesn't have subscribe
+			setInterval(() => this.notify(), 100);
+		}
+	}
+
+	private notify() {
+		const currentValue = filteredGamesStore.games;
+		// Always notify subscribers when underlying stores change
+		// The filteredGamesStore.games getter handles caching internally
+		for (const fn of this.subscribers) {
+			fn(currentValue);
+		}
+	}
+
 	get value() {
 		return filteredGamesStore.games;
-	},
-	subscribe(fn: (value: Game[]) => void): () => void {
-		// Immediately call with current value for SSR compatibility
-		fn(filteredGamesStore.games);
-		// In browser, setup reactive subscription
-		if (typeof window !== 'undefined') {
-			const cleanup = $effect.root(() => {
-				$effect(() => {
-					fn(filteredGamesStore.games);
-				});
-			});
-			return cleanup;
-		}
-		return () => {};
 	}
-};
+
+	subscribe(fn: (value: Game[]) => void): () => void {
+		// Immediately call with current value
+		fn(filteredGamesStore.games);
+		// Add to subscribers
+		this.subscribers.add(fn);
+		// Return unsubscribe function
+		return () => {
+			this.subscribers.delete(fn);
+		};
+	}
+}
+
+export const filteredGames = new FilteredGamesSubscription();
+

@@ -48,11 +48,12 @@ const initialFilters: FilterState = {
 
 class FiltersStore {
 	private _state = $state<FilterState | null>(null);
+	private subscribers = new Set<(value: FilterState | null) => void>();
 
 	constructor() {
 		// Initialize filters if in browser
 		if (browser) {
-			this._state = { ...initialFilters };
+			this.state = { ...initialFilters };
 		}
 	}
 
@@ -60,20 +61,24 @@ class FiltersStore {
 		return this._state;
 	}
 
+	private set state(value: FilterState | null) {
+		this._state = value;
+		// Notify all subscribers
+		for (const fn of this.subscribers) {
+			fn(value);
+		}
+	}
+
 	// For backwards compatibility with $filtersStore subscription
 	subscribe(fn: (value: FilterState | null) => void): () => void {
-		// Immediately call with current value for SSR compatibility
+		// Immediately call with current value
 		fn(this._state);
-		// In browser, setup reactive subscription
-		if (typeof window !== 'undefined') {
-			const cleanup = $effect.root(() => {
-				$effect(() => {
-					fn(this._state);
-				});
-			});
-			return cleanup;
-		}
-		return () => {};
+		// Add to subscribers
+		this.subscribers.add(fn);
+		// Return unsubscribe function
+		return () => {
+			this.subscribers.delete(fn);
+		};
 	}
 
 	// Derived getters for backwards compatibility
@@ -113,7 +118,10 @@ class FiltersStore {
 	}
 
 	resetFilters(): void {
-		this._state = { ...initialFilters };
+		// Guard: only reset if not already in initial state
+		if (!this._state) return;
+		if (!this.isAnyFilterApplied() && this._state.sortOption === null) return;
+		this.state = { ...initialFilters };
 	}
 
 	togglePlatform(platform: string): void {
@@ -121,7 +129,7 @@ class FiltersStore {
 		const platforms = this._state.platforms.includes(platform)
 			? this._state.platforms.filter((p) => p !== platform)
 			: [...this._state.platforms, platform];
-		this._state = { ...this._state, platforms };
+		this.state = { ...this._state, platforms };
 	}
 
 	toggleGenre(genre: string): void {
@@ -129,7 +137,7 @@ class FiltersStore {
 		const genres = this._state.genres.includes(genre)
 			? this._state.genres.filter((g) => g !== genre)
 			: [...this._state.genres, genre];
-		this._state = { ...this._state, genres };
+		this.state = { ...this._state, genres };
 	}
 
 	toggleStatus(status: string): void {
@@ -137,7 +145,7 @@ class FiltersStore {
 		const statuses = this._state.statuses.includes(status)
 			? this._state.statuses.filter((s) => s !== status)
 			: [...this._state.statuses, status];
-		this._state = { ...this._state, statuses };
+		this.state = { ...this._state, statuses };
 	}
 
 	toggleTier(tier: string): void {
@@ -145,7 +153,7 @@ class FiltersStore {
 		const tiers = this._state.tiers.includes(tier)
 			? this._state.tiers.filter((t) => t !== tier)
 			: [...this._state.tiers, tier];
-		this._state = { ...this._state, tiers };
+		this.state = { ...this._state, tiers };
 	}
 
 	toggleCoOp(coOpValue: string): void {
@@ -153,12 +161,12 @@ class FiltersStore {
 		const coOp = this._state.coOp.includes(coOpValue)
 			? this._state.coOp.filter((c) => c !== coOpValue)
 			: [...this._state.coOp, coOpValue];
-		this._state = { ...this._state, coOp };
+		this.state = { ...this._state, coOp };
 	}
 
 	removePlatform(platform: string): void {
 		if (!this._state) return;
-		this._state = {
+		this.state = {
 			...this._state,
 			platforms: this._state.platforms.filter((p) => p !== platform)
 		};
@@ -166,17 +174,17 @@ class FiltersStore {
 
 	removeGenre(genre: string): void {
 		if (!this._state) return;
-		this._state = { ...this._state, genres: this._state.genres.filter((g) => g !== genre) };
+		this.state = { ...this._state, genres: this._state.genres.filter((g) => g !== genre) };
 	}
 
 	removeTier(tier: string): void {
 		if (!this._state) return;
-		this._state = { ...this._state, tiers: this._state.tiers.filter((t) => t !== tier) };
+		this.state = { ...this._state, tiers: this._state.tiers.filter((t) => t !== tier) };
 	}
 
 	removeCoOp(coOpValue: string): void {
 		if (!this._state) return;
-		this._state = { ...this._state, coOp: this._state.coOp.filter((c) => c !== coOpValue) };
+		this.state = { ...this._state, coOp: this._state.coOp.filter((c) => c !== coOpValue) };
 	}
 
 	resetAllFilters(): void {
@@ -185,20 +193,28 @@ class FiltersStore {
 
 	setSearchTerm(term: string): void {
 		if (!this._state) return;
-		this._state = { ...this._state, searchTerm: term };
+		// Guard: only update if value changed to prevent effect loops
+		if (this._state.searchTerm === term) return;
+		this.state = { ...this._state, searchTerm: term };
 	}
 
 	setSort(sortOption: SortOption | null): void {
 		if (!this._state) return;
-		this._state = { ...this._state, sortOption };
+		// Guard: only update if value changed to prevent effect loops
+		const currentSort = this._state.sortOption;
+		if (currentSort === sortOption) return;
+		if (currentSort && sortOption &&
+			currentSort.key === sortOption.key &&
+			currentSort.direction === sortOption.direction) return;
+		this.state = { ...this._state, sortOption };
 	}
 
 	set(newState: FilterState | null): void {
-		this._state = newState;
+		this.state = newState;
 	}
 
 	update(fn: (state: FilterState | null) => FilterState | null): void {
-		this._state = fn(this._state);
+		this.state = fn(this._state);
 	}
 
 	readSearchFromURL(searchParams: URLSearchParams): void {
