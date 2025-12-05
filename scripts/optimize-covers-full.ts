@@ -290,21 +290,7 @@ async function main(): Promise<void> {
 		console.log(`400w details total: ${formatBytes(stats.totalDetail400Size)}`);
 	}
 
-	const manifest = {
-		generatedAt: new Date().toISOString(),
-		totalImages: stats.totalFiles,
-		optimizedImages: stats.successful,
-		totalSizeBefore: stats.totalOriginalSize,
-		totalCover200Size: stats.totalCover200Size,
-		totalCover300Size: stats.totalCover300Size,
-		totalDetail400Size: stats.totalDetail400Size,
-		totalTimeMs: stats.totalTime,
-		results
-	};
 
-	const manifestPath = join(COVERS_DIR, 'optimization-manifest.json');
-	await writeFile(manifestPath, JSON.stringify(manifest, null, 2));
-	console.log(`\n📋 Manifest saved: ${manifestPath}`);
 
 	// Update games.json with new cover paths:
 	// coverImage always points to the 300w card image: covers/{id}.webp
