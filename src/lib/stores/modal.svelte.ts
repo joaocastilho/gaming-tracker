@@ -7,7 +7,6 @@ import { pushState, replaceState } from '$app/navigation';
 import { createGameSlug } from '$lib/utils/slugUtils';
 import { getTierDisplayName } from '$lib/utils/tierUtils';
 import type { Game } from '../types/game.js';
-import { debounce } from '../utils/debounce.js';
 import type { SortOption } from './filters.svelte';
 import { gamesStore } from './games.svelte';
 

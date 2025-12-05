@@ -32,10 +32,14 @@ describe('Detail Modal Navigation', () => {
 	const originalWindow = global.window;
 	let mockUrl: URL;
 
-	beforeEach(() => {
+	beforeEach(async () => {
+		vi.useFakeTimers();
 		// Reset stores
 		gamesStore.initializeGames(mockGames);
 		modalStore.closeModal();
+
+		// Advance timers to clear the lock from closeModal -> writeToURL
+		await vi.advanceTimersByTimeAsync(100);
 
 		// Mock URL and window
 		mockUrl = new URL('http://localhost/');
@@ -51,6 +55,7 @@ describe('Detail Modal Navigation', () => {
 	});
 
 	afterEach(() => {
+		vi.useRealTimers();
 		global.window = originalWindow;
 	});
 
@@ -95,13 +100,13 @@ describe('Detail Modal Navigation', () => {
 		expect(state.activeGame).toEqual(mockGame);
 	});
 
-	it('updates URL when opening modal (debounced)', async () => {
+	it('updates URL when opening modal', async () => {
 		modalStore.openViewModal(mockGame, mockGames);
 
-		// Trigger the debounced write
+		// Trigger write
 		await modalStore.writeToURL();
 
-		// Wait for debounce (100ms)
-		await new Promise((resolve) => setTimeout(resolve, 150));
+		// Advance time for cleanup
+		await vi.advanceTimersByTimeAsync(150);
 	});
 });
