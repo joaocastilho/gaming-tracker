@@ -16,16 +16,15 @@ class AppStore {
 	activeTab = $state<TabValue>('all');
 
 	constructor() {
-		// Initialize from localStorage in an effect to avoid hydration mismatch
+		// Initialize from localStorage immediately to avoid hydration mismatch
 		if (typeof window !== 'undefined') {
+			const savedTheme = localStorage.getItem('gaming-tracker-theme') as ThemeValue | null;
+			if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
+				this.theme = savedTheme;
+			}
+
 			$effect.root(() => {
 				$effect(() => {
-					// On mount/first run, sync from localStorage if available and not set
-					const savedTheme = localStorage.getItem('gaming-tracker-theme') as ThemeValue | null;
-					if (savedTheme && savedTheme !== this.theme) {
-						this.theme = savedTheme;
-					}
-
 					// Sync state to localStorage and DOM
 					localStorage.setItem('gaming-tracker-theme', this.theme);
 					document.documentElement.classList.remove('light', 'dark');
