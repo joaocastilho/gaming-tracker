@@ -144,9 +144,7 @@ describe('Theme Switching', () => {
 		localStorage = new MockLocalStorage();
 		dom = new MockDOM();
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).localStorage = localStorage;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).document = {
 			documentElement: dom.createElement('html'),
 			body: dom.createElement('body'),

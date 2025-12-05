@@ -53,38 +53,11 @@ const initialState: ModalState = {
 
 class ModalStore {
 	private _state = $state<ModalState>({ ...initialState });
+	private subscribers = new Set<(value: ModalState) => void>();
+	private isProgrammaticUpdate = false;
 
-	private debouncedWriteToURL = debounce(async () => {
-		if (typeof window === 'undefined') return;
+	// Removed debouncedWriteToURL to prevent race conditions with readFromURL
 
-		try {
-			const state = this._state;
-			// eslint-disable-next-line svelte/prefer-svelte-reactivity -- URL used for one-time computation, not reactive state
-			const url = new URL(window.location.href);
-			const currentSlug = url.searchParams.get('game');
-
-			if (state.isOpen && state.activeGame) {
-				const slug = createGameSlug(state.activeGame.title);
-
-				if (currentSlug) {
-					url.searchParams.set('game', slug);
-					await replaceState(url.toString(), { noscroll: true });
-				} else {
-					url.searchParams.set('game', slug);
-					await pushState(url.toString(), { noscroll: true });
-				}
-			} else {
-				if (currentSlug) {
-					url.searchParams.delete('game');
-					await replaceState(url.toString(), { noscroll: true });
-				}
-			}
-		} catch {
-			// Ignore router initialization errors
-		}
-	}, 100);
-
-	// State getters
 	get isOpen(): boolean {
 		return this._state.isOpen;
 	}
@@ -121,10 +94,12 @@ class ModalStore {
 		return this._state.filterContext;
 	}
 
-	// For backwards compatibility with $modalStore subscription
 	subscribe(fn: (value: ModalState) => void): () => void {
 		fn(this._state);
-		return () => {};
+		this.subscribers.add(fn);
+		return () => {
+			this.subscribers.delete(fn);
+		};
 	}
 
 	getState(): ModalState {
@@ -157,6 +132,8 @@ class ModalStore {
 				? { ...this._state.filterContext, ...filterContext }
 				: this._state.filterContext
 		};
+		this.notifySubscribers();
+		this.writeToURL();
 	}
 
 	openEditModal(game: Game, filterContext?: Partial<ModalState['filterContext']>): void {
@@ -174,6 +151,7 @@ class ModalStore {
 				? { ...this._state.filterContext, ...filterContext }
 				: this._state.filterContext
 		};
+		this.notifySubscribers();
 	}
 
 	openAddModal(filterContext?: Partial<ModalState['filterContext']>): void {
@@ -194,6 +172,7 @@ class ModalStore {
 				? { ...this._state.filterContext, ...filterContext }
 				: this._state.filterContext
 		};
+		this.notifySubscribers();
 	}
 
 	closeModal(): void {
@@ -209,7 +188,8 @@ class ModalStore {
 			pendingGameFromURL: null
 		};
 
-		this.debouncedWriteToURL();
+		this.notifySubscribers();
+		this.writeToURL();
 	}
 
 	toggleModal(): void {
@@ -217,6 +197,7 @@ class ModalStore {
 			...this._state,
 			isOpen: !this._state.isOpen
 		};
+		this.notifySubscribers();
 	}
 
 	setActiveGame(game: Game | null): void {
@@ -224,6 +205,7 @@ class ModalStore {
 			...this._state,
 			activeGame: game
 		};
+		this.notifySubscribers();
 	}
 
 	setMode(mode: 'view' | 'edit' | 'add'): void {
@@ -231,6 +213,7 @@ class ModalStore {
 			...this._state,
 			mode
 		};
+		this.notifySubscribers();
 	}
 
 	updateFilterContext(context: Partial<ModalState['filterContext']>): void {
@@ -252,6 +235,7 @@ class ModalStore {
 			displayedGames: updatedDisplayedGames,
 			activeGame: updatedActiveGame
 		};
+		this.notifySubscribers();
 	}
 
 	getReactiveNavigationGamesFromContext(
@@ -340,7 +324,7 @@ class ModalStore {
 						if (!a.finishedDate && !b.finishedDate) return 0;
 						if (!a.finishedDate) return 1;
 						if (!b.finishedDate) return -1;
-						// eslint-disable-next-line svelte/prefer-svelte-reactivity -- Date used for one-time comparison, not reactive state
+
 						return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
 					});
 					break;
@@ -559,6 +543,8 @@ class ModalStore {
 	}
 
 	readFromURL(searchParams: URLSearchParams, games: Game[]): void {
+		if (this.isProgrammaticUpdate) return;
+
 		const gameSlug = searchParams.get('game');
 		if (gameSlug) {
 			let game = games.find((g) => {
@@ -595,8 +581,39 @@ class ModalStore {
 		}
 	}
 
-	writeToURL(): void {
-		this.debouncedWriteToURL();
+	async writeToURL(): Promise<void> {
+		if (typeof window === 'undefined') return;
+
+		this.isProgrammaticUpdate = true;
+
+		try {
+			const state = this._state;
+			const url = new URL(window.location.href);
+			const currentSlug = url.searchParams.get('game');
+
+			if (state.isOpen && state.activeGame) {
+				const slug = createGameSlug(state.activeGame.title);
+
+				if (currentSlug) {
+					url.searchParams.set('game', slug);
+					await replaceState(url.toString(), { noscroll: true });
+				} else {
+					url.searchParams.set('game', slug);
+					await pushState(url.toString(), { noscroll: true });
+				}
+			} else {
+				if (currentSlug) {
+					url.searchParams.delete('game');
+					await replaceState(url.toString(), { noscroll: true });
+				}
+			}
+		} catch {
+			// Ignore router initialization errors
+		} finally {
+			setTimeout(() => {
+				this.isProgrammaticUpdate = false;
+			}, 50);
+		}
 	}
 
 	openPendingGameFromURL(
@@ -618,6 +635,13 @@ class ModalStore {
 				...this._state,
 				isOpen: false
 			};
+			this.notifySubscribers();
+		}
+	}
+
+	private notifySubscribers(): void {
+		for (const fn of this.subscribers) {
+			fn(this._state);
 		}
 	}
 }

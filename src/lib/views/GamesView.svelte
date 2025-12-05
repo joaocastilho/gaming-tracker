@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { SvelteMap } from 'svelte/reactivity';
 	import type { Game } from '$lib/types/game';
 	import GameCard from '$lib/components/GameCard.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
@@ -27,7 +26,7 @@
 		(() => {
 			if (!filteredGames) return [];
 
-			const uniqueGames = new SvelteMap();
+			const uniqueGames = new Map();
 			filteredGames.forEach((game) => {
 				if (game && typeof game.id === 'string' && game.id.length > 0) {
 					if (!uniqueGames.has(game.id)) {
@@ -41,8 +40,9 @@
 			const result = [];
 			for (let i = 0; i < validGames.length; i += columns) {
 				const chunk = validGames.slice(i, i + columns);
+				const firstGameId = chunk[0]?.id || 'empty';
 				result.push({
-					id: `row-${i}`,
+					id: `row-${i}-${firstGameId}`,
 					games: chunk,
 					startIndex: i
 				});
@@ -112,7 +112,6 @@
 						</div>
 					{/each}
 					{#if row.games.length < columns}
-						<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
 						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}
@@ -130,7 +129,6 @@
 						</div>
 					{/each}
 					{#if row.games.length < columns}
-						<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
 						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
 							<div class="game-card-wrapper empty"></div>
 						{/each}

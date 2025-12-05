@@ -88,9 +88,7 @@ describe('Data Persistence', () => {
 		localStorage = new MockLocalStorage();
 		location = new MockLocation();
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).localStorage = localStorage;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).location = location;
 	});
 
@@ -254,21 +252,18 @@ describe('Data Persistence', () => {
 
 		expect(importedData.games.length).toBe(2);
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const game1 = importedData.games.find((g: any) => g.id === 'test-game-1');
 		expect(game1).toBeDefined();
 		expect(game1.title).toBe('Test Persistence Game');
 		expect(game1.ratingPresentation).toBe(8);
 		expect(game1.tier).toBe('A');
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const game2 = importedData.games.find((g: any) => g.id === 'test-game-2');
 		expect(game2).toBeDefined();
 		expect(game2.title).toBe('Second Test Game');
 		expect(game2.platform).toBe('PlayStation 5');
 		expect(game2.tier).toBe('S');
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		importedData.games.forEach((game: any) => {
 			expect(game.id).toBeDefined();
 			expect(game.title).toBeDefined();

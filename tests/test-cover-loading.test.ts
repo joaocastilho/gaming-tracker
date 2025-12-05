@@ -3,10 +3,10 @@ import { generateSizes, generateSrcset, generateTinySrcset } from '$lib/utils/im
 
 // Mock imageCache for testing without SvelteKit dependencies
 const mockImageCache = {
-	preload: (_src: string) => Promise.resolve(), // eslint-disable-line @typescript-eslint/no-unused-vars
-	setLoaded: (_src: string) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
-	setError: (_src: string) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
-	getImage: (_src: string) => ({ isLoaded: false, hasError: false }) // eslint-disable-line @typescript-eslint/no-unused-vars
+	preload: (_src: string) => Promise.resolve(),
+	setLoaded: (_src: string) => {},
+	setError: (_src: string) => {},
+	getImage: (_src: string) => ({ isLoaded: false, hasError: false })
 };
 
 // Mock IntersectionObserver for our tests
@@ -58,11 +58,8 @@ class MockIntersectionObserver {
 
 describe('Cover Loading Optimization', () => {
 	beforeEach(() => {
-		// Install mock IntersectionObserver
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).IntersectionObserver = MockIntersectionObserver;
 
-		// Basic document mock where needed
 		if (!global.document) {
 			Object.defineProperty(global, 'document', {
 				value: {

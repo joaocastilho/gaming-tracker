@@ -25,7 +25,6 @@
 		className = '',
 		priorityCount = 6,
 		useWindowScroll = false
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	}: Props<any> = $props();
 
 	let container = $state<HTMLDivElement>();

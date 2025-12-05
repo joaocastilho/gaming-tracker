@@ -35,11 +35,7 @@
 		return modalStore.getReactiveNavigationGames(allGames);
 	});
 
-	$effect(() => {
-		if ($modalStore.isOpen) {
-			modalStore.writeToURL();
-		}
-	});
+	// Effect removed: writeToURL is now called immediately in store methods to prevent race conditions
 
 	$effect(() => {
 		if ($modalStore.isOpen && modalElement && browser) {

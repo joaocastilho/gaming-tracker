@@ -30,12 +30,11 @@
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 	import FilterToggle from '$lib/components/FilterToggle.svelte';
 
+	import DetailModal from '$lib/components/DetailModal.svelte';
+
 	let initialized = $state(false);
 	let gamesInitialized = $state(false);
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | undefined;
-	let DetailModalComponent = $state<
-		typeof import('$lib/components/DetailModal.svelte').default | null
-	>(null);
 
 	// Initialize games reactively (SSR support)
 	$effect(() => {
@@ -134,18 +133,6 @@
 			initialized = true;
 			// Initialize search from URL
 			filtersStore.readSearchFromURL(page.url.searchParams);
-		}
-	});
-
-	$effect(() => {
-		if ($modalStore.isOpen && !DetailModalComponent) {
-			import('$lib/components/DetailModal.svelte')
-				.then((module) => {
-					DetailModalComponent = module.default;
-				})
-				.catch(() => {
-					// Silently handle DetailModal loading errors
-				});
 		}
 	});
 
@@ -262,26 +249,202 @@
 	{/if}
 </svelte:head>
 
-<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
-	<Header />
-	<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
-		<div class="container mx-auto space-y-4 px-6 py-4">
-			{#if !isTierlistPage}
-				<SearchBar />
-				<div class="flex flex-col items-center gap-4">
-					<div class="flex flex-wrap items-center justify-center gap-3">
+{#if initialized}
+	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
+		<Header />
+		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
+			<div class="container mx-auto space-y-4 px-6 py-4">
+				{#if !isTierlistPage}
+					<SearchBar />
+					<div class="flex flex-col items-center gap-4">
+						<div class="flex flex-wrap items-center justify-center gap-3">
+							<FilterDropdown
+								type="platforms"
+								label="Platforms"
+								options={filterOptions.platforms}
+								selectedOptions={selectedPlatforms}
+							/>
+							<FilterDropdown
+								type="genres"
+								label="Genres"
+								options={filterOptions.genres}
+								selectedOptions={selectedGenres}
+							/>
+							{#if showTiersFilter}
+								<FilterDropdown
+									type="tiers"
+									label="Tiers"
+									options={filterOptions.tiers}
+									selectedOptions={selectedTiers}
+								/>
+							{/if}
+
+							{#if showCoOpFilter}
+								<FilterToggle label="Co-op" value="Yes" isSelected={selectedCoOp.includes('Yes')} />
+							{/if}
+							<span class="pipe-separator">|</span>
+							<RatingsSort />
+							<button
+								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+								title="Reset all filters"
+								onclick={resetFilters}
+							>
+								<RotateCcw size={18} />
+								Reset
+							</button>
+						</div>
+					</div>
+				{/if}
+			</div>
+		</section>
+
+		<main class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6">
+			<div class="container mx-auto">
+				{#if isGamesPage}
+					{#if hasActiveFilters && $filteredGames.length === 0}
+						<div
+							class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center"
+						>
+							<h2 class="font-semibold">No games match your current filters</h2>
+							<p class="text-gray-600 dark:text-gray-400">
+								Try adjusting or clearing your filters to see more games.
+							</p>
+							<button
+								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+								type="button"
+								onclick={resetFilters}
+							>
+								<RotateCcw size={18} />
+								Reset
+							</button>
+						</div>
+					{:else}
+						<GamesView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
+					{/if}
+
+					<div style="display: none;">
+						{@render children?.()}
+					</div>
+				{:else if isTierlistPage}
+					{#if hasActiveFilters && $filteredGames.length === 0}
+						<div
+							class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center"
+						>
+							<h2 class="font-semibold">No games match your current filters</h2>
+							<p class="text-gray-600 dark:text-gray-400">
+								Try adjusting or clearing your filters to see more games.
+							</p>
+							<button
+								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+								type="button"
+								onclick={resetFilters}
+							>
+								<RotateCcw size={18} />
+								Reset
+							</button>
+						</div>
+					{:else}
+						<TierListView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
+					{/if}
+
+					<div style="display: none;">
+						{@render children?.()}
+					</div>
+				{:else}
+					{@render children?.()}
+				{/if}
+			</div>
+		</main>
+
+		<DetailModal />
+
+		<!-- Mobile Search Input -->
+		{#if isSearchOpen}
+			<div
+				class="mobile-search-overlay fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+				onclick={(e) => {
+					if (e.target === e.currentTarget) onSearchToggle();
+				}}
+				role="button"
+				tabindex="0"
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						if (e.target === e.currentTarget) onSearchToggle();
+					}
+				}}
+			>
+				<div class="mobile-search-container absolute right-4 bottom-[80px] left-4">
+					<div class="bg-background border-border rounded-lg border p-4 shadow-lg">
+						<div class="relative">
+							<input
+								bind:this={searchInput}
+								type="text"
+								placeholder="Search games..."
+								class="bg-surface border-border text-foreground placeholder:text-muted-foreground focus:ring-primary w-full rounded-md border py-2 pr-10 pl-4 focus:ring-2 focus:outline-none"
+								bind:value={$filtersStore.searchTerm}
+								onkeydown={(e) => {
+									if (e.key === 'Enter') {
+										onSearchToggle();
+									} else if (e.key === 'Escape') {
+										onSearchToggle();
+									}
+								}}
+							/>
+							<button
+								type="button"
+								class="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+								onclick={() => {
+									$filtersStore.searchTerm = '';
+									onSearchToggle();
+								}}
+								aria-label="Clear search"
+							>
+								✕
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Mobile Filters Modal -->
+		{#if isFiltersOpen}
+			<div
+				class="mobile-filters-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden"
+				onclick={(e) => {
+					if (e.target === e.currentTarget) onFiltersToggle();
+				}}
+				role="button"
+				tabindex="0"
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						if (e.target === e.currentTarget) onFiltersToggle();
+					}
+				}}
+			>
+				<div
+					class="mobile-filters-container bg-background absolute right-0 bottom-0 left-0 max-h-[95vh] overflow-hidden rounded-t-lg shadow-lg"
+				>
+					<div class="border-border flex items-center justify-between border-b p-4">
+						<h2 class="text-lg font-semibold">Filters & Sorts</h2>
+						<button type="button" onclick={onFiltersToggle} aria-label="Close filters"> ✕ </button>
+					</div>
+					<div class="max-h-[calc(95vh-120px)] space-y-4 overflow-y-auto p-4">
+						<!-- Platforms -->
 						<FilterDropdown
 							type="platforms"
 							label="Platforms"
 							options={filterOptions.platforms}
 							selectedOptions={selectedPlatforms}
 						/>
+						<!-- Genres -->
 						<FilterDropdown
 							type="genres"
 							label="Genres"
 							options={filterOptions.genres}
 							selectedOptions={selectedGenres}
 						/>
+						<!-- Tiers -->
 						{#if showTiersFilter}
 							<FilterDropdown
 								type="tiers"
@@ -290,211 +453,39 @@
 								selectedOptions={selectedTiers}
 							/>
 						{/if}
-
+						<!-- Co-op -->
 						{#if showCoOpFilter}
 							<FilterToggle label="Co-op" value="Yes" isSelected={selectedCoOp.includes('Yes')} />
 						{/if}
-						<span class="pipe-separator">|</span>
+						<!-- Ratings Sort -->
 						<RatingsSort />
+					</div>
+					<div class="border-border flex items-center justify-between border-t p-4">
 						<button
-							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
-							title="Reset all filters"
+							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-3 py-2 text-xs transition-colors"
 							onclick={resetFilters}
 						>
-							<RotateCcw size={18} />
-							Reset
+							↻ Reset
 						</button>
-					</div>
-				</div>
-			{/if}
-		</div>
-	</section>
-
-	<main class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6">
-		<div class="container mx-auto">
-			{#if isGamesPage}
-				{#if hasActiveFilters && $filteredGames.length === 0}
-					<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
-						<h2 class="font-semibold">No games match your current filters</h2>
-						<p class="text-gray-600 dark:text-gray-400">
-							Try adjusting or clearing your filters to see more games.
-						</p>
-						<button
-							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
-							type="button"
-							onclick={resetFilters}
-						>
-							<RotateCcw size={18} />
-							Reset
-						</button>
-					</div>
-				{:else}
-					<GamesView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
-				{/if}
-
-				<div style="display: none;">
-					{@render children?.()}
-				</div>
-			{:else if isTierlistPage}
-				{#if hasActiveFilters && $filteredGames.length === 0}
-					<div class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center">
-						<h2 class="font-semibold">No games match your current filters</h2>
-						<p class="text-gray-600 dark:text-gray-400">
-							Try adjusting or clearing your filters to see more games.
-						</p>
-						<button
-							class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
-							type="button"
-							onclick={resetFilters}
-						>
-							<RotateCcw size={18} />
-							Reset
-						</button>
-					</div>
-				{:else}
-					<TierListView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
-				{/if}
-
-				<div style="display: none;">
-					{@render children?.()}
-				</div>
-			{:else}
-				{@render children?.()}
-			{/if}
-		</div>
-	</main>
-
-	{#if DetailModalComponent}
-		<DetailModalComponent />
-	{/if}
-
-	<!-- Mobile Search Input -->
-	{#if isSearchOpen}
-		<div
-			class="mobile-search-overlay fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
-			onclick={(e) => {
-				if (e.target === e.currentTarget) onSearchToggle();
-			}}
-			role="button"
-			tabindex="0"
-			onkeydown={(e) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					if (e.target === e.currentTarget) onSearchToggle();
-				}
-			}}
-		>
-			<div class="mobile-search-container absolute right-4 bottom-[80px] left-4">
-				<div class="bg-background border-border rounded-lg border p-4 shadow-lg">
-					<div class="relative">
-						<input
-							bind:this={searchInput}
-							type="text"
-							placeholder="Search games..."
-							class="bg-surface border-border text-foreground placeholder:text-muted-foreground focus:ring-primary w-full rounded-md border py-2 pr-10 pl-4 focus:ring-2 focus:outline-none"
-							bind:value={$filtersStore.searchTerm}
-							onkeydown={(e) => {
-								if (e.key === 'Enter') {
-									onSearchToggle();
-								} else if (e.key === 'Escape') {
-									onSearchToggle();
-								}
-							}}
-						/>
 						<button
 							type="button"
-							class="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+							class="apply-button bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors"
 							onclick={() => {
-								$filtersStore.searchTerm = '';
-								onSearchToggle();
+								// Apply filters - they are already bound
+								onFiltersToggle();
 							}}
-							aria-label="Clear search"
 						>
-							✕
+							✓ Apply
 						</button>
 					</div>
 				</div>
 			</div>
-		</div>
-	{/if}
+		{/if}
 
-	<!-- Mobile Filters Modal -->
-	{#if isFiltersOpen}
-		<div
-			class="mobile-filters-modal fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden"
-			onclick={(e) => {
-				if (e.target === e.currentTarget) onFiltersToggle();
-			}}
-			role="button"
-			tabindex="0"
-			onkeydown={(e) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					if (e.target === e.currentTarget) onFiltersToggle();
-				}
-			}}
-		>
-			<div
-				class="mobile-filters-container bg-background absolute right-0 bottom-0 left-0 max-h-[95vh] overflow-hidden rounded-t-lg shadow-lg"
-			>
-				<div class="border-border flex items-center justify-between border-b p-4">
-					<h2 class="text-lg font-semibold">Filters & Sorts</h2>
-					<button type="button" onclick={onFiltersToggle} aria-label="Close filters"> ✕ </button>
-				</div>
-				<div class="max-h-[calc(95vh-120px)] space-y-4 overflow-y-auto p-4">
-					<!-- Platforms -->
-					<FilterDropdown
-						type="platforms"
-						label="Platforms"
-						options={filterOptions.platforms}
-						selectedOptions={selectedPlatforms}
-					/>
-					<!-- Genres -->
-					<FilterDropdown
-						type="genres"
-						label="Genres"
-						options={filterOptions.genres}
-						selectedOptions={selectedGenres}
-					/>
-					<!-- Tiers -->
-					{#if showTiersFilter}
-						<FilterDropdown
-							type="tiers"
-							label="Tiers"
-							options={filterOptions.tiers}
-							selectedOptions={selectedTiers}
-						/>
-					{/if}
-					<!-- Co-op -->
-					{#if showCoOpFilter}
-						<FilterToggle label="Co-op" value="Yes" isSelected={selectedCoOp.includes('Yes')} />
-					{/if}
-					<!-- Ratings Sort -->
-					<RatingsSort />
-				</div>
-				<div class="border-border flex items-center justify-between border-t p-4">
-					<button
-						class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-3 py-2 text-xs transition-colors"
-						onclick={resetFilters}
-					>
-						↻ Reset
-					</button>
-					<button
-						type="button"
-						class="apply-button bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors"
-						onclick={() => {
-							// Apply filters - they are already bound
-							onFiltersToggle();
-						}}
-					>
-						✓ Apply
-					</button>
-				</div>
-			</div>
-		</div>
-	{/if}
-
-	<BottomNavigation {onSearchToggle} {onFiltersToggle} {onCloseSearchAndFilters} />
-	<ScrollToTopButton />
-</div>
+		<BottomNavigation {onSearchToggle} {onFiltersToggle} {onCloseSearchAndFilters} />
+		<ScrollToTopButton />
+	</div>
+{/if}
 
 <style>
 	:global(.h-15) {

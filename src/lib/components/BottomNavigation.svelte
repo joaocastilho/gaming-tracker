@@ -20,11 +20,9 @@
 		route?: string;
 		count: number | null;
 		active: boolean;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		icon: any; // Lucide icon component
+		icon: any;
 	};
 
-	// Use $derived to reactively compute navItems whenever activeTab or counts change
 	let navItems = $derived.by(() => {
 		const counts = filteredCountsStore.counts;
 		const currentTab = appStore.activeTab;
