@@ -178,18 +178,31 @@
 		}
 	}
 
-	function handleCardClick() {
+	let cardElement = $state<HTMLDivElement>();
+
+	function handleCardClick(event: MouseEvent) {
+		const rect = cardElement?.getBoundingClientRect();
+		const cardRect = rect
+			? {
+					x: rect.x,
+					y: rect.y,
+					width: rect.width,
+					height: rect.height
+				}
+			: undefined;
+
 		if (onOpenModal) {
 			onOpenModal(game, displayedGames);
 		} else {
-			modalStore.openViewModal(game, displayedGames);
+			modalStore.openViewModal(game, displayedGames, undefined, cardRect);
 		}
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
-			handleCardClick();
+			// Create a synthetic MouseEvent for keyboard navigation
+			handleCardClick(new MouseEvent('click'));
 		}
 	}
 
@@ -250,6 +263,7 @@
 </script>
 
 <div
+	bind:this={cardElement}
 	class="game-card {size === 'tierlist' ? 'tierlist-size' : ''}"
 	style="background-color: {game.status === 'Completed'
 		? 'var(--color-surface-completed)'

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { fade, fly, scale } from 'svelte/transition';
+	import { cubicOut, backOut, quintOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { createGameSlug } from '../utils/slugUtils.js';
@@ -20,6 +21,48 @@
 		Link,
 		Users
 	} from 'lucide-svelte';
+
+	// Platform detection for iOS/Android-specific animations
+	let isIOS = $state(false);
+	let isAndroid = $state(false);
+
+	// Horizontal swipe animation state (navigation)
+	let swipeOffsetX = $state(0);
+	let isSwipeTransitioning = $state(false);
+	let swipeDirection = $state<'left' | 'right' | null>(null);
+
+	// Vertical swipe state (swipe-to-close)
+	let swipeOffsetY = $state(0);
+	let isClosingGesture = $state(false);
+
+	// Parallax preview state
+	let nextGamePreview = $state<Game | null>(null);
+	let prevGamePreview = $state<Game | null>(null);
+	let parallaxOffset = $state(0);
+
+	// Zoom/Shrink animation state
+	let isZoomAnimating = $state(false);
+	let zoomProgress = $state(0);
+	let animationPhase = $state<'opening' | 'open' | 'closing' | 'closed'>('closed');
+
+	// Touch tracking
+	let touchStartX = 0;
+	let touchStartY = 0;
+	let touchCurrentX = 0;
+	let touchCurrentY = 0;
+	let isVerticalSwipe = false;
+	let isHorizontalSwipe = false;
+	let touchStartTime = 0;
+
+	$effect(() => {
+		if (browser) {
+			const ua = navigator.userAgent;
+			isIOS =
+				/iPad|iPhone|iPod/.test(ua) ||
+				(navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+			isAndroid = /Android/.test(ua);
+		}
+	});
 
 	let currentActiveTab = $derived(appStore.activeTab);
 
@@ -74,31 +117,220 @@
 	let firstFocusableElement = $state<HTMLElement>();
 	let lastFocusableElement = $state<HTMLElement>();
 
-	// Swipe gesture state
-	let touchStartX = 0;
-	let touchEndX = 0;
+	// Swipe thresholds
 	const SWIPE_THRESHOLD = 50;
+	const SWIPE_CLOSE_THRESHOLD = 150;
+	const VELOCITY_THRESHOLD = 0.5;
+
+	// Update parallax previews based on current game index
+	$effect(() => {
+		if ($modalStore.isOpen && displayedGames.length > 0) {
+			const index = currentGameIndex;
+			nextGamePreview = index < displayedGames.length - 1 ? displayedGames[index + 1] : null;
+			prevGamePreview = index > 0 ? displayedGames[index - 1] : null;
+		}
+	});
 
 	function handleTouchStart(e: TouchEvent) {
-		touchStartX = e.changedTouches[0].screenX;
+		if (isSwipeTransitioning || isZoomAnimating) return;
+
+		const touch = e.touches[0];
+		touchStartX = touch.screenX;
+		touchStartY = touch.screenY;
+		touchCurrentX = touchStartX;
+		touchCurrentY = touchStartY;
+		touchStartTime = Date.now();
+		isVerticalSwipe = false;
+		isHorizontalSwipe = false;
+		swipeOffsetX = 0;
+		swipeOffsetY = 0;
+		parallaxOffset = 0;
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		if (isSwipeTransitioning || isZoomAnimating) return;
+
+		const touch = e.touches[0];
+		touchCurrentX = touch.screenX;
+		touchCurrentY = touch.screenY;
+
+		const diffX = touchCurrentX - touchStartX;
+		const diffY = touchCurrentY - touchStartY;
+
+		if (!isVerticalSwipe && !isHorizontalSwipe && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+			if (Math.abs(diffY) > Math.abs(diffX) * 1.5) {
+				isVerticalSwipe = true;
+			} else if (Math.abs(diffX) > Math.abs(diffY)) {
+				isHorizontalSwipe = true;
+			}
+		}
+
+		if (isVerticalSwipe && diffY > 0) {
+			const resistance = 0.6;
+			swipeOffsetY = diffY * resistance;
+			isClosingGesture = true;
+		} else if (isHorizontalSwipe) {
+			const maxOffset = 150;
+			const resistance = 0.5;
+
+			if (diffX > 0 && prevGamePreview) {
+				swipeDirection = 'right';
+				swipeOffsetX = Math.min(diffX * resistance, maxOffset);
+				parallaxOffset = -100 + (swipeOffsetX / maxOffset) * 100;
+			} else if (diffX < 0 && nextGamePreview) {
+				swipeDirection = 'left';
+				swipeOffsetX = Math.max(diffX * resistance, -maxOffset);
+				parallaxOffset = 100 + (swipeOffsetX / maxOffset) * 100;
+			} else {
+				swipeOffsetX = diffX * 0.2;
+			}
+		}
 	}
 
 	function handleTouchEnd(e: TouchEvent) {
-		touchEndX = e.changedTouches[0].screenX;
-		handleSwipe();
-	}
+		const touchEndTime = Date.now();
+		const duration = touchEndTime - touchStartTime;
+		const velocity = Math.abs(touchCurrentX - touchStartX) / duration;
+		const velocityY = (touchCurrentY - touchStartY) / duration;
 
-	function handleSwipe() {
-		const diff = touchStartX - touchEndX;
-		if (Math.abs(diff) > SWIPE_THRESHOLD) {
-			if (diff > 0) {
-				// Swiped left -> Next
-				navigateToNext();
+		if (isClosingGesture) {
+			if (swipeOffsetY > SWIPE_CLOSE_THRESHOLD || velocityY > VELOCITY_THRESHOLD) {
+				animateClose();
 			} else {
-				// Swiped right -> Previous
-				navigateToPrevious();
+				resetVerticalPosition();
+			}
+		} else if (isHorizontalSwipe) {
+			const diffX = touchStartX - touchCurrentX;
+
+			if (Math.abs(diffX) > SWIPE_THRESHOLD || velocity > VELOCITY_THRESHOLD) {
+				if (diffX > 0 && nextGamePreview) {
+					animateSwipeTransition('left');
+				} else if (diffX < 0 && prevGamePreview) {
+					animateSwipeTransition('right');
+				} else {
+					resetSwipePosition();
+				}
+			} else {
+				resetSwipePosition();
 			}
 		}
+
+		isVerticalSwipe = false;
+		isHorizontalSwipe = false;
+		isClosingGesture = false;
+	}
+
+	function animateClose() {
+		isSwipeTransitioning = true;
+		animationPhase = 'closing';
+
+		const startOffset = swipeOffsetY;
+		const targetOffset = window.innerHeight;
+		const startTime = performance.now();
+		const duration = 300;
+
+		function animate(currentTime: number) {
+			const elapsed = currentTime - startTime;
+			const progress = Math.min(elapsed / duration, 1);
+			const eased = 1 - Math.pow(1 - progress, 3);
+
+			swipeOffsetY = startOffset + (targetOffset - startOffset) * eased;
+
+			if (progress < 1) {
+				requestAnimationFrame(animate);
+			} else {
+				modalStore.closeModal();
+				swipeOffsetY = 0;
+				isSwipeTransitioning = false;
+				animationPhase = 'closed';
+			}
+		}
+
+		requestAnimationFrame(animate);
+	}
+
+	function resetVerticalPosition() {
+		const startOffset = swipeOffsetY;
+		const startTime = performance.now();
+		const duration = 300;
+
+		function animate(currentTime: number) {
+			const elapsed = currentTime - startTime;
+			const progress = Math.min(elapsed / duration, 1);
+			const eased = 1 - Math.pow(1 - progress, 4) * Math.cos(progress * Math.PI * 0.5);
+
+			swipeOffsetY = startOffset * (1 - eased);
+
+			if (progress < 1) {
+				requestAnimationFrame(animate);
+			} else {
+				swipeOffsetY = 0;
+			}
+		}
+
+		requestAnimationFrame(animate);
+	}
+
+	function animateSwipeTransition(direction: 'left' | 'right') {
+		isSwipeTransitioning = true;
+		const targetOffset = direction === 'left' ? -300 : 300;
+		const startOffset = swipeOffsetX;
+		const startTime = performance.now();
+		const duration = 200;
+
+		function animate(currentTime: number) {
+			const elapsed = currentTime - startTime;
+			const progress = Math.min(elapsed / duration, 1);
+			const eased = 1 - Math.pow(1 - progress, 3);
+
+			swipeOffsetX = startOffset + (targetOffset - startOffset) * eased;
+			parallaxOffset = direction === 'left' ? 100 * (1 - progress) : -100 * (1 - progress);
+
+			if (progress < 1) {
+				requestAnimationFrame(animate);
+			} else {
+				if (direction === 'left') {
+					navigateToNext();
+				} else {
+					navigateToPrevious();
+				}
+				setTimeout(() => {
+					swipeOffsetX = 0;
+					parallaxOffset = 0;
+					isSwipeTransitioning = false;
+					swipeDirection = null;
+				}, 50);
+			}
+		}
+
+		requestAnimationFrame(animate);
+	}
+
+	function resetSwipePosition() {
+		const startOffset = swipeOffsetX;
+		const startParallax = parallaxOffset;
+		const startTime = performance.now();
+		const duration = 300;
+
+		function animate(currentTime: number) {
+			const elapsed = currentTime - startTime;
+			const progress = Math.min(elapsed / duration, 1);
+			const eased = 1 - Math.pow(1 - progress, 4) * Math.cos(progress * Math.PI * 0.5);
+
+			swipeOffsetX = startOffset * (1 - eased);
+			parallaxOffset = startParallax * (1 - eased);
+
+			if (progress < 1) {
+				requestAnimationFrame(animate);
+			} else {
+				swipeOffsetX = 0;
+				parallaxOffset = 0;
+				isSwipeTransitioning = false;
+				swipeDirection = null;
+			}
+		}
+
+		requestAnimationFrame(animate);
 	}
 
 	function getFocusableElements(): HTMLElement[] {
@@ -407,7 +639,7 @@
 		bind:this={modalElement}
 		class="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-5 md:items-center md:pt-4"
 		style="background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);"
-		transition:fade={{ duration: 200 }}
+		transition:fade={{ duration: isIOS ? 250 : 200 }}
 		onclick={handleOverlayClick}
 		onkeydown={(e) => e.key === 'Escape' && modalStore.closeModal()}
 		role="dialog"
@@ -438,41 +670,258 @@
 			</button>
 		{/if}
 
-		<div
-			class="relative flex h-auto max-h-[95dvh] w-[95vw] max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
-			style="background-color: var(--color-surface);"
-			role="document"
-			ontouchstart={handleTouchStart}
-			ontouchend={handleTouchEnd}
-		>
-			<!-- Desktop navigation arrows -->
+		<!-- Parallax Preview: Previous Game -->
+		{#if prevGamePreview && swipeDirection === 'right' && Math.abs(swipeOffsetX) > 0}
 			<div
-				class="pointer-events-none absolute inset-0 z-10 hidden items-center justify-center md:flex"
+				class="parallax-preview parallax-left"
+				style="transform: translateX({(swipeOffsetX / 150) * 100}%); opacity: {Math.min(
+					Math.abs(swipeOffsetX) / 50,
+					1
+				)};"
 			>
-				<div class="relative w-full max-w-[1250px]">
-					{#if currentGameIndex > 0}
-						<button
-							onclick={navigateToPrevious}
-							class="pointer-events-auto absolute top-1/2 left-2 flex h-16 w-16 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none"
-							aria-label="Previous game"
-						>
-							<ChevronLeft size={32} />
-						</button>
-					{/if}
-					{#if (() => {
-						const games = displayedGames;
-						return currentGameIndex > -1 && currentGameIndex < games.length - 1;
-					})()}
-						<button
-							onclick={navigateToNext}
-							class="pointer-events-auto absolute top-1/2 right-2 flex h-16 w-16 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/30 focus:outline-none"
-							aria-label="Next game"
-						>
-							<ChevronRight size={32} />
-						</button>
-					{/if}
+				<div class="parallax-modal-content">
+					<div class="parallax-image-section">
+						<img
+							src={prevGamePreview.coverImage.replace('.webp', '-detail.webp')}
+							alt={prevGamePreview.title}
+							class="parallax-preview-image"
+						/>
+					</div>
+					<div class="parallax-details-section">
+						<h3 class="parallax-title">{prevGamePreview.mainTitle || prevGamePreview.title}</h3>
+						{#if prevGamePreview.subtitle}
+							<p class="parallax-subtitle">{prevGamePreview.subtitle}</p>
+						{/if}
+						<div class="parallax-badges">
+							<span class="parallax-badge {getPlatformColor(prevGamePreview.platform)}"
+								>{prevGamePreview.platform}</span
+							>
+							<span class="parallax-badge {getGenreColor(prevGamePreview.genre)}"
+								>{prevGamePreview.genre}</span
+							>
+							{#if prevGamePreview.tier}
+								<span class="parallax-badge {getTierClass(prevGamePreview.tier)}"
+									>{getTierDisplayName(prevGamePreview.tier)}</span
+								>
+							{/if}
+						</div>
+						<div class="parallax-info-grid">
+							<div class="parallax-info-item">
+								<span class="parallax-label">Year Released</span>
+								<span class="parallax-value">{prevGamePreview.year}</span>
+							</div>
+							<div class="parallax-info-item">
+								<span class="parallax-label"
+									>{prevGamePreview.status === 'Completed' ? 'Finished Date' : 'Time to Beat'}</span
+								>
+								<span class="parallax-value"
+									>{prevGamePreview.status === 'Completed'
+										? prevGamePreview.finishedDate
+											? formatDate(prevGamePreview.finishedDate)
+											: 'N/A'
+										: prevGamePreview.timeToBeat || 'N/A'}</span
+								>
+							</div>
+						</div>
+						<!-- Ratings Section -->
+						<div class="parallax-ratings">
+							<div class="parallax-rating-row">
+								<span class="parallax-rating-label">Presentation</span>
+								<div class="parallax-rating-bar">
+									<div
+										class="parallax-rating-fill"
+										style="width: {(prevGamePreview.ratingPresentation ?? 0) * 10}%"
+									></div>
+								</div>
+								<span class="parallax-rating-value"
+									>{prevGamePreview.ratingPresentation ?? 'N/A'}</span
+								>
+							</div>
+							<div class="parallax-rating-row">
+								<span class="parallax-rating-label">Story</span>
+								<div class="parallax-rating-bar">
+									<div
+										class="parallax-rating-fill"
+										style="width: {(prevGamePreview.ratingStory ?? 0) * 10}%"
+									></div>
+								</div>
+								<span class="parallax-rating-value">{prevGamePreview.ratingStory ?? 'N/A'}</span>
+							</div>
+							<div class="parallax-rating-row">
+								<span class="parallax-rating-label">Gameplay</span>
+								<div class="parallax-rating-bar">
+									<div
+										class="parallax-rating-fill"
+										style="width: {(prevGamePreview.ratingGameplay ?? 0) * 10}%"
+									></div>
+								</div>
+								<span class="parallax-rating-value">{prevGamePreview.ratingGameplay ?? 'N/A'}</span>
+							</div>
+						</div>
+						<!-- Status Section -->
+						<div class="parallax-status">
+							{#if prevGamePreview.status === 'Completed' && prevGamePreview.score !== null}
+								<span class="parallax-score">Total Score: {prevGamePreview.score}/20</span>
+							{:else}
+								<span class="parallax-pending">Game to be completed</span>
+							{/if}
+						</div>
+					</div>
 				</div>
 			</div>
+		{/if}
+
+		<!-- Parallax Preview: Next Game -->
+		{#if nextGamePreview && swipeDirection === 'left' && Math.abs(swipeOffsetX) > 0}
+			<div
+				class="parallax-preview parallax-right"
+				style="transform: translateX({(swipeOffsetX / 150) * 100}%); opacity: {Math.min(
+					Math.abs(swipeOffsetX) / 50,
+					1
+				)};"
+			>
+				<div class="parallax-modal-content">
+					<div class="parallax-image-section">
+						<img
+							src={nextGamePreview.coverImage.replace('.webp', '-detail.webp')}
+							alt={nextGamePreview.title}
+							class="parallax-preview-image"
+						/>
+					</div>
+					<div class="parallax-details-section">
+						<h3 class="parallax-title">{nextGamePreview.mainTitle || nextGamePreview.title}</h3>
+						{#if nextGamePreview.subtitle}
+							<p class="parallax-subtitle">{nextGamePreview.subtitle}</p>
+						{/if}
+						<div class="parallax-badges">
+							<span class="parallax-badge {getPlatformColor(nextGamePreview.platform)}"
+								>{nextGamePreview.platform}</span
+							>
+							<span class="parallax-badge {getGenreColor(nextGamePreview.genre)}"
+								>{nextGamePreview.genre}</span
+							>
+							{#if nextGamePreview.tier}
+								<span class="parallax-badge {getTierClass(nextGamePreview.tier)}"
+									>{getTierDisplayName(nextGamePreview.tier)}</span
+								>
+							{/if}
+						</div>
+						<div class="parallax-info-grid">
+							<div class="parallax-info-item">
+								<span class="parallax-label">Year Released</span>
+								<span class="parallax-value">{nextGamePreview.year}</span>
+							</div>
+							<div class="parallax-info-item">
+								<span class="parallax-label"
+									>{nextGamePreview.status === 'Completed' ? 'Finished Date' : 'Time to Beat'}</span
+								>
+								<span class="parallax-value"
+									>{nextGamePreview.status === 'Completed'
+										? nextGamePreview.finishedDate
+											? formatDate(nextGamePreview.finishedDate)
+											: 'N/A'
+										: nextGamePreview.timeToBeat || 'N/A'}</span
+								>
+							</div>
+						</div>
+						<!-- Ratings Section -->
+						<div class="parallax-ratings">
+							<div class="parallax-rating-row">
+								<span class="parallax-rating-label">Presentation</span>
+								<div class="parallax-rating-bar">
+									<div
+										class="parallax-rating-fill"
+										style="width: {(nextGamePreview.ratingPresentation ?? 0) * 10}%"
+									></div>
+								</div>
+								<span class="parallax-rating-value"
+									>{nextGamePreview.ratingPresentation ?? 'N/A'}</span
+								>
+							</div>
+							<div class="parallax-rating-row">
+								<span class="parallax-rating-label">Story</span>
+								<div class="parallax-rating-bar">
+									<div
+										class="parallax-rating-fill"
+										style="width: {(nextGamePreview.ratingStory ?? 0) * 10}%"
+									></div>
+								</div>
+								<span class="parallax-rating-value">{nextGamePreview.ratingStory ?? 'N/A'}</span>
+							</div>
+							<div class="parallax-rating-row">
+								<span class="parallax-rating-label">Gameplay</span>
+								<div class="parallax-rating-bar">
+									<div
+										class="parallax-rating-fill"
+										style="width: {(nextGamePreview.ratingGameplay ?? 0) * 10}%"
+									></div>
+								</div>
+								<span class="parallax-rating-value">{nextGamePreview.ratingGameplay ?? 'N/A'}</span>
+							</div>
+						</div>
+						<!-- Status Section -->
+						<div class="parallax-status">
+							{#if nextGamePreview.status === 'Completed' && nextGamePreview.score !== null}
+								<span class="parallax-score">Total Score: {nextGamePreview.score}/20</span>
+							{:else}
+								<span class="parallax-pending">Game to be completed</span>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Desktop navigation arrows - on backdrop, outside modal -->
+		{#if currentGameIndex > 0}
+			<button
+				onclick={navigateToPrevious}
+				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
+				style="left: calc(50% - 500px - 70px);"
+				aria-label="Previous game"
+			>
+				<ChevronLeft size={28} />
+			</button>
+		{/if}
+		{#if (() => {
+			const games = displayedGames;
+			return currentGameIndex > -1 && currentGameIndex < games.length - 1;
+		})()}
+			<button
+				onclick={navigateToNext}
+				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
+				style="right: calc(50% - 500px - 70px);"
+				aria-label="Next game"
+			>
+				<ChevronRight size={28} />
+			</button>
+		{/if}
+
+		<div
+			class="modal-content relative flex h-auto max-h-[95dvh] w-[95vw] max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
+			class:ios-modal={isIOS}
+			class:android-modal={isAndroid}
+			class:swiping-close={isClosingGesture}
+			style="background-color: var(--color-surface); 
+				transform: translateX({swipeOffsetX}px) translateY({swipeOffsetY}px) 
+					scale({1 - Math.abs(swipeOffsetX) * 0.0003 - swipeOffsetY * 0.0008}); 
+				opacity: {1 - Math.abs(swipeOffsetX) * 0.002 - swipeOffsetY * 0.002};
+				border-radius: {12 + swipeOffsetY * 0.1}px;"
+			role="document"
+			ontouchstart={handleTouchStart}
+			ontouchmove={handleTouchMove}
+			ontouchend={handleTouchEnd}
+			in:fly={{
+				y: isIOS ? 60 : 40,
+				duration: isIOS ? 400 : 250,
+				easing: isIOS ? backOut : cubicOut
+			}}
+			out:fly={{
+				y: isIOS ? 100 : 30,
+				duration: isIOS ? 300 : 200,
+				easing: cubicOut
+			}}
+		>
 			<button
 				onclick={() => modalStore.closeModal()}
 				class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/30 focus:outline-none md:top-4 md:right-4 md:bg-black/10 md:text-white md:hover:bg-black/30"
@@ -969,6 +1418,278 @@
 		}
 		100% {
 			background-position: 200% 0;
+		}
+	}
+
+	.modal-content {
+		will-change: transform, opacity;
+		transition: box-shadow 0.2s ease;
+	}
+
+	.ios-modal {
+		box-shadow:
+			0 25px 50px -12px rgba(0, 0, 0, 0.4),
+			0 0 0 1px rgba(255, 255, 255, 0.1);
+	}
+
+	.android-modal {
+		box-shadow:
+			0 24px 38px 3px rgba(0, 0, 0, 0.14),
+			0 9px 46px 8px rgba(0, 0, 0, 0.12),
+			0 11px 15px -7px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal-content::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		pointer-events: none;
+		z-index: 100;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+		border-radius: inherit;
+	}
+
+	@media (pointer: coarse) {
+		.modal-content {
+			touch-action: pan-y pinch-zoom;
+		}
+	}
+
+	.parallax-preview {
+		position: fixed;
+		top: 10%;
+		transform: translateY(-10%);
+		width: 90vw;
+		max-width: 480px;
+		height: auto;
+		max-height: 90dvh;
+		border-radius: 16px;
+		overflow: hidden;
+		z-index: 59;
+		pointer-events: none;
+		box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+		background: var(--color-surface);
+	}
+
+	.parallax-left {
+		right: 100%;
+		margin-right: -20px;
+	}
+
+	.parallax-right {
+		left: 100%;
+		margin-left: -20px;
+	}
+
+	.parallax-card {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.parallax-cover {
+		width: 100%;
+		aspect-ratio: 2/3;
+		max-height: 50vh;
+		overflow: hidden;
+	}
+
+	.parallax-modal-content {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.parallax-image-section {
+		width: 100%;
+		aspect-ratio: 2/3;
+		max-height: 45vh;
+		overflow: hidden;
+	}
+
+	.parallax-preview-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.parallax-details-section {
+		padding: 14px 16px;
+		background: var(--color-surface);
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.parallax-info {
+		padding: 16px;
+		background: var(--color-surface);
+	}
+
+	.parallax-title {
+		font-size: 1rem;
+		font-weight: 700;
+		color: var(--color-text-primary);
+		margin: 0;
+		line-height: 1.2;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.parallax-subtitle {
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--color-text-secondary);
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	.parallax-badges {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin-top: 4px;
+	}
+
+	.parallax-badge {
+		padding: 4px 8px;
+		border-radius: 4px;
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: white;
+	}
+
+	.parallax-info-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+		margin-top: 8px;
+	}
+
+	.parallax-info-item {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.parallax-label {
+		font-size: 0.65rem;
+		color: var(--color-text-tertiary);
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
+	}
+
+	.parallax-value {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+	}
+
+	/* Ratings section */
+	.parallax-ratings {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin-top: 8px;
+	}
+
+	.parallax-rating-row {
+		display: grid;
+		grid-template-columns: 70px 1fr 30px;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.parallax-rating-label {
+		font-size: 0.65rem;
+		color: var(--color-text-tertiary);
+	}
+
+	.parallax-rating-bar {
+		height: 8px;
+		background: rgba(100, 100, 100, 0.3);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.parallax-rating-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #4f46e5, #7c3aed);
+		border-radius: 4px;
+		transition: width 0.3s ease;
+	}
+
+	.parallax-rating-value {
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--color-text-secondary);
+		text-align: right;
+	}
+
+	/* Status section */
+	.parallax-status {
+		margin-top: 10px;
+		padding: 10px 12px;
+		background: rgba(100, 100, 100, 0.15);
+		border-radius: 8px;
+		text-align: center;
+	}
+
+	.parallax-score {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: var(--color-text-primary);
+	}
+
+	.parallax-pending {
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: var(--color-text-secondary);
+		font-style: italic;
+	}
+
+	/* Swipe-to-close visual feedback */
+	.swiping-close {
+		transition: none !important;
+	}
+
+	/* Pull-down handle indicator */
+	.modal-content::after {
+		content: '';
+		position: absolute;
+		top: 8px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 36px;
+		height: 4px;
+		background: rgba(255, 255, 255, 0.3);
+		border-radius: 2px;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+		z-index: 110;
+	}
+
+	@media (pointer: coarse) {
+		.modal-content::after {
+			opacity: 1;
+		}
+	}
+
+	:global(.light) .modal-content::after {
+		background: rgba(0, 0, 0, 0.2);
+	}
+
+	/* Hide parallax on desktop */
+	@media (pointer: fine) {
+		.parallax-preview {
+			display: none;
 		}
 	}
 </style>

@@ -10,6 +10,13 @@ import type { Game } from '../types/game.js';
 import type { SortOption } from './filters.svelte';
 import { gamesStore } from './games.svelte';
 
+export interface CardRect {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
+
 export interface ModalState {
 	isOpen: boolean;
 	activeGame: Game | null;
@@ -19,6 +26,7 @@ export interface ModalState {
 	isSubmitting: boolean;
 	displayedGames: Game[];
 	pendingGameFromURL: Game | null;
+	cardRect: CardRect | null;
 	filterContext: {
 		searchTerm: string;
 		platforms: string[];
@@ -39,6 +47,7 @@ const initialState: ModalState = {
 	isSubmitting: false,
 	displayedGames: [],
 	pendingGameFromURL: null,
+	cardRect: null,
 	filterContext: {
 		searchTerm: '',
 		platforms: [],
@@ -93,6 +102,10 @@ class ModalStore {
 		return this._state.filterContext;
 	}
 
+	get cardRect(): CardRect | null {
+		return this._state.cardRect;
+	}
+
 	subscribe(fn: (value: ModalState) => void): () => void {
 		fn(this._state);
 		this.subscribers.add(fn);
@@ -108,7 +121,8 @@ class ModalStore {
 	openViewModal(
 		game: Game | null,
 		displayedGames: Game[] = [],
-		filterContext?: Partial<ModalState['filterContext']>
+		filterContext?: Partial<ModalState['filterContext']>,
+		cardRect?: CardRect
 	): void {
 		let finalDisplayedGames = displayedGames;
 
@@ -127,6 +141,7 @@ class ModalStore {
 			isSubmitting: false,
 			displayedGames: finalDisplayedGames,
 			pendingGameFromURL: null,
+			cardRect: cardRect ?? null,
 			filterContext: filterContext
 				? { ...this._state.filterContext, ...filterContext }
 				: this._state.filterContext
@@ -184,7 +199,8 @@ class ModalStore {
 			validationErrors: {},
 			isSubmitting: false,
 			displayedGames: [],
-			pendingGameFromURL: null
+			pendingGameFromURL: null,
+			cardRect: null
 		};
 
 		this.notifySubscribers();
