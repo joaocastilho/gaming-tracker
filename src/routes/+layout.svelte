@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { pushState } from '$app/navigation';
+	import { pushState, goto, replaceState } from '$app/navigation';
 	import '../app.css';
 	import Header from '$lib/components/Header.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
@@ -35,6 +35,7 @@
 	import GamesView from '$lib/views/GamesView.svelte';
 	import TierListView from '$lib/views/TierListView.svelte';
 	import { filteredGames } from '$lib/stores/filteredGamesStore.svelte';
+	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 
 	let {
 		children,
@@ -150,6 +151,27 @@
 			initialized = true;
 			// Initialize search from URL
 			filtersStore.readSearchFromURL(page.url.searchParams);
+
+			// Auto-open mobile search if URL has search parameter
+			const searchParam = page.url.searchParams.get('s');
+			if (searchParam && browser && window.innerWidth < 768) {
+				pushState(page.url, { showMobileSearch: true });
+			}
+		}
+	});
+
+	// Sync search term from URL on every navigation (for auto-switching and manual tab changes)
+	// BUT NOT when mobile search is open (to avoid interfering with active typing)
+	$effect(() => {
+		if (initialized && browser && !isSearchOpen) {
+			const searchParam = page.url.searchParams.get('s');
+			const currentSearchTerm = $filtersStore?.searchTerm ?? '';
+			// Only update if URL search differs from current state to avoid loops
+			if (searchParam !== currentSearchTerm) {
+				if (searchParam) {
+					filtersStore.setSearchTerm(searchParam);
+				}
+			}
 		}
 	});
 
@@ -159,9 +181,21 @@
 		}
 	});
 
+	// Track if we just opened search to set initial value
+	let searchJustOpened = false;
 	$effect(() => {
 		if (isSearchOpen && searchInput) {
+			const searchTerm = $filtersStore?.searchTerm ?? '';
+
+			// Set initial value when search opens
+			if (!searchJustOpened) {
+				searchInput.value = searchTerm;
+				searchJustOpened = true;
+			}
+
 			searchInput.focus();
+		} else if (!isSearchOpen) {
+			searchJustOpened = false;
 		}
 	});
 
@@ -264,10 +298,26 @@
 			if (browser && window.innerWidth < 768) {
 				savedScrollPosition = window.scrollY;
 			}
-			// Open search: push state and reset filters
+
+			// Tier list is not searchable - switch to Completed tab if trying to search from tierlist
+			const currentTab = appStore.activeTab;
+			if (currentTab === 'tierlist') {
+				const searchTerm = $filtersStore?.searchTerm ?? '';
+				const searchParam = searchTerm ? `?s=${encodeURIComponent(searchTerm)}` : '';
+				// Open search first, then navigate
+				pushState(page.url, { showMobileSearch: true });
+				goto(`/completed${searchParam}`, {
+					keepFocus: true,
+					noScroll: true,
+					state: { showMobileSearch: true }
+				});
+				isFiltersOpen = false;
+				return;
+			}
+
+			// Open search: push state (don't reset filters to preserve search term)
 			pushState(page.url, { showMobileSearch: true });
 			isFiltersOpen = false;
-			filtersStore.resetAllFilters();
 		}
 	}
 
@@ -362,7 +412,17 @@
 			wasSearchOpen = true;
 		} else if (wasSearchOpen) {
 			wasSearchOpen = false;
+
+			// Clear filter store first to trigger unfiltering
 			filtersStore.setSearchTerm('');
+
+			// Then clear URL parameter
+			if (browser) {
+				const url = new URL(window.location.href);
+				url.searchParams.delete('s');
+				replaceState(url.toString(), page.state);
+			}
+
 			// Restore scroll position when search closes (mobile only)
 			if (browser && window.innerWidth < 768) {
 				requestAnimationFrame(() => {
@@ -385,6 +445,62 @@
 		}
 	});
 
+	// Auto-switch to tab with results when current tab has no matches
+	let lastSearchTerm = '';
+	let lastActiveTab = '';
+	$effect(() => {
+		if (!browser || !isSearchOpen) return;
+
+		const searchTerm = $filtersStore?.searchTerm ?? '';
+		const currentTab = appStore.activeTab;
+		const counts = filteredCountsStore.counts;
+		const currentCount = $filteredGames.length;
+
+		// Only trigger on search term changes, not on initial load or tab switch
+		if (searchTerm && searchTerm !== lastSearchTerm && currentTab === lastActiveTab) {
+			// Current tab has no results, but complementary tab does
+			if (currentCount === 0) {
+				// Preserve search term in URL when navigating
+				const searchParam = searchTerm ? `?s=${encodeURIComponent(searchTerm)}` : '';
+
+				// Tier list is not searchable - switch to Completed or Planned based on what has results
+				if (currentTab === 'tierlist') {
+					if (counts.completed > 0) {
+						goto(`/completed${searchParam}`, {
+							keepFocus: true,
+							noScroll: true,
+							state: { showMobileSearch: true }
+						});
+					} else if (counts.planned > 0) {
+						goto(`/planned${searchParam}`, {
+							keepFocus: true,
+							noScroll: true,
+							state: { showMobileSearch: true }
+						});
+					}
+				}
+				// Planned and Completed are complementary - if one has no results, switch to the other
+				else if (currentTab === 'planned' && counts.completed > 0) {
+					goto(`/completed${searchParam}`, {
+						keepFocus: true,
+						noScroll: true,
+						state: { showMobileSearch: true }
+					});
+				} else if (currentTab === 'completed' && counts.planned > 0) {
+					goto(`/planned${searchParam}`, {
+						keepFocus: true,
+						noScroll: true,
+						state: { showMobileSearch: true }
+					});
+				}
+				// If in All tab, don't auto-switch
+			}
+		}
+
+		lastSearchTerm = searchTerm;
+		lastActiveTab = currentTab;
+	});
+
 	function openModalWithFilterContext(game: Game, contextGames?: Game[]) {
 		modalStore.openViewModal(game, contextGames ?? $filteredGames);
 	}
@@ -403,16 +519,42 @@
 		}
 
 		mobileSearchDebounceTimeout = setTimeout(() => {
-			filtersStore.writeSearchToURL(page.state);
+			// Update filter store FIRST to trigger filtering
 			filtersStore.setSearchTerm(newValue);
+
+			// Then update URL with search parameter using current location
+			if (browser) {
+				const url = new URL(window.location.href);
+				if (newValue) {
+					url.searchParams.set('s', newValue);
+				} else {
+					url.searchParams.delete('s');
+				}
+				// Use replaceState to update URL without navigation
+				replaceState(url.toString(), { ...page.state });
+			}
 		}, 300);
 	}
 
 	function clearMobileSearch() {
+		// Clear filter store first to trigger unfiltering
 		filtersStore.setSearchTerm('');
+
+		// Clear input value
 		if (searchInput) {
 			searchInput.value = '';
-			searchInput.focus();
+		}
+
+		// Clear URL parameter
+		if (browser) {
+			const url = new URL(window.location.href);
+			url.searchParams.delete('s');
+			replaceState(url.toString(), page.state);
+		}
+
+		// Close search box
+		if (isSearchOpen) {
+			history.back();
 		}
 	}
 </script>
@@ -572,7 +714,7 @@
 						<button
 							type="button"
 							class="mobile-close-button"
-							onclick={onSearchToggle}
+							onclick={clearMobileSearch}
 							aria-label="Close search"
 						>
 							Close

@@ -31,6 +31,14 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 		typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
 	);
 
+	// Preserve search term in URL if it exists
+	if (opts.preserveFilters) {
+		const searchTerm = filtersStore.state?.searchTerm;
+		if (searchTerm) {
+			url.searchParams.set('s', searchTerm);
+		}
+	}
+
 	appStore.setActiveTab(target, true);
 
 	await goto(url.toString(), {

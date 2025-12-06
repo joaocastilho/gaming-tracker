@@ -83,7 +83,8 @@
 		} else if (target === 'filters') {
 			onFiltersToggle?.();
 		} else {
-			onCloseSearchAndFilters?.();
+			// Don't close search when navigating between tabs - preserve search state
+			// Only close filters modal
 			navigateTo(target as 'all' | 'completed' | 'planned' | 'tierlist');
 		}
 	}
