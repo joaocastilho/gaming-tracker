@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { modalStore } from '$lib/stores/modal.svelte';
 
+	interface Props {
+		hideWhenFiltersOpen?: boolean;
+	}
+
+	let { hideWhenFiltersOpen = false }: Props = $props();
+
 	let isVisible = $state(false);
 	let buttonElement = $state<HTMLButtonElement | undefined>();
 
@@ -31,7 +37,7 @@
 	}
 </script>
 
-{#if isVisible && !$modalStore.isOpen}
+{#if isVisible && !$modalStore.isOpen && !hideWhenFiltersOpen}
 	<button
 		bind:this={buttonElement}
 		type="button"
