@@ -214,6 +214,7 @@
 	let isFiltersOpen = $state(false);
 	let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
 	let searchInput = $state<HTMLInputElement | null>(null);
+	let savedScrollPosition = $state<number>(0);
 
 	// Pending filter state (applied only when user clicks Apply)
 	let pendingPlatforms = $state<string[]>([]);
@@ -259,6 +260,10 @@
 		if (isSearchOpen) {
 			history.back();
 		} else {
+			// Save scroll position before opening search (mobile only)
+			if (browser && window.innerWidth < 768) {
+				savedScrollPosition = window.scrollY;
+			}
 			// Open search: push state and reset filters
 			pushState(page.url, { showMobileSearch: true });
 			isFiltersOpen = false;
@@ -358,6 +363,25 @@
 		} else if (wasSearchOpen) {
 			wasSearchOpen = false;
 			filtersStore.setSearchTerm('');
+			// Restore scroll position when search closes (mobile only)
+			if (browser && window.innerWidth < 768) {
+				requestAnimationFrame(() => {
+					window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
+				});
+			}
+		}
+	});
+
+	// Scroll to top when search term changes in mobile search
+	$effect(() => {
+		if (browser && isSearchOpen && window.innerWidth < 768) {
+			const searchTerm = $filtersStore?.searchTerm ?? '';
+			// Scroll to top when there's a search term or when results change
+			if (searchTerm) {
+				requestAnimationFrame(() => {
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+				});
+			}
 		}
 	});
 
@@ -707,6 +731,12 @@
 				<div
 					class="absolute inset-0 bg-black/60 backdrop-blur-sm"
 					onclick={() => (activeFilterPopup = null)}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							activeFilterPopup = null;
+						}
+					}}
 					role="button"
 					tabindex="0"
 					aria-label="Close popup"
