@@ -1,4 +1,4 @@
-![Gaming Tracker](static/logo.webp)
+# Gaming Tracker
 
 A fast personal library for tracking and rating my video game collection. Designed to be a clean, offline-friendly way to organize my played and planned games, complete with visual tier lists and detailed stats.
 

@@ -24,7 +24,8 @@
 		Monitor,
 		Tag,
 		Trophy,
-		Users
+		Users,
+		ChevronDown
 	} from 'lucide-svelte';
 	import {
 		getPlatformColor,
@@ -246,6 +247,7 @@
 
 	let isSearchOpen = $derived(!!(page.state as any).showMobileSearch);
 	let isFiltersOpen = $state(false);
+	let isDesktopFiltersExpanded = $state(true); // Desktop filter section expanded by default
 	let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
 	let searchInput = $state<HTMLInputElement | null>(null);
 	let savedScrollPosition = $state<number>(0);
@@ -575,47 +577,76 @@
 	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
 		<Header />
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
-			<div class="container mx-auto space-y-4 px-6 py-4">
+			<div class="container mx-auto px-6">
 				{#if !isTierlistPage}
-					<SearchBar />
-					<div class="flex flex-col items-center gap-4">
-						<div class="flex flex-wrap items-center justify-center gap-3">
-							<FilterDropdown
-								type="platforms"
-								label="Platforms"
-								options={filterOptions.platforms}
-								selectedOptions={selectedPlatforms}
+					<!-- Toggle button for collapsible filters -->
+					<div class="filter-toggle-container">
+						<button
+							type="button"
+							class="filter-toggle-button"
+							onclick={() => (isDesktopFiltersExpanded = !isDesktopFiltersExpanded)}
+							aria-expanded={isDesktopFiltersExpanded}
+							aria-label={isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
+						>
+							<span class="filter-toggle-text">
+								{isDesktopFiltersExpanded ? 'Hide Filters' : 'Show Filters'}
+							</span>
+							<ChevronDown
+								size={20}
+								class="filter-toggle-icon"
+								style="transform: rotate({isDesktopFiltersExpanded ? '180deg' : '0deg'})"
 							/>
-							<FilterDropdown
-								type="genres"
-								label="Genres"
-								options={filterOptions.genres}
-								selectedOptions={selectedGenres}
-							/>
-							{#if showTiersFilter}
-								<FilterDropdown
-									type="tiers"
-									label="Tiers"
-									options={filterOptions.tiers}
-									selectedOptions={selectedTiers}
-								/>
-							{/if}
-
-							{#if showCoOpFilter}
-								<FilterToggle label="Co-op" value="Yes" isSelected={selectedCoOp.includes('Yes')} />
-							{/if}
-							<span class="pipe-separator">|</span>
-							<RatingsSort />
-							<button
-								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
-								title="Reset all filters"
-								onclick={resetFilters}
-							>
-								<RotateCcw size={18} />
-								Reset
-							</button>
-						</div>
+						</button>
 					</div>
+
+					<!-- Collapsible filter content -->
+					{#if isDesktopFiltersExpanded}
+						<div class="filter-content space-y-4 py-4">
+							<SearchBar />
+							<div class="flex flex-col items-center gap-4">
+								<div class="flex flex-wrap items-center justify-center gap-3">
+									<FilterDropdown
+										type="platforms"
+										label="Platforms"
+										options={filterOptions.platforms}
+										selectedOptions={selectedPlatforms}
+									/>
+									<FilterDropdown
+										type="genres"
+										label="Genres"
+										options={filterOptions.genres}
+										selectedOptions={selectedGenres}
+									/>
+									{#if showTiersFilter}
+										<FilterDropdown
+											type="tiers"
+											label="Tiers"
+											options={filterOptions.tiers}
+											selectedOptions={selectedTiers}
+										/>
+									{/if}
+
+									{#if showCoOpFilter}
+										<FilterToggle
+											label="Co-op"
+											value="Yes"
+											isSelected={selectedCoOp.includes('Yes')}
+										/>
+									{/if}
+									<span class="pipe-separator">|</span>
+									<RatingsSort />
+									<button
+										class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+										title="Reset all filters"
+										onclick={resetFilters}
+									>
+										<RotateCcw size={18} />
+										Reset
+									</button>
+								</div>
+							</div>
+						</div>
+					{/if}
 				{/if}
 			</div>
 		</section>
@@ -1698,5 +1729,57 @@
 	.filter-popup-accept:hover {
 		background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+	}
+
+	/* Desktop Collapsible Filter Toggle Styles */
+	.filter-toggle-container {
+		display: flex;
+		justify-content: center;
+		padding: 0.75rem 0;
+	}
+
+	.filter-toggle-button {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
+		background-color: var(--color-surface);
+		color: var(--color-text-primary);
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.filter-toggle-button:hover {
+		background-color: var(--color-accent);
+		border-color: var(--color-accent);
+		transform: translateY(-1px);
+	}
+
+	.filter-toggle-text {
+		user-select: none;
+	}
+
+	.filter-toggle-button :global(.filter-toggle-icon) {
+		transition: transform 0.3s ease;
+	}
+
+	.filter-content {
+		animation: filterExpandCollapse 0.3s ease;
+		transform-origin: top;
+	}
+
+	@keyframes filterExpandCollapse {
+		from {
+			opacity: 0;
+			transform: scaleY(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scaleY(1);
+		}
 	}
 </style>

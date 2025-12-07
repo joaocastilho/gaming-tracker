@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { navigateTo, navigateToAndReset } from '$lib/utils/navigationUtils';
-	import { goto } from '$app/navigation';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import Logo from '$lib/components/Logo.svelte';
 
 	import { appStore } from '$lib/stores/app.svelte';
-	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
@@ -55,25 +52,6 @@
 		] as NavItem[];
 	});
 
-	function handleLogoClick(event: MouseEvent) {
-		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-		event.preventDefault();
-
-		filtersStore.resetAllFilters();
-		filtersStore.setSearchTerm('');
-		appStore.setActiveTab('all', true);
-		const route = '/';
-		goto(route, {
-			replaceState: false,
-			noScroll: false,
-			keepFocus: true
-		});
-
-		if (typeof window !== 'undefined') {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		}
-	}
-
 	async function handleNavClick(target: NavId) {
 		if (target === 'tierlist') {
 			await navigateToAndReset(target);
@@ -85,10 +63,6 @@
 
 <header class="header-root px-6 py-3 md:py-1">
 	<div class="header-inner container mx-auto">
-		<a href="/" class="logo-button relative z-10 mx-auto md:mx-0" onclick={handleLogoClick}>
-			<Logo />
-		</a>
-
 		<nav class="tabs-nav">
 			<ul class="tabs-list">
 				{#each navItems as item (item.id)}
@@ -108,9 +82,7 @@
 			</ul>
 		</nav>
 
-		<div
-			class="header-right absolute top-1/2 right-6 flex -translate-y-1/2 items-center gap-2 md:static md:translate-y-0 md:items-start md:justify-self-end"
-		>
+		<div class="header-right">
 			<div class="theme-toggle-wrapper">
 				<ThemeToggle />
 			</div>
@@ -120,55 +92,31 @@
 
 <style>
 	.header-root {
-		padding: 0.4rem 16px 0.4rem;
+		padding: 0.75rem 16px;
 	}
 
 	.header-inner {
 		display: grid;
-		grid-template-columns: 1fr;
-		grid-template-rows: auto auto;
-		gap: 0.5rem;
+		grid-template-columns: 1fr auto;
+		grid-template-rows: auto;
+		gap: 1rem;
 		max-width: 1000px;
 		width: 100%;
 		margin: 0 auto;
-	}
-
-	.logo-button {
-		display: inline-flex;
-		align-items: flex-end;
-		justify-content: center;
-		padding: 0;
-		border: none;
-		background: transparent;
-		color: var(--color-foreground);
-		cursor: pointer;
-		grid-row: 1;
-		grid-column: 1;
-	}
-
-	.logo-button :global(img) {
-		height: 120px;
-		width: auto;
-		display: block;
-	}
-
-	@media (max-width: 768px) {
-		.logo-button :global(img) {
-			height: 80px;
-		}
+		align-items: center;
 	}
 
 	.tabs-nav {
 		display: flex;
-		align-items: flex-end;
+		align-items: center;
 		justify-content: center;
-		grid-row: 2;
+		grid-row: 1;
 		grid-column: 1;
 	}
 
 	.tabs-list {
 		display: inline-flex;
-		align-items: flex-end;
+		align-items: center;
 		gap: 1.5rem;
 		list-style: none;
 		padding: 0;
@@ -248,43 +196,18 @@
 
 	.header-right {
 		display: flex;
-		align-items: flex-start;
+		align-items: center;
 		justify-content: flex-end;
 		gap: 0.5rem;
 		grid-row: 1;
-		grid-column: 1;
-		justify-self: end;
+		grid-column: 2;
 	}
 
 	.theme-toggle-wrapper {
 		display: inline-flex;
-		align-items: flex-start;
+		align-items: center;
 		transform: scale(1.2);
-		transform-origin: top right;
-	}
-
-	@media (min-width: 835px) {
-		.header-inner {
-			grid-template-columns: auto 1fr auto;
-			grid-template-rows: auto;
-			gap: 1rem;
-		}
-
-		.logo-button {
-			grid-row: 1;
-			grid-column: 1;
-		}
-
-		.tabs-nav {
-			grid-row: 1;
-			grid-column: 2;
-		}
-
-		.header-right {
-			grid-row: 1;
-			grid-column: 3;
-			justify-self: auto;
-		}
+		transform-origin: center right;
 	}
 
 	@media (max-width: 834px) {
@@ -298,32 +221,17 @@
 		}
 
 		.header-inner {
-			position: relative;
-			grid-template-columns: 1fr;
-			grid-template-rows: auto;
-			gap: 0;
-			justify-content: center;
+			grid-template-columns: 1fr auto;
+			justify-content: space-between;
 		}
 
 		.header-root {
-			padding: 0.4rem 1.8rem 0.4rem;
-		}
-
-		.logo-button {
-			grid-row: 1;
-			grid-column: 1;
-			margin: 0 auto;
-			justify-self: center;
+			padding: 0.75rem 1.8rem;
 		}
 
 		.header-right {
-			position: absolute;
-			top: 0.4rem;
-			right: 0;
-			grid-row: unset;
-			grid-column: unset;
-			transform: none;
-			justify-self: auto;
+			grid-row: 1;
+			grid-column: 2;
 		}
 
 		.theme-toggle-wrapper {
