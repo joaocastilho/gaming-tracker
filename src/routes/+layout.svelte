@@ -259,8 +259,10 @@
 
 	let isSearchOpen = $derived(!!(page.state as any).showMobileSearch);
 	let isFiltersOpen = $state(false);
-	let isDesktopFiltersExpanded = $state(true); // Desktop filter section expanded by default
+
+	// Desktop filters expanded state moved to filtersStore
 	let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
+
 	let searchInput = $state<HTMLInputElement | null>(null);
 	let savedScrollPosition = $state<number>(0);
 
@@ -591,28 +593,11 @@
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
 			<div class="container mx-auto px-6">
 				{#if !isTierlistPage}
-					<!-- Toggle button for collapsible filters -->
-					<div class="filter-toggle-container">
-						<button
-							type="button"
-							class="filter-toggle-button"
-							onclick={() => (isDesktopFiltersExpanded = !isDesktopFiltersExpanded)}
-							aria-expanded={isDesktopFiltersExpanded}
-							aria-label={isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
-							title={isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
-						>
-							<SlidersHorizontal size={16} class="filter-icon" />
-							<ChevronDown
-								size={16}
-								class="filter-toggle-icon"
-								style="transform: rotate({isDesktopFiltersExpanded ? '180deg' : '0deg'})"
-							/>
-						</button>
-					</div>
+					<!-- Filter toggle moved to Header.svelte -->
 
 					<!-- Collapsible filter content -->
-					{#if isDesktopFiltersExpanded}
-						<div class="filter-content space-y-4 py-4">
+					{#if filtersStore.isDesktopFiltersExpanded}
+						<div class="filter-content space-y-4 mb-4">
 							<SearchBar />
 							<div class="flex flex-col items-center gap-4">
 								<div class="flex flex-wrap items-center justify-center gap-3">
@@ -1740,37 +1725,6 @@
 	.filter-popup-accept:hover {
 		background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-	}
-
-	/* Desktop Collapsible Filter Toggle Styles */
-	.filter-toggle-container {
-		display: flex;
-		justify-content: center;
-		padding: 0.75rem 0;
-	}
-
-	.filter-toggle-button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 6px;
-		padding: 6px 12px;
-		border: 1px solid transparent;
-		border-radius: 20px;
-		background-color: transparent;
-		color: var(--color-text-secondary);
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.filter-toggle-button:hover {
-		background-color: var(--color-surface);
-		color: var(--color-text-primary);
-		transform: translateY(-1px);
-	}
-
-	.filter-toggle-button :global(.filter-toggle-icon) {
-		transition: transform 0.3s ease;
 	}
 
 	.filter-content {

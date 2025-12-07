@@ -4,6 +4,8 @@
 
 	import { appStore } from '$lib/stores/app.svelte';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
+	import { filtersStore } from '$lib/stores/filters.svelte';
+	import { ChevronDown, SlidersHorizontal } from 'lucide-svelte';
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -85,6 +87,24 @@
 		<div class="header-right">
 			<div class="theme-toggle-wrapper">
 				<ThemeToggle />
+			</div>
+
+			<div class="filter-toggle-wrapper hidden md:block">
+				<button
+					type="button"
+					class="filter-toggle-button"
+					onclick={() => filtersStore.toggleDesktopFiltersExpanded()}
+					aria-expanded={filtersStore.isDesktopFiltersExpanded}
+					aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
+					title={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
+				>
+					<SlidersHorizontal size={16} class="filter-icon" />
+					<ChevronDown
+						size={16}
+						class="filter-chevron-icon"
+						style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
+					/>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -210,6 +230,43 @@
 		transform-origin: center right;
 	}
 
+	.filter-toggle-wrapper {
+		display: inline-flex;
+		align-items: center;
+		margin-left: 0.5rem;
+	}
+
+	.filter-toggle-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		padding: 6px 12px;
+		border: 1px solid var(--color-border);
+		border-radius: 20px;
+		background-color: var(--color-surface);
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.filter-toggle-button:hover {
+		background-color: var(--color-accent);
+		color: white;
+		border-color: var(--color-accent);
+		transform: translateY(-1px);
+	}
+
+	/* Also update the icon colors on hover */
+	.filter-toggle-button:hover :global(.filter-icon),
+	.filter-toggle-button:hover :global(.filter-chevron-icon) {
+		color: white;
+	}
+
+	.filter-toggle-button :global(.filter-chevron-icon) {
+		transition: transform 0.3s ease;
+	}
+
 	@media (max-width: 834px) {
 		.tabs-list button {
 			min-height: 44px;
@@ -236,6 +293,10 @@
 
 		.theme-toggle-wrapper {
 			transform: none;
+		}
+
+		.filter-toggle-wrapper {
+			display: none;
 		}
 	}
 </style>

@@ -50,6 +50,10 @@ class FiltersStore {
 	private _state = $state<FilterState | null>(null);
 	private subscribers = new Set<(value: FilterState | null) => void>();
 
+	// UI State - Desktop Filters Expansion
+	// Default to TRUE as per original behavior
+	public isDesktopFiltersExpanded = $state(true);
+
 	constructor() {
 		// Initialize filters if in browser
 		if (browser) {
@@ -229,6 +233,10 @@ class FiltersStore {
 
 	update(fn: (state: FilterState | null) => FilterState | null): void {
 		this.state = fn(this._state);
+	}
+
+	toggleDesktopFiltersExpanded(): void {
+		this.isDesktopFiltersExpanded = !this.isDesktopFiltersExpanded;
 	}
 
 	readSearchFromURL(searchParams: URLSearchParams): void {
