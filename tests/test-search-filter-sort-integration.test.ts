@@ -2,7 +2,7 @@
  * Search, Filter, and Sort Integration Tests
  * Tests that verify the core functionality of searching, filtering, and sorting games.
  * These tests ensure that changes to filters/search/sort actually affect the filtered results.
- * 
+ *
  * IMPORTANT: These tests use singleton store imports (like the app) to ensure we test
  * actual production behavior, including caching. State is reset between tests using
  * store reset methods instead of vi.resetModules().
@@ -295,14 +295,12 @@ describe('Search Functionality', () => {
 		// Verify search is cleared and gallery updated
 		expect(filtersStore.state?.searchTerm).toBe('');
 		expect(allPlanned).toHaveLength(1); // Still 1 because we only have 1 Planned game
-		expect(allPlanned.every(g => g.status === 'Planned')).toBe(true);
+		expect(allPlanned.every((g) => g.status === 'Planned')).toBe(true);
 	});
 });
 
 describe('Platform Filter Functionality', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
+	beforeEach(resetStoreState);
 
 	it('should filter games by single platform', async () => {
 		const { gamesStore } = await import('$lib/stores/games.svelte');
@@ -348,9 +346,7 @@ describe('Platform Filter Functionality', () => {
 });
 
 describe('Genre Filter Functionality', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
+	beforeEach(resetStoreState);
 
 	it('should filter games by genre', async () => {
 		const { gamesStore } = await import('$lib/stores/games.svelte');
@@ -382,9 +378,7 @@ describe('Genre Filter Functionality', () => {
 });
 
 describe('Tier Filter Functionality', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
+	beforeEach(resetStoreState);
 
 	it('should filter games by tier', async () => {
 		const { gamesStore } = await import('$lib/stores/games.svelte');
@@ -416,9 +410,7 @@ describe('Tier Filter Functionality', () => {
 });
 
 describe('Co-Op Filter Functionality', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
+	beforeEach(resetStoreState);
 
 	it('should filter games by co-op Yes', async () => {
 		const { gamesStore } = await import('$lib/stores/games.svelte');
@@ -450,9 +442,7 @@ describe('Co-Op Filter Functionality', () => {
 });
 
 describe('Sorting Functionality', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
+	beforeEach(resetStoreState);
 
 	it('should sort games by score descending', async () => {
 		const { gamesStore } = await import('$lib/stores/games.svelte');
@@ -574,9 +564,7 @@ describe('Sorting Functionality', () => {
 });
 
 describe('Combined Filters', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
+	beforeEach(resetStoreState);
 
 	it('should apply both search and platform filter', async () => {
 		const { gamesStore } = await import('$lib/stores/games.svelte');
@@ -645,9 +633,7 @@ describe('Combined Filters', () => {
 });
 
 describe('Reset Filters', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
+	beforeEach(resetStoreState);
 
 	it('should clear all filters and return all games', async () => {
 		const { gamesStore } = await import('$lib/stores/games.svelte');
@@ -693,9 +679,7 @@ describe('Reset Filters', () => {
 });
 
 describe('Filter Removal', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
+	beforeEach(resetStoreState);
 
 	it('should remove individual platform filter', async () => {
 		const { filtersStore } = await import('$lib/stores/filters.svelte');

@@ -193,7 +193,12 @@ class FiltersStore {
 
 	setSearchTerm(term: string): void {
 		if (!this._state) return;
-		console.log('[FiltersStore] setSearchTerm called with:', term, 'current:', this._state.searchTerm);
+		console.log(
+			'[FiltersStore] setSearchTerm called with:',
+			term,
+			'current:',
+			this._state.searchTerm
+		);
 		// Guard: only update if value changed to prevent effect loops
 		if (this._state.searchTerm === term) {
 			console.log('[FiltersStore] searchTerm unchanged, skipping update');
