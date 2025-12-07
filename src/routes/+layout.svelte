@@ -161,15 +161,27 @@
 		}
 	});
 
+	import { lastManualClearTime } from '$lib/stores/searchClearCoordinator';
+
 	// Sync search term from URL on every navigation (for auto-switching and manual tab changes)
 	// BUT NOT when mobile search is open (to avoid interfering with active typing)
+	// Also NOT immediately after a manual clear (to prevent race condition)
 	$effect(() => {
 		if (initialized && browser && !isSearchOpen) {
 			const searchParam = page.url.searchParams.get('s');
 			const currentSearchTerm = $filtersStore?.searchTerm ?? '';
+
+			// Skip sync if we just manually cleared (within 100ms)
+			const timeSinceLastClear = Date.now() - lastManualClearTime;
+			if (timeSinceLastClear < 100) {
+				console.log('[Layout] Skipping URL sync - recent manual clear');
+				return;
+			}
+
 			// Only update if URL search differs from current state to avoid loops
 			if (searchParam !== currentSearchTerm) {
 				if (searchParam) {
+					console.log('[Layout] Syncing search from URL:', searchParam);
 					filtersStore.setSearchTerm(searchParam);
 				}
 			}

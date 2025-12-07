@@ -1,15 +1,28 @@
 <script lang="ts">
 	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { page } from '$app/state';
+	import { replaceState } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import { X } from 'lucide-svelte';
+	import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
+
+	type Props = {
+		onClose?: () => void;
+	};
+
+	let { onClose }: Props = $props();
 
 	let inputElement = $state<HTMLInputElement | undefined>(undefined);
 	let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	let searchTerm = $derived($filtersStore?.searchTerm ?? '');
 
+	// Initialize input value once on mount
+	let initialized = $state(false);
 	$effect(() => {
-		if (inputElement) {
+		if (inputElement && !initialized) {
+			inputElement.value = searchTerm;
+			initialized = true;
 			inputElement.focus();
 		}
 	});
@@ -23,22 +36,46 @@
 		}
 
 		debounceTimeout = setTimeout(() => {
-			filtersStore.writeSearchToURL(page.state);
 			filtersStore.setSearchTerm(newValue);
+			filtersStore.writeSearchToURL(page.state);
 		}, 300);
 	}
 
 	function clearSearch() {
+		console.log('[SearchBar] clearSearch called');
+
+		// Cancel any pending debounced writes
+		if (debounceTimeout) {
+			clearTimeout(debounceTimeout);
+		}
+
+		console.log('[SearchBar] Clearing URL first...');
+		// Clear URL parameter FIRST (synchronously) before touching the store
+		// This prevents the URL sync effect from restoring the value
+		if (browser) {
+			const url = new URL(window.location.href);
+			console.log('[SearchBar] Current URL:', url.toString());
+			url.searchParams.delete('s');
+			console.log('[SearchBar] New URL:', url.toString());
+			replaceState(url.toString(), page.state);
+		}
+
+		// Mark the clear timestamp to prevent URL sync effect from running
+		markSearchCleared();
+
+		console.log('[SearchBar] Clearing store...');
+		// Then clear store to trigger filtering
+		filtersStore.setSearchTerm('');
+
+		console.log('[SearchBar] Clearing input element...');
+		// Finally clear input value
 		if (inputElement) {
 			inputElement.value = '';
 			requestAnimationFrame(() => {
 				inputElement?.focus();
 			});
 		}
-		filtersStore.setSearchTerm('');
-		if (debounceTimeout) {
-			clearTimeout(debounceTimeout);
-		}
+		console.log('[SearchBar] clearSearch complete');
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
@@ -75,13 +112,13 @@
 	});
 </script>
 
+```
 <div class="search-bar-container">
 	<div class="search-bar">
 		<span class="search-icon" aria-hidden="true">🔍</span>
 		<input
 			id="search-input"
 			bind:this={inputElement}
-			bind:value={searchTerm}
 			type="text"
 			placeholder="Search games..."
 			oninput={handleInput}

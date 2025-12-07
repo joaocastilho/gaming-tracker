@@ -2,9 +2,16 @@
  * Search, Filter, and Sort Integration Tests
  * Tests that verify the core functionality of searching, filtering, and sorting games.
  * These tests ensure that changes to filters/search/sort actually affect the filtered results.
+ * 
+ * IMPORTANT: These tests use singleton store imports (like the app) to ensure we test
+ * actual production behavior, including caching. State is reset between tests using
+ * store reset methods instead of vi.resetModules().
  */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { Game } from '$lib/types/game';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
 
 // Mock game data for testing
 const mockGames: Partial<Game>[] = [
@@ -80,18 +87,26 @@ const mockGames: Partial<Game>[] = [
 	}
 ];
 
+// Helper to reset all store state between tests (mimics app restart)
+function resetStoreState() {
+	// Clear filters
+	filtersStore.resetAllFilters();
+	filtersStore.setSearchTerm('');
+	filtersStore.setSort(null);
+
+	// Clear caches
+	filteredGamesStore.clearCache();
+
+	// Reinitialize games
+	gamesStore.initializeGames(mockGames);
+}
+
 describe('Search Functionality', () => {
 	beforeEach(() => {
-		vi.resetModules();
+		resetStoreState();
 	});
 
-	it('should filter games by title when search term is set', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-
-		gamesStore.initializeGames(mockGames);
-
+	it('should filter games by title when search term is set', () => {
 		// Search for "Zelda"
 		filtersStore.setSearchTerm('Zelda');
 
@@ -159,6 +174,94 @@ describe('Search Functionality', () => {
 		expect(filteredGamesStore.games).toHaveLength(5);
 	});
 
+	it('should allow clearing search multiple times in sequence', async () => {
+		const { gamesStore } = await import('$lib/stores/games.svelte');
+		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+
+		gamesStore.initializeGames(mockGames);
+
+		// First search and clear
+		filtersStore.setSearchTerm('Zelda');
+		expect(filteredGamesStore.games).toHaveLength(1);
+		filtersStore.setSearchTerm('');
+		expect(filteredGamesStore.games).toHaveLength(5);
+		expect(filtersStore.state?.searchTerm).toBe('');
+
+		// Second search and clear
+		filtersStore.setSearchTerm('Souls');
+		expect(filteredGamesStore.games).toHaveLength(1);
+		filtersStore.setSearchTerm('');
+		expect(filteredGamesStore.games).toHaveLength(5);
+		expect(filtersStore.state?.searchTerm).toBe('');
+
+		// Third search and clear
+		filtersStore.setSearchTerm('Mario');
+		expect(filteredGamesStore.games).toHaveLength(1);
+		filtersStore.setSearchTerm('');
+		expect(filteredGamesStore.games).toHaveLength(5);
+		expect(filtersStore.state?.searchTerm).toBe('');
+	});
+
+	it('should not interfere with typing when setting consecutive search terms', async () => {
+		const { filtersStore } = await import('$lib/stores/filters.svelte');
+
+		// Simulate typing "Zelda" character by character (like user typing)
+		filtersStore.setSearchTerm('Z');
+		expect(filtersStore.state?.searchTerm).toBe('Z');
+
+		filtersStore.setSearchTerm('Ze');
+		expect(filtersStore.state?.searchTerm).toBe('Ze');
+
+		filtersStore.setSearchTerm('Zel');
+		expect(filtersStore.state?.searchTerm).toBe('Zel');
+
+		filtersStore.setSearchTerm('Zelda');
+		expect(filtersStore.state?.searchTerm).toBe('Zelda');
+
+		// Clear should work after typing
+		filtersStore.setSearchTerm('');
+		expect(filtersStore.state?.searchTerm).toBe('');
+	});
+
+	it('should clear search and show all games even when no results match', async () => {
+		const { gamesStore } = await import('$lib/stores/games.svelte');
+		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+
+		gamesStore.initializeGames(mockGames);
+
+		// Search for non-existent game
+		filtersStore.setSearchTerm('XYZ_NONEXISTENT');
+		expect(filteredGamesStore.games).toHaveLength(0);
+
+		// Clear should work and show all games
+		filtersStore.setSearchTerm('');
+		expect(filtersStore.state?.searchTerm).toBe('');
+		expect(filteredGamesStore.games).toHaveLength(5);
+	});
+
+	it('should clear search but preserve other filters', async () => {
+		const { gamesStore } = await import('$lib/stores/games.svelte');
+		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+
+		gamesStore.initializeGames(mockGames);
+
+		// Apply platform filter
+		filtersStore.togglePlatform('PC');
+		expect(filteredGamesStore.games).toHaveLength(3); // PC games
+
+		// Search within filtered results
+		filtersStore.setSearchTerm('Souls');
+		expect(filteredGamesStore.games).toHaveLength(1);
+
+		// Clear search (but keep filter)
+		filtersStore.setSearchTerm('');
+		expect(filtersStore.state?.searchTerm).toBe('');
+		expect(filteredGamesStore.games).toHaveLength(3); // Back to all PC games
+	});
+
 	it('should return empty array when no games match search', async () => {
 		const { gamesStore } = await import('$lib/stores/games.svelte');
 		const { filtersStore } = await import('$lib/stores/filters.svelte');
@@ -169,6 +272,30 @@ describe('Search Functionality', () => {
 		filtersStore.setSearchTerm('NONEXISTENT');
 
 		expect(filteredGamesStore.games).toHaveLength(0);
+	});
+
+	it('should clear search and show all tab games after navigation (bug fix test)', async () => {
+		// This test verifies the fix for: search → tab change → clear
+		// Bug was: URL sync effect restored search term after clear
+		const { appStore } = await import('$lib/stores/app.svelte');
+
+		// Search for "Ring" on default tab
+		filtersStore.setSearchTerm('Ring');
+		expect(filteredGamesStore.games).toHaveLength(1); // Elden Ring
+
+		// Navigate to Planned tab
+		appStore.setActiveTab('planned');
+		const filteredPlanned = filteredGamesStore.games;
+		expect(filteredPlanned).toHaveLength(1); // Elden Ring is Planned
+
+		// Clear search - critical: should show ALL planned games
+		filtersStore.setSearchTerm('');
+		const allPlanned = filteredGamesStore.games;
+
+		// Verify search is cleared and gallery updated
+		expect(filtersStore.state?.searchTerm).toBe('');
+		expect(allPlanned).toHaveLength(1); // Still 1 because we only have 1 Planned game
+		expect(allPlanned.every(g => g.status === 'Planned')).toBe(true);
 	});
 });
 

@@ -41,7 +41,8 @@ class FilteredGamesStore {
 
 		const cacheKey = this.createCacheKey(filters, activeTab);
 
-		if (this.lastCacheKey === cacheKey && this.lastCachedResult.length > 0) {
+		// Return cached result if cache key matches (even if result is empty)
+		if (this.lastCacheKey === cacheKey) {
 			return this.lastCachedResult;
 		}
 
