@@ -599,12 +599,11 @@
 							onclick={() => (isDesktopFiltersExpanded = !isDesktopFiltersExpanded)}
 							aria-expanded={isDesktopFiltersExpanded}
 							aria-label={isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
+							title={isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
 						>
-							<span class="filter-toggle-text">
-								{isDesktopFiltersExpanded ? 'Hide Filters' : 'Show Filters'}
-							</span>
+							<SlidersHorizontal size={16} class="filter-icon" />
 							<ChevronDown
-								size={20}
+								size={16}
 								class="filter-toggle-icon"
 								style="transform: rotate({isDesktopFiltersExpanded ? '180deg' : '0deg'})"
 							/>
@@ -1753,26 +1752,21 @@
 	.filter-toggle-button {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 1rem;
-		border: 1px solid var(--color-border);
-		border-radius: 8px;
-		background-color: var(--color-surface);
-		color: var(--color-text-primary);
-		font-size: 0.875rem;
-		font-weight: 500;
+		justify-content: center;
+		gap: 6px;
+		padding: 6px 12px;
+		border: 1px solid transparent;
+		border-radius: 20px;
+		background-color: transparent;
+		color: var(--color-text-secondary);
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
 
 	.filter-toggle-button:hover {
-		background-color: var(--color-accent);
-		border-color: var(--color-accent);
+		background-color: var(--color-surface);
+		color: var(--color-text-primary);
 		transform: translateY(-1px);
-	}
-
-	.filter-toggle-text {
-		user-select: none;
 	}
 
 	.filter-toggle-button :global(.filter-toggle-icon) {
