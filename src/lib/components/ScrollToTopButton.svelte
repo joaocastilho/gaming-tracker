@@ -61,7 +61,7 @@
 		height: 48px;
 		border-radius: 50%;
 		border: none;
-		background-color: rgba(128, 128, 128, 0.4);
+		background-color: rgba(128, 128, 128, 0.65);
 		color: var(--color-text-primary);
 		cursor: pointer;
 		display: flex;
@@ -77,7 +77,7 @@
 	}
 
 	.scroll-to-top-button:hover {
-		background-color: rgba(128, 128, 128, 0.7);
+		background-color: rgba(128, 128, 128, 0.9);
 		opacity: 1;
 	}
 
@@ -94,12 +94,12 @@
 	}
 
 	:global(.light) .scroll-to-top-button {
-		background-color: rgba(128, 128, 128, 0.4);
+		background-color: rgba(128, 128, 128, 0.65);
 		color: var(--color-text-primary);
 	}
 
 	:global(.light) .scroll-to-top-button:hover {
-		background-color: rgba(128, 128, 128, 0.7);
+		background-color: rgba(128, 128, 128, 0.9);
 	}
 
 	:global(.light) .scroll-to-top-button:focus {
@@ -114,7 +114,7 @@
 
 	@media (max-width: 768px) {
 		.scroll-to-top-button {
-			bottom: 124px;
+			bottom: 115px;
 			right: 16px;
 			width: 44px;
 			height: 44px;

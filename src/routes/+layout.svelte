@@ -1814,7 +1814,7 @@
 	.mobile-settings-container {
 		position: fixed;
 		right: 16px;
-		bottom: 70px;
+		bottom: 65px;
 		z-index: 45;
 		display: flex;
 		flex-direction: row;
@@ -1854,7 +1854,7 @@
 		height: 40px;
 		border-radius: 50%;
 		border: none;
-		background-color: rgba(128, 128, 128, 0.4);
+		background-color: rgba(128, 128, 128, 0.65);
 		color: var(--color-text-primary);
 		cursor: pointer;
 		display: flex;
@@ -1867,7 +1867,7 @@
 	}
 
 	.settings-menu-item:hover {
-		background-color: rgba(128, 128, 128, 0.7);
+		background-color: rgba(128, 128, 128, 0.9);
 		opacity: 1;
 	}
 
@@ -1905,19 +1905,19 @@
 
 	/* Settings FAB */
 	.settings-fab {
-		background-color: rgba(128, 128, 128, 0.4);
+		background-color: rgba(128, 128, 128, 0.65);
 		border: none;
 		color: var(--color-text-primary);
 		opacity: 0.95;
 	}
 
 	.settings-fab:hover {
-		background-color: rgba(128, 128, 128, 0.7);
+		background-color: rgba(128, 128, 128, 0.9);
 		opacity: 1;
 	}
 
 	.settings-fab.active {
-		background-color: rgba(128, 128, 128, 0.7);
+		background-color: rgba(128, 128, 128, 0.9);
 		opacity: 1;
 	}
 
@@ -1932,7 +1932,7 @@
 	@media (max-width: 480px) {
 		.mobile-settings-container {
 			right: 16px;
-			bottom: 100px;
+			bottom: 70px;
 		}
 
 		.floating-action-button {
