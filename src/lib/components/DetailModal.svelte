@@ -710,7 +710,7 @@
 {#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}
 	<div
 		bind:this={modalElement}
-		class="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-5 md:items-center md:pt-4"
+		class="fixed inset-0 z-[60] flex items-center justify-center p-3 md:p-4"
 		style="background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);"
 		transition:fade={{ duration: isIOS ? 250 : 200 }}
 		onclick={handleOverlayClick}
@@ -992,7 +992,7 @@
 		{/if}
 
 		<div
-			class="modal-content relative flex h-auto max-h-[95dvh] w-[95vw] max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
+			class="modal-content relative flex h-auto w-full max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
 			class:ios-modal={isIOS}
 			class:android-modal={isAndroid}
 			class:swiping-close={isClosingGesture}
@@ -1023,9 +1023,11 @@
 			>
 				<X size={20} />
 			</button>
-			<div class="flex h-full flex-col md:grid md:grid-cols-[350px_1fr] lg:grid-cols-[400px_1fr]">
+			<div
+				class="modal-layout flex h-full flex-col md:grid md:grid-cols-[350px_1fr] lg:grid-cols-[400px_1fr]"
+			>
 				<div
-					class="relative shrink-0 overflow-hidden rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
+					class="modal-image-container relative flex-1 overflow-hidden rounded-t-xl md:shrink-0 md:flex-none md:rounded-l-xl md:rounded-tr-none"
 				>
 					<div class="modal-image-wrapper">
 						<div class="modal-skeleton-loader"></div>
@@ -1064,7 +1066,9 @@
 					</div>
 				</div>
 
-				<div class="flex-1 overflow-y-auto px-5 pt-4 pb-6 md:pt-4 md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8">
+				<div
+					class="modal-details-section shrink-0 overflow-hidden px-5 pt-4 pb-4 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
+				>
 					<div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
 						<h1
 							id="modal-title"
@@ -1432,10 +1436,22 @@
 	.modal-image-wrapper {
 		position: relative;
 		width: 100%;
-		height: 28vh;
-		min-height: 140px;
-		max-height: 30vh;
+		height: 100%;
+		min-height: 120px;
 		overflow: hidden;
+	}
+
+	/* Mobile: image container grows to fill available space */
+	.modal-image-container {
+		min-height: 120px;
+	}
+
+	/* Mobile: details section should not scroll, stays compact */
+	@media (max-width: 767px) {
+		.modal-details-section {
+			max-height: none;
+			overflow: visible;
+		}
 	}
 
 	#modal-title {
@@ -1518,6 +1534,38 @@
 	.modal-content {
 		will-change: transform, opacity;
 		transition: box-shadow 0.2s ease;
+	}
+
+	/* Mobile: fill viewport height minus padding, use flex layout */
+	@media (max-width: 767px) {
+		.modal-content {
+			height: calc(100dvh - 24px);
+			max-height: calc(100dvh - 24px);
+			overflow: hidden;
+		}
+
+		.modal-layout {
+			height: 100%;
+		}
+
+		.modal-image-container {
+			flex: 1 1 auto;
+			min-height: 0;
+		}
+
+		.modal-details-section {
+			flex: 0 0 auto;
+		}
+	}
+
+	/* Desktop: reset to auto height */
+	@media (min-width: 768px) {
+		.modal-content {
+			height: auto;
+			max-height: 85vh;
+			min-height: unset;
+			overflow: visible;
+		}
 	}
 
 	.ios-modal {
