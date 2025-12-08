@@ -974,7 +974,7 @@
 					<div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
 						<h1
 							id="modal-title"
-							class="flex min-w-0 flex-1 flex-col justify-start h-[90px] md:h-auto"
+							class="flex min-w-0 flex-1 flex-col justify-start md:h-auto"
 							style="color: var(--color-text-primary);"
 						>
 							<span
@@ -1338,10 +1338,14 @@
 	.modal-image-wrapper {
 		position: relative;
 		width: 100%;
-		height: 35vh;
+		height: 28vh;
 		min-height: 140px;
-		max-height: 38vh;
+		max-height: 30vh;
 		overflow: hidden;
+	}
+
+	#modal-title {
+		min-height: 65px;
 	}
 
 	@media (min-width: 768px) {
