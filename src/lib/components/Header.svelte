@@ -292,7 +292,7 @@
 		}
 
 		.theme-toggle-wrapper {
-			transform: none;
+			display: none;
 		}
 
 		.filter-toggle-wrapper {

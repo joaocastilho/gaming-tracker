@@ -25,7 +25,10 @@
 		Tag,
 		Trophy,
 		Users,
-		ChevronDown
+		ChevronDown,
+		Settings,
+		Sun,
+		Moon
 	} from 'lucide-svelte';
 	import {
 		getPlatformColor,
@@ -259,6 +262,7 @@
 
 	let isSearchOpen = $derived(!!(page.state as any).showMobileSearch);
 	let isFiltersOpen = $state(false);
+	let isSettingsMenuOpen = $state(false);
 
 	// Desktop filters expanded state moved to filtersStore
 	let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
@@ -987,7 +991,70 @@
 			</div>
 		{/if}
 
-		<BottomNavigation {onSearchToggle} {onFiltersToggle} {onCloseSearchAndFilters} />
+		<!-- Mobile Settings Menu -->
+		{#if !$modalStore.isOpen && !isFiltersOpen}
+			<div class="mobile-settings-container md:hidden">
+				<!-- Expanded menu options (to the left of button) -->
+				{#if isSettingsMenuOpen}
+					<!-- Backdrop to close menu -->
+					<button
+						type="button"
+						class="settings-backdrop"
+						onclick={() => (isSettingsMenuOpen = false)}
+						aria-label="Close settings menu"
+					></button>
+
+					<div class="settings-menu">
+						<!-- Theme Toggle - leftmost -->
+						<button
+							type="button"
+							class="settings-menu-item"
+							onclick={() => {
+								appStore.toggleTheme();
+								isSettingsMenuOpen = false;
+							}}
+							aria-label={appStore.theme === 'dark'
+								? 'Switch to light mode'
+								: 'Switch to dark mode'}
+							title="Toggle theme"
+						>
+							<Moon size={18} />
+						</button>
+
+						<!-- Filters (not shown on tier list) -->
+						{#if !isTierlistPage}
+							<button
+								type="button"
+								class="settings-menu-item"
+								onclick={() => {
+									isSettingsMenuOpen = false;
+									onFiltersToggle();
+								}}
+								aria-label="Open filters"
+								title="Filters"
+							>
+								<SlidersHorizontal size={18} />
+							</button>
+						{/if}
+					</div>
+				{/if}
+
+				<!-- Main Settings FAB (rightmost) -->
+				<button
+					type="button"
+					class="floating-action-button settings-fab"
+					class:active={isSettingsMenuOpen}
+					onclick={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
+					aria-label={isSettingsMenuOpen ? 'Close settings' : 'Open settings'}
+					aria-expanded={isSettingsMenuOpen}
+					title="Settings"
+				>
+					<Settings size={20} class="settings-icon" />
+				</button>
+			</div>
+		{/if}
+
+		<BottomNavigation {onSearchToggle} {onCloseSearchAndFilters} />
 		<ScrollToTopButton hideWhenFiltersOpen={isFiltersOpen} />
 	</div>
 {/if}
@@ -1740,6 +1807,151 @@
 		to {
 			opacity: 1;
 			transform: scaleY(1);
+		}
+	}
+
+	/* Mobile Settings Menu */
+	.mobile-settings-container {
+		position: fixed;
+		right: 16px;
+		bottom: 70px;
+		z-index: 45;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.settings-backdrop {
+		position: fixed;
+		inset: 0;
+		background: transparent;
+		border: none;
+		cursor: default;
+		z-index: -1;
+	}
+
+	.settings-menu {
+		display: flex;
+		flex-direction: row;
+		gap: 8px;
+		animation: settingsMenuAppear 0.2s ease-out;
+	}
+
+	@keyframes settingsMenuAppear {
+		from {
+			opacity: 0;
+			transform: translateX(10px) scale(0.9);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0) scale(1);
+		}
+	}
+
+	.settings-menu-item {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		border: none;
+		background-color: rgba(128, 128, 128, 0.4);
+		color: var(--color-text-primary);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: none;
+		transition: all 0.2s ease;
+		outline: none;
+		opacity: 0.95;
+	}
+
+	.settings-menu-item:hover {
+		background-color: rgba(128, 128, 128, 0.7);
+		opacity: 1;
+	}
+
+	.settings-menu-item:focus {
+		outline: none;
+	}
+
+	.floating-action-button {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		transition: all 0.3s ease;
+		outline: none;
+	}
+
+	.floating-action-button:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+	}
+
+	.floating-action-button:active {
+		transform: translateY(0);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	}
+
+	.floating-action-button:focus {
+		outline: none;
+	}
+
+	/* Settings FAB */
+	.settings-fab {
+		background-color: rgba(128, 128, 128, 0.4);
+		border: none;
+		color: var(--color-text-primary);
+		opacity: 0.95;
+	}
+
+	.settings-fab:hover {
+		background-color: rgba(128, 128, 128, 0.7);
+		opacity: 1;
+	}
+
+	.settings-fab.active {
+		background-color: rgba(128, 128, 128, 0.7);
+		opacity: 1;
+	}
+
+	.settings-fab :global(.settings-icon) {
+		transition: transform 0.3s ease;
+	}
+
+	.settings-fab.active :global(.settings-icon) {
+		transform: rotate(90deg);
+	}
+
+	@media (max-width: 480px) {
+		.mobile-settings-container {
+			right: 16px;
+			bottom: 100px;
+		}
+
+		.floating-action-button {
+			width: 40px;
+			height: 40px;
+		}
+
+		.settings-menu-item {
+			width: 36px;
+			height: 36px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.floating-action-button,
+		.settings-menu-item,
+		.settings-menu {
+			transition: none;
+			animation: none;
 		}
 	}
 </style>

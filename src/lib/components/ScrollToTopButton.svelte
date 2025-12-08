@@ -61,34 +61,32 @@
 		height: 48px;
 		border-radius: 50%;
 		border: none;
-		background-color: #3b82f6;
-		color: white;
+		background-color: rgba(128, 128, 128, 0.4);
+		color: var(--color-text-primary);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 1.2rem;
 		font-weight: bold;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		box-shadow: none;
 		transition: all 0.3s ease;
 		z-index: 50;
 		outline: none;
+		opacity: 0.95;
 	}
 
 	.scroll-to-top-button:hover {
-		background-color: #2563eb;
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+		background-color: rgba(128, 128, 128, 0.7);
+		opacity: 1;
 	}
 
 	.scroll-to-top-button:focus {
-		outline: 2px solid #60a5fa;
-		outline-offset: 2px;
+		outline: none;
 	}
 
 	.scroll-to-top-button:active {
-		transform: translateY(0);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+		opacity: 1;
 	}
 
 	.scroll-icon {
@@ -96,16 +94,16 @@
 	}
 
 	:global(.light) .scroll-to-top-button {
-		background-color: #3b82f6;
-		color: white;
+		background-color: rgba(128, 128, 128, 0.4);
+		color: var(--color-text-primary);
 	}
 
 	:global(.light) .scroll-to-top-button:hover {
-		background-color: #2563eb;
+		background-color: rgba(128, 128, 128, 0.7);
 	}
 
 	:global(.light) .scroll-to-top-button:focus {
-		outline: 2px solid #60a5fa;
+		outline: none;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -116,8 +114,8 @@
 
 	@media (max-width: 768px) {
 		.scroll-to-top-button {
-			bottom: 100px;
-			right: 20px;
+			bottom: 124px;
+			right: 16px;
 			width: 44px;
 			height: 44px;
 			font-size: 1.1rem;
@@ -126,7 +124,7 @@
 
 	@media (max-width: 480px) {
 		.scroll-to-top-button {
-			bottom: 100px;
+			bottom: 120px;
 			right: 16px;
 			width: 40px;
 			height: 40px;

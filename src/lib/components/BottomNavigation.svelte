@@ -2,17 +2,16 @@
 	import { navigateTo } from '$lib/utils/navigationUtils';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 	import { appStore } from '$lib/stores/app.svelte';
-	import { Gamepad, CheckCircle, Calendar, List, Search, Filter } from 'lucide-svelte';
+	import { Gamepad, CheckCircle, Calendar, List, Search } from 'lucide-svelte';
 
 	interface Props {
 		onSearchToggle?: () => void;
-		onFiltersToggle?: () => void;
 		onCloseSearchAndFilters?: () => void;
 	}
 
-	let { onSearchToggle, onFiltersToggle, onCloseSearchAndFilters }: Props = $props();
+	let { onSearchToggle, onCloseSearchAndFilters }: Props = $props();
 
-	type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search' | 'filters';
+	type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search';
 
 	type NavItem = {
 		id: NavId;
@@ -66,13 +65,6 @@
 				count: null,
 				active: false,
 				icon: Search
-			},
-			{
-				id: 'filters' as NavId,
-				label: 'Filters',
-				count: null,
-				active: false,
-				icon: Filter
 			}
 		] as NavItem[];
 	});
@@ -80,12 +72,9 @@
 	function handleNavClick(target: NavId) {
 		if (target === 'search') {
 			onSearchToggle?.();
-		} else if (target === 'filters') {
-			onFiltersToggle?.();
 		} else {
-			// Don't close search when navigating between tabs - preserve search state
-			// Only close filters modal
-			navigateTo(target as 'all' | 'completed' | 'planned' | 'tierlist');
+			// Navigate to tab page
+			navigateTo(target);
 		}
 	}
 
