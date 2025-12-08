@@ -707,7 +707,7 @@
 	.time-item,
 	.date-item {
 		display: flex;
-		gap: 5px;
+		gap: 3px;
 		align-items: flex-end;
 	}
 
@@ -739,7 +739,7 @@
 		}
 
 		.time-date-section {
-			font-size: 0.75rem;
+			font-size: 0.65rem;
 		}
 	}
 
@@ -809,7 +809,7 @@
 
 		.time-date-section {
 			gap: 4px;
-			font-size: 0.7rem;
+			font-size: 0.65rem;
 		}
 
 		.tier-badge {
