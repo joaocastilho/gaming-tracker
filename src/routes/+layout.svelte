@@ -597,7 +597,7 @@
 
 					<!-- Collapsible filter content -->
 					{#if filtersStore.isDesktopFiltersExpanded}
-						<div class="filter-content space-y-4 mb-4">
+						<div class="filter-content space-y-4 mb-8">
 							<SearchBar />
 							<div class="flex flex-col items-center gap-4">
 								<div class="flex flex-wrap items-center justify-center gap-3">

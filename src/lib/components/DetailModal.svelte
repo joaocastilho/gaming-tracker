@@ -974,12 +974,12 @@
 					<div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
 						<h1
 							id="modal-title"
-							class="flex min-w-0 flex-1 flex-col justify-start h-[60px] md:h-auto"
+							class="flex min-w-0 flex-1 flex-col justify-start h-[90px] md:h-auto"
 							style="color: var(--color-text-primary);"
 						>
 							<span
 								class="modal-title-text w-full font-bold"
-								style="font-size: clamp(1rem, 5vw, 1.85rem);"
+								style="font-size: clamp(1rem, 5vw, 1.65rem);"
 							>
 								{$modalStore.activeGame.mainTitle}
 							</span>
@@ -1016,7 +1016,7 @@
 						</button>
 					</div>
 
-					<div class="mb-3 flex items-center justify-between md:mb-6">
+					<div class="mb-3 flex items-center justify-between md:mb-4">
 						<div class="flex flex-wrap gap-2">
 							<span
 								class="rounded-md px-3 py-1.5 text-sm font-medium text-white md:text-sm {getPlatformColor(
@@ -1189,7 +1189,7 @@
 
 							{#if $modalStore.activeGame.score !== null}
 								<div
-									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-8 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
+									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-6 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
 								>
 									<div class="flex items-center justify-center gap-2">
 										<Award size={24} class="text-yellow-500" />
@@ -1279,7 +1279,7 @@
 							</div>
 
 							<div
-								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-8 dark:border-gray-700"
+								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-6 dark:border-gray-700"
 							>
 								<div class="flex items-center justify-center gap-2">
 									<Award size={24} class="text-gray-400" />
@@ -1360,7 +1360,7 @@
 		}
 
 		#modal-title {
-			min-height: 75px;
+			min-height: 90px;
 		}
 	}
 

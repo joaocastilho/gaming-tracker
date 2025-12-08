@@ -63,7 +63,7 @@
 	}
 </script>
 
-<header class="header-root px-6 py-3 md:py-1">
+<header class="header-root px-6 py-3 mb-6 md:py-1">
 	<div class="header-inner container mx-auto">
 		<nav class="tabs-nav">
 			<ul class="tabs-list">

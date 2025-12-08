@@ -10,8 +10,6 @@
 		onClose?: () => void;
 	};
 
-	let { onClose }: Props = $props();
-
 	let inputElement = $state<HTMLInputElement | undefined>(undefined);
 	let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 
