@@ -40,6 +40,10 @@
 	let prevGamePreview = $state<Game | null>(null);
 	let parallaxOffset = $state(0);
 
+	// Mobile swipe indicator state
+	let showSwipeIndicator = $state(false);
+	let swipeIndicatorTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	// Zoom/Shrink animation state
 	let isZoomAnimating = $state(false);
 	let zoomProgress = $state(0);
@@ -632,6 +636,45 @@
 			}
 		}
 	});
+
+	// Show swipe indicator only on first-ever modal open (using localStorage)
+	const SWIPE_HINT_KEY = 'gaming-tracker-swipe-hint-seen';
+
+	$effect(() => {
+		if (browser && $modalStore.isOpen && $modalStore.mode === 'view') {
+			// Check if user has already seen the swipe hint
+			// const hasSeenHint = localStorage.getItem(SWIPE_HINT_KEY);
+			// if (hasSeenHint) return;
+
+			// Check if on mobile (screen width < 768px)
+			const isMobile = window.innerWidth < 768;
+			const canNavigate = displayedGames.length > 1;
+
+			if (isMobile && canNavigate) {
+				showSwipeIndicator = true;
+
+				// Clear any existing timeout
+				if (swipeIndicatorTimeout) {
+					clearTimeout(swipeIndicatorTimeout);
+				}
+
+				// Hide indicator after 3 seconds and mark as seen
+				swipeIndicatorTimeout = setTimeout(() => {
+					showSwipeIndicator = false;
+					localStorage.setItem(SWIPE_HINT_KEY, 'true');
+				}, 3000);
+			}
+		} else {
+			showSwipeIndicator = false;
+		}
+	});
+
+	// Cleanup timeout on destroy
+	onDestroy(() => {
+		if (swipeIndicatorTimeout) {
+			clearTimeout(swipeIndicatorTimeout);
+		}
+	});
 </script>
 
 {#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}
@@ -647,27 +690,48 @@
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		<!-- Mobile navigation arrows - on backdrop, outside modal -->
-		{#if currentGameIndex > 0}
-			<button
-				onclick={navigateToPrevious}
-				class="absolute left-1 top-1/2 z-[61] flex h-10 w-8 -translate-y-1/2 items-center justify-center rounded-r-full bg-black/10 text-white/80 transition-all hover:bg-black/25 focus:outline-none md:hidden"
-				aria-label="Previous game"
-			>
-				<ChevronLeft size={24} />
-			</button>
-		{/if}
-		{#if (() => {
-			const games = displayedGames;
-			return currentGameIndex > -1 && currentGameIndex < games.length - 1;
-		})()}
-			<button
-				onclick={navigateToNext}
-				class="absolute right-1 top-1/2 z-[61] flex h-10 w-8 -translate-y-1/2 items-center justify-center rounded-l-full bg-black/10 text-white/80 transition-all hover:bg-black/25 focus:outline-none md:hidden"
-				aria-label="Next game"
-			>
-				<ChevronRight size={24} />
-			</button>
+		<!-- Mobile swipe indicator (first time only) -->
+		{#if showSwipeIndicator && displayedGames.length > 1}
+			<div class="swipe-hint-overlay md:hidden" transition:fade={{ duration: 400 }}>
+				<div class="swipe-hint-content">
+					<!-- SVG-based Arrow-only Swipe Hint -->
+					<svg
+						class="swipe-hint-svg"
+						viewBox="0 0 100 80"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<!-- Left arrow -->
+						<path
+							class="swipe-arrow swipe-arrow-left"
+							d="M15 40 L5 40 M5 40 L12 33 M5 40 L12 47"
+							stroke="currentColor"
+							stroke-width="2.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+						<!-- Down arrow (Swipe to close) - Centered -->
+						<path
+							class="swipe-arrow swipe-arrow-down"
+							d="M50 55 L50 65 M50 65 L43 58 M50 65 L57 58"
+							stroke="currentColor"
+							stroke-width="2.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+						<!-- Right arrow -->
+						<path
+							class="swipe-arrow swipe-arrow-right"
+							d="M85 40 L95 40 M95 40 L88 33 M95 40 L88 47"
+							stroke="currentColor"
+							stroke-width="2.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+					<span class="swipe-hint-text">Swipe to navigate</span>
+				</div>
+			</div>
 		{/if}
 
 		<!-- Parallax Preview: Previous Game -->
@@ -1690,6 +1754,117 @@
 	@media (pointer: fine) {
 		.parallax-preview {
 			display: none;
+		}
+	}
+
+	/* Mobile swipe hint styles */
+	.swipe-hint-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.4);
+		z-index: 61;
+		pointer-events: none;
+	}
+
+	.swipe-hint-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		color: white;
+		background: rgba(0, 0, 0, 0.6);
+		padding: 24px 32px;
+		border-radius: 20px;
+		backdrop-filter: blur(4px);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	}
+
+	/* SVG Layout styles */
+	.swipe-hint-svg {
+		width: 100px;
+		height: 80px;
+		margin-bottom: 16px;
+		overflow: visible;
+	}
+
+	.swipe-arrow {
+		opacity: 0.3;
+		transition: opacity 0.3s ease;
+	}
+
+	.swipe-arrow-left {
+		animation: arrow-fade-left 2.5s ease-in-out infinite;
+	}
+
+	.swipe-arrow-right {
+		animation: arrow-fade-right 2.5s ease-in-out infinite;
+	}
+
+	.swipe-arrow-down {
+		animation: arrow-fade-down 2.5s ease-in-out infinite;
+	}
+
+	.swipe-hint-text {
+		font-size: 1rem;
+		font-weight: 500;
+		opacity: 0.95;
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+	}
+
+	@keyframes arrow-fade-left {
+		0%,
+		15% {
+			opacity: 0.3;
+		}
+		40% {
+			opacity: 1;
+			transform: translateX(-4px);
+		}
+		65% {
+			opacity: 0.3;
+			transform: translateX(0);
+		}
+		100% {
+			opacity: 0.3;
+		}
+	}
+
+	@keyframes arrow-fade-right {
+		0%,
+		15% {
+			opacity: 0.3;
+		}
+		40% {
+			opacity: 0.3;
+			transform: translateX(0);
+		}
+		65% {
+			opacity: 1;
+			transform: translateX(4px);
+		}
+		100% {
+			opacity: 0.3;
+		}
+	}
+
+	@keyframes arrow-fade-down {
+		0%,
+		15%,
+		65% {
+			opacity: 0.3;
+			transform: translateY(0);
+		}
+		85% {
+			opacity: 1;
+			transform: translateY(4px);
+		}
+		100% {
+			opacity: 0.3;
 		}
 	}
 </style>
