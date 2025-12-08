@@ -651,7 +651,10 @@
 			</div>
 		</section>
 
-		<main class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6">
+		<main
+			class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6"
+			class:search-open-mobile={isSearchOpen}
+		>
 			<div class="container mx-auto">
 				{#if isGamesPage}
 					{#if hasActiveFilters && $filteredGames.length === 0}
@@ -1091,9 +1094,14 @@
 		right: 0;
 		z-index: 40;
 		background-color: var(--color-background);
-		border-bottom: 1px solid var(--color-border);
 		padding: 12px 16px;
+		padding-top: calc(12px + env(safe-area-inset-top, 0px));
 		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Push content below the fixed search bar when search is open */
+	:global(main.search-open-mobile) {
+		padding-top: 75px !important;
 	}
 
 	.mobile-search-bar-container {

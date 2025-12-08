@@ -284,6 +284,7 @@
 
 		.header-root {
 			padding: 0.75rem 1.8rem;
+			padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
 		}
 
 		.header-right {
