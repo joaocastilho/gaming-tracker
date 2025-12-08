@@ -43,6 +43,7 @@
 	// Mobile swipe indicator state
 	let showSwipeIndicator = $state(false);
 	let swipeIndicatorTimeout: ReturnType<typeof setTimeout> | null = null;
+	let swipeHideTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Zoom/Shrink animation state
 	let isZoomAnimating = $state(false);
@@ -640,39 +641,68 @@
 	// Show swipe indicator only on first-ever modal open (using localStorage)
 	const SWIPE_HINT_KEY = 'gaming-tracker-swipe-hint-seen';
 
+	// Track displayedGames.length explicitly to ensure effect re-runs when games load
+	const gamesCount = $derived(displayedGames.length);
+
+	// Track if we've already triggered the hint in this session (prevents re-triggering)
+	let hasTriggeredHint = false;
+
 	$effect(() => {
-		if (browser && $modalStore.isOpen && $modalStore.mode === 'view') {
-			// Check if user has already seen the swipe hint
-			const hasSeenHint = localStorage.getItem(SWIPE_HINT_KEY);
-			if (hasSeenHint) return;
+		// Explicitly track these values to ensure effect re-runs appropriately
+		const currentGamesCount = gamesCount;
+		const isModalOpen = $modalStore.isOpen;
+		const isViewMode = $modalStore.mode === 'view';
 
-			// Check if on mobile (screen width < 768px)
-			const isMobile = window.innerWidth < 768;
-			const canNavigate = displayedGames.length > 1;
-
-			if (isMobile && canNavigate) {
-				showSwipeIndicator = true;
-
-				// Clear any existing timeout
-				if (swipeIndicatorTimeout) {
-					clearTimeout(swipeIndicatorTimeout);
-				}
-
-				// Hide indicator after 3 seconds and mark as seen
-				swipeIndicatorTimeout = setTimeout(() => {
-					showSwipeIndicator = false;
-					localStorage.setItem(SWIPE_HINT_KEY, 'true');
-				}, 3000);
-			}
-		} else {
-			showSwipeIndicator = false;
+		if (!browser || !isModalOpen || !isViewMode) {
+			return;
 		}
+
+		// Check if user has already seen the swipe hint THIS SESSION (using sessionStorage)
+		// sessionStorage clears when the tab/PWA closes, so hint shows again on next visit
+		const hasSeenHint = sessionStorage.getItem(SWIPE_HINT_KEY);
+		if (hasSeenHint) {
+			return;
+		}
+
+		// Check if on mobile (screen width < 768px)
+		const isMobile = window.innerWidth < 768;
+		const canNavigate = currentGamesCount > 1;
+
+		// Only show if on mobile and can navigate between games
+		if (!isMobile || !canNavigate) {
+			return;
+		}
+
+		// Prevent re-triggering in this session
+		if (hasTriggeredHint || showSwipeIndicator) {
+			return;
+		}
+
+		// Mark as triggered immediately (before any async operations)
+		hasTriggeredHint = true;
+
+		// Use a small delay to ensure the modal is fully rendered
+		swipeIndicatorTimeout = setTimeout(() => {
+			// Show the indicator
+			showSwipeIndicator = true;
+
+			// Hide indicator after 1.5 seconds and mark as seen in sessionStorage
+			swipeHideTimeout = setTimeout(() => {
+				showSwipeIndicator = false;
+				sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
+				swipeIndicatorTimeout = null;
+				swipeHideTimeout = null;
+			}, 1500);
+		}, 300);
 	});
 
 	// Cleanup timeout on destroy
 	onDestroy(() => {
 		if (swipeIndicatorTimeout) {
 			clearTimeout(swipeIndicatorTimeout);
+		}
+		if (swipeHideTimeout) {
+			clearTimeout(swipeHideTimeout);
 		}
 	});
 </script>
@@ -1767,7 +1797,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(0, 0, 0, 0.4);
+		background: transparent;
 		z-index: 61;
 		pointer-events: none;
 	}
@@ -1776,12 +1806,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		color: white;
-		background: rgba(0, 0, 0, 0.6);
-		padding: 24px 32px;
-		border-radius: 20px;
-		backdrop-filter: blur(4px);
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+		color: rgba(255, 255, 255, 0.9);
+		background: rgba(0, 0, 0, 0.25);
+		padding: 16px 24px;
+		border-radius: 12px;
+		backdrop-filter: blur(12px);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
 
 	/* SVG Layout styles */
