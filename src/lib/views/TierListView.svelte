@@ -57,6 +57,12 @@
 		padding-top: 1.5rem;
 	}
 
+	@media (max-width: 768px) {
+		.tier-list-container {
+			padding-top: 0.25rem;
+		}
+	}
+
 	.empty-state {
 		display: flex;
 		flex-direction: column;
