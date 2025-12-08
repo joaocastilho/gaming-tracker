@@ -9,6 +9,7 @@
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Game } from '$lib/types/game';
+import { appStore } from '$lib/stores/app.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
@@ -89,10 +90,16 @@ const mockGames: Partial<Game>[] = [
 
 // Helper to reset all store state between tests (mimics app restart)
 function resetStoreState() {
+	// Must initialize for testing first (bypasses browser check)
+	filtersStore.initializeForTesting();
+
 	// Clear filters
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
 	filtersStore.setSort(null);
+
+	// Reset active tab to default
+	appStore.setActiveTab('all');
 
 	// Clear caches
 	filteredGamesStore.clearCache();

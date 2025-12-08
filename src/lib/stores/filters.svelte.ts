@@ -246,6 +246,16 @@ class FiltersStore {
 		}
 	}
 
+	/**
+	 * Initialize the store for testing purposes.
+	 * This bypasses the browser check and ensures state is set.
+	 */
+	initializeForTesting(): void {
+		if (!this._state) {
+			this.state = { ...initialFilters };
+		}
+	}
+
 	writeSearchToURL = debounce(async (pageState: App.PageState) => {
 		if (typeof window === 'undefined') return;
 		try {
