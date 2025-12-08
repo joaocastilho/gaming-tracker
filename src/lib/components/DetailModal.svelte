@@ -643,8 +643,8 @@
 	$effect(() => {
 		if (browser && $modalStore.isOpen && $modalStore.mode === 'view') {
 			// Check if user has already seen the swipe hint
-			// const hasSeenHint = localStorage.getItem(SWIPE_HINT_KEY);
-			// if (hasSeenHint) return;
+			const hasSeenHint = localStorage.getItem(SWIPE_HINT_KEY);
+			if (hasSeenHint) return;
 
 			// Check if on mobile (screen width < 768px)
 			const isMobile = window.innerWidth < 768;
