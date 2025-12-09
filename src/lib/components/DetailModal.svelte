@@ -123,9 +123,9 @@
 	let lastFocusableElement = $state<HTMLElement>();
 
 	// Swipe thresholds
-	const SWIPE_THRESHOLD = 50;
+	const SWIPE_THRESHOLD = 60;
 	const SWIPE_CLOSE_THRESHOLD = 150;
-	const VELOCITY_THRESHOLD = 0.5;
+	const VELOCITY_THRESHOLD = 0.8;
 
 	// Update parallax previews based on current game index
 	$effect(() => {
@@ -181,11 +181,13 @@
 			if (diffX > 0 && prevGamePreview) {
 				swipeDirection = 'right';
 				swipeOffsetX = Math.min(diffX * resistance, maxOffset);
-				parallaxOffset = -100 + (swipeOffsetX / maxOffset) * 100;
+				// Parallax travels from -100 (off-screen) to -20 (80% visible) during drag
+				parallaxOffset = -100 + (swipeOffsetX / maxOffset) * 80;
 			} else if (diffX < 0 && nextGamePreview) {
 				swipeDirection = 'left';
 				swipeOffsetX = Math.max(diffX * resistance, -maxOffset);
-				parallaxOffset = 100 + (swipeOffsetX / maxOffset) * 100;
+				// Parallax travels from 100 (off-screen) to 20 (80% visible) during drag
+				parallaxOffset = 100 + (swipeOffsetX / maxOffset) * 80;
 			} else {
 				swipeOffsetX = diffX * 0.2;
 			}
@@ -280,31 +282,39 @@
 		isSwipeTransitioning = true;
 		const targetOffset = direction === 'left' ? -300 : 300;
 		const startOffset = swipeOffsetX;
+		const startParallax = parallaxOffset;
+		// Parallax animates from current position (~50%) to 0 (centered/final position)
+		const targetParallax = 0;
 		const startTime = performance.now();
-		const duration = 200;
+		const duration = 280; // Slightly longer for smoother feel
+
+		// Smooth easing: starts fast, decelerates naturally (ease-out cubic)
+		function easeOutCubic(t: number): number {
+			return 1 - Math.pow(1 - t, 3);
+		}
 
 		function animate(currentTime: number) {
 			const elapsed = currentTime - startTime;
 			const progress = Math.min(elapsed / duration, 1);
-			const eased = 1 - Math.pow(1 - progress, 3);
+			const eased = easeOutCubic(progress);
 
 			swipeOffsetX = startOffset + (targetOffset - startOffset) * eased;
-			parallaxOffset = direction === 'left' ? 100 * (1 - progress) : -100 * (1 - progress);
+			parallaxOffset = startParallax + (targetParallax - startParallax) * eased;
 
 			if (progress < 1) {
 				requestAnimationFrame(animate);
 			} else {
+				// Navigate first, then immediately reset offsets
 				if (direction === 'left') {
 					navigateToNext();
 				} else {
 					navigateToPrevious();
 				}
-				setTimeout(() => {
-					swipeOffsetX = 0;
-					parallaxOffset = 0;
-					isSwipeTransitioning = false;
-					swipeDirection = null;
-				}, 50);
+				// Reset immediately - no delay for smoother transition
+				swipeOffsetX = 0;
+				parallaxOffset = 0;
+				isSwipeTransitioning = false;
+				swipeDirection = null;
 			}
 		}
 
@@ -312,15 +322,21 @@
 	}
 
 	function resetSwipePosition() {
+		isSwipeTransitioning = true;
 		const startOffset = swipeOffsetX;
 		const startParallax = parallaxOffset;
 		const startTime = performance.now();
-		const duration = 300;
+		const duration = 250; // Quick snap-back
+
+		// Smooth spring-like easing for reset (ease-out expo)
+		function easeOutExpo(t: number): number {
+			return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+		}
 
 		function animate(currentTime: number) {
 			const elapsed = currentTime - startTime;
 			const progress = Math.min(elapsed / duration, 1);
-			const eased = 1 - Math.pow(1 - progress, 4) * Math.cos(progress * Math.PI * 0.5);
+			const eased = easeOutExpo(progress);
 
 			swipeOffsetX = startOffset * (1 - eased);
 			parallaxOffset = startParallax * (1 - eased);
@@ -789,7 +805,7 @@
 		{#if prevGamePreview && swipeDirection === 'right' && Math.abs(swipeOffsetX) > 0}
 			<div
 				class="parallax-preview parallax-left"
-				style="transform: translateX({(swipeOffsetX / 150) * 100}%); opacity: {Math.min(
+				style="transform: translateX({100 + parallaxOffset}%); opacity: {Math.min(
 					Math.abs(swipeOffsetX) / 50,
 					1
 				)};"
@@ -952,7 +968,7 @@
 		{#if nextGamePreview && swipeDirection === 'left' && Math.abs(swipeOffsetX) > 0}
 			<div
 				class="parallax-preview parallax-right"
-				style="transform: translateX({(swipeOffsetX / 150) * 100}%); opacity: {Math.min(
+				style="transform: translateX({-100 + parallaxOffset}%); opacity: {Math.min(
 					Math.abs(swipeOffsetX) / 50,
 					1
 				)};"
@@ -1759,6 +1775,10 @@
 		pointer-events: none;
 		box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
 		background: var(--color-surface);
+		/* GPU acceleration for smooth animations */
+		will-change: transform, opacity;
+		transform: translate3d(0, 0, 0);
+		backface-visibility: hidden;
 	}
 
 	.parallax-left {
