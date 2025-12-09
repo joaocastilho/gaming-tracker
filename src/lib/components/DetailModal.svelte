@@ -833,7 +833,7 @@
 								>
 								{#if prevGamePreview.coOp === 'Yes'}
 									<div class="parallax-coop-badge" title="Co-op Available">
-										<Users size={14} />
+										<Users size={18} />
 									</div>
 								{/if}
 							</div>
@@ -871,7 +871,7 @@
 								<h4 class="parallax-ratings-title">Ratings</h4>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<Presentation size={16} class="parallax-rating-icon text-rose-500" />
+										<Presentation size={20} class="parallax-rating-icon text-rose-500" />
 										<span class="parallax-rating-label">Presentation</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -886,7 +886,7 @@
 								</div>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<NotebookPen size={16} class="parallax-rating-icon text-sky-500" />
+										<NotebookPen size={20} class="parallax-rating-icon text-sky-500" />
 										<span class="parallax-rating-label">Story</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -899,7 +899,7 @@
 								</div>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<Gamepad2 size={16} class="parallax-rating-icon text-emerald-500" />
+										<Gamepad2 size={20} class="parallax-rating-icon text-emerald-500" />
 										<span class="parallax-rating-label">Gameplay</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -916,7 +916,7 @@
 							<!-- Score Section -->
 							{#if prevGamePreview.score !== null}
 								<div class="parallax-score-card">
-									<Award size={18} class="text-yellow-500" />
+									<Award size={24} class="text-yellow-500" />
 									<span class="parallax-score">Total Score: {prevGamePreview.score}/20</span>
 								</div>
 							{/if}
@@ -925,7 +925,7 @@
 								<h4 class="parallax-ratings-title">Ratings</h4>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<Presentation size={16} class="parallax-rating-icon text-rose-500" />
+										<Presentation size={20} class="parallax-rating-icon text-rose-500" />
 										<span class="parallax-rating-label">Presentation</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -935,7 +935,7 @@
 								</div>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<NotebookPen size={16} class="parallax-rating-icon text-sky-500" />
+										<NotebookPen size={20} class="parallax-rating-icon text-sky-500" />
 										<span class="parallax-rating-label">Story</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -945,7 +945,7 @@
 								</div>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<Gamepad2 size={16} class="parallax-rating-icon text-emerald-500" />
+										<Gamepad2 size={20} class="parallax-rating-icon text-emerald-500" />
 										<span class="parallax-rating-label">Gameplay</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -955,7 +955,7 @@
 								</div>
 							</div>
 							<div class="parallax-score-card parallax-pending-card">
-								<Award size={18} class="text-gray-400" />
+								<Award size={24} class="text-gray-400" />
 								<span class="parallax-pending">Game to be completed</span>
 							</div>
 						{/if}
@@ -996,7 +996,7 @@
 								>
 								{#if nextGamePreview.coOp === 'Yes'}
 									<div class="parallax-coop-badge" title="Co-op Available">
-										<Users size={14} />
+										<Users size={18} />
 									</div>
 								{/if}
 							</div>
@@ -1034,7 +1034,7 @@
 								<h4 class="parallax-ratings-title">Ratings</h4>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<Presentation size={16} class="parallax-rating-icon text-rose-500" />
+										<Presentation size={20} class="parallax-rating-icon text-rose-500" />
 										<span class="parallax-rating-label">Presentation</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -1049,7 +1049,7 @@
 								</div>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<NotebookPen size={16} class="parallax-rating-icon text-sky-500" />
+										<NotebookPen size={20} class="parallax-rating-icon text-sky-500" />
 										<span class="parallax-rating-label">Story</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -1062,7 +1062,7 @@
 								</div>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<Gamepad2 size={16} class="parallax-rating-icon text-emerald-500" />
+										<Gamepad2 size={20} class="parallax-rating-icon text-emerald-500" />
 										<span class="parallax-rating-label">Gameplay</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -1079,7 +1079,7 @@
 							<!-- Score Section -->
 							{#if nextGamePreview.score !== null}
 								<div class="parallax-score-card">
-									<Award size={18} class="text-yellow-500" />
+									<Award size={24} class="text-yellow-500" />
 									<span class="parallax-score">Total Score: {nextGamePreview.score}/20</span>
 								</div>
 							{/if}
@@ -1088,7 +1088,7 @@
 								<h4 class="parallax-ratings-title">Ratings</h4>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<Presentation size={16} class="parallax-rating-icon text-rose-500" />
+										<Presentation size={20} class="parallax-rating-icon text-rose-500" />
 										<span class="parallax-rating-label">Presentation</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -1098,7 +1098,7 @@
 								</div>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<NotebookPen size={16} class="parallax-rating-icon text-sky-500" />
+										<NotebookPen size={20} class="parallax-rating-icon text-sky-500" />
 										<span class="parallax-rating-label">Story</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -1108,7 +1108,7 @@
 								</div>
 								<div class="parallax-rating-row">
 									<div class="parallax-rating-label-group">
-										<Gamepad2 size={16} class="parallax-rating-icon text-emerald-500" />
+										<Gamepad2 size={20} class="parallax-rating-icon text-emerald-500" />
 										<span class="parallax-rating-label">Gameplay</span>
 									</div>
 									<div class="parallax-rating-bar">
@@ -1118,7 +1118,7 @@
 								</div>
 							</div>
 							<div class="parallax-score-card parallax-pending-card">
-								<Award size={18} class="text-gray-400" />
+								<Award size={24} class="text-gray-400" />
 								<span class="parallax-pending">Game to be completed</span>
 							</div>
 						{/if}
@@ -1828,12 +1828,11 @@
 
 	/* Details section - matches .modal-details-section on mobile exactly */
 	.parallax-details-section {
-		padding: 16px 20px 16px 20px;
+		/* Match modal: px-5 pt-4 pb-4 = padding: 16px 20px */
+		padding: 16px 20px;
 		background: var(--color-surface);
 		flex: 0 0 auto;
 		overflow: hidden;
-		/* Match main modal details section minimum height */
-		min-height: 420px;
 	}
 
 	.parallax-info {
@@ -1842,15 +1841,14 @@
 	}
 
 	.parallax-title {
+		/* Match modal: font-size: clamp(1rem, 5vw, 1.65rem) */
 		font-size: clamp(1rem, 5vw, 1.65rem);
 		font-weight: 700;
 		color: var(--color-text-primary);
-		margin: 0 0 4px 0;
+		/* Match modal #modal-title: min-height: 65px, mb-2 */
+		min-height: 65px;
+		margin: 0 0 8px 0;
 		line-height: 1.2;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
 	}
 
 	.parallax-subtitle {
@@ -1861,7 +1859,7 @@
 		line-height: 1.2;
 	}
 
-	/* Badge row with tier badge on right */
+	/* Badge row with tier badge on right - match modal: mb-3 */
 	.parallax-badges-row {
 		display: flex;
 		align-items: center;
@@ -1878,9 +1876,10 @@
 	}
 
 	.parallax-badge {
+		/* Match modal: px-3 py-1.5 rounded-md */
 		padding: 6px 12px;
 		border-radius: 6px;
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: white;
 	}
@@ -1909,6 +1908,7 @@
 	.parallax-info-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
+		/* Match modal: gap-3 mb-3 */
 		gap: 12px;
 		margin-bottom: 12px;
 	}
@@ -1920,17 +1920,21 @@
 	}
 
 	.parallax-label {
-		font-size: 0.75rem;
+		/* Match modal: text-sm */
+		font-size: 0.875rem;
 		color: var(--color-text-tertiary);
+		margin-bottom: 4px;
 	}
 
 	.parallax-value {
-		font-size: 0.875rem;
+		/* Match modal: text-base font-semibold */
+		font-size: 1rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 	}
 
 	.parallax-ratings {
+		/* Match modal: mt-3 space-y-3 */
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
@@ -1938,10 +1942,11 @@
 	}
 
 	.parallax-ratings-title {
-		font-size: 0.875rem;
+		/* Match modal: text-base font-semibold mb-3 */
+		font-size: 1rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
-		margin: 0 0 4px 0;
+		margin: 0 0 12px 0;
 	}
 
 	.parallax-rating-row {
@@ -1951,11 +1956,12 @@
 	}
 
 	.parallax-rating-label-group {
+		/* Match modal: w-24 = 96px, but use 110px to ensure value fits */
 		display: flex;
 		align-items: center;
-		gap: 6px;
+		gap: 8px;
 		min-width: 0;
-		width: 96px;
+		width: 110px;
 		flex-shrink: 0;
 	}
 
@@ -1964,17 +1970,20 @@
 	}
 
 	.parallax-rating-label {
-		font-size: 0.65rem;
+		/* Match modal: text-xs */
+		font-size: 0.75rem;
 		font-weight: 500;
 		color: var(--color-text-secondary);
 	}
 
 	.parallax-rating-bar {
-		height: 8px;
+		/* Match modal: h-2 flex-1 rounded-full */
+		height: 0.5rem;
 		flex: 1;
 		border-radius: 9999px;
 		overflow: hidden;
-		background: #e5e7eb;
+		/* Track color matches main modal's dark appearance */
+		background: #4b5563;
 	}
 
 	:global(.dark) .parallax-rating-bar {
@@ -1989,24 +1998,31 @@
 
 	.parallax-rating-fill-empty {
 		height: 100%;
-		width: 0%;
+		/* Show full width dark fill for N/A state to match main modal */
+		width: 100%;
 		border-radius: 9999px;
+		/* Match modal N/A dark appearance: solid dark gray/blue */
+		background: #374151;
 	}
 
 	.parallax-rating-value {
-		font-size: 0.65rem;
+		/* Match modal: text-xs font-semibold */
+		font-size: 0.75rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 		text-align: right;
-		width: 32px;
+		/* Ensure full X/10 text fits */
+		width: 40px;
 		flex-shrink: 0;
 	}
 
 	/* Score card section - matches main modal styling */
 	.parallax-score-card {
-		margin-top: 12px;
-		padding: 12px;
-		border: 1px solid rgb(191, 219, 254);
+		/* Match modal: mt-6 p-4 rounded-lg border border-blue-200 */
+		margin-top: 24px;
+		padding: 16px;
+		/* Thicker border to match main modal appearance */
+		border: 2px solid #93c5fd;
 		border-radius: 8px;
 		display: flex;
 		align-items: center;
@@ -2015,11 +2031,13 @@
 	}
 
 	:global(.dark) .parallax-score-card {
-		border-color: rgb(30, 58, 138);
+		border-color: #3b82f6;
 	}
 
 	.parallax-score-card.parallax-pending-card {
+		/* Match modal pending state: gray border and light gray background */
 		border-color: #e5e7eb;
+		background: #f9fafb;
 	}
 
 	:global(.dark) .parallax-score-card.parallax-pending-card {
@@ -2027,13 +2045,15 @@
 	}
 
 	.parallax-score {
-		font-size: 0.75rem;
+		/* Match modal: text-sm font-bold */
+		font-size: 0.875rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 	}
 
 	.parallax-pending {
-		font-size: 0.75rem;
+		/* Match modal: text-sm font-bold */
+		font-size: 0.875rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 	}
