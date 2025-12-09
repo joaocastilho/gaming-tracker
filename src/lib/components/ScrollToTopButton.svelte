@@ -55,30 +55,32 @@
 <style>
 	.scroll-to-top-button {
 		position: fixed;
-		bottom: 24px;
+		bottom: 65px;
 		right: 24px;
 		width: 52px;
 		height: 52px;
 		border-radius: 50%;
 		border: none;
-		background-color: rgba(128, 128, 128, 0.75);
-		color: var(--color-text-primary);
+		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+		color: white;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 1.3rem;
 		font-weight: bold;
-		box-shadow: none;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		transition: all 0.3s ease;
 		z-index: 50;
 		outline: none;
-		opacity: 0.98;
+		opacity: 0.7;
 	}
 
 	.scroll-to-top-button:hover {
-		background-color: rgba(128, 128, 128, 0.9);
-		opacity: 1;
+		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+		transform: translateY(-2px);
+		opacity: 0.9;
 	}
 
 	.scroll-to-top-button:focus {
@@ -94,12 +96,16 @@
 	}
 
 	:global(.light) .scroll-to-top-button {
-		background-color: rgba(128, 128, 128, 0.75);
-		color: var(--color-text-primary);
+		background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+		color: white;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		opacity: 0.7;
 	}
 
 	:global(.light) .scroll-to-top-button:hover {
-		background-color: rgba(128, 128, 128, 0.9);
+		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+		opacity: 0.9;
 	}
 
 	:global(.light) .scroll-to-top-button:focus {
@@ -114,7 +120,7 @@
 
 	@media (max-width: 768px) {
 		.scroll-to-top-button {
-			bottom: 115px;
+			bottom: 120px;
 			right: 16px;
 			width: 48px;
 			height: 48px;
@@ -124,7 +130,7 @@
 
 	@media (max-width: 480px) {
 		.scroll-to-top-button {
-			bottom: 120px;
+			bottom: 125px;
 			right: 16px;
 			width: 44px;
 			height: 44px;

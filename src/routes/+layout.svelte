@@ -1837,6 +1837,12 @@
 		gap: 8px;
 	}
 
+	@media (min-width: 768px) {
+		.mobile-settings-container {
+			display: none;
+		}
+	}
+
 	.settings-backdrop {
 		position: fixed;
 		inset: 0;
@@ -1869,21 +1875,22 @@
 		height: 44px;
 		border-radius: 50%;
 		border: none;
-		background-color: rgba(128, 128, 128, 0.75);
-		color: var(--color-text-primary);
+		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+		color: white;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: none;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		transition: all 0.2s ease;
 		outline: none;
-		opacity: 0.98;
+		opacity: 0.7;
 	}
 
 	.settings-menu-item:hover {
-		background-color: rgba(128, 128, 128, 0.9);
-		opacity: 1;
+		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+		opacity: 0.9;
 	}
 
 	.settings-menu-item:focus {
@@ -1920,20 +1927,50 @@
 
 	/* Settings FAB */
 	.settings-fab {
-		background-color: rgba(128, 128, 128, 0.75);
+		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
 		border: none;
-		color: var(--color-text-primary);
-		opacity: 0.98;
+		color: white;
+		opacity: 0.7;
 	}
 
 	.settings-fab:hover {
-		background-color: rgba(128, 128, 128, 0.9);
-		opacity: 1;
+		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+		opacity: 0.9;
 	}
 
 	.settings-fab.active {
-		background-color: rgba(128, 128, 128, 0.9);
-		opacity: 1;
+		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+		opacity: 0.9;
+	}
+
+	/* Light theme variations for settings buttons */
+	:global(.light) .settings-menu-item {
+		background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		opacity: 0.7;
+	}
+
+	:global(.light) .settings-menu-item:hover {
+		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+		opacity: 0.9;
+	}
+
+	:global(.light) .settings-fab {
+		background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		opacity: 0.7;
+	}
+
+	:global(.light) .settings-fab:hover {
+		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+		opacity: 0.9;
+	}
+
+	:global(.light) .settings-fab.active {
+		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
 	}
 
 	.settings-fab :global(.settings-icon) {
