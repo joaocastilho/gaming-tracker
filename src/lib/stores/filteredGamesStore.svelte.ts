@@ -21,6 +21,19 @@ interface FilterCacheKey {
 	sortDirection: string;
 }
 
+/**
+ * Parse a playtime string (e.g., "20h 5m") into total minutes
+ * Returns null if the string is invalid or null
+ */
+function parsePlaytime(time: string | null | undefined): number | null {
+	if (!time) return null;
+	const match = time.match(/^(\d+)h\s*(\d+)m$/);
+	if (!match) return null;
+	const hours = parseInt(match[1], 10);
+	const minutes = parseInt(match[2], 10);
+	return hours * 60 + minutes;
+}
+
 class FilteredGamesStore {
 	private cache = new Map<string, Game[]>();
 	private lastCacheKey: string | null = null;
@@ -190,6 +203,8 @@ class FilteredGamesStore {
 			score: (a: Game, b: Game) => this.compareNullableNumbers(a.score, b.score),
 			finishedDate: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
 			alphabetical: (a: Game, b: Game) => a.title.localeCompare(b.title),
+			hoursPlayed: (a: Game, b: Game) => this.comparePlaytimes(a.hoursPlayed, b.hoursPlayed),
+			timeToBeat: (a: Game, b: Game) => this.comparePlaytimes(a.timeToBeat, b.timeToBeat),
 
 			default: (a: Game, b: Game) => a.title.localeCompare(b.title),
 			completed: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
@@ -198,10 +213,11 @@ class FilteredGamesStore {
 
 		let sortFunction = sortFunctions.default;
 
-		if (activeTab === 'planned') {
-			sortFunction = sortFunctions.planned;
-		} else if (sort?.key && sortFunctions[sort.key as keyof typeof sortFunctions]) {
+		// When an explicit sort key is set, use it regardless of tab
+		if (sort?.key && sortFunctions[sort.key as keyof typeof sortFunctions]) {
 			sortFunction = sortFunctions[sort.key as keyof typeof sortFunctions];
+		} else if (activeTab === 'planned') {
+			sortFunction = sortFunctions.planned;
 		} else if (activeTab === 'completed') {
 			sortFunction = sortFunctions.completed;
 		}
@@ -227,6 +243,21 @@ class FilteredGamesStore {
 				if (bTime === null) return -1;
 
 				return (aTime - bTime) * direction;
+			}
+
+			// Handle playtime sorts (hoursPlayed and timeToBeat)
+			if (sort?.key === 'hoursPlayed' || sort?.key === 'timeToBeat') {
+				const timeField = sort.key === 'hoursPlayed' ? a.hoursPlayed : a.timeToBeat;
+				const timeFieldB = sort.key === 'hoursPlayed' ? b.hoursPlayed : b.timeToBeat;
+				const aMinutes = parsePlaytime(timeField);
+				const bMinutes = parsePlaytime(timeFieldB);
+
+				// Null values go last always
+				if (aMinutes === null && bMinutes === null) return 0;
+				if (aMinutes === null) return 1;
+				if (bMinutes === null) return -1;
+
+				return (aMinutes - bMinutes) * direction;
 			}
 
 			if (
@@ -295,6 +326,17 @@ class FilteredGamesStore {
 		if (aTime === null) return 1;
 		if (bTime === null) return -1;
 		return aTime - bTime;
+	}
+
+	private comparePlaytimes(a: string | null | undefined, b: string | null | undefined): number {
+		const aMinutes = parsePlaytime(a);
+		const bMinutes = parsePlaytime(b);
+
+		// Null values go last
+		if (aMinutes === null && bMinutes === null) return 0;
+		if (aMinutes === null) return 1;
+		if (bMinutes === null) return -1;
+		return aMinutes - bMinutes;
 	}
 
 	private updateCache(key: string, result: Game[]): void {

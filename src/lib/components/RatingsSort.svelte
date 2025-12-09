@@ -9,7 +9,9 @@
 		ArrowUp,
 		ArrowDown,
 		Calendar,
-		AArrowDown
+		AArrowDown,
+		Clock,
+		Timer
 	} from 'lucide-svelte';
 	import { appStore } from '$lib/stores/app.svelte';
 
@@ -143,6 +145,46 @@
 			<Calendar class="sort-icon text-green-500" aria-hidden="true" />
 			<span class="sort-field-label">Finished Date</span>
 			{#if activeKey === 'finishedDate'}
+				{#if activeDirection === 'asc'}
+					<ArrowUp size={14} class="sort-direction-icon" />
+				{:else}
+					<ArrowDown size={14} class="sort-direction-icon" />
+				{/if}
+			{/if}
+		</button>
+	{/if}
+
+	{#if currentTab === 'completed'}
+		<button
+			type="button"
+			class="sort-button"
+			class:active={activeKey === 'hoursPlayed'}
+			onclick={() => handleSort('hoursPlayed')}
+			aria-label="Sort by Hours Played"
+		>
+			<Clock class="sort-icon text-purple-500" aria-hidden="true" />
+			<span class="sort-field-label">Hours Played</span>
+			{#if activeKey === 'hoursPlayed'}
+				{#if activeDirection === 'asc'}
+					<ArrowUp size={14} class="sort-direction-icon" />
+				{:else}
+					<ArrowDown size={14} class="sort-direction-icon" />
+				{/if}
+			{/if}
+		</button>
+	{/if}
+
+	{#if currentTab === 'planned'}
+		<button
+			type="button"
+			class="sort-button"
+			class:active={activeKey === 'timeToBeat'}
+			onclick={() => handleSort('timeToBeat')}
+			aria-label="Sort by Time to Beat"
+		>
+			<Timer class="sort-icon text-orange-500" aria-hidden="true" />
+			<span class="sort-field-label">Time to Beat</span>
+			{#if activeKey === 'timeToBeat'}
 				{#if activeDirection === 'asc'}
 					<ArrowUp size={14} class="sort-direction-icon" />
 				{:else}
