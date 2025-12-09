@@ -110,7 +110,6 @@
 	});
 </script>
 
-```
 <div class="search-bar-container">
 	<div class="search-bar">
 		<span class="search-icon" aria-hidden="true">🔍</span>

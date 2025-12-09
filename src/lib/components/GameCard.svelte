@@ -317,6 +317,7 @@
 				onclick={handleTierClick}
 				onkeydown={handleTierClick}
 				aria-label="Filter by Tier {game.tier}"
+				title="Tier: {getTierDisplayName(game.tier)}"
 			>
 				<span class="tier-text">{getTierDisplayName(game.tier)}</span>
 			</button>
@@ -347,10 +348,11 @@
 						onclick={handlePlatformClick}
 						onkeydown={handlePlatformClick}
 						aria-label="Filter by {game.platform}"
+						title="Platform: {game.platform}"
 					>
 						{game.platform}
 					</button>
-					<span class="game-year">{game.year}</span>
+					<span class="game-year" title="Release Year">{game.year}</span>
 				</div>
 				<div class="second-line">
 					<div class="flex items-center gap-2">
@@ -359,6 +361,7 @@
 							onclick={handleGenreClick}
 							onkeydown={handleGenreClick}
 							aria-label="Filter by {game.genre}"
+							title="Genre: {game.genre}"
 						>
 							{game.genre}
 						</button>
@@ -368,12 +371,13 @@
 								onclick={handleCoOpClick}
 								onkeydown={handleCoOpClick}
 								aria-label="Filter by Co-op"
+								title="Co-op Available"
 							>
 								<Users size={16} class="text-blue-400" aria-label="Co-op available" />
 							</button>
 						{/if}
 					</div>
-					<div class="total-score">
+					<div class="total-score" title="Total Score">
 						<Award class="rating-icon text-yellow-400" aria-label="Total score" />
 						<span class="rating-score">{totalScore ?? '-'}</span>
 					</div>
@@ -381,7 +385,7 @@
 			</div>
 
 			<div class="ratings-section">
-				<div class="rating-item">
+				<div class="rating-item" title="Presentation">
 					<Presentation
 						class="rating-icon text-rose-500"
 						aria-label="Presentation rating"
@@ -389,18 +393,21 @@
 					/>
 					<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
 				</div>
-				<div class="rating-item">
+				<div class="rating-item" title="Story">
 					<NotebookPen class="rating-icon text-sky-500" aria-label="Story rating" size={20} />
 					<span class="rating-score">{game.ratingStory ?? '-'}</span>
 				</div>
-				<div class="rating-item">
+				<div class="rating-item" title="Gameplay">
 					<Gamepad2 class="rating-icon text-emerald-500" aria-label="Gameplay rating" size={20} />
 					<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
 				</div>
 			</div>
 
 			<div class="time-date-section">
-				<div class="time-item">
+				<div
+					class="time-item"
+					title={game.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}
+				>
 					<Timer class="time-icon" aria-label="Time played / Time to beat" size={20} />
 					<span class="time-text"
 						>{game.status === 'Completed'
@@ -408,7 +415,7 @@
 							: (game.timeToBeat ?? 'N/A')}</span
 					>
 				</div>
-				<div class="date-item">
+				<div class="date-item" title={game.finishedDate ? 'Completed On' : 'Completion Date'}>
 					<CalendarDays class="date-icon" aria-label="Completion date" size={20} />
 					<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span
 					>
