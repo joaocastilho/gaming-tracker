@@ -319,18 +319,12 @@
 				savedScrollPosition = window.scrollY;
 			}
 
-			// Tier list is not searchable - switch to Completed tab if trying to search from tierlist
+			// Tier list is not searchable - open search overlay first
+			// When user starts typing, we'll redirect to Games page
 			const currentTab = appStore.activeTab;
 			if (currentTab === 'tierlist') {
-				const searchTerm = $filtersStore?.searchTerm ?? '';
-				const searchParam = searchTerm ? `?s=${encodeURIComponent(searchTerm)}` : '';
-				// Open search first, then navigate
-				pushState(page.url, { showMobileSearch: true });
-				goto(`/completed${searchParam}`, {
-					keepFocus: true,
-					noScroll: true,
-					state: { showMobileSearch: true }
-				});
+				// Just open search, no redirect yet - redirect happens when typing
+				pushState(page.url, { showMobileSearch: true, fromTierlist: true });
 				isFiltersOpen = false;
 				return;
 			}
@@ -539,6 +533,19 @@
 		}
 
 		mobileSearchDebounceTimeout = setTimeout(() => {
+			// Check if we're searching from tierlist and user started typing
+			const isFromTierlist = (page.state as any)?.fromTierlist;
+			if (isFromTierlist && newValue && appStore.activeTab === 'tierlist') {
+				// Redirect to Games page with search term
+				const searchParam = `?s=${encodeURIComponent(newValue)}`;
+				goto(`/${searchParam}`, {
+					keepFocus: true,
+					noScroll: true,
+					state: { showMobileSearch: true }
+				});
+				return;
+			}
+
 			// Update filter store FIRST to trigger filtering
 			filtersStore.setSearchTerm(newValue);
 
@@ -1858,11 +1865,11 @@
 	}
 
 	.settings-menu-item {
-		width: 40px;
-		height: 40px;
+		width: 44px;
+		height: 44px;
 		border-radius: 50%;
 		border: none;
-		background-color: rgba(128, 128, 128, 0.65);
+		background-color: rgba(128, 128, 128, 0.75);
 		color: var(--color-text-primary);
 		cursor: pointer;
 		display: flex;
@@ -1871,7 +1878,7 @@
 		box-shadow: none;
 		transition: all 0.2s ease;
 		outline: none;
-		opacity: 0.95;
+		opacity: 0.98;
 	}
 
 	.settings-menu-item:hover {
@@ -1884,8 +1891,8 @@
 	}
 
 	.floating-action-button {
-		width: 44px;
-		height: 44px;
+		width: 48px;
+		height: 48px;
 		border-radius: 50%;
 		border: none;
 		cursor: pointer;
@@ -1913,10 +1920,10 @@
 
 	/* Settings FAB */
 	.settings-fab {
-		background-color: rgba(128, 128, 128, 0.65);
+		background-color: rgba(128, 128, 128, 0.75);
 		border: none;
 		color: var(--color-text-primary);
-		opacity: 0.95;
+		opacity: 0.98;
 	}
 
 	.settings-fab:hover {
@@ -1944,13 +1951,13 @@
 		}
 
 		.floating-action-button {
-			width: 40px;
-			height: 40px;
+			width: 44px;
+			height: 44px;
 		}
 
 		.settings-menu-item {
-			width: 36px;
-			height: 36px;
+			width: 40px;
+			height: 40px;
 		}
 	}
 

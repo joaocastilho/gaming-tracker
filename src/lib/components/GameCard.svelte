@@ -219,6 +219,10 @@
 
 	function handlePlatformClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
+		// Disable badge filtering on mobile
+		if (typeof window !== 'undefined' && window.innerWidth < 768) {
+			return;
+		}
 		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
 			return;
 		}
@@ -227,6 +231,10 @@
 
 	function handleGenreClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
+		// Disable badge filtering on mobile
+		if (typeof window !== 'undefined' && window.innerWidth < 768) {
+			return;
+		}
 		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
 			return;
 		}
@@ -235,6 +243,10 @@
 
 	function handleCoOpClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
+		// Disable badge filtering on mobile
+		if (typeof window !== 'undefined' && window.innerWidth < 768) {
+			return;
+		}
 		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
 			return;
 		}
@@ -243,6 +255,10 @@
 
 	function handleTierClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
+		// Disable badge filtering on mobile
+		if (typeof window !== 'undefined' && window.innerWidth < 768) {
+			return;
+		}
 		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
 			return;
 		}

@@ -638,7 +638,7 @@
 		}
 	});
 
-	// Show swipe indicator only on first-ever modal open (using localStorage)
+	// Show swipe indicator only on first-ever modal open (using sessionStorage)
 	const SWIPE_HINT_KEY = 'gaming-tracker-swipe-hint-seen';
 
 	// Track displayedGames.length explicitly to ensure effect re-runs when games load
@@ -686,15 +686,29 @@
 			// Show the indicator
 			showSwipeIndicator = true;
 
-			// Hide indicator after 1.5 seconds and mark as seen in sessionStorage
+			// Hide indicator after 5 seconds and mark as seen in sessionStorage
 			swipeHideTimeout = setTimeout(() => {
 				showSwipeIndicator = false;
 				sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
 				swipeIndicatorTimeout = null;
 				swipeHideTimeout = null;
-			}, 1500);
+			}, 5000);
 		}, 300);
 	});
+
+	// Dismiss swipe hint early when user clicks/taps
+	function dismissSwipeHint() {
+		if (swipeIndicatorTimeout) {
+			clearTimeout(swipeIndicatorTimeout);
+			swipeIndicatorTimeout = null;
+		}
+		if (swipeHideTimeout) {
+			clearTimeout(swipeHideTimeout);
+			swipeHideTimeout = null;
+		}
+		showSwipeIndicator = false;
+		sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
+	}
 
 	// Cleanup timeout on destroy
 	onDestroy(() => {
@@ -722,44 +736,51 @@
 	>
 		<!-- Mobile swipe indicator (first time only) -->
 		{#if showSwipeIndicator && displayedGames.length > 1}
-			<div class="swipe-hint-overlay md:hidden" transition:fade={{ duration: 400 }}>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div
+				class="swipe-hint-overlay md:hidden"
+				transition:fade={{ duration: 400 }}
+				onclick={dismissSwipeHint}
+			>
 				<div class="swipe-hint-content">
-					<!-- SVG-based Arrow-only Swipe Hint -->
+					<!-- SVG-based Simple Double Chevron Hint -->
 					<svg
 						class="swipe-hint-svg"
-						viewBox="0 0 100 80"
+						viewBox="0 0 120 80"
 						fill="none"
 						xmlns="http://www.w3.org/2000/svg"
 					>
-						<!-- Left arrow -->
+						<!-- Left double chevron << -->
 						<path
 							class="swipe-arrow swipe-arrow-left"
-							d="M15 40 L5 40 M5 40 L12 33 M5 40 L12 47"
+							d="M20 33 L13 40 L20 47 M30 33 L23 40 L30 47"
 							stroke="currentColor"
-							stroke-width="2.5"
+							stroke-width="3"
 							stroke-linecap="round"
 							stroke-linejoin="round"
 						/>
-						<!-- Down arrow (Swipe to close) - Centered -->
+						<!-- Down double chevron vv -->
 						<path
 							class="swipe-arrow swipe-arrow-down"
-							d="M50 55 L50 65 M50 65 L43 58 M50 65 L57 58"
+							d="M55 58 L60 63 L65 58 M55 66 L60 71 L65 66"
 							stroke="currentColor"
-							stroke-width="2.5"
+							stroke-width="3"
 							stroke-linecap="round"
 							stroke-linejoin="round"
 						/>
-						<!-- Right arrow -->
+						<!-- Right double chevron >> -->
 						<path
 							class="swipe-arrow swipe-arrow-right"
-							d="M85 40 L95 40 M95 40 L88 33 M95 40 L88 47"
+							d="M100 33 L107 40 L100 47 M90 33 L97 40 L90 47"
 							stroke="currentColor"
-							stroke-width="2.5"
+							stroke-width="3"
 							stroke-linecap="round"
 							stroke-linejoin="round"
 						/>
 					</svg>
 					<span class="swipe-hint-text">Swipe to navigate</span>
+					<span class="swipe-hint-dismiss">Tap to dismiss</span>
 				</div>
 			</div>
 		{/if}
@@ -2048,7 +2069,8 @@
 		justify-content: center;
 		background: transparent;
 		z-index: 61;
-		pointer-events: none;
+		pointer-events: auto;
+		cursor: pointer;
 	}
 
 	.swipe-hint-content {
@@ -2065,8 +2087,8 @@
 
 	/* SVG Layout styles */
 	.swipe-hint-svg {
-		width: 100px;
-		height: 80px;
+		width: 140px;
+		height: 110px;
 		margin-bottom: 16px;
 		overflow: visible;
 	}
@@ -2093,6 +2115,13 @@
 		font-weight: 500;
 		opacity: 0.95;
 		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+	}
+
+	.swipe-hint-dismiss {
+		font-size: 0.75rem;
+		font-weight: 400;
+		opacity: 0.6;
+		margin-top: 8px;
 	}
 
 	@keyframes arrow-fade-left {

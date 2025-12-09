@@ -57,23 +57,23 @@
 		position: fixed;
 		bottom: 24px;
 		right: 24px;
-		width: 48px;
-		height: 48px;
+		width: 52px;
+		height: 52px;
 		border-radius: 50%;
 		border: none;
-		background-color: rgba(128, 128, 128, 0.65);
+		background-color: rgba(128, 128, 128, 0.75);
 		color: var(--color-text-primary);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.2rem;
+		font-size: 1.3rem;
 		font-weight: bold;
 		box-shadow: none;
 		transition: all 0.3s ease;
 		z-index: 50;
 		outline: none;
-		opacity: 0.95;
+		opacity: 0.98;
 	}
 
 	.scroll-to-top-button:hover {
@@ -94,7 +94,7 @@
 	}
 
 	:global(.light) .scroll-to-top-button {
-		background-color: rgba(128, 128, 128, 0.65);
+		background-color: rgba(128, 128, 128, 0.75);
 		color: var(--color-text-primary);
 	}
 
@@ -116,9 +116,9 @@
 		.scroll-to-top-button {
 			bottom: 115px;
 			right: 16px;
-			width: 44px;
-			height: 44px;
-			font-size: 1.1rem;
+			width: 48px;
+			height: 48px;
+			font-size: 1.2rem;
 		}
 	}
 
@@ -126,9 +126,9 @@
 		.scroll-to-top-button {
 			bottom: 120px;
 			right: 16px;
-			width: 40px;
-			height: 40px;
-			font-size: 1rem;
+			width: 44px;
+			height: 44px;
+			font-size: 1.1rem;
 		}
 	}
 
