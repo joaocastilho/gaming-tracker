@@ -1772,20 +1772,18 @@
 		}
 	}
 
-	/* Parallax preview - match main modal sizing exactly */
 	.parallax-preview {
 		position: fixed;
 		top: 12px;
 		width: calc(100% - 24px);
 		max-width: 500px;
-		height: calc(100dvh - 24px);
+		height: calc(100dvh - 40px);
 		border-radius: 12px;
 		overflow: hidden;
 		z-index: 59;
 		pointer-events: none;
 		box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
 		background: var(--color-surface);
-		/* GPU acceleration for smooth animations */
 		will-change: transform, opacity;
 		transform: translate3d(0, 0, 0);
 		backface-visibility: hidden;
@@ -1820,7 +1818,6 @@
 		height: 100%;
 	}
 
-	/* Image section - matches .modal-image-container behavior on mobile */
 	.parallax-image-section {
 		position: relative;
 		width: 100%;
@@ -1836,10 +1833,8 @@
 		object-fit: cover;
 	}
 
-	/* Details section - matches .modal-details-section on mobile exactly */
 	.parallax-details-section {
-		/* Match modal: px-5 pt-4 pb-4 = padding: 16px 20px */
-		padding: 16px 20px;
+		padding: 20px 20px;
 		background: transparent;
 		flex: 0 0 auto;
 		overflow: hidden;
@@ -1851,16 +1846,14 @@
 	}
 
 	.parallax-title-container {
-		/* Match modal #modal-title: min-height: 65px */
 		min-height: 65px;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		margin-bottom: 8px; /* mb-2 */
+		margin-bottom: 8px;
 	}
 
 	.parallax-title {
-		/* Match modal: font-size: clamp(1rem, 5vw, 1.65rem) */
 		font-size: clamp(1rem, 5vw, 1.65rem);
 		font-weight: 700;
 		color: var(--color-text-primary);
@@ -1878,7 +1871,6 @@
 		text-overflow: ellipsis;
 	}
 
-	/* Badge row with tier badge on right - match modal: mb-3 */
 	.parallax-badges-row {
 		display: flex;
 		align-items: center;
@@ -1927,7 +1919,6 @@
 	.parallax-info-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		/* Match modal: gap-3 mb-3 */
 		gap: 12px;
 		margin-bottom: 12px;
 	}
@@ -1939,21 +1930,18 @@
 	}
 
 	.parallax-label {
-		/* Match modal: text-sm */
 		font-size: 0.875rem;
 		color: var(--color-text-tertiary);
 		margin-bottom: 4px;
 	}
 
 	.parallax-value {
-		/* Match modal: text-base font-semibold */
 		font-size: 1rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 	}
 
 	.parallax-ratings {
-		/* Match modal: mt-3 space-y-3 */
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
@@ -1961,7 +1949,6 @@
 	}
 
 	.parallax-ratings-title {
-		/* Match modal: text-base font-semibold - gap handles spacing */
 		font-size: 1rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
@@ -1975,12 +1962,10 @@
 	}
 
 	.parallax-rating-label-group {
-		/* Match modal: w-24 = 96px, but use 110px to ensure value fits */
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		flex-shrink: 0;
-		/* Match modal: w-24 = 96px */
 		width: 96px;
 	}
 
@@ -1989,24 +1974,20 @@
 	}
 
 	.parallax-rating-label {
-		/* Match modal: text-xs */
 		font-size: 0.75rem;
 		font-weight: 500;
 		color: var(--color-text-secondary);
 	}
 
 	.parallax-rating-bar {
-		/* Match modal: h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 */
 		height: 0.5rem;
 		flex: 1;
 		border-radius: 9999px;
 		overflow: hidden;
-		/* Light theme: bg-gray-200 = #e5e7eb */
 		background: #e5e7eb;
 	}
 
 	:global(.dark) .parallax-rating-bar {
-		/* Dark theme: bg-gray-700 = #374151 */
 		background: #374151;
 	}
 
@@ -2018,30 +1999,23 @@
 
 	.parallax-rating-fill-empty {
 		height: 100%;
-		/* N/A state: 0% width with gray gradient to match main modal */
 		width: 0%;
 		border-radius: 9999px;
-		/* Match modal: bg-gradient-to-r from-gray-400 to-gray-500 */
 		background: linear-gradient(to right, #9ca3af, #6b7280);
 	}
 
 	.parallax-rating-value {
-		/* Match modal: text-xs font-semibold */
 		font-size: 0.75rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 		text-align: right;
-		/* Match modal: w-8 = 32px */
 		width: 32px;
 		flex-shrink: 0;
 	}
 
-	/* Score card section - matches main modal styling */
 	.parallax-score-card {
-		/* Match modal: mt-6 p-4 rounded-lg border border-blue-200 */
-		margin-top: 24px;
+		margin-top: 12px;
 		padding: 16px;
-		/* Match modal: border (1px) border-blue-200 (#bfdbfe) */
 		border: 1px solid #bfdbfe;
 		border-radius: 8px;
 		display: flex;
@@ -2051,12 +2025,10 @@
 	}
 
 	:global(.dark) .parallax-score-card {
-		/* Match modal: dark:border-blue-800 */
 		border-color: #1e40af;
 	}
 
 	.parallax-score-card.parallax-pending-card {
-		/* Match modal pending state: gray border and light gray background */
 		border-color: #e5e7eb;
 		background: #f9fafb;
 	}
@@ -2067,25 +2039,20 @@
 	}
 
 	.parallax-score {
-		/* Match modal: text-sm font-bold */
 		font-size: 0.875rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 	}
 
 	.parallax-pending {
-		/* Match modal: text-sm font-bold */
 		font-size: 0.875rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 	}
 
-	/* Swipe-to-close visual feedback */
 	.swiping-close {
 		transition: none !important;
 	}
-
-	/* Pull-down handle indicator */
 	.modal-content::after {
 		content: '';
 		position: absolute;
@@ -2111,14 +2078,12 @@
 		background: rgba(0, 0, 0, 0.2);
 	}
 
-	/* Hide parallax on desktop */
 	@media (pointer: fine) {
 		.parallax-preview {
 			display: none;
 		}
 	}
 
-	/* Mobile swipe hint styles */
 	.swipe-hint-overlay {
 		position: fixed;
 		top: 0;
@@ -2146,7 +2111,6 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
 
-	/* SVG Layout styles */
 	.swipe-hint-svg {
 		width: 140px;
 		height: 110px;
