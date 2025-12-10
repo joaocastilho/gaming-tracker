@@ -1165,7 +1165,9 @@
 			class:ios-modal={isIOS}
 			class:android-modal={isAndroid}
 			class:swiping-close={isClosingGesture}
-			style="background-color: var(--color-surface); 
+			style="background-color: {$modalStore.activeGame.status === 'Completed'
+				? 'var(--color-surface-completed)'
+				: 'var(--color-surface)'}; 
 				transform: translateX({swipeOffsetX}px) translateY({swipeOffsetY}px) 
 					scale({1 - Math.abs(swipeOffsetX) * 0.0003 - swipeOffsetY * 0.0008}); 
 				opacity: {1 - Math.abs(swipeOffsetX) * 0.002 - swipeOffsetY * 0.002};
@@ -1959,11 +1961,11 @@
 	}
 
 	.parallax-ratings-title {
-		/* Match modal: text-base font-semibold mb-3 */
+		/* Match modal: text-base font-semibold - gap handles spacing */
 		font-size: 1rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
-		margin: 0 0 12px 0;
+		margin: 0;
 	}
 
 	.parallax-rating-row {
@@ -1994,16 +1996,17 @@
 	}
 
 	.parallax-rating-bar {
-		/* Match modal: h-2 flex-1 rounded-full */
+		/* Match modal: h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 */
 		height: 0.5rem;
 		flex: 1;
 		border-radius: 9999px;
 		overflow: hidden;
-		/* Track color matches main modal's dark appearance */
-		background: #4b5563;
+		/* Light theme: bg-gray-200 = #e5e7eb */
+		background: #e5e7eb;
 	}
 
 	:global(.dark) .parallax-rating-bar {
+		/* Dark theme: bg-gray-700 = #374151 */
 		background: #374151;
 	}
 
@@ -2015,11 +2018,11 @@
 
 	.parallax-rating-fill-empty {
 		height: 100%;
-		/* Show full width dark fill for N/A state to match main modal */
-		width: 100%;
+		/* N/A state: 0% width with gray gradient to match main modal */
+		width: 0%;
 		border-radius: 9999px;
-		/* Match modal N/A dark appearance: solid dark gray/blue */
-		background: #374151;
+		/* Match modal: bg-gradient-to-r from-gray-400 to-gray-500 */
+		background: linear-gradient(to right, #9ca3af, #6b7280);
 	}
 
 	.parallax-rating-value {
