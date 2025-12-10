@@ -1707,7 +1707,6 @@
 		transition: box-shadow 0.2s ease;
 	}
 
-	/* Mobile: fill viewport height minus padding, use flex layout */
 	@media (max-width: 767px) {
 		.modal-content {
 			height: calc(100dvh - 24px);
@@ -1729,7 +1728,6 @@
 		}
 	}
 
-	/* Desktop: reset to auto height */
 	@media (min-width: 768px) {
 		.modal-content {
 			height: auto;
@@ -1777,7 +1775,7 @@
 		top: 12px;
 		width: calc(100% - 24px);
 		max-width: 500px;
-		height: calc(100dvh - 40px);
+		height: calc(100dvh - 22px);
 		border-radius: 12px;
 		overflow: hidden;
 		z-index: 59;
@@ -1887,7 +1885,6 @@
 	}
 
 	.parallax-badge {
-		/* Match modal: px-3 py-1.5 rounded-md */
 		padding: 6px 12px;
 		border-radius: 6px;
 		font-size: 0.875rem;
@@ -1898,7 +1895,7 @@
 	.parallax-tier-badge {
 		padding: 6px 12px;
 		border-radius: 6px;
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		font-weight: 600;
 	}
 
@@ -2014,8 +2011,8 @@
 	}
 
 	.parallax-score-card {
-		margin-top: 12px;
-		padding: 16px;
+		margin-top: 28px;
+		padding: 17px;
 		border: 1px solid #bfdbfe;
 		border-radius: 8px;
 		display: flex;
@@ -2053,6 +2050,7 @@
 	.swiping-close {
 		transition: none !important;
 	}
+
 	.modal-content::after {
 		content: '';
 		position: absolute;
