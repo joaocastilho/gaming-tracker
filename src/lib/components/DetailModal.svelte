@@ -1863,7 +1863,6 @@
 		font-weight: 700;
 		color: var(--color-text-primary);
 		margin: 0;
-		line-height: 1.2;
 	}
 
 	.parallax-subtitle {
@@ -1890,7 +1889,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: 6px;
+		gap: 8px;
 	}
 
 	.parallax-badge {
@@ -2039,8 +2038,8 @@
 		/* Match modal: mt-6 p-4 rounded-lg border border-blue-200 */
 		margin-top: 24px;
 		padding: 16px;
-		/* Match modal: border (1px) */
-		border: 1px solid #93c5fd;
+		/* Match modal: border (1px) border-blue-200 (#bfdbfe) */
+		border: 1px solid #bfdbfe;
 		border-radius: 8px;
 		display: flex;
 		align-items: center;
@@ -2049,7 +2048,8 @@
 	}
 
 	:global(.dark) .parallax-score-card {
-		border-color: #3b82f6;
+		/* Match modal: dark:border-blue-800 */
+		border-color: #1e40af;
 	}
 
 	.parallax-score-card.parallax-pending-card {
