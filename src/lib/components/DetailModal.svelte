@@ -808,7 +808,9 @@
 				style="transform: translateX({100 + parallaxOffset}%); opacity: {Math.min(
 					Math.abs(swipeOffsetX) / 50,
 					1
-				)};"
+				)}; background-color: {prevGamePreview.status === 'Completed'
+					? 'var(--color-surface-completed)'
+					: 'var(--color-surface)'};"
 			>
 				<div class="parallax-modal-content">
 					<div class="parallax-image-section">
@@ -971,7 +973,9 @@
 				style="transform: translateX({-100 + parallaxOffset}%); opacity: {Math.min(
 					Math.abs(swipeOffsetX) / 50,
 					1
-				)};"
+				)}; background-color: {nextGamePreview.status === 'Completed'
+					? 'var(--color-surface-completed)'
+					: 'var(--color-surface)'};"
 			>
 				<div class="parallax-modal-content">
 					<div class="parallax-image-section">
@@ -1830,14 +1834,14 @@
 	.parallax-details-section {
 		/* Match modal: px-5 pt-4 pb-4 = padding: 16px 20px */
 		padding: 16px 20px;
-		background: var(--color-surface);
+		background: transparent;
 		flex: 0 0 auto;
 		overflow: hidden;
 	}
 
 	.parallax-info {
 		padding: 16px;
-		background: var(--color-surface);
+		background: transparent;
 	}
 
 	.parallax-title {
@@ -2042,6 +2046,7 @@
 
 	:global(.dark) .parallax-score-card.parallax-pending-card {
 		border-color: #374151;
+		background: transparent;
 	}
 
 	.parallax-score {
