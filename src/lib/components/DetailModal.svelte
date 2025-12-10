@@ -821,10 +821,12 @@
 						/>
 					</div>
 					<div class="parallax-details-section">
-						<h3 class="parallax-title">{prevGamePreview.mainTitle || prevGamePreview.title}</h3>
-						{#if prevGamePreview.subtitle}
-							<p class="parallax-subtitle">{prevGamePreview.subtitle}</p>
-						{/if}
+						<div class="parallax-title-container">
+							<h3 class="parallax-title">{prevGamePreview.mainTitle || prevGamePreview.title}</h3>
+							{#if prevGamePreview.subtitle}
+								<p class="parallax-subtitle">{prevGamePreview.subtitle}</p>
+							{/if}
+						</div>
 						<div class="parallax-badges-row">
 							<div class="parallax-badges">
 								<span class="parallax-badge {getPlatformColor(prevGamePreview.platform)}"
@@ -986,10 +988,12 @@
 						/>
 					</div>
 					<div class="parallax-details-section">
-						<h3 class="parallax-title">{nextGamePreview.mainTitle || nextGamePreview.title}</h3>
-						{#if nextGamePreview.subtitle}
-							<p class="parallax-subtitle">{nextGamePreview.subtitle}</p>
-						{/if}
+						<div class="parallax-title-container">
+							<h3 class="parallax-title">{nextGamePreview.mainTitle || nextGamePreview.title}</h3>
+							{#if nextGamePreview.subtitle}
+								<p class="parallax-subtitle">{nextGamePreview.subtitle}</p>
+							{/if}
+						</div>
 						<div class="parallax-badges-row">
 							<div class="parallax-badges">
 								<span class="parallax-badge {getPlatformColor(nextGamePreview.platform)}"
@@ -1844,14 +1848,21 @@
 		background: transparent;
 	}
 
+	.parallax-title-container {
+		/* Match modal #modal-title: min-height: 65px */
+		min-height: 65px;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		margin-bottom: 8px; /* mb-2 */
+	}
+
 	.parallax-title {
 		/* Match modal: font-size: clamp(1rem, 5vw, 1.65rem) */
 		font-size: clamp(1rem, 5vw, 1.65rem);
 		font-weight: 700;
 		color: var(--color-text-primary);
-		/* Match modal #modal-title: min-height: 65px, mb-2 */
-		min-height: 65px;
-		margin: 0 0 8px 0;
+		margin: 0;
 		line-height: 1.2;
 	}
 
@@ -1859,8 +1870,11 @@
 		font-size: 0.875rem;
 		font-weight: 600;
 		color: var(--color-text-secondary);
-		margin: 0 0 8px 0;
+		margin: 0;
 		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	/* Badge row with tier badge on right - match modal: mb-3 */
@@ -1964,9 +1978,9 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		min-width: 0;
-		width: 110px;
 		flex-shrink: 0;
+		/* Match modal: w-24 = 96px */
+		width: 96px;
 	}
 
 	.parallax-rating-icon {
@@ -2015,8 +2029,8 @@
 		font-weight: 600;
 		color: var(--color-text-primary);
 		text-align: right;
-		/* Ensure full X/10 text fits */
-		width: 40px;
+		/* Match modal: w-8 = 32px */
+		width: 32px;
 		flex-shrink: 0;
 	}
 
@@ -2025,8 +2039,8 @@
 		/* Match modal: mt-6 p-4 rounded-lg border border-blue-200 */
 		margin-top: 24px;
 		padding: 16px;
-		/* Thicker border to match main modal appearance */
-		border: 2px solid #93c5fd;
+		/* Match modal: border (1px) */
+		border: 1px solid #93c5fd;
 		border-radius: 8px;
 		display: flex;
 		align-items: center;
