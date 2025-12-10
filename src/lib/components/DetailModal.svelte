@@ -1196,7 +1196,7 @@
 				class="modal-layout flex h-full flex-col md:grid md:grid-cols-[350px_1fr] lg:grid-cols-[400px_1fr]"
 			>
 				<div
-					class="modal-image-container relative flex-1 overflow-hidden rounded-t-xl md:shrink-0 md:flex-none md:rounded-l-xl md:rounded-tr-none"
+					class="modal-image-container relative flex-1 overflow-hidden rounded-t-xl md:flex-none md:shrink-0 md:rounded-l-xl md:rounded-tr-none"
 				>
 					<div class="modal-image-wrapper">
 						<div class="modal-skeleton-loader"></div>
@@ -1383,7 +1383,7 @@
 								Ratings
 							</h3>
 							<div class="flex items-center gap-2">
-								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
+								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
 									<Presentation size={20} class="flex-shrink-0 text-rose-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
@@ -1407,7 +1407,7 @@
 							</div>
 
 							<div class="flex items-center gap-2">
-								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
+								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
 									<NotebookPen size={20} class="flex-shrink-0 text-sky-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
@@ -1431,7 +1431,7 @@
 							</div>
 
 							<div class="flex items-center gap-2">
-								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
+								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
 									<Gamepad2 size={20} class="flex-shrink-0 text-emerald-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
@@ -1480,7 +1480,7 @@
 							</h3>
 
 							<div class="flex items-center gap-2">
-								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
+								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
 									<Presentation size={20} class="flex-shrink-0 text-rose-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
@@ -1502,7 +1502,7 @@
 							</div>
 
 							<div class="flex items-center gap-2">
-								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
+								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
 									<NotebookPen size={20} class="flex-shrink-0 text-sky-500" />
 									<span
 										class="text-xs font-medium md:text-sm"
@@ -1524,7 +1524,7 @@
 							</div>
 
 							<div class="flex items-center gap-2">
-								<div class="flex min-w-0 w-24 md:w-32 shrink-0 items-center gap-2">
+								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
 									<Gamepad2 size={20} class="flex-shrink-0 text-emerald-500" />
 									<span
 										class="text-xs font-medium md:text-sm"

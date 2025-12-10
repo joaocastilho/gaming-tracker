@@ -281,8 +281,6 @@ async function main(): Promise<void> {
 		console.log(`400w details total: ${formatBytes(stats.totalDetail400Size)}`);
 	}
 
-
-
 	// Update games.json with new cover paths:
 	// coverImage always points to the 300w card image: covers/{id}.webp
 	console.log('\n🔗 Updating cover paths in games.json...');
