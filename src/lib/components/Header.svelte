@@ -85,26 +85,28 @@
 		</nav>
 
 		<div class="header-right">
-			<div class="theme-toggle-wrapper">
-				<ThemeToggle />
+			<div class="filter-toggle-wrapper hidden md:block">
+				{#if appStore.activeTab !== 'tierlist'}
+					<button
+						type="button"
+						class="filter-toggle-button"
+						onclick={() => filtersStore.toggleDesktopFiltersExpanded()}
+						aria-expanded={filtersStore.isDesktopFiltersExpanded}
+						aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
+						title={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
+					>
+						<SlidersHorizontal size={16} class="filter-icon" />
+						<ChevronDown
+							size={16}
+							class="filter-chevron-icon"
+							style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
+						/>
+					</button>
+				{/if}
 			</div>
 
-			<div class="filter-toggle-wrapper hidden md:block">
-				<button
-					type="button"
-					class="filter-toggle-button"
-					onclick={() => filtersStore.toggleDesktopFiltersExpanded()}
-					aria-expanded={filtersStore.isDesktopFiltersExpanded}
-					aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
-					title={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
-				>
-					<SlidersHorizontal size={16} class="filter-icon" />
-					<ChevronDown
-						size={16}
-						class="filter-chevron-icon"
-						style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
-					/>
-				</button>
+			<div class="theme-toggle-wrapper">
+				<ThemeToggle />
 			</div>
 		</div>
 	</div>
@@ -234,6 +236,7 @@
 		display: inline-flex;
 		align-items: center;
 		margin-left: 0.5rem;
+		min-width: 62px; /* Maintain consistent width when button is hidden */
 	}
 
 	.filter-toggle-button {
