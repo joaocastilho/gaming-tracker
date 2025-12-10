@@ -54,12 +54,20 @@ class FiltersStore {
 
 	// UI State - Desktop Filters Expansion
 	// Default to TRUE as per original behavior
+	// Persisted to sessionStorage to survive page refreshes within session
 	public isDesktopFiltersExpanded = $state(true);
+
+	private static readonly FILTERS_EXPANDED_KEY = 'filtersExpanded';
 
 	constructor() {
 		// Initialize filters if in browser
 		if (browser) {
 			this.state = { ...initialFilters };
+			// Restore desktop filters expanded state from sessionStorage
+			const savedExpanded = sessionStorage.getItem(FiltersStore.FILTERS_EXPANDED_KEY);
+			if (savedExpanded !== null) {
+				this.isDesktopFiltersExpanded = savedExpanded === 'true';
+			}
 		}
 	}
 
@@ -239,6 +247,12 @@ class FiltersStore {
 
 	toggleDesktopFiltersExpanded(): void {
 		this.isDesktopFiltersExpanded = !this.isDesktopFiltersExpanded;
+		if (browser) {
+			sessionStorage.setItem(
+				FiltersStore.FILTERS_EXPANDED_KEY,
+				String(this.isDesktopFiltersExpanded)
+			);
+		}
 	}
 
 	readSearchFromURL(searchParams: URLSearchParams): void {
