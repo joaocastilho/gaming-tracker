@@ -1775,7 +1775,7 @@
 		top: 12px;
 		width: calc(100% - 24px);
 		max-width: 500px;
-		height: calc(100dvh - 22px);
+		height: calc(100dvh - 23px);
 		border-radius: 12px;
 		overflow: hidden;
 		z-index: 59;
@@ -1832,14 +1832,14 @@
 	}
 
 	.parallax-details-section {
-		padding: 20px 20px;
+		padding: 19px 25px;
 		background: transparent;
 		flex: 0 0 auto;
 		overflow: hidden;
 	}
 
 	.parallax-info {
-		padding: 16px;
+		padding: 12px;
 		background: transparent;
 	}
 
@@ -1848,7 +1848,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		margin-bottom: 8px;
+		margin-bottom: 10px;
 	}
 
 	.parallax-title {
@@ -1929,7 +1929,7 @@
 	.parallax-label {
 		font-size: 0.875rem;
 		color: var(--color-text-tertiary);
-		margin-bottom: 4px;
+		margin-bottom: 3px;
 	}
 
 	.parallax-value {
@@ -1963,7 +1963,7 @@
 		align-items: center;
 		gap: 8px;
 		flex-shrink: 0;
-		width: 96px;
+		width: 110px;
 	}
 
 	.parallax-rating-icon {
