@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { filtersStore } from '$lib/stores/filters.svelte';
+	import { editorStore } from '$lib/stores/editor.svelte';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS } from '../utils/colorConstants.js';
 	import { getTierClass, getTierDisplayName } from '../utils/tierUtils.js';
@@ -12,7 +13,9 @@
 		Gamepad2,
 		Timer,
 		CalendarDays,
-		Users
+		Users,
+		Pencil,
+		Trash2
 	} from 'lucide-svelte';
 
 	interface Props {
@@ -23,6 +26,8 @@
 		isPriority?: boolean;
 		displayedGames?: Game[];
 		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
+		onEditGame?: (game: Game) => void;
+		onDeleteGame?: (game: Game) => void;
 	}
 
 	let {
@@ -32,8 +37,12 @@
 		isAboveFold = false,
 		isPriority = false,
 		displayedGames = [],
-		onOpenModal
+		onOpenModal,
+		onEditGame,
+		onDeleteGame
 	}: Props = $props();
+
+	let isEditor = $derived(editorStore.editorMode);
 
 	const imageSrcset = $derived(() => {
 		if (size === 'tiny') {
@@ -321,6 +330,35 @@
 			>
 				<span class="tier-text">{getTierDisplayName(game.tier)}</span>
 			</button>
+		{/if}
+
+		{#if isEditor}
+			<div class="editor-controls">
+				<button
+					type="button"
+					class="editor-control-btn edit-btn"
+					onclick={(e) => {
+						e.stopPropagation();
+						onEditGame?.(game);
+					}}
+					title="Edit game"
+					aria-label="Edit {game.title}"
+				>
+					<Pencil size={16} />
+				</button>
+				<button
+					type="button"
+					class="editor-control-btn delete-btn"
+					onclick={(e) => {
+						e.stopPropagation();
+						onDeleteGame?.(game);
+					}}
+					title="Delete game"
+					aria-label="Delete {game.title}"
+				>
+					<Trash2 size={16} />
+				</button>
+			</div>
 		{/if}
 	</div>
 
@@ -854,6 +892,69 @@
 
 		.game-card:hover {
 			transform: none;
+		}
+	}
+
+	/* Editor controls */
+	.editor-controls {
+		position: absolute;
+		bottom: 8px;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		gap: 8px;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+		z-index: 20;
+	}
+
+	.game-card:hover .editor-controls,
+	.game-card:focus-within .editor-controls {
+		opacity: 1;
+	}
+
+	.editor-control-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		border: none;
+		cursor: pointer;
+		backdrop-filter: blur(8px);
+		transition: all 0.2s ease;
+	}
+
+	.edit-btn {
+		background: rgba(59, 130, 246, 0.85);
+		color: white;
+	}
+
+	.edit-btn:hover {
+		background: #3b82f6;
+		transform: scale(1.1);
+	}
+
+	.delete-btn {
+		background: rgba(239, 68, 68, 0.85);
+		color: white;
+	}
+
+	.delete-btn:hover {
+		background: #ef4444;
+		transform: scale(1.1);
+	}
+
+	@media (max-width: 768px) {
+		.editor-controls {
+			opacity: 1;
+			bottom: 6px;
+		}
+
+		.editor-control-btn {
+			width: 28px;
+			height: 28px;
 		}
 	}
 </style>

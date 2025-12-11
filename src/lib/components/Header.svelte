@@ -5,7 +5,15 @@
 	import { appStore } from '$lib/stores/app.svelte';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 	import { filtersStore } from '$lib/stores/filters.svelte';
-	import { ChevronDown, SlidersHorizontal } from 'lucide-svelte';
+	import { editorStore } from '$lib/stores/editor.svelte';
+	import { ChevronDown, SlidersHorizontal, Plus, Save, X } from 'lucide-svelte';
+
+	interface Props {
+		onAddGame?: () => void;
+		onApplyChanges?: () => void;
+	}
+
+	let { onAddGame, onApplyChanges }: Props = $props();
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -16,6 +24,12 @@
 		count: number | null;
 		active: boolean;
 	};
+
+	// Derive editor state
+	let isEditor = $derived(editorStore.editorMode);
+	let hasPending = $derived(editorStore.hasPendingChanges);
+	let pendingCount = $derived(editorStore.pendingChangesCount);
+	let isSaving = $derived(editorStore.savePending);
 
 	// Use $derived to reactively compute navItems whenever activeTab or counts change
 	let navItems = $derived.by(() => {
@@ -61,6 +75,18 @@
 			await navigateTo(target);
 		}
 	}
+
+	function handleAddGame() {
+		onAddGame?.();
+	}
+
+	function handleApplyChanges() {
+		onApplyChanges?.();
+	}
+
+	function handleDiscardChanges() {
+		editorStore.discardAllChanges();
+	}
 </script>
 
 <header class="header-root mb-2 px-6 py-3 md:mb-6 md:py-1">
@@ -85,6 +111,42 @@
 		</nav>
 
 		<div class="header-right">
+			{#if isEditor && appStore.activeTab !== 'tierlist'}
+				<button
+					type="button"
+					class="editor-button add-game-button"
+					onclick={handleAddGame}
+					title="Add new game"
+				>
+					<Plus size={16} />
+					<span class="button-label">Add Game</span>
+				</button>
+			{/if}
+
+			{#if isEditor && hasPending}
+				<button
+					type="button"
+					class="editor-button discard-button"
+					onclick={handleDiscardChanges}
+					title="Discard all pending changes"
+					disabled={isSaving}
+				>
+					<X size={16} />
+				</button>
+
+				<button
+					type="button"
+					class="editor-button apply-button"
+					onclick={handleApplyChanges}
+					disabled={isSaving}
+					title="Apply all pending changes"
+				>
+					<Save size={16} />
+					<span class="button-label">{isSaving ? 'Saving...' : 'Apply'}</span>
+					<span class="pending-badge">{pendingCount}</span>
+				</button>
+			{/if}
+
 			<div class="filter-toggle-wrapper hidden md:block">
 				{#if appStore.activeTab !== 'tierlist'}
 					<button
@@ -302,5 +364,93 @@
 		.filter-toggle-wrapper {
 			display: none;
 		}
+
+		.editor-button .button-label {
+			display: none;
+		}
+
+		.add-game-button,
+		.apply-button,
+		.discard-button {
+			padding: 6px 8px;
+		}
+	}
+
+	/* Editor button styles */
+	.editor-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		padding: 6px 12px;
+		border: 1px solid var(--color-border);
+		border-radius: 20px;
+		background-color: var(--color-surface);
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		transition: all 0.2s ease;
+		font-size: 0.85rem;
+		font-weight: 500;
+	}
+
+	.editor-button:hover:not(:disabled) {
+		transform: translateY(-1px);
+	}
+
+	.editor-button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.add-game-button {
+		border-color: rgba(34, 197, 94, 0.4);
+		background: rgba(34, 197, 94, 0.12);
+		color: #22c55e;
+	}
+
+	.add-game-button:hover {
+		background: #22c55e;
+		color: white;
+		border-color: #22c55e;
+	}
+
+	.apply-button {
+		border-color: rgba(59, 130, 246, 0.4);
+		background: rgba(59, 130, 246, 0.12);
+		color: #3b82f6;
+	}
+
+	.apply-button:hover:not(:disabled) {
+		background: #3b82f6;
+		color: white;
+		border-color: #3b82f6;
+	}
+
+	.discard-button {
+		border-color: rgba(239, 68, 68, 0.4);
+		background: rgba(239, 68, 68, 0.12);
+		color: #ef4444;
+		padding: 6px 8px;
+	}
+
+	.discard-button:hover:not(:disabled) {
+		background: #ef4444;
+		color: white;
+		border-color: #ef4444;
+	}
+
+	.pending-badge {
+		min-width: 1.2rem;
+		padding: 0.1rem 0.4rem;
+		border-radius: 999px;
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-align: center;
+		background: rgba(255, 255, 255, 0.2);
+		color: inherit;
+	}
+
+	.apply-button:hover .pending-badge {
+		background: rgba(255, 255, 255, 0.25);
 	}
 </style>

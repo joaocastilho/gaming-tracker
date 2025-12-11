@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { editorStore } from '$lib/stores/editor.svelte';
+	import { dev } from '$app/environment';
 
 	interface Props {
 		open?: boolean;
@@ -34,6 +35,12 @@
 		if (ok) {
 			open = false;
 		}
+	}
+
+	// Dev mode bypass - enables editor without API call
+	function enableDevMode() {
+		editorStore.setEditorModeFromSessionCheck(true);
+		open = false;
 	}
 </script>
 
@@ -103,6 +110,12 @@
 						{/if}
 					</button>
 				</div>
+
+				{#if dev}
+					<button type="button" class="dev-mode-btn" onclick={enableDevMode}>
+						🛠️ Enable Dev Mode (skip login)
+					</button>
+				{/if}
 			</form>
 		</div>
 	</div>
@@ -218,5 +231,23 @@
 	button:disabled {
 		opacity: 0.6;
 		cursor: default;
+	}
+
+	.dev-mode-btn {
+		width: 100%;
+		margin-top: 1rem;
+		padding: 0.6rem;
+		border: 1px dashed #f59e0b;
+		background: rgba(245, 158, 11, 0.1);
+		color: #f59e0b;
+		border-radius: 8px;
+		cursor: pointer;
+		font-size: 0.85rem;
+		transition: all 0.2s;
+	}
+
+	.dev-mode-btn:hover {
+		background: rgba(245, 158, 11, 0.2);
+		border-style: solid;
 	}
 </style>

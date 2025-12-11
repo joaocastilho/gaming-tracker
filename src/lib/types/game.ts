@@ -1,6 +1,12 @@
 export type GameStatus = 'Planned' | 'Completed';
 
-export type TierValue = 'S' | 'A' | 'B' | 'C' | 'D' | 'E';
+export type TierValue =
+	| 'S - Masterpiece'
+	| 'A - Amazing'
+	| 'B - Great'
+	| 'C - Good'
+	| 'D - Decent'
+	| 'E - Bad';
 
 export type CoOpStatus = 'Yes' | 'No';
 

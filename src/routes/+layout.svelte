@@ -53,6 +53,9 @@
 	import FilterToggle from '$lib/components/FilterToggle.svelte';
 
 	import DetailModal from '$lib/components/DetailModal.svelte';
+	import GameEditorModal from '$lib/components/GameEditorModal.svelte';
+	import DeleteConfirmModal from '$lib/components/DeleteConfirmModal.svelte';
+	import { editorStore } from '$lib/stores/editor.svelte';
 
 	let initialized = $state(false);
 	let gamesInitialized = $state(false);
@@ -584,6 +587,67 @@
 			history.back();
 		}
 	}
+
+	// ==========================================
+	// Editor Mode State and Handlers
+	// ==========================================
+	let editorModalOpen = $state(false);
+	let editorModalMode = $state<'create' | 'edit'>('create');
+	let editorModalGame = $state<Game | null>(null);
+	let deleteModalOpen = $state(false);
+	let deleteModalGame = $state<Game | null>(null);
+
+	function handleAddGame() {
+		editorModalMode = 'create';
+		editorModalGame = null;
+		editorModalOpen = true;
+	}
+
+	function handleEditGame(game: Game) {
+		editorModalMode = 'edit';
+		editorModalGame = game;
+		editorModalOpen = true;
+	}
+
+	function handleDeleteGame(game: Game) {
+		deleteModalGame = game;
+		deleteModalOpen = true;
+	}
+
+	function handleEditorClose() {
+		editorModalOpen = false;
+		editorModalGame = null;
+	}
+
+	async function handleApplyChanges() {
+		const games = $gamesStore;
+		const success = await editorStore.applyAllChanges(games);
+		if (success) {
+			// Refresh games from server after successful save
+			try {
+				const res = await fetch('/api/games', {
+					method: 'GET',
+					headers: { Accept: 'application/json' },
+					credentials: 'include'
+				});
+				if (res.ok) {
+					const data = await res.json();
+					if (data && Array.isArray(data.games)) {
+						gamesStore.initializeGames(data.games);
+					}
+				}
+			} catch {
+				// Ignore refresh errors
+			}
+		}
+	}
+
+	// Check session on mount
+	onMount(() => {
+		if (browser && editorStore.editorMode) {
+			editorStore.checkSession();
+		}
+	});
 </script>
 
 <svelte:head>
@@ -600,7 +664,7 @@
 
 {#if initialized}
 	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
-		<Header />
+		<Header onAddGame={handleAddGame} onApplyChanges={handleApplyChanges} />
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
 			<div class="container mx-auto px-6">
 				{#if !isTierlistPage}
@@ -682,7 +746,12 @@
 							</button>
 						</div>
 					{:else}
-						<GamesView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
+						<GamesView
+							filteredGames={$filteredGames}
+							onOpenModal={openModalWithFilterContext}
+							onEditGame={handleEditGame}
+							onDeleteGame={handleDeleteGame}
+						/>
 					{/if}
 
 					<div style="display: none;">
@@ -720,6 +789,17 @@
 		</main>
 
 		<DetailModal />
+
+		{#if editorModalOpen}
+			<GameEditorModal
+				mode={editorModalMode}
+				initialGame={editorModalGame}
+				allGames={$gamesStore}
+				onClose={handleEditorClose}
+			/>
+		{/if}
+
+		<DeleteConfirmModal bind:open={deleteModalOpen} game={deleteModalGame} />
 
 		<!-- Mobile Search Input -->
 		{#if isSearchOpen}

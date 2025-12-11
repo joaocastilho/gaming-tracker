@@ -192,4 +192,162 @@ describe('EditorStore', () => {
 			unsubscribe();
 		});
 	});
+
+	describe('Pending Changes Queue', () => {
+		const mockGame = {
+			id: 'test-game-1',
+			title: 'Test Game',
+			mainTitle: 'Test Game',
+			subtitle: null,
+			platform: 'PC',
+			year: 2024,
+			genre: 'Action',
+			coOp: 'No' as const,
+			status: 'Planned' as const,
+			coverImage: 'covers/test.webp',
+			timeToBeat: '10h 0m',
+			hoursPlayed: null,
+			finishedDate: null,
+			ratingPresentation: null,
+			ratingStory: null,
+			ratingGameplay: null,
+			score: null,
+			tier: null
+		};
+
+		it('starts with no pending changes', () => {
+			expect(editorStore.hasPendingChanges).toBe(false);
+			expect(editorStore.pendingChangesCount).toBe(0);
+			expect(editorStore.pendingAdds).toEqual([]);
+			expect(editorStore.pendingEdits.size).toBe(0);
+			expect(editorStore.pendingDeletes.size).toBe(0);
+		});
+
+		it('addPendingGame adds game to pending adds', () => {
+			editorStore.addPendingGame(mockGame);
+
+			expect(editorStore.hasPendingChanges).toBe(true);
+			expect(editorStore.pendingChangesCount).toBe(1);
+			expect(editorStore.pendingAdds).toHaveLength(1);
+			expect(editorStore.pendingAdds[0].id).toBe('test-game-1');
+		});
+
+		it('editPendingGame adds game to pending edits', () => {
+			const editedGame = { ...mockGame, title: 'Edited Game' };
+			editorStore.editPendingGame(mockGame.id, editedGame);
+
+			expect(editorStore.hasPendingChanges).toBe(true);
+			expect(editorStore.pendingEdits.has(mockGame.id)).toBe(true);
+			expect(editorStore.pendingEdits.get(mockGame.id)?.title).toBe('Edited Game');
+		});
+
+		it('deletePendingGame adds id to pending deletes', () => {
+			editorStore.deletePendingGame('existing-game-id');
+
+			expect(editorStore.hasPendingChanges).toBe(true);
+			expect(editorStore.pendingDeletes.has('existing-game-id')).toBe(true);
+		});
+
+		it('deletePendingGame removes from pending adds if game was pending add', () => {
+			editorStore.addPendingGame(mockGame);
+			expect(editorStore.pendingAdds).toHaveLength(1);
+
+			editorStore.deletePendingGame(mockGame.id);
+
+			expect(editorStore.pendingAdds).toHaveLength(0);
+			expect(editorStore.pendingDeletes.has(mockGame.id)).toBe(false);
+		});
+
+		it('discardAllChanges clears all pending changes', () => {
+			editorStore.addPendingGame(mockGame);
+			editorStore.editPendingGame('another-id', { ...mockGame, id: 'another-id' });
+			editorStore.deletePendingGame('delete-id');
+
+			expect(editorStore.hasPendingChanges).toBe(true);
+
+			editorStore.discardAllChanges();
+
+			expect(editorStore.hasPendingChanges).toBe(false);
+			expect(editorStore.pendingAdds).toEqual([]);
+			expect(editorStore.pendingEdits.size).toBe(0);
+			expect(editorStore.pendingDeletes.size).toBe(0);
+		});
+
+		it('logout clears pending changes', () => {
+			editorStore.addPendingGame(mockGame);
+			expect(editorStore.hasPendingChanges).toBe(true);
+
+			editorStore.logout();
+
+			expect(editorStore.hasPendingChanges).toBe(false);
+		});
+
+		it('buildFinalGames applies all pending changes correctly', () => {
+			const existingGames = [
+				{ ...mockGame, id: 'existing-1', title: 'Existing 1' },
+				{ ...mockGame, id: 'existing-2', title: 'Existing 2' },
+				{ ...mockGame, id: 'existing-3', title: 'Existing 3' }
+			];
+
+			// Add a new game
+			editorStore.addPendingGame({ ...mockGame, id: 'new-game', title: 'New Game' });
+
+			// Edit existing-1
+			editorStore.editPendingGame('existing-1', {
+				...mockGame,
+				id: 'existing-1',
+				title: 'Edited Existing 1'
+			});
+
+			// Delete existing-3
+			editorStore.deletePendingGame('existing-3');
+
+			const result = editorStore.buildFinalGames(existingGames);
+
+			expect(result).toHaveLength(3); // 3 existing - 1 deleted + 1 added = 3
+			expect(result.find((g) => g.id === 'existing-1')?.title).toBe('Edited Existing 1');
+			expect(result.find((g) => g.id === 'existing-2')?.title).toBe('Existing 2');
+			expect(result.find((g) => g.id === 'existing-3')).toBeUndefined();
+			expect(result.find((g) => g.id === 'new-game')?.title).toBe('New Game');
+		});
+	});
+
+	describe('Session Check', () => {
+		it('checkSession returns true when session is valid', async () => {
+			globalThis.fetch = mockFetch({
+				ok: false,
+				status: 400,
+				json: () => Promise.resolve({ error: 'Validation failed' })
+			});
+
+			editorStore.setEditorModeFromSessionCheck(true);
+			const result = await editorStore.checkSession();
+
+			expect(result).toBe(true);
+			expect(editorStore.editorMode).toBe(true);
+		});
+
+		it('checkSession returns false and disables editor mode when session is invalid', async () => {
+			globalThis.fetch = mockFetch({
+				ok: false,
+				status: 401,
+				json: () => Promise.resolve({ error: 'Unauthorized' })
+			});
+
+			editorStore.setEditorModeFromSessionCheck(true);
+			const result = await editorStore.checkSession();
+
+			expect(result).toBe(false);
+			expect(editorStore.editorMode).toBe(false);
+		});
+
+		it('checkSession returns true on network error (assumes session valid)', async () => {
+			globalThis.fetch = mockFetchError();
+
+			editorStore.setEditorModeFromSessionCheck(true);
+			const result = await editorStore.checkSession();
+
+			expect(result).toBe(true);
+		});
+	});
 });

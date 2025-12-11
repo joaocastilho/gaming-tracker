@@ -6,7 +6,14 @@ import type { CoOpStatus, GameStatus, TierValue } from '../types/game';
  */
 
 export const GAME_STATUS_VALUES = ['Planned', 'Completed'] as const satisfies GameStatus[];
-export const TIER_VALUES = ['S', 'A', 'B', 'C', 'D', 'E'] as const satisfies TierValue[];
+export const TIER_VALUES = [
+	'S - Masterpiece',
+	'A - Amazing',
+	'B - Great',
+	'C - Good',
+	'D - Decent',
+	'E - Bad'
+] as const satisfies TierValue[];
 export const COOP_VALUES = ['Yes', 'No'] as const satisfies CoOpStatus[];
 
 /**

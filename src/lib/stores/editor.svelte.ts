@@ -1,7 +1,8 @@
 /**
  * Editor Store - Svelte 5 Runes
- * Manages admin editor state, login, and save operations
+ * Manages admin editor state, login, save operations, and batch editing
  */
+import type { Game } from '$lib/types/game';
 
 type EditorState = {
 	editorMode: boolean;
@@ -11,6 +12,12 @@ type EditorState = {
 	saveSuccess: boolean;
 	saveError: string | null;
 	lastSnapshot: unknown | null;
+};
+
+type PendingChanges = {
+	adds: Game[];
+	edits: Map<string, Game>;
+	deletes: Set<string>;
 };
 
 const initialState: EditorState = {
@@ -23,8 +30,19 @@ const initialState: EditorState = {
 	lastSnapshot: null
 };
 
+const initialPendingChanges: PendingChanges = {
+	adds: [],
+	edits: new Map(),
+	deletes: new Set()
+};
+
 class EditorStore {
 	private _state = $state<EditorState>({ ...initialState });
+	private _pending = $state<PendingChanges>({
+		adds: [],
+		edits: new Map(),
+		deletes: new Set()
+	});
 
 	// Direct property getters
 	get editorMode(): boolean {
@@ -62,6 +80,152 @@ class EditorStore {
 
 	get hasLoginError(): boolean {
 		return Boolean(this._state.loginError);
+	}
+
+	// Pending changes getters
+	get pendingAdds(): Game[] {
+		return this._pending.adds;
+	}
+
+	get pendingEdits(): Map<string, Game> {
+		return this._pending.edits;
+	}
+
+	get pendingDeletes(): Set<string> {
+		return this._pending.deletes;
+	}
+
+	get hasPendingChanges(): boolean {
+		return (
+			this._pending.adds.length > 0 ||
+			this._pending.edits.size > 0 ||
+			this._pending.deletes.size > 0
+		);
+	}
+
+	get pendingChangesCount(): number {
+		return this._pending.adds.length + this._pending.edits.size + this._pending.deletes.size;
+	}
+
+	// Pending changes methods
+	addPendingGame(game: Game): void {
+		this._pending = {
+			...this._pending,
+			adds: [...this._pending.adds, game]
+		};
+	}
+
+	editPendingGame(id: string, game: Game): void {
+		const newEdits = new Map(this._pending.edits);
+		newEdits.set(id, game);
+		this._pending = {
+			...this._pending,
+			edits: newEdits
+		};
+	}
+
+	deletePendingGame(id: string): void {
+		// If it's a pending add, just remove it from adds
+		const addIndex = this._pending.adds.findIndex((g) => g.id === id);
+		if (addIndex !== -1) {
+			const newAdds = [...this._pending.adds];
+			newAdds.splice(addIndex, 1);
+			this._pending = {
+				...this._pending,
+				adds: newAdds
+			};
+			return;
+		}
+
+		// If it's a pending edit, remove from edits and add to deletes
+		const newEdits = new Map(this._pending.edits);
+		newEdits.delete(id);
+
+		const newDeletes = new Set(this._pending.deletes);
+		newDeletes.add(id);
+
+		this._pending = {
+			...this._pending,
+			edits: newEdits,
+			deletes: newDeletes
+		};
+	}
+
+	discardAllChanges(): void {
+		this._pending = {
+			adds: [],
+			edits: new Map(),
+			deletes: new Set()
+		};
+	}
+
+	/**
+	 * Build the final games array by applying all pending changes to the current games
+	 */
+	buildFinalGames(currentGames: Game[]): Game[] {
+		// Start with current games
+		let result = [...currentGames];
+
+		// Remove deleted games
+		result = result.filter((g) => !this._pending.deletes.has(g.id));
+
+		// Apply edits
+		result = result.map((g) => {
+			const edited = this._pending.edits.get(g.id);
+			return edited ? edited : g;
+		});
+
+		// Add new games
+		result = [...result, ...this._pending.adds];
+
+		return result;
+	}
+
+	/**
+	 * Apply all pending changes by sending to the API
+	 */
+	async applyAllChanges(currentGames: Game[]): Promise<boolean> {
+		if (!this.hasPendingChanges) {
+			return true;
+		}
+
+		const finalGames = this.buildFinalGames(currentGames);
+		const success = await this.saveGames(() => ({ games: finalGames }));
+
+		if (success) {
+			this.discardAllChanges();
+		}
+
+		return success;
+	}
+
+	/**
+	 * Check if session is still valid by making a lightweight request
+	 */
+	async checkSession(): Promise<boolean> {
+		try {
+			const res = await fetch('/api/games', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ games: [] }),
+				credentials: 'include'
+			});
+
+			// If we get 401, session is invalid
+			if (res.status === 401) {
+				this._state = { ...this._state, editorMode: false };
+				return false;
+			}
+
+			// Any other response (including 400 for empty games) means session is valid
+			// We don't want to actually save, so we just check auth
+			return true;
+		} catch {
+			// Network error - assume session is still valid
+			return true;
+		}
 	}
 
 	async login(username: string, password: string): Promise<boolean> {
@@ -108,6 +272,7 @@ class EditorStore {
 
 	logout(): void {
 		this._state = { ...initialState, editorMode: false };
+		this.discardAllChanges();
 	}
 
 	setEditorModeFromSessionCheck(enabled: boolean): void {
@@ -181,9 +346,9 @@ class EditorStore {
 	// For backwards compatibility
 	subscribe(fn: (value: EditorState) => void): () => void {
 		fn(this._state);
-		return () => {};
+		return () => { };
 	}
 }
 
 export const editorStore = new EditorStore();
-export type { EditorStore };
+export type { EditorStore, PendingChanges };

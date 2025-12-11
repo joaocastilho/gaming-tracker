@@ -9,9 +9,17 @@
 		filteredGames: Game[];
 		displayedGames?: Game[];
 		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
+		onEditGame?: (game: Game) => void;
+		onDeleteGame?: (game: Game) => void;
 	}
 
-	let { filteredGames = [], displayedGames: displayedGamesProp, onOpenModal }: Props = $props();
+	let {
+		filteredGames = [],
+		displayedGames: displayedGamesProp,
+		onOpenModal,
+		onEditGame,
+		onDeleteGame
+	}: Props = $props();
 	let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
 	const isEditor = $derived($editorStore.editorMode);
@@ -108,6 +116,8 @@
 								{displayedGames}
 								isPriority={isPriority && i < 4}
 								onOpenModal={handleOpenModal}
+								{onEditGame}
+								{onDeleteGame}
 							/>
 						</div>
 					{/each}
@@ -125,7 +135,14 @@
 				<div class="game-row pb-5">
 					{#each row.games as game, i (game.id || `fallback-ssr-${row.id}-${i}`)}
 						<div class="game-card-wrapper">
-							<GameCard {game} {displayedGames} isPriority={i < 4} onOpenModal={handleOpenModal} />
+							<GameCard
+								{game}
+								{displayedGames}
+								isPriority={i < 4}
+								onOpenModal={handleOpenModal}
+								{onEditGame}
+								{onDeleteGame}
+							/>
 						</div>
 					{/each}
 					{#if row.games.length < columns}
