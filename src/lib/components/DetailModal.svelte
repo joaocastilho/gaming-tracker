@@ -1775,7 +1775,7 @@
 		top: 12px;
 		width: calc(100% - 24px);
 		max-width: 500px;
-		height: calc(100dvh - 23px);
+		height: calc(100dvh - 24px);
 		border-radius: 12px;
 		overflow: hidden;
 		z-index: 59;
@@ -1832,14 +1832,15 @@
 	}
 
 	.parallax-details-section {
-		padding: 19px 25px;
+		padding: 23px 25px;
 		background: transparent;
 		flex: 0 0 auto;
 		overflow: hidden;
+		margin-top: -5px;
 	}
 
 	.parallax-info {
-		padding: 12px;
+		padding: 10px;
 		background: transparent;
 	}
 
@@ -1848,7 +1849,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		margin-bottom: 10px;
+		margin-bottom: 8px;
 	}
 
 	.parallax-title {
@@ -1885,7 +1886,7 @@
 	}
 
 	.parallax-badge {
-		padding: 6px 12px;
+		padding: 6px 13px;
 		border-radius: 6px;
 		font-size: 0.875rem;
 		font-weight: 500;
