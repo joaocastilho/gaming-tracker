@@ -1,10 +1,9 @@
 export function transformGameData(game: Record<string, unknown>): Record<string, unknown> {
 	const transformed = { ...game };
 
-	// Ensure ID exists. If valid UUID exists, keep it.
-	// If title exists, generate deterministic UUID.
-	// Otherwise, generate random UUID to prevent duplicate key errors.
-	if (!transformed.id || !isValidUUID(String(transformed.id))) {
+	// Ensure ID exists.
+	// If ID is missing, generate one (deterministic from title if available, otherwise random).
+	if (!transformed.id) {
 		if (transformed.title) {
 			transformed.id = generateDeterministicUUID(String(transformed.title));
 		} else {

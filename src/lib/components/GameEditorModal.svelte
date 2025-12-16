@@ -39,6 +39,7 @@
 	const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
 
 	onMount(() => {
+		console.log('GameEditorModal mounted - Fix v2');
 		if (mode === 'edit' && initialGame) {
 			working = structuredClone(initialGame);
 			// Fix compatibility: Convert numeric playtime to string if needed
@@ -288,7 +289,7 @@
 				{/if}
 
 				<div class="full cover-path">
-					<span class="label-text">Game ID</span>
+					<span class="label-text">Game ID (Click to Copy)</span>
 					<!-- Read-only auto-generated path visualization + copy -->
 					<div
 						class="read-only-field copyable"

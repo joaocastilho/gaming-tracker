@@ -48,8 +48,8 @@ describe('Data Transformer', () => {
 
 		const gameWithId = { id: 'existing-id', title: 'Another Game' };
 		const transformed9 = transformGameData(gameWithId);
-		// 'existing-id' is NOT a valid UUID, so it SHOULD be replaced.
-		expect(transformed9.id).not.toBe('existing-id');
+		// 'existing-id' IS a valid ID (slug), so it SHOULD be preserved.
+		expect(transformed9.id).toBe('existing-id');
 	});
 
 	test('ID Generation Edge Cases', () => {

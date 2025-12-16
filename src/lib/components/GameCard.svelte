@@ -179,6 +179,14 @@
 
 	function handleImageError() {
 		if (imageElement) {
+			// Fallback to placeholder if not already there
+			if (!imageElement.src.includes('placeholder_cover.webp')) {
+				imageElement.src = 'covers/placeholder_cover.webp';
+				// Also update srcset to ensure browser doesn't retry invalid sources
+				imageElement.srcset =
+					'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
+			}
+
 			imageElement.classList.add('loaded');
 			const skeleton = imageElement.previousElementSibling as HTMLElement;
 			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
@@ -216,10 +224,9 @@
 	}
 
 	function preloadDetailImage() {
-		if (game.coverImage) {
-			const detailImg = new Image();
-			detailImg.src = game.coverImage.replace('.webp', '-detail.webp');
-		}
+		const imgPath = game.coverImage || 'covers/placeholder_cover.webp';
+		const detailImg = new Image();
+		detailImg.src = imgPath.replace('.webp', '-detail.webp');
 	}
 
 	function isValidKeyboardAction(event: KeyboardEvent): boolean {
@@ -306,7 +313,9 @@
 			<div class="skeleton-loader"></div>
 			<img
 				bind:this={imageElement}
-				src={size === 'tiny' ? game.coverImage.replace('.webp', '-200w.webp') : game.coverImage}
+				src={size === 'tiny'
+					? (game.coverImage || 'covers/placeholder_cover.webp').replace('.webp', '-200w.webp')
+					: game.coverImage || 'covers/placeholder_cover.webp'}
 				srcset={imageSrcset()}
 				sizes={imageSizes()}
 				alt=""

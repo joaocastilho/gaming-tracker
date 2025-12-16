@@ -99,7 +99,10 @@
 	let isImageFullScreen = $state(false);
 
 	const detailImageSrc = $derived(
-		$modalStore.activeGame?.coverImage.replace('.webp', '-detail.webp') ?? ''
+		($modalStore.activeGame?.coverImage || 'covers/placeholder_cover.webp').replace(
+			'.webp',
+			'-detail.webp'
+		)
 	);
 
 	const detailImageSrcset = $derived(
@@ -561,6 +564,11 @@
 
 	function handleImageError() {
 		if (modalImageElement) {
+			if (!modalImageElement.src.includes('placeholder_cover.webp')) {
+				modalImageElement.src = 'covers/placeholder_cover.webp';
+				modalImageElement.srcset =
+					'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
+			}
 			modalImageElement.classList.add('loaded');
 		}
 	}
@@ -803,9 +811,18 @@
 				<div class="parallax-modal-content">
 					<div class="parallax-image-section">
 						<img
-							src={prevGamePreview.coverImage.replace('.webp', '-detail.webp')}
+							src={(prevGamePreview.coverImage || 'covers/placeholder_cover.webp').replace(
+								'.webp',
+								'-detail.webp'
+							)}
 							alt={prevGamePreview.title}
 							class="parallax-preview-image"
+							onerror={(e) => {
+								const img = e.currentTarget as HTMLImageElement;
+								if (!img.src.includes('placeholder_cover')) {
+									img.src = 'covers/placeholder_cover-detail.webp';
+								}
+							}}
 						/>
 					</div>
 					<div class="parallax-details-section">
@@ -970,9 +987,18 @@
 				<div class="parallax-modal-content">
 					<div class="parallax-image-section">
 						<img
-							src={nextGamePreview.coverImage.replace('.webp', '-detail.webp')}
+							src={(nextGamePreview.coverImage || 'covers/placeholder_cover.webp').replace(
+								'.webp',
+								'-detail.webp'
+							)}
 							alt={nextGamePreview.title}
 							class="parallax-preview-image"
+							onerror={(e) => {
+								const img = e.currentTarget as HTMLImageElement;
+								if (!img.src.includes('placeholder_cover')) {
+									img.src = 'covers/placeholder_cover-detail.webp';
+								}
+							}}
 						/>
 					</div>
 					<div class="parallax-details-section">

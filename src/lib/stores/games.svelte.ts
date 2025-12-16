@@ -94,6 +94,11 @@ class GamesStore {
 		completedGamesCache.updateCache(this._games);
 	}
 
+	setAllGames(games: Game[]): void {
+		this.games = games;
+		completedGamesCache.updateCache(this._games);
+	}
+
 	// For backwards compatibility with $gamesStore subscription
 	subscribe(fn: (value: Game[]) => void): () => void {
 		// Immediately call with current value

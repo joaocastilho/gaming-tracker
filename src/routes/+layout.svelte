@@ -614,24 +614,13 @@
 
 	async function handleApplyChanges() {
 		const games = $gamesStore;
+		// Calculate final state before applying changes (which clears pending)
+		const finalGames = editorStore.buildFinalGames(games);
+
 		const success = await editorStore.applyAllChanges(games);
 		if (success) {
-			// Refresh games from server after successful save
-			try {
-				const res = await fetch('/api/games', {
-					method: 'GET',
-					headers: { Accept: 'application/json' },
-					credentials: 'include'
-				});
-				if (res.ok) {
-					const data = await res.json();
-					if (data && Array.isArray(data.games)) {
-						gamesStore.initializeGames(data.games);
-					}
-				}
-			} catch {
-				// Ignore refresh errors
-			}
+			// Immediately update local store to reflect changes without reload
+			gamesStore.setAllGames(finalGames);
 		}
 	}
 
