@@ -127,7 +127,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			'Set-Cookie',
 			`gt_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${12 * 60 * 60}`
 		);
-		
+
 		return new Response(JSON.stringify({ ok: true }), {
 			status: 200,
 			headers
