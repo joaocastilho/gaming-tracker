@@ -26,6 +26,13 @@
 	let working = $state<Game>();
 	let error = $state<string | null>(null);
 	let saving = $state(false);
+	let dateInput = $state('');
+
+	function copyGameId() {
+		if (working?.id) {
+			navigator.clipboard.writeText(working.id);
+		}
+	}
 
 	// Derived unique lists for auto-complete
 	const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
@@ -38,6 +45,10 @@
 			if (typeof (working.playtime as unknown) === 'number') {
 				// @ts-ignore - Runtime fix for data mismatch
 				working.playtime = formatDuration(working.playtime as number);
+			}
+			// Init date input
+			if (working.finishedDate) {
+				dateInput = working.finishedDate.split('T')[0];
 			}
 		} else {
 			const now = new Date();
@@ -61,6 +72,22 @@
 				playtime: '0h 0m',
 				finishedDate: null
 			} as Game;
+		}
+	});
+
+	// Sync dateInput to working.finishedDate
+	$effect(() => {
+		if (!working) return;
+		// Only update if status is Completed, otherwise finishedDate should be null (handled by validateGame/cleanup but good to keep clean)
+		if (working.status === 'Completed') {
+			if (dateInput) {
+				working.finishedDate = `${dateInput}T00:00:00.000Z`;
+			} else {
+				working.finishedDate = null;
+			}
+		} else {
+			// If not completed, these should be null
+			working.finishedDate = null;
 		}
 	});
 
@@ -256,15 +283,22 @@
 				{#if working.status === 'Completed'}
 					<label>
 						<span>Finished Date *</span>
-						<input type="date" bind:value={working.finishedDate} required />
+						<input type="date" bind:value={dateInput} required />
 					</label>
 				{/if}
 
 				<div class="full cover-path">
-					<span class="label-text">Cover Image Path</span>
-					<!-- Read-only auto-generated path visualization -->
-					<div class="read-only-field">
-						{working.coverImage || '(Auto-generated from Title on Create)'}
+					<span class="label-text">Game ID</span>
+					<!-- Read-only auto-generated path visualization + copy -->
+					<div
+						class="read-only-field copyable"
+						role="button"
+						tabindex="0"
+						onclick={copyGameId}
+						onkeydown={(e) => e.key === 'Enter' && copyGameId()}
+						title="Click to copy ID"
+					>
+						{working.id || '(Auto-generated)'}
 					</div>
 				</div>
 
@@ -278,13 +312,7 @@
 							<span>Presentation</span>
 							<span class="val">{working.ratingPresentation?.toFixed(1) ?? '-'}</span>
 						</div>
-						<input
-							type="range"
-							min="0"
-							max="10"
-							step="0.5"
-							bind:value={working.ratingPresentation}
-						/>
+						<input type="range" min="0" max="10" step="1" bind:value={working.ratingPresentation} />
 					</div>
 
 					<div class="rating-slider">
@@ -292,7 +320,7 @@
 							<span>Story</span>
 							<span class="val">{working.ratingStory?.toFixed(1) ?? '-'}</span>
 						</div>
-						<input type="range" min="0" max="10" step="0.5" bind:value={working.ratingStory} />
+						<input type="range" min="0" max="10" step="1" bind:value={working.ratingStory} />
 					</div>
 
 					<div class="rating-slider">
@@ -300,7 +328,7 @@
 							<span>Gameplay</span>
 							<span class="val">{working.ratingGameplay?.toFixed(1) ?? '-'}</span>
 						</div>
-						<input type="range" min="0" max="10" step="0.5" bind:value={working.ratingGameplay} />
+						<input type="range" min="0" max="10" step="1" bind:value={working.ratingGameplay} />
 					</div>
 
 					<div class="score-display">
@@ -555,5 +583,21 @@
 	.secondary:hover {
 		color: #e2e8f0;
 		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.read-only-field.copyable {
+		cursor: copy;
+		transition:
+			background 0.2s,
+			color 0.2s;
+	}
+
+	.read-only-field.copyable:hover {
+		background: rgba(255, 255, 255, 0.1);
+		color: #e2e8f0;
+	}
+
+	.read-only-field.copyable:active {
+		background: rgba(255, 255, 255, 0.15);
 	}
 </style>
