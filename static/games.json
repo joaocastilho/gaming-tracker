@@ -9391,15 +9391,15 @@
             "year": 2024,
             "genre": "Survival Horror",
             "coOp": "Yes",
-            "status": "Planned",
+            "status": "Completed",
             "coverImage": "covers/sons-of-the-forest.webp",
-            "finishedDate": null,
-            "ratingPresentation": null,
-            "ratingStory": null,
-            "ratingGameplay": null,
-            "score": null,
-            "tier": null,
-            "playtime": "15h 30m"
+            "finishedDate": "30/11/2025",
+            "ratingPresentation": 8,
+            "ratingStory": 6,
+            "ratingGameplay": 7,
+            "score": 14,
+            "tier": "C - Good",
+            "playtime": "43h 0m"
         },
         {
             "id": "kingdom-come-deliverance-ii",
@@ -9570,6 +9570,23 @@
             "tier": "B - Great",
             "playtime": "2h 29m",
             "finishedDate": "16/11/2025"
+        },
+        {
+            "id": "hi-fi-rush",
+            "title": "Hi-Fi RUSH",
+            "platform": "PC",
+            "genre": "Hack & Slash",
+            "status": "Completed",
+            "year": 2023,
+            "coverImage": "covers/hi-fi-rush.webp",
+            "coOp": "No",
+            "ratingPresentation": 10,
+            "ratingStory": 7,
+            "ratingGameplay": 8,
+            "score": 17,
+            "tier": "B - Great",
+            "playtime": "14h 30m",
+            "finishedDate": "08/12/2025"
         }
     ]
 }

@@ -27,6 +27,8 @@
 	let error = $state<string | null>(null);
 	let saving = $state(false);
 	let dateInput = $state('');
+	let hours = $state(0);
+	let minutes = $state(0);
 
 	function copyGameId() {
 		if (working?.id) {
@@ -40,11 +42,21 @@
 
 	onMount(() => {
 		if (mode === 'edit' && initialGame) {
-			working = structuredClone(initialGame);
+			// structuredClone struggles with Svelte 5 proxies sometimes, so we use JSON scan
+			working = JSON.parse(JSON.stringify(initialGame));
 			// Fix compatibility: Convert numeric playtime to string if needed
 			if (typeof (working.playtime as unknown) === 'number') {
 				// @ts-ignore - Runtime fix for data mismatch
 				working.playtime = formatDuration(working.playtime as number);
+			}
+
+			// Init hours/minutes from playtime string
+			if (working.playtime) {
+				const match = working.playtime.match(/(\d+)h\s*(\d+)m/);
+				if (match) {
+					hours = parseInt(match[1]);
+					minutes = parseInt(match[2]);
+				}
 			}
 			// Init date input
 			if (working.finishedDate) {
@@ -123,6 +135,13 @@
 				ratingStory: working.ratingStory,
 				ratingGameplay: working.ratingGameplay
 			});
+		}
+	});
+
+	// Sync hours/minutes to playtime string
+	$effect(() => {
+		if (working) {
+			working.playtime = `${hours}h ${minutes}m`;
 		}
 	});
 
@@ -278,7 +297,16 @@
 				<!-- Playtime Field (unified - label changes based on status) -->
 				<label>
 					<span>{working.status === 'Completed' ? 'Hours Played *' : 'Time to Beat'}</span>
-					<input type="text" bind:value={working.playtime} placeholder="e.g. 15h 30m" />
+					<div class="playtime-inputs">
+						<div class="input-group">
+							<input type="number" bind:value={hours} min="0" placeholder="0" />
+							<span class="unit">h</span>
+						</div>
+						<div class="input-group">
+							<input type="number" bind:value={minutes} min="0" max="59" placeholder="0" />
+							<span class="unit">m</span>
+						</div>
+					</div>
 				</label>
 				{#if working.status === 'Completed'}
 					<label>
@@ -599,5 +627,23 @@
 
 	.read-only-field.copyable:active {
 		background: rgba(255, 255, 255, 0.15);
+	}
+
+	.playtime-inputs {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.input-group {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex: 1;
+	}
+
+	.unit {
+		color: #94a3b8;
+		font-size: 0.85rem;
+		font-weight: 500;
 	}
 </style>
