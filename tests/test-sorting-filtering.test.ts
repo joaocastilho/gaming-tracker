@@ -16,7 +16,7 @@ const mockGames = [
 		ratingPresentation: 10,
 		ratingStory: 9,
 		ratingGameplay: 10,
-		score: 9.7,
+		score: 10,
 		finishedDate: '2023-01-01T00:00:00.000Z',
 		coOp: 'No'
 	},
@@ -30,7 +30,7 @@ const mockGames = [
 		ratingPresentation: 9,
 		ratingStory: 10,
 		ratingGameplay: 9,
-		score: 9.3,
+		score: 9,
 		finishedDate: '2023-02-01T00:00:00.000Z',
 		coOp: 'No'
 	},
@@ -58,7 +58,7 @@ const mockGames = [
 		ratingPresentation: 8,
 		ratingStory: 8,
 		ratingGameplay: 9,
-		score: 8.3,
+		score: 8,
 		finishedDate: '2022-12-01T00:00:00.000Z',
 		coOp: 'No'
 	}
@@ -130,8 +130,8 @@ describe('Sorting and Filtering Logic', () => {
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		results = filteredGamesStore.games;
-		expect(results[0].title).toBe('The Legend of Zelda: Breath of the Wild'); // 9.7
-		expect(results[1].title).toBe('God of War'); // 9.3
+		expect(results[0].title).toBe('The Legend of Zelda: Breath of the Wild'); // 10
+		expect(results[1].title).toBe('God of War'); // 9
 	});
 
 	it('defaults to alphabetical sort for planned games', async () => {
@@ -176,7 +176,7 @@ describe('Sorting and Filtering Logic', () => {
 				ratingPresentation: 7,
 				ratingStory: 7,
 				ratingGameplay: 7,
-				score: 7.0,
+				score: 7,
 				finishedDate: null,
 				coOp: 'No'
 			}

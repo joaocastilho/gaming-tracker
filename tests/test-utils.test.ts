@@ -7,7 +7,9 @@ import {
 	getPlatformColor,
 	getTierColor
 } from '$lib/utils/filterOptions';
+import { formatRating } from '$lib/validation/game';
 import { memoize } from '$lib/utils/memoize';
+
 
 describe('Utility Tests', () => {
 	describe('Memoize', () => {
@@ -56,7 +58,7 @@ describe('Utility Tests', () => {
 
 	describe('Debounce', () => {
 		it('delays execution', async () => {
-			const fn = vi.fn(() => {});
+			const fn = vi.fn(() => { });
 			const debounced = debounce(fn, 20);
 
 			debounced();
@@ -71,7 +73,7 @@ describe('Utility Tests', () => {
 		});
 
 		it('supports immediate execution', async () => {
-			const fn = vi.fn(() => {});
+			const fn = vi.fn(() => { });
 			const debounced = debounce(fn, 20, true);
 
 			debounced();
@@ -107,6 +109,24 @@ describe('Utility Tests', () => {
 			expect(getGenreColor('RPG')).toBeDefined();
 			expect(getTierColor('S')).toBeDefined();
 			expect(getPlatformColor('Unknown')).toContain('bg-gray-600');
+		});
+	});
+
+	describe('Rating Formatting', () => {
+		it('formats whole numbers without decimals', () => {
+			expect(formatRating(8)).toBe('8');
+			expect(formatRating(10)).toBe('10');
+			expect(formatRating(0)).toBe('0');
+		});
+
+		it('formats decimals as-is', () => {
+			expect(formatRating(7.5)).toBe('7.5');
+			expect(formatRating(8.1)).toBe('8.1');
+		});
+
+		it('handles null/undefined gracefully', () => {
+			expect(formatRating(null)).toBe('-');
+			expect(formatRating(undefined)).toBe('-');
 		});
 	});
 });

@@ -64,7 +64,17 @@ export function computeScore({
 	const score = avg * 2;
 
 	const clamped = Math.max(0, Math.min(20, score));
-	return Math.round(clamped * 10) / 10;
+	return Math.round(clamped);
+}
+
+/**
+ * Format rating for display.
+ * - Integer -> "8" (not "8.0")
+ * - Null/Undefined -> "-"
+ */
+export function formatRating(rating: number | null | undefined): string {
+	if (rating == null) return '-';
+	return rating.toString();
 }
 
 /**

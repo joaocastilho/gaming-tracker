@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Game } from '$lib/types/game';
-	import { GameSchema, computeScore, TIER_VALUES } from '$lib/validation/game';
+	import { GameSchema, computeScore, TIER_VALUES, formatRating } from '$lib/validation/game';
 	import { editorStore } from '$lib/stores/editor.svelte';
 
 	// Helper to format implicit "Xh Ym" from a decimal number (e.g. 2.5 -> "2h 30m")
@@ -310,7 +310,7 @@
 					<div class="rating-slider">
 						<div class="label-row">
 							<span>Presentation</span>
-							<span class="val">{working.ratingPresentation?.toFixed(1) ?? '-'}</span>
+							<span class="val">{formatRating(working.ratingPresentation)}</span>
 						</div>
 						<input type="range" min="0" max="10" step="1" bind:value={working.ratingPresentation} />
 					</div>
@@ -318,7 +318,7 @@
 					<div class="rating-slider">
 						<div class="label-row">
 							<span>Story</span>
-							<span class="val">{working.ratingStory?.toFixed(1) ?? '-'}</span>
+							<span class="val">{formatRating(working.ratingStory)}</span>
 						</div>
 						<input type="range" min="0" max="10" step="1" bind:value={working.ratingStory} />
 					</div>
@@ -326,7 +326,7 @@
 					<div class="rating-slider">
 						<div class="label-row">
 							<span>Gameplay</span>
-							<span class="val">{working.ratingGameplay?.toFixed(1) ?? '-'}</span>
+							<span class="val">{formatRating(working.ratingGameplay)}</span>
 						</div>
 						<input type="range" min="0" max="10" step="1" bind:value={working.ratingGameplay} />
 					</div>
