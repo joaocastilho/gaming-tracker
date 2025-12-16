@@ -408,8 +408,8 @@ class ModalStore {
 		if (!state.formData.genre?.trim()) {
 			errors.genre = 'Genre is required';
 		}
-		if (!state.formData.timeToBeat?.trim()) {
-			errors.timeToBeat = 'Time to beat is required';
+		if (!state.formData.playtime?.trim()) {
+			errors.playtime = 'Playtime is required';
 		}
 
 		if (state.formData.year !== undefined) {
@@ -421,9 +421,6 @@ class ModalStore {
 		}
 
 		if (state.formData.status === 'Completed') {
-			if (!state.formData.hoursPlayed?.trim()) {
-				errors.hoursPlayed = 'Hours played is required for completed games';
-			}
 			if (!state.formData.finishedDate) {
 				errors.finishedDate = 'Finished date is required for completed games';
 			}

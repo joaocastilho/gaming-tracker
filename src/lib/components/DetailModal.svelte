@@ -848,12 +848,12 @@
 							{#if prevGamePreview.status === 'Completed'}
 								<div class="parallax-info-item">
 									<span class="parallax-label">Hours Played</span>
-									<span class="parallax-value">{prevGamePreview.hoursPlayed || 'N/A'}</span>
+									<span class="parallax-value">{prevGamePreview.playtime || 'N/A'}</span>
 								</div>
 							{:else}
 								<div class="parallax-info-item">
 									<span class="parallax-label">Time to Beat</span>
-									<span class="parallax-value">{prevGamePreview.timeToBeat || 'N/A'}</span>
+									<span class="parallax-value">{prevGamePreview.playtime || 'N/A'}</span>
 								</div>
 							{/if}
 						</div>
@@ -1015,12 +1015,12 @@
 							{#if nextGamePreview.status === 'Completed'}
 								<div class="parallax-info-item">
 									<span class="parallax-label">Hours Played</span>
-									<span class="parallax-value">{nextGamePreview.hoursPlayed || 'N/A'}</span>
+									<span class="parallax-value">{nextGamePreview.playtime || 'N/A'}</span>
 								</div>
 							{:else}
 								<div class="parallax-info-item">
 									<span class="parallax-label">Time to Beat</span>
-									<span class="parallax-value">{nextGamePreview.timeToBeat || 'N/A'}</span>
+									<span class="parallax-value">{nextGamePreview.playtime || 'N/A'}</span>
 								</div>
 							{/if}
 						</div>
@@ -1346,7 +1346,7 @@
 									class="text-base font-semibold md:text-base"
 									style="color: var(--color-text-primary);"
 								>
-									{$modalStore.activeGame.hoursPlayed || 'Not completed'}
+									{$modalStore.activeGame.playtime || 'Not completed'}
 								</div>
 							</div>
 						{:else}
@@ -1358,7 +1358,7 @@
 									class="text-base font-semibold md:text-base"
 									style="color: var(--color-text-primary);"
 								>
-									{$modalStore.activeGame.timeToBeat}
+									{$modalStore.activeGame.playtime}
 								</div>
 							</div>
 						{/if}

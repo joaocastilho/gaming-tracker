@@ -27,11 +27,15 @@ describe('Data Transformer', () => {
 	test('Hours Played Formatting', () => {
 		const gameWithDecimalHours = { hoursPlayed: 10.5 };
 		const transformed5 = transformGameData(gameWithDecimalHours);
-		expect(transformed5.hoursPlayed).toBe('10h 30m');
+		expect(transformed5.playtime).toBe('10h 30m');
 
 		const gameWithStringHours = { hoursPlayed: '20h 15m' };
 		const transformed6 = transformGameData(gameWithStringHours);
-		expect(transformed6.hoursPlayed).toBe('20h 15m');
+		expect(transformed6.playtime).toBe('20h 15m');
+
+		const gameWithTimeToBeat = { timeToBeat: '8h 0m' };
+		const transformed7 = transformGameData(gameWithTimeToBeat);
+		expect(transformed7.playtime).toBe('8h 0m');
 	});
 
 	test('UUID Generation', () => {

@@ -203,8 +203,7 @@ class FilteredGamesStore {
 			score: (a: Game, b: Game) => this.compareNullableNumbers(a.score, b.score),
 			finishedDate: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
 			alphabetical: (a: Game, b: Game) => a.title.localeCompare(b.title),
-			hoursPlayed: (a: Game, b: Game) => this.comparePlaytimes(a.hoursPlayed, b.hoursPlayed),
-			timeToBeat: (a: Game, b: Game) => this.comparePlaytimes(a.timeToBeat, b.timeToBeat),
+			playtime: (a: Game, b: Game) => this.comparePlaytimes(a.playtime, b.playtime),
 
 			default: (a: Game, b: Game) => a.title.localeCompare(b.title),
 			completed: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
@@ -245,12 +244,10 @@ class FilteredGamesStore {
 				return (aTime - bTime) * direction;
 			}
 
-			// Handle playtime sorts (hoursPlayed and timeToBeat)
-			if (sort?.key === 'hoursPlayed' || sort?.key === 'timeToBeat') {
-				const timeField = sort.key === 'hoursPlayed' ? a.hoursPlayed : a.timeToBeat;
-				const timeFieldB = sort.key === 'hoursPlayed' ? b.hoursPlayed : b.timeToBeat;
-				const aMinutes = parsePlaytime(timeField);
-				const bMinutes = parsePlaytime(timeFieldB);
+			// Handle playtime sort
+			if (sort?.key === 'playtime') {
+				const aMinutes = parsePlaytime(a.playtime);
+				const bMinutes = parsePlaytime(b.playtime);
 
 				// Null values go last always
 				if (aMinutes === null && bMinutes === null) return 0;

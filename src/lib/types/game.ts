@@ -21,8 +21,7 @@ export interface Game {
 	coOp: CoOpStatus;
 	status: GameStatus;
 	coverImage: string;
-	timeToBeat: string;
-	hoursPlayed: string | null;
+	playtime: string;
 	finishedDate: string | null;
 	ratingPresentation: number | null;
 	ratingStory: number | null;

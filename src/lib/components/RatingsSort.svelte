@@ -154,37 +154,23 @@
 		</button>
 	{/if}
 
-	{#if currentTab === 'completed'}
+	<!-- Playtime Sort (available on both completed and planned tabs) -->
+	{#if currentTab === 'completed' || currentTab === 'planned'}
 		<button
 			type="button"
 			class="sort-button"
-			class:active={activeKey === 'hoursPlayed'}
-			onclick={() => handleSort('hoursPlayed')}
-			aria-label="Sort by Hours Played"
+			class:active={activeKey === 'playtime'}
+			onclick={() => handleSort('playtime')}
+			aria-label="Sort by {currentTab === 'completed' ? 'Hours Played' : 'Time to Beat'}"
 		>
-			<Clock class="sort-icon text-purple-500" aria-hidden="true" />
-			<span class="sort-field-label">Hours Played</span>
-			{#if activeKey === 'hoursPlayed'}
-				{#if activeDirection === 'asc'}
-					<ArrowUp size={14} class="sort-direction-icon" />
-				{:else}
-					<ArrowDown size={14} class="sort-direction-icon" />
-				{/if}
+			{#if currentTab === 'completed'}
+				<Clock class="sort-icon text-purple-500" aria-hidden="true" />
+				<span class="sort-field-label">Hours Played</span>
+			{:else}
+				<Timer class="sort-icon text-orange-500" aria-hidden="true" />
+				<span class="sort-field-label">Time to Beat</span>
 			{/if}
-		</button>
-	{/if}
-
-	{#if currentTab === 'planned'}
-		<button
-			type="button"
-			class="sort-button"
-			class:active={activeKey === 'timeToBeat'}
-			onclick={() => handleSort('timeToBeat')}
-			aria-label="Sort by Time to Beat"
-		>
-			<Timer class="sort-icon text-orange-500" aria-hidden="true" />
-			<span class="sort-field-label">Time to Beat</span>
-			{#if activeKey === 'timeToBeat'}
+			{#if activeKey === 'playtime'}
 				{#if activeDirection === 'asc'}
 					<ArrowUp size={14} class="sort-direction-icon" />
 				{:else}

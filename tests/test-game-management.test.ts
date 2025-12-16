@@ -19,8 +19,13 @@ describe('Game Management Flows', () => {
 			genre: 'Action',
 			coOp: 'No',
 			status: 'Planned',
-			timeToBeat: '8h',
-			coverImage: 'covers/test.webp'
+			playtime: '8h 0m',
+			finishedDate: null,
+			ratingPresentation: null,
+			ratingStory: null,
+			ratingGameplay: null,
+			score: null,
+			tier: null
 		} as Game;
 
 		const gameToAdd = {
@@ -28,13 +33,7 @@ describe('Game Management Flows', () => {
 			id: crypto.randomUUID(),
 			mainTitle: newGameData.title,
 			subtitle: null,
-			hoursPlayed: null,
-			finishedDate: null,
-			ratingPresentation: null,
-			ratingStory: null,
-			ratingGameplay: null,
-			score: null,
-			tier: null
+			coverImage: 'covers/test.webp'
 		} as Game;
 
 		gamesStore.addGame(gameToAdd);
@@ -57,11 +56,7 @@ describe('Game Management Flows', () => {
 			genre: 'Action',
 			coOp: 'No',
 			status: 'Planned',
-			timeToBeat: '8h',
-			coverImage: 'covers/test.webp',
-			mainTitle: 'Test Game Flow',
-			subtitle: null,
-			hoursPlayed: null,
+			playtime: '8h 0m',
 			finishedDate: null,
 			ratingPresentation: null,
 			ratingStory: null,
@@ -81,7 +76,7 @@ describe('Game Management Flows', () => {
 		const updatedGame = {
 			...game,
 			status: 'Completed',
-			hoursPlayed: '12h 30m',
+			playtime: '12h 30m',
 			finishedDate: '2024-11-02',
 			ratingPresentation: 8,
 			ratingStory: 7,

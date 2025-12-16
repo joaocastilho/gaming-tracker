@@ -34,10 +34,10 @@
 	onMount(() => {
 		if (mode === 'edit' && initialGame) {
 			working = structuredClone(initialGame);
-			// Fix compatibility: Convert numeric hoursPlayed to string if needed
-			if (typeof (working.hoursPlayed as unknown) === 'number') {
+			// Fix compatibility: Convert numeric playtime to string if needed
+			if (typeof (working.playtime as unknown) === 'number') {
 				// @ts-ignore - Runtime fix for data mismatch
-				working.hoursPlayed = formatDuration(working.hoursPlayed as number);
+				working.playtime = formatDuration(working.playtime as number);
 			}
 		} else {
 			const now = new Date();
@@ -58,8 +58,7 @@
 				ratingGameplay: null,
 				score: null,
 				tier: null,
-				hoursPlayed: null,
-				timeToBeat: '0h 0m',
+				playtime: '0h 0m',
 				finishedDate: null
 			} as Game;
 		}
@@ -103,26 +102,12 @@
 	function validateGame(game: Game): string | null {
 		// Field cleanups before validation
 		if (game.status === 'Planned') {
-			game.hoursPlayed = null;
 			game.finishedDate = null;
 			game.ratingPresentation = null;
 			game.ratingStory = null;
 			game.ratingGameplay = null;
 			game.score = null;
 			game.tier = null;
-		}
-
-		if (game.status === 'Completed') {
-			// Ensure timeToBeat exists (required by schema) even if hidden.
-			// converting hoursPlayed to timeToBeat string for consistency if missing
-			if (game.hoursPlayed !== null) {
-				// optional update
-				if (!game.timeToBeat || game.timeToBeat === '0h 0m') {
-					game.timeToBeat = formatDuration(
-						typeof game.hoursPlayed === 'string' ? parseFloat(game.hoursPlayed) : game.hoursPlayed
-					);
-				}
-			}
 		}
 
 		if (!game.title) return 'Title is required.';
@@ -263,45 +248,12 @@
 					</div>
 				</label>
 
-				<!-- Time Fields (Conditional) -->
-				<!-- Planned: Time to Beat. Completed: Hours Played. -->
-				{#if working.status === 'Planned'}
-					<label>
-						<span>Time to Beat</span>
-						<input type="text" bind:value={working.timeToBeat} placeholder="e.g. 15h 30m" />
-					</label>
-				{:else}
-					<label>
-						<span>Hours Played *</span>
-						<!-- Using text input but binding logic to number? 
-                             The schema expects 'XXh XXm'. The original code seemed to parse 'hoursPlayed' 
-                             as a number in JSON but strictly string 'XXh XXm' in schema? 
-                             Wait, games.json has hoursPlayed: number (e.g. 2.5). 
-                             But validation/game.ts BaseGameSchema says: hoursPlayed: z.number if strictly typed?
-                             Let's check game.ts: hoursPlayed: string | null.
-                             Wait, games.json contents I viewed earlier: "hoursPlayed": 2.5 (NUMBER).
-                             "timeToBeat": "2h 30m" (STRING).
-                             BUT src/lib/types/game.ts says: hoursPlayed: string | null.
-                             There is a MISMATCH between types and JSON!
-                             GameSchema validation (line 29 in previous view_file) said: z.string().regex...
-                             If JSON has numbers, SafeParse will fail.
-                             I should probably check if my ViewFile of games.json was accurate.
-                             Yes: "hoursPlayed": 2.5
-                             The types/schema seem to have been updated to strings recently OR they are wrong.
-                             I should probably stick to what the schema says (String), OR usage in the app expects numbers.
-                             The user said "hours played and time to beat are essential the same field".
-                             Let's look at `Game` type again. `hoursPlayed: string | null`.
-                             This is conflicting with `games.json` using numbers.
-                             I will treat it as valid if I can input it. If `games.json` is using numbers, I should probably change the type to number in code OR update json.
-                             Given this is "Improve Add New Game Modal", I should probably follow the schema.
-                             Actually, let's allow user to input "20.5" or "20h 30m" and convert it?
-                             The simple way is to use a text input.
-                             But if I save "20h 30m" and JSON has 20.5, I am changing data format.
-                             Let's check `parsePlaytime` mentioned in history? No, that was sorting.
-                             Let's assume String format "XXh XXm" is desired based on schema.
-                        -->
-						<input type="text" bind:value={working.hoursPlayed} placeholder="e.g. 20h 30m" />
-					</label>
+				<!-- Playtime Field (unified - label changes based on status) -->
+				<label>
+					<span>{working.status === 'Completed' ? 'Hours Played *' : 'Time to Beat'}</span>
+					<input type="text" bind:value={working.playtime} placeholder="e.g. 15h 30m" />
+				</label>
+				{#if working.status === 'Completed'}
 					<label>
 						<span>Finished Date *</span>
 						<input type="date" bind:value={working.finishedDate} required />

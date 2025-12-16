@@ -16,8 +16,7 @@ interface MockGame {
 	year: number;
 	coverImage: string;
 	coOp: 'Yes' | 'No';
-	timeToBeat: string;
-	hoursPlayed: string | null;
+	playtime: string;
 	finishedDate: string | null;
 	ratingPresentation: number | null;
 	ratingStory: number | null;
@@ -37,8 +36,7 @@ const createCompletedGame = (overrides: Partial<MockGame>): MockGame => ({
 	year: 2023,
 	coverImage: 'test.webp',
 	coOp: 'No',
-	timeToBeat: '20h 0m',
-	hoursPlayed: '25h 30m',
+	playtime: '25h 30m',
 	finishedDate: '2023-06-15T00:00:00.000Z',
 	ratingPresentation: 8,
 	ratingStory: 8,
@@ -59,8 +57,7 @@ const createPlannedGame = (overrides: Partial<MockGame>): MockGame => ({
 	year: 2024,
 	coverImage: 'planned.webp',
 	coOp: 'No',
-	timeToBeat: '15h 0m',
-	hoursPlayed: null,
+	playtime: '15h 0m',
 	finishedDate: null,
 	ratingPresentation: null,
 	ratingStory: null,
@@ -76,10 +73,10 @@ describe('Hours Played Sorting (Completed Games)', () => {
 	});
 
 	const completedGames: MockGame[] = [
-		createCompletedGame({ id: '1', title: 'Short Game', hoursPlayed: '5h 30m' }),
-		createCompletedGame({ id: '2', title: 'Long Game', hoursPlayed: '100h 0m' }),
-		createCompletedGame({ id: '3', title: 'Medium Game', hoursPlayed: '25h 45m' }),
-		createCompletedGame({ id: '4', title: 'Quick Game', hoursPlayed: '2h 15m' })
+		createCompletedGame({ id: '1', title: 'Short Game', playtime: '5h 30m' }),
+		createCompletedGame({ id: '2', title: 'Long Game', playtime: '100h 0m' }),
+		createCompletedGame({ id: '3', title: 'Medium Game', playtime: '25h 45m' }),
+		createCompletedGame({ id: '4', title: 'Quick Game', playtime: '2h 15m' })
 	];
 
 	it('should sort by hours played in ascending order (shortest first)', async () => {
@@ -90,7 +87,7 @@ describe('Hours Played Sorting (Completed Games)', () => {
 
 		gamesStore.initializeGames(completedGames);
 		appStore.setActiveTab('completed');
-		filtersStore.setSort({ key: 'hoursPlayed', direction: 'asc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
@@ -108,7 +105,7 @@ describe('Hours Played Sorting (Completed Games)', () => {
 
 		gamesStore.initializeGames(completedGames);
 		appStore.setActiveTab('completed');
-		filtersStore.setSort({ key: 'hoursPlayed', direction: 'desc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
@@ -126,11 +123,11 @@ describe('Hours Played Sorting (Completed Games)', () => {
 
 		const gamesWithNull: MockGame[] = [
 			...completedGames,
-			createCompletedGame({ id: '5', title: 'No Hours Game', hoursPlayed: null })
+			createCompletedGame({ id: '5', title: 'No Hours Game', playtime: '' })
 		];
 		gamesStore.initializeGames(gamesWithNull);
 		appStore.setActiveTab('completed');
-		filtersStore.setSort({ key: 'hoursPlayed', direction: 'asc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
@@ -151,8 +148,8 @@ describe('Hours Played Sorting (Completed Games)', () => {
 		const unsubscribe = filteredGames.subscribe(subscriber);
 		subscriber.mockClear();
 
-		// Change to hoursPlayed sort
-		filtersStore.setSort({ key: 'hoursPlayed', direction: 'desc' });
+		// Change to playtime sort
+		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		// Subscriber should be called with sorted data
@@ -171,10 +168,10 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 	});
 
 	const plannedGames: MockGame[] = [
-		createPlannedGame({ id: '1', title: 'Long RPG', timeToBeat: '80h 0m' }),
-		createPlannedGame({ id: '2', title: 'Short Indie', timeToBeat: '6h 30m' }),
-		createPlannedGame({ id: '3', title: 'Medium Adventure', timeToBeat: '20h 0m' }),
-		createPlannedGame({ id: '4', title: 'Quick Puzzle', timeToBeat: '3h 0m' })
+		createPlannedGame({ id: '1', title: 'Long RPG', playtime: '80h 0m' }),
+		createPlannedGame({ id: '2', title: 'Short Indie', playtime: '6h 30m' }),
+		createPlannedGame({ id: '3', title: 'Medium Adventure', playtime: '20h 0m' }),
+		createPlannedGame({ id: '4', title: 'Quick Puzzle', playtime: '3h 0m' })
 	];
 
 	it('should sort by time to beat in ascending order (shortest first)', async () => {
@@ -185,7 +182,7 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 
 		gamesStore.initializeGames(plannedGames);
 		appStore.setActiveTab('planned');
-		filtersStore.setSort({ key: 'timeToBeat', direction: 'asc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
@@ -203,7 +200,7 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 
 		gamesStore.initializeGames(plannedGames);
 		appStore.setActiveTab('planned');
-		filtersStore.setSort({ key: 'timeToBeat', direction: 'desc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
@@ -220,13 +217,13 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		const { appStore } = await import('$lib/stores/app.svelte');
 
 		const gamesWithSameTime: MockGame[] = [
-			createPlannedGame({ id: '1', title: 'Game A', timeToBeat: '10h 0m' }),
-			createPlannedGame({ id: '2', title: 'Game B', timeToBeat: '10h 0m' }),
-			createPlannedGame({ id: '3', title: 'Game C', timeToBeat: '10h 0m' })
+			createPlannedGame({ id: '1', title: 'Game A', playtime: '10h 0m' }),
+			createPlannedGame({ id: '2', title: 'Game B', playtime: '10h 0m' }),
+			createPlannedGame({ id: '3', title: 'Game C', playtime: '10h 0m' })
 		];
 		gamesStore.initializeGames(gamesWithSameTime);
 		appStore.setActiveTab('planned');
-		filtersStore.setSort({ key: 'timeToBeat', direction: 'asc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
@@ -248,14 +245,14 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		const unsubscribe = filteredGames.subscribe(subscriber);
 		subscriber.mockClear();
 
-		// Change to timeToBeat sort descending
-		filtersStore.setSort({ key: 'timeToBeat', direction: 'desc' });
+		// Change to playtime sort descending
+		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		expect(subscriber).toHaveBeenCalled();
 		const lastCall = subscriber.mock.calls[subscriber.mock.calls.length - 1];
 		const sortedGames = lastCall[0];
-		// timeToBeat desc order: Long RPG (80h), Medium Adventure (20h), Short Indie (6h 30m), Quick Puzzle (3h)
+		// playtime desc order: Long RPG (80h), Medium Adventure (20h), Short Indie (6h 30m), Quick Puzzle (3h)
 		expect(sortedGames[0].title).toBe('Long RPG');
 		expect(sortedGames[3].title).toBe('Quick Puzzle');
 
@@ -269,10 +266,10 @@ describe('Cross-tab Sorting Behavior', () => {
 	});
 
 	const createMixedGames = (): MockGame[] => [
-		createCompletedGame({ id: '1', title: 'Completed A', hoursPlayed: '50h 0m' }),
-		createCompletedGame({ id: '2', title: 'Completed B', hoursPlayed: '10h 0m' }),
-		createPlannedGame({ id: '3', title: 'Planned A', timeToBeat: '30h 0m' }),
-		createPlannedGame({ id: '4', title: 'Planned B', timeToBeat: '5h 0m' })
+		createCompletedGame({ id: '1', title: 'Completed A', playtime: '50h 0m' }),
+		createCompletedGame({ id: '2', title: 'Completed B', playtime: '10h 0m' }),
+		createPlannedGame({ id: '3', title: 'Planned A', playtime: '30h 0m' }),
+		createPlannedGame({ id: '4', title: 'Planned B', playtime: '5h 0m' })
 	];
 
 	it('should only show hoursPlayed sort option results for completed tab', async () => {
@@ -283,7 +280,7 @@ describe('Cross-tab Sorting Behavior', () => {
 
 		gamesStore.initializeGames(createMixedGames());
 		appStore.setActiveTab('completed');
-		filtersStore.setSort({ key: 'hoursPlayed', direction: 'desc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
@@ -300,7 +297,7 @@ describe('Cross-tab Sorting Behavior', () => {
 
 		gamesStore.initializeGames(createMixedGames());
 		appStore.setActiveTab('planned');
-		filtersStore.setSort({ key: 'timeToBeat', direction: 'asc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
@@ -322,14 +319,14 @@ describe('Playtime Parsing Edge Cases', () => {
 		const { appStore } = await import('$lib/stores/app.svelte');
 
 		const edgeCaseGames: MockGame[] = [
-			createCompletedGame({ id: '1', title: 'Zero Minutes', hoursPlayed: '10h 0m' }),
-			createCompletedGame({ id: '2', title: 'With Minutes', hoursPlayed: '10h 30m' }),
-			createCompletedGame({ id: '3', title: 'Zero Hours', hoursPlayed: '0h 45m' }),
-			createCompletedGame({ id: '4', title: 'Large Hours', hoursPlayed: '999h 59m' })
+			createCompletedGame({ id: '1', title: 'Zero Minutes', playtime: '10h 0m' }),
+			createCompletedGame({ id: '2', title: 'With Minutes', playtime: '10h 30m' }),
+			createCompletedGame({ id: '3', title: 'Zero Hours', playtime: '0h 45m' }),
+			createCompletedGame({ id: '4', title: 'Large Hours', playtime: '999h 59m' })
 		];
 		gamesStore.initializeGames(edgeCaseGames);
 		appStore.setActiveTab('completed');
-		filtersStore.setSort({ key: 'hoursPlayed', direction: 'asc' });
+		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;

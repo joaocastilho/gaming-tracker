@@ -447,11 +447,7 @@
 					title={game.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}
 				>
 					<Timer class="time-icon" aria-label="Time played / Time to beat" size={20} />
-					<span class="time-text"
-						>{game.status === 'Completed'
-							? (game.hoursPlayed ?? 'N/A')
-							: (game.timeToBeat ?? 'N/A')}</span
-					>
+					<span class="time-text">{game.playtime ?? 'N/A'}</span>
 				</div>
 				<div class="date-item" title={game.finishedDate ? 'Completed On' : 'Completion Date'}>
 					<CalendarDays class="date-icon" aria-label="Completion date" size={20} />

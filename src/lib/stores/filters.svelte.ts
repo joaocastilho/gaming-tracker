@@ -14,8 +14,7 @@ export type SortKey =
 	| 'score'
 	| 'finishedDate'
 	| 'alphabetical'
-	| 'hoursPlayed'
-	| 'timeToBeat';
+	| 'playtime';
 
 export type SortDirection = 'asc' | 'desc';
 

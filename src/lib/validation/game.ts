@@ -31,11 +31,7 @@ export const BaseGameSchema = z.object({
 	coOp: z.enum(COOP_VALUES),
 	status: z.enum(GAME_STATUS_VALUES),
 	coverImage: z.string().regex(/^covers\/[\w-]+\.webp$/),
-	timeToBeat: z.string().regex(/^\d+h \d+m$/),
-	hoursPlayed: z
-		.string()
-		.regex(/^\d+h \d+m$/)
-		.nullable(),
+	playtime: z.string().regex(/^\d+h \d+m$/),
 
 	finishedDate: z
 		.string()
@@ -76,11 +72,11 @@ export function computeScore({
  *
  * - Planned:
  *   - status === 'Planned'
- *   - hoursPlayed, finishedDate, rating* , score, tier MUST be null.
+ *   - finishedDate, rating* , score, tier MUST be null.
  *
  * - Completed:
  *   - status === 'Completed'
- *   - hoursPlayed MUST be non-null and match "XXh XXm".
+ *   - playtime MUST be non-null and match "XXh XXm" (always required anyway).
  *   - finishedDate MUST be non-null.
  *   - ratingPresentation, ratingStory, ratingGameplay MUST be non-null (0-10).
  *   - score MUST equal computeScore(rating*).
@@ -89,13 +85,6 @@ export function computeScore({
 
 export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 	if (game.status === 'Planned') {
-		if (game.hoursPlayed !== null) {
-			ctx.addIssue({
-				code: 'custom',
-				path: ['hoursPlayed'],
-				message: 'Planned games must have hoursPlayed = null'
-			});
-		}
 		if (game.finishedDate !== null) {
 			ctx.addIssue({
 				code: 'custom',
@@ -142,13 +131,6 @@ export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 	}
 
 	if (game.status === 'Completed') {
-		if (game.hoursPlayed === null) {
-			ctx.addIssue({
-				code: 'custom',
-				path: ['hoursPlayed'],
-				message: 'Completed games must have hoursPlayed set'
-			});
-		}
 		if (game.finishedDate === null) {
 			ctx.addIssue({
 				code: 'custom',

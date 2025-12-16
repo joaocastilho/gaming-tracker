@@ -22,12 +22,22 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 		}
 	}
 
-	// Only format hours if it's a number
+	// Consolidate playtime: prefer hoursPlayed (for completed games) over timeToBeat
+	// hoursPlayed comes as number (e.g. 2.5), timeToBeat as string (e.g. "2h 30m")
 	if (transformed.hoursPlayed && typeof transformed.hoursPlayed === 'number') {
 		const hours = Math.floor(transformed.hoursPlayed);
 		const minutes = Math.round((transformed.hoursPlayed - hours) * 60);
-		transformed.hoursPlayed = `${hours}h ${minutes}m`;
+		transformed.playtime = `${hours}h ${minutes}m`;
+	} else if (transformed.hoursPlayed && typeof transformed.hoursPlayed === 'string') {
+		// Already a string, use as playtime
+		transformed.playtime = transformed.hoursPlayed;
+	} else if (transformed.timeToBeat) {
+		// For planned games, use timeToBeat as playtime
+		transformed.playtime = transformed.timeToBeat;
 	}
+	// Remove legacy fields
+	delete transformed.hoursPlayed;
+	delete transformed.timeToBeat;
 
 	// Set default coOp value only if it doesn't exist
 	if (!transformed.coOp) {
