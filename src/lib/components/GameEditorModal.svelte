@@ -226,7 +226,7 @@
 			<div class="form-grid">
 				<!-- Title Block -->
 				<label class="full">
-					<span>Title *</span>
+					<span>Title</span>
 					<input
 						type="text"
 						bind:value={working.title}
@@ -238,7 +238,7 @@
 
 				<!-- Platform / Genre with Datalists -->
 				<label>
-					<span>Platform *</span>
+					<span>Platform</span>
 					<input
 						type="text"
 						bind:value={working.platform}
@@ -254,7 +254,7 @@
 				</label>
 
 				<label>
-					<span>Genre *</span>
+					<span>Genre</span>
 					<input
 						type="text"
 						bind:value={working.genre}
@@ -269,57 +269,58 @@
 					</datalist>
 				</label>
 
-				<label>
-					<span>Year *</span>
-					<input type="number" bind:value={working.year} min="1980" max="2100" required />
-				</label>
-
-				<label>
-					<span>Status *</span>
+				<label class="full">
+					<span>Status</span>
 					<select bind:value={working.status}>
 						<option value="Planned">Planned</option>
 						<option value="Completed">Completed</option>
 					</select>
 				</label>
 
-				<!-- Co-op as Checkbox -->
-				<label>
-					<span>Co-op</span>
-					<div class="checkbox-container">
-						<input
-							type="checkbox"
-							checked={working.coOp === 'Yes'}
-							onchange={(e) => (working!.coOp = e.currentTarget.checked ? 'Yes' : 'No')}
-						/>
-					</div>
-				</label>
+				<!-- Combined Row: Year, Playtime, Co-op -->
+				<div class="row-triple full">
+					<label class="year-col">
+						<span>Year</span>
+						<input type="number" bind:value={working.year} min="1980" max="2100" required />
+					</label>
 
-				<!-- Playtime Field (unified - label changes based on status) -->
-				<label>
-					<span>{working.status === 'Completed' ? 'Hours Played *' : 'Time to Beat'}</span>
-					<div class="playtime-inputs">
-						<div class="input-group">
-							<input type="number" bind:value={hours} min="0" placeholder="0" />
-							<span class="unit">h</span>
+					<label class="time-col">
+						<span>{working.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}</span>
+						<div class="playtime-inputs">
+							<div class="input-group">
+								<input type="number" bind:value={hours} min="0" placeholder="0" />
+								<span class="unit">h</span>
+							</div>
+							<div class="input-group">
+								<input type="number" bind:value={minutes} min="0" max="59" placeholder="0" />
+								<span class="unit">m</span>
+							</div>
 						</div>
-						<div class="input-group">
-							<input type="number" bind:value={minutes} min="0" max="59" placeholder="0" />
-							<span class="unit">m</span>
+					</label>
+
+					<label class="coop-col">
+						<span>Co-op</span>
+						<div class="checkbox-simple">
+							<input
+								type="checkbox"
+								checked={working.coOp === 'Yes'}
+								onchange={(e) => (working!.coOp = e.currentTarget.checked ? 'Yes' : 'No')}
+							/>
 						</div>
-					</div>
-				</label>
+					</label>
+				</div>
 				{#if working.status === 'Completed'}
-					<label>
-						<span>Finished Date *</span>
+					<label class="full">
+						<span>Finished Date</span>
 						<input type="date" bind:value={dateInput} required />
 					</label>
 				{/if}
 
-				<div class="full cover-path">
+				<div class="full cover-path" style="margin-top: 1.5rem;">
 					<span class="label-text">Game ID (Click to Copy)</span>
 					<!-- Read-only auto-generated path visualization + copy -->
 					<div
-						class="read-only-field copyable"
+						class="read-only-field copyable large-id"
 						role="button"
 						tabindex="0"
 						onclick={copyGameId}
@@ -365,7 +366,7 @@
 					</div>
 
 					<label class="full">
-						<span>Tier *</span>
+						<span>Tier</span>
 						<select bind:value={working.tier}>
 							<option value={null}>Select Tier...</option>
 							{#each TIER_VALUES as t (t)}
@@ -443,30 +444,70 @@
 		gap: 0.35rem;
 	}
 
-	label.full {
+	.full {
 		grid-column: 1 / -1;
 	}
 
-	.checkbox-container {
-		padding: 0.5rem 0.75rem;
-		border-radius: 0.5rem;
-		border: 1px solid rgba(75, 85, 99, 0.4);
-		background: #0f172a;
-		min-height: 38px; /* Approximate height of text inputs */
-		display: flex;
-		align-items: center;
+	/* Remove spinner buttons */
+	input[type='number']::-webkit-inner-spin-button,
+	input[type='number']::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	input[type='number'] {
+		-moz-appearance: textfield;
+		appearance: textfield;
 	}
 
-	/* Specific override for checkbox inside container */
-	.checkbox-container input[type='checkbox'] {
-		width: 1rem;
-		height: 1rem;
-		margin: 0;
-		padding: 0;
+	.row-triple {
+		display: grid;
+		grid-template-columns: 100px 1fr auto;
+		gap: 1.25rem;
+		align-items: start;
+	}
+
+	.year-col input {
+		text-align: center;
+	}
+
+	.checkbox-simple {
+		display: flex;
+		align-items: center;
+		padding: 0.5rem 0; /* Align with input height approx */
+		height: 38px;
+	}
+
+	.checkbox-simple input[type='checkbox'] {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 1.25rem;
+		height: 1.25rem;
+		cursor: pointer;
+		background-color: #0f172a;
+		border: 1px solid rgba(75, 85, 99, 0.4);
 		border-radius: 4px;
-		/* Standard inputs have background/border styling which might conflict if applied to checkbox directly 
-           via global input selector. Let's rely on browser default or global cleanups, 
-           ensuring it's centered. */
+		display: grid;
+		place-content: center;
+		transition:
+			background-color 0.2s,
+			border-color 0.2s;
+	}
+
+	.checkbox-simple input[type='checkbox']:checked {
+		background-color: #6366f1;
+		border-color: #6366f1;
+		background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: 80%;
+	}
+
+	.large-id {
+		font-size: 1rem;
+		padding: 0.75rem 1rem;
+		/* Make it visually pop a bit more */
+		background: rgba(0, 0, 0, 0.3);
+		border-color: rgba(148, 163, 253, 0.2);
 	}
 
 	span {
@@ -639,6 +680,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		flex: 1;
+	}
+
+	.input-group input {
+		text-align: right;
 	}
 
 	.unit {
