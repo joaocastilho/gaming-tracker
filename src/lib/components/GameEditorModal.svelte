@@ -176,7 +176,9 @@
 		return null;
 	}
 
-	function handleSave() {
+	import { invalidateAll } from '$app/navigation'; // Import invalidateAll
+
+	async function handleSave() {
 		if (!working) return;
 		error = null;
 		const validationError = validateGame(working);
@@ -185,13 +187,24 @@
 			return;
 		}
 
+		saving = true;
+
 		// Queue the change
 		if (mode === 'create') {
 			editorStore.addPendingGame(working);
 		} else {
 			editorStore.editPendingGame(working.id, working);
 		}
-		onClose();
+
+		// Immediate Save & Refresh
+		const success = await editorStore.applyAllChanges(allGames);
+		if (success) {
+			await invalidateAll();
+			onClose();
+		} else {
+			error = editorStore.saveError || 'Failed to save changes.';
+			saving = false;
+		}
 	}
 </script>
 
