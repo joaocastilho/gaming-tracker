@@ -241,7 +241,26 @@ class FilteredGamesStore {
 				if (aTime === null) return 1;
 				if (bTime === null) return -1;
 
-				return (aTime - bTime) * direction;
+				const timeDiff = aTime - bTime;
+				if (timeDiff !== 0) {
+					return timeDiff * direction;
+				}
+
+				// If times are equal, sort by priority (asc means lower number first)
+				// We want higher priority (lower number) to show FIRST in Ascending sort
+				// And also FIRST in Descending sort (usually) or maybe it follows direction?
+				// "Daily Order" usually implies 1, 2, 3... regardless of date sort direction?
+				// Actually, if I sort by Date Descending (newest first), and I have two games on same day:
+				// Game A (Order 1), Game B (Order 2).
+				// If "Order" implies sequence, Game B happened *after* Game A.
+				// So in Descending sort, Game B should come *before* Game A.
+				// In Ascending sort, Game A should come *before* Game B.
+				// So sortPriority should follow the same direction as the date sort.
+
+				const aPriority = a.sortPriority ?? 0;
+				const bPriority = b.sortPriority ?? 0;
+
+				return (aPriority - bPriority) * direction;
 			}
 
 			// Handle playtime sort

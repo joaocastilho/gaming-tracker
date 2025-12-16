@@ -622,10 +622,16 @@
 		}
 	}
 
-	// Check session on mount
+	// Restore editor mode from session and check if session is still valid
 	onMount(() => {
-		if (browser && editorStore.editorMode) {
-			editorStore.checkSession();
+		if (browser) {
+			// First restore from session storage
+			editorStore.restoreFromSession();
+
+			// If editor mode is now active, verify the session is still valid with the API
+			if (editorStore.editorMode) {
+				editorStore.checkSession();
+			}
 		}
 	});
 </script>

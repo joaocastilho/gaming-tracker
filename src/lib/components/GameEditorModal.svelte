@@ -176,8 +176,7 @@
 		return null;
 	}
 
-	import { invalidateAll } from '$app/navigation'; // Import invalidateAll
-
+	import { invalidateAll } from '$app/navigation';
 	async function handleSave() {
 		if (!working) return;
 		error = null;
@@ -189,14 +188,12 @@
 
 		saving = true;
 
-		// Queue the change
 		if (mode === 'create') {
 			editorStore.addPendingGame(working);
 		} else {
 			editorStore.editPendingGame(working.id, working);
 		}
 
-		// Immediate Save & Refresh
 		const success = await editorStore.applyAllChanges(allGames);
 		if (success) {
 			await invalidateAll();
@@ -329,9 +326,13 @@
 					</label>
 				</div>
 				{#if working.status === 'Completed'}
-					<label class="full">
+					<label>
 						<span>Finished Date</span>
 						<input type="date" bind:value={dateInput} required />
+					</label>
+					<label>
+						<span>Daily Order</span>
+						<input type="number" bind:value={working.sortPriority} placeholder="0" />
 					</label>
 				{/if}
 
@@ -387,6 +388,7 @@
 					<div class="full divider"></div>
 					<div class="full section-header">Ratings</div>
 
+					<!-- Rating Presentation & Story -->
 					<div class="rating-slider">
 						<div class="label-row">
 							<span>Presentation</span>

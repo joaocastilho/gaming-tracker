@@ -2,7 +2,10 @@
  * Editor Store - Svelte 5 Runes
  * Manages admin editor state, login, save operations, and batch editing
  */
+import { browser } from '$app/environment';
 import type { Game } from '$lib/types/game';
+
+const SESSION_STORAGE_KEY = 'gaming-tracker-editor-mode';
 
 type EditorState = {
 	editorMode: boolean;
@@ -252,6 +255,15 @@ class EditorStore {
 				editorMode: true
 			};
 
+			// Persist to session storage
+			if (browser) {
+				try {
+					sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
+				} catch {
+					// Ignore storage errors
+				}
+			}
+
 			return true;
 		} catch {
 			this._state = {
@@ -267,10 +279,48 @@ class EditorStore {
 	logout(): void {
 		this._state = { ...initialState, editorMode: false };
 		this.discardAllChanges();
+
+		// Clear session storage
+		if (browser) {
+			try {
+				sessionStorage.removeItem(SESSION_STORAGE_KEY);
+			} catch {
+				// Ignore storage errors
+			}
+		}
 	}
 
 	setEditorModeFromSessionCheck(enabled: boolean): void {
 		this._state = { ...this._state, editorMode: enabled };
+
+		// Sync with session storage
+		if (browser) {
+			try {
+				if (enabled) {
+					sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
+				} else {
+					sessionStorage.removeItem(SESSION_STORAGE_KEY);
+				}
+			} catch {
+				// Ignore storage errors
+			}
+		}
+	}
+
+	/**
+	 * Restore editor mode from session storage on page load
+	 */
+	restoreFromSession(): void {
+		if (browser) {
+			try {
+				const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
+				if (stored === 'true') {
+					this._state = { ...this._state, editorMode: true };
+				}
+			} catch {
+				// Ignore storage errors
+			}
+		}
 	}
 
 	captureSnapshot(snapshot: unknown): void {
@@ -340,7 +390,7 @@ class EditorStore {
 	// For backwards compatibility
 	subscribe(fn: (value: EditorState) => void): () => void {
 		fn(this._state);
-		return () => {};
+		return () => { };
 	}
 }
 
