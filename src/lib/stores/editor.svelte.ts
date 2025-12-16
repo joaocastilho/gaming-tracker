@@ -30,12 +30,6 @@ const initialState: EditorState = {
 	lastSnapshot: null
 };
 
-const initialPendingChanges: PendingChanges = {
-	adds: [],
-	edits: new Map(),
-	deletes: new Set()
-};
-
 class EditorStore {
 	private _state = $state<EditorState>({ ...initialState });
 	private _pending = $state<PendingChanges>({
@@ -346,7 +340,7 @@ class EditorStore {
 	// For backwards compatibility
 	subscribe(fn: (value: EditorState) => void): () => void {
 		fn(this._state);
-		return () => { };
+		return () => {};
 	}
 }
 

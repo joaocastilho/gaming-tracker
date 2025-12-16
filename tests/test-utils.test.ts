@@ -88,9 +88,9 @@ describe('Utility Tests', () => {
 
 	describe('Filter Options', () => {
 		const mockGames = [
-			{ platform: 'PC', genre: 'RPG', tier: 'S' },
-			{ platform: 'PS5', genre: 'Action', tier: 'A' },
-			{ platform: 'PC', genre: 'Action', tier: 'S' }
+			{ platform: 'PC', genre: 'RPG', tier: 'S - Masterpiece' },
+			{ platform: 'PS5', genre: 'Action', tier: 'A - Amazing' },
+			{ platform: 'PC', genre: 'Action', tier: 'S - Masterpiece' }
 		] as Game[];
 
 		it('extracts unique options', () => {

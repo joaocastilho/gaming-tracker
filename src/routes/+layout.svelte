@@ -25,17 +25,10 @@
 		Tag,
 		Trophy,
 		Users,
-		ChevronDown,
 		Settings,
-		Sun,
 		Moon
 	} from 'lucide-svelte';
-	import {
-		getPlatformColor,
-		getGenreColor,
-		getTierColor,
-		getCoOpColor
-	} from '$lib/utils/filterOptions';
+	import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions';
 	import GamesView from '$lib/views/GamesView.svelte';
 	import TierListView from '$lib/views/TierListView.svelte';
 	import { filteredGames } from '$lib/stores/filteredGamesStore.svelte';

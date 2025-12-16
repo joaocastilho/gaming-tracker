@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { fade, fly, scale } from 'svelte/transition';
-	import { cubicOut, backOut, quintOut } from 'svelte/easing';
+	import { fade, fly } from 'svelte/transition';
+	import { cubicOut, backOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { createGameSlug } from '../utils/slugUtils.js';
@@ -47,8 +47,6 @@
 
 	// Zoom/Shrink animation state
 	let isZoomAnimating = $state(false);
-	let zoomProgress = $state(0);
-	let animationPhase = $state<'opening' | 'open' | 'closing' | 'closed'>('closed');
 
 	// Touch tracking
 	let touchStartX = 0;
@@ -108,14 +106,6 @@
 		detailImageSrc ? generateSrcset(detailImageSrc.replace('-detail.webp', '')) : ''
 	);
 	const detailImageSizes = $derived(generateSizes('modal'));
-
-	let titleSizeClass = $derived.by(() => {
-		const len = $modalStore.activeGame?.mainTitle?.length ?? 0;
-		if (len <= 20) return 'text-lg md:text-3xl';
-		if (len <= 30) return 'text-base md:text-2xl';
-		if (len <= 38) return 'text-sm md:text-xl';
-		return 'text-xs md:text-lg';
-	});
 
 	let linkToGame = $state('');
 	let focusableElements = $state<HTMLElement[]>([]);
@@ -194,7 +184,7 @@
 		}
 	}
 
-	function handleTouchEnd(e: TouchEvent) {
+	function handleTouchEnd() {
 		const touchEndTime = Date.now();
 		const duration = touchEndTime - touchStartTime;
 		const velocity = Math.abs(touchCurrentX - touchStartX) / duration;
@@ -229,7 +219,6 @@
 
 	function animateClose() {
 		isSwipeTransitioning = true;
-		animationPhase = 'closing';
 
 		const startOffset = swipeOffsetY;
 		const targetOffset = window.innerHeight;
@@ -249,7 +238,6 @@
 				modalStore.closeModal();
 				swipeOffsetY = 0;
 				isSwipeTransitioning = false;
-				animationPhase = 'closed';
 			}
 		}
 

@@ -1,0 +1,158 @@
+Loading svelte-check in workspace: c:\home\code\gaming-tracker
+Getting Svelte diagnostics...
+
+c:\home\code\gaming-tracker\[32msrc\lib\stores\modal.svelte.ts[39m:506:6
+[31mError[39m: Type '"S" | "A" | "B" | "C" | "D" | "E"' is not assignable to type 'TierValue'.
+  Type '"S"' is not assignable to type 'TierValue'. 
+[36m					score,
+					[35mtier[36m:
+						state.formData.status === 'Completed' && score !== null[39m
+
+c:\home\code\gaming-tracker\[32msrc\lib\stores\modal.svelte.ts[39m:526:6
+[31mError[39m: Type 'TierValue | "S" | "A" | "B" | "C" | "D" | "E"' is not assignable to type 'TierValue'.
+  Type '"S"' is not assignable to type 'TierValue'. 
+[36m					score,
+					[35mtier[36m:
+						state.formData.status === 'Completed' && score !== null[39m
+
+c:\home\code\gaming-tracker\[32msrc\lib\components\GameEditorModal.svelte[39m:316:5
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m
+				[35m<label class="full cover-path">
+					<span>Cover Image Path</span>
+					<!-- Read-only auto-generated path visualization -->
+					<div class="read-only-field">
+						{working.coverImage || '(Auto-generated from Title on Create)'}
+					</div>
+				</label[36m>[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-completed-games-caching.test.ts[39m:110:22
+[31mError[39m: Conversion of type '{ id: string; title: string; mainTitle: string; subtitle: null; platform: string; year: number; genre: string; coOp: "No"; status: "Completed"; coverImage: string; timeToBeat: string; hoursPlayed: string; ... 5 more ...; tier: "A"; }' to type 'Game' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'tier' are incompatible.
+    Type '"A"' is not comparable to type 'TierValue'. 
+[36m		const modifiedGames = [...mockGames];
+		modifiedGames.push([35m{
+			id: 'game5',
+			title: 'Game 5',
+			mainTitle: 'Game 5',
+			subtitle: null,
+			platform: 'PC',
+			year: 2024,
+			genre: 'Strategy',
+			coOp: 'No' as const,
+			status: 'Completed' as const,
+			coverImage: 'game5.webp',
+			timeToBeat: '15 hours',
+			hoursPlayed: '15 hours',
+			finishedDate: '2024-03-01',
+			ratingPresentation: 8,
+			ratingStory: 8,
+			ratingGameplay: 7,
+			score: 7.7,
+			tier: 'A' as const
+		} as Game[36m);[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-cover-loading.test.ts[39m:112:49
+[31mError[39m: Expected 0 arguments, but got 1. 
+[36m		// preload() should not throw synchronously
+		const preloadPromise = mockImageCache.preload([35msrc[36m);
+		expect(preloadPromise).toBeInstanceOf(Promise);[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-cover-loading.test.ts[39m:116:28
+[31mError[39m: Expected 0 arguments, but got 1. 
+[36m		// Manually mark loaded
+		mockImageCache.setLoaded([35msrc[36m);
+	});[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-cover-loading.test.ts[39m:145:3
+[31mError[39m: Type '(src: string) => any' is not assignable to type '() => Promise<void>'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0. 
+[36m		const originalPreload = mockImageCache.preload;
+		[35mmockImageCache.preload[36m = (src: string) => {
+			if (src === detail) {[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-cover-loading.test.ts[39m:153:26
+[31mError[39m: Expected 0 arguments, but got 1. 
+[36m		// Simulate GameCard.preloadDetailImage behavior
+		mockImageCache.preload([35mdetail[36m);[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-game-management.test.ts[39m:81:23
+[31mError[39m: Conversion of type '{ status: "Completed"; hoursPlayed: string; finishedDate: string; ratingPresentation: number; ratingStory: number; ratingGameplay: number; score: number; tier: "A"; id: string; title: string; ... 7 more ...; timeToBeat: string; }' to type 'Game' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'tier' are incompatible.
+    Type '"A"' is not comparable to type 'TierValue'. 
+[36m
+		const updatedGame = [35m{
+			...game,
+			status: 'Completed',
+			hoursPlayed: '12h 30m',
+			finishedDate: '2024-11-02',
+			ratingPresentation: 8,
+			ratingStory: 7,
+			ratingGameplay: 9,
+			score: 16,
+			tier: 'A'
+		} as Game[36m;[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-modal-store.test.ts[39m:19:2
+[31mError[39m: Type '"S"' is not assignable to type 'TierValue'. 
+[36m	status: 'Completed',
+	[35mtier[36m: 'S',
+	score: 18,[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-search-filter-sort-integration.test.ts[39m:26:3
+[31mError[39m: Type '"S"' is not assignable to type 'TierValue'. 
+[36m		score: 95,
+		[35mtier[36m: 'S',
+		coOp: 'No',[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-search-filter-sort-integration.test.ts[39m:40:3
+[31mError[39m: Type '"A"' is not assignable to type 'TierValue'. 
+[36m		score: 88,
+		[35mtier[36m: 'A',
+		coOp: 'Yes',[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-search-filter-sort-integration.test.ts[39m:54:3
+[31mError[39m: Type '"S"' is not assignable to type 'TierValue'. 
+[36m		score: 92,
+		[35mtier[36m: 'S',
+		coOp: 'No',[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-search-filter-sort-integration.test.ts[39m:82:3
+[31mError[39m: Type '"A"' is not assignable to type 'TierValue'. 
+[36m		score: 90,
+		[35mtier[36m: 'A',
+		coOp: 'No',[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-search-filter-sort-integration.test.ts[39m:401:31
+[31mError[39m: This comparison appears to be unintentional because the types 'TierValue' and '"S"' have no overlap. 
+[36m		expect(results).toHaveLength(2); // Zelda and Hollow Knight
+		expect(results.every((g) => [35mg.tier === 'S'[36m)).toBe(true);
+	});[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-search-filter-sort-integration.test.ts[39m:415:31
+[31mError[39m: This comparison appears to be unintentional because the types 'TierValue' and '"A"' have no overlap. 
+[36m		expect(results).toHaveLength(2); // Dark Souls and Mario
+		expect(results.every((g) => [35mg.tier === 'A'[36m)).toBe(true);
+	});[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-sorting-filtering.test.ts[39m:209:31
+[31mError[39m: This comparison appears to be unintentional because the types 'TierValue' and '"S"' have no overlap. 
+[36m		expect(results.length).toBe(2);
+		expect(results.every((g) => [35mg.tier === 'S'[36m)).toBe(true);
+	});[39m
+
+c:\home\code\gaming-tracker\[32mtests\test-utils.test.ts[39m:90:21
+[31mError[39m: Conversion of type '({ platform: string; genre: string; tier: "S"; } | { platform: string; genre: string; tier: "A"; })[]' to type 'Game[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ platform: string; genre: string; tier: "S"; } | { platform: string; genre: string; tier: "A"; }' is not comparable to type 'Game'.
+    Type '{ platform: string; genre: string; tier: "A"; }' is missing the following properties from type 'Game': id, title, mainTitle, subtitle, and 11 more. 
+[36m	describe('Filter Options', () => {
+		const mockGames = [35m[
+			{ platform: 'PC', genre: 'RPG', tier: 'S' },
+			{ platform: 'PS5', genre: 'Action', tier: 'A' },
+			{ platform: 'PC', genre: 'Action', tier: 'S' }
+		] as Game[][36m;[39m
+
+====================================
+[31msvelte-check found 17 errors and 1 warning in 9 files
+[39m

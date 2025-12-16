@@ -7,7 +7,7 @@ import globals from 'globals';
 export default [
 	// Global ignores
 	{
-		ignores: ['node_modules/**', '.svelte-kit/**', 'build/**', 'dist/**', '.git/**']
+		ignores: ['node_modules/**', '.svelte-kit/**', 'build/**', 'dist/**', '.git/**', '.wrangler/**']
 	},
 
 	// Base JS config
@@ -24,7 +24,8 @@ export default [
 		languageOptions: {
 			globals: {
 				...globals.browser,
-				...globals.node
+				...globals.node,
+				__APP_VERSION__: 'readonly'
 			}
 		}
 	},
@@ -54,7 +55,13 @@ export default [
 	{
 		rules: {
 			'no-unused-vars': 'off',
-			'@typescript-eslint/no-unused-vars': 'warn',
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_'
+				}
+			],
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-non-null-assertion': 'off',
 			'@typescript-eslint/ban-ts-comment': 'off',

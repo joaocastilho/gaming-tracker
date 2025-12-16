@@ -189,7 +189,7 @@
 
 	let cardElement = $state<HTMLDivElement>();
 
-	function handleCardClick(event: MouseEvent) {
+	function handleCardClick() {
 		const rect = cardElement?.getBoundingClientRect();
 		const cardRect = rect
 			? {
@@ -211,7 +211,7 @@
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
 			// Create a synthetic MouseEvent for keyboard navigation
-			handleCardClick(new MouseEvent('click'));
+			handleCardClick();
 		}
 	}
 

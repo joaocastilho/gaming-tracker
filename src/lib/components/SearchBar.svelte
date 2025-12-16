@@ -6,10 +6,6 @@
 	import { X } from 'lucide-svelte';
 	import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
 
-	type Props = {
-		onClose?: () => void;
-	};
-
 	let inputElement = $state<HTMLInputElement | undefined>(undefined);
 	let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 

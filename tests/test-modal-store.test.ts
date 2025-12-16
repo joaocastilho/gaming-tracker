@@ -16,7 +16,7 @@ const mockGame: Game = {
 	platform: 'PC',
 	genre: 'RPG',
 	status: 'Completed',
-	tier: 'S',
+	tier: 'S - Masterpiece',
 	score: 18,
 	coOp: 'No',
 	coverImage: 'covers/test.webp',
@@ -219,33 +219,33 @@ describe('ModalStore', () => {
 
 	describe('Tier Calculation', () => {
 		it('getTierFromScore returns correct tier for S (18+)', () => {
-			expect(modalStore.getTierFromScore(18)).toBe('S');
-			expect(modalStore.getTierFromScore(20)).toBe('S');
+			expect(modalStore.getTierFromScore(18)).toBe('S - Masterpiece');
+			expect(modalStore.getTierFromScore(20)).toBe('S - Masterpiece');
 		});
 
 		it('getTierFromScore returns correct tier for A (15-17)', () => {
-			expect(modalStore.getTierFromScore(15)).toBe('A');
-			expect(modalStore.getTierFromScore(17)).toBe('A');
+			expect(modalStore.getTierFromScore(15)).toBe('A - Amazing');
+			expect(modalStore.getTierFromScore(17)).toBe('A - Amazing');
 		});
 
 		it('getTierFromScore returns correct tier for B (12-14)', () => {
-			expect(modalStore.getTierFromScore(12)).toBe('B');
-			expect(modalStore.getTierFromScore(14)).toBe('B');
+			expect(modalStore.getTierFromScore(12)).toBe('B - Great');
+			expect(modalStore.getTierFromScore(14)).toBe('B - Great');
 		});
 
 		it('getTierFromScore returns correct tier for C (9-11)', () => {
-			expect(modalStore.getTierFromScore(9)).toBe('C');
-			expect(modalStore.getTierFromScore(11)).toBe('C');
+			expect(modalStore.getTierFromScore(9)).toBe('C - Good');
+			expect(modalStore.getTierFromScore(11)).toBe('C - Good');
 		});
 
 		it('getTierFromScore returns correct tier for D (6-8)', () => {
-			expect(modalStore.getTierFromScore(6)).toBe('D');
-			expect(modalStore.getTierFromScore(8)).toBe('D');
+			expect(modalStore.getTierFromScore(6)).toBe('D - Decent');
+			expect(modalStore.getTierFromScore(8)).toBe('D - Decent');
 		});
 
 		it('getTierFromScore returns E for low scores', () => {
-			expect(modalStore.getTierFromScore(5)).toBe('E');
-			expect(modalStore.getTierFromScore(0)).toBe('E');
+			expect(modalStore.getTierFromScore(5)).toBe('E - Bad');
+			expect(modalStore.getTierFromScore(0)).toBe('E - Bad');
 		});
 	});
 

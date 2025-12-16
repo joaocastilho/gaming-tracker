@@ -23,7 +23,7 @@ const mockGames: Partial<Game>[] = [
 		genre: 'Action-Adventure',
 		status: 'Completed',
 		score: 95,
-		tier: 'S',
+		tier: 'S - Masterpiece',
 		coOp: 'No',
 		finishedDate: '15/03/2023',
 		ratingGameplay: 10,
@@ -37,7 +37,7 @@ const mockGames: Partial<Game>[] = [
 		genre: 'Action RPG',
 		status: 'Completed',
 		score: 88,
-		tier: 'A',
+		tier: 'A - Amazing',
 		coOp: 'Yes',
 		finishedDate: '20/01/2023',
 		ratingGameplay: 9,
@@ -51,7 +51,7 @@ const mockGames: Partial<Game>[] = [
 		genre: 'Metroidvania',
 		status: 'Completed',
 		score: 92,
-		tier: 'S',
+		tier: 'S - Masterpiece',
 		coOp: 'No',
 		finishedDate: '10/06/2023',
 		ratingGameplay: 10,
@@ -79,7 +79,7 @@ const mockGames: Partial<Game>[] = [
 		genre: 'Platformer',
 		status: 'Completed',
 		score: 90,
-		tier: 'A',
+		tier: 'A - Amazing',
 		coOp: 'No',
 		finishedDate: '05/02/2023',
 		ratingGameplay: 9,
@@ -398,7 +398,7 @@ describe('Tier Filter Functionality', () => {
 
 		const results = filteredGamesStore.games;
 		expect(results).toHaveLength(2); // Zelda and Hollow Knight
-		expect(results.every((g) => g.tier === 'S')).toBe(true);
+		expect(results.every((g) => g.tier === 'S - Masterpiece')).toBe(true);
 	});
 
 	it('should filter games by A tier', async () => {
@@ -412,7 +412,7 @@ describe('Tier Filter Functionality', () => {
 
 		const results = filteredGamesStore.games;
 		expect(results).toHaveLength(2); // Dark Souls and Mario
-		expect(results.every((g) => g.tier === 'A')).toBe(true);
+		expect(results.every((g) => g.tier === 'A - Amazing')).toBe(true);
 	});
 });
 

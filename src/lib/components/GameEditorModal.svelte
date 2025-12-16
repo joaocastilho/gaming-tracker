@@ -156,11 +156,6 @@
 		}
 		onClose();
 	}
-
-	// Helper for sliders
-	function onSliderChange() {
-		// Triggered by binding, effect handles score calc
-	}
 </script>
 
 <div
@@ -221,7 +216,7 @@
 						required
 					/>
 					<datalist id="platforms">
-						{#each uniquePlatforms as p}
+						{#each uniquePlatforms as p (p)}
 							<option value={p}>{p}</option>
 						{/each}
 					</datalist>
@@ -237,7 +232,7 @@
 						required
 					/>
 					<datalist id="genres">
-						{#each uniqueGenres as g}
+						{#each uniqueGenres as g (g)}
 							<option value={g}>{g}</option>
 						{/each}
 					</datalist>
@@ -313,13 +308,13 @@
 					</label>
 				{/if}
 
-				<label class="full cover-path">
-					<span>Cover Image Path</span>
+				<div class="full cover-path">
+					<span class="label-text">Cover Image Path</span>
 					<!-- Read-only auto-generated path visualization -->
 					<div class="read-only-field">
 						{working.coverImage || '(Auto-generated from Title on Create)'}
 					</div>
-				</label>
+				</div>
 
 				<!-- Ratings (Completed Only) -->
 				{#if working.status === 'Completed'}
@@ -365,7 +360,7 @@
 						<span>Tier *</span>
 						<select bind:value={working.tier}>
 							<option value={null}>Select Tier...</option>
-							{#each TIER_VALUES as t}
+							{#each TIER_VALUES as t (t)}
 								<option value={t}>{t}</option>
 							{/each}
 						</select>

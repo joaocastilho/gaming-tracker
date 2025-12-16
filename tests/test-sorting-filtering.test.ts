@@ -11,7 +11,7 @@ const mockGames = [
 		title: 'The Legend of Zelda: Breath of the Wild',
 		platform: 'Nintendo Switch',
 		genre: 'Adventure',
-		tier: 'S',
+		tier: 'S - Masterpiece',
 		status: 'Completed',
 		ratingPresentation: 10,
 		ratingStory: 9,
@@ -25,7 +25,7 @@ const mockGames = [
 		title: 'God of War',
 		platform: 'PlayStation 5',
 		genre: 'Action',
-		tier: 'A',
+		tier: 'A - Amazing',
 		status: 'Completed',
 		ratingPresentation: 9,
 		ratingStory: 10,
@@ -39,7 +39,7 @@ const mockGames = [
 		title: 'Elden Ring',
 		platform: 'PC',
 		genre: 'RPG',
-		tier: 'S',
+		tier: 'S - Masterpiece',
 		status: 'Planned',
 		ratingPresentation: null,
 		ratingStory: null,
@@ -53,7 +53,7 @@ const mockGames = [
 		title: 'Hollow Knight',
 		platform: 'PC',
 		genre: 'Metroidvania',
-		tier: 'A',
+		tier: 'A - Amazing',
 		status: 'Completed',
 		ratingPresentation: 8,
 		ratingStory: 8,
@@ -171,7 +171,7 @@ describe('Sorting and Filtering Logic', () => {
 				title: 'Null Date Game',
 				platform: 'PC',
 				genre: 'RPG',
-				tier: 'B',
+				tier: 'B - Great',
 				status: 'Completed',
 				ratingPresentation: 7,
 				ratingStory: 7,
@@ -206,7 +206,7 @@ describe('Sorting and Filtering Logic', () => {
 		filtersStore.toggleTier('S - Masterpiece');
 		const results = filteredGamesStore.games;
 		expect(results.length).toBe(2);
-		expect(results.every((g) => g.tier === 'S')).toBe(true);
+		expect(results.every((g) => g.tier === 'S - Masterpiece')).toBe(true);
 	});
 
 	it('filters by co-op', () => {

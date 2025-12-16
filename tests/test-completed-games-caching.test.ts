@@ -22,7 +22,7 @@ const mockGames = [
 		ratingStory: 7,
 		ratingGameplay: 9,
 		score: 8,
-		tier: 'A' as const
+		tier: 'A - Amazing' as const
 	},
 	{
 		id: 'game2',
@@ -42,7 +42,7 @@ const mockGames = [
 		ratingStory: 9,
 		ratingGameplay: 8,
 		score: 8.7,
-		tier: 'S' as const
+		tier: 'S - Masterpiece' as const
 	},
 	{
 		id: 'game3',
@@ -82,7 +82,7 @@ const mockGames = [
 		ratingStory: 6,
 		ratingGameplay: 8,
 		score: 7,
-		tier: 'B' as const
+		tier: 'B - Great' as const
 	}
 ] as Game[];
 
@@ -125,7 +125,7 @@ describe('Completed Games Caching', () => {
 			ratingStory: 8,
 			ratingGameplay: 7,
 			score: 7.7,
-			tier: 'A' as const
+			tier: 'A - Amazing' as const
 		} as Game);
 
 		completedGamesCache.updateCache(modifiedGames);

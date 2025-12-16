@@ -6,7 +6,7 @@
 import { pushState, replaceState } from '$app/navigation';
 import { createGameSlug } from '$lib/utils/slugUtils';
 import { getTierDisplayName } from '$lib/utils/tierUtils';
-import type { Game } from '../types/game.js';
+import type { Game, TierValue } from '../types/game.js';
 import type { SortOption } from './filters.svelte';
 import { gamesStore } from './games.svelte';
 
@@ -548,13 +548,13 @@ class ModalStore {
 		}
 	}
 
-	getTierFromScore(score: number): 'S' | 'A' | 'B' | 'C' | 'D' | 'E' {
-		if (score >= 18) return 'S';
-		if (score >= 15) return 'A';
-		if (score >= 12) return 'B';
-		if (score >= 9) return 'C';
-		if (score >= 6) return 'D';
-		return 'E';
+	getTierFromScore(score: number): TierValue {
+		if (score >= 18) return 'S - Masterpiece';
+		if (score >= 15) return 'A - Amazing';
+		if (score >= 12) return 'B - Great';
+		if (score >= 9) return 'C - Good';
+		if (score >= 6) return 'D - Decent';
+		return 'E - Bad';
 	}
 
 	readFromURL(searchParams: URLSearchParams, games: Game[]): void {

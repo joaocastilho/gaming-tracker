@@ -87,7 +87,7 @@ describe('Game Management Flows', () => {
 			ratingStory: 7,
 			ratingGameplay: 9,
 			score: 16,
-			tier: 'A'
+			tier: 'A - Amazing'
 		} as Game;
 
 		gamesStore.updateGame(addedGameId, updatedGame);
@@ -97,7 +97,7 @@ describe('Game Management Flows', () => {
 
 		expect(completedGame?.status).toBe('Completed');
 		expect(completedGame?.score).toBe(16);
-		expect(completedGame?.tier).toBe('A');
+		expect(completedGame?.tier).toBe('A - Amazing');
 	});
 
 	test('Switch Between Views', () => {

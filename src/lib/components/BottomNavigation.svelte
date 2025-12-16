@@ -9,7 +9,7 @@
 		onCloseSearchAndFilters?: () => void;
 	}
 
-	let { onSearchToggle, onCloseSearchAndFilters }: Props = $props();
+	let { onSearchToggle }: Props = $props();
 
 	type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search';
 

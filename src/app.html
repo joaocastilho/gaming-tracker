@@ -1,35 +1,35 @@
 <!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-title" content="Gaming Tracker" />
+		<meta
+			name="description"
+			content="A personal gaming tracker for my completed games, planned games, scores, and tier lists."
+		/>
 
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-	<meta name="mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-title" content="Gaming Tracker" />
-	<meta name="description"
-		content="A personal gaming tracker for my completed games, planned games, scores, and tier lists." />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+		<link rel="manifest" href="/site.webmanifest" />
 
-	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-	<link rel="manifest" href="/site.webmanifest" />
-
-	<script>
-		if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-			const savedTheme = localStorage.getItem('gaming-tracker-theme');
-			if (savedTheme === 'light' || savedTheme === 'dark') {
-				document.documentElement.classList.add(savedTheme);
-			} else {
-				document.documentElement.classList.add('dark');
+		<script>
+			if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+				const savedTheme = localStorage.getItem('gaming-tracker-theme');
+				if (savedTheme === 'light' || savedTheme === 'dark') {
+					document.documentElement.classList.add(savedTheme);
+				} else {
+					document.documentElement.classList.add('dark');
+				}
 			}
-		}
-	</script>
+		</script>
 
-	%sveltekit.head%
-</head>
+		%sveltekit.head%
+	</head>
 
-<body data-sveltekit-preload-data="hover" class="bg-background min-h-screen">
-	<div class="contents">%sveltekit.body%</div>
-</body>
-
+	<body data-sveltekit-preload-data="hover" class="bg-background min-h-screen">
+		<div class="contents">%sveltekit.body%</div>
+	</body>
 </html>
