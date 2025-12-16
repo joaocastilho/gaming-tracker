@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 import type { CoOpStatus, GameStatus, TierValue } from '../types/game';
 
 /**
