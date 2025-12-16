@@ -6892,15 +6892,15 @@
             "year": 2013,
             "genre": "Survival Horror",
             "coOp": "No",
-            "status": "Planned",
+            "status": "Completed",
             "coverImage": "covers/outlast.webp",
-            "finishedDate": null,
-            "ratingPresentation": null,
-            "ratingStory": null,
-            "ratingGameplay": null,
-            "score": null,
-            "tier": null,
-            "playtime": "5h 0m"
+            "finishedDate": "16/11/2025",
+            "ratingPresentation": 8,
+            "ratingStory": 7,
+            "ratingGameplay": 7,
+            "score": 15,
+            "tier": "B - Great",
+            "playtime": "6h 5m"
         },
         {
             "id": "outlast-2",
@@ -7579,7 +7579,7 @@
             "ratingStory": 8,
             "ratingGameplay": 7,
             "score": 16,
-            "tier": "A - Amazing",
+            "tier": "B - Great",
             "playtime": "7h 52m"
         },
         {
@@ -9544,15 +9544,15 @@
             "year": 2022,
             "genre": "Action",
             "coOp": "No",
-            "status": "Planned",
+            "status": "Completed",
             "coverImage": "covers/marvels-spiderman-miles-morales.webp",
-            "finishedDate": null,
-            "ratingPresentation": null,
-            "ratingStory": null,
-            "ratingGameplay": null,
-            "score": null,
-            "tier": null,
-            "playtime": "7h 30m"
+            "finishedDate": "16/11/2025",
+            "ratingPresentation": 9,
+            "ratingStory": 7,
+            "ratingGameplay": 8,
+            "score": 16,
+            "tier": "B - Great",
+            "playtime": "7h 11m"
         },
         {
             "id": "outlast-whistleblower-dlc",
