@@ -30,9 +30,15 @@
 	let hours = $state(0);
 	let minutes = $state(0);
 
+	let copied = $state(false);
+
 	function copyGameId() {
 		if (working?.id) {
 			navigator.clipboard.writeText(working.id);
+			copied = true;
+			setTimeout(() => {
+				copied = false;
+			}, 2000);
 		}
 	}
 
@@ -317,17 +323,49 @@
 				{/if}
 
 				<div class="full cover-path" style="margin-top: 1.5rem;">
-					<span class="label-text">Game ID (Click to Copy)</span>
+					<span class="label-text">Game ID</span>
 					<!-- Read-only auto-generated path visualization + copy -->
 					<div
 						class="read-only-field copyable large-id"
 						role="button"
 						tabindex="0"
 						onclick={copyGameId}
-						onkeydown={(e) => e.key === 'Enter' && copyGameId()}
 						title="Click to copy ID"
 					>
-						{working.id || '(Auto-generated)'}
+						{#if copied}
+							<span style="color: #4ade80; font-weight: 600;">Copied!</span>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#4ade80"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<polyline points="20 6 9 17 4 12" />
+							</svg>
+						{:else}
+							<span>{working.id || '(Auto-generated)'}</span>
+							<!-- Clipboard Icon -->
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="icon-copy"
+							>
+								<rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+								<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+							</svg>
+						{/if}
 					</div>
 				</div>
 
@@ -655,7 +693,7 @@
 	}
 
 	.read-only-field.copyable {
-		cursor: copy;
+		cursor: pointer;
 		transition:
 			background 0.2s,
 			color 0.2s;
@@ -668,6 +706,20 @@
 
 	.read-only-field.copyable:active {
 		background: rgba(255, 255, 255, 0.15);
+	}
+
+	.read-only-field.large-id {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.icon-copy {
+		opacity: 0.6;
+	}
+
+	.read-only-field.copyable:hover .icon-copy {
+		opacity: 1;
 	}
 
 	.playtime-inputs {
