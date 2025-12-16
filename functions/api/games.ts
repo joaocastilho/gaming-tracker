@@ -150,14 +150,6 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 				prefix: 'rl:games'
 			});
 			if (!rl.allowed) {
-				console.log(
-					JSON.stringify({
-						event: 'rate_limit_denied',
-						target: 'games_write',
-						ip,
-						remaining: rl.remaining
-					})
-				);
 				return new Response(JSON.stringify({ error: 'Too many requests' }), {
 					status: 429,
 					headers: { 'Content-Type': 'application/json' }
@@ -271,13 +263,6 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		await syncGamesToGitHub(nextData, env);
 		await env.GAMES_KV.put('games', JSON.stringify(nextData));
-		console.log(
-			JSON.stringify({
-				event: 'games_write_success',
-				count: nextData.games.length,
-				meta: nextData.meta
-			})
-		);
 
 		return new Response(JSON.stringify({ ok: true, meta: nextData.meta }), {
 			status: 200,

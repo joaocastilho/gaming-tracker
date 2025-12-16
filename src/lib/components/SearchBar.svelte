@@ -36,32 +36,25 @@
 	}
 
 	function clearSearch() {
-		console.log('[SearchBar] clearSearch called');
-
 		// Cancel any pending debounced writes
 		if (debounceTimeout) {
 			clearTimeout(debounceTimeout);
 		}
 
-		console.log('[SearchBar] Clearing URL first...');
 		// Clear URL parameter FIRST (synchronously) before touching the store
 		// This prevents the URL sync effect from restoring the value
 		if (browser) {
 			const url = new URL(window.location.href);
-			console.log('[SearchBar] Current URL:', url.toString());
 			url.searchParams.delete('s');
-			console.log('[SearchBar] New URL:', url.toString());
 			replaceState(url.toString(), page.state);
 		}
 
 		// Mark the clear timestamp to prevent URL sync effect from running
 		markSearchCleared();
 
-		console.log('[SearchBar] Clearing store...');
 		// Then clear store to trigger filtering
 		filtersStore.setSearchTerm('');
 
-		console.log('[SearchBar] Clearing input element...');
 		// Finally clear input value
 		if (inputElement) {
 			inputElement.value = '';
@@ -69,7 +62,6 @@
 				inputElement?.focus();
 			});
 		}
-		console.log('[SearchBar] clearSearch complete');
 	}
 
 	function handleKeydown(event: KeyboardEvent) {

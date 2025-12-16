@@ -56,8 +56,6 @@ export async function POST({ request }) {
 
 		await fs.writeFile(filePath, JSON.stringify(outputPayload, null, 4), 'utf-8');
 
-		console.log(`[Dev API] Updated games.json with ${payload.games.length} games.`);
-
 		return json({ success: true, games: payload.games });
 	} catch (error) {
 		console.error('[Dev API] Error writing to games.json:', error);

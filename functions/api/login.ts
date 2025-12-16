@@ -47,14 +47,6 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			});
 
 			if (!rl.allowed) {
-				console.log(
-					JSON.stringify({
-						event: 'rate_limit_denied',
-						target: 'login',
-						ip,
-						remaining: rl.remaining
-					})
-				);
 				return new Response(JSON.stringify({ error: 'Too many requests' }), {
 					status: 429,
 					headers: { 'Content-Type': 'application/json' }
@@ -135,12 +127,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			'Set-Cookie',
 			`gt_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${12 * 60 * 60}`
 		);
-
-		console.log(
-			JSON.stringify({
-				event: 'login_success'
-			})
-		);
+		
 		return new Response(JSON.stringify({ ok: true }), {
 			status: 200,
 			headers

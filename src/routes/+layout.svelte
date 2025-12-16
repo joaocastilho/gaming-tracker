@@ -173,14 +173,12 @@
 			// Skip sync if we just manually cleared (within 100ms)
 			const timeSinceLastClear = Date.now() - lastManualClearTime;
 			if (timeSinceLastClear < 100) {
-				console.log('[Layout] Skipping URL sync - recent manual clear');
 				return;
 			}
 
 			// Only update if URL search differs from current state to avoid loops
 			if (searchParam !== currentSearchTerm) {
 				if (searchParam) {
-					console.log('[Layout] Syncing search from URL:', searchParam);
 					filtersStore.setSearchTerm(searchParam);
 				}
 			}

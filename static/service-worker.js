@@ -53,7 +53,6 @@ self.addEventListener('activate', (event) => {
 							return name !== CACHE_NAME && name !== STATIC_CACHE_NAME && name !== IMAGE_CACHE_NAME;
 						})
 						.map((name) => {
-							console.log(`Service Worker: Deleting old cache ${name}`);
 							return caches.delete(name);
 						})
 				);
