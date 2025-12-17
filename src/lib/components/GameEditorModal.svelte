@@ -3,6 +3,7 @@
 	import type { Game } from '$lib/types/game';
 	import { GameSchema, computeScore, TIER_VALUES, formatRating } from '$lib/validation/game';
 	import { editorStore } from '$lib/stores/editor.svelte';
+	import { dev } from '$app/environment';
 
 	// Helper to format implicit "Xh Ym" from a decimal number (e.g. 2.5 -> "2h 30m")
 	// Used to auto-fill timeToBeat from hoursPlayed if needed, or just for display.
@@ -188,19 +189,27 @@
 
 		saving = true;
 
+		// Queue the change in the pending changes store
 		if (mode === 'create') {
 			editorStore.addPendingGame(working);
 		} else {
 			editorStore.editPendingGame(working.id, working);
 		}
 
-		const success = await editorStore.applyAllChanges(allGames);
-		if (success) {
-			await invalidateAll();
-			onClose();
+		// In dev mode: save immediately to local JSON file
+		// In production mode: just queue the change and close (user will click Apply later)
+		if (dev) {
+			const success = await editorStore.saveLocally(allGames);
+			if (success) {
+				await invalidateAll();
+				onClose();
+			} else {
+				error = editorStore.saveError || 'Failed to save changes locally.';
+				saving = false;
+			}
 		} else {
-			error = editorStore.saveError || 'Failed to save changes.';
-			saving = false;
+			// Production mode: just close after queueing, user will Apply later
+			onClose();
 		}
 	}
 </script>

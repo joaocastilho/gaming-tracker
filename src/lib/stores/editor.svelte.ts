@@ -2,7 +2,7 @@
  * Editor Store - Svelte 5 Runes
  * Manages admin editor state, login, save operations, and batch editing
  */
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import type { Game } from '$lib/types/game';
 
 const SESSION_STORAGE_KEY = 'gaming-tracker-editor-mode';
@@ -77,6 +77,11 @@ class EditorStore {
 
 	get hasLoginError(): boolean {
 		return Boolean(this._state.loginError);
+	}
+
+	// Environment check
+	get isDevMode(): boolean {
+		return dev;
 	}
 
 	// Pending changes getters
@@ -194,6 +199,64 @@ class EditorStore {
 		}
 
 		return success;
+	}
+
+	/**
+	 * Save games directly to local static/games.json file (dev mode only).
+	 * This bypasses the production API and writes to the file system.
+	 */
+	async saveLocally(currentGames: Game[]): Promise<boolean> {
+		if (!this.hasPendingChanges) {
+			return true;
+		}
+
+		const finalGames = this.buildFinalGames(currentGames);
+
+		this._state = {
+			...this._state,
+			savePending: true,
+			saveSuccess: false,
+			saveError: null
+		};
+
+		try {
+			const res = await fetch('/api/games-local', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ games: finalGames })
+			});
+
+			if (!res.ok) {
+				const errorData = await res.json().catch(() => ({}));
+				this._state = {
+					...this._state,
+					savePending: false,
+					saveSuccess: false,
+					saveError: (errorData as { error?: string }).error || 'Failed to save locally.'
+				};
+				return false;
+			}
+
+			this._state = {
+				...this._state,
+				savePending: false,
+				saveSuccess: true,
+				saveError: null
+			};
+
+			this.discardAllChanges();
+			return true;
+		} catch (error) {
+			this._state = {
+				...this._state,
+				savePending: false,
+				saveSuccess: false,
+				saveError: `Local save failed: ${error instanceof Error ? error.message : String(error)}`
+			};
+			return false;
+		}
 	}
 
 	/**

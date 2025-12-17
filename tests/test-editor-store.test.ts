@@ -177,6 +177,88 @@ describe('EditorStore', () => {
 		});
 	});
 
+	describe('Local Save Flow', () => {
+		const mockGame = {
+			id: 'test-game-1',
+			title: 'Test Game',
+			mainTitle: 'Test Game',
+			subtitle: null,
+			platform: 'PC',
+			year: 2024,
+			genre: 'Action',
+			coOp: 'No' as const,
+			status: 'Planned' as const,
+			coverImage: 'covers/test.webp',
+			playtime: '10h 0m',
+			finishedDate: null,
+			ratingPresentation: null,
+			ratingStory: null,
+			ratingGameplay: null,
+			score: null,
+			tier: null
+		};
+
+		it('saveLocally returns true when no pending changes', async () => {
+			const result = await editorStore.saveLocally([]);
+			expect(result).toBe(true);
+		});
+
+		it('saveLocally calls /api/games-local endpoint', async () => {
+			const mockFn = vi.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ ok: true, saved: 1 })
+				} as Response)
+			);
+			globalThis.fetch = mockFn as unknown as typeof fetch;
+
+			editorStore.addPendingGame(mockGame);
+			await editorStore.saveLocally([]);
+
+			expect(mockFn).toHaveBeenCalledWith('/api/games-local', expect.objectContaining({
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			}));
+		});
+
+		it('saveLocally clears pending changes on success', async () => {
+			globalThis.fetch = mockFetch({
+				ok: true,
+				json: () => Promise.resolve({ ok: true, saved: 1 })
+			});
+
+			editorStore.addPendingGame(mockGame);
+			expect(editorStore.hasPendingChanges).toBe(true);
+
+			await editorStore.saveLocally([]);
+
+			expect(editorStore.hasPendingChanges).toBe(false);
+		});
+
+		it('saveLocally returns false on failure', async () => {
+			globalThis.fetch = mockFetch({
+				ok: false,
+				json: () => Promise.resolve({ error: 'Write failed' })
+			});
+
+			editorStore.addPendingGame(mockGame);
+			const result = await editorStore.saveLocally([]);
+
+			expect(result).toBe(false);
+			expect(editorStore.saveError).toBeDefined();
+		});
+
+		it('saveLocally handles network error', async () => {
+			globalThis.fetch = mockFetchError();
+
+			editorStore.addPendingGame(mockGame);
+			const result = await editorStore.saveLocally([]);
+
+			expect(result).toBe(false);
+			expect(editorStore.saveError).toContain('Local save failed');
+		});
+	});
+
 	describe('Subscribe', () => {
 		it('exposes subscribe for Svelte store compatibility', () => {
 			expect(typeof editorStore.subscribe).toBe('function');
