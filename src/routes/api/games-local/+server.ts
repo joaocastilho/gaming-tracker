@@ -1,14 +1,6 @@
 import { json } from '@sveltejs/kit';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-
-/**
- * Local-only handler to write games directly to static/games.json.
- * This endpoint is for dev mode only - allows immediate file saves.
- *
- * POST /api/games-local
- * Body: { games: Game[] }
- */
+// Node imports must be dynamic to avoid breaking Cloudflare build
+// They will only be loaded in dev mode
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
@@ -16,6 +8,9 @@ export async function POST({ request }) {
 	if (import.meta.env.PROD) {
 		return new Response('Not found', { status: 404 });
 	}
+
+	const fs = (await import('node:fs/promises')).default;
+	const path = (await import('node:path')).default;
 
 	try {
 		const payload = await request.json();
