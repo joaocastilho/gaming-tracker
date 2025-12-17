@@ -30,6 +30,7 @@ export async function POST({ request }) {
 						gameHeader.finishedDate = `${day}/${month}/${year}`;
 					}
 				} catch {
+					// Keep original finishedDate if parsing fails
 				}
 			}
 
