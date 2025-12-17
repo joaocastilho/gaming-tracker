@@ -46,7 +46,7 @@ async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
 	const branch = env.GH_BRANCH || 'main';
 
 	if (!token || !owner || !repo || !path) {
-		throw new Error('GitHub sync not configured');
+		throw new Error(`GitHub sync not configured: token=${!!token}, owner=${owner}, repo=${repo}, path=${path}`);
 	}
 
 	const apiBase = 'https://api.github.com';
@@ -58,13 +58,15 @@ async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
 		{
 			headers: {
 				Authorization: `Bearer ${token}`,
-				Accept: 'application/vnd.github+json'
+				Accept: 'application/vnd.github+json',
+				'User-Agent': 'gaming-tracker-cloudflare'
 			}
 		}
 	);
 
 	if (!getRes.ok) {
-		throw new Error(`GitHub get contents failed: ${getRes.status}`);
+		const errorBody = await getRes.text().catch(() => 'no body');
+		throw new Error(`GitHub get contents failed: ${getRes.status} - ${errorBody}`);
 	}
 
 	const fileJson = (await getRes.json()) as { sha: string; content: string };
@@ -82,7 +84,8 @@ async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: 'application/vnd.github+json',
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'User-Agent': 'gaming-tracker-cloudflare'
 			},
 			body: JSON.stringify({
 				message: 'chore(data): update games.json via cloudflare editor',
@@ -94,7 +97,8 @@ async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
 	);
 
 	if (!putRes.ok) {
-		throw new Error(`GitHub update failed: ${putRes.status}`);
+		const errorBody = await putRes.text().catch(() => 'no body');
+		throw new Error(`GitHub update failed: ${putRes.status} - ${errorBody}`);
 	}
 }
 
@@ -217,17 +221,40 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 		}
 
 		const normalizedGames = parsed.data.games.map((g) => {
-			if (g.status === 'Completed') {
-				if (g.ratingPresentation != null && g.ratingStory != null && g.ratingGameplay != null) {
-					const score = computeScore({
-						ratingPresentation: g.ratingPresentation,
-						ratingStory: g.ratingStory,
-						ratingGameplay: g.ratingGameplay
+			// Clone to avoid mutating original
+			const game = { ...g };
+
+			// Compute score for completed games
+			if (game.status === 'Completed') {
+				if (game.ratingPresentation != null && game.ratingStory != null && game.ratingGameplay != null) {
+					game.score = computeScore({
+						ratingPresentation: game.ratingPresentation,
+						ratingStory: game.ratingStory,
+						ratingGameplay: game.ratingGameplay
 					});
-					return { ...g, score };
 				}
 			}
-			return g;
+
+			// Convert finishedDate from ISO to DD/MM/YYYY for storage
+			if (game.finishedDate && typeof game.finishedDate === 'string') {
+				try {
+					const d = new Date(game.finishedDate);
+					if (!isNaN(d.getTime())) {
+						const day = String(d.getUTCDate()).padStart(2, '0');
+						const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+						const year = d.getUTCFullYear();
+						game.finishedDate = `${day}/${month}/${year}`;
+					}
+				} catch {
+					// Keep original if parsing fails
+				}
+			}
+
+			// Remove computed fields that shouldn't be persisted
+			delete (game as Record<string, unknown>).mainTitle;
+			delete (game as Record<string, unknown>).subtitle;
+
+			return game;
 		});
 
 		const nextData: GamesPayload = {
@@ -246,15 +273,17 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
 		console.error(
 			JSON.stringify({
 				event: 'games_write_error',
-				message: error instanceof Error ? error.message : String(error)
+				message: errorMessage
 			})
 		);
 		return new Response(
 			JSON.stringify({
-				error: 'Failed to update games'
+				error: 'Failed to update games',
+				details: errorMessage
 			}),
 			{
 				status: 500,
