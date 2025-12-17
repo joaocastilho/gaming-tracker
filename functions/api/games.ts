@@ -46,7 +46,9 @@ async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
 	const branch = env.GH_BRANCH || 'main';
 
 	if (!token || !owner || !repo || !path) {
-		throw new Error(`GitHub sync not configured: token=${!!token}, owner=${owner}, repo=${repo}, path=${path}`);
+		throw new Error(
+			`GitHub sync not configured: token=${!!token}, owner=${owner}, repo=${repo}, path=${path}`
+		);
 	}
 
 	const apiBase = 'https://api.github.com';
@@ -226,7 +228,11 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 			// Compute score for completed games
 			if (game.status === 'Completed') {
-				if (game.ratingPresentation != null && game.ratingStory != null && game.ratingGameplay != null) {
+				if (
+					game.ratingPresentation != null &&
+					game.ratingStory != null &&
+					game.ratingGameplay != null
+				) {
 					game.score = computeScore({
 						ratingPresentation: game.ratingPresentation,
 						ratingStory: game.ratingStory,

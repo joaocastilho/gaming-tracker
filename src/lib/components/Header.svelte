@@ -7,7 +7,8 @@
 	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
-	import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut } from 'lucide-svelte';
+	import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn } from 'lucide-svelte';
+	import LoginModal from '$lib/components/LoginModal.svelte';
 
 	interface Props {
 		onAddGame?: () => void;
@@ -31,6 +32,7 @@
 	let hasPending = $derived(editorStore.hasPendingChanges);
 	let pendingCount = $derived(editorStore.pendingChangesCount);
 	let isSaving = $derived(editorStore.savePending);
+	let loginModalOpen = $state(false);
 
 	// Use $derived to reactively compute navItems whenever activeTab or counts change
 	let navItems = $derived.by(() => {
@@ -161,6 +163,15 @@
 				>
 					<LogOut size={16} />
 				</button>
+			{:else}
+				<button
+					type="button"
+					class="editor-button login-button"
+					onclick={() => (loginModalOpen = true)}
+					title="Login"
+				>
+					<LogIn size={16} />
+				</button>
 			{/if}
 
 			<div class="filter-toggle-wrapper hidden md:block">
@@ -189,6 +200,8 @@
 		</div>
 	</div>
 </header>
+
+<LoginModal bind:open={loginModalOpen} />
 
 <style>
 	.header-root {
@@ -481,5 +494,18 @@
 		background: #6b7280;
 		color: white;
 		border-color: #6b7280;
+	}
+
+	.login-button {
+		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(99, 102, 241, 0.12);
+		color: #818cf8;
+		padding: 6px 8px;
+	}
+
+	.login-button:hover:not(:disabled) {
+		background: #6366f1;
+		color: white;
+		border-color: #6366f1;
 	}
 </style>

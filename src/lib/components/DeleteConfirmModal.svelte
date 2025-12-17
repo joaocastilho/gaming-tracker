@@ -13,7 +13,6 @@
 	}
 
 	let { game, open = $bindable(false), onConfirm, onCancel }: Props = $props();
-	let saving = $state(false);
 
 	async function handleConfirm() {
 		if (game) {
@@ -21,7 +20,6 @@
 
 			// In dev mode: save immediately to local JSON file
 			if (dev) {
-				saving = true;
 				const currentGames = gamesStore.games;
 				const finalGames = editorStore.buildFinalGames(currentGames);
 				const success = await editorStore.saveLocally(currentGames);
@@ -29,7 +27,6 @@
 					gamesStore.setAllGames(finalGames);
 					await invalidateAll();
 				}
-				saving = false;
 			}
 		}
 		open = false;
