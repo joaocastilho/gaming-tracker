@@ -453,7 +453,7 @@ class EditorStore {
 	// For backwards compatibility
 	subscribe(fn: (value: EditorState) => void): () => void {
 		fn(this._state);
-		return () => { };
+		return () => {};
 	}
 }
 

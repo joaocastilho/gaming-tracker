@@ -215,10 +215,13 @@ describe('EditorStore', () => {
 			editorStore.addPendingGame(mockGame);
 			await editorStore.saveLocally([]);
 
-			expect(mockFn).toHaveBeenCalledWith('/api/games-local', expect.objectContaining({
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' }
-			}));
+			expect(mockFn).toHaveBeenCalledWith(
+				'/api/games-local',
+				expect.objectContaining({
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' }
+				})
+			);
 		});
 
 		it('saveLocally clears pending changes on success', async () => {

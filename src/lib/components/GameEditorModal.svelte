@@ -30,8 +30,48 @@
 	let dateInput = $state('');
 	let hours = $state(0);
 	let minutes = $state(0);
+	let sortPriorityInput = $state<number | null>(null);
 
 	let copied = $state(false);
+
+	// Refs for focus management
+	let modalRef = $state<HTMLDivElement>();
+	let titleInputRef = $state<HTMLInputElement>();
+
+	// Focus trap: keep focus within the modal
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			onClose();
+			return;
+		}
+
+		if (event.key === 'Tab' && modalRef) {
+			const focusableElements = modalRef.querySelectorAll<HTMLElement>(
+				'input:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+			);
+			const focusableArray = Array.from(focusableElements);
+
+			if (focusableArray.length === 0) return;
+
+			const firstElement = focusableArray[0];
+			const lastElement = focusableArray[focusableArray.length - 1];
+
+			if (event.shiftKey) {
+				// Shift+Tab: if on first element, go to last
+				if (document.activeElement === firstElement) {
+					event.preventDefault();
+					lastElement.focus();
+				}
+			} else {
+				// Tab: if on last element, go to first
+				if (document.activeElement === lastElement) {
+					event.preventDefault();
+					firstElement.focus();
+				}
+			}
+		}
+	}
 
 	function copyGameId() {
 		if (working?.id) {
@@ -48,6 +88,11 @@
 	const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
 
 	onMount(() => {
+		// Auto-focus title input when modal opens
+		setTimeout(() => {
+			titleInputRef?.focus();
+		}, 50);
+
 		if (mode === 'edit' && initialGame) {
 			// structuredClone struggles with Svelte 5 proxies sometimes, so we use JSON scan
 			working = JSON.parse(JSON.stringify(initialGame));
@@ -69,6 +114,8 @@
 			if (working.finishedDate) {
 				dateInput = working.finishedDate.split('T')[0];
 			}
+			// Init sortPriority
+			sortPriorityInput = working.sortPriority ?? null;
 		} else {
 			const now = new Date();
 			// We'll generate ID from title later, but for now init empty
@@ -89,8 +136,10 @@
 				score: null,
 				tier: null,
 				playtime: '0h 0m',
-				finishedDate: null
+				finishedDate: null,
+				sortPriority: null
 			} as Game;
+			sortPriorityInput = null;
 		}
 	});
 
@@ -152,6 +201,13 @@
 		}
 	});
 
+	// Sync sortPriorityInput to working.sortPriority
+	$effect(() => {
+		if (working) {
+			working.sortPriority = sortPriorityInput;
+		}
+	});
+
 	function validateGame(game: Game): string | null {
 		// Field cleanups before validation
 		if (game.status === 'Planned') {
@@ -161,6 +217,7 @@
 			game.ratingGameplay = null;
 			game.score = null;
 			game.tier = null;
+			game.sortPriority = null;
 		}
 
 		if (!game.title) return 'Title is required.';
@@ -178,6 +235,7 @@
 	}
 
 	import { invalidateAll } from '$app/navigation';
+	import { gamesStore } from '$lib/stores/games.svelte';
 	async function handleSave() {
 		if (!working) return;
 		error = null;
@@ -199,8 +257,22 @@
 		// In dev mode: save immediately to local JSON file
 		// In production mode: just queue the change and close (user will click Apply later)
 		if (dev) {
-			const success = await editorStore.saveLocally(allGames);
+			// Use fresh games from store, not the stale allGames prop
+			const currentGames = gamesStore.games;
+
+			// Safety check: don't save if we'd be erasing all games
+			if (currentGames.length === 0 && mode === 'edit') {
+				error = 'Cannot save: games data appears to be missing. Please refresh the page.';
+				saving = false;
+				return;
+			}
+
+			// Build final games array before saving (saveLocally will clear pending)
+			const finalGames = editorStore.buildFinalGames(currentGames);
+			const success = await editorStore.saveLocally(currentGames);
 			if (success) {
+				// Directly update the games store to bypass Vite's static file cache
+				gamesStore.setAllGames(finalGames);
 				await invalidateAll();
 				onClose();
 			} else {
@@ -214,30 +286,24 @@
 	}
 </script>
 
-<div
-	class="backdrop"
-	role="presentation"
-	onclick={onClose}
-	onkeydown={(event) => {
-		if (event.key === 'Escape') {
-			event.preventDefault();
+<svelte:window
+	onkeydown={(e) => {
+		if (e.key === 'Escape') {
+			e.preventDefault();
 			onClose();
 		}
 	}}
-	tabindex="-1"
->
+/>
+
+<div class="backdrop" role="presentation" onclick={onClose} onkeydown={handleKeyDown} tabindex="-1">
 	<div
+		bind:this={modalRef}
 		class="modal"
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 		onclick={(event) => event.stopPropagation()}
-		onkeydown={(event) => {
-			if (event.key === 'Escape') {
-				event.preventDefault();
-				onClose();
-			}
-		}}
+		onkeydown={handleKeyDown}
 	>
 		<h2>{mode === 'create' ? 'Add Game' : 'Edit Game'}</h2>
 
@@ -253,6 +319,7 @@
 				<label class="full">
 					<span>Title</span>
 					<input
+						bind:this={titleInputRef}
 						type="text"
 						bind:value={working.title}
 						placeholder="Game Title"
@@ -341,7 +408,7 @@
 					</label>
 					<label>
 						<span>Daily Order</span>
-						<input type="number" bind:value={working.sortPriority} placeholder="0" />
+						<input type="number" bind:value={sortPriorityInput} placeholder="0" />
 					</label>
 				{/if}
 
@@ -353,6 +420,12 @@
 						role="button"
 						tabindex="0"
 						onclick={copyGameId}
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								copyGameId();
+							}
+						}}
 						title="Click to copy ID"
 					>
 						{#if copied}

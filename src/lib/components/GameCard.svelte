@@ -932,22 +932,22 @@
 	}
 
 	.edit-btn {
-		background: rgba(59, 130, 246, 0.85);
+		background: rgba(255, 255, 255, 0.15);
 		color: white;
 	}
 
 	.edit-btn:hover {
-		background: #3b82f6;
+		background: rgba(255, 255, 255, 0.3);
 		transform: scale(1.1);
 	}
 
 	.delete-btn {
-		background: rgba(239, 68, 68, 0.85);
+		background: rgba(255, 255, 255, 0.15);
 		color: white;
 	}
 
 	.delete-btn:hover {
-		background: #ef4444;
+		background: rgba(255, 255, 255, 0.3);
 		transform: scale(1.1);
 	}
 
