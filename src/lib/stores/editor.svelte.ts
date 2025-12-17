@@ -260,27 +260,26 @@ class EditorStore {
 	}
 
 	/**
-	 * Check if session is still valid by making a lightweight POST request.
-	 * The API will return 401 if session is expired, 400 for invalid payload (which means auth passed).
+	 * Check if session is still valid by calling the auth check endpoint.
 	 */
 	async checkSession(): Promise<boolean> {
 		try {
-			// Use POST request with minimal invalid payload to check auth status
-			// If we get 401, session is invalid. If we get 400 (validation error), session is valid.
-			const res = await fetch('/api/games', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({}), // Empty payload will fail validation but pass auth
+			const res = await fetch('/api/auth/check', {
+				method: 'GET',
 				credentials: 'include'
 			});
 
-			// If we get 401, session is invalid
-			if (res.status === 401) {
+			if (!res.ok) {
 				this._state = { ...this._state, editorMode: false };
 				return false;
 			}
 
-			// Any other response (including 400 validation error) means session is valid
+			const data = await res.json();
+			if (!data.valid) {
+				this._state = { ...this._state, editorMode: false };
+				return false;
+			}
+
 			return true;
 		} catch {
 			// Network error - assume session is still valid
@@ -339,7 +338,7 @@ class EditorStore {
 		}
 	}
 
-	logout(): void {
+	async logout(): Promise<void> {
 		this._state = { ...initialState, editorMode: false };
 		this.discardAllChanges();
 
@@ -349,6 +348,16 @@ class EditorStore {
 				sessionStorage.removeItem(SESSION_STORAGE_KEY);
 			} catch {
 				// Ignore storage errors
+			}
+
+			// Call logout API to clear the server-side cookie
+			try {
+				await fetch('/api/auth/logout', {
+					method: 'POST',
+					credentials: 'include'
+				});
+			} catch {
+				// Ignore API errors - local state is already cleared
 			}
 		}
 	}

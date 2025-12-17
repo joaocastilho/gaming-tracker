@@ -7,7 +7,7 @@
 	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
-	import { ChevronDown, SlidersHorizontal, Plus, Save, X } from 'lucide-svelte';
+	import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut } from 'lucide-svelte';
 
 	interface Props {
 		onAddGame?: () => void;
@@ -88,6 +88,10 @@
 	function handleDiscardChanges() {
 		editorStore.discardAllChanges();
 	}
+
+	async function handleLogout() {
+		await editorStore.logout();
+	}
 </script>
 
 <header class="header-root mb-2 px-6 py-3 md:mb-6 md:py-1">
@@ -145,6 +149,17 @@
 					<Save size={16} />
 					<span class="button-label">{isSaving ? 'Saving...' : 'Apply'}</span>
 					<span class="pending-badge">{pendingCount}</span>
+				</button>
+			{/if}
+
+			{#if isEditor}
+				<button
+					type="button"
+					class="editor-button logout-button"
+					onclick={handleLogout}
+					title="Logout"
+				>
+					<LogOut size={16} />
 				</button>
 			{/if}
 
@@ -453,5 +468,18 @@
 
 	.apply-button:hover .pending-badge {
 		background: rgba(255, 255, 255, 0.25);
+	}
+
+	.logout-button {
+		border-color: rgba(156, 163, 175, 0.4);
+		background: rgba(156, 163, 175, 0.12);
+		color: #9ca3af;
+		padding: 6px 8px;
+	}
+
+	.logout-button:hover:not(:disabled) {
+		background: #6b7280;
+		color: white;
+		border-color: #6b7280;
 	}
 </style>

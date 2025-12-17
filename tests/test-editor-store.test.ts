@@ -399,9 +399,8 @@ describe('EditorStore', () => {
 	describe('Session Check', () => {
 		it('checkSession returns true when session is valid', async () => {
 			globalThis.fetch = mockFetch({
-				ok: false,
-				status: 400,
-				json: () => Promise.resolve({ error: 'Validation failed' })
+				ok: true,
+				json: () => Promise.resolve({ valid: true })
 			});
 
 			editorStore.setEditorModeFromSessionCheck(true);
@@ -413,9 +412,8 @@ describe('EditorStore', () => {
 
 		it('checkSession returns false and disables editor mode when session is invalid', async () => {
 			globalThis.fetch = mockFetch({
-				ok: false,
-				status: 401,
-				json: () => Promise.resolve({ error: 'Unauthorized' })
+				ok: true,
+				json: () => Promise.resolve({ valid: false })
 			});
 
 			editorStore.setEditorModeFromSessionCheck(true);
