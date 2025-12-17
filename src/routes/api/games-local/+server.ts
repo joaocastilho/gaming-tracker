@@ -25,18 +25,6 @@ export async function POST({ request }) {
 			return json({ error: 'Invalid payload: games array required' }, { status: 400 });
 		}
 
-		// CRITICAL SAFETY CHECK: Refuse to save if games array is suspiciously small
-		// This protects against accidental data erasure
-		if (payload.games.length < 10) {
-			console.error('[Dev API] REFUSING to save - games array too small:', payload.games.length);
-			return json(
-				{
-					error: `Safety check failed: refusing to save only ${payload.games.length} games (minimum 10 required)`
-				},
-				{ status: 400 }
-			);
-		}
-
 		// Path to static/games.json
 		const filePath = path.join(process.cwd(), 'static', 'games.json');
 

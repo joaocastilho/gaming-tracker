@@ -260,16 +260,14 @@ class EditorStore {
 	}
 
 	/**
-	 * Check if session is still valid by making a lightweight request
+	 * Check if session is still valid by making a lightweight GET request.
+	 * Uses GET instead of POST to avoid accidentally writing data.
 	 */
 	async checkSession(): Promise<boolean> {
 		try {
+			// Use GET request to check auth status without triggering any writes
 			const res = await fetch('/api/games', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ games: [] }),
+				method: 'GET',
 				credentials: 'include'
 			});
 
@@ -279,8 +277,7 @@ class EditorStore {
 				return false;
 			}
 
-			// Any other response (including 400 for empty games) means session is valid
-			// We don't want to actually save, so we just check auth
+			// Any successful response means session is valid
 			return true;
 		} catch {
 			// Network error - assume session is still valid
@@ -453,7 +450,7 @@ class EditorStore {
 	// For backwards compatibility
 	subscribe(fn: (value: EditorState) => void): () => void {
 		fn(this._state);
-		return () => {};
+		return () => { };
 	}
 }
 
