@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
+	import { invalidateAll } from '$app/navigation';
 	import { editorStore } from '$lib/stores/editor.svelte';
+	import { gamesStore } from '$lib/stores/games.svelte';
 	import type { Game } from '$lib/types/game';
 
 	interface Props {
@@ -10,10 +13,24 @@
 	}
 
 	let { game, open = $bindable(false), onConfirm, onCancel }: Props = $props();
+	let saving = $state(false);
 
-	function handleConfirm() {
+	async function handleConfirm() {
 		if (game) {
 			editorStore.deletePendingGame(game.id);
+
+			// In dev mode: save immediately to local JSON file
+			if (dev) {
+				saving = true;
+				const currentGames = gamesStore.games;
+				const finalGames = editorStore.buildFinalGames(currentGames);
+				const success = await editorStore.saveLocally(currentGames);
+				if (success) {
+					gamesStore.setAllGames(finalGames);
+					await invalidateAll();
+				}
+				saving = false;
+			}
 		}
 		open = false;
 		onConfirm?.();

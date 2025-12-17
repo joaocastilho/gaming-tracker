@@ -260,14 +260,17 @@ class EditorStore {
 	}
 
 	/**
-	 * Check if session is still valid by making a lightweight GET request.
-	 * Uses GET instead of POST to avoid accidentally writing data.
+	 * Check if session is still valid by making a lightweight POST request.
+	 * The API will return 401 if session is expired, 400 for invalid payload (which means auth passed).
 	 */
 	async checkSession(): Promise<boolean> {
 		try {
-			// Use GET request to check auth status without triggering any writes
+			// Use POST request with minimal invalid payload to check auth status
+			// If we get 401, session is invalid. If we get 400 (validation error), session is valid.
 			const res = await fetch('/api/games', {
-				method: 'GET',
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({}), // Empty payload will fail validation but pass auth
 				credentials: 'include'
 			});
 
@@ -277,7 +280,7 @@ class EditorStore {
 				return false;
 			}
 
-			// Any successful response means session is valid
+			// Any other response (including 400 validation error) means session is valid
 			return true;
 		} catch {
 			// Network error - assume session is still valid
@@ -450,7 +453,7 @@ class EditorStore {
 	// For backwards compatibility
 	subscribe(fn: (value: EditorState) => void): () => void {
 		fn(this._state);
-		return () => {};
+		return () => { };
 	}
 }
 

@@ -1,12 +1,7 @@
 name = "gaming-tracker"
 pages_build_output_dir = "build/"
 
-[[kv_namespaces]]
-binding = "GAMES_KV"
-id = "a77aa7a697de43be858e54891a0e9721"
-
 [vars]
-ENABLE_RATE_LIMITING = "true"
 GH_REPO_OWNER = "joaocastilho"
 GH_REPO_NAME = "gaming-tracker"
 GH_FILE_PATH = "static/games.json"

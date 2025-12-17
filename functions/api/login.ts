@@ -1,14 +1,7 @@
-import { checkRateLimit } from '../utils/rateLimit';
-
 type Env = {
 	EDITOR_USERNAME?: string;
 	EDITOR_PASSWORD?: string;
 	SESSION_SECRET?: string;
-	GAMES_KV?: {
-		get(key: string): Promise<string | null>;
-		put(key: string, value: string): Promise<void>;
-	};
-	ENABLE_RATE_LIMITING?: string;
 };
 
 async function hmacSign(payload: string, secret: string): Promise<string> {
@@ -34,25 +27,6 @@ async function hmacSign(payload: string, secret: string): Promise<string> {
 
 export const onRequestPost = async ({ request, env }: { request: Request; env: Env }) => {
 	try {
-		if (env.ENABLE_RATE_LIMITING === 'true' && env.GAMES_KV) {
-			const ip =
-				request.headers.get('cf-connecting-ip') ||
-				request.headers.get('x-forwarded-for') ||
-				'unknown';
-
-			const rl = await checkRateLimit(env.GAMES_KV, ip, {
-				windowMs: 60_000,
-				max: 20,
-				prefix: 'rl:login'
-			});
-
-			if (!rl.allowed) {
-				return new Response(JSON.stringify({ error: 'Too many requests' }), {
-					status: 429,
-					headers: { 'Content-Type': 'application/json' }
-				});
-			}
-		}
 		const contentType = request.headers.get('content-type') || '';
 		if (!contentType.includes('application/json')) {
 			console.warn(

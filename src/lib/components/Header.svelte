@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
 	import { navigateTo, navigateToAndReset } from '$lib/utils/navigationUtils';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
@@ -123,7 +124,7 @@
 				</button>
 			{/if}
 
-			{#if isEditor && hasPending}
+			{#if isEditor && hasPending && !dev}
 				<button
 					type="button"
 					class="editor-button discard-button"
