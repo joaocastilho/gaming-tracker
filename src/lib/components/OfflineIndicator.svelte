@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { offlineStore } from '$lib/stores/offline.svelte';
-	import { CloudOff, WifiOff, CloudUpload, CheckCircle2 } from 'lucide-svelte';
+	import { CloudOff, WifiOff, CloudUpload } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
 
 	let isOnline = $derived(offlineStore.isOnline);

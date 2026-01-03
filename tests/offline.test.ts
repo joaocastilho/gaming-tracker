@@ -45,7 +45,6 @@ vi.mock('$lib/stores/games.svelte', () => ({
 
 import { idb } from '$lib/utils/idb';
 import { editorStore } from '$lib/stores/editor.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
 
 const mockIdb = vi.mocked(idb);
 const mockEditorStore = vi.mocked(editorStore);

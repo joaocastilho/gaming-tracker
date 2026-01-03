@@ -781,7 +781,7 @@
 			</div>
 		</main>
 
-		<DetailModal />
+		<DetailModal onEditGame={handleEditGame} onDeleteGame={handleDeleteGame} />
 
 		{#if editorModalOpen}
 			<GameEditorModal

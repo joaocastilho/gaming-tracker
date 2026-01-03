@@ -19,8 +19,20 @@
 		ChevronLeft,
 		ChevronRight,
 		Link,
-		Users
+		Users,
+		Pencil,
+		Trash2
 	} from 'lucide-svelte';
+
+	interface Props {
+		onEditGame?: (game: Game) => void;
+		onDeleteGame?: (game: Game) => void;
+	}
+
+	let { onEditGame, onDeleteGame }: Props = $props();
+
+	import { editorStore } from '$lib/stores/editor.svelte';
+	let isEditor = $derived(editorStore.editorMode);
 
 	// Platform detection for iOS/Android-specific animations
 	let isIOS = $state(false);
@@ -1248,6 +1260,35 @@
 								<Link size={18} />
 							{/if}
 						</button>
+
+						{#if isEditor && $modalStore.activeGame}
+							<div class="absolute top-3 left-3 z-30 flex gap-2 md:hidden">
+								<button
+									onclick={(e) => {
+										e.stopPropagation();
+										const game = $modalStore.activeGame;
+										modalStore.closeModal();
+										if (game) onEditGame?.(game);
+									}}
+									class="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-black/70"
+									aria-label="Edit game"
+								>
+									<Pencil size={18} />
+								</button>
+								<button
+									onclick={(e) => {
+										e.stopPropagation();
+										const game = $modalStore.activeGame;
+										modalStore.closeModal();
+										if (game) onDeleteGame?.(game);
+									}}
+									class="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-black/70"
+									aria-label="Delete game"
+								>
+									<Trash2 size={18} class="text-red-400" />
+								</button>
+							</div>
+						{/if}
 					</div>
 				</div>
 
@@ -1275,28 +1316,61 @@
 							{/if}
 						</h1>
 
-						<button
-							onclick={shareGame}
-							class="mr-10 hidden h-8 cursor-pointer items-center justify-center rounded-full bg-transparent transition-colors hover:bg-black/10 md:flex dark:bg-transparent dark:hover:bg-white/10 {linkToGame
-								? 'w-auto px-3'
-								: 'w-8'}"
-							aria-label="Share game"
-						>
-							{#if linkToGame}
-								<span
-									style="color: var(--color-text-primary)"
-									class="text-sm font-medium text-gray-700 dark:text-gray-200"
-								>
-									{linkToGame}
-								</span>
-							{:else}
-								<Link
-									size={18}
-									style="color: var(--color-text-primary)"
-									class="text-gray-700 dark:text-gray-200"
-								/>
+						<div class="flex items-center md:mr-10">
+							{#if isEditor && $modalStore.activeGame}
+								<div class="mr-2 hidden items-center gap-1 md:flex">
+									<button
+										onclick={(e) => {
+											e.stopPropagation();
+											const game = $modalStore.activeGame;
+											modalStore.closeModal();
+											if (game) onEditGame?.(game);
+										}}
+										class="flex h-8 w-8 items-center justify-center rounded-full bg-transparent transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+										title="Edit game"
+										aria-label="Edit {$modalStore.activeGame.title}"
+									>
+										<Pencil size={18} style="color: var(--color-text-primary)" />
+									</button>
+									<button
+										onclick={(e) => {
+											e.stopPropagation();
+											const game = $modalStore.activeGame;
+											modalStore.closeModal();
+											if (game) onDeleteGame?.(game);
+										}}
+										class="flex h-8 w-8 items-center justify-center rounded-full bg-transparent transition-colors hover:bg-red-500/10"
+										title="Delete game"
+										aria-label="Delete {$modalStore.activeGame.title}"
+									>
+										<Trash2 size={18} class="text-red-500" />
+									</button>
+								</div>
 							{/if}
-						</button>
+
+							<button
+								onclick={shareGame}
+								class="hidden h-8 cursor-pointer items-center justify-center rounded-full bg-transparent transition-colors hover:bg-black/10 md:flex dark:bg-transparent dark:hover:bg-white/10 {linkToGame
+									? 'w-auto px-3'
+									: 'w-8'}"
+								aria-label="Share game"
+							>
+								{#if linkToGame}
+									<span
+										style="color: var(--color-text-primary)"
+										class="text-sm font-medium text-gray-700 dark:text-gray-200"
+									>
+										{linkToGame}
+									</span>
+								{:else}
+									<Link
+										size={18}
+										style="color: var(--color-text-primary)"
+										class="text-gray-700 dark:text-gray-200"
+									/>
+								{/if}
+							</button>
+						</div>
 					</div>
 
 					<div class="mb-3 flex items-center justify-between md:mb-4">

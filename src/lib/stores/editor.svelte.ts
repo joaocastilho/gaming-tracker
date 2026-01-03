@@ -3,7 +3,6 @@ import { browser, dev } from '$app/environment';
 import type { Game } from '$lib/types/game';
 import { idb } from '$lib/utils/idb';
 import { offlineStore } from './offline.svelte';
-import { gamesStore } from './games.svelte';
 
 const SESSION_STORAGE_KEY = 'gaming-tracker-editor-mode';
 
