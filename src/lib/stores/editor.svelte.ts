@@ -1,6 +1,9 @@
 import { untrack } from 'svelte';
 import { browser, dev } from '$app/environment';
 import type { Game } from '$lib/types/game';
+import { idb } from '$lib/utils/idb';
+import { offlineStore } from './offline.svelte';
+import { gamesStore } from './games.svelte';
 
 const SESSION_STORAGE_KEY = 'gaming-tracker-editor-mode';
 
@@ -186,6 +189,20 @@ class EditorStore {
 	async applyAllChanges(currentGames: Game[]): Promise<boolean> {
 		if (!this.hasPendingChanges) {
 			return true;
+		}
+
+		if (browser && !navigator.onLine) {
+			const finalGames = this.buildFinalGames(currentGames);
+			try {
+				await idb.setPendingSync({ games: finalGames });
+				this.discardAllChanges();
+				// Notify the offline store
+				offlineStore.setHasPendingSync(true);
+				return true;
+			} catch (error) {
+				console.error('Failed to save changes offline:', error);
+				return false;
+			}
 		}
 
 		const finalGames = this.buildFinalGames(currentGames);

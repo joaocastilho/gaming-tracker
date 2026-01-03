@@ -9,6 +9,7 @@
 	import { editorStore } from '$lib/stores/editor.svelte';
 	import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn } from 'lucide-svelte';
 	import LoginModal from '$lib/components/LoginModal.svelte';
+	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
 	interface Props {
 		onAddGame?: () => void;
@@ -27,14 +28,12 @@
 		active: boolean;
 	};
 
-	// Derive editor state
 	let isEditor = $derived(editorStore.editorMode);
 	let hasPending = $derived(editorStore.hasPendingChanges);
 	let pendingCount = $derived(editorStore.pendingChangesCount);
 	let isSaving = $derived(editorStore.savePending);
 	let loginModalOpen = $state(false);
 
-	// Use $derived to reactively compute navItems whenever activeTab or counts change
 	let navItems = $derived.by(() => {
 		const counts = filteredCountsStore.counts;
 		const currentTab = appStore.activeTab;
@@ -118,6 +117,8 @@
 		</nav>
 
 		<div class="header-right">
+			<OfflineIndicator />
+
 			{#if isEditor && appStore.activeTab !== 'tierlist'}
 				<button
 					type="button"

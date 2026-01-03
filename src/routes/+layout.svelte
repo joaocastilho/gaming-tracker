@@ -64,6 +64,8 @@
 	});
 
 	onMount(() => {
+		gamesStore.loadFromIDB();
+
 		if (data.games) {
 			// Handle promise case (client-side only)
 			if (data.games instanceof Promise) {

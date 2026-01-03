@@ -2,8 +2,16 @@ const CACHE_NAME = 'gaming-tracker-v1';
 const STATIC_CACHE_NAME = 'gaming-tracker-static-v1';
 const IMAGE_CACHE_NAME = 'gaming-tracker-images-v1';
 
-// Assets to cache on install
-const STATIC_ASSETS = ['/', '/games.json'];
+const STATIC_ASSETS = [
+	'/',
+	'/games.json',
+	'/manifest.webmanifest',
+	'/favicon.ico',
+	'/logo.png',
+	'/covers/placeholder_cover.webp',
+	'/covers/placeholder_cover-200w.webp',
+	'/covers/placeholder_cover-detail.webp'
+];
 
 // Install event - cache static assets with optimized strategy
 self.addEventListener('install', (event) => {
