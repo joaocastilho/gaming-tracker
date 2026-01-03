@@ -9478,15 +9478,16 @@
       "year": 1998,
       "genre": "Action Adventure",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Completed",
       "coverImage": "covers/the-legend-of-zelda-ocarina-of-time.webp",
-      "playtime": "27h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "38h 8m",
+      "finishedDate": "03/01/2026",
+      "ratingPresentation": 9,
+      "ratingStory": 7,
+      "ratingGameplay": 8,
+      "score": 16,
+      "tier": "B - Great",
+      "sortPriority": null
     },
     {
       "id": "the-legend-of-zelda-majoras-mask",
@@ -9594,6 +9595,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2025-12-17T14:10:32.979Z"
+    "lastUpdated": "2026-01-03T22:07:11.433Z"
   }
 }
