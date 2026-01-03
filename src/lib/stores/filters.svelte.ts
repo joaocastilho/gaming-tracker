@@ -130,6 +130,10 @@ class FiltersStore {
 		return hasSearch || hasPlatforms || hasGenres || hasStatuses || hasTiers || hasCoOp;
 	}
 
+	isSortModified(): boolean {
+		return (this._state?.sortOption ?? null) !== null;
+	}
+
 	resetFilters(): void {
 		// Guard: only reset if not already in initial state
 		if (!this._state) return;

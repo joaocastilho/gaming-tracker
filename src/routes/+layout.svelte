@@ -300,13 +300,7 @@
 	function resetFilters() {
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
-
-		const pathname = page.url.pathname;
-		if (pathname === '/' || pathname === '/planned') {
-			filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
-		} else if (pathname === '/completed') {
-			filtersStore.setSort({ key: 'finishedDate', direction: 'desc' });
-		}
+		filtersStore.setSort(null);
 
 		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 	}
@@ -521,6 +515,7 @@
 	}
 
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
+	let canReset = $derived(hasActiveFilters || filtersStore.isSortModified());
 
 	// Handle mobile search input with debounce
 	let mobileSearchDebounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -700,12 +695,12 @@
 									<span class="pipe-separator">|</span>
 									<RatingsSort />
 									<button
-										class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+										class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex h-[44px] w-[44px] items-center justify-center rounded-md transition-colors"
+										class:invisible={!canReset}
 										title="Reset all filters"
 										onclick={resetFilters}
 									>
 										<RotateCcw size={18} />
-										Reset
 									</button>
 								</div>
 							</div>
@@ -730,12 +725,12 @@
 								Try adjusting or clearing your filters to see more games.
 							</p>
 							<button
-								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex h-[44px] w-[44px] items-center justify-center rounded-md transition-colors"
 								type="button"
 								onclick={resetFilters}
+								title="Reset all filters"
 							>
 								<RotateCcw size={18} />
-								Reset
 							</button>
 						</div>
 					{:else}
@@ -760,12 +755,12 @@
 								Try adjusting or clearing your filters to see more games.
 							</p>
 							<button
-								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex min-h-[44px] items-center gap-1 rounded-md px-3 py-2 text-sm transition-colors"
+								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex h-[44px] w-[44px] items-center justify-center rounded-md transition-colors"
 								type="button"
 								onclick={resetFilters}
+								title="Reset all filters"
 							>
 								<RotateCcw size={18} />
-								Reset
 							</button>
 						</div>
 					{:else}
