@@ -1,8 +1,4 @@
-/**
- * Completed Games Cache - Svelte 5 Runes
- * Cache for completed games sorted by finished date
- * This prevents re-sorting on every tab switch to the completed view
- */
+import { untrack } from 'svelte';
 import type { Game } from '$lib/types/game';
 
 interface CompletedGamesCacheState {
@@ -123,10 +119,25 @@ class CompletedGamesCacheStore {
 		return this._cache;
 	}
 
-	// For backwards compatibility
+	// For backwards compatibility with $completedGamesCache subscription
 	subscribe(fn: (value: CompletedGamesCacheState | null) => void): () => void {
 		fn(this._cache);
-		return () => {};
+
+		const root = $effect.root(() => {
+			let first = true;
+			$effect(() => {
+				const state = this._cache;
+				if (first) {
+					first = false;
+					return;
+				}
+				untrack(() => fn(state));
+			});
+		});
+
+		return () => {
+			root();
+		};
 	}
 }
 

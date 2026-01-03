@@ -1,7 +1,4 @@
-/**
- * Editor Store - Svelte 5 Runes
- * Manages admin editor state, login, save operations, and batch editing
- */
+import { untrack } from 'svelte';
 import { browser, dev } from '$app/environment';
 import type { Game } from '$lib/types/game';
 
@@ -459,10 +456,25 @@ class EditorStore {
 		}
 	}
 
-	// For backwards compatibility
+	// For backwards compatibility with $editorStore subscription
 	subscribe(fn: (value: EditorState) => void): () => void {
 		fn(this._state);
-		return () => {};
+
+		const root = $effect.root(() => {
+			let first = true;
+			$effect(() => {
+				const state = this._state;
+				if (first) {
+					first = false;
+					return;
+				}
+				untrack(() => fn(state));
+			});
+		});
+
+		return () => {
+			root();
+		};
 	}
 }
 

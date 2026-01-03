@@ -64,9 +64,19 @@ class FilteredGamesStore {
 
 		this.updateCache(cacheKey, sortedGames);
 
-		// Update counts
-		// Apply all filters EXCEPT the tab filter, so counts show games in each category
-		// that match the active filters (search, platform, genre, tier, coOp)
+		return sortedGames;
+	}
+
+	/**
+	 * Force update the counts. This should be called when games data changes
+	 * or when filters change, but outside of the getter to avoid side effects.
+	 */
+	updateCounts() {
+		const games = gamesStore.games;
+		const filters = filtersStore.state;
+
+		if (!games) return;
+
 		const gamesWithFiltersApplied = this.filterGamesWithoutTabFilter(games, filters);
 
 		const total = gamesWithFiltersApplied.length;
@@ -79,8 +89,6 @@ class FilteredGamesStore {
 			planned,
 			tierlist: null
 		});
-
-		return sortedGames;
 	}
 
 	private createCacheKey(
@@ -379,13 +387,16 @@ class FilteredGamesSubscription {
 
 	constructor() {
 		// Subscribe to underlying stores to trigger updates
-		gamesStore.subscribe(() => this.notify());
-		filtersStore.subscribe(() => this.notify());
+		gamesStore.subscribe(() => {
+			filteredGamesStore.updateCounts();
+			this.notify();
+		});
+		filtersStore.subscribe(() => {
+			filteredGamesStore.updateCounts();
+			this.notify();
+		});
 		// Also listen to appStore changes
-		if (typeof window !== 'undefined') {
-			// Poll appStore since it doesn't have subscribe
-			setInterval(() => this.notify(), 100);
-		}
+		appStore.subscribe(() => this.notify());
 	}
 
 	private notify() {

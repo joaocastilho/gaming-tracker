@@ -1,3 +1,8 @@
+<script module>
+	let canvasSingleton: HTMLCanvasElement;
+	let contextSingleton: CanvasRenderingContext2D | null;
+</script>
+
 <script lang="ts">
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { filtersStore } from '$lib/stores/filters.svelte';
@@ -63,8 +68,6 @@
 
 	let totalScore = $derived(game.score);
 
-	let canvas: HTMLCanvasElement;
-	let context: CanvasRenderingContext2D | null;
 	let cachedFont: string = '';
 
 	function getFont(node: HTMLElement) {
@@ -77,13 +80,13 @@
 
 	function getTextWidth(text: string, font: string): number {
 		if (typeof document === 'undefined') return 0;
-		if (!canvas) {
-			canvas = document.createElement('canvas');
-			context = canvas.getContext('2d');
+		if (!canvasSingleton) {
+			canvasSingleton = document.createElement('canvas');
+			contextSingleton = canvasSingleton.getContext('2d');
 		}
-		if (context) {
-			context.font = font;
-			return context.measureText(text).width;
+		if (contextSingleton) {
+			contextSingleton.font = font;
+			return contextSingleton.measureText(text).width;
 		}
 		return 0;
 	}

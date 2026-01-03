@@ -79,9 +79,10 @@
 		}
 	});
 
-	onMount(() => {
+	$effect(() => {
 		if (browser && 'serviceWorker' in navigator) {
 			const swPath = '/service-worker.js';
+			let intervalId: any;
 
 			navigator.serviceWorker
 				.register(swPath, {
@@ -100,9 +101,13 @@
 						}
 					};
 
-					setInterval(checkForUpdates, 60000);
+					intervalId = setInterval(checkForUpdates, 60000);
 				})
 				.catch(() => {});
+
+			return () => {
+				if (intervalId) clearInterval(intervalId);
+			};
 		}
 	});
 
