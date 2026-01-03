@@ -260,6 +260,10 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			delete (game as Record<string, unknown>).mainTitle;
 			delete (game as Record<string, unknown>).subtitle;
 
+			if (game.sortPriority === null || game.sortPriority === undefined) {
+				delete game.sortPriority;
+			}
+
 			return game;
 		});
 

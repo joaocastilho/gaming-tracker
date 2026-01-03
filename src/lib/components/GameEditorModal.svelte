@@ -136,8 +136,7 @@
 				score: null,
 				tier: null,
 				playtime: '0h 0m',
-				finishedDate: null,
-				sortPriority: null
+				finishedDate: null
 			} as Game;
 			sortPriorityInput = null;
 		}
@@ -217,7 +216,7 @@
 			game.ratingGameplay = null;
 			game.score = null;
 			game.tier = null;
-			game.sortPriority = null;
+			delete game.sortPriority;
 		}
 
 		if (!game.title) return 'Title is required.';

@@ -49,6 +49,10 @@ export async function POST({ request }) {
 			delete gameHeader.mainTitle;
 			delete gameHeader.subtitle;
 
+			if (gameHeader.sortPriority === null || gameHeader.sortPriority === undefined) {
+				delete gameHeader.sortPriority;
+			}
+
 			return gameHeader;
 		});
 
