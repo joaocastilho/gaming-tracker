@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import type { Game } from '$lib/types/game';
 import { transformGameData } from '$lib/utils/dataTransformer';
 import { createGameSlug } from '$lib/utils/slugUtils';
-import { idb } from '$lib/utils/idb';
+import { db } from '$lib/db';
 import { completedGamesCache } from './completedGamesCache.svelte';
 
 class GamesStore {
@@ -60,11 +60,10 @@ class GamesStore {
 
 			this.games = normalized;
 
-			// Cache to IDB
 			if (browser && typeof indexedDB !== 'undefined') {
-				idb
-					.setGames(normalized)
-					.catch((err) => console.error('Failed to cache games to IDB:', err));
+				db.games
+					.bulkPut(normalized)
+					.catch((err) => console.error('Failed to cache games to Dexie:', err));
 			}
 
 			if (normalized.length === 0) {
@@ -103,27 +102,23 @@ class GamesStore {
 		this.games = games;
 		completedGamesCache.updateCache(this._games);
 
-		// Cache to IDB
 		if (browser && typeof indexedDB !== 'undefined') {
-			idb.setGames(games).catch((err) => console.error('Failed to cache games to IDB:', err));
+			db.games.bulkPut(games).catch((err) => console.error('Failed to cache games to Dexie:', err));
 		}
 	}
 
-	/**
-	 * Load games from IndexedDB for instant display
-	 */
 	async loadFromIDB(): Promise<void> {
 		if (typeof window === 'undefined') return;
 
 		try {
-			const cachedGames = await idb.getGames();
+			const cachedGames = await db.games.toArray();
 			if (cachedGames && cachedGames.length > 0 && this._games.length === 0) {
 				this._games = cachedGames;
 				this.loading = false;
 				completedGamesCache.updateCache(cachedGames);
 			}
 		} catch (err) {
-			console.error('Failed to load games from IDB:', err);
+			console.error('Failed to load games from Dexie:', err);
 		}
 	}
 

@@ -1,80 +1,25 @@
 import { vi } from 'vitest';
 
-// Mock SvelteKit navigation
-vi.mock('$app/navigation', () => ({
-	goto: () => Promise.resolve(),
-	invalidate: () => Promise.resolve(),
-	invalidateAll: () => Promise.resolve(),
-	replaceState: () => Promise.resolve(),
-	pushState: () => Promise.resolve(),
-	beforeNavigate: () => {},
-	afterNavigate: () => {},
-	disableScrollHandling: () => {},
-	preloadData: () => Promise.resolve(),
-	preloadCode: () => Promise.resolve()
-}));
-
-// Mock FilterWorker
-vi.mock('$lib/workers/filterWorker.ts?worker', () => {
-	return {
-		default: class MockWorker {
-			postMessage() {}
-			onmessage() {}
-			terminate() {}
-		}
-	};
+// Mock window.scrollTo
+Object.defineProperty(window, 'scrollTo', {
+	value: vi.fn(),
+	writable: true
 });
 
-// Mock Svelte stores if needed, but they should work natively
-// We might need to mock $app/stores if used
-vi.mock('$app/stores', () => ({
-	page: { subscribe: () => {} },
-	navigating: { subscribe: () => {} },
-	updated: { subscribe: () => {} }
-}));
+// Mock window.scrollIntoView if needed (often goes with scrollTo)
+Element.prototype.scrollIntoView = vi.fn();
 
-// Mock window and document globally for all tests
-if (typeof global.window === 'undefined') {
-	global.window = {
-		location: {
-			origin: 'http://localhost',
-			href: 'http://localhost/',
-			pathname: '/',
-			search: ''
-		},
-		scrollTo: () => {},
-		localStorage: {
-			getItem: () => null,
-			setItem: () => {}
-		}
-	} as unknown as Window & typeof globalThis;
-}
-
-if (typeof global.localStorage === 'undefined') {
-	global.localStorage = {
-		getItem: () => null,
-		setItem: () => {},
-		removeItem: () => {},
-		clear: () => {},
-		key: () => null,
-		length: 0
-	} as unknown as Storage;
-}
-
-if (typeof global.document === 'undefined') {
-	global.document = {
-		documentElement: {
-			classList: {
-				add: () => {},
-				remove: () => {}
-			}
-		},
-		body: {
-			classList: {
-				add: () => {},
-				remove: () => {}
-			},
-			style: {}
-		}
-	} as unknown as Document;
-}
+// Mock window.matchMedia if not already present (jsdom often lacks this)
+Object.defineProperty(window, 'matchMedia', {
+	writable: true,
+	value: vi.fn().mockImplementation((query) => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addListener: vi.fn(), // deprecated
+		removeListener: vi.fn(), // deprecated
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		dispatchEvent: vi.fn()
+	}))
+});

@@ -53,7 +53,6 @@
 
 	// Placeholder constants
 	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
-	const PLACEHOLDER_SRC_TINY = 'covers/placeholder_cover-200w.webp';
 	const PLACEHOLDER_SRCSET =
 		'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
 	// Data URI fallback for when network is completely unavailable

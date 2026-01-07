@@ -8,24 +8,29 @@ const { mockNavigator, mockWindow } = vi.hoisted(() => ({
 vi.stubGlobal('navigator', mockNavigator);
 vi.stubGlobal('window', mockWindow);
 
-// Mock IndexedDB
-vi.mock('$lib/utils/idb', () => ({
-	idb: {
-		getGames: vi.fn(),
-		setGames: vi.fn(),
-		getPendingSync: vi.fn(),
-		setPendingSync: vi.fn(),
-		clearPendingSync: vi.fn()
+vi.mock('$lib/db', () => ({
+	db: {
+		games: {
+			toArray: vi.fn(),
+			bulkPut: vi.fn(),
+			clear: vi.fn(),
+			get: vi.fn(),
+			put: vi.fn(),
+			delete: vi.fn()
+		},
+		sync_queue: {
+			get: vi.fn(),
+			put: vi.fn(),
+			delete: vi.fn()
+		}
 	}
 }));
 
-// Mock browser environment for $app/environment
 vi.mock('$app/environment', () => ({
 	browser: true,
 	dev: false
 }));
 
-// Mock editorStore
 vi.mock('$lib/stores/editor.svelte', () => ({
 	editorStore: {
 		editorMode: true,
@@ -36,27 +41,30 @@ vi.mock('$lib/stores/editor.svelte', () => ({
 	}
 }));
 
-// Mock gamesStore
 vi.mock('$lib/stores/games.svelte', () => ({
 	gamesStore: {
 		setAllGames: vi.fn()
 	}
 }));
 
-import { idb } from '$lib/utils/idb';
+import { db } from '$lib/db';
 import { editorStore } from '$lib/stores/editor.svelte';
 
-const mockIdb = vi.mocked(idb);
-const mockEditorStore = vi.mocked(editorStore);
+// Cast to any to avoid complex type mocking issues
+const mockDb = db as any;
+const mockEditorStore = editorStore as any;
 
 describe('Offline Support Logic', () => {
-	let offlineStore: any;
+	let offlineStore: {
+		isOnline: boolean;
+		hasPendingSync: boolean;
+		checkPendingSync: () => Promise<void>;
+	};
 
 	beforeEach(async () => {
 		vi.resetModules();
 		vi.clearAllMocks();
 		mockNavigator.onLine = true;
-		// Dynamically import to ensure constructor runs AFTER mocks
 		const module = await import('../src/lib/stores/offline.svelte');
 		offlineStore = module.offlineStore;
 	});
@@ -81,16 +89,16 @@ describe('Offline Support Logic', () => {
 	});
 
 	it('should check for pending sync on initialization', async () => {
-		mockIdb.getPendingSync.mockResolvedValueOnce({ games: [] });
+		mockDb.sync_queue.get.mockResolvedValueOnce({ games: [] });
 
 		await offlineStore.checkPendingSync();
 
-		expect(mockIdb.getPendingSync).toHaveBeenCalled();
+		expect(mockDb.sync_queue.get).toHaveBeenCalledWith('pending');
 		expect(offlineStore.hasPendingSync).toBe(true);
 	});
 
 	it('should try to sync when coming online if there is pending sync', async () => {
-		mockIdb.getPendingSync.mockResolvedValueOnce({ games: [{ id: '1', title: 'Test' }] } as any);
+		mockDb.sync_queue.get.mockResolvedValueOnce({ games: [{ id: '1', title: 'Test' }] } as any);
 		mockEditorStore.saveGames.mockResolvedValueOnce(true);
 
 		const onlineHandler = mockWindow.addEventListener.mock.calls.find(
@@ -98,13 +106,10 @@ describe('Offline Support Logic', () => {
 		)[1];
 
 		await onlineHandler();
-
-		// Note: trySync is called inside onlineHandler
-		// Depending on timing/promises, we might need to wait
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		expect(mockEditorStore.saveGames).toHaveBeenCalled();
-		expect(mockIdb.clearPendingSync).toHaveBeenCalled();
+		expect(mockDb.sync_queue.delete).toHaveBeenCalledWith('pending');
 		expect(offlineStore.hasPendingSync).toBe(false);
 	});
 });
