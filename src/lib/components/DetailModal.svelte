@@ -1214,7 +1214,7 @@
 		{#if currentGameIndex > 0}
 			<button
 				onclick={navigateToPrevious}
-				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
+				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
 				style="left: calc(50% - 500px - 120px);"
 				aria-label="Previous game"
 			>
@@ -1227,7 +1227,7 @@
 		})()}
 			<button
 				onclick={navigateToNext}
-				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 backdrop-blur-sm transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
+				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
 				style="right: calc(50% - 500px - 120px);"
 				aria-label="Next game"
 			>
@@ -1822,12 +1822,10 @@
 		z-index: 2;
 		opacity: 0;
 		transition: opacity 0.5s ease-in-out;
-		filter: blur(2px);
 	}
 
 	.modal-cover-image.loaded {
 		opacity: 1;
-		filter: blur(0px);
 	}
 
 	@keyframes skeleton-shimmer {
