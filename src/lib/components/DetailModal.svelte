@@ -144,6 +144,11 @@
 	function handleTouchStart(e: TouchEvent) {
 		if (isSwipeTransitioning || isZoomAnimating) return;
 
+		// Dismiss swipe hint when user starts any touch gesture
+		if (showSwipeIndicator) {
+			dismissSwipeHint();
+		}
+
 		const touch = e.touches[0];
 		touchStartX = touch.screenX;
 		touchStartY = touch.screenY;
@@ -2184,8 +2189,7 @@
 		justify-content: center;
 		background: transparent;
 		z-index: 61;
-		pointer-events: auto;
-		cursor: pointer;
+		pointer-events: none;
 	}
 
 	.swipe-hint-content {
@@ -2198,6 +2202,8 @@
 		border-radius: 12px;
 		backdrop-filter: blur(12px);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		pointer-events: auto;
+		cursor: pointer;
 	}
 
 	.swipe-hint-svg {
