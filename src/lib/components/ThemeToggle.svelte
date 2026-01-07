@@ -61,32 +61,30 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border: none;
-		border-radius: 8px;
-		background: transparent;
-		color: inherit;
+		width: 36px;
+		height: 36px;
+		border: 1px solid var(--color-border);
+		border-radius: 50%;
+		background: var(--color-surface);
+		color: var(--color-text-secondary);
 		cursor: pointer;
 		transition: all 0.2s ease;
 		position: relative;
 		overflow: hidden;
 		outline: none;
-		color: #8b92a8;
 	}
 
 	.theme-toggle:hover {
-		background-color: rgba(42, 47, 58, 0.8);
+		border-color: var(--color-accent);
+		background-color: var(--color-accent);
 		color: #ffffff;
-	}
-
-	:global(.light) .theme-toggle {
-		color: #6b7280;
+		transform: translateY(-1px);
 	}
 
 	:global(.light) .theme-toggle:hover {
-		background-color: #e9decd;
-		color: #1a1a1a;
+		border-color: var(--color-accent);
+		background-color: var(--color-accent);
+		color: #ffffff;
 	}
 
 	.theme-toggle:focus {

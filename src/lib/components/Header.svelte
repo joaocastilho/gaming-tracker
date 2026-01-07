@@ -175,8 +175,8 @@
 				</button>
 			{/if}
 
-			<div class="filter-toggle-wrapper hidden md:block">
-				{#if appStore.activeTab !== 'tierlist'}
+			{#if appStore.activeTab !== 'tierlist'}
+				<div class="filter-toggle-wrapper hidden md:block">
 					<button
 						type="button"
 						class="filter-toggle-button"
@@ -192,8 +192,8 @@
 							style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
 						/>
 					</button>
-				{/if}
-			</div>
+				</div>
+			{/if}
 
 			<div class="theme-toggle-wrapper">
 				<ThemeToggle />
@@ -320,7 +320,6 @@
 	.theme-toggle-wrapper {
 		display: inline-flex;
 		align-items: center;
-		transform: scale(1.2);
 		transform-origin: center right;
 	}
 
@@ -490,29 +489,21 @@
 		background: rgba(255, 255, 255, 0.25);
 	}
 
-	.logout-button {
-		border-color: rgba(156, 163, 175, 0.4);
-		background: rgba(156, 163, 175, 0.12);
-		color: #9ca3af;
-		padding: 6px 8px;
-	}
-
-	.logout-button:hover:not(:disabled) {
-		background: #6b7280;
-		color: white;
-		border-color: #6b7280;
-	}
-
+	.logout-button,
 	.login-button {
-		border-color: rgba(99, 102, 241, 0.4);
-		background: rgba(99, 102, 241, 0.12);
-		color: #818cf8;
-		padding: 6px 8px;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		border-radius: 50%;
+		border-color: var(--color-border);
+		background: var(--color-surface);
+		color: var(--color-text-secondary);
 	}
 
+	.logout-button:hover:not(:disabled),
 	.login-button:hover:not(:disabled) {
-		background: #6366f1;
+		background: var(--color-accent);
 		color: white;
-		border-color: #6366f1;
+		border-color: var(--color-accent);
 	}
 </style>
