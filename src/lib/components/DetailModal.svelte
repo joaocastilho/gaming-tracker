@@ -122,6 +122,15 @@
 	);
 	const detailImageSizes = $derived(generateSizes('modal'));
 
+	// Reset loaded state when game changes for smooth image transition
+	$effect(() => {
+		const gameId = $modalStore.activeGame?.id;
+		if (gameId && modalImageElement) {
+			// Remove loaded class immediately so the skeleton shows
+			modalImageElement.classList.remove('loaded');
+		}
+	});
+
 	let linkToGame = $state('');
 	let focusableElements = $state<HTMLElement[]>([]);
 	let firstFocusableElement = $state<HTMLElement>();
@@ -1238,21 +1247,19 @@
 							onclick={() => (isImageFullScreen = true)}
 							aria-label="View full screen cover"
 						>
-							{#key $modalStore.activeGame?.id}
-								<img
-									bind:this={modalImageElement}
-									src={detailImageSrc}
-									srcset={detailImageSrcset}
-									sizes={detailImageSizes}
-									alt="{$modalStore.activeGame.title} cover"
-									class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
-									loading="eager"
-									fetchpriority="high"
-									decoding="async"
-									onload={handleImageLoad}
-									onerror={handleImageError}
-								/>
-							{/key}
+							<img
+								bind:this={modalImageElement}
+								src={detailImageSrc}
+								srcset={detailImageSrcset}
+								sizes={detailImageSizes}
+								alt="{$modalStore.activeGame.title} cover"
+								class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
+								loading="eager"
+								fetchpriority="high"
+								decoding="async"
+								onload={handleImageLoad}
+								onerror={handleImageError}
+							/>
 						</button>
 						<button
 							onclick={shareGame}
