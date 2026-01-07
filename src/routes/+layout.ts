@@ -2,7 +2,7 @@ import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch }) => {
 	try {
-		const res = await fetch(`/games.json?t=${Date.now()}`, {
+		const res = await fetch('/games.json', {
 			headers: { accept: 'application/json' }
 		});
 

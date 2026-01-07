@@ -7,6 +7,7 @@
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
+	import { offlineStore } from '$lib/stores/offline.svelte';
 	import type { Game } from '../types/game.js';
 	import { PLATFORM_COLORS, GENRE_COLORS } from '../utils/colorConstants.js';
 	import { getTierClass, getTierDisplayName } from '../utils/tierUtils.js';
@@ -48,8 +49,33 @@
 	}: Props = $props();
 
 	let isEditor = $derived(editorStore.editorMode);
+	let isOffline = $derived(!offlineStore.isOnline);
 
-	const imageSrcset = $derived(() => {
+	// Placeholder constants
+	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
+	const PLACEHOLDER_SRC_TINY = 'covers/placeholder_cover-200w.webp';
+	const PLACEHOLDER_SRCSET =
+		'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
+	// Data URI fallback for when network is completely unavailable
+	const OFFLINE_FALLBACK_DATA_URI =
+		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
+
+	// When offline, use data URI directly since network requests will fail
+	// (Service worker caching only works in production builds)
+	const effectiveImageSrc = $derived(() => {
+		if (isOffline) {
+			return OFFLINE_FALLBACK_DATA_URI;
+		}
+		if (size === 'tiny') {
+			return (game.coverImage || PLACEHOLDER_SRC).replace('.webp', '-200w.webp');
+		}
+		return game.coverImage || PLACEHOLDER_SRC;
+	});
+
+	const effectiveImageSrcset = $derived(() => {
+		if (isOffline) {
+			return ''; // Data URI doesn't need srcset
+		}
 		if (size === 'tiny') {
 			return generateTinySrcset(game.coverImage);
 		}
@@ -182,18 +208,22 @@
 
 	function handleImageError() {
 		if (imageElement) {
-			// Fallback to placeholder if not already there
-			if (!imageElement.src.includes('placeholder_cover.webp')) {
-				imageElement.src = 'covers/placeholder_cover.webp';
-				// Also update srcset to ensure browser doesn't retry invalid sources
-				imageElement.srcset =
-					'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
-			}
-
+			// Always mark as loaded and hide skeleton on error
 			imageElement.classList.add('loaded');
 			const skeleton = imageElement.previousElementSibling as HTMLElement;
 			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
 				skeleton.style.opacity = '0';
+			}
+
+			// Try placeholder, if already placeholder then use data URI fallback
+			if (!imageElement.src.includes('placeholder_cover')) {
+				imageElement.src = PLACEHOLDER_SRC;
+				imageElement.srcset = PLACEHOLDER_SRCSET;
+			} else {
+				// Placeholder also failed (not cached) - use inline SVG data URI
+				imageElement.src =
+					'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
+				imageElement.srcset = '';
 			}
 		}
 	}
@@ -316,10 +346,8 @@
 			<div class="skeleton-loader"></div>
 			<img
 				bind:this={imageElement}
-				src={size === 'tiny'
-					? (game.coverImage || 'covers/placeholder_cover.webp').replace('.webp', '-200w.webp')
-					: game.coverImage || 'covers/placeholder_cover.webp'}
-				srcset={imageSrcset()}
+				src={effectiveImageSrc()}
+				srcset={effectiveImageSrcset()}
 				sizes={imageSizes()}
 				alt=""
 				class="cover-image"

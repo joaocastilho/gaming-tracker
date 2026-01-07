@@ -32,7 +32,18 @@
 	let { onEditGame, onDeleteGame }: Props = $props();
 
 	import { editorStore } from '$lib/stores/editor.svelte';
+	import { offlineStore } from '$lib/stores/offline.svelte';
 	let isEditor = $derived(editorStore.editorMode);
+	let isOffline = $derived(!offlineStore.isOnline);
+
+	// Placeholder constants for offline mode
+	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
+	const PLACEHOLDER_DETAIL_SRC = 'covers/placeholder_cover-detail.webp';
+	const PLACEHOLDER_SRCSET =
+		'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
+	// Data URI fallback for when network is completely unavailable
+	const OFFLINE_FALLBACK_DATA_URI =
+		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
 
 	// Platform detection for iOS/Android-specific animations
 	let isIOS = $state(false);
@@ -110,17 +121,34 @@
 	let modalImageElement = $state<HTMLImageElement>();
 	let isImageFullScreen = $state(false);
 
-	const detailImageSrc = $derived(
-		($modalStore.activeGame?.coverImage || 'covers/placeholder_cover.webp').replace(
-			'.webp',
-			'-detail.webp'
-		)
-	);
+	// When offline, use data URI directly since network requests will fail
+	const detailImageSrc = $derived.by(() => {
+		if (isOffline) {
+			return OFFLINE_FALLBACK_DATA_URI;
+		}
+		const coverImage = $modalStore.activeGame?.coverImage;
+		return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
+	});
 
-	const detailImageSrcset = $derived(
-		detailImageSrc ? generateSrcset(detailImageSrc.replace('-detail.webp', '')) : ''
-	);
+	const detailImageSrcset = $derived.by(() => {
+		if (isOffline) {
+			return ''; // Data URI doesn't need srcset
+		}
+		const src = detailImageSrc;
+		if (src.includes('placeholder_cover')) {
+			return PLACEHOLDER_SRCSET;
+		}
+		return generateSrcset(src.replace('-detail.webp', ''));
+	});
 	const detailImageSizes = $derived(generateSizes('modal'));
+
+	// Helper to get preview image source (respects offline state)
+	function getPreviewImageSrc(coverImage: string | undefined): string {
+		if (isOffline) {
+			return OFFLINE_FALLBACK_DATA_URI;
+		}
+		return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
+	}
 
 	// Reset loaded state when game changes for smooth image transition
 	$effect(() => {
@@ -590,12 +618,19 @@
 
 	function handleImageError() {
 		if (modalImageElement) {
-			if (!modalImageElement.src.includes('placeholder_cover.webp')) {
-				modalImageElement.src = 'covers/placeholder_cover.webp';
-				modalImageElement.srcset =
-					'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
-			}
+			// Always mark as loaded first
 			modalImageElement.classList.add('loaded');
+
+			// Try placeholder, if already placeholder then use data URI fallback
+			if (!modalImageElement.src.includes('placeholder_cover')) {
+				modalImageElement.src = PLACEHOLDER_DETAIL_SRC;
+				modalImageElement.srcset = PLACEHOLDER_SRCSET;
+			} else {
+				// Placeholder also failed (not cached) - use inline SVG data URI
+				modalImageElement.src =
+					'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
+				modalImageElement.srcset = '';
+			}
 		}
 	}
 
@@ -837,16 +872,16 @@
 				<div class="parallax-modal-content">
 					<div class="parallax-image-section">
 						<img
-							src={(prevGamePreview.coverImage || 'covers/placeholder_cover.webp').replace(
-								'.webp',
-								'-detail.webp'
-							)}
+							src={getPreviewImageSrc(prevGamePreview.coverImage)}
 							alt={prevGamePreview.title}
 							class="parallax-preview-image"
 							onerror={(e) => {
 								const img = e.currentTarget as HTMLImageElement;
-								if (!img.src.includes('placeholder_cover')) {
-									img.src = 'covers/placeholder_cover-detail.webp';
+								if (!img.src.includes('placeholder_cover') && !img.src.startsWith('data:')) {
+									img.src = PLACEHOLDER_DETAIL_SRC;
+								} else if (!img.src.startsWith('data:')) {
+									img.src =
+										'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
 								}
 							}}
 						/>
@@ -1013,16 +1048,16 @@
 				<div class="parallax-modal-content">
 					<div class="parallax-image-section">
 						<img
-							src={(nextGamePreview.coverImage || 'covers/placeholder_cover.webp').replace(
-								'.webp',
-								'-detail.webp'
-							)}
+							src={getPreviewImageSrc(nextGamePreview.coverImage)}
 							alt={nextGamePreview.title}
 							class="parallax-preview-image"
 							onerror={(e) => {
 								const img = e.currentTarget as HTMLImageElement;
-								if (!img.src.includes('placeholder_cover')) {
-									img.src = 'covers/placeholder_cover-detail.webp';
+								if (!img.src.includes('placeholder_cover') && !img.src.startsWith('data:')) {
+									img.src = PLACEHOLDER_DETAIL_SRC;
+								} else if (!img.src.startsWith('data:')) {
+									img.src =
+										'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
 								}
 							}}
 						/>
