@@ -1233,19 +1233,21 @@
 							onclick={() => (isImageFullScreen = true)}
 							aria-label="View full screen cover"
 						>
-							<img
-								bind:this={modalImageElement}
-								src={detailImageSrc}
-								srcset={detailImageSrcset}
-								sizes={detailImageSizes}
-								alt="{$modalStore.activeGame.title} cover"
-								class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
-								loading="eager"
-								fetchpriority="high"
-								decoding="async"
-								onload={handleImageLoad}
-								onerror={handleImageError}
-							/>
+							{#key $modalStore.activeGame?.id}
+								<img
+									bind:this={modalImageElement}
+									src={detailImageSrc}
+									srcset={detailImageSrcset}
+									sizes={detailImageSizes}
+									alt="{$modalStore.activeGame.title} cover"
+									class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
+									loading="eager"
+									fetchpriority="high"
+									decoding="async"
+									onload={handleImageLoad}
+									onerror={handleImageError}
+								/>
+							{/key}
 						</button>
 						<button
 							onclick={shareGame}

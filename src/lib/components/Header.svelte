@@ -399,7 +399,13 @@
 			display: none;
 		}
 
+		/* Hide editor buttons on mobile - they're in the settings FAB menu */
 		.add-game-button,
+		.login-button,
+		.logout-button {
+			display: none !important;
+		}
+
 		.apply-button,
 		.discard-button {
 			padding: 6px 8px;

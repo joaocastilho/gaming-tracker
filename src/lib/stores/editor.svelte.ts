@@ -363,14 +363,17 @@ class EditorStore {
 				// Ignore storage errors
 			}
 
-			// Call logout API to clear the server-side cookie
-			try {
-				await fetch('/api/auth/logout', {
-					method: 'POST',
-					credentials: 'include'
-				});
-			} catch {
-				// Ignore API errors - local state is already cleared
+			// Call logout API to clear the server-side cookie (production only)
+			// In dev mode there's no /api/auth/logout endpoint
+			if (!dev) {
+				try {
+					await fetch('/api/auth/logout', {
+						method: 'POST',
+						credentials: 'include'
+					});
+				} catch {
+					// Ignore API errors - local state is already cleared
+				}
 			}
 		}
 	}

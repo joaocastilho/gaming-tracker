@@ -26,7 +26,10 @@
 		Trophy,
 		Users,
 		Settings,
-		Moon
+		Moon,
+		LogIn,
+		LogOut,
+		Plus
 	} from 'lucide-svelte';
 	import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions';
 	import GamesView from '$lib/views/GamesView.svelte';
@@ -48,6 +51,7 @@
 	import DetailModal from '$lib/components/DetailModal.svelte';
 	import GameEditorModal from '$lib/components/GameEditorModal.svelte';
 	import DeleteConfirmModal from '$lib/components/DeleteConfirmModal.svelte';
+	import LoginModal from '$lib/components/LoginModal.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
 
 	let initialized = $state(false);
@@ -264,6 +268,8 @@
 	let isSearchOpen = $derived(!!(page.state as any).showMobileSearch);
 	let isFiltersOpen = $state(false);
 	let isSettingsMenuOpen = $state(false);
+	let loginModalOpen = $state(false);
+	let isEditor = $derived(editorStore.editorMode);
 
 	// Desktop filters expanded state moved to filtersStore
 	let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
@@ -581,9 +587,6 @@
 		}
 	}
 
-	// ==========================================
-	// Editor Mode State and Handlers
-	// ==========================================
 	let editorModalOpen = $state(false);
 	let editorModalMode = $state<'create' | 'edit'>('create');
 	let editorModalGame = $state<Game | null>(null);
@@ -614,24 +617,19 @@
 
 	async function handleApplyChanges() {
 		const games = $gamesStore;
-		// Calculate final state before applying changes (which clears pending)
 		const finalGames = editorStore.buildFinalGames(games);
 
 		const success = await editorStore.applyAllChanges(games);
 		if (success) {
-			// Immediately update local store to reflect changes without reload
 			gamesStore.setAllGames(finalGames);
 		}
 	}
 
-	// Restore editor mode from session and check if session is still valid
 	onMount(() => {
 		if (browser) {
-			// First restore from session storage
 			editorStore.restoreFromSession();
 
-			// If editor mode is now active, verify the session is still valid with the API
-			if (editorStore.editorMode) {
+			if (editorStore.editorMode && !dev) {
 				editorStore.checkSession();
 			}
 		}
@@ -788,6 +786,8 @@
 		{/if}
 
 		<DeleteConfirmModal bind:open={deleteModalOpen} game={deleteModalGame} />
+
+		<LoginModal bind:open={loginModalOpen} />
 
 		<!-- Mobile Search Input -->
 		{#if isSearchOpen}
@@ -1112,6 +1112,51 @@
 								title="Filters"
 							>
 								<SlidersHorizontal size={18} />
+							</button>
+						{/if}
+
+						<!-- Add Game (only for logged-in editors, not on tier list) -->
+						{#if isEditor && !isTierlistPage}
+							<button
+								type="button"
+								class="settings-menu-item add-game-item"
+								onclick={() => {
+									isSettingsMenuOpen = false;
+									handleAddGame();
+								}}
+								aria-label="Add new game"
+								title="Add Game"
+							>
+								<Plus size={18} />
+							</button>
+						{/if}
+
+						<!-- Login/Logout -->
+						{#if isEditor}
+							<button
+								type="button"
+								class="settings-menu-item logout-item"
+								onclick={async () => {
+									isSettingsMenuOpen = false;
+									await editorStore.logout();
+								}}
+								aria-label="Logout"
+								title="Logout"
+							>
+								<LogOut size={18} />
+							</button>
+						{:else}
+							<button
+								type="button"
+								class="settings-menu-item login-item"
+								onclick={() => {
+									isSettingsMenuOpen = false;
+									loginModalOpen = true;
+								}}
+								aria-label="Login"
+								title="Login"
+							>
+								<LogIn size={18} />
 							</button>
 						{/if}
 					</div>
@@ -1963,6 +2008,31 @@
 
 	.settings-menu-item:focus {
 		outline: none;
+	}
+
+	/* Login/Logout button colors */
+	.settings-menu-item.login-item {
+		background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+	}
+
+	.settings-menu-item.login-item:hover {
+		background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+	}
+
+	.settings-menu-item.logout-item {
+		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+	}
+
+	.settings-menu-item.logout-item:hover {
+		background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+	}
+
+	.settings-menu-item.add-game-item {
+		background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+	}
+
+	.settings-menu-item.add-game-item:hover {
+		background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
 	}
 
 	.floating-action-button {
