@@ -150,14 +150,8 @@
 		return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
 	}
 
-	// Reset loaded state when game changes for smooth image transition
-	$effect(() => {
-		const gameId = $modalStore.activeGame?.id;
-		if (gameId && modalImageElement) {
-			// Remove loaded class immediately so the skeleton shows
-			modalImageElement.classList.remove('loaded');
-		}
-	});
+	// Image is always visible (opacity: 1) by default
+	// Only hidden during active swipe via .swiping class
 
 	let linkToGame = $state('');
 	let focusableElements = $state<HTMLElement[]>([]);
@@ -355,11 +349,15 @@
 				} else {
 					navigateToPrevious();
 				}
-				// Reset immediately - no delay for smoother transition
+				// Reset offsets immediately but delay transitioning flag
+				// This gives the game change effect time to apply the transitioning class
 				swipeOffsetX = 0;
 				parallaxOffset = 0;
-				isSwipeTransitioning = false;
 				swipeDirection = null;
+				// Delay resetting isSwipeTransitioning to ensure image is hidden
+				requestAnimationFrame(() => {
+					isSwipeTransitioning = false;
+				});
 			}
 		}
 
@@ -611,16 +609,11 @@
 	}
 
 	function handleImageLoad() {
-		if (modalImageElement) {
-			modalImageElement.classList.add('loaded');
-		}
+		// Image loaded successfully - no action needed since image is always visible
 	}
 
 	function handleImageError() {
 		if (modalImageElement) {
-			// Always mark as loaded first
-			modalImageElement.classList.add('loaded');
-
 			// Try placeholder, if already placeholder then use data URI fallback
 			if (!modalImageElement.src.includes('placeholder_cover')) {
 				modalImageElement.src = PLACEHOLDER_DETAIL_SRC;
@@ -1289,9 +1282,10 @@
 								sizes={detailImageSizes}
 								alt="{$modalStore.activeGame.title} cover"
 								class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
+								class:swiping={isSwipeTransitioning}
 								loading="eager"
 								fetchpriority="high"
-								decoding="async"
+								decoding="sync"
 								onload={handleImageLoad}
 								onerror={handleImageError}
 							/>
@@ -1820,12 +1814,12 @@
 	.modal-cover-image {
 		position: relative;
 		z-index: 2;
-		opacity: 0;
-		transition: opacity 0.5s ease-in-out;
+		opacity: 1;
 	}
 
-	.modal-cover-image.loaded {
-		opacity: 1;
+	/* Hide image only during active swipe transition to prevent old image flash */
+	.modal-cover-image.swiping {
+		opacity: 0 !important;
 	}
 
 	@keyframes skeleton-shimmer {
