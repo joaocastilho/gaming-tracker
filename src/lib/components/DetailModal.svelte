@@ -71,6 +71,10 @@
 	// Zoom/Shrink animation state
 	let isZoomAnimating = $state(false);
 
+	// Image Transition State (for smooth swipes)
+	let transitionImage = $state('');
+	let isTransitioningImage = $state(false);
+
 	// Touch tracking
 	let touchStartX = 0;
 	let touchStartY = 0;
@@ -566,6 +570,9 @@
 
 		if (index > 0) {
 			const prevGame = games[index - 1];
+			// Pre-set the transition image from the cached/loaded preview
+			transitionImage = getPreviewImageSrc(prevGame.coverImage);
+			isTransitioningImage = true;
 			modalStore.openViewModal(prevGame, games);
 		}
 	}
@@ -576,6 +583,9 @@
 
 		if (index < games.length - 1) {
 			const nextGame = games[index + 1];
+			// Pre-set the transition image from the cached/loaded preview
+			transitionImage = getPreviewImageSrc(nextGame.coverImage);
+			isTransitioningImage = true;
 			modalStore.openViewModal(nextGame, games);
 		}
 	}
@@ -609,7 +619,11 @@
 	}
 
 	function handleImageLoad() {
-		// Image loaded successfully - no action needed since image is always visible
+		// Image loaded successfully - hide the transition overlay
+		// Small timeout ensures the browser has actually painted the new image
+		setTimeout(() => {
+			isTransitioningImage = false;
+		}, 50);
 	}
 
 	function handleImageError() {
@@ -625,6 +639,8 @@
 				modalImageElement.srcset = '';
 			}
 		}
+		// Also clear transition on error so we don't get stuck
+		isTransitioningImage = false;
 	}
 
 	function formatDate(dateString: string | null): string {
@@ -1270,6 +1286,17 @@
 				>
 					<div class="modal-image-wrapper">
 						<div class="modal-skeleton-loader"></div>
+
+						<!-- Transition Overlay Image (Prevents Blip/Reload Flash) -->
+						{#if isTransitioningImage && transitionImage}
+							<img
+								src={transitionImage}
+								alt="Transitioning..."
+								class="absolute inset-0 z-10 h-full w-full object-cover"
+								aria-hidden="true"
+							/>
+						{/if}
+
 						<button
 							class="contents"
 							onclick={() => (isImageFullScreen = true)}
