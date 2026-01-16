@@ -250,6 +250,17 @@ class FiltersStore {
 		}
 	}
 
+	setDesktopFiltersExpanded(expanded: boolean): void {
+		if (this.isDesktopFiltersExpanded === expanded) return;
+		this.isDesktopFiltersExpanded = expanded;
+		if (browser) {
+			sessionStorage.setItem(
+				FiltersStore.FILTERS_EXPANDED_KEY,
+				String(this.isDesktopFiltersExpanded)
+			);
+		}
+	}
+
 	readSearchFromURL(searchParams: URLSearchParams): void {
 		const search = searchParams.get('s');
 		if (search) {

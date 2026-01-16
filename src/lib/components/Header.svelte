@@ -285,8 +285,8 @@
 		transform-origin: center;
 		transform: scaleX(0);
 		transition:
-			background-color 0.18s ease,
-			transform 0.18s ease;
+			background-color 0.1s ease-out,
+			transform 0.1s ease-out;
 	}
 
 	.tabs-list button:hover {
@@ -341,7 +341,7 @@
 		background-color: var(--color-surface);
 		color: var(--color-text-secondary);
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all 0.12s ease-out;
 	}
 
 	.filter-toggle-button:hover {
@@ -358,7 +358,7 @@
 	}
 
 	.filter-toggle-button :global(.filter-chevron-icon) {
-		transition: transform 0.3s ease;
+		transition: transform 0.15s ease-out;
 	}
 
 	@media (max-width: 834px) {
@@ -423,7 +423,7 @@
 		background-color: var(--color-surface);
 		color: var(--color-text-secondary);
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all 0.12s ease-out;
 		font-size: 0.85rem;
 		font-weight: 500;
 	}

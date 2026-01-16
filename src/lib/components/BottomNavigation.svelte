@@ -120,7 +120,7 @@
 
 <style>
 	.bottom-navigation {
-		height: 60px;
+		height: 64px;
 		padding-bottom: env(safe-area-inset-bottom, 0);
 		background-color: var(--color-background);
 		border-color: var(--color-border);
@@ -145,7 +145,7 @@
 	}
 
 	.icon-wrapper {
-		transition: transform 0.2s ease;
+		transition: transform 0.12s ease-out;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -188,7 +188,7 @@
 	@supports (padding-bottom: env(safe-area-inset-bottom)) {
 		.bottom-navigation {
 			padding-bottom: calc(env(safe-area-inset-bottom, 0));
-			height: calc(60px + env(safe-area-inset-bottom, 0));
+			height: calc(64px + env(safe-area-inset-bottom, 0));
 		}
 	}
 

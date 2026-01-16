@@ -2,4 +2,4 @@
 trigger: always_on
 ---
 
-every time some functionality did not work as expected add tests defining the behaviour first and then implement a fix until the tests pass
+before implementing new features, unless they are trivial, you need to create first a set of tests that fully test the feature to implement behaviour and present them to the user for approval. After getting approval you implement the feature completely ensuring the tests pass without changing them.

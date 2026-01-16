@@ -83,6 +83,27 @@
 					});
 			}
 		}
+
+		// Auto-collapse filters on scroll (desktop only)
+		let lastScrollY = window.scrollY;
+		const handleScroll = () => {
+			if (window.innerWidth < 768) return; // Skip on mobile
+			const currentScrollY = window.scrollY;
+			// Collapse filters when scrolling down past 80px
+			if (
+				currentScrollY > 80 &&
+				currentScrollY > lastScrollY &&
+				filtersStore.isDesktopFiltersExpanded
+			) {
+				filtersStore.setDesktopFiltersExpanded(false);
+			}
+			lastScrollY = currentScrollY;
+		};
+
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
 	});
 
 	$effect(() => {
@@ -1072,97 +1093,20 @@
 		<!-- Mobile Settings Menu -->
 		{#if !$modalStore.isOpen && !isFiltersOpen}
 			<div class="mobile-settings-container md:hidden">
-				<!-- Expanded menu options (to the left of button) -->
-				{#if isSettingsMenuOpen}
-					<!-- Backdrop to close menu -->
+				<!-- Filter button - prominent, always visible (not on tierlist) -->
+				{#if !isTierlistPage}
 					<button
 						type="button"
-						class="settings-backdrop"
-						onclick={() => (isSettingsMenuOpen = false)}
-						aria-label="Close settings menu"
-					></button>
-
-					<div class="settings-menu">
-						<!-- Theme Toggle - leftmost -->
-						<button
-							type="button"
-							class="settings-menu-item"
-							onclick={() => {
-								appStore.toggleTheme();
-								isSettingsMenuOpen = false;
-							}}
-							aria-label={appStore.theme === 'dark'
-								? 'Switch to light mode'
-								: 'Switch to dark mode'}
-							title="Toggle theme"
-						>
-							<Moon size={18} />
-						</button>
-
-						<!-- Filters (not shown on tier list) -->
-						{#if !isTierlistPage}
-							<button
-								type="button"
-								class="settings-menu-item"
-								onclick={() => {
-									isSettingsMenuOpen = false;
-									onFiltersToggle();
-								}}
-								aria-label="Open filters"
-								title="Filters"
-							>
-								<SlidersHorizontal size={18} />
-							</button>
-						{/if}
-
-						<!-- Add Game (only for logged-in editors, not on tier list) -->
-						{#if isEditor && !isTierlistPage}
-							<button
-								type="button"
-								class="settings-menu-item add-game-item"
-								onclick={() => {
-									isSettingsMenuOpen = false;
-									handleAddGame();
-								}}
-								aria-label="Add new game"
-								title="Add Game"
-							>
-								<Plus size={18} />
-							</button>
-						{/if}
-
-						<!-- Login/Logout -->
-						{#if isEditor}
-							<button
-								type="button"
-								class="settings-menu-item logout-item"
-								onclick={async () => {
-									isSettingsMenuOpen = false;
-									await editorStore.logout();
-								}}
-								aria-label="Logout"
-								title="Logout"
-							>
-								<LogOut size={18} />
-							</button>
-						{:else}
-							<button
-								type="button"
-								class="settings-menu-item login-item"
-								onclick={() => {
-									isSettingsMenuOpen = false;
-									loginModalOpen = true;
-								}}
-								aria-label="Login"
-								title="Login"
-							>
-								<LogIn size={18} />
-							</button>
-						{/if}
-					</div>
+						class="floating-action-button filter-fab"
+						onclick={onFiltersToggle}
+						aria-label="Open filters"
+						title="Filters"
+					>
+						<SlidersHorizontal size={20} />
+					</button>
 				{/if}
 
-				<!-- Main Settings FAB (rightmost) -->
+				<!-- Main Settings FAB -->
 				<button
 					type="button"
 					class="floating-action-button settings-fab"
@@ -1174,6 +1118,81 @@
 				>
 					<Settings size={20} class="settings-icon" />
 				</button>
+			</div>
+		{/if}
+
+		<!-- Settings Bottom Sheet -->
+		{#if isSettingsMenuOpen}
+			<div
+				class="settings-bottom-sheet-overlay md:hidden"
+				onclick={() => (isSettingsMenuOpen = false)}
+				onkeydown={(e) => e.key === 'Escape' && (isSettingsMenuOpen = false)}
+				role="button"
+				tabindex="0"
+			>
+				<div
+					class="settings-bottom-sheet"
+					onclick={(e) => e.stopPropagation()}
+					onkeydown={() => {}}
+					role="dialog"
+					aria-modal="true"
+					tabindex="-1"
+				>
+					<div class="sheet-handle"></div>
+					<div class="sheet-content">
+						<button
+							type="button"
+							class="sheet-item"
+							onclick={() => {
+								appStore.toggleTheme();
+								isSettingsMenuOpen = false;
+							}}
+						>
+							<Moon size={20} />
+							<span>{appStore.theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+						</button>
+
+						{#if isEditor && !isTierlistPage}
+							<button
+								type="button"
+								class="sheet-item sheet-item-green"
+								onclick={() => {
+									isSettingsMenuOpen = false;
+									handleAddGame();
+								}}
+							>
+								<Plus size={20} />
+								<span>Add Game</span>
+							</button>
+						{/if}
+
+						{#if isEditor}
+							<button
+								type="button"
+								class="sheet-item sheet-item-red"
+								onclick={async () => {
+									isSettingsMenuOpen = false;
+									await editorStore.logout();
+								}}
+							>
+								<LogOut size={20} />
+								<span>Logout</span>
+							</button>
+						{:else}
+							<button
+								type="button"
+								class="sheet-item sheet-item-blue"
+								onclick={() => {
+									isSettingsMenuOpen = false;
+									loginModalOpen = true;
+								}}
+							>
+								<LogIn size={20} />
+								<span>Login</span>
+							</button>
+						{/if}
+					</div>
+				</div>
 			</div>
 		{/if}
 
@@ -1769,7 +1788,7 @@
 		border-radius: 16px;
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 		overflow: hidden;
-		animation: popupSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+		animation: popupSlideIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 
 	@keyframes popupSlideIn {
@@ -1785,7 +1804,7 @@
 
 	/* iOS/Android friendly slide-up animation for container */
 	.mobile-filters-container {
-		animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+		animation: slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 	}
 
 	@keyframes slideUp {
@@ -1923,7 +1942,7 @@
 	}
 
 	.filter-content {
-		animation: filterExpandCollapse 0.3s ease;
+		animation: filterExpandCollapse 0.15s ease-out;
 		transform-origin: top;
 	}
 
@@ -1942,7 +1961,7 @@
 	.mobile-settings-container {
 		position: fixed;
 		right: 16px;
-		bottom: 65px;
+		bottom: 70px;
 		z-index: 45;
 		display: flex;
 		flex-direction: row;
@@ -1969,7 +1988,7 @@
 		display: flex;
 		flex-direction: row;
 		gap: 8px;
-		animation: settingsMenuAppear 0.2s ease-out;
+		animation: settingsMenuAppear 0.12s ease-out;
 	}
 
 	@keyframes settingsMenuAppear {
@@ -2045,7 +2064,7 @@
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-		transition: all 0.3s ease;
+		transition: all 0.2s ease;
 		outline: none;
 	}
 
@@ -2112,17 +2131,123 @@
 	}
 
 	.settings-fab :global(.settings-icon) {
-		transition: transform 0.3s ease;
+		transition: transform 0.2s ease;
 	}
 
 	.settings-fab.active :global(.settings-icon) {
 		transform: rotate(90deg);
 	}
 
+	/* Filter FAB */
+	.filter-fab {
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		border: none;
+		color: white;
+	}
+
+	.filter-fab:hover {
+		background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+		box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+	}
+
+	:global(.light) .filter-fab {
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+	}
+
+	:global(.light) .filter-fab:hover {
+		background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+	}
+
+	/* Settings Bottom Sheet */
+	.settings-bottom-sheet-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+		background: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(4px);
+		animation: fadeIn 0.15s ease-out;
+	}
+
+	.settings-bottom-sheet {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background-color: var(--color-background);
+		border-radius: 20px 20px 0 0;
+		padding: 8px 16px 24px;
+		padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+		animation: slideUp 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+		z-index: 61;
+		box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+	}
+
+	.sheet-handle {
+		width: 36px;
+		height: 4px;
+		background-color: var(--color-border);
+		border-radius: 2px;
+		margin: 8px auto 16px;
+	}
+
+	.sheet-content {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.sheet-item {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 16px;
+		border-radius: 12px;
+		border: none;
+		background-color: var(--color-surface);
+		color: var(--color-text-primary);
+		font-size: 1rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.12s ease-out;
+		text-align: left;
+	}
+
+	.sheet-item:hover {
+		background-color: rgba(59, 130, 246, 0.1);
+	}
+
+	.sheet-item:active {
+		transform: scale(0.98);
+	}
+
+	.sheet-item-green {
+		color: #22c55e;
+	}
+
+	.sheet-item-green:hover {
+		background-color: rgba(34, 197, 94, 0.1);
+	}
+
+	.sheet-item-red {
+		color: #ef4444;
+	}
+
+	.sheet-item-red:hover {
+		background-color: rgba(239, 68, 68, 0.1);
+	}
+
+	.sheet-item-blue {
+		color: #3b82f6;
+	}
+
+	.sheet-item-blue:hover {
+		background-color: rgba(59, 130, 246, 0.15);
+	}
+
 	@media (max-width: 480px) {
 		.mobile-settings-container {
 			right: 16px;
-			bottom: 70px;
+			bottom: 74px;
 		}
 
 		.floating-action-button {
@@ -2139,7 +2264,9 @@
 	@media (prefers-reduced-motion: reduce) {
 		.floating-action-button,
 		.settings-menu-item,
-		.settings-menu {
+		.settings-menu,
+		.settings-bottom-sheet,
+		.settings-bottom-sheet-overlay {
 			transition: none;
 			animation: none;
 		}

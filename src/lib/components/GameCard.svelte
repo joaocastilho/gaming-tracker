@@ -512,8 +512,8 @@
 		overflow: hidden;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 		transition:
-			transform 0.3s ease-in-out,
-			box-shadow 0.3s ease-in-out;
+			transform 0.15s ease-out,
+			box-shadow 0.15s ease-out;
 		cursor: pointer;
 		height: 100%;
 		border: none;
@@ -621,7 +621,7 @@
 		text-overflow: ellipsis;
 		border: none;
 		cursor: pointer;
-		transition: transform 0.2s;
+		transition: transform 0.1s ease-out;
 	}
 
 	.tier-badge:hover {
@@ -717,13 +717,19 @@
 		font-size: 0.8rem;
 		font-weight: 500;
 		white-space: nowrap;
-		border: none;
 		cursor: pointer;
-		transition: opacity 0.2s;
+		transition: all 0.12s ease-out;
+		opacity: 0.75;
+		border: 1px solid transparent;
 	}
 
 	.platform-badge:hover,
-	.genre-badge:hover,
+	.genre-badge:hover {
+		opacity: 1;
+		transform: scale(1.02);
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+	}
+
 	.coop-badge:hover {
 		opacity: 0.8;
 	}

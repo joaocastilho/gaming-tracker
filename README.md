@@ -21,17 +21,17 @@ Built with modern web technologies for performance and developer experience:
 
 | Category       | Technology                                                                                                                                                                  | Version    |
 | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| **Framework**  | <a href="https://kit.svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white" alt="SvelteKit" /></a>               | `v2.49.3`  |
-| **UI Library** | <a href="https://svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white" alt="Svelte" /></a>                         | `v5.46.1`  |
+| **Framework**  | <a href="https://kit.svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white" alt="SvelteKit" /></a>               | `v2.49.5`  |
+| **UI Library** | <a href="https://svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white" alt="Svelte" /></a>                         | `v5.46.4`  |
 | **Language**   | <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript" /></a> | `v5.9.3`   |
 | **Styling**    | <a href="https://tailwindcss.com/" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>  | `v4.1.18`  |
 | **Database**   | <a href="https://dexie.org/" target="_blank"><img src="https://img.shields.io/badge/Dexie.js-1a1a2e?logo=indexeddb&logoColor=white" alt="Dexie.js" /></a>                   | `v4.2.1`   |
 | **Icons**      | <a href="https://lucide.dev/" target="_blank"><img src="https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white" alt="Lucide" /></a>                         | `v0.562.0` |
-| **Runtime**    | <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" /></a>                                      | `v1.3.5`   |
+| **Runtime**    | <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" /></a>                                      | `v1.3.6`   |
 | **Build Tool** | <a href="https://vite.dev/" target="_blank"><img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /></a>                                 | `v7.3.1`   |
 | **Lint**       | <a href="https://eslint.org/" target="_blank"><img src="https://img.shields.io/badge/ESLint-4B32C3?logo=eslint&logoColor=white" alt="ESLint" /></a>                         | `v9.39.2`  |
-| **Format**     | <a href="https://prettier.io/" target="_blank"><img src="https://img.shields.io/badge/Prettier-F7B93E?logo=prettier&logoColor=black" alt="Prettier" /></a>                  | `v3.7.4`   |
-| **Testing**    | <a href="https://vitest.dev/" target="_blank"><img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /></a>                         | `v4.0.16`  |
+| **Format**     | <a href="https://prettier.io/" target="_blank"><img src="https://img.shields.io/badge/Prettier-F7B93E?logo=prettier&logoColor=black" alt="Prettier" /></a>                  | `v3.8.0`   |
+| **Testing**    | <a href="https://vitest.dev/" target="_blank"><img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /></a>                         | `v4.0.17`  |
 
 #### ⚡ PageSpeed Insights
 
