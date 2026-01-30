@@ -61,8 +61,10 @@ class GamesStore {
 			this.games = normalized;
 
 			if (browser && typeof indexedDB !== 'undefined') {
+				// Clone to plain objects to avoid DataCloneError with reactive proxies
+				const plainGames = JSON.parse(JSON.stringify(normalized)) as Game[];
 				db.games
-					.bulkPut(normalized)
+					.bulkPut(plainGames)
 					.catch((err) => console.error('Failed to cache games to Dexie:', err));
 			}
 
@@ -103,7 +105,9 @@ class GamesStore {
 		completedGamesCache.updateCache(this._games);
 
 		if (browser && typeof indexedDB !== 'undefined') {
-			db.games.bulkPut(games).catch((err) => console.error('Failed to cache games to Dexie:', err));
+			// Clone to plain objects to avoid DataCloneError with Svelte 5 reactive proxies
+			const plainGames = JSON.parse(JSON.stringify(games)) as Game[];
+			db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
 		}
 	}
 

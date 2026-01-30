@@ -34,6 +34,14 @@
 
 	let copied = $state(false);
 
+	// Cover image upload state
+	let coverUrl = $state('');
+	let coverFile = $state<File | null>(null);
+	let coverPreview = $state<string | null>(null);
+	let coverUploading = $state(false);
+	let coverError = $state<string | null>(null);
+	let fileInputRef = $state<HTMLInputElement>();
+
 	// Refs for focus management
 	let modalRef = $state<HTMLDivElement>();
 	let titleInputRef = $state<HTMLInputElement>();
@@ -80,6 +88,102 @@
 			setTimeout(() => {
 				copied = false;
 			}, 2000);
+		}
+	}
+
+	// Cover image handling functions
+	function isValidImageUrl(url: string): boolean {
+		try {
+			const parsed = new URL(url);
+			return ['http:', 'https:'].includes(parsed.protocol);
+		} catch {
+			return false;
+		}
+	}
+
+	function handleCoverUrlChange() {
+		coverError = null;
+		if (coverUrl && isValidImageUrl(coverUrl)) {
+			coverPreview = coverUrl;
+			coverFile = null;
+		} else if (coverUrl) {
+			coverError = 'Invalid URL';
+			coverPreview = null;
+		} else {
+			coverPreview = null;
+		}
+	}
+
+	function handleFileSelect(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const file = target.files?.[0];
+		coverError = null;
+
+		if (file) {
+			if (!file.type.includes('png') && !file.name.toLowerCase().endsWith('.png')) {
+				coverError = 'Only PNG files are accepted';
+				coverFile = null;
+				coverPreview = null;
+				return;
+			}
+
+			coverFile = file;
+			coverUrl = '';
+			coverPreview = URL.createObjectURL(file);
+		}
+	}
+
+	function clearCover() {
+		coverUrl = '';
+		coverFile = null;
+		if (coverPreview && coverPreview.startsWith('blob:')) {
+			URL.revokeObjectURL(coverPreview);
+		}
+		coverPreview = null;
+		coverError = null;
+		if (fileInputRef) {
+			fileInputRef.value = '';
+		}
+	}
+
+	async function uploadCover(gameId: string): Promise<boolean> {
+		if (!coverUrl && !coverFile) return true; // No cover to upload
+
+		coverUploading = true;
+		coverError = null;
+
+		try {
+			const endpoint = dev ? '/api/cover-upload-local' : '/api/cover-upload';
+
+			let response: Response;
+			if (coverFile) {
+				const formData = new FormData();
+				formData.append('gameId', gameId);
+				formData.append('file', coverFile);
+				response = await fetch(endpoint, {
+					method: 'POST',
+					body: formData
+				});
+			} else {
+				response = await fetch(endpoint, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ url: coverUrl, gameId })
+				});
+			}
+
+			if (!response.ok) {
+				const data = await response.json().catch(() => ({}));
+				coverError = data.error || 'Failed to upload cover image';
+				return false;
+			}
+
+			return true;
+		} catch (err) {
+			coverError = err instanceof Error ? err.message : 'Network error';
+			return false;
+		} finally {
+			coverUploading = false;
 		}
 	}
 
@@ -245,6 +349,16 @@
 		}
 
 		saving = true;
+
+		// Upload cover image first if provided
+		if (coverUrl || coverFile) {
+			const coverSuccess = await uploadCover(working.id);
+			if (!coverSuccess) {
+				error = coverError || 'Failed to upload cover image';
+				saving = false;
+				return;
+			}
+		}
 
 		// Queue the change in the pending changes store
 		if (mode === 'create') {
@@ -462,6 +576,67 @@
 							</svg>
 						{/if}
 					</div>
+				</div>
+
+				<!-- Cover Image Upload -->
+				<div class="full cover-upload-section">
+					<span class="label-text">Cover Image (Optional)</span>
+					<div class="cover-input-row">
+						<input
+							type="text"
+							placeholder="Paste image URL..."
+							bind:value={coverUrl}
+							oninput={handleCoverUrlChange}
+							disabled={!!coverFile}
+							class="cover-url-input"
+						/>
+						<span class="or-divider">or</span>
+						<label class="file-upload-btn">
+							<input
+								bind:this={fileInputRef}
+								type="file"
+								accept=".png,image/png"
+								onchange={handleFileSelect}
+								style="display: none;"
+							/>
+							<span class="upload-btn">Upload PNG</span>
+						</label>
+					</div>
+
+					{#if coverError}
+						<div class="cover-error">{coverError}</div>
+					{/if}
+
+					{#if coverPreview}
+						<div class="cover-preview-wrap">
+							<img src={coverPreview} alt="Cover preview" class="cover-preview" />
+							<button
+								type="button"
+								class="clear-cover-btn"
+								onclick={clearCover}
+								title="Remove cover"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+					{/if}
+
+					{#if coverUploading}
+						<div class="cover-uploading">Uploading cover...</div>
+					{/if}
 				</div>
 
 				<!-- Ratings (Completed Only) -->
@@ -838,5 +1013,107 @@
 		color: #94a3b8;
 		font-size: 0.85rem;
 		font-weight: 500;
+	}
+
+	/* Cover Upload Styles */
+	.cover-upload-section {
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.cover-input-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-top: 0.5rem;
+	}
+
+	.cover-url-input {
+		flex: 1;
+	}
+
+	.or-divider {
+		color: #64748b;
+		font-size: 0.75rem;
+		font-weight: 500;
+		text-transform: uppercase;
+	}
+
+	.file-upload-btn {
+		cursor: pointer;
+	}
+
+	.upload-btn {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.5rem 1rem;
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.3);
+		border-radius: 0.5rem;
+		color: #818cf8;
+		font-size: 0.85rem;
+		font-weight: 500;
+		transition: all 0.2s;
+	}
+
+	.upload-btn:hover {
+		background: rgba(99, 102, 241, 0.2);
+		border-color: rgba(99, 102, 241, 0.5);
+	}
+
+	.cover-error {
+		margin-top: 0.5rem;
+		padding: 0.4rem 0.6rem;
+		border-radius: 0.375rem;
+		background: rgba(239, 68, 68, 0.1);
+		color: #fca5a5;
+		font-size: 0.8rem;
+		border: 1px solid rgba(239, 68, 68, 0.2);
+	}
+
+	.cover-preview-wrap {
+		position: relative;
+		margin-top: 0.75rem;
+		display: inline-block;
+	}
+
+	.cover-preview {
+		width: 100px;
+		height: 150px;
+		object-fit: cover;
+		border-radius: 0.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.clear-cover-btn {
+		position: absolute;
+		top: -8px;
+		right: -8px;
+		width: 24px;
+		height: 24px;
+		padding: 0;
+		border-radius: 50%;
+		background: #ef4444;
+		color: white;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: transform 0.1s;
+	}
+
+	.clear-cover-btn:hover {
+		transform: scale(1.1);
+	}
+
+	.cover-uploading {
+		margin-top: 0.5rem;
+		color: #818cf8;
+		font-size: 0.85rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 </style>
