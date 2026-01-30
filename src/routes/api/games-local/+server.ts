@@ -56,6 +56,9 @@ export async function POST({ request }) {
 			return gameHeader;
 		});
 
+		// Sort games alphabetically by id
+		gamesForFile.sort((a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id));
+
 		const outputPayload = {
 			...payload,
 			games: gamesForFile
