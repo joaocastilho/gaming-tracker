@@ -4370,6 +4370,23 @@
       "tier": null
     },
     {
+      "id": "lies-of-p",
+      "title": "Lies of P",
+      "platform": "PC",
+      "year": 2023,
+      "genre": "Action RPG",
+      "coOp": "No",
+      "status": "Completed",
+      "coverImage": "covers/lies-of-p.webp",
+      "playtime": "40h 34m",
+      "finishedDate": "30/01/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 7,
+      "ratingGameplay": 7,
+      "score": 15,
+      "tier": "B - Great"
+    },
+    {
       "id": "limbo",
       "title": "LIMBO",
       "platform": "PC",
@@ -9590,23 +9607,6 @@
       "ratingGameplay": null,
       "score": null,
       "tier": null
-    },
-    {
-      "id": "lies-of-p",
-      "title": "Lies of P",
-      "platform": "PC",
-      "year": 2023,
-      "genre": "Action RPG",
-      "coOp": "No",
-      "status": "Completed",
-      "coverImage": "covers/lies-of-p.webp",
-      "playtime": "40h 34m",
-      "finishedDate": "30/01/2026",
-      "ratingPresentation": 8,
-      "ratingStory": 7,
-      "ratingGameplay": 7,
-      "score": 15,
-      "tier": "B - Great"
     }
   ],
   "meta": {
