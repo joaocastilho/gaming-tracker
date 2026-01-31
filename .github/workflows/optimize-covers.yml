@@ -6,6 +6,14 @@ on:
       - main
     paths:
       - 'static/covers_raw/*.png'
+  
+  # Triggered via API from Cloudflare after cover upload
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'Game ID to optimize'
+        required: true
+        type: string
 
 jobs:
   optimize-covers:
@@ -31,6 +39,15 @@ jobs:
       - name: Get changed cover files
         id: changed-covers
         run: |
+          # If triggered via workflow_dispatch with game_id, use that
+          if [ -n "${{ github.event.inputs.game_id }}" ]; then
+            echo "Workflow dispatch for game: ${{ github.event.inputs.game_id }}"
+            echo "game_ids=${{ github.event.inputs.game_id }}" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Push trigger: detect changed files
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- 'static/covers_raw/*.png' || true)
           
           if [ -z "$CHANGED_FILES" ]; then

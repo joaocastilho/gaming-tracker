@@ -120,6 +120,48 @@ async function commitFileToGitHub(
 }
 
 /**
+ * Trigger the optimize-covers GitHub Action workflow
+ */
+async function triggerOptimizeWorkflow(gameId: string, env: Env): Promise<void> {
+    const token = env.GITHUB_TOKEN;
+    const owner = env.GH_REPO_OWNER;
+    const repo = env.GH_REPO_NAME;
+    const branch = env.GH_BRANCH || 'main';
+
+    if (!token || !owner || !repo) {
+        console.log('GitHub not configured, skipping workflow trigger');
+        return;
+    }
+
+    const apiBase = 'https://api.github.com';
+
+    const res = await fetch(
+        `${apiBase}/repos/${owner}/${repo}/actions/workflows/optimize-covers.yml/dispatches`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/vnd.github+json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'gaming-tracker-cloudflare'
+            },
+            body: JSON.stringify({
+                ref: branch,
+                inputs: {
+                    game_id: gameId
+                }
+            })
+        }
+    );
+
+    if (!res.ok) {
+        const errorBody = await res.text().catch(() => 'no body');
+        console.error(`Failed to trigger workflow: ${res.status} - ${errorBody}`);
+        // Don't throw - we don't want to fail the upload if workflow trigger fails
+    }
+}
+
+/**
  * POST /api/cover-upload - Upload and process cover image via GitHub
  * 
  * Accepts JSON: { url: string, gameId: string }
@@ -198,16 +240,15 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
             env
         );
 
-        // Note: In production Cloudflare, we can't run sharp.
-        // The optimization needs to happen on deploy via GitHub Actions or locally.
-        // For now, we just commit the raw PNG and the user needs to run optimize script locally.
+        // Trigger the optimize-covers workflow via GitHub API
+        await triggerOptimizeWorkflow(sanitizedGameId, env);
 
         return new Response(
             JSON.stringify({
                 success: true,
                 gameId: sanitizedGameId,
-                message: 'Cover image uploaded to GitHub. Run optimize script locally to generate WebP versions.',
-                note: 'Optimization script should be run locally or via CI after merge.'
+                message: 'Cover image uploaded and optimization workflow triggered.',
+                coverPath: `covers/${sanitizedGameId}.webp`
             }),
             {
                 status: 200,
