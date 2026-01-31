@@ -1,5 +1,6 @@
 import { vi } from 'vitest';
 import 'fake-indexeddb/auto'; // Mock indexedDB globally
+import '@testing-library/jest-dom/vitest'; // Import jest-dom matchers
 
 // Mock window.scrollTo
 Object.defineProperty(window, 'scrollTo', {

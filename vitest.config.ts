@@ -7,6 +7,10 @@ export default defineConfig({
 		environment: 'jsdom',
 		globals: true,
 		include: ['tests/**/*.{test,spec}.{js,ts}'],
-		setupFiles: ['fake-indexeddb/auto', 'tests/setup.ts']
+		setupFiles: ['fake-indexeddb/auto', 'tests/setup.ts'],
+		restoreMocks: true
+	},
+	resolve: {
+		conditions: ['browser']
 	}
 });
