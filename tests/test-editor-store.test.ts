@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { editorStore } from '$lib/stores/editor.svelte';
 
 /**
@@ -6,22 +6,20 @@ import { editorStore } from '$lib/stores/editor.svelte';
  * Tests login, logout, save, and snapshot functionality
  */
 
-// Store original fetch for restore
-const originalFetch = globalThis.fetch;
-
 // Helper to create typed mock fetch
-function mockFetch(response: Partial<Response>): typeof fetch {
-	return vi.fn(() => Promise.resolve(response as Response)) as unknown as typeof fetch;
+// Now uses the global spy
+function mockFetch(response: Partial<Response>) {
+	(globalThis.fetch as unknown as Mock).mockResolvedValue(response as Response);
 }
 
-function mockFetchError(): typeof fetch {
-	return vi.fn(() => Promise.reject(new Error('Network error'))) as unknown as typeof fetch;
+function mockFetchError() {
+	(globalThis.fetch as unknown as Mock).mockRejectedValue(new Error('Network error'));
 }
 
 describe('EditorStore', () => {
 	beforeEach(() => {
 		editorStore.logout();
-		globalThis.fetch = originalFetch;
+		vi.clearAllMocks();
 	});
 
 	describe('Initial State', () => {
@@ -96,7 +94,7 @@ describe('EditorStore', () => {
 
 	describe('Login Flow', () => {
 		it('login returns true on success', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: true,
 				json: () => Promise.resolve({ success: true })
 			});
@@ -108,7 +106,7 @@ describe('EditorStore', () => {
 		});
 
 		it('login returns false on failure', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: false,
 				json: () => Promise.resolve({ error: 'Invalid' })
 			});
@@ -120,7 +118,7 @@ describe('EditorStore', () => {
 		});
 
 		it('login handles network error', async () => {
-			globalThis.fetch = mockFetchError();
+			mockFetchError();
 
 			const result = await editorStore.login('admin', 'password');
 			expect(result).toBe(false);
@@ -130,7 +128,7 @@ describe('EditorStore', () => {
 
 	describe('Save Flow', () => {
 		it('saveGames returns true on success', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: true,
 				json: () => Promise.resolve({ games: [] })
 			});
@@ -143,7 +141,7 @@ describe('EditorStore', () => {
 		});
 
 		it('saveGames returns false on failure', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: false,
 				text: () => Promise.resolve('Error')
 			});
@@ -155,7 +153,7 @@ describe('EditorStore', () => {
 		});
 
 		it('saveGames handles network error', async () => {
-			globalThis.fetch = mockFetchError();
+			mockFetchError();
 
 			const result = await editorStore.saveGames(() => ({ games: [] }));
 
@@ -164,7 +162,7 @@ describe('EditorStore', () => {
 		});
 
 		it('saveGames captures snapshot', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: true,
 				json: () => Promise.resolve({ games: [] })
 			});
@@ -204,18 +202,16 @@ describe('EditorStore', () => {
 		});
 
 		it('saveLocally calls /api/games-local endpoint', async () => {
-			const mockFn = vi.fn(() =>
-				Promise.resolve({
-					ok: true,
-					json: () => Promise.resolve({ ok: true, saved: 1 })
-				} as Response)
-			);
-			globalThis.fetch = mockFn as unknown as typeof fetch;
+			const mockResponse = {
+				ok: true,
+				json: () => Promise.resolve({ ok: true, saved: 1 })
+			} as Response;
+			mockFetch(mockResponse);
 
 			editorStore.addPendingGame(mockGame);
 			await editorStore.saveLocally([]);
 
-			expect(mockFn).toHaveBeenCalledWith(
+			expect(globalThis.fetch).toHaveBeenCalledWith(
 				'/api/games-local',
 				expect.objectContaining({
 					method: 'POST',
@@ -225,7 +221,7 @@ describe('EditorStore', () => {
 		});
 
 		it('saveLocally clears pending changes on success', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: true,
 				json: () => Promise.resolve({ ok: true, saved: 1 })
 			});
@@ -239,7 +235,7 @@ describe('EditorStore', () => {
 		});
 
 		it('saveLocally returns false on failure', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: false,
 				json: () => Promise.resolve({ error: 'Write failed' })
 			});
@@ -252,7 +248,7 @@ describe('EditorStore', () => {
 		});
 
 		it('saveLocally handles network error', async () => {
-			globalThis.fetch = mockFetchError();
+			mockFetchError();
 
 			editorStore.addPendingGame(mockGame);
 			const result = await editorStore.saveLocally([]);
@@ -398,7 +394,7 @@ describe('EditorStore', () => {
 
 	describe('Session Check', () => {
 		it('checkSession returns true when session is valid', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: true,
 				json: () => Promise.resolve({ valid: true })
 			});
@@ -411,7 +407,7 @@ describe('EditorStore', () => {
 		});
 
 		it('checkSession returns false and disables editor mode when session is invalid', async () => {
-			globalThis.fetch = mockFetch({
+			mockFetch({
 				ok: true,
 				json: () => Promise.resolve({ valid: false })
 			});
@@ -424,7 +420,8 @@ describe('EditorStore', () => {
 		});
 
 		it('checkSession returns true on network error (assumes session valid)', async () => {
-			globalThis.fetch = mockFetchError();
+			// This test assumes that network error means "offline" or "cant reach server", so we trust local state
+			mockFetchError();
 
 			editorStore.setEditorModeFromSessionCheck(true);
 			const result = await editorStore.checkSession();

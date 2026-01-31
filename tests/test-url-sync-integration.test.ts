@@ -3,7 +3,7 @@
  * Tests the interaction between SearchBar clearing and layout URL sync effect
  * These tests verify the searchClearCoordinator prevents race conditions
  */
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
@@ -35,7 +35,14 @@ function simulateURLSyncEffect(urlSearchParam: string | null, currentSearchTerm:
 }
 
 describe('URL Sync Integration Tests', () => {
-	beforeEach(resetStores);
+	beforeEach(() => {
+		vi.useFakeTimers();
+		resetStores();
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
+	});
 
 	it('should prevent URL sync from restoring search immediately after manual clear', () => {
 		filtersStore.setSearchTerm('Ring');
@@ -48,9 +55,11 @@ describe('URL Sync Integration Tests', () => {
 		expect(filtersStore.state?.searchTerm).toBe('');
 	});
 
-	it('should allow URL sync after 100ms has passed', async () => {
+	it('should allow URL sync after 100ms has passed', () => {
 		markSearchCleared();
-		await new Promise((resolve) => setTimeout(resolve, 101));
+
+		// Advance time by 101 loops
+		vi.advanceTimersByTime(101);
 
 		const syncHappened = simulateURLSyncEffect('Ring', '');
 
@@ -66,6 +75,9 @@ describe('URL Sync Integration Tests', () => {
 
 		markSearchCleared();
 		filtersStore.setSearchTerm('');
+
+		// Ensure strictly less than 100ms passed
+		vi.setSystemTime(lastManualClearTime + 50);
 
 		const syncHappened = simulateURLSyncEffect('Ring', '');
 

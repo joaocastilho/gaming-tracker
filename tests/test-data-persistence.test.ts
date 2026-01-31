@@ -1,50 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
-// Mock localStorage for testing
-class MockLocalStorage {
-	private storage: Map<string, string> = new Map();
-
-	getItem(key: string): string | null {
-		return this.storage.get(key) || null;
-	}
-
-	setItem(key: string, value: string): void {
-		this.storage.set(key, value);
-	}
-
-	removeItem(key: string): void {
-		this.storage.delete(key);
-	}
-
-	clear(): void {
-		this.storage.clear();
-	}
-
-	get length(): number {
-		return this.storage.size;
-	}
-
-	key(index: number): string | null {
-		const keys = Array.from(this.storage.keys());
-		return keys[index] || null;
-	}
-}
-
-class MockLocation {
-	href: string = 'http://localhost:5173';
-	search: string = '';
-	pathname: string = '/';
-	hash: string = '';
-
-	updateFromURL(url: string) {
-		const urlObj = new URL(url);
-		this.href = url;
-		this.search = urlObj.search;
-		this.pathname = urlObj.pathname;
-		this.hash = urlObj.hash;
-	}
-}
-
 // Test data
 const TEST_GAME_DATA = {
 	id: 'test-game-1',
@@ -80,15 +35,10 @@ const TEST_SORT_STATE = {
 };
 
 describe('Data Persistence', () => {
-	let localStorage: MockLocalStorage;
-	let location: MockLocation;
-
 	beforeEach(() => {
-		localStorage = new MockLocalStorage();
-		location = new MockLocation();
-
-		(global as any).localStorage = localStorage;
-		(global as any).location = location;
+		localStorage.clear();
+		// Reset location search
+		window.location.search = '';
 	});
 
 	test('Theme Persistence', () => {
@@ -97,7 +47,8 @@ describe('Data Persistence', () => {
 		localStorage.setItem('theme', 'dark');
 		expect(localStorage.getItem('theme')).toBe('dark');
 
-		// Simulate page refresh (new session)
+		// In a real browser, refresh persists localStorage.
+		// Here we just check that setting it works as expected.
 		expect(localStorage.getItem('theme')).toBe('dark');
 
 		localStorage.setItem('theme', 'light');
@@ -117,7 +68,7 @@ describe('Data Persistence', () => {
 	});
 
 	test('Filter URL Persistence', () => {
-		expect(location.search).toBe('');
+		expect(window.location.search).toBe('');
 
 		const params = new URLSearchParams();
 		params.set('search', TEST_FILTER_STATE.searchQuery);
@@ -140,39 +91,40 @@ describe('Data Persistence', () => {
 			`${TEST_FILTER_STATE.totalScore[0]}-${TEST_FILTER_STATE.totalScore[1]}`
 		);
 
-		location.search = params.toString();
+		// Manually update the mock location search
+		window.location.search = params.toString();
 
-		expect(location.search).toContain('search=test+game');
-		expect(location.search).toContain('platforms=PC%2CPlayStation+5');
-		expect(location.search).toContain('genres=Action%2CRPG');
-		expect(location.search).toContain('ratingPresentation=7-10');
+		expect(window.location.search).toContain('search=test+game');
+		expect(window.location.search).toContain('platforms=PC%2CPlayStation+5');
+		expect(window.location.search).toContain('genres=Action%2CRPG');
+		expect(window.location.search).toContain('ratingPresentation=7-10');
 
-		expect(location.search).toContain('search=test+game');
+		expect(window.location.search).toContain('search=test+game');
 
-		location.search = '';
-		expect(location.search).toBe('');
+		window.location.search = '';
+		expect(window.location.search).toBe('');
 	});
 
 	test('Sort URL Persistence', () => {
-		expect(location.search).toBe('');
+		expect(window.location.search).toBe('');
 
 		const params = new URLSearchParams();
 		params.set('sortBy', TEST_SORT_STATE.sortBy);
 		params.set('sortDirection', TEST_SORT_STATE.sortDirection);
 
-		location.search = params.toString();
+		window.location.search = params.toString();
 
-		expect(location.search).toContain('sortBy=title');
-		expect(location.search).toContain('sortDirection=asc');
+		expect(window.location.search).toContain('sortBy=title');
+		expect(window.location.search).toContain('sortDirection=asc');
 
-		expect(location.search).toContain('sortBy=title');
+		expect(window.location.search).toContain('sortBy=title');
 
 		params.set('sortBy', 'year');
 		params.set('sortDirection', 'desc');
-		location.search = params.toString();
+		window.location.search = params.toString();
 
-		expect(location.search).toContain('sortBy=year');
-		expect(location.search).toContain('sortDirection=desc');
+		expect(window.location.search).toContain('sortBy=year');
+		expect(window.location.search).toContain('sortDirection=desc');
 	});
 
 	test('JSON Export', () => {

@@ -4,6 +4,7 @@
  * This catches issues where the subscription mechanism is broken.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { flushPromises } from './utils';
 
 describe('Store Subscriber Reactivity', () => {
 	beforeEach(() => {
@@ -233,7 +234,7 @@ describe('Store Subscriber Reactivity', () => {
 			]);
 
 			// Give time for propagation
-			await new Promise((r) => setTimeout(r, 50));
+			await flushPromises();
 
 			expect(callback).toHaveBeenCalled();
 		});
@@ -262,7 +263,7 @@ describe('Store Subscriber Reactivity', () => {
 			filtersStore.setSearchTerm('test');
 
 			// Give time for propagation
-			await new Promise((r) => setTimeout(r, 50));
+			await flushPromises();
 
 			expect(callback).toHaveBeenCalled();
 		});
@@ -300,7 +301,7 @@ describe('Store Subscriber Reactivity', () => {
 			filtersStore.setSort({ key: 'score', direction: 'desc' });
 
 			// Give time for propagation
-			await new Promise((r) => setTimeout(r, 50));
+			await flushPromises();
 
 			expect(callback).toHaveBeenCalled();
 		});

@@ -1,35 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
-// Mock localStorage for testing
-class MockLocalStorage {
-	private storage: Map<string, string> = new Map();
-
-	getItem(key: string): string | null {
-		return this.storage.get(key) || null;
-	}
-
-	setItem(key: string, value: string): void {
-		this.storage.set(key, value);
-	}
-
-	removeItem(key: string): void {
-		this.storage.delete(key);
-	}
-
-	clear(): void {
-		this.storage.clear();
-	}
-
-	get length(): number {
-		return this.storage.size;
-	}
-
-	key(index: number): string | null {
-		const keys = Array.from(this.storage.keys());
-		return keys[index] || null;
-	}
-}
-
 interface MockElement {
 	tagName: string;
 	className: string;
@@ -137,14 +107,14 @@ const CONTRAST_REQUIREMENTS = {
 };
 
 describe('Theme Switching', () => {
-	let localStorage: MockLocalStorage;
 	let dom: MockDOM;
 
 	beforeEach(() => {
-		localStorage = new MockLocalStorage();
+		// Clear global localStorage mock
+		localStorage.clear();
 		dom = new MockDOM();
 
-		(global as any).localStorage = localStorage;
+		// We assume localStorage is already mocked globally in setup.ts
 		(global as any).document = {
 			documentElement: dom.createElement('html'),
 			body: dom.createElement('body'),
