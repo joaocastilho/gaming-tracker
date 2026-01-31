@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
-// Node imports must be dynamic to avoid breaking Cloudflare build
-// They will only be loaded in dev mode
+import { spawn } from 'child_process';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
@@ -13,7 +12,78 @@ export async function POST({ request }) {
 	const path = (await import('node:path')).default;
 
 	try {
-		const payload = await request.json();
+		const contentType = request.headers.get('content-type') || '';
+		let payload: any;
+
+		if (contentType.includes('multipart/form-data')) {
+			const formData = await request.formData();
+			const gamesJson = formData.get('games') as string;
+
+			if (!gamesJson) {
+				return json({ error: 'Invalid payload: games JSON required' }, { status: 400 });
+			}
+			payload = JSON.parse(gamesJson);
+
+			// Handle multiple cover uploads
+			// format: key = "cover_<gameId>"
+			for (const [key, value] of formData.entries()) {
+				if (key.startsWith('cover_') && typeof value !== 'string') {
+					const gameIdForCover = key.substring(6); // remove "cover_"
+					const coverFile = value as File;
+
+					if (gameIdForCover && coverFile) {
+						const sanitizedGameId = gameIdForCover.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+
+						// Save to covers_raw directory
+						const coversRawDir = path.join(process.cwd(), 'static', 'covers_raw');
+						const rawOutputPath = path.join(coversRawDir, `${sanitizedGameId}.png`);
+
+						await fs.mkdir(coversRawDir, { recursive: true });
+
+						const buffer = await coverFile.arrayBuffer();
+						await fs.writeFile(rawOutputPath, Buffer.from(buffer));
+
+						// Run the optimization script synchronously
+						const scriptPath = path.join(process.cwd(), 'scripts', 'optimize-covers-full.ts');
+
+						console.log(`[Dev API] optimizing cover for ${sanitizedGameId}...`);
+
+						try {
+							await new Promise<void>((resolve, reject) => {
+								const child = spawn('bun', ['run', scriptPath, sanitizedGameId], {
+									cwd: process.cwd(),
+									stdio: 'pipe'
+								});
+
+								let stderr = '';
+								child.stderr?.on('data', (data) => {
+									stderr += data.toString();
+								});
+
+								child.on('close', (code) => {
+									if (code === 0) {
+										resolve();
+									} else {
+										console.error(`[Dev API] Optimization script failed: ${stderr}`);
+										reject(new Error(`Optimization script failed with code ${code}: ${stderr}`));
+									}
+								});
+
+								child.on('error', (err) => {
+									reject(err);
+								});
+							});
+							console.log(`[Dev API] Optimization complete for ${sanitizedGameId}`);
+						} catch (optErr) {
+							console.error(`[Dev API] optimization failed for ${sanitizedGameId}`, optErr);
+							// Don't fail the whole request, just log
+						}
+					}
+				}
+			}
+		} else {
+			payload = await request.json();
+		}
 
 		// Ensure the payload has the expected structure
 		if (!payload || !Array.isArray(payload.games)) {
@@ -68,10 +138,10 @@ export async function POST({ request }) {
 
 		return json({ ok: true, saved: payload.games.length });
 	} catch (error) {
-		console.error('[Dev API] Error writing to games.json:', error);
+		console.error('[Dev API] Error processing request:', error);
 		return json(
 			{
-				error: 'Failed to write games locally',
+				error: 'Failed to save games',
 				message: error instanceof Error ? error.message : String(error)
 			},
 			{ status: 500 }

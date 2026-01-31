@@ -219,7 +219,7 @@ describe('EditorStore', () => {
 				'/api/games-local',
 				expect.objectContaining({
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' }
+					body: expect.any(FormData)
 				})
 			);
 		});

@@ -38,7 +38,7 @@
 	let coverUrl = $state('');
 	let coverFile = $state<File | null>(null);
 	let coverPreview = $state<string | null>(null);
-	let coverUploading = $state(false);
+
 	let coverError = $state<string | null>(null);
 	let fileInputRef = $state<HTMLInputElement>();
 
@@ -143,47 +143,6 @@
 		coverError = null;
 		if (fileInputRef) {
 			fileInputRef.value = '';
-		}
-	}
-
-	async function uploadCover(gameId: string): Promise<boolean> {
-		if (!coverUrl && !coverFile) return true; // No cover to upload
-
-		coverUploading = true;
-		coverError = null;
-
-		try {
-			const endpoint = dev ? '/api/cover-upload-local' : '/api/cover-upload';
-
-			let response: Response;
-			if (coverFile) {
-				const formData = new FormData();
-				formData.append('gameId', gameId);
-				formData.append('file', coverFile);
-				response = await fetch(endpoint, {
-					method: 'POST',
-					body: formData
-				});
-			} else {
-				response = await fetch(endpoint, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ url: coverUrl, gameId })
-				});
-			}
-
-			if (!response.ok) {
-				const data = await response.json().catch(() => ({}));
-				coverError = data.error || 'Failed to upload cover image';
-				return false;
-			}
-
-			return true;
-		} catch (err) {
-			coverError = err instanceof Error ? err.message : 'Network error';
-			return false;
-		} finally {
-			coverUploading = false;
 		}
 	}
 
@@ -356,6 +315,7 @@
 
 	import { invalidateAll } from '$app/navigation';
 	import { gamesStore } from '$lib/stores/games.svelte';
+
 	async function handleSave() {
 		if (!working) return;
 		error = null;
@@ -367,51 +327,45 @@
 
 		saving = true;
 
-		// Upload cover image first if provided
-		if (coverUrl || coverFile) {
-			const coverSuccess = await uploadCover(working.id);
-			if (!coverSuccess) {
-				error = coverError || 'Failed to upload cover image';
-				saving = false;
-				return;
-			}
-		}
-
-		// Queue the change in the pending changes store
-		if (mode === 'create') {
-			editorStore.addPendingGame(working);
-		} else {
-			editorStore.editPendingGame(working.id, working);
-		}
-
-		// In dev mode: save immediately to local JSON file
-		// In production mode: just queue the change and close (user will click Apply later)
-		if (dev) {
-			// Use fresh games from store, not the stale allGames prop
-			const currentGames = gamesStore.games;
-
-			// Safety check: don't save if we'd be erasing all games
-			if (currentGames.length === 0 && mode === 'edit') {
-				error = 'Cannot save: games data appears to be missing. Please refresh the page.';
-				saving = false;
-				return;
-			}
-
-			// Build final games array before saving (saveLocally will clear pending)
-			const finalGames = editorStore.buildFinalGames(currentGames);
-			const success = await editorStore.saveLocally(currentGames);
-			if (success) {
-				// Directly update the games store to bypass Vite's static file cache
-				gamesStore.setAllGames(finalGames);
-				await invalidateAll();
-				onClose();
+		try {
+			// Update the pending store with the game and optional cover file
+			if (mode === 'create') {
+				editorStore.addPendingGame(working, coverFile);
 			} else {
-				error = editorStore.saveError || 'Failed to save changes locally.';
-				saving = false;
+				editorStore.editPendingGame(working.id, working, coverFile);
 			}
-		} else {
-			// Production mode: just close after queueing, user will Apply later
-			onClose();
+
+			// In development mode, we save immediately to local JSON file via the store
+			if (dev) {
+				const currentGames = gamesStore.games;
+
+				// Safety check
+				if (currentGames.length === 0 && mode === 'edit') {
+					throw new Error(
+						'Cannot save: games data appears to be missing. Please refresh the page.'
+					);
+				}
+
+				const success = await editorStore.saveLocally(currentGames);
+				if (success) {
+					// Directly update the games store to bypass Vite's static file cache
+					// Note: saveLocally clears pending changes on success
+					const finalGames = editorStore.buildFinalGames(currentGames);
+					gamesStore.setAllGames(finalGames);
+					await invalidateAll();
+					onClose();
+				} else {
+					error = editorStore.saveError || 'Failed to save changes locally.';
+					saving = false;
+				}
+			} else {
+				// Production mode: just close after queueing to store.
+				// User will click "Apply Changes" globally to trigger the full save including files.
+				onClose();
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Save failed';
+			saving = false;
 		}
 	}
 </script>
@@ -649,10 +603,6 @@
 								</svg>
 							</button>
 						</div>
-					{/if}
-
-					{#if coverUploading}
-						<div class="cover-uploading">Uploading cover...</div>
 					{/if}
 				</div>
 
@@ -1123,14 +1073,5 @@
 
 	.clear-cover-btn:hover {
 		transform: scale(1.1);
-	}
-
-	.cover-uploading {
-		margin-top: 0.5rem;
-		color: #818cf8;
-		font-size: 0.85rem;
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
 	}
 </style>

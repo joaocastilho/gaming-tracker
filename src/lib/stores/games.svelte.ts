@@ -107,7 +107,9 @@ class GamesStore {
 		if (browser && typeof indexedDB !== 'undefined') {
 			// Clone to plain objects to avoid DataCloneError with Svelte 5 reactive proxies
 			const plainGames = JSON.parse(JSON.stringify(games)) as Game[];
-			db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
+			db.games
+				.bulkPut(plainGames)
+				.catch((err) => console.error('Failed to cache games to Dexie:', err));
 		}
 	}
 

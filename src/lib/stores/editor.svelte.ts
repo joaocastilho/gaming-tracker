@@ -20,6 +20,7 @@ type PendingChanges = {
 	adds: Game[];
 	edits: Map<string, Game>;
 	deletes: Set<string>;
+	files: Map<string, File>;
 };
 
 const initialState: EditorState = {
@@ -37,9 +38,11 @@ class EditorStore {
 	private _pending = $state<PendingChanges>({
 		adds: [],
 		edits: new Map(),
-		deletes: new Set()
+		deletes: new Set(),
+		files: new Map()
 	});
 
+	// ... [Getters omitted for brevity, effectively keeping unchanged] ...
 	// Direct property getters
 	get editorMode(): boolean {
 		return this._state.editorMode;
@@ -109,23 +112,41 @@ class EditorStore {
 	}
 
 	// Pending changes methods
-	addPendingGame(game: Game): void {
+	addPendingGame(game: Game, file?: File | null): void {
+		const newFiles = new Map(this._pending.files);
+		if (file) {
+			newFiles.set(game.id, file);
+		}
+
 		this._pending = {
 			...this._pending,
-			adds: [...this._pending.adds, game]
+			adds: [...this._pending.adds, game],
+			files: newFiles
 		};
 	}
 
-	editPendingGame(id: string, game: Game): void {
+	editPendingGame(id: string, game: Game, file?: File | null): void {
 		const newEdits = new Map(this._pending.edits);
 		newEdits.set(id, game);
+
+		const newFiles = new Map(this._pending.files);
+		if (file) {
+			newFiles.set(id, file);
+		}
+
 		this._pending = {
 			...this._pending,
-			edits: newEdits
+			edits: newEdits,
+			files: newFiles
 		};
 	}
 
 	deletePendingGame(id: string): void {
+		const newFiles = new Map(this._pending.files);
+		if (newFiles.has(id)) {
+			newFiles.delete(id);
+		}
+
 		// If it's a pending add, just remove it from adds
 		const addIndex = this._pending.adds.findIndex((g) => g.id === id);
 		if (addIndex !== -1) {
@@ -133,7 +154,8 @@ class EditorStore {
 			newAdds.splice(addIndex, 1);
 			this._pending = {
 				...this._pending,
-				adds: newAdds
+				adds: newAdds,
+				files: newFiles
 			};
 			return;
 		}
@@ -148,7 +170,8 @@ class EditorStore {
 		this._pending = {
 			...this._pending,
 			edits: newEdits,
-			deletes: newDeletes
+			deletes: newDeletes,
+			files: newFiles
 		};
 	}
 
@@ -156,8 +179,13 @@ class EditorStore {
 		this._pending = {
 			adds: [],
 			edits: new Map(),
-			deletes: new Set()
+			deletes: new Set(),
+			files: new Map()
 		};
+	}
+
+	clearPending(): void {
+		this.discardAllChanges();
 	}
 
 	/**
@@ -192,6 +220,10 @@ class EditorStore {
 
 		if (browser && !navigator.onLine) {
 			const finalGames = this.buildFinalGames(currentGames);
+			// Note: We cannot easily stash 'files' in IndexedDB cleanly for raw File objects in this simple sync_queue
+			// without more work, but for now we assume offline changes are mostly metadata.
+			// If we need to support offline image uploads, that's a bigger task.
+			// We'll proceed with metadata only for offline.
 			try {
 				await db.sync_queue.put({ games: finalGames }, 'pending');
 				this.discardAllChanges();
@@ -204,6 +236,7 @@ class EditorStore {
 		}
 
 		const finalGames = this.buildFinalGames(currentGames);
+		// Pass files maps to saveGames
 		const success = await this.saveGames(() => ({ games: finalGames }));
 
 		if (success) {
@@ -232,12 +265,19 @@ class EditorStore {
 		};
 
 		try {
+			const formData = new FormData();
+			// Match API payload structure
+			const payload = { games: finalGames };
+			formData.append('games', JSON.stringify(payload));
+
+			// Append all pending files
+			for (const [id, file] of this._pending.files.entries()) {
+				formData.append(`cover_${id}`, file);
+			}
+
 			const res = await fetch('/api/games-local', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ games: finalGames })
+				body: formData
 			});
 
 			if (!res.ok) {
@@ -429,12 +469,18 @@ class EditorStore {
 		};
 
 		try {
+			const formData = new FormData();
+			// Match API structure
+			formData.append('games', JSON.stringify(snapshot));
+
+			// Append all pending files
+			for (const [id, file] of this._pending.files.entries()) {
+				formData.append(`cover_${id}`, file);
+			}
+
 			const res = await fetch('/api/games', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(snapshot),
+				body: formData,
 				credentials: 'include'
 			});
 
