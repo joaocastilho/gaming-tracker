@@ -220,6 +220,17 @@
 			}
 			// Init sortPriority
 			sortPriorityInput = working.sortPriority ?? null;
+
+			// Reset cover upload state but show existing cover as preview
+			coverUrl = '';
+			coverFile = null;
+			coverError = null;
+			// Show existing cover image as preview if it exists
+			if (working.coverImage) {
+				coverPreview = `/${working.coverImage}`;
+			} else {
+				coverPreview = null;
+			}
 		} else {
 			const now = new Date();
 			// We'll generate ID from title later, but for now init empty
@@ -243,6 +254,12 @@
 				finishedDate: null
 			} as Game;
 			sortPriorityInput = null;
+
+			// Reset cover upload state for new game
+			coverUrl = '';
+			coverFile = null;
+			coverPreview = null;
+			coverError = null;
 		}
 	});
 
