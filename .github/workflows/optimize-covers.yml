@@ -1,0 +1,76 @@
+name: Optimize Cover Images
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'static/covers_raw/*.png'
+
+jobs:
+  optimize-covers:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies
+        run: bun install
+      
+      - name: Get changed cover files
+        id: changed-covers
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- 'static/covers_raw/*.png' || true)
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No cover images changed"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changed files:"
+            echo "$CHANGED_FILES"
+            
+            GAME_IDS=""
+            for file in $CHANGED_FILES; do
+              GAME_ID=$(basename "$file" .png)
+              GAME_IDS="$GAME_IDS $GAME_ID"
+            done
+            
+            echo "Game IDs to process:$GAME_IDS"
+            echo "game_ids=$GAME_IDS" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Run cover optimization script
+        if: steps.changed-covers.outputs.has_changes == 'true'
+        run: |
+          for GAME_ID in ${{ steps.changed-covers.outputs.game_ids }}; do
+            echo "Processing cover for: $GAME_ID"
+            bun run scripts/optimize-covers-full.ts "$GAME_ID"
+          done
+      
+      - name: Commit optimized covers
+        if: steps.changed-covers.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          git add static/covers/*.webp
+          git add static/games.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(covers): optimize cover images [skip ci]"
+            git push
+          fi
