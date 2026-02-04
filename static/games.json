@@ -117,7 +117,8 @@
       "ratingStory": 8,
       "ratingGameplay": 7,
       "score": 16,
-      "tier": "A - Amazing"
+      "tier": "A - Amazing",
+      "sortPriority": 1
     },
     {
       "id": "a-short-hike",
@@ -7583,7 +7584,8 @@
       "ratingStory": 8,
       "ratingGameplay": 5,
       "score": 12,
-      "tier": "C - Good"
+      "tier": "C - Good",
+      "sortPriority": 2
     },
     {
       "id": "the-binding-of-isaac-rebirth",
