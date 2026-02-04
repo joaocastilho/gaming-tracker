@@ -45,7 +45,7 @@ export const BaseGameSchema = z.object({
 	ratingGameplay: z.number().min(0).max(10).nullable(),
 	score: z.number().min(0).max(20).nullable(),
 	tier: z.enum(TIER_VALUES).nullable(),
-	sortPriority: z.number().nullable().optional()
+	completionOrder: z.number().nullable().optional()
 });
 
 /**
@@ -138,11 +138,11 @@ export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 				message: 'Planned games must have tier = null'
 			});
 		}
-		if (game.sortPriority !== null && game.sortPriority !== undefined) {
+		if (game.completionOrder !== null && game.completionOrder !== undefined) {
 			ctx.addIssue({
 				code: 'custom',
-				path: ['sortPriority'],
-				message: 'Planned games must have sortPriority = null'
+				path: ['completionOrder'],
+				message: 'Planned games must have completionOrder = null'
 			});
 		}
 		return;

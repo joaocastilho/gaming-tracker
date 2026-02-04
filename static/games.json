@@ -118,7 +118,7 @@
       "ratingGameplay": 7,
       "score": 16,
       "tier": "A - Amazing",
-      "sortPriority": 1
+      "completionOrder": 1
     },
     {
       "id": "a-short-hike",
@@ -4726,7 +4726,7 @@
       "ratingGameplay": 8,
       "score": 16,
       "tier": "B - Great",
-      "sortPriority": 3
+      "completionOrder": 1
     },
     {
       "id": "mass-effect",
@@ -5594,7 +5594,7 @@
       "ratingGameplay": 7,
       "score": 15,
       "tier": "B - Great",
-      "sortPriority": 2
+      "completionOrder": 2
     },
     {
       "id": "outlast-2",
@@ -5629,7 +5629,7 @@
       "ratingGameplay": 7,
       "score": 16,
       "tier": "B - Great",
-      "sortPriority": 1
+      "completionOrder": 3
     },
     {
       "id": "oxenfree",
@@ -7585,7 +7585,7 @@
       "ratingGameplay": 5,
       "score": 12,
       "tier": "C - Good",
-      "sortPriority": 2
+      "completionOrder": 2
     },
     {
       "id": "the-binding-of-isaac-rebirth",

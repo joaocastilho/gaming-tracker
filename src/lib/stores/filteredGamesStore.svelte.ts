@@ -254,17 +254,16 @@ class FilteredGamesStore {
 					return timeDiff * direction;
 				}
 
-				// If times are equal, sort by priority
+				// If times are equal, sort by completionOrder
 				// User requirement:
-				// - Descending (newest first): sortPriority 1 shows FIRST
-				// - Ascending (oldest first): sortPriority 1 shows LAST
-				// This means lower sortPriority values should sort in the SAME direction as dates
+				// - Descending (newest first): completionOrder 2 (later) shows FIRST, 1 (earlier) shows LAST
+				// - Ascending (oldest first): completionOrder 1 (earlier) shows FIRST, 2 (later) shows LAST
+				// This means completionOrder values should sort in the SAME direction as dates (Higher Date = Newer)
 
-				const aPriority = a.sortPriority ?? 0;
-				const bPriority = b.sortPriority ?? 0;
+				const aOrder = a.completionOrder ?? 0;
+				const bOrder = b.completionOrder ?? 0;
 
-				// Swap operands so lower priority comes first in descending, last in ascending
-				return (bPriority - aPriority) * direction;
+				return (aOrder - bOrder) * direction;
 			}
 
 			// Handle playtime sort

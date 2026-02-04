@@ -119,8 +119,8 @@ export async function POST({ request }) {
 			delete gameHeader.mainTitle;
 			delete gameHeader.subtitle;
 
-			if (gameHeader.sortPriority === null || gameHeader.sortPriority === undefined) {
-				delete gameHeader.sortPriority;
+			if (gameHeader.completionOrder === null || gameHeader.completionOrder === undefined) {
+				delete gameHeader.completionOrder;
 			}
 
 			return gameHeader;

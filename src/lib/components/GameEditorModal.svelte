@@ -30,7 +30,7 @@
 	let dateInput = $state('');
 	let hours = $state(0);
 	let minutes = $state(0);
-	let sortPriorityInput = $state<number | null>(null);
+	let completionOrderInput = $state<number | null>(null);
 
 	let copied = $state(false);
 
@@ -177,8 +177,8 @@
 			if (working.finishedDate) {
 				dateInput = working.finishedDate.split('T')[0];
 			}
-			// Init sortPriority
-			sortPriorityInput = working.sortPriority ?? null;
+			// Init completionOrder
+			completionOrderInput = working.completionOrder ?? null;
 
 			// Reset cover upload state but show existing cover as preview
 			coverUrl = '';
@@ -212,7 +212,7 @@
 				playtime: '0h 0m',
 				finishedDate: null
 			} as Game;
-			sortPriorityInput = null;
+			completionOrderInput = null;
 
 			// Reset cover upload state for new game
 			coverUrl = '';
@@ -280,10 +280,10 @@
 		}
 	});
 
-	// Sync sortPriorityInput to working.sortPriority
+	// Sync completionOrderInput to working.completionOrder
 	$effect(() => {
 		if (working) {
-			working.sortPriority = sortPriorityInput;
+			working.completionOrder = completionOrderInput;
 		}
 	});
 
@@ -296,7 +296,7 @@
 			game.ratingGameplay = null;
 			game.score = null;
 			game.tier = null;
-			delete game.sortPriority;
+			delete game.completionOrder;
 		}
 
 		if (!game.title) return 'Title is required.';
@@ -492,7 +492,7 @@
 					</label>
 					<label>
 						<span>Daily Order</span>
-						<input type="number" bind:value={sortPriorityInput} placeholder="0" />
+						<input type="number" bind:value={completionOrderInput} placeholder="0" />
 					</label>
 				{/if}
 

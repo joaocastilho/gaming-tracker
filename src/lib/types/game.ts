@@ -28,5 +28,5 @@ export interface Game {
 	ratingGameplay: number | null;
 	score: number | null;
 	tier: TierValue | null;
-	sortPriority?: number | null;
+	completionOrder?: number | null;
 }
