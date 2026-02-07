@@ -2,6 +2,8 @@
 
 A fast personal library for tracking and rating my video game collection. Designed to be a clean, offline-friendly way to organize my played and planned games, complete with visual tier lists and detailed stats.
 
+![Gaming Tracker Screenshot](static/screenshot.png)
+
 ## ✨ Key Features
 
 - **Track My Collection**: Keep track of games I've completed and ones I plan to play.
@@ -12,8 +14,10 @@ A fast personal library for tracking and rating my video game collection. Design
   - **Tier List**: Visualize my favorites in a classic tier list format.
 - **Smart Filtering**: Instantly find games by platform, genre, status, or rating.
 - **Performance First**: Optimized for speed with instant loading and smooth animations.
-- **Privacy Focused**: 100% client-side. All data stays in the clients browser.
-- **Dark & Light Mode**
+- **Privacy Focused**: 100% client-side. All data stays in the client's browser using IndexedDB.
+- **Modern Dark & Light Mode**: Deep space dark theme and warm beige light theme with glassmorphism effects.
+- **Offline Support**: Works without internet connection after initial load.
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices.
 
 ## 🛠️ Tech Stack
 
@@ -21,8 +25,8 @@ Built with modern web technologies for performance and developer experience:
 
 | Category       | Technology                                                                                                                                                                  | Version    |
 | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| **Framework**  | <a href="https://kit.svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white" alt="SvelteKit" /></a>               | `v2.50.1`  |
-| **UI Library** | <a href="https://svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white" alt="Svelte" /></a>                         | `v5.49.1`  |
+| **Framework**  | <a href="https://kit.svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white" alt="SvelteKit" /></a>               | `v2.50.2`  |
+| **UI Library** | <a href="https://svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white" alt="Svelte" /></a>                         | `v5.50.0`  |
 | **Language**   | <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript" /></a> | `v5.9.3`   |
 | **Styling**    | <a href="https://tailwindcss.com/" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>  | `v4.1.18`  |
 | **Database**   | <a href="https://dexie.org/" target="_blank"><img src="https://img.shields.io/badge/Dexie.js-1a1a2e?logo=indexeddb&logoColor=white" alt="Dexie.js" /></a>                   | `v4.3.0`   |
@@ -37,14 +41,102 @@ Built with modern web technologies for performance and developer experience:
 
 <a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=desktop" target="_blank"><img src="https://img.shields.io/badge/Desktop-F16529?logo=lighthouse&logoColor=white" alt="PageSpeed Desktop" /></a> <a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=mobile" target="_blank"><img src="https://img.shields.io/badge/Mobile-F16529?logo=lighthouse&logoColor=white" alt="PageSpeed Mobile" /></a>
 
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.sh/) v1.3.8 or higher
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/gaming-tracker.git
+cd gaming-tracker
+
+# Install dependencies
+bun install
+
+# Start development server
+bun run dev
+```
+
+The app will be available at `http://localhost:5173`
+
+### Building for Production
+
+```bash
+# Create optimized production build
+bun run build
+
+# Preview the production build locally
+bun run preview
+```
+
 ## 📂 Project Structure
 
 A quick look at how the project is organized:
 
-- `src/`: The heart of the application.
-  - `routes/`: Contains the pages and layout definitions (SvelteKit routing).
-  - `lib/`: Shared components, utility functions, and stores.
-  - `app.html`: The main HTML template.
-- `static/`: Static assets like game covers, icons, and the initial `games.json` data.
-- `scripts/`: Helper scripts for tasks like optimizing images and converting data.
-- `tests/`: Unit and integration tests to ensure everything works perfectly.
+```
+gaming-tracker/
+├── src/
+│   ├── routes/              # SvelteKit routes (pages)
+│   │   ├── +layout.svelte   # Root layout with header and navigation
+│   │   ├── +page.svelte     # Home page (All games)
+│   │   ├── completed/       # Completed games view
+│   │   ├── planned/         # Planned games view
+│   │   └── tierlist/        # Tier list visualization
+│   ├── lib/
+│   │   ├── components/      # Reusable UI components
+│   │   │   ├── GameCard.svelte
+│   │   │   ├── Header.svelte
+│   │   │   ├── SearchBar.svelte
+│   │   │   ├── ThemeToggle.svelte
+│   │   │   └── ...
+│   │   ├── stores/          # Svelte stores (state management)
+│   │   │   ├── games.svelte
+│   │   │   ├── filters.svelte
+│   │   │   ├── app.svelte
+│   │   │   └── ...
+│   │   ├── views/           # Page-level view components
+│   │   │   ├── GamesView.svelte
+│   │   │   └── TierListView.svelte
+│   │   ├── utils/           # Utility functions
+│   │   └── types/           # TypeScript type definitions
+│   ├── app.css              # Global styles and CSS variables
+│   └── app.html             # HTML template
+├── static/
+│   ├── games.json           # Game data (loaded at build time)
+│   ├── covers/              # Optimized game cover images
+│   └── favicon/             # Favicon files
+├── scripts/                 # Build and utility scripts
+│   ├── optimize-covers.ts
+│   ├── convert-csv-to-json.ts
+│   └── ...
+├── tests/                   # Unit and integration tests
+└── docs/                    # Project documentation
+```
+
+## 📝 Available Scripts
+
+| Script                 | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `bun run dev`          | Start development server with hot reload            |
+| `bun run build`        | Create optimized production build                   |
+| `bun run preview`      | Preview production build locally                    |
+| `bun run check`        | Run TypeScript type checking                        |
+| `bun run lint`         | Run ESLint to check code quality                    |
+| `bun run lint:fix`     | Run ESLint and auto-fix issues                      |
+| `bun run format`       | Format code with Prettier                           |
+| `bun run format:check` | Check code formatting without modifying files       |
+| `bun run test`         | Run all tests with Vitest                           |
+| `bun run test:unit`    | Run unit tests only                                 |
+| `bun run validate`     | Run lint, format, check, and test (full validation) |
+
+### Utility Scripts
+
+| Script                    | Description                        |
+| ------------------------- | ---------------------------------- |
+| `bun run optimize-covers` | Optimize cover images for web      |
+| `bun run convert-csv`     | Convert CSV data to JSON format    |
+| `bun run compare-images`  | Compare image files with game data |
