@@ -27,13 +27,13 @@ The application uses a **fixed header layout** with content areas below:
 
 3. **Search & Filter Section (Sticky)**
    - Sticks below navigation when scrolling
-   - Contains: Search bar, filter dropdowns, view toggle
+   - Contains: Search bar, filter dropdowns
    - Two-row layout: Search bar (full width), then filters row
    - Height: ~100px total
 
 4. **Content Area (Scrollable)**
    - Main content area that scrolls
-   - Displays either Gallery View or Table View
+   - Displays Gallery View
    - Padding: 24px horizontal
 
 ---
@@ -99,10 +99,6 @@ The application uses a **fixed header layout** with content areas below:
 - All Tiers ▼
 - 📊 Ratings (opens rating sliders)
 - ↻ Reset
-
-**Right-aligned:**
-
-- View toggle buttons: ⊞ (gallery) and ☰ (table)
 
 **Styling:**
 
@@ -185,47 +181,11 @@ The application uses a **fixed header layout** with content areas below:
 - Padding: 4px 8px
 - Border radius: 4px
 
-### 8. Table View
-
-**Table Structure:**
-
-- Full-width table with horizontal scroll on mobile
-- Columns: Cover | Title | Year | Platform | Genre | Tier | Ratings | Score | Hours | Finished
-
-**Column Specifications:**
-
-- **Cover**: 40px × 60px thumbnail
-- **Title**: Left-aligned, bold (600 weight)
-- **Year**: 4-digit year
-- **Platform**: Badge (same styling as gallery)
-- **Genre**: Badge (same styling as gallery)
-- **Tier**: Badge with tier color
-- **Ratings**: Three icons with scores in a row
-- **Score**: Bold total score (e.g., "17/20")
-- **Hours**: Time format (e.g., "58h 38m")
-- **Finished**: Date format (e.g., "May 28, 2025")
-
-**Sortable Headers:**
-
-- Clickable column headers with ↕ indicator
-- Sorted column highlights slightly
-- Font size: 0.8rem
-- Text transform: uppercase
-- Letter spacing: 0.5px
-
-**Row Styling:**
-
-- Padding: 14px 16px
-- Hover: Background color change
-- Dark mode: Hover background #1a1f27
-- Light mode: Hover background #f9fafb
-
-### 9. Detail Modal
+### 8. Detail Modal
 
 **Trigger:**
 
 - Click on any game card in gallery view
-- Click on any table row in table view
 
 **Layout:**
 
@@ -275,10 +235,9 @@ The application uses a **fixed header layout** with content areas below:
 ### Navigation
 
 1. **Tab Switching**: Click tab to change view, updates URL, maintains filters
-2. **View Toggle**: Click grid/table icon to switch between gallery and table views
-3. **Search**: Real-time filtering as user types (debounced)
-4. **Filters**: Dropdown menus with checkboxes for multi-select
-5. **Sorting**: Click table headers to sort (toggle asc/desc)
+2. **Search**: Real-time filtering as user types (debounced)
+3. **Filters**: Dropdown menus with checkboxes for multi-select
+4. **Sorting**: Click sort controls to sort games (toggle asc/desc)
 
 ### Adding Games
 
@@ -301,7 +260,7 @@ The application uses a **fixed header layout** with content areas below:
 
 ### Detail View
 
-1. Click on any game card/row
+1. Click on any game card
 2. Modal opens with full information
 3. Click overlay or ✕ button to close
 4. Arrow keys to navigate between games (optional enhancement)
@@ -380,7 +339,6 @@ The application uses a **fixed header layout** with content areas below:
 ### Desktop (1200px+)
 
 - Gallery: 5-6 cards per row
-- Table: All columns visible
 - Modal: Two-column layout
 - Filters: Single row
 - Sidebar navigation: Optional left sidebar for future enhancement
@@ -388,7 +346,6 @@ The application uses a **fixed header layout** with content areas below:
 ### Tablet (768px - 1199px)
 
 - Gallery: 3-4 cards per row
-- Table: Horizontal scroll for overflow columns
 - Modal: Two-column layout (narrower)
 - Filters: May wrap to two rows
 
@@ -396,7 +353,6 @@ The application uses a **fixed header layout** with content areas below:
 
 - Gallery: 2 cards per row
 - Cover size: Scales down proportionally (height: 240px)
-- Table: Horizontal scroll
 - Modal: Single column layout, cover on top (height: 400px)
 - Filters: Horizontal scroll, no wrap
 - Search: Full width, prominent
@@ -413,7 +369,7 @@ The application uses a **fixed header layout** with content areas below:
 ### Performance
 
 - Lazy load game covers as user scrolls
-- Virtualize table rows for large datasets
+- Virtualize game cards for large datasets
 - Debounce search input (300ms)
 - Cache filter states in URL/localStorage
 
@@ -472,7 +428,7 @@ The application uses a **fixed header layout** with content areas below:
 - Focus indicators: 2px blue outline on all interactive elements
 - Escape key: Closes modals and dropdowns
 - Enter/Space: Activates buttons and toggles
-- Arrow keys: Navigate through table cells (optional)
+- Arrow keys: Navigate between game cards (optional)
 
 ### Screen Readers
 
@@ -511,14 +467,13 @@ The application uses a **fixed header layout** with content areas below:
 - Search: 🔍 (magnifying glass)
 - Ratings: 📊 (bar chart)
 - Reset: ↻ (circular arrow)
-- Gallery: ⊞ (grid)
-- Table: ☰ (list)
+
 
 ### State Management
 
 - Active tab
 - Selected filters
-- Current view (gallery/table)
+
 - Theme preference (dark/light)
 - Sort order and column
 - Search query
@@ -554,11 +509,10 @@ The application uses a **fixed header layout** with content areas below:
 
 ### Phase 2 - Enhanced Features
 
-6. Table view
-7. Filter system
-8. Detail modal
-9. Add/Edit game forms
-10. Sorting
+6. Filter system
+7. Detail modal
+8. Add/Edit game forms
+9. Sorting
 
 ### Phase 3 - Advanced Features
 

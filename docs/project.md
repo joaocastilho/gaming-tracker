@@ -65,7 +65,7 @@ gaming-tracker/
    - Detail modal
 
 4. **Phase 4 - Advanced Views** (Day 4-5)
-   - Table view with sorting
+   - Detail modal with full game information
    - Tier list visualization
 
 5. **Phase 5 - Polish** (Day 5-6)
@@ -152,14 +152,13 @@ gaming-tracker/
 - Provide filtering options for **Platforms, Genres, and Tiers**.
 - Enable sorting/filtering by score ranges (Presentation, Story, Gameplay, Total Score).
 - Include a prominent **Search bar** to quickly find games by Title.
-- **Sorting:** All columns in the **Table View** must be sortable. The **Gallery View** must also provide a clear way to initiate sorting based on key metrics (e.g., Score, Hours Played).
+- **Sorting:** The **Gallery View** must provide a clear way to initiate sorting based on key metrics (e.g., Score, Hours Played, Title, Year).
 
 ### 4. User Stories - How will the user interact 🙋
 
 - **Phase 1 Input (Planned):** _As a user, I want a simple input form to quickly add a game to my **Planned** list, only requiring basic fields like **Cover, Title, Platform, Genre, Coop and Time to Beat**, so I can manage my backlog efficiently._
 - **Phase 2 Input (Completed):** _As a user, I want to easily open a **Planned** game via an 'Edit' button, mark it as **Completed**, and then input my **Finished Date**, actual **Hours Played**, tier level and detailed **0-10 ratings** to finalize the review._
 - **Visual Verification:** _As a user, I want to see a cover-focused **Gallery View** of my tracked games by default, with clear **icons and metrics** visible, to prioritize visual appeal._
-- **Detailed Review:** _As a user, I want to easily switch to a **Table View** and **sort all columns** to perform detailed analysis and comparison of my game metrics._
 - **Tier List Generation:** _As a user, I want to view a dedicated **Tier List** screen that groups all my **Completed** games visually by their assigned Tier, and allow the user to **export this list as an image**._
 
 ### 5. User Interface - How will the app look 🎨
@@ -167,9 +166,7 @@ gaming-tracker/
 - **Priorities:** **Speed, UX, and Navigation** are paramount. **Game Covers** must be the key visual element.
 - **Theme:** Must feature a visible **Light Mode and Dark Mode** toggle.
 - **Navigation:** A clean top navigation bar with clear links for **Completed, Planned, Tier List**, and **Game Input**.
-- **Display Modes:**
-  - **Gallery View (Default):** Game covers are the primary focus. Game cards must display: Title, Platform, Genre tags, and clear, icon-based metrics for the three scores and the final 0-20 score.
-  - **Table View (Toggle):** A tabular list showing all data fields.
+- **Gallery View:** Game covers are the primary focus. Game cards must display: Title, Platform, Genre tags, and clear, icon-based metrics for the three scores and the final 0-20 score.
 - **Iconography:** Metrics should use **clear, obvious icons and graphs** (instead of long labels) to represent scores, hours played, and dates, provided their meaning is immediately intuitive.
 - **Responsiveness:** **Mobile and tablet support must be ensured.** The design must be optimized for all views, particularly ensuring the gallery of game covers is smooth and easily navigable on small screens.
 
@@ -224,7 +221,7 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 - Pre-build image optimization pipeline using `sharp`
 - Client-side routing with SvelteKit's built-in router
 - URL-based state management for shareability
-- Browser localStorage for user preferences (theme, view mode)
+- Browser localStorage for user preferences (theme)
 
 ### Architecture Pattern
 
@@ -234,7 +231,7 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 
 - Svelte 5 components with Runes for reactivity
 - Route-based page components (`+page.svelte`)
-- Reusable UI components (cards, modals, tables)
+- Reusable UI components (cards, modals)
 - Tailwind CSS for styling with Shadcn-Svelte theming
 
 **Layer 2: Business Logic Layer**
@@ -266,7 +263,6 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 
 ```typescript
 - theme: 'dark' | 'light'
-- viewMode: 'gallery' | 'table'
 - activeTab: 'all' | 'completed' | 'planned' | 'tierlist'
 ```
 
@@ -325,7 +321,6 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 #### State Persistence
 
 - Theme preference → localStorage
-- View mode preference → localStorage
 - Filter state → URL query parameters
 - Sort state → URL query parameters
 - Active tab → URL route
@@ -355,12 +350,7 @@ User clicks tab → Update activeTab in app store → Update URL →
 Filter games by status → Re-render view
 ```
 
-**View Toggle Flow:**
 
-```
-User clicks gallery/table toggle → Update viewMode in app store →
-Save to localStorage → Re-render with new view component
-```
 
 **Sort Flow:**
 
@@ -484,7 +474,6 @@ src/routes/
 **Query Parameters (Shared across routes):**
 
 ```
-?view=gallery|table              # View mode
 &search=query                    # Search filter
 &platforms=PC,PS5                # Selected platforms (comma-separated)
 &genres=RPG,Action               # Selected genres (comma-separated)
@@ -497,10 +486,8 @@ src/routes/
 **Example URLs:**
 
 ```
-/completed?view=table&sortBy=score&sortDir=desc
+/completed?sortBy=score&sortDir=desc
 /planned?search=zelda&platforms=Switch
-/?game=uuid-12345                # Opens detail modal for game
-/tierlist                         # No filters apply here
 ```
 
 #### Navigation Behavior
@@ -733,7 +720,7 @@ const gamesById = new Map<string, Game>();
 #### Performance Optimizations
 
 - **Lazy Loading:** Images load as they enter viewport
-- **Virtualization:** Table view virtualizes rows for 1000+ games
+- **Performance:** Gallery view optimized for large datasets
 - **Debounced Search:** 300ms delay before filtering
 - **Memoized Computations:** Cache filtered/sorted results
 - **Code Splitting:** Route-based chunks
@@ -791,7 +778,7 @@ The application uses a **fixed header layout** with content areas below:
 
 4. **Content Area (Scrollable)**
    - Main content area that scrolls
-   - Displays either Gallery View or Table View
+   - Displays game cards in Gallery View
    - Padding: 24px horizontal
 
 ### Core Components
@@ -862,9 +849,7 @@ The application uses a **fixed header layout** with content areas below:
 - 📊 Ratings (opens rating sliders)
 - ↻ Reset
 
-**Right-aligned:**
 
-- View toggle buttons: ⊞ (gallery) and ☰ (table)
 
 **Styling:**
 
@@ -955,52 +940,13 @@ The application uses a **fixed header layout** with content areas below:
 - Padding: 4px 8px
 - Border radius: 4px
 
-#### 8. Table View
 
-**Table Structure:**
 
-- Full-width table with horizontal scroll on mobile
-- Columns: Cover | Title | Year | Platform | Genre | Tier | Ratings | Score | Hours | Finished
-
-**Column Specifications:**
-
-- **Cover**: 40px × 60px thumbnail
-- **Title**: Left-aligned, bold (600 weight)
-- **Year**: 4-digit year
-- **Platform**: Badge (same styling as gallery)
-- **Genre**: Badge (same styling as gallery)
-- **Tier**: Badge with tier color
-- **Ratings**: Three icons with scores in a row
-- **Score**: Bold total score (e.g., "17/20")
-- **Hours**: Time format (e.g., "58h 38m")
-- **Finished**: Date format (e.g., "May 28, 2025")
-
-**Sortable Headers:**
-
-- Clickable column headers with ↕ indicator
-- Sorted column highlights slightly
-- Font size: 0.8rem
-- Text transform: uppercase
-- Letter spacing: 0.5px
-
-**Row Styling:**
-
-- Padding: 14px 16px
-- Hover: Background color change
-- Dark mode: Hover background #1a1f27
-- Light mode: Hover background #f9fafb
-
-**Cross-reference**:
-
-- Sorting managed by [Sort Store](#global-state-svelte-stores)
-- Updates [URL Query Parameters](#url-structure--query-parameters)
-
-#### 9. Detail Modal
+#### 8. Detail Modal
 
 **Trigger:**
 
 - Click on any game card in gallery view
-- Click on any table row in table view
 
 **Layout:**
 
@@ -1053,17 +999,16 @@ The application uses a **fixed header layout** with content areas below:
 #### Navigation
 
 1. **Tab Switching**: Click tab to change view, updates URL, maintains filters
-2. **View Toggle**: Click grid/table icon to switch between gallery and table views
-3. **Search**: Real-time filtering as user types (debounced)
-4. **Filters**: Dropdown menus with checkboxes for multi-select
-5. **Sorting**: Click table headers to sort (toggle asc/desc)
+2. **Search**: Real-time filtering as user types (debounced)
+3. **Filters**: Dropdown menus with checkboxes for multi-select
+4. **Sorting**: Select sort option from dropdown (e.g., Score, Title, Year, Hours)
 
 **Cross-reference**: See [Data Flow](#data-flow) for detailed interaction flows
 
 #### Adding Games
 
 1. Click "+ Add Game" button in header
-2. Opens modal/sidebar form with Phase 1 fields (for Planned games)
+2. Opens modal form with Phase 1 fields (for Planned games)
 3. After saving, game appears in Planned tab
 
 **Cross-reference**: See [Phase 1 Input](#game-data-management-two-phase-input) in PRD
@@ -1071,7 +1016,7 @@ The application uses a **fixed header layout** with content areas below:
 #### Editing Games
 
 1. Click "Edit" button on game card (visible on hover or always visible on mobile)
-2. Opens same modal/form with all fields populated
+2. Opens same modal with all fields populated
 3. Can change status from Planned → Completed (unlocks Phase 2 fields)
 
 **Cross-reference**: See [Add/Edit Game Flow](#user-interactions-flow)
@@ -1087,7 +1032,7 @@ The application uses a **fixed header layout** with content areas below:
 
 #### Detail View
 
-1. Click on any game card/row
+1. Click on any game card
 2. Modal opens with full information
 3. Click overlay or ✕ button to close
 4. Arrow keys to navigate between games (optional enhancement)
@@ -1168,7 +1113,6 @@ The application uses a **fixed header layout** with content areas below:
 #### Desktop (1200px+)
 
 - Gallery: 5-6 cards per row
-- Table: All columns visible
 - Modal: Two-column layout
 - Filters: Single row
 - Sidebar navigation: Optional left sidebar for future enhancement
@@ -1176,7 +1120,6 @@ The application uses a **fixed header layout** with content areas below:
 #### Tablet (768px - 1199px)
 
 - Gallery: 3-4 cards per row
-- Table: Horizontal scroll for overflow columns
 - Modal: Two-column layout (narrower)
 - Filters: May wrap to two rows
 
@@ -1184,7 +1127,6 @@ The application uses a **fixed header layout** with content areas below:
 
 - Gallery: 2 cards per row
 - Cover size: Scales down proportionally (height: 240px)
-- Table: Horizontal scroll
 - Modal: Single column layout, cover on top (height: 400px)
 - Filters: Horizontal scroll, no wrap
 - Search: Full width, prominent
@@ -1203,7 +1145,7 @@ The application uses a **fixed header layout** with content areas below:
 #### Performance
 
 - Lazy load game covers as user scrolls
-- Virtualize table rows for large datasets
+- Optimize rendering for large datasets
 - Debounce search input (300ms)
 - Cache filter states in URL/localStorage
 
@@ -1260,7 +1202,7 @@ The application uses a **fixed header layout** with content areas below:
 - Focus indicators: 2px blue outline on all interactive elements
 - Escape key: Closes modals and dropdowns
 - Enter/Space: Activates buttons and toggles
-- Arrow keys: Navigate through table cells (optional)
+- Arrow keys: Navigate between game cards (optional)
 
 #### Screen Readers
 
@@ -1298,7 +1240,6 @@ The application uses a **fixed header layout** with content areas below:
 - Ratings: 📊 (bar chart)
 - Reset: ↻ (circular arrow)
 - Gallery: ⊞ (grid)
-- Table: ☰ (list)
 
 **Cross-reference**: Use Lucide-Svelte icons from [Technical Stack](#ui--styling)
 
@@ -1306,7 +1247,6 @@ The application uses a **fixed header layout** with content areas below:
 
 - Active tab
 - Selected filters
-- Current view (gallery/table)
 - Theme preference (dark/light)
 - Sort order and column
 - Search query
@@ -1480,7 +1420,7 @@ The application uses a **fixed header layout** with content areas below:
 
 ### Phase 4 - Advanced Views (Day 4-5)
 
-**Goal**: Add table view, detail modal, and tier list
+**Goal**: Add detail modal and tier list
 
 #### Tasks
 
@@ -1492,21 +1432,7 @@ The application uses a **fixed header layout** with content areas below:
    - Add close button and overlay click
    - Support `?game={id}` URL parameter for deep linking
 
-2. **Table View**
-   - Create table component
-   - Implement all columns (see [Table View](#8-table-view))
-   - Add sortable column headers
-   - Create sort store
-   - Wire sorting to URL query parameters
-   - Add horizontal scroll for mobile
-   - Implement row virtualization for large datasets
-
-3. **View Toggle**
-   - Add gallery/table toggle buttons
-   - Store preference in localStorage
-   - Maintain filters/sort when switching views
-
-4. **Tier List View**
+2. **Tier List View**
    - Create tier list page (`/tierlist`)
    - Group completed games by tier (S, A, B, C, D, E)
    - Display games in horizontal rows per tier
@@ -1517,16 +1443,12 @@ The application uses a **fixed header layout** with content areas below:
 
 - ✓ Detail modal opens with correct game data
 - ✓ URL updates with `?game={id}` parameter
-- ✓ Table view shows all data correctly
-- ✓ All columns are sortable
-- ✓ View toggle persists preference
 - ✓ Tier list groups games correctly
 - ✓ Can export tier list as image
 
 **Cross-references**:
 
-- [Detail Modal](#9-detail-modal)
-- [Table View](#8-table-view)
+- [Detail Modal](#8-detail-modal)
 - [Tier List Generation](#tier-list-generation)
 - [Route Design](#route-design)
 
@@ -1547,7 +1469,7 @@ The application uses a **fixed header layout** with content areas below:
 
 2. **Performance Optimization**
    - Implement image lazy loading
-   - Add table row virtualization
+   
    - Memoize filtered/sorted game computations
    - Optimize re-renders with Svelte reactivity
    - Test with large datasets (1000+ games)
@@ -1606,11 +1528,10 @@ The application uses a **fixed header layout** with content areas below:
 | Total Score (0-20)                    | `(P + S + G) / 3 × 2` formula           | Score display in card/detail   |
 | Tier Structure (S-E)                  | TierValue type, validation              | Tier badge on cards            |
 | Filtering (Platform/Genre/Tier)       | Filters Store + derived state           | Filter dropdown components     |
-| Sorting (All columns)                 | Sort Store + URL params                 | Sortable table headers         |
 | Search by Title                       | Filters Store `searchQuery`             | Search bar component           |
-| Gallery View (Default)                | App Store `viewMode: 'gallery'`         | Game card grid layout          |
-| Table View (Toggle)                   | App Store `viewMode: 'table'`           | Table component                |
+| Gallery View (Default)                | App Store `activeTab`                   | Game card grid layout          |
 | Tier List with Export                 | Tier grouping logic + HTML2Canvas       | Tier list page + export button |
+| Sorting                               | Sort Store + URL params                 | Sort dropdown component        |
 | Theme Toggle                          | App Store `theme` + localStorage        | Theme toggle button in header  |
 | JSON Export/Import                    | Download/upload functions               | Export button in UI            |
 | Responsive Design                     | Tailwind breakpoints                    | Mobile/tablet/desktop layouts  |
@@ -1625,7 +1546,6 @@ The application uses a **fixed header layout** with content areas below:
 4. **Modal Store** before add/edit forms
 5. **Theme System** before any styled components
 6. **Gallery View** before detail modal (needs clickable cards)
-7. **Table View** before full sorting implementation
 
 **Can Build in Parallel**:
 
@@ -1689,7 +1609,7 @@ All above fields must have values (non-null).
 **Example URL with full state**:
 
 ```
-/completed?view=table&search=zelda&platforms=Switch&sortBy=score&sortDir=desc&game=uuid-123
+/completed?search=zelda&platforms=Switch&sortBy=score&sortDir=desc&game=uuid-123
 ```
 
 **Benefits**:

@@ -20,7 +20,7 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 - Pre-build image optimization pipeline using `sharp`
 - Client-side routing with SvelteKit's built-in router
 - URL-based state management for shareability
-- Browser localStorage for user preferences (theme, view mode)
+- Browser localStorage for user preferences (theme)
 
 ---
 
@@ -32,7 +32,7 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 
 - Svelte 5 components with Runes for reactivity
 - Route-based page components (`+page.svelte`)
-- Reusable UI components (cards, modals, tables)
+- Reusable UI components (cards, modals)
 - Tailwind CSS for styling with Shadcn-Svelte theming
 
 **Layer 2: Business Logic Layer**
@@ -66,7 +66,6 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 
 ```typescript
 - theme: 'dark' | 'light'
-- viewMode: 'gallery' | 'table'
 - activeTab: 'all' | 'completed' | 'planned' | 'tierlist'
 ```
 
@@ -125,7 +124,7 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 ### State Persistence
 
 - Theme preference → localStorage
-- View mode preference → localStorage
+
 - Filter state → URL query parameters
 - Sort state → URL query parameters
 - Active tab → URL route
@@ -138,7 +137,7 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 
 1. **App Mount** → Load theme from localStorage → Apply theme class to `<html>`
 2. **Load Games Data** → Fetch `static/games.json` → Parse JSON → Populate games store
-3. **Restore UI State** → Read URL params → Set filters/sort → Read localStorage → Set view mode
+3. **Restore UI State** → Read URL params → Set filters/sort → Read localStorage → Set theme
 4. **Initial Render** → Compute filtered/sorted games → Render active view
 
 ### User Interactions Flow
@@ -155,13 +154,6 @@ Re-render game list → Update URL params
 ```
 User clicks tab → Update activeTab in app store → Update URL →
 Filter games by status → Re-render view
-```
-
-**View Toggle Flow:**
-
-```
-User clicks gallery/table toggle → Update viewMode in app store →
-Save to localStorage → Re-render with new view component
 ```
 
 **Sort Flow:**
@@ -300,8 +292,7 @@ src/routes/
 **Query Parameters (Shared across routes):**
 
 ```
-?view=gallery|table              # View mode
-&search=query                    # Search filter
+?search=query                    # Search filter
 &platforms=PC,PS5                # Selected platforms (comma-separated)
 &genres=RPG,Action               # Selected genres (comma-separated)
 &tiers=S,A,B                     # Selected tiers (comma-separated)
@@ -313,7 +304,7 @@ src/routes/
 **Example URLs:**
 
 ```
-/completed?view=table&sortBy=score&sortDir=desc
+/completed?sortBy=score&sortDir=desc
 /planned?search=zelda&platforms=Switch
 /?game=uuid-12345                # Opens detail modal for game
 /tierlist                         # No filters apply here
@@ -557,7 +548,7 @@ const gamesById = new Map<string, Game>();
 ### Performance Optimizations
 
 - **Lazy Loading:** Images load as they enter viewport
-- **Virtualization:** Table view virtualizes rows for 1000+ games
+- **Virtualization:** List view virtualizes items for 1000+ games
 - **Debounced Search:** 300ms delay before filtering
 - **Memoized Computations:** Cache filtered/sorted results
 - **Code Splitting:** Route-based chunks

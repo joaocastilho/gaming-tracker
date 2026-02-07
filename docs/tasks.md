@@ -25,10 +25,10 @@
 | **Phase 1: Foundation**      | ✅ **COMPLETED**   | 15/15           | 0/15            |
 | **Phase 2: Core UI**         | ✅ **COMPLETED**   | 15/15           | 0/15            |
 | **Phase 3: Data Management** | ✅ **COMPLETED**   | 22/22           | 0/22            |
-| **Phase 4: Advanced Views**  | ✅ **COMPLETED**   | 20/20           | 0/20            |
+| **Phase 4: Advanced Views**  | ✅ **COMPLETED**   | 11/11           | 0/11            |
 | **Phase 5: Polish**          | ⏳ **IN PROGRESS** | 26/26           | 0/26            |
 
-**Overall Progress**: 96/96 tasks completed (100.0%)
+**Overall Progress**: 87/87 tasks completed (100.0%)
 
 ---
 
@@ -90,7 +90,7 @@
   - **Status**: ✅ **COMPLETED**
 
 - [x] **Task 1.3.2**: Implement app store
-  - **Implementation**: `src/lib/stores/app.ts` with theme, viewMode, activeTab management
+  - **Implementation**: `src/lib/stores/app.ts` with theme and activeTab management
   - **Status**: ✅ **COMPLETED**
 
 - [x] **Task 1.3.3**: Create theme toggle component
@@ -315,7 +315,7 @@
 
 ## ✅ Phase 4: Advanced Views - COMPLETED
 
-**Goal**: Add table view, detail modal, and tier list
+**Goal**: Add detail modal and tier list
 
 ### 4.1 Detail Modal ✅
 
@@ -349,78 +349,36 @@
   - **Features**: Deep linking with URL state management
   - **Status**: ✅ **COMPLETED**
 
-### 4.2 Table View ✅
+### 4.2 Sorting ✅
 
-- [x] **Task 4.2.1**: Create table component
-  - **Implementation**: `src/lib/components/GameTable.svelte` with full-width table
-  - **Features**: Responsive table structure with proper styling
-  - **Status**: ✅ **COMPLETED**
-
-- [x] **Task 4.2.2**: Implement all columns
-  - **Implementation**: All required columns (Cover, Title, Year, Platform, Genre, Tier, Ratings, Score, Hours, Finished)
-  - **Features**: Proper data display with conditional rendering
-  - **Status**: ✅ **COMPLETED**
-
-- [x] **Task 4.2.3**: Add sortable column headers
-  - **Implementation**: Clickable headers with sort indicators (↕ ↑ ↓)
-  - **Features**: Visual feedback and proper sorting logic
-  - **Status**: ✅ **COMPLETED**
-
-- [x] **Task 4.2.4**: Create sort store
+- [x] **Task 4.2.1**: Create sort store
   - **Implementation**: `src/lib/stores/sort.ts` with sortBy, sortDirection state
   - **Features**: URL parameter integration and state management
   - **Status**: ✅ **COMPLETED**
 
-- [x] **Task 4.2.5**: Wire sorting to URL query parameters
+- [x] **Task 4.2.2**: Wire sorting to URL query parameters
   - **Implementation**: Sort state persistence in URL with proper encoding
   - **Features**: Browser back/forward navigation support
   - **Status**: ✅ **COMPLETED**
 
-- [x] **Task 4.2.6**: Add horizontal scroll for mobile
-  - **Implementation**: Mobile-responsive table with horizontal scrolling
-  - **Features**: Proper scrollbar styling and touch support
-  - **Status**: ✅ **COMPLETED**
+### 4.3 Tier List View ✅
 
-- [x] **Task 4.2.7**: Implement row virtualization for large datasets
-  - **Implementation**: Performance optimization ready for 1000+ games
-  - **Features**: Efficient rendering for large datasets
-  - **Status**: ✅ **COMPLETED**
-
-### 4.3 View Toggle ✅
-
-- [x] **Task 4.3.1**: Add gallery/table toggle buttons
-  - **Implementation**: Grid icon (⊞) and list icon (☰) in filter section
-  - **Features**: Visual toggle buttons with proper styling
-  - **Status**: ✅ **COMPLETED**
-
-- [x] **Task 4.3.2**: Store preference in localStorage
-  - **Implementation**: View mode persistence across sessions
-  - **Features**: Automatic restoration of user preference
-  - **Status**: ✅ **COMPLETED**
-
-- [x] **Task 4.3.3**: Maintain filters/sort when switching views
-  - **Implementation**: State preservation across view changes
-  - **Features**: Filters and sort persist when switching between gallery/table
-  - **Status**: ✅ **COMPLETED**
-
-### 4.4 Tier List View ✅
-
-- [x] **Task 4.4.1**: Create tier list page
+- [x] **Task 4.3.1**: Create tier list page
   - **Implementation**: `src/routes/tierlist/+page.svelte` with tier grouping
   - **Features**: Games grouped by tier (S, A, B, C, D, E)
   - **Status**: ✅ **COMPLETED**
 
-- [x] **Task 4.4.2**: Display games in horizontal rows per tier
+- [x] **Task 4.3.2**: Display games in horizontal rows per tier
   - **Implementation**: Horizontal scrolling rows with colored tier headers
   - **Features**: Tier headers with proper color coding
   - **Status**: ✅ **COMPLETED**
 
-- [x] **Task 4.4.3**: Implement tier list export as image
+- [x] **Task 4.3.3**: Implement tier list export as image
   - **Implementation**: html2canvas-based image export functionality
   - **Features**: Generate downloadable PNG of tier list
   - **Status**: ✅ **COMPLETED**
 
-- [x] **Task 4.4.4**: Add export button to tier list page
+- [x] **Task 4.3.4**: Add export button to tier list page
   - **Implementation**: Export button with success feedback
   - **Features**: Clear UI with proper user feedback
   - **Status**: ✅ **COMPLETED**
@@ -431,13 +389,8 @@
 - ✅ Two-column layout works on desktop and adapts for mobile
 - ✅ Rating progress bars display correct percentages
 - ✅ URL parameters support deep linking to specific games
-- ✅ Table displays all required columns with proper data
 - ✅ Column sorting works with visual indicators
 - ✅ Sort state persists in URL parameters
-- ✅ Table scrolls horizontally on mobile devices
-- ✅ View toggle switches between gallery and table correctly
-- ✅ View preference stored in localStorage
-- ✅ Filters and sort maintained when switching views
 - ✅ Tier list groups games correctly by tier
 - ✅ Tier rows display with correct colors and games
 - ✅ Image export creates downloadable PNG file
@@ -460,7 +413,7 @@
 
 - [x] **Task 5.1.2**: Test and fix tablet layout
   - **Breakpoint**: 768px - 1199px
-  - **Features**: Grid columns, table display, modal sizing
+  - **Features**: Grid columns, modal sizing
   - **Validation**: App displays properly on tablet devices
   - **Status**: ✅ **COMPLETED** - Grid layout optimized with 3 columns for tablets (md:grid-cols-3)
 
@@ -489,10 +442,10 @@
   - **Validation**: Images load smoothly without layout shift
   - **Status**: ✅ **COMPLETED** - Lazy loading implemented with loading="lazy" attribute
 
-- [x] **Task 5.2.2**: Add table row virtualization
-  - **Features**: Render only visible rows for performance
-  - **Validation**: Table scrolls smoothly with 1000+ rows
-  - **Status**: ✅ **COMPLETED** - VirtualizedTable component created for large dataset performance
+- [x] **Task 5.2.2**: Add virtual list optimization
+  - **Features**: Render only visible items for performance
+  - **Validation**: Gallery scrolls smoothly with 1000+ games
+  - **Status**: ✅ **COMPLETED** - VirtualList component created for large dataset performance
 
 - [x] **Task 5.2.3**: Memoize filtered/sorted game computations
   - **Features**: Cache expensive calculations

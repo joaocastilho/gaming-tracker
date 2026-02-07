@@ -66,7 +66,7 @@
 - Provide filtering options for **Platforms, Genres, and Tiers**.
 - Enable sorting/filtering by score ranges (Presentation, Story, Gameplay, Total Score).
 - Include a prominent **Search bar** to quickly find games by Title.
-- **Sorting:** All columns in the **Table View** must be sortable. The **Gallery View** must also provide a clear way to initiate sorting based on key metrics (e.g., Score, Hours Played).
+- **Sorting:** The **Gallery View** must provide a clear way to initiate sorting based on key metrics (e.g., Score, Hours Played).
 
 ---
 
@@ -75,7 +75,6 @@
 - **Phase 1 Input (Planned):** _As a user, I want a simple input form to quickly add a game to my **Planned** list, only requiring basic fields like **Cover, Title, Platform, Genre, Coop and Time to Beat**, so I can manage my backlog efficiently._
 - **Phase 2 Input (Completed):** _As a user, I want to easily open a **Planned** game via an 'Edit' button, mark it as **Completed**, and then input my **Finished Date**, actual **Hours Played**, tier level and detailed **0-10 ratings** to finalize the review._
 - **Visual Verification:** _As a user, I want to see a cover-focused **Gallery View** of my tracked games by default, with clear **icons and metrics** visible, to prioritize visual appeal._
-- **Detailed Review:** _As a user, I want to easily switch to a **Table View** and **sort all columns** to perform detailed analysis and comparison of my game metrics._
 - **Tier List Generation:** _As a user, I want to view a dedicated **Tier List** screen that groups all my **Completed** games visually by their assigned Tier, and allow the user to **export this list as an image**._
 
 ---
@@ -86,8 +85,7 @@
 - **Theme:** Must feature a visible **Light Mode and Dark Mode** toggle.
 - **Navigation:** A clean top navigation bar with clear links for **Completed, Planned, Tier List**, and **Game Input**.
 - **Display Modes:**
-  - **Gallery View (Default):** Game covers are the primary focus. Game cards must display: Title, Platform, Genre tags, and clear, icon-based metrics for the three scores and the final 0-20 score.
-  - **Table View (Toggle):** A tabular list showing all data fields.
+  - **Gallery View:** Game covers are the primary focus. Game cards must display: Title, Platform, Genre tags, and clear, icon-based metrics for the three scores and the final 0-20 score.
 - **Iconography:** Metrics should use **clear, obvious icons and graphs** (instead of long labels) to represent scores, hours played, and dates, provided their meaning is immediately intuitive.
 - **Responsiveness:** **Mobile and tablet support must be ensured.** The design must be optimized for all views, particularly ensuring the gallery of game covers is smooth and easily navigable on small screens.
 

@@ -42,7 +42,6 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 - **Modal Store** before add/edit forms
 - **Theme System** before any styled components
 - **Gallery View** before detail modal (needs clickable cards)
-- **Table View** before full sorting implementation
 
 ---
 
@@ -112,7 +111,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 
 - **Task 1.3.2**: Implement app store
   - **File**: `src/lib/stores/app.ts`
-  - **Features**: Theme, viewMode, activeTab state
+  - **Features**: Theme and activeTab state
   - **Reference**: [App Store](#app-store) in docs/project.md
 
 - **Task 1.3.3**: Create theme toggle component
@@ -303,7 +302,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 
 ## Phase 4: Advanced Views
 
-**Goal**: Add table view, detail modal, and tier list
+**Goal**: Add detail modal and tier list
 
 ### 4.1 Detail Modal
 
@@ -330,64 +329,22 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Features**: `?game={id}` parameter support
   - **Reference**: [URL Parameter](#url-parameter) in docs/project.md
 
-### 4.2 Table View
+### 4.2 Tier List View
 
-- **Task 4.2.1**: Create table component
-  - **File**: `src/lib/components/GameTable.svelte`
-  - **Features**: Full-width table, column structure
-  - **Reference**: [Table View](#8-table-view) in docs/project.md
-
-- **Task 4.2.2**: Implement all columns
-  - **Columns**: Cover, Title, Year, Platform, Genre, Tier, Ratings, Score, Hours, Finished
-  - **Reference**: [Column Specifications](#column-specifications) in docs/project.md
-
-- **Task 4.2.3**: Add sortable column headers
-  - **Features**: Clickable headers, sort indicators
-
-- **Task 4.2.4**: Create sort store
-  - **File**: `src/lib/stores/sort.ts`
-  - **Features**: sortBy, sortDirection state
-  - **Reference**: [Sort Store](#sort-store) in docs/project.md
-
-- **Task 4.2.5**: Wire sorting to URL query parameters
-  - **Features**: Sort state persistence in URL
-
-- **Task 4.2.6**: Add horizontal scroll for mobile
-  - **Features**: Mobile-responsive table scrolling
-  - **Reference**: [Mobile Considerations](#mobile-web-app-desktop-considerations) in docs/project.md
-
-- **Task 4.2.7**: Implement row virtualization for large datasets
-  - **Features**: Performance optimization for 1000+ games
-
-### 4.3 View Toggle
-
-- **Task 4.3.1**: Add gallery/table toggle buttons
-  - **Location**: Filter section
-  - **Features**: Grid icon (⊞) and list icon (☰)
-  - **Reference**: [View Toggle](#view-toggle) in docs/project.md
-
-- **Task 4.3.2**: Store preference in localStorage
-  - **Features**: Persist view mode choice
-
-- **Task 4.3.3**: Maintain filters/sort when switching views
-  - **Features**: State preservation across view changes
-
-### 4.4 Tier List View
-
-- **Task 4.4.1**: Create tier list page
+- **Task 4.2.1**: Create tier list page
   - **File**: `src/routes/tierlist/+page.svelte`
   - **Features**: Group games by tier (S, A, B, C, D, E)
   - **Reference**: [Tier List Generation](#tier-list-generation) in docs/project.md
 
-- **Task 4.4.2**: Display games in horizontal rows per tier
+- **Task 4.2.2**: Display games in horizontal rows per tier
   - **Features**: Tier headers with colored backgrounds
   - **Reference**: [Tier Colors](#tier-colors) in docs/project.md
 
-- **Task 4.4.3**: Implement tier list export as image
+- **Task 4.2.3**: Implement tier list export as image
   - **Library**: html2canvas or similar
   - **Features**: Generate image of tier list, download
 
-- **Task 4.4.4**: Add export button to tier list page
+- **Task 4.2.4**: Add export button to tier list page
   - **Features**: Clear export button, success feedback
 
 ---
@@ -405,7 +362,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
 
 - **Task 5.1.2**: Test and fix tablet layout
   - **Breakpoint**: 768px - 1199px
-  - **Features**: Grid columns, table display, modal sizing
+  - **Features**: Grid columns, modal sizing
 
 - **Task 5.1.3**: Adjust grid columns for different breakpoints
   - **Features**: Desktop 5-6, Tablet 3-4, Mobile 2 columns
@@ -424,10 +381,7 @@ Phase 1 (Foundation) → Phase 2 (Core UI) → Phase 3 (Data Management) → Pha
   - **Features**: Load images as they enter viewport
   - **Reference**: [Lazy Loading](#lazy-loading) in docs/project.md
 
-- **Task 5.2.2**: Add table row virtualization
-  - **Features**: Render only visible rows for performance
-
-- **Task 5.2.3**: Memoize filtered/sorted game computations
+- **Task 5.2.2**: Memoize filtered/sorted game computations
   - **Features**: Cache expensive calculations
   - **Reference**: [Memoized Computations](#memoized-computations) in docs/project.md
 
