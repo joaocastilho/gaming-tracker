@@ -110,9 +110,7 @@ gaming-tracker/
 │   ├── covers/              # Optimized game cover images
 │   └── favicon/             # Favicon files
 ├── scripts/                 # Build and utility scripts
-│   ├── optimize-covers.ts
-│   ├── convert-csv-to-json.ts
-│   └── ...
+│   └── optimize-covers.ts
 ├── tests/                   # Unit and integration tests
 └── docs/                    # Project documentation
 ```
@@ -135,8 +133,6 @@ gaming-tracker/
 
 ### Utility Scripts
 
-| Script                    | Description                        |
-| ------------------------- | ---------------------------------- |
-| `bun run optimize-covers` | Optimize cover images for web      |
-| `bun run convert-csv`     | Convert CSV data to JSON format    |
-| `bun run compare-images`  | Compare image files with game data |
+| Script                    | Description                   |
+| ------------------------- | ----------------------------- |
+| `bun run optimize-covers` | Optimize cover images for web |

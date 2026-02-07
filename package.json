@@ -14,8 +14,6 @@
 		"format:check": "prettier --check .",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"compare-images": "bun scripts/compare-images-and-games.ts",
-		"convert-csv": "bun scripts/convert-csv-to-json.ts",
 		"generate-favicons": "bun scripts/generate-favicons.ts",
 		"optimize-covers": "bun scripts/optimize-covers-full.ts",
 		"optimize-logo": "bun scripts/optimize-logo.ts",
