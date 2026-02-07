@@ -558,7 +558,7 @@
 
 <svelte:head>
 	<title>Gaming Tracker</title>
-	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0f1419' : '#f2ebe1'} />
+	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0a0c10' : '#e8e2d9'} />
 	<meta
 		name="apple-mobile-web-app-status-bar-style"
 		content={appStore.theme === 'dark' ? 'black-translucent' : 'default'}
@@ -926,28 +926,17 @@
 		display: flex;
 		align-items: center;
 		width: 100%;
-		border-radius: 8px;
+		border-radius: 12px;
 		padding: 12px 16px;
-		background-color: #1a1f27;
-		border: 1px solid #2a2f3a;
-		transition:
-			border-color 0.2s ease,
-			box-shadow 0.2s ease;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		transition: all var(--transition-fast);
 		gap: 8px;
 	}
 
-	:global(.light) .mobile-search-bar {
-		background-color: #ffffff;
-		border-color: #e5e7eb;
-	}
-
 	.mobile-search-bar:focus-within {
-		border-color: #3b82f6;
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-	}
-
-	:global(.light) .mobile-search-bar:focus-within {
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+		border-color: var(--color-accent);
+		box-shadow: 0 0 0 3px var(--color-focus-ring);
 	}
 
 	.mobile-search-icon {
@@ -960,22 +949,14 @@
 		background: transparent;
 		border: none;
 		outline: none;
-		color: #ffffff;
+		color: var(--color-text-primary);
 		font-size: 1rem;
 		line-height: 1.5;
 		min-width: 0;
 	}
 
-	:global(.light) .mobile-search-input {
-		color: #1a1a1a;
-	}
-
 	.mobile-search-input::placeholder {
-		color: #8b92a8;
-	}
-
-	:global(.light) .mobile-search-input::placeholder {
-		color: #6b7280;
+		color: var(--color-text-muted);
 	}
 
 	.mobile-clear-button {
@@ -985,29 +966,18 @@
 		width: 24px;
 		height: 24px;
 		border: none;
-		background: transparent;
-		color: #8b92a8;
+		background: var(--color-surface-elevated);
+		color: var(--color-text-secondary);
 		cursor: pointer;
-		border-radius: 4px;
-		transition:
-			background-color 0.2s ease,
-			color 0.2s ease;
+		border-radius: 6px;
+		transition: all var(--transition-fast);
 		flex-shrink: 0;
 		font-size: 0.9rem;
 	}
 
-	:global(.light) .mobile-clear-button {
-		color: #6b7280;
-	}
-
 	.mobile-clear-button:hover {
-		background-color: rgba(139, 146, 168, 0.1);
-		color: #ffffff;
-	}
-
-	:global(.light) .mobile-clear-button:hover {
-		background-color: rgba(107, 114, 128, 0.1);
-		color: #1a1a1a;
+		background: var(--color-hover);
+		color: var(--color-text-primary);
 	}
 
 	.mobile-close-button {
@@ -1016,8 +986,8 @@
 		justify-content: center;
 		padding: 6px 12px;
 		border: none;
-		background: rgba(59, 130, 246, 0.1);
-		color: #60a5fa;
+		background: var(--color-hover);
+		color: var(--color-accent);
 		cursor: pointer;
 		border-radius: 6px;
 		transition:
@@ -1108,19 +1078,19 @@
 
 	/* Light theme variations for settings FAB */
 	:global(.light) .settings-fab {
-		background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-		opacity: 0.7;
+		background: linear-gradient(135deg, #b8a99a 0%, #9c8b7a 100%);
+		box-shadow: 0 4px 12px rgba(61, 53, 48, 0.15);
+		opacity: 0.8;
 	}
 
 	:global(.light) .settings-fab:hover {
-		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-		opacity: 0.9;
+		background: linear-gradient(135deg, #9c8b7a 0%, #8a7a6a 100%);
+		box-shadow: 0 6px 16px rgba(61, 53, 48, 0.25);
+		opacity: 0.95;
 	}
 
 	:global(.light) .settings-fab.active {
-		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+		background: linear-gradient(135deg, #9c8b7a 0%, #8a7a6a 100%);
 	}
 
 	.settings-fab :global(.settings-icon) {
@@ -1133,22 +1103,14 @@
 
 	/* Filter FAB */
 	.filter-fab {
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
 		border: none;
-		color: white;
+		color: var(--color-accent-foreground);
 	}
 
 	.filter-fab:hover {
-		background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-		box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-	}
-
-	:global(.light) .filter-fab {
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-	}
-
-	:global(.light) .filter-fab:hover {
-		background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+		background: linear-gradient(135deg, var(--color-accent-hover) 0%, var(--color-accent) 100%);
+		box-shadow: var(--shadow-glow);
 	}
 
 	/* Settings Bottom Sheet */
@@ -1206,7 +1168,7 @@
 	}
 
 	.sheet-item:hover {
-		background-color: rgba(59, 130, 246, 0.1);
+		background-color: var(--color-hover);
 	}
 
 	.sheet-item:active {
@@ -1218,7 +1180,7 @@
 	}
 
 	.sheet-item-green:hover {
-		background-color: rgba(34, 197, 94, 0.1);
+		background-color: rgba(34, 197, 94, 0.15);
 	}
 
 	.sheet-item-red {
@@ -1226,15 +1188,15 @@
 	}
 
 	.sheet-item-red:hover {
-		background-color: rgba(239, 68, 68, 0.1);
+		background-color: rgba(239, 68, 68, 0.15);
 	}
 
 	.sheet-item-blue {
-		color: #3b82f6;
+		color: var(--color-accent);
 	}
 
 	.sheet-item-blue:hover {
-		background-color: rgba(59, 130, 246, 0.15);
+		background-color: var(--color-hover);
 	}
 
 	@media (max-width: 480px) {

@@ -207,6 +207,11 @@
 <style>
 	.header-root {
 		padding: 0.75rem 16px;
+		background: var(--color-background);
+		border-bottom: 1px solid var(--color-border);
+		position: sticky;
+		top: 0;
+		z-index: 40;
 	}
 
 	.header-inner {
@@ -239,6 +244,9 @@
 
 	.tabs-list li {
 		list-style: none;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.tabs-list button {
@@ -246,57 +254,61 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0 0 0.15rem;
+		padding: 0.5rem 0.25rem;
 		border: none;
 		background: transparent;
 		cursor: pointer;
-		font-size: 1.3rem;
+		font-size: 1.25rem;
 		font-weight: 600;
-		color: #9ca3af;
-		transition:
-			color 0.16s ease,
-			transform 0.12s ease;
+		color: var(--color-text-tertiary);
+		transition: all var(--transition-fast);
+		border-radius: 8px;
 	}
 
 	.tabs-list button .label {
-		letter-spacing: 0;
-		font-size: 1.3rem;
+		letter-spacing: -0.01em;
 	}
 
 	.tabs-list .count-badge {
 		min-width: 1.5rem;
-		padding: 0.08rem 0.5rem;
+		padding: 0.15rem 0.5rem;
 		border-radius: 999px;
 		font-size: 0.7rem;
+		font-weight: 600;
 		text-align: center;
-		background: rgba(37, 99, 235, 0.22);
-		color: #60a5fa;
+		background: var(--color-surface-elevated);
+		color: var(--color-accent);
+		border: 1px solid var(--color-border);
+		transition: all var(--transition-fast);
 	}
 
 	.tabs-list button::after {
 		content: '';
 		position: absolute;
-		left: 0;
-		right: 0;
+		left: 0.25rem;
+		right: 0.25rem;
 		bottom: 0;
 		height: 2px;
 		border-radius: 999px;
 		background: transparent;
 		transform-origin: center;
 		transform: scaleX(0);
-		transition:
-			background-color 0.1s ease-out,
-			transform 0.1s ease-out;
+		transition: all var(--transition-fast);
 	}
 
 	.tabs-list button:hover {
 		color: var(--color-text-primary);
-		transform: translateY(-1px);
+		background: var(--color-hover);
+	}
+
+	.tabs-list button:hover .count-badge {
+		border-color: var(--color-accent);
 	}
 
 	.tabs-list button:hover::after {
-		background: rgba(148, 163, 253, 0.55);
+		background: var(--color-accent);
 		transform: scaleX(1);
+		opacity: 0.5;
 	}
 
 	.tabs-list button.active {
@@ -304,8 +316,15 @@
 	}
 
 	.tabs-list button.active::after {
-		background: #3b82f6;
+		background: var(--color-accent);
 		transform: scaleX(1);
+		opacity: 1;
+	}
+
+	.tabs-list button.active .count-badge {
+		background: var(--color-accent);
+		color: var(--color-accent-foreground);
+		border-color: var(--color-accent);
 	}
 
 	.header-right {
@@ -327,7 +346,7 @@
 		display: inline-flex;
 		align-items: center;
 		margin-left: 0.5rem;
-		min-width: 62px; /* Maintain consistent width when button is hidden */
+		min-width: 62px;
 	}
 
 	.filter-toggle-button {
@@ -335,30 +354,30 @@
 		align-items: center;
 		justify-content: center;
 		gap: 6px;
-		padding: 6px 12px;
+		padding: 8px 14px;
 		border: 1px solid var(--color-border);
-		border-radius: 20px;
+		border-radius: 10px;
 		background-color: var(--color-surface);
 		color: var(--color-text-secondary);
 		cursor: pointer;
-		transition: all 0.12s ease-out;
+		transition: all var(--transition-fast);
+		font-weight: 500;
 	}
 
 	.filter-toggle-button:hover {
-		background-color: var(--color-accent);
-		color: white;
+		background-color: var(--color-hover);
 		border-color: var(--color-accent);
+		color: var(--color-accent);
 		transform: translateY(-1px);
 	}
 
-	/* Also update the icon colors on hover */
 	.filter-toggle-button:hover :global(.filter-icon),
 	.filter-toggle-button:hover :global(.filter-chevron-icon) {
-		color: white;
+		color: var(--color-accent);
 	}
 
 	.filter-toggle-button :global(.filter-chevron-icon) {
-		transition: transform 0.15s ease-out;
+		transition: transform var(--transition-fast);
 	}
 
 	@media (max-width: 834px) {
@@ -417,84 +436,81 @@
 		align-items: center;
 		justify-content: center;
 		gap: 6px;
-		padding: 6px 12px;
+		padding: 8px 14px;
 		border: 1px solid var(--color-border);
-		border-radius: 20px;
+		border-radius: 10px;
 		background-color: var(--color-surface);
 		color: var(--color-text-secondary);
 		cursor: pointer;
-		transition: all 0.12s ease-out;
+		transition: all var(--transition-fast);
 		font-size: 0.85rem;
 		font-weight: 500;
 	}
 
 	.editor-button:hover:not(:disabled) {
 		transform: translateY(-1px);
+		box-shadow: var(--shadow-sm);
 	}
 
 	.editor-button:disabled {
-		opacity: 0.6;
+		opacity: 0.5;
 		cursor: not-allowed;
 	}
 
 	.add-game-button {
-		border-color: rgba(34, 197, 94, 0.4);
-		background: rgba(34, 197, 94, 0.12);
+		border-color: rgba(34, 197, 94, 0.3);
+		background: rgba(34, 197, 94, 0.1);
 		color: #22c55e;
 	}
 
 	.add-game-button:hover {
-		background: #22c55e;
-		color: white;
-		border-color: #22c55e;
+		background: rgba(34, 197, 94, 0.2);
+		border-color: rgba(34, 197, 94, 0.5);
+		color: #4ade80;
 	}
 
 	.apply-button {
-		border-color: rgba(59, 130, 246, 0.4);
-		background: rgba(59, 130, 246, 0.12);
-		color: #3b82f6;
+		border-color: rgba(99, 102, 241, 0.3);
+		background: rgba(99, 102, 241, 0.1);
+		color: var(--color-accent);
 	}
 
 	.apply-button:hover:not(:disabled) {
-		background: #3b82f6;
-		color: white;
-		border-color: #3b82f6;
+		background: rgba(99, 102, 241, 0.2);
+		border-color: rgba(99, 102, 241, 0.5);
+		color: var(--color-accent-hover);
 	}
 
 	.discard-button {
-		border-color: rgba(239, 68, 68, 0.4);
-		background: rgba(239, 68, 68, 0.12);
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.1);
 		color: #ef4444;
-		padding: 6px 8px;
+		padding: 8px;
 	}
 
 	.discard-button:hover:not(:disabled) {
-		background: #ef4444;
-		color: white;
-		border-color: #ef4444;
+		background: rgba(239, 68, 68, 0.2);
+		border-color: rgba(239, 68, 68, 0.5);
+		color: #f87171;
 	}
 
 	.pending-badge {
 		min-width: 1.2rem;
-		padding: 0.1rem 0.4rem;
+		padding: 0.15rem 0.4rem;
 		border-radius: 999px;
 		font-size: 0.7rem;
 		font-weight: 600;
 		text-align: center;
-		background: rgba(255, 255, 255, 0.2);
-		color: inherit;
-	}
-
-	.apply-button:hover .pending-badge {
-		background: rgba(255, 255, 255, 0.25);
+		background: var(--color-accent);
+		color: var(--color-accent-foreground);
 	}
 
 	.logout-button,
 	.login-button {
-		width: 36px;
-		height: 36px;
+		width: 40px;
+		height: 40px;
 		padding: 0;
-		border-radius: 50%;
+		border-radius: 10px;
 		border-color: var(--color-border);
 		background: var(--color-surface);
 		color: var(--color-text-secondary);
@@ -502,8 +518,8 @@
 
 	.logout-button:hover:not(:disabled),
 	.login-button:hover:not(:disabled) {
-		background: var(--color-accent);
-		color: white;
+		background: var(--color-hover);
 		border-color: var(--color-accent);
+		color: var(--color-accent);
 	}
 </style>

@@ -136,7 +136,7 @@
 
 	.nav-button:hover {
 		color: var(--color-text-primary);
-		background-color: rgba(255, 255, 255, 0.03);
+		background-color: var(--color-hover);
 	}
 
 	.nav-button.active {

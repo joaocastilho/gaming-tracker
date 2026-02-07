@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* ============================================
+   MODERN DARK MODE DESIGN SYSTEM
+   Enhanced contrast, glassmorphism, smooth animations
+   ============================================ */
+
 html,
 body {
 	min-height: 100%;
@@ -16,169 +21,446 @@ html {
 		sans-serif;
 }
 
-/* Theme Variables - Dark Mode (Default) - Pastel Theme */
+/* ============================================
+   DARK MODE - Modern Deep Space Theme
+   ============================================ */
 :root {
-	/* Background Colors */
-	--color-background: #0f1419;
-	--color-surface: #1a1f27;
-	--color-surface-completed: #212f4d;
-	--color-border: #2a2f3a;
+	/* Base Background Colors - Richer, deeper tones */
+	--color-background: #0a0c10;
+	--color-background-rgb: 10, 12, 16;
+	--color-surface: #111318;
+	--color-surface-elevated: #161922;
+	--color-surface-completed: #1a2230;
+	--color-border: #1e232d;
+	--color-border-subtle: #252b36;
 
-	/* Text Colors */
-	--color-text-primary: #ffffff;
-	--color-text-secondary: #8b92a8;
-	--color-text-tertiary: #6b7280;
+	/* Text Colors - Enhanced contrast */
+	--color-text-primary: #f0f2f5;
+	--color-text-secondary: #a0a8b8;
+	--color-text-tertiary: #6b7285;
+	--color-text-muted: #4a5060;
 
-	/* Accent Colors */
-	--color-accent: #3b82f6;
-	--color-accent-foreground: #989292;
+	/* Accent Colors - Vibrant but not overwhelming */
+	--color-accent: #6366f1;
+	--color-accent-hover: #818cf8;
+	--color-accent-rgb: 99, 102, 241;
+	--color-accent-foreground: #ffffff;
 	--color-primary: var(--color-accent);
-	--color-primary-rgb: 59, 130, 246;
+	--color-primary-rgb: var(--color-accent-rgb);
 
-	/* Tier Colors */
-	--color-tier-s: #dc2626;
+	/* Interactive States */
+	--color-hover: rgba(99, 102, 241, 0.1);
+	--color-active: rgba(99, 102, 241, 0.2);
+	--color-focus-ring: rgba(99, 102, 241, 0.4);
+
+	/* Glassmorphism */
+	--glass-bg: rgba(17, 19, 24, 0.85);
+	--glass-border: rgba(255, 255, 255, 0.08);
+	--glass-backdrop: blur(20px) saturate(180%);
+
+	/* Shadows - Modern depth system */
+	--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+	--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+	--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+	--shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+
+	/* Tier Colors - Enhanced vibrancy */
+	--color-tier-s: #ef4444;
+	--color-tier-s-glow: rgba(239, 68, 68, 0.4);
 	--color-tier-a: #f97316;
+	--color-tier-a-glow: rgba(249, 115, 22, 0.4);
 	--color-tier-b: #eab308;
+	--color-tier-b-glow: rgba(234, 179, 8, 0.4);
 	--color-tier-c: #22c55e;
+	--color-tier-c-glow: rgba(34, 197, 94, 0.4);
 	--color-tier-d: #06b6d4;
+	--color-tier-d-glow: rgba(6, 182, 212, 0.4);
 	--color-tier-e: #6b7280;
+	--color-tier-e-glow: rgba(107, 114, 128, 0.4);
 	--tier-color: var(--color-tier-s);
 
-	/* Platform Colors */
-	--color-platform-pc-bg: #4c1d95;
+	/* Platform Colors - Updated for dark mode */
+	--color-platform-pc-bg: rgba(139, 92, 246, 0.15);
 	--color-platform-pc-text: #a78bfa;
-	--color-platform-ps5-bg: #1e293b;
+	--color-platform-pc-border: rgba(139, 92, 246, 0.3);
+	--color-platform-ps5-bg: rgba(14, 165, 233, 0.15);
 	--color-platform-ps5-text: #38bdf8;
-	--color-platform-xbox-bg: #14532d;
+	--color-platform-ps5-border: rgba(14, 165, 233, 0.3);
+	--color-platform-xbox-bg: rgba(34, 197, 94, 0.15);
 	--color-platform-xbox-text: #4ade80;
-	--color-platform-switch-bg: #7c2d12;
+	--color-platform-xbox-border: rgba(34, 197, 94, 0.3);
+	--color-platform-switch-bg: rgba(251, 146, 60, 0.15);
 	--color-platform-switch-text: #fb923c;
+	--color-platform-switch-border: rgba(251, 146, 60, 0.3);
+
+	/* Genre Colors - Updated for dark mode */
+	--color-genre-action-rpg-bg: rgba(168, 85, 247, 0.15);
+	--color-genre-action-rpg-text: #c084fc;
+	--color-genre-action-rpg-border: rgba(168, 85, 247, 0.3);
+	--color-genre-story-adventure-bg: rgba(245, 158, 11, 0.15);
+	--color-genre-story-adventure-text: #fbbf24;
+	--color-genre-story-adventure-border: rgba(245, 158, 11, 0.3);
+	--color-genre-action-adventure-bg: rgba(6, 182, 212, 0.15);
+	--color-genre-action-adventure-text: #22d3ee;
+	--color-genre-action-adventure-border: rgba(6, 182, 212, 0.3);
+	--color-genre-puzzle-bg: rgba(236, 72, 153, 0.15);
+	--color-genre-puzzle-text: #f472b6;
+	--color-genre-puzzle-border: rgba(236, 72, 153, 0.3);
+	--color-genre-metroidvania-bg: rgba(139, 92, 246, 0.15);
+	--color-genre-metroidvania-text: #a78bfa;
+	--color-genre-metroidvania-border: rgba(139, 92, 246, 0.3);
+
+	/* Rating Colors */
+	--color-rating-presentation: #f43f5e;
+	--color-rating-story: #0ea5e9;
+	--color-rating-gameplay: #10b981;
+	--color-rating-total: #f59e0b;
+
+	/* Animations */
+	--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================
+   LIGHT MODE - Warm Beige Theme
+   ============================================ */
+.light {
+	/* Base Background Colors - Warm beige tones */
+	--color-background: #e8e2d9;
+	--color-background-rgb: 232, 226, 217;
+	--color-surface: #f0ebe3;
+	--color-surface-elevated: #f5f0e8;
+	--color-surface-completed: #ebe5db;
+	--color-border: #d4cdc2;
+	--color-border-subtle: #c9c2b6;
+
+	/* Text Colors - Warm brown tones */
+	--color-text-primary: #3d3530;
+	--color-text-secondary: #5c5349;
+	--color-text-tertiary: #7a6f63;
+	--color-text-muted: #9a8f80;
+
+	/* Accent Colors - Warm amber/brown */
+	--color-accent: #b8860b;
+	--color-accent-hover: #d4a030;
+	--color-accent-rgb: 184, 134, 11;
+	--color-accent-foreground: #ffffff;
+	--color-primary: var(--color-accent);
+	--color-primary-rgb: var(--color-accent-rgb);
+
+	/* Interactive States */
+	--color-hover: rgba(184, 134, 11, 0.12);
+	--color-active: rgba(184, 134, 11, 0.2);
+	--color-focus-ring: rgba(184, 134, 11, 0.35);
+
+	/* Glassmorphism */
+	--glass-bg: rgba(240, 235, 227, 0.95);
+	--glass-border: rgba(61, 53, 48, 0.1);
+	--glass-backdrop: blur(20px) saturate(180%);
+
+	/* Shadows - Warm brown tones */
+	--shadow-sm: 0 1px 2px 0 rgba(61, 53, 48, 0.08);
+	--shadow-md: 0 4px 6px -1px rgba(61, 53, 48, 0.1), 0 2px 4px -2px rgba(61, 53, 48, 0.08);
+	--shadow-lg: 0 10px 15px -3px rgba(61, 53, 48, 0.12), 0 4px 6px -4px rgba(61, 53, 48, 0.1);
+	--shadow-xl: 0 20px 25px -5px rgba(61, 53, 48, 0.15), 0 8px 10px -6px rgba(61, 53, 48, 0.1);
+	--shadow-glow: 0 0 20px rgba(184, 134, 11, 0.25);
+
+	/* Platform Colors */
+	--color-platform-pc-bg: rgba(139, 92, 246, 0.12);
+	--color-platform-pc-text: #7c3aed;
+	--color-platform-pc-border: rgba(139, 92, 246, 0.25);
+	--color-platform-ps5-bg: rgba(14, 165, 233, 0.12);
+	--color-platform-ps5-text: #0284c7;
+	--color-platform-ps5-border: rgba(14, 165, 233, 0.25);
+	--color-platform-xbox-bg: rgba(34, 197, 94, 0.12);
+	--color-platform-xbox-text: #16a34a;
+	--color-platform-xbox-border: rgba(34, 197, 94, 0.25);
+	--color-platform-switch-bg: rgba(251, 146, 60, 0.12);
+	--color-platform-switch-text: #ea580c;
+	--color-platform-switch-border: rgba(251, 146, 60, 0.25);
 
 	/* Genre Colors */
-	--color-genre-action-rpg-bg: #2d1f3f;
-	--color-genre-action-rpg-text: #c084fc;
-	--color-genre-story-adventure-bg: #422006;
-	--color-genre-story-adventure-text: #fbbf24;
-	--color-genre-action-adventure-bg: #164e63;
-	--color-genre-action-adventure-text: #22d3ee;
-	--color-genre-puzzle-bg: #3f1f4d;
-	--color-genre-puzzle-text: #e879f9;
-	--color-genre-metroidvania-bg: #4c1d95;
-	--color-genre-metroidvania-text: #a78bfa;
+	--color-genre-action-rpg-bg: rgba(168, 85, 247, 0.12);
+	--color-genre-action-rpg-text: #9333ea;
+	--color-genre-action-rpg-border: rgba(168, 85, 247, 0.25);
+	--color-genre-story-adventure-bg: rgba(245, 158, 11, 0.12);
+	--color-genre-story-adventure-text: #d97706;
+	--color-genre-story-adventure-border: rgba(245, 158, 11, 0.25);
+	--color-genre-action-adventure-bg: rgba(6, 182, 212, 0.12);
+	--color-genre-action-adventure-text: #0891b2;
+	--color-genre-action-adventure-border: rgba(6, 182, 212, 0.25);
+	--color-genre-puzzle-bg: rgba(236, 72, 153, 0.12);
+	--color-genre-puzzle-text: #db2777;
+	--color-genre-puzzle-border: rgba(236, 72, 153, 0.25);
+	--color-genre-metroidvania-bg: rgba(139, 92, 246, 0.12);
+	--color-genre-metroidvania-text: #7c3aed;
+	--color-genre-metroidvania-border: rgba(139, 92, 246, 0.25);
 }
 
-/* Light Mode */
-.light {
-	/* Background Colors */
-	--color-background: #f2ebe1;
-	--color-surface: #f7eded;
-	--color-surface-completed: #ece5dc;
-	--color-border: #ede3d3;
-
-	/* Text Colors */
-	--color-text-primary: #1a1a1a;
-	--color-text-secondary: #4b5563;
-	--color-text-tertiary: #6b7280;
-
-	/* Accent Colors */
-	--color-accent: #3b82f6;
-	--color-primary: var(--color-accent);
-	--color-primary-rgb: 59, 130, 246;
-
-	/* Tier Colors (same for both modes) */
-	--color-tier-s: #dc2626;
-	--color-tier-a: #f97316;
-	--color-tier-b: #eab308;
-	--color-tier-c: #22c55e;
-	--color-tier-d: #06b6d4;
-	--color-tier-e: #6b7280;
-
-	/* Platform Colors (same for both modes) */
-	--color-platform-pc-bg: #4c1d95;
-	--color-platform-pc-text: #a78bfa;
-	--color-platform-ps5-bg: #1e293b;
-	--color-platform-ps5-text: #38bdf8;
-	--color-platform-xbox-bg: #14532d;
-	--color-platform-xbox-text: #4ade80;
-	--color-platform-switch-bg: #7c2d12;
-	--color-platform-switch-text: #fb923c;
-
-	/* Genre Colors (same for both modes) */
-	--color-genre-action-rpg-bg: #2d1f3f;
-	--color-genre-action-rpg-text: #c084fc;
-	--color-genre-story-adventure-bg: #422006;
-	--color-genre-story-adventure-text: #fbbf24;
-	--color-genre-action-adventure-bg: #164e63;
-	--color-genre-action-adventure-text: #22d3ee;
-	--color-genre-puzzle-bg: #3f1f4d;
-	--color-genre-puzzle-text: #e879f9;
-	--color-genre-metroidvania-bg: #4c1d95;
-	--color-genre-metroidvania-text: #a78bfa;
+/* ============================================
+   SMOOTH THEME TRANSITIONS
+   ============================================ */
+*,
+*::before,
+*::after {
+	transition-property: background-color, border-color, color, fill, stroke;
+	transition-duration: var(--transition-normal);
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Filter section table toggle button colors for theme support */
-.filter-section .view-toggle-button {
-	color: #ffffff !important;
-	/* White text on accent background */
+/* Exclude certain elements from theme transitions */
+img,
+video,
+svg,
+canvas,
+.game-card,
+.tier-badge,
+.skeleton-loader {
+	transition-property: none;
 }
 
-/* Tier Badge Classes */
+/* ============================================
+   GLASSMORPHISM UTILITY CLASSES
+   ============================================ */
+.glass {
+	background: var(--glass-bg);
+	backdrop-filter: var(--glass-backdrop);
+	-webkit-backdrop-filter: var(--glass-backdrop);
+	border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+	background: var(--glass-bg);
+	backdrop-filter: var(--glass-backdrop);
+	-webkit-backdrop-filter: var(--glass-backdrop);
+	border: 1px solid var(--glass-border);
+	box-shadow: var(--shadow-lg);
+}
+
+/* ============================================
+   TIER BADGE STYLES WITH GLOW EFFECTS
+   ============================================ */
+.tier-badge {
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	transition: all var(--transition-fast);
+}
+
+.tier-badge:hover {
+	transform: translateY(-2px) scale(1.05);
+}
+
 .tier-badge.tier-s {
-	background-color: var(--color-tier-s);
+	background: linear-gradient(135deg, var(--color-tier-s) 0%, #dc2626 100%);
 	color: white;
+	box-shadow: 0 2px 12px var(--color-tier-s-glow);
 }
 
 .tier-badge.tier-a {
-	background-color: var(--color-tier-a);
+	background: linear-gradient(135deg, var(--color-tier-a) 0%, #ea580c 100%);
 	color: white;
+	box-shadow: 0 2px 12px var(--color-tier-a-glow);
 }
 
 .tier-badge.tier-b {
-	background-color: var(--color-tier-b);
-	color: black;
-	/* Yellow shows better with black text */
+	background: linear-gradient(135deg, var(--color-tier-b) 0%, #ca8a04 100%);
+	color: #1a1a1a;
+	box-shadow: 0 2px 12px var(--color-tier-b-glow);
 }
 
 .tier-badge.tier-c {
-	background-color: var(--color-tier-c);
+	background: linear-gradient(135deg, var(--color-tier-c) 0%, #16a34a 100%);
 	color: white;
+	box-shadow: 0 2px 12px var(--color-tier-c-glow);
 }
 
 .tier-badge.tier-d {
-	background-color: var(--color-tier-d);
+	background: linear-gradient(135deg, var(--color-tier-d) 0%, #0891b2 100%);
 	color: white;
+	box-shadow: 0 2px 12px var(--color-tier-d-glow);
 }
 
 .tier-badge.tier-e {
-	background-color: var(--color-tier-e);
+	background: linear-gradient(135deg, var(--color-tier-e) 0%, #4b5563 100%);
 	color: white;
+	box-shadow: 0 2px 12px var(--color-tier-e-glow);
 }
 
-/* Global Keyframes for Loading Animations */
+/* ============================================
+   PLATFORM & GENRE BADGE STYLES
+   ============================================ */
+.platform-badge,
+.genre-badge {
+	border: 1px solid transparent;
+	transition: all var(--transition-fast);
+}
+
+.platform-badge:hover,
+.genre-badge:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   MODERN CARD STYLES
+   ============================================ */
+.game-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 12px;
+	box-shadow: var(--shadow-md);
+	transition: all var(--transition-normal);
+	contain: layout style paint;
+}
+
+.game-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--shadow-xl);
+	border-color: var(--color-border-subtle);
+}
+
+.game-card[data-status='completed'] {
+	background: var(--color-surface-completed);
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+.btn-primary {
+	background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+	color: var(--color-accent-foreground);
+	border: none;
+	border-radius: 8px;
+	padding: 10px 20px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-glow);
+}
+
+.btn-primary:active {
+	transform: translateY(0);
+}
+
+.btn-secondary {
+	background: var(--color-surface-elevated);
+	color: var(--color-text-primary);
+	border: 1px solid var(--color-border);
+	border-radius: 8px;
+	padding: 10px 20px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+	background: var(--color-hover);
+	border-color: var(--color-accent);
+}
+
+/* ============================================
+   INPUT STYLES
+   ============================================ */
+.input-modern {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 10px;
+	padding: 12px 16px;
+	color: var(--color-text-primary);
+	font-size: 0.95rem;
+	transition: all var(--transition-fast);
+	width: 100%;
+}
+
+.input-modern:hover {
+	border-color: var(--color-border-subtle);
+}
+
+.input-modern:focus {
+	outline: none;
+	border-color: var(--color-accent);
+	box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.input-modern::placeholder {
+	color: var(--color-text-muted);
+}
+
+/* ============================================
+   MODAL STYLES
+   ============================================ */
+.modal-overlay {
+	background: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.modal-content {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 16px;
+	box-shadow: var(--shadow-xl);
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--color-border-subtle);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-text-muted);
+}
+
+/* ============================================
+   SELECTION STYLES
+   ============================================ */
+::selection {
+	background: var(--color-accent);
+	color: var(--color-accent-foreground);
+}
+
+/* ============================================
+   FOCUS STYLES
+   ============================================ */
+:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+/* ============================================
+   ANIMATION KEYFRAMES
+   ============================================ */
 @keyframes strongPulse {
-	0% {
-		opacity: 1;
-		transform: scale(1);
-	}
-
-	25% {
-		opacity: 0.7;
-		transform: scale(1.01);
-	}
-
-	50% {
-		opacity: 0.4;
-		transform: scale(1.02);
-	}
-
-	75% {
-		opacity: 0.7;
-		transform: scale(1.01);
-	}
-
+	0%,
 	100% {
 		opacity: 1;
 		transform: scale(1);
+	}
+	50% {
+		opacity: 0.7;
+		transform: scale(1.02);
 	}
 }
 
@@ -186,22 +468,99 @@ html {
 	0% {
 		transform: translateX(-100%);
 	}
-
 	100% {
 		transform: translateX(100%);
 	}
 }
 
-/* Safari compatibility for backdrop-filter */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes glow {
+	0%,
+	100% {
+		box-shadow: 0 0 5px var(--color-accent);
+	}
+	50% {
+		box-shadow:
+			0 0 20px var(--color-accent),
+			0 0 30px var(--color-accent-hover);
+	}
+}
+
+/* ============================================
+   UTILITY ANIMATIONS
+   ============================================ */
+.animate-fade-in {
+	animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.animate-slide-up {
+	animation: slideUp var(--transition-normal) ease-out;
+}
+
+.animate-glow {
+	animation: glow 2s ease-in-out infinite;
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ============================================
+   RESPONSIVE IMPROVEMENTS
+   ============================================ */
+@media (max-width: 768px) {
+	.game-card:hover {
+		transform: translateY(-2px);
+	}
+
+	.tier-badge {
+		font-size: 0.8rem;
+		padding: 4px 8px;
+	}
+}
+
+/* ============================================
+   PERFORMANCE GUARD
+   ============================================ */
+.disable-animations * {
+	animation-duration: 0.01ms !important;
+}
+
+/* ============================================
+   SAFARI COMPATIBILITY
+   ============================================ */
 @supports (-webkit-backdrop-filter: none) {
 	.backdrop-blur-sm,
 	.backdrop-blur-\[8px\] {
 		-webkit-backdrop-filter: blur(8px);
 		backdrop-filter: blur(8px);
 	}
-}
-
-/* Performance Guard - Disable animations when filtering is slow */
-.disable-animations * {
-	animation-duration: 0.01ms !important;
 }

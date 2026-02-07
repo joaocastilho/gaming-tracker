@@ -508,23 +508,24 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		border-radius: 6px;
+		border-radius: 12px;
 		overflow: hidden;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-		transition:
-			transform 0.15s ease-out,
-			box-shadow 0.15s ease-out;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		box-shadow: var(--shadow-md);
+		transition: all var(--transition-normal);
 		cursor: pointer;
 		height: 100%;
-		border: none;
 		padding: 0;
 		text-align: left;
+		contain: layout style paint;
 	}
 
 	.game-card:hover,
 	.game-card:focus-visible {
-		transform: translateY(-2px) scale(1.01);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+		transform: translateY(-4px);
+		box-shadow: var(--shadow-xl);
+		border-color: var(--color-border-subtle);
 		outline: none;
 	}
 
@@ -552,26 +553,26 @@
 		background: linear-gradient(
 			90deg,
 			var(--color-surface) 0%,
-			var(--color-surface) 25%,
-			#4a4a4a 50%,
-			var(--color-surface) 75%,
+			var(--color-surface-elevated) 25%,
+			var(--color-border-subtle) 50%,
+			var(--color-surface-elevated) 75%,
 			var(--color-surface) 100%
 		);
 		background-size: 200% 100%;
-		animation: skeleton-shimmer 3s ease-in-out infinite;
+		animation: skeleton-shimmer 2s ease-in-out infinite;
 		z-index: 1;
-		opacity: 0.6;
-		transition: opacity 0.5s ease-in-out;
+		opacity: 0.7;
+		transition: opacity var(--transition-normal);
 	}
 
 	:global(.light) .skeleton-loader {
 		background: linear-gradient(
 			90deg,
-			#f8f9fa 0%,
-			#f8f9fa 25%,
-			#d1d5db 50%,
-			#f8f9fa 75%,
-			#f8f9fa 100%
+			var(--color-surface) 0%,
+			var(--color-surface-elevated) 25%,
+			var(--color-border) 50%,
+			var(--color-surface-elevated) 75%,
+			var(--color-surface) 100%
 		);
 	}
 
@@ -603,29 +604,33 @@
 
 	.tier-badge {
 		position: absolute;
-		top: 6px;
-		right: 6px;
+		top: 8px;
+		right: 8px;
 		display: flex;
 		align-items: center;
-		padding: 5px 10px;
-		border-radius: 4px;
-		font-size: 0.85rem;
-		font-weight: 600;
-		backdrop-filter: blur(4px);
-		min-width: 24px;
+		padding: 6px 12px;
+		border-radius: 8px;
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		min-width: 28px;
 		justify-content: center;
 		z-index: 10;
-		max-width: calc(100% - 12px);
+		max-width: calc(100% - 16px);
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-		border: none;
+		border: 1px solid rgba(255, 255, 255, 0.2);
 		cursor: pointer;
-		transition: transform 0.1s ease-out;
+		transition: all var(--transition-fast);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 
 	.tier-badge:hover {
-		transform: scale(1.1);
+		transform: translateY(-2px) scale(1.05);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 	}
 
 	.tier-text {
@@ -667,17 +672,13 @@
 
 	.game-subtitle {
 		font-weight: 550;
-		color: #8b92a8;
+		color: var(--color-text-secondary);
 		line-height: 1.2;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		display: block;
 		width: 100%;
-	}
-
-	:global(.light) .game-subtitle {
-		color: #6b7280;
 	}
 
 	.platform-genre-year-section {
@@ -695,13 +696,9 @@
 
 	.game-year {
 		font-size: 0.9rem;
-		color: #8b92a8;
+		color: var(--color-text-secondary);
 		flex-shrink: 0;
 		white-space: nowrap;
-	}
-
-	:global(.light) .game-year {
-		color: #6b7280;
 	}
 
 	.badges-section {
@@ -712,22 +709,23 @@
 
 	.platform-badge,
 	.genre-badge {
-		padding: 4px 8px;
-		border-radius: 4px;
-		font-size: 0.8rem;
-		font-weight: 500;
+		padding: 5px 10px;
+		border-radius: 6px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
 		white-space: nowrap;
 		cursor: pointer;
-		transition: all 0.12s ease-out;
-		opacity: 0.75;
+		transition: all var(--transition-fast);
 		border: 1px solid transparent;
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
 	}
 
 	.platform-badge:hover,
 	.genre-badge:hover {
-		opacity: 1;
-		transform: scale(1.02);
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+		transform: translateY(-1px);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 
 	.coop-badge:hover {
@@ -757,14 +755,10 @@
 		align-items: center;
 		gap: 8px;
 		font-size: 0.85rem;
-		color: #8b92a8;
+		color: var(--color-text-secondary);
 		min-width: 0;
 		flex: 1;
 		justify-content: center;
-	}
-
-	:global(.light) .rating-item {
-		color: #6b7280;
 	}
 
 	.rating-icon {
@@ -781,7 +775,7 @@
 		display: flex;
 		align-items: center;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--color-text-primary);
 		font-size: 0.9rem;
 		gap: 4px;
 	}
@@ -790,20 +784,12 @@
 		font-size: 1.2rem;
 	}
 
-	:global(.light) .total-score {
-		color: #1a1a1a;
-	}
-
 	.time-date-section {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-end;
 		font-size: 0.8rem;
-		color: #8b92a8;
-	}
-
-	:global(.light) .time-date-section {
-		color: #6b7280;
+		color: var(--color-text-secondary);
 	}
 
 	.time-item,
@@ -939,13 +925,13 @@
 	/* Editor controls */
 	.editor-controls {
 		position: absolute;
-		bottom: 8px;
+		bottom: 12px;
 		left: 50%;
 		transform: translateX(-50%);
 		display: flex;
-		gap: 8px;
+		gap: 10px;
 		opacity: 0;
-		transition: opacity 0.2s ease;
+		transition: all var(--transition-normal);
 		z-index: 20;
 	}
 
@@ -958,33 +944,39 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		border: none;
+		width: 36px;
+		height: 36px;
+		border-radius: 10px;
+		border: 1px solid rgba(255, 255, 255, 0.2);
 		cursor: pointer;
-		backdrop-filter: blur(8px);
-		transition: all 0.2s ease;
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		transition: all var(--transition-fast);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 
 	.edit-btn {
-		background: rgba(255, 255, 255, 0.15);
-		color: white;
+		background: rgba(99, 102, 241, 0.2);
+		color: #a5b4fc;
 	}
 
 	.edit-btn:hover {
-		background: rgba(255, 255, 255, 0.3);
+		background: rgba(99, 102, 241, 0.4);
+		color: #ffffff;
 		transform: scale(1.1);
+		box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
 	}
 
 	.delete-btn {
-		background: rgba(255, 255, 255, 0.15);
-		color: white;
+		background: rgba(239, 68, 68, 0.2);
+		color: #fca5a5;
 	}
 
 	.delete-btn:hover {
-		background: rgba(255, 255, 255, 0.3);
+		background: rgba(239, 68, 68, 0.4);
+		color: #ffffff;
 		transform: scale(1.1);
+		box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
 	}
 
 	@media (max-width: 768px) {

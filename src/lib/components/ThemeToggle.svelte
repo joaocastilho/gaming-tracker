@@ -12,6 +12,7 @@
 <button
 	type="button"
 	class="theme-toggle"
+	class:dark={theme === 'dark'}
 	onclick={toggleTheme}
 	aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
 	title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -20,9 +21,8 @@
 		<svg
 			class="sun-icon"
 			class:visible={theme === 'light'}
-			class:hidden={theme === 'dark'}
-			width="20"
-			height="20"
+			width="18"
+			height="18"
 			viewBox="0 0 24 24"
 			fill="none"
 			stroke="currentColor"
@@ -31,18 +31,17 @@
 			stroke-linejoin="round"
 			aria-hidden="true"
 		>
-			<circle cx="12" cy="12" r="5" />
+			<circle cx="12" cy="12" r="4" />
 			<path
-				d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+				d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
 			/>
 		</svg>
 
 		<svg
 			class="moon-icon"
 			class:visible={theme === 'dark'}
-			class:hidden={theme === 'light'}
-			width="20"
-			height="20"
+			width="18"
+			height="18"
 			viewBox="0 0 24 24"
 			fill="none"
 			stroke="currentColor"
@@ -51,9 +50,10 @@
 			stroke-linejoin="round"
 			aria-hidden="true"
 		>
-			<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+			<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
 		</svg>
 	</div>
+	<div class="glow-effect"></div>
 </button>
 
 <style>
@@ -61,14 +61,14 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 36px;
-		height: 36px;
+		width: 40px;
+		height: 40px;
 		border: 1px solid var(--color-border);
-		border-radius: 50%;
+		border-radius: 12px;
 		background: var(--color-surface);
 		color: var(--color-text-secondary);
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all var(--transition-fast);
 		position: relative;
 		overflow: hidden;
 		outline: none;
@@ -76,19 +76,21 @@
 
 	.theme-toggle:hover {
 		border-color: var(--color-accent);
-		background-color: var(--color-accent);
-		color: #ffffff;
-		transform: translateY(-1px);
+		background-color: var(--color-hover);
+		color: var(--color-accent);
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
 	}
 
-	:global(.light) .theme-toggle:hover {
-		border-color: var(--color-accent);
-		background-color: var(--color-accent);
-		color: #ffffff;
+	.theme-toggle.dark:hover {
+		color: #fbbf24;
+		border-color: #fbbf24;
+		background-color: rgba(251, 191, 36, 0.1);
 	}
 
-	.theme-toggle:focus {
-		outline: none;
+	.theme-toggle:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
 	}
 
 	.theme-toggle:active {
@@ -97,19 +99,23 @@
 
 	.icon-container {
 		position: relative;
-		width: 20px;
-		height: 20px;
+		width: 18px;
+		height: 18px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.sun-icon,
 	.moon-icon {
 		position: absolute;
-		top: 0;
-		left: 0;
-		width: 20px;
-		height: 20px;
-		transition: all 0.3s ease;
+		inset: 0;
+		width: 18px;
+		height: 18px;
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		transform-origin: center;
+		opacity: 0;
+		transform: scale(0.5) rotate(-90deg);
 	}
 
 	.sun-icon.visible,
@@ -118,18 +124,27 @@
 		transform: scale(1) rotate(0deg);
 	}
 
-	.sun-icon.hidden,
-	.moon-icon.hidden {
+	.sun-icon {
+		color: #d4a030;
+	}
+
+	.moon-icon {
+		color: #a5b4fc;
+	}
+
+	.glow-effect {
+		position: absolute;
+		inset: -2px;
+		border-radius: 14px;
+		background: linear-gradient(135deg, var(--color-accent), transparent);
 		opacity: 0;
-		transform: scale(0.8) rotate(-45deg);
+		transition: opacity var(--transition-fast);
+		z-index: -1;
+		filter: blur(8px);
 	}
 
-	:global(.light) .sun-icon {
-		color: #f59e0b;
-	}
-
-	:global(.dark) .moon-icon {
-		color: #60a5fa;
+	.theme-toggle:hover .glow-effect {
+		opacity: 0.3;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -146,7 +161,9 @@
 
 	@media (max-width: 765px) {
 		.theme-toggle {
-			margin-top: 30px;
+			width: 36px;
+			height: 36px;
+			border-radius: 10px;
 		}
 	}
 </style>
