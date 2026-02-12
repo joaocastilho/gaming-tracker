@@ -1,6 +1,6 @@
 # 🎮 Gaming Tracker
 
-> Track your gaming journey — from backlog to completed gems. Visual tier lists, detailed ratings, and offline-first design.
+Track your gaming journey — from backlog to completed gems. Visual tier lists, detailed ratings, and offline-first design.
 
 [![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -39,7 +39,7 @@ Manually assign games to tiers based on overall assessment:
 | 🎖️ **D** | Decent      |
 | ❌ **E** | Bad         |
 
-### Search & Filter
+### 🔍 Search & Filter
 
 - Real-time title search
 - Filter by platform, genre, or tier
