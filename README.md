@@ -20,9 +20,9 @@ Organize games into two categories:
 
 Rate completed games across three dimensions (0-10 scale):
 
-- **Presentation** - Visuals, audio, polish
-- **Story** - Narrative, characters, writing
-- **Gameplay** - Mechanics, fun factor, replayability
+- **Presentation** - Visuals, art style, sound design, and music. How the game looks, feels, and immerses the player
+- **Story** - Narrative, characters, and world-building. How the plot, dialogue, and themes create a compelling story
+- **Gameplay** - Mechanics, progression systems, and interactivity. How engaging the game's systems and challenges are
 
 The total score is automatically calculated using the formula: `(Presentation + Story + Gameplay) / 3 × 2` resulting in a **0-20 score**.
 
@@ -109,15 +109,14 @@ gaming-tracker/
 
 ## Available Scripts
 
-| Script                    | Description                |
-| ------------------------- | -------------------------- |
-| `bun run dev`             | Start dev server           |
-| `bun run build`           | Build for production       |
-| `bun run check`           | TypeScript type check      |
-| `bun run lint`            | Check code with ESLint     |
-| `bun run format`          | Format with Prettier       |
-| `bun run test`            | Run tests                  |
-| `bun run optimize-covers` | Convert PNG covers to WebP |
+| Script           | Description            |
+| ---------------- | ---------------------- |
+| `bun run dev`    | Start dev server       |
+| `bun run build`  | Build for production   |
+| `bun run check`  | TypeScript type check  |
+| `bun run lint`   | Check code with ESLint |
+| `bun run format` | Format with Prettier   |
+| `bun run test`   | Run tests              |
 
 ## Documentation
 
