@@ -20,9 +20,9 @@ Organize games into two categories:
 
 Rate completed games across three dimensions (0-10 scale):
 
-- **Presentation** - Visuals, art style, sound design, and music. How the game looks, feels, and immerses the player
-- **Story** - Narrative, characters, and world-building. How the plot, dialogue, and themes create a compelling story
-- **Gameplay** - Mechanics, progression systems, and interactivity. How engaging the game's systems and challenges are
+- **Presentation** - Visuals, art style, sound design, and music. How the game looks, feels, and immerses the player.
+- **Story** - Narrative, characters, and world-building. How the plot, dialogue, and themes create a compelling story.
+- **Gameplay** - Mechanics, progression systems, and interactivity. How engaging the game's systems and challenges are.
 
 The total score is automatically calculated using the formula: `(Presentation + Story + Gameplay) / 3 × 2` resulting in a **0-20 score**.
 
@@ -36,8 +36,6 @@ Manually assign games to tiers based on overall assessment:
 - **C** - Good
 - **D** - Decent
 - **E** - Bad
-
-View the collection organized by tier with export capabilities.
 
 ### Search & Filter
 
