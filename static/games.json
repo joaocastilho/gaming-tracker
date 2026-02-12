@@ -2637,23 +2637,6 @@
       "tier": null
     },
     {
-      "id": "fire-emblem-three-houses",
-      "title": "Fire Emblem: Three Houses",
-      "platform": "Switch",
-      "year": 2019,
-      "genre": "Strategy",
-      "coOp": "No",
-      "status": "Planned",
-      "coverImage": "covers/fire-emblem-three-houses.webp",
-      "playtime": "50h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
-    },
-    {
       "id": "firewatch",
       "title": "Firewatch",
       "platform": "PC",
