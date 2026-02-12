@@ -12,9 +12,9 @@ A single-user, client-side web application for tracking and rating video games w
 
 ### Core Technology Stack
 
-- **Framework**: SvelteKit (latest, 1.30+) with Svelte 5 Runes + TypeScript 5.9.x
-- **Styling**: Tailwind CSS v4.1 + Shadcn-Svelte components
-- **Runtime**: Bun 1.3.x (Windows)
+- **Framework**: SvelteKit with Svelte 5 Runes + TypeScript
+- **Styling**: Tailwind CSS + Shadcn-Svelte components
+- **Runtime**: Bun (Windows)
 - **Deployment**: Static site (GitHub Pages/Netlify via @sveltejs/adapter-static)
 - **Data**: Local JSON file (no database, no backend)
 - **Environment**: Windows (using Git Bash for all terminal commands)
@@ -35,7 +35,7 @@ gaming-tracker/
 │   ├── routes/              # SvelteKit routes (SSG pages)
 │   ├── lib/
 │   │   ├── components/      # Reusable UI components
-│   │   ├── stores/          # Svelte stores (app, games, filters, sort, modal)
+│   │   ├── stores/          # Svelte 5 Runes stores (app, games, filters, modal, editor, etc.)
 │   │   └── utils/           # Helper functions
 │   └── app.html             # HTML shell
 ├── static/
@@ -259,14 +259,14 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 
 #### Global State (Svelte Stores)
 
-**App Store (`stores/app.ts`)**
+**App Store (`stores/app.svelte.ts`)**
 
 ```typescript
 - theme: 'dark' | 'light'
 - activeTab: 'all' | 'completed' | 'planned' | 'tierlist'
 ```
 
-**Games Store (`stores/games.ts`)**
+**Games Store (`stores/games.svelte.ts`)**
 
 ```typescript
 - games: Game[] (loaded from JSON)
@@ -274,7 +274,7 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 - error: string | null
 ```
 
-**Filters Store (`stores/filters.ts`)**
+**Filters Store (`stores/filters.svelte.ts`)**
 
 ```typescript
 - searchQuery: string
@@ -289,19 +289,40 @@ A client-side Single Page Application (SPA) built with SvelteKit as a static sit
 }
 ```
 
-**Sort Store (`stores/sort.ts`)**
+**Filtered Games Store (`stores/filteredGamesStore.svelte.ts`)**
 
 ```typescript
-- sortBy: 'title' | 'year' | 'score' | 'hours' | 'finished' | null
-- sortDirection: 'asc' | 'desc'
+- Computed filtered and sorted games based on current filters and active tab
+- Filtered counts by status
 ```
 
-**Modal Store (`stores/modal.ts`)**
+**Modal Store (`stores/modal.svelte.ts`)**
 
 ```typescript
 - isOpen: boolean
 - activeGame: Game | null
 - mode: 'view' | 'edit' | 'add'
+```
+
+**Editor Store (`stores/editor.svelte.ts`)**
+
+```typescript
+- Manages game creation and editing state
+- Form validation and submission handling
+```
+
+**Completed Games Cache (`stores/completedGamesCache.svelte.ts`)**
+
+```typescript
+- Caches sorted completed games for performance
+- Maintains completion order for sorting
+```
+
+**Offline Store (`stores/offline.svelte.ts`)**
+
+```typescript
+- Tracks online/offline status
+- Manages offline data sync queue
 ```
 
 #### Local State
@@ -396,14 +417,14 @@ Lazy load image → Show placeholder while loading → Display optimized WebP
 
 #### Core Framework
 
-- **SvelteKit:** `latest` (1.30+) with Svelte 5 Runes
-- **TypeScript:** `5.9.x`
-- **Vite:** `6.x` (bundled with SvelteKit)
-- **Bun:** `1.3.x` runtime for Windows
+- **SvelteKit:** with Svelte 5 Runes
+- **TypeScript:**
+- **Vite:** (bundled with SvelteKit)
+- **Bun:** runtime for Windows
 
 #### UI & Styling
 
-- **Tailwind CSS:** `v4.1`
+- **Tailwind CSS:**
 - **Shadcn-Svelte:** Component library with theming
 - **Lucide-Svelte:** Icon library
 - **PostCSS:** For Tailwind processing
@@ -417,8 +438,8 @@ Lazy load image → Show placeholder while loading → Display optimized WebP
 
 #### Development Tools
 
-- **ESLint:** `9.x` with `eslint-plugin-svelte` and TypeScript plugins
-- **Prettier:** `3.x` with `prettier-plugin-svelte` and `prettier-plugin-tailwindcss`
+- **ESLint:** with `eslint-plugin-svelte` and TypeScript plugins
+- **Prettier:** with `prettier-plugin-svelte` and `prettier-plugin-tailwindcss`
 - **TypeScript ESLint:** For TypeScript linting
 - **Svelte Check:** Type checking for Svelte files
 
@@ -426,11 +447,12 @@ Lazy load image → Show placeholder while loading → Display optimized WebP
 
 - **Zod:** Runtime schema validation for JSON data
 - **date-fns:** Date formatting and manipulation
+- **Dexie.js:** IndexedDB wrapper for client-side storage
 
-#### Testing (Optional/Future)
+#### Testing
 
 - **Vitest:** Unit testing framework
-- **Playwright:** E2E testing
+- **@testing-library:** Component testing utilities
 
 ### Authentication Process
 
@@ -458,6 +480,13 @@ src/routes/
 ├── tierlist/
 │   ├── +page.svelte        # Tier list view with export functionality
 │   └── +page.ts            # Group completed games by tier
+│
+├── login/
+│   └── +page.svelte        # Admin login page
+│
+├── api/                    # API routes (local development only)
+│   └── games-local/
+│       └── +server.ts      # POST endpoint for saving games.json
 │
 └── +error.svelte           # Error page for 404/build errors
 ```
