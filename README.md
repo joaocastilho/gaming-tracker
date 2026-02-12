@@ -1,6 +1,6 @@
 # 🎮 Gaming Tracker
 
-Track your gaming journey — from backlog to completed gems. Visual tier lists, detailed ratings, and offline-first design.
+A fast personal library for tracking and rating my video game collection. Designed to be a clean, offline-friendly way to organize played and planned games, complete with visual tier lists and detailed stats.
 
 [![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
