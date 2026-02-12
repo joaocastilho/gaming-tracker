@@ -1,138 +1,124 @@
-# Gaming Tracker
+# Gaming Tracker 🎮
 
-A fast personal library for tracking and rating my video game collection. Designed to be a clean, offline-friendly way to organize my played and planned games, complete with visual tier lists and detailed stats.
+A video game tracker and rating system for organizing played and planned games. Features visual tier lists, detailed ratings, and an offline-friendly design.
 
-![Gaming Tracker Screenshot](static/screenshot.png)
+[![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)
 
-## ✨ Key Features
+## Features
 
-- **Track My Collection**: Keep track of games I've completed and ones I plan to play.
-- **Detailed Ratings**: Rate games on Presentation, Story, and Gameplay to generate an overall score.
-- **Visual Tier Lists**: Automatically generate tier lists based on my opinion of the game.
-- **Multiple Views**:
-  - **Gallery**: Browse my collection with high-quality cover art.
-  - **Tier List**: Visualize my favorites in a classic tier list format.
-- **Smart Filtering**: Instantly find games by platform, genre, status, or rating.
-- **Performance First**: Optimized for speed with instant loading and smooth animations.
-- **Privacy Focused**: 100% client-side. All data stays in the client's browser using IndexedDB.
-- **Modern Dark & Light Mode**: Deep space dark theme and warm beige light theme with glassmorphism effects.
-- **Offline Support**: Works without internet connection after initial load.
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices.
+### Game Tracking
 
-## 🛠️ Tech Stack
+Organize games into two categories:
 
-Built with modern web technologies for performance and developer experience:
+- **Planned** - Games in the backlog waiting to be played
+- **Completed** - Finished games with full rating data
 
-| Category       | Technology                                                                                                                                                                  | Version    |
-| :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| **Framework**  | <a href="https://kit.svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white" alt="SvelteKit" /></a>               | `v2.50.2`  |
-| **UI Library** | <a href="https://svelte.dev/" target="_blank"><img src="https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white" alt="Svelte" /></a>                         | `v5.50.0`  |
-| **Language**   | <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript" /></a> | `v5.9.3`   |
-| **Styling**    | <a href="https://tailwindcss.com/" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>  | `v4.1.18`  |
-| **Database**   | <a href="https://dexie.org/" target="_blank"><img src="https://img.shields.io/badge/Dexie.js-1a1a2e?logo=indexeddb&logoColor=white" alt="Dexie.js" /></a>                   | `v4.3.0`   |
-| **Icons**      | <a href="https://lucide.dev/" target="_blank"><img src="https://img.shields.io/badge/Lucide-F05033?logo=lucide&logoColor=white" alt="Lucide" /></a>                         | `v0.562.0` |
-| **Runtime**    | <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" /></a>                                      | `v1.3.8`   |
-| **Build Tool** | <a href="https://vite.dev/" target="_blank"><img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /></a>                                 | `v7.3.1`   |
-| **Lint**       | <a href="https://eslint.org/" target="_blank"><img src="https://img.shields.io/badge/ESLint-4B32C3?logo=eslint&logoColor=white" alt="ESLint" /></a>                         | `v9.39.2`  |
-| **Format**     | <a href="https://prettier.io/" target="_blank"><img src="https://img.shields.io/badge/Prettier-F7B93E?logo=prettier&logoColor=black" alt="Prettier" /></a>                  | `v3.8.1`   |
-| **Testing**    | <a href="https://vitest.dev/" target="_blank"><img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" /></a>                         | `v4.0.18`  |
+### Rating System
 
-#### ⚡ PageSpeed Insights
+Rate completed games across three dimensions (0-10 scale):
 
-<a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=desktop" target="_blank"><img src="https://img.shields.io/badge/Desktop-F16529?logo=lighthouse&logoColor=white" alt="PageSpeed Desktop" /></a> <a href="https://pagespeed.web.dev/analysis?url=gaming-tracker.pages.dev&form_factor=mobile" target="_blank"><img src="https://img.shields.io/badge/Mobile-F16529?logo=lighthouse&logoColor=white" alt="PageSpeed Mobile" /></a>
+- **Presentation** - Visuals, audio, polish
+- **Story** - Narrative, characters, writing
+- **Gameplay** - Mechanics, fun factor, replayability
 
-## 🚀 Getting Started
+The total score is automatically calculated using the formula: `(Presentation + Story + Gameplay) / 3 × 2` resulting in a **0-20 score**.
 
-### Prerequisites
+### Tier Lists
 
-- [Bun](https://bun.sh/) v1.3.8 or higher
+Manually assign games to tiers based on overall assessment:
 
-### Installation
+- **S** - Masterpiece
+- **A** - Amazing
+- **B** - Great
+- **C** - Good
+- **D** - Decent
+- **E** - Bad
+
+View the collection organized by tier with export capabilities.
+
+### Search & Filter
+
+- Real-time title search
+- Filter by platform, genre, or tier
+- Filter by rating ranges (presentation, story, gameplay, or total score)
+
+### Modern UI
+
+- Dark and light mode themes
+- Glassmorphism design effects
+- Responsive layout for desktop and mobile
+- Smooth animations and transitions
+
+### Offline Support
+
+- Works without internet after initial load
+- All data stored locally in the browser via IndexedDB
+- JSON export/import for data backup and restoration
+
+## Tech Stack
+
+| Category       | Technology                                     | Version   |
+| -------------- | ---------------------------------------------- | --------- |
+| **Framework**  | [SvelteKit](https://kit.svelte.dev/)           | `v2.50.2` |
+| **UI Library** | [Svelte](https://svelte.dev/)                  | `v5.50.2` |
+| **Language**   | [TypeScript](https://www.typescriptlang.org/)  | `v5.9.3`  |
+| **Styling**    | [Tailwind CSS](https://tailwindcss.com/)       | `v4.1.18` |
+| **Storage**    | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.3.0`  |
+| **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.8`  |
+| **Build Tool** | [Vite](https://vite.dev/)                      | `v7.3.1`  |
+
+## Running Locally
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/gaming-tracker.git
-cd gaming-tracker
-
-# Install dependencies
-bun install
-
 # Start development server
 bun run dev
-```
 
-The app will be available at `http://localhost:5173`
-
-### Building for Production
-
-```bash
-# Create optimized production build
+# Build for production
 bun run build
 
-# Preview the production build locally
+# Preview production build
 bun run preview
 ```
 
-## 📂 Project Structure
-
-A quick look at how the project is organized:
+## Project Structure
 
 ```
 gaming-tracker/
 ├── src/
-│   ├── routes/              # SvelteKit routes (pages)
-│   │   ├── +layout.svelte   # Root layout with header and navigation
-│   │   ├── +page.svelte     # Home page (All games)
-│   │   ├── completed/       # Completed games view
-│   │   ├── planned/         # Planned games view
-│   │   └── tierlist/        # Tier list visualization
 │   ├── lib/
-│   │   ├── components/      # Reusable UI components
-│   │   │   ├── GameCard.svelte
-│   │   │   ├── Header.svelte
-│   │   │   ├── SearchBar.svelte
-│   │   │   ├── ThemeToggle.svelte
-│   │   │   └── ...
-│   │   ├── stores/          # Svelte stores (state management)
-│   │   │   ├── games.svelte
-│   │   │   ├── filters.svelte
-│   │   │   ├── app.svelte
-│   │   │   └── ...
-│   │   ├── views/           # Page-level view components
-│   │   │   ├── GamesView.svelte
-│   │   │   └── TierListView.svelte
-│   │   ├── utils/           # Utility functions
-│   │   └── types/           # TypeScript type definitions
-│   ├── app.css              # Global styles and CSS variables
+│   │   ├── components/      # UI components (GameCard, Header, etc.)
+│   │   ├── stores/          # Svelte 5 stores for state
+│   │   ├── utils/           # Helper functions
+│   │   └── types/           # TypeScript types
+│   ├── routes/              # SvelteKit routes
+│   ├── app.css              # Global styles
 │   └── app.html             # HTML template
 ├── static/
-│   ├── games.json           # Game data (loaded at build time)
-│   ├── covers/              # Optimized game cover images
-│   └── favicon/             # Favicon files
-├── scripts/                 # Build and utility scripts
-│   └── optimize-covers.ts
-├── tests/                   # Unit and integration tests
-└── docs/                    # Project documentation
+│   ├── games.json           # Game data
+│   ├── covers/              # Game cover images (WebP)
+│   └── service-worker.js    # Offline support
+├── scripts/                 # Build scripts
+│   └── optimize-covers.ts   # Image optimizer
+├── tests/                   # Unit tests
+└── docs/
+    └── project.md           # Full documentation
 ```
 
-## 📝 Available Scripts
+## Available Scripts
 
-| Script                 | Description                                         |
-| ---------------------- | --------------------------------------------------- |
-| `bun run dev`          | Start development server with hot reload            |
-| `bun run build`        | Create optimized production build                   |
-| `bun run preview`      | Preview production build locally                    |
-| `bun run check`        | Run TypeScript type checking                        |
-| `bun run lint`         | Run ESLint to check code quality                    |
-| `bun run lint:fix`     | Run ESLint and auto-fix issues                      |
-| `bun run format`       | Format code with Prettier                           |
-| `bun run format:check` | Check code formatting without modifying files       |
-| `bun run test`         | Run all tests with Vitest                           |
-| `bun run test:unit`    | Run unit tests only                                 |
-| `bun run validate`     | Run lint, format, check, and test (full validation) |
+| Script                    | Description                |
+| ------------------------- | -------------------------- |
+| `bun run dev`             | Start dev server           |
+| `bun run build`           | Build for production       |
+| `bun run check`           | TypeScript type check      |
+| `bun run lint`            | Check code with ESLint     |
+| `bun run format`          | Format with Prettier       |
+| `bun run test`            | Run tests                  |
+| `bun run optimize-covers` | Convert PNG covers to WebP |
 
-### Utility Scripts
+## Documentation
 
-| Script                    | Description                   |
-| ------------------------- | ----------------------------- |
-| `bun run optimize-covers` | Optimize cover images for web |
+For full technical details, see [docs/project.md](docs/project.md)
