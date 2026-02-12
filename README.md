@@ -1,22 +1,22 @@
-# Gaming Tracker 🎮
+# 🎮 Gaming Tracker
 
-A video game tracker and rating system for organizing played and planned games. Features visual tier lists, detailed ratings, and an offline-friendly design.
+> Track your gaming journey — from backlog to completed gems. Visual tier lists, detailed ratings, and offline-first design.
 
 [![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)
 
-## Features
+## ✨ Features
 
-### Game Tracking
+### 🎯 Game Tracking
 
 Organize games into two categories:
 
-- **Planned** - Games in the backlog waiting to be played
-- **Completed** - Finished games with full rating data
+- **Planned** — Games in the backlog waiting to be played
+- **Completed** — Finished games with full rating data
 
-### Rating System
+### ⭐ Rating System
 
 Rate completed games across three dimensions (0-10 scale):
 
@@ -26,16 +26,18 @@ Rate completed games across three dimensions (0-10 scale):
 
 The total score is automatically calculated using the formula: `(Presentation + Story + Gameplay) / 3 × 2` resulting in a **0-20 score**.
 
-### Tier Lists
+### 🏆 Tier Lists
 
 Manually assign games to tiers based on overall assessment:
 
-- **S** - Masterpiece
-- **A** - Amazing
-- **B** - Great
-- **C** - Good
-- **D** - Decent
-- **E** - Bad
+| Tier     | Meaning     |
+| :------- | :---------- |
+| 🏅 **S** | Masterpiece |
+| 🥇 **A** | Amazing     |
+| 🥈 **B** | Great       |
+| 🥉 **C** | Good        |
+| 🎖️ **D** | Decent      |
+| ❌ **E** | Bad         |
 
 ### Search & Filter
 
@@ -43,20 +45,20 @@ Manually assign games to tiers based on overall assessment:
 - Filter by platform, genre, or tier
 - Filter by rating ranges (presentation, story, gameplay, or total score)
 
-### Modern UI
+### 🎨 Modern UI
 
-- Dark and light mode themes
-- Glassmorphism design effects
-- Responsive layout for desktop and mobile
-- Smooth animations and transitions
+- 🌙 Dark and light mode themes
+- ✨ Glassmorphism design effects
+- 📱 Responsive layout for desktop and mobile
+- ⚡ Smooth animations and transitions
 
-### Offline Support
+### 📦 Offline Support
 
 - Works without internet after initial load
 - All data stored locally in the browser via IndexedDB
-- JSON export/import for data backup and restoration
+- 🔄 JSON export/import for data backup and restoration
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Category       | Technology                                     | Version   |
 | -------------- | ---------------------------------------------- | --------- |
@@ -68,7 +70,7 @@ Manually assign games to tiers based on overall assessment:
 | **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.8`  |
 | **Build Tool** | [Vite](https://vite.dev/)                      | `v7.3.1`  |
 
-## Running Locally
+## 🚀 Running Locally
 
 ```bash
 # Start development server
@@ -81,7 +83,7 @@ bun run build
 bun run preview
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 gaming-tracker/
@@ -105,7 +107,7 @@ gaming-tracker/
     └── project.md           # Full documentation
 ```
 
-## Available Scripts
+## 📜 Available Scripts
 
 | Script           | Description            |
 | ---------------- | ---------------------- |
@@ -116,6 +118,6 @@ gaming-tracker/
 | `bun run format` | Format with Prettier   |
 | `bun run test`   | Run tests              |
 
-## Documentation
+## 📖 Documentation
 
 For full technical details, see [docs/project.md](docs/project.md)
