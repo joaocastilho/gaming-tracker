@@ -45,7 +45,8 @@ export const BaseGameSchema = z.object({
 	ratingGameplay: z.number().min(0).max(10).nullable(),
 	score: z.number().min(0).max(20).nullable(),
 	tier: z.enum(TIER_VALUES).nullable(),
-	completionOrder: z.number().nullable().optional()
+	completionOrder: z.number().nullable().optional(),
+	sortPriority: z.number().nullable().optional()
 });
 
 /**

@@ -29,4 +29,5 @@ export interface Game {
 	score: number | null;
 	tier: TierValue | null;
 	completionOrder?: number | null;
+	sortPriority?: number | null;
 }

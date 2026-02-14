@@ -9,7 +9,11 @@
 	import { editorStore } from '$lib/stores/editor.svelte';
 	import { offlineStore } from '$lib/stores/offline.svelte';
 	import type { Game } from '../types/game.js';
-	import { PLATFORM_COLORS, GENRE_COLORS } from '../utils/colorConstants.js';
+	import {
+		getPlatformClasses,
+		getGenreClasses,
+		getRatingBarColor
+	} from '../utils/colorConstants.js';
 	import { getTierClass, getTierDisplayName } from '../utils/tierUtils.js';
 	import { generateSrcset, generateTinySrcset, generateSizes } from '../utils/imageSrcset.js';
 	import {
@@ -55,12 +59,9 @@
 	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
 	const PLACEHOLDER_SRCSET =
 		'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
-	// Data URI fallback for when network is completely unavailable
 	const OFFLINE_FALLBACK_DATA_URI =
 		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
 
-	// When offline, use data URI directly since network requests will fail
-	// (Service worker caching only works in production builds)
 	const effectiveImageSrc = $derived(() => {
 		if (isOffline) {
 			return OFFLINE_FALLBACK_DATA_URI;
@@ -73,7 +74,7 @@
 
 	const effectiveImageSrcset = $derived(() => {
 		if (isOffline) {
-			return ''; // Data URI doesn't need srcset
+			return '';
 		}
 		if (size === 'tiny') {
 			return generateTinySrcset(game.coverImage);
@@ -90,8 +91,6 @@
 
 	let imageElement = $state<HTMLImageElement>();
 	let isVisible = $state(true);
-
-	let totalScore = $derived(game.score);
 
 	let cachedFont: string = '';
 
@@ -145,8 +144,8 @@
 		}
 
 		const isTierList = size === 'tierlist';
-		const minSize = isTierList ? 0.6 : 0.65;
-		const maxSize = isTierList ? 1 : 1.25;
+		const minSize = isTierList ? 0.65 : 0.75;
+		const maxSize = isTierList ? 1.05 : 1.15;
 		const singleLineMinSize = isTierList ? 0.9 : 0.95;
 
 		const containerWidth = width ?? node.clientWidth;
@@ -179,7 +178,7 @@
 	let subtitleFontSize = $derived(() => {
 		const title = game.subtitle || '';
 		const baseSize = 0.85;
-		const minSize = 0.5;
+		const minSize = 0.55;
 		const maxLength = 25;
 
 		if (!title || title.length <= maxLength) {
@@ -207,19 +206,16 @@
 
 	function handleImageError() {
 		if (imageElement) {
-			// Always mark as loaded and hide skeleton on error
 			imageElement.classList.add('loaded');
 			const skeleton = imageElement.previousElementSibling as HTMLElement;
 			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
 				skeleton.style.opacity = '0';
 			}
 
-			// Try placeholder, if already placeholder then use data URI fallback
 			if (!imageElement.src.includes('placeholder_cover')) {
 				imageElement.src = PLACEHOLDER_SRC;
 				imageElement.srcset = PLACEHOLDER_SRCSET;
 			} else {
-				// Placeholder also failed (not cached) - use inline SVG data URI
 				imageElement.src =
 					'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
 				imageElement.srcset = '';
@@ -250,7 +246,6 @@
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
-			// Create a synthetic MouseEvent for keyboard navigation
 			handleCardClick();
 		}
 	}
@@ -267,7 +262,6 @@
 
 	function handlePlatformClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
-		// Disable badge filtering on mobile
 		if (typeof window !== 'undefined' && window.innerWidth < 768) {
 			return;
 		}
@@ -279,7 +273,6 @@
 
 	function handleGenreClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
-		// Disable badge filtering on mobile
 		if (typeof window !== 'undefined' && window.innerWidth < 768) {
 			return;
 		}
@@ -291,7 +284,6 @@
 
 	function handleCoOpClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
-		// Disable badge filtering on mobile
 		if (typeof window !== 'undefined' && window.innerWidth < 768) {
 			return;
 		}
@@ -303,7 +295,6 @@
 
 	function handleTierClick(event: MouseEvent | KeyboardEvent) {
 		event.stopPropagation();
-		// Disable badge filtering on mobile
 		if (typeof window !== 'undefined' && window.innerWidth < 768) {
 			return;
 		}
@@ -418,10 +409,11 @@
 		</div>
 
 		{#if size === 'small'}
-			<div class="platform-genre-year-section">
-				<div class="first-line">
+			<!-- Metadata Section - Single row with left/right alignment -->
+			<div class="metadata-row">
+				<div class="badges-left">
 					<button
-						class="platform-badge {PLATFORM_COLORS[game.platform] || 'bg-gray-600 text-white'}"
+						class="badge platform-badge {getPlatformClasses(game.platform)}"
 						onclick={handlePlatformClick}
 						onkeydown={handlePlatformClick}
 						aria-label="Filter by {game.platform}"
@@ -429,71 +421,111 @@
 					>
 						{game.platform}
 					</button>
-					<span class="game-year" title="Release Year">{game.year}</span>
+					<button
+						class="badge genre-badge {getGenreClasses(game.genre)}"
+						onclick={handleGenreClick}
+						onkeydown={handleGenreClick}
+						aria-label="Filter by {game.genre}"
+						title="Genre: {game.genre}"
+					>
+						{game.genre}
+					</button>
 				</div>
-				<div class="second-line">
-					<div class="flex items-center gap-2">
+				<div class="year-right">
+					<span class="game-year">{game.year}</span>
+					{#if game.coOp === 'Yes'}
 						<button
-							class="genre-badge {GENRE_COLORS[game.genre] || 'bg-gray-600 text-white'}"
-							onclick={handleGenreClick}
-							onkeydown={handleGenreClick}
-							aria-label="Filter by {game.genre}"
-							title="Genre: {game.genre}"
+							class="coop-badge"
+							onclick={handleCoOpClick}
+							onkeydown={handleCoOpClick}
+							aria-label="Filter by Co-op"
+							title="Co-op Available"
 						>
-							{game.genre}
+							<Users size={16} class="text-blue-500" />
 						</button>
-						{#if game.coOp === 'Yes'}
-							<button
-								class="coop-badge"
-								onclick={handleCoOpClick}
-								onkeydown={handleCoOpClick}
-								aria-label="Filter by Co-op"
-								title="Co-op Available"
-							>
-								<Users size={16} class="text-blue-400" aria-label="Co-op available" />
-							</button>
-						{/if}
-					</div>
-					<div class="total-score" title="Total Score">
-						<Award class="rating-icon text-yellow-400" aria-label="Total score" />
-						<span class="rating-score">{totalScore ?? '-'}</span>
-					</div>
+					{/if}
 				</div>
 			</div>
 
-			<div class="ratings-section">
-				<div class="rating-item" title="Presentation">
-					<Presentation
-						class="rating-icon text-rose-500"
-						aria-label="Presentation rating"
-						size={20}
-					/>
-					<span class="rating-score">{game.ratingPresentation ?? '-'}</span>
-				</div>
-				<div class="rating-item" title="Story">
-					<NotebookPen class="rating-icon text-sky-500" aria-label="Story rating" size={20} />
-					<span class="rating-score">{game.ratingStory ?? '-'}</span>
-				</div>
-				<div class="rating-item" title="Gameplay">
-					<Gamepad2 class="rating-icon text-emerald-500" aria-label="Gameplay rating" size={20} />
-					<span class="rating-score">{game.ratingGameplay ?? '-'}</span>
-				</div>
-			</div>
-
-			<div class="time-date-section">
+			<!-- Time and Date Section - Common position for both types -->
+			<div class="time-date-row">
 				<div
 					class="time-item"
 					title={game.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}
 				>
-					<Timer class="time-icon" aria-label="Time played / Time to beat" size={20} />
-					<span class="time-text">{game.playtime ?? 'N/A'}</span>
+					<Timer size={16} />
+					<span>{game.playtime ?? 'N/A'}</span>
 				</div>
-				<div class="date-item" title={game.finishedDate ? 'Completed On' : 'Completion Date'}>
-					<CalendarDays class="date-icon" aria-label="Completion date" size={20} />
-					<span class="date-text">{game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span
+				<div
+					class="date-item"
+					title={game.status === 'Completed' ? 'Completed On' : 'Expected Completion'}
+				>
+					<CalendarDays size={16} />
+					<span
+						>{game.status === 'Completed' && game.finishedDate
+							? formatDate(game.finishedDate)
+							: 'Soon'}</span
 					>
 				</div>
 			</div>
+
+			<!-- Total Score Section -->
+			{#if game.status === 'Completed' && game.score !== null}
+				<div class="total-score-badge">
+					<Award size={16} class="text-amber-500" />
+					<span>TOTAL: {game.score}/20</span>
+				</div>
+			{:else}
+				<div class="planned-indicator">
+					<span>PLANNED</span>
+				</div>
+			{/if}
+
+			<!-- Ratings Section - Compact horizontal layout -->
+			{#if game.status === 'Completed' && game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null}
+				<div class="ratings-compact">
+					<div class="rating-mini" title="Presentation: {game.ratingPresentation}/10">
+						<Presentation size={16} class="text-rose-500" />
+						<div class="mini-bar-container">
+							<div class="mini-progress-bar">
+								<div
+									class={getRatingBarColor(game.ratingPresentation)}
+									style="width: {game.ratingPresentation * 10}%"
+								></div>
+							</div>
+						</div>
+						<span class="mini-rating-value">{game.ratingPresentation}</span>
+					</div>
+					<div class="rating-mini" title="Story: {game.ratingStory}/10">
+						<NotebookPen size={16} class="text-sky-500" />
+						<div class="mini-bar-container">
+							<div class="mini-progress-bar">
+								<div
+									class={getRatingBarColor(game.ratingStory)}
+									style="width: {game.ratingStory * 10}%"
+								></div>
+							</div>
+						</div>
+						<span class="mini-rating-value">{game.ratingStory}</span>
+					</div>
+					<div class="rating-mini" title="Gameplay: {game.ratingGameplay}/10">
+						<Gamepad2 size={16} class="text-emerald-500" />
+						<div class="mini-bar-container">
+							<div class="mini-progress-bar">
+								<div
+									class={getRatingBarColor(game.ratingGameplay)}
+									style="width: {game.ratingGameplay * 10}%"
+								></div>
+							</div>
+						</div>
+						<span class="mini-rating-value">{game.ratingGameplay}</span>
+					</div>
+				</div>
+			{:else}
+				<div class="ratings-placeholder">
+					<span>Ratings after completion</span>
+				</div>
+			{/if}
 		{/if}
 	</div>
 </div>
@@ -508,14 +540,14 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		border-radius: 12px;
+		min-width: 280px;
+		border-radius: 16px;
 		overflow: hidden;
 		background: var(--color-surface);
-		border: 1px solid var(--color-border);
+		border: 0px;
 		box-shadow: var(--shadow-md);
 		transition: all var(--transition-normal);
 		cursor: pointer;
-		height: 100%;
 		padding: 0;
 		text-align: left;
 		contain: layout style paint;
@@ -525,7 +557,6 @@
 	.game-card:focus-visible {
 		transform: translateY(-4px);
 		box-shadow: var(--shadow-xl);
-		border-color: var(--color-border-subtle);
 		outline: none;
 	}
 
@@ -541,7 +572,7 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-		border-radius: 6px 6px 0 0;
+		border-radius: 12px 12px 0 0;
 	}
 
 	.skeleton-loader {
@@ -604,21 +635,21 @@
 
 	.tier-badge {
 		position: absolute;
-		top: 8px;
-		right: 8px;
+		top: 10px;
+		right: 10px;
 		display: flex;
 		align-items: center;
 		padding: 6px 12px;
 		border-radius: 8px;
-		font-size: 0.8rem;
+		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.02em;
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
-		min-width: 28px;
+		min-width: 32px;
 		justify-content: center;
 		z-index: 10;
-		max-width: calc(100% - 16px);
+		max-width: calc(100% - 20px);
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -634,44 +665,46 @@
 	}
 
 	.tier-text {
-		font-size: 0.95rem;
+		font-size: 0.85rem;
 		font-weight: 700;
 	}
 
 	.game-info {
-		padding: 12px;
+		padding: 16px 16px 0px 16px;
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
-		flex: 1;
+		gap: 15px;
+		flex: 0 0 auto;
 	}
 
 	.title-section {
-		margin-bottom: 2px;
-		min-height: 1.2rem;
+		margin-bottom: 0;
+		min-height: 44px;
+		max-height: 44px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
-	}
-
-	.game-title {
-		font-size: 1.2rem;
-		font-weight: 550;
-		margin: 0;
-		line-height: 1.2;
-		word-wrap: break-word;
-		height: 50px;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		text-align: center;
-		width: 100%;
 		overflow: hidden;
 	}
 
+	.game-title {
+		font-size: 1.1rem;
+		font-weight: 600;
+		margin: 0;
+		line-height: 1.2;
+		word-wrap: break-word;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		text-align: center;
+		width: 100%;
+		overflow: hidden;
+		color: var(--color-text-primary);
+	}
+
 	.game-subtitle {
-		font-weight: 550;
+		font-weight: 500;
 		color: var(--color-text-secondary);
 		line-height: 1.2;
 		white-space: nowrap;
@@ -679,59 +712,212 @@
 		text-overflow: ellipsis;
 		display: block;
 		width: 100%;
+		font-size: 0.75rem;
 	}
 
-	.platform-genre-year-section {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.first-line,
-	.second-line {
+	/* Metadata Section - Single row layout */
+	.metadata-row {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		gap: 8px;
 	}
 
-	.game-year {
-		font-size: 0.9rem;
-		color: var(--color-text-secondary);
-		flex-shrink: 0;
-		white-space: nowrap;
-	}
-
-	.badges-section {
+	.badges-left {
 		display: flex;
 		gap: 6px;
 		flex-wrap: wrap;
+		justify-content: flex-start;
+		flex: 1;
 	}
 
-	.platform-badge,
-	.genre-badge {
-		padding: 5px 10px;
-		border-radius: 6px;
+	.year-right {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 0.85rem;
+		color: var(--color-text-secondary);
+		flex-shrink: 0;
+	}
+
+	.game-year {
+		font-weight: 500;
+	}
+
+	/* Badge Styles */
+	.badge {
 		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.01em;
+		font-weight: 500;
+		padding: 4px 10px;
+		border-radius: 6px;
 		white-space: nowrap;
 		cursor: pointer;
 		transition: all var(--transition-fast);
 		border: 1px solid transparent;
-		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
+		max-width: 140px;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
-	.platform-badge:hover,
-	.genre-badge:hover {
+	.badge:hover {
 		transform: translateY(-1px);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 
-	.coop-badge:hover {
-		opacity: 0.8;
+	/* Platform Badges - Dark Mode */
+	:global(:root) .platform-pc-badge {
+		background: var(--color-platform-pc-bg);
+		color: var(--color-platform-pc-text);
+		border-color: var(--color-platform-pc-border);
 	}
 
+	:global(:root) .platform-ps5-badge {
+		background: var(--color-platform-ps5-bg);
+		color: var(--color-platform-ps5-text);
+		border-color: var(--color-platform-ps5-border);
+	}
+
+	:global(:root) .platform-ps4-badge {
+		background: var(--color-platform-ps4-bg);
+		color: var(--color-platform-ps4-text);
+		border-color: var(--color-platform-ps4-border);
+	}
+
+	:global(:root) .platform-ps2-badge,
+	:global(:root) .platform-ps3-badge {
+		background: var(--color-platform-ps2-bg);
+		color: var(--color-platform-ps2-text);
+		border-color: var(--color-platform-ps2-border);
+	}
+
+	:global(:root) .platform-switch-badge {
+		background: var(--color-platform-switch-bg);
+		color: var(--color-platform-switch-text);
+		border-color: var(--color-platform-switch-border);
+	}
+
+	:global(:root) .platform-xbox-badge {
+		background: var(--color-platform-xbox-bg);
+		color: var(--color-platform-xbox-text);
+		border-color: var(--color-platform-xbox-border);
+	}
+
+	:global(:root) .platform-xbox-360-badge {
+		background: var(--color-platform-xbox-360-bg);
+		color: var(--color-platform-xbox-360-text);
+		border-color: var(--color-platform-xbox-360-border);
+	}
+
+	/* Genre Badges - Dark Mode */
+	:global(:root) .genre-action-badge {
+		background: var(--color-genre-action-bg);
+		color: var(--color-genre-action-text);
+		border-color: var(--color-genre-action-border);
+	}
+
+	:global(:root) .genre-action-adventure-badge {
+		background: var(--color-genre-action-adventure-bg);
+		color: var(--color-genre-action-adventure-text);
+		border-color: var(--color-genre-action-adventure-border);
+	}
+
+	:global(:root) .genre-action-rpg-badge {
+		background: var(--color-genre-action-rpg-bg);
+		color: var(--color-genre-action-rpg-text);
+		border-color: var(--color-genre-action-rpg-border);
+	}
+
+	:global(:root) .genre-fps-badge {
+		background: var(--color-genre-fps-bg);
+		color: var(--color-genre-fps-text);
+		border-color: var(--color-genre-fps-border);
+	}
+
+	:global(:root) .genre-metroidvania-badge {
+		background: var(--color-genre-metroidvania-bg);
+		color: var(--color-genre-metroidvania-text);
+		border-color: var(--color-genre-metroidvania-border);
+	}
+
+	:global(:root) .genre-platformer-badge {
+		background: var(--color-genre-platformer-bg);
+		color: var(--color-genre-platformer-text);
+		border-color: var(--color-genre-platformer-border);
+	}
+
+	:global(:root) .genre-puzzle-badge {
+		background: var(--color-genre-puzzle-bg);
+		color: var(--color-genre-puzzle-text);
+		border-color: var(--color-genre-puzzle-border);
+	}
+
+	:global(:root) .genre-puzzle-platformer-badge {
+		background: var(--color-genre-puzzle-platformer-bg);
+		color: var(--color-genre-puzzle-platformer-text);
+		border-color: var(--color-genre-puzzle-platformer-border);
+	}
+
+	:global(:root) .genre-roguelike-badge {
+		background: var(--color-genre-roguelike-bg);
+		color: var(--color-genre-roguelike-text);
+		border-color: var(--color-genre-roguelike-border);
+	}
+
+	:global(:root) .genre-story-adventure-badge {
+		background: var(--color-genre-story-adventure-bg);
+		color: var(--color-genre-story-adventure-text);
+		border-color: var(--color-genre-story-adventure-border);
+	}
+
+	:global(:root) .genre-story-puzzle-badge {
+		background: var(--color-genre-story-puzzle-bg);
+		color: var(--color-genre-story-puzzle-text);
+		border-color: var(--color-genre-story-puzzle-border);
+	}
+
+	:global(:root) .genre-survival-horror-badge {
+		background: var(--color-genre-survival-horror-bg);
+		color: var(--color-genre-survival-horror-text);
+		border-color: var(--color-genre-survival-horror-border);
+	}
+
+	:global(:root) .genre-japanese-rpg-badge {
+		background: var(--color-genre-japanese-rpg-bg);
+		color: var(--color-genre-japanese-rpg-text);
+		border-color: var(--color-genre-japanese-rpg-border);
+	}
+
+	:global(:root) .genre-classic-rpg-badge {
+		background: var(--color-genre-classic-rpg-bg);
+		color: var(--color-genre-classic-rpg-text);
+		border-color: var(--color-genre-classic-rpg-border);
+	}
+
+	:global(:root) .genre-story-rpg-badge {
+		background: var(--color-genre-story-rpg-bg);
+		color: var(--color-genre-story-rpg-text);
+		border-color: var(--color-genre-story-rpg-border);
+	}
+
+	:global(:root) .genre-story-horror-badge {
+		background: var(--color-genre-story-horror-bg);
+		color: var(--color-genre-story-horror-text);
+		border-color: var(--color-genre-story-horror-border);
+	}
+
+	:global(:root) .genre-hack-slash-badge {
+		background: var(--color-genre-hack-slash-bg);
+		color: var(--color-genre-hack-slash-text);
+		border-color: var(--color-genre-hack-slash-border);
+	}
+
+	:global(:root) .genre-strategy-badge {
+		background: var(--color-genre-strategy-bg);
+		color: var(--color-genre-strategy-text);
+		border-color: var(--color-genre-strategy-border);
+	}
+
+	/* Co-op Badge */
 	.coop-badge {
 		background: none;
 		border: none;
@@ -742,187 +928,174 @@
 		transition: opacity 0.2s;
 	}
 
-	.ratings-section {
-		display: flex;
-		gap: 8px;
-		flex-wrap: wrap;
-		margin-top: auto;
-		margin-bottom: auto;
-	}
-
-	.rating-item {
+	/* Total Score Badge - No box background */
+	.total-score-badge {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		font-size: 0.85rem;
-		color: var(--color-text-secondary);
-		min-width: 0;
-		flex: 1;
 		justify-content: center;
-	}
-
-	.rating-icon {
-		font-size: 1.25rem;
-		flex-shrink: 0;
-	}
-
-	.rating-score {
+		gap: 6px;
 		font-weight: 700;
-		font-size: 1rem;
+		font-size: 0.9rem;
+		color: var(--color-rating-total);
+		padding: 2px 0;
 	}
 
-	.total-score {
+	/* Planned Indicator - Simple text, no box */
+	.planned-indicator {
 		display: flex;
 		align-items: center;
-		font-weight: 700;
-		color: var(--color-text-primary);
-		font-size: 0.9rem;
-		gap: 4px;
+		justify-content: center;
+		font-weight: 600;
+		font-size: 0.85rem;
+		color: var(--color-text-tertiary);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		padding: 2px 0;
 	}
 
-	.total-score .rating-score {
-		font-size: 1.2rem;
-	}
-
-	.time-date-section {
+	/* Time and Date Row */
+	.time-date-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-end;
-		font-size: 0.8rem;
+		align-items: center;
+		font-size: 0.9rem;
 		color: var(--color-text-secondary);
+		padding: 0;
+	}
+
+	.time-date-row.completed {
+		border-top: 1px solid var(--color-border);
+		padding-top: 8px;
+		margin-top: 4px;
 	}
 
 	.time-item,
 	.date-item {
 		display: flex;
-		gap: 3px;
-		align-items: flex-end;
+		align-items: center;
+		gap: 4px;
 	}
 
-	.time-icon {
+	/* Compact Ratings - Horizontal layout */
+	.ratings-compact {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 0;
+	}
+
+	.rating-mini {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.rating-mini :global(svg) {
+		flex-shrink: 0;
+	}
+
+	.mini-bar-container {
+		flex: 1;
+		display: flex;
+		align-items: center;
+	}
+
+	.mini-progress-bar {
+		width: 100%;
+		height: 4px;
+		background: var(--color-border);
+		border-radius: 2px;
+		overflow: hidden;
+	}
+
+	.mini-progress-bar > div {
+		height: 100%;
+		border-radius: 2px;
+		transition: width 0.5s ease-out;
+	}
+
+	.mini-rating-value {
 		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+		min-width: 18px;
+		text-align: right;
 	}
 
-	.date-icon {
-		font-size: 0.7rem;
+	.ratings-placeholder {
+		text-align: center;
+		padding: 0;
+		font-size: 0.75rem;
+		color: var(--color-text-muted);
+		font-style: italic;
 	}
 
-	.time-text,
-	.date-text {
+	/* Legacy styles for compatibility */
+	.ratings-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px 0;
+	}
+
+	.rating-row {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+	}
+
+	.rating-label {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 0.75rem;
 		font-weight: 500;
-		line-height: 1.1;
+		color: var(--color-text-secondary);
 	}
 
-	@media (max-width: 768px) {
-		.game-year {
-			font-size: 0.75rem;
-		}
-
-		.ratings-section {
-			gap: 6px;
-		}
-
-		.rating-item {
-			font-size: 0.7rem;
-		}
-
-		.time-date-section {
-			font-size: 0.65rem;
-		}
+	.rating-bar-container {
+		display: flex;
+		align-items: center;
+		gap: 6px;
 	}
 
-	@media (max-width: 768px) {
-		.game-card.tierlist-size {
-			width: 100%;
-			--cover-height: auto;
-		}
-
-		.game-title {
-			font-size: 1.1rem;
-			height: auto;
-			min-height: 50px;
-		}
-
-		.game-subtitle {
-			font-size: 0.8rem !important;
-		}
-
-		.game-info {
-			gap: 8px;
-		}
-
-		.tier-badge {
-			padding: 6px 12px;
-			font-size: 0.9rem;
-		}
-
-		.tier-text {
-			font-size: 1rem;
-		}
+	.progress-bar {
+		flex: 1;
+		height: 5px;
+		background: var(--color-border);
+		border-radius: 3px;
+		overflow: hidden;
 	}
 
-	@media (max-width: 480px) {
-		.game-info {
-			padding: 8px;
-		}
-
-		.title-section {
-			min-height: 1rem;
-		}
-
-		.platform-genre-year-section {
-			gap: 4px;
-		}
-
-		.badges-section {
-			gap: 4px;
-		}
-
-		.platform-badge,
-		.genre-badge {
-			font-size: 0.75rem;
-			padding: 4px 8px;
-		}
-
-		.ratings-section {
-			gap: 8px;
-			justify-content: space-between;
-		}
-
-		.rating-item {
-			font-size: 0.65rem;
-			justify-content: flex-start;
-			flex: 0 1 auto;
-		}
-
-		.time-date-section {
-			gap: 4px;
-			font-size: 0.65rem;
-		}
-
-		.tier-badge {
-			padding: 5px 10px;
-			min-width: 22px;
-			top: 5px;
-			right: 5px;
-		}
-
-		.tier-text {
-			font-size: 0.85rem;
-		}
+	.progress-bar-fill.high {
+		background: linear-gradient(90deg, #22c55e, #4ade80);
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.game-card {
-			transition: none;
-		}
-
-		.game-card:hover {
-			transform: none;
-		}
+	.progress-bar-fill.medium {
+		background: linear-gradient(90deg, #eab308, #facc15);
 	}
 
-	/* Editor controls */
+	.progress-bar-fill.low {
+		background: linear-gradient(90deg, #f97316, #fb923c);
+	}
+
+	.progress-bar-fill.very-low {
+		background: linear-gradient(90deg, #ef4444, #f87171);
+	}
+
+	.progress-bar-fill-empty {
+		background: var(--color-border);
+	}
+
+	.rating-value {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: var(--color-text-primary);
+		min-width: 20px;
+		text-align: right;
+	}
+
+	/* Editor Controls */
 	.editor-controls {
 		position: absolute;
 		bottom: 12px;
@@ -979,15 +1152,187 @@
 		box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
 	}
 
+	/* Responsive Styles */
 	@media (max-width: 768px) {
+		.game-card {
+			min-width: auto;
+		}
+
+		.game-card.tierlist-size {
+			width: 100%;
+			--cover-height: auto;
+		}
+
+		.title-section {
+			min-height: 40px;
+			max-height: 40px;
+		}
+
+		.game-title {
+			font-size: 0.95rem;
+			line-height: 1.15;
+		}
+
+		.game-subtitle {
+			font-size: 0.7rem !important;
+		}
+
+		.game-info {
+			padding: 12px 12px 0px 12px;
+			gap: 8px;
+		}
+
+		.metadata-row {
+			gap: 6px;
+		}
+
+		.badges-left {
+			gap: 4px;
+		}
+
+		.year-right {
+			font-size: 0.8rem;
+			gap: 4px;
+		}
+
+		.tier-badge {
+			padding: 5px 10px;
+			font-size: 0.75rem;
+		}
+
+		.tier-text {
+			font-size: 0.85rem;
+		}
+
+		.badge {
+			font-size: 0.7rem;
+			padding: 3px 8px;
+			max-width: 120px;
+		}
+
+		.total-score-badge {
+			padding: 8px 12px;
+			font-size: 0.85rem;
+		}
+
+		.planned-indicator {
+			font-size: 0.8rem;
+		}
+
+		.ratings-compact {
+			padding: 0;
+			gap: 3px;
+		}
+
+		.rating-mini {
+			gap: 5px;
+		}
+
+		.mini-rating-value {
+			font-size: 0.75rem;
+		}
+
+		.ratings-placeholder {
+			padding: 0;
+			font-size: 0.75rem;
+		}
+
+		.time-date-row {
+			font-size: 0.75rem;
+		}
+
 		.editor-controls {
 			opacity: 1;
-			bottom: 6px;
+			bottom: 8px;
 		}
 
 		.editor-control-btn {
-			width: 28px;
-			height: 28px;
+			width: 32px;
+			height: 32px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.game-info {
+			padding: 10px 10px 0px 10px;
+			gap: 6px;
+		}
+
+		.title-section {
+			min-height: 36px;
+			max-height: 36px;
+		}
+
+		.game-title {
+			font-size: 0.9rem;
+			line-height: 1.15;
+		}
+
+		.metadata-row {
+			gap: 4px;
+		}
+
+		.badges-left {
+			gap: 3px;
+		}
+
+		.year-right {
+			font-size: 0.75rem;
+			gap: 3px;
+		}
+
+		.badge {
+			font-size: 0.65rem;
+			padding: 2px 6px;
+			max-width: 100px;
+		}
+
+		.ratings-compact {
+			padding: 0;
+			gap: 2px;
+		}
+
+		.rating-mini {
+			gap: 4px;
+		}
+
+		.mini-rating-value {
+			font-size: 0.7rem;
+			min-width: 16px;
+		}
+
+		.ratings-list {
+			padding: 6px 0;
+			gap: 6px;
+		}
+
+		.rating-row {
+			gap: 2px;
+		}
+
+		.time-date-row {
+			font-size: 0.75rem;
+		}
+
+		.tier-badge {
+			padding: 4px 8px;
+			min-width: 26px;
+			top: 8px;
+			right: 8px;
+		}
+
+		.tier-text {
+			font-size: 0.8rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.game-card {
+			transition: none;
+		}
+
+		.game-card:hover {
+			transform: none;
 		}
 	}
 </style>

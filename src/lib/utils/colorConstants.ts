@@ -1,75 +1,97 @@
+// Platform color mappings using CSS variables for automatic theme switching
+// Dark mode: translucent backgrounds with bright text
+// Light mode: light backgrounds with dark text
+
+export function getPlatformClasses(platform: string): string {
+	const colorKey = PLATFORM_COLORS[platform] || 'platform-pc';
+	return `${colorKey}-badge`;
+}
+
+export function getGenreClasses(genre: string): string {
+	const colorKey = GENRE_COLORS[genre] || 'genre-action';
+	return `${colorKey}-badge`;
+}
+
 export const PLATFORM_COLORS: Record<string, string> = {
-	PC: 'bg-[#1e40af] text-white', // Royal blue (changed from purple)
-	PS4: 'bg-[#f59e0b] text-[#fef3c7]', // Bright amber
-	PS3: 'bg-[#ef4444] text-[#fecaca]', // Bright red
-	PS2: 'bg-[#a855f7] text-[#e9d5ff]', // Bright purple
-	PS1: 'bg-[#f97316] text-white', // Vibrant orange
-	Switch: 'bg-[#22c55e] text-[#dcfce7]', // Bright green
-	'3DS': 'bg-[#ec4899] text-[#fce7f3]', // Bright pink
-	N64: 'bg-[#7c3aed] text-white', // Electric purple (changed from bright yellow)
-	GameCube: 'bg-[#06b6d4] text-[#cffafe]', // Bright cyan
-	'Game Boy Advance': 'bg-[#dc2626] text-[#fca5a5]', // Crimson red
-	Xbox: 'bg-[#166534] text-[#dcfce7]', // Dark green
-	'Xbox 360': 'bg-[#65a30d] text-[#f7f9e3]', // Bright lime green
-	Dreamcast: 'bg-[#0d9488] text-[#ccfbf1]' // Bright teal
+	PC: 'platform-pc',
+	PS5: 'platform-ps5',
+	PS4: 'platform-ps4',
+	PS3: 'platform-ps3',
+	PS2: 'platform-ps2',
+	PS1: 'platform-ps2', // Group with PS2
+	Switch: 'platform-switch',
+	'3DS': 'platform-switch', // Group with Switch
+	N64: 'platform-switch', // Group with Switch
+	GameCube: 'platform-switch', // Group with Switch
+	'Game Boy Advance': 'platform-switch', // Group with Switch
+	Xbox: 'platform-xbox',
+	'Xbox 360': 'platform-xbox-360',
+	'Xbox Series X': 'platform-xbox',
+	Dreamcast: 'platform-xbox' // Use Xbox colors
 };
 
-// Genre color mappings
+// Genre color mappings using CSS variables
 export const GENRE_COLORS: Record<string, string> = {
-	// Highly distinct colors, guaranteeing separation and white text readability
+	// Action genres
+	Action: 'genre-action',
+	'Action Platformer': 'genre-action',
+	'Bullet Hell': 'genre-action',
+	'Hack & Slash': 'genre-hack-slash',
 
-	// REDS / ORANGES
-	Platformer: 'bg-[#b91c1c] text-white', // Deep Red (Base)
-	'Action Platformer': 'bg-[#991b1b] text-white', // Darker Red
-	'Hack & Slash': 'bg-[#d97706] text-white', // Dark Amber
-	Survival: 'bg-[#78350f] text-white', // Deep Brown
-	'Bullet Hell': 'bg-[#ea580c] text-white', // Burnt Orange
-	Action: 'bg-[#ef4444] text-white', // Primary Red
+	// Adventure genres
+	'Action Adventure': 'genre-action-adventure',
+	'Story Adventure': 'genre-story-adventure',
 
-	// BLUES / TEALS
-	'Action Adventure': 'bg-[#1e40af] text-white', // Strong Royal Blue
-	'Story Adventure': 'bg-[#4338ca] text-white', // Bright Indigo
-	'Action RPG': 'bg-[#0369a1] text-white', // Sapphire Blue
+	// RPG genres
+	'Action RPG': 'genre-action-rpg',
+	'Classic RPG': 'genre-classic-rpg',
+	'Japanese RPG': 'genre-japanese-rpg',
+	'Sandbox RPG': 'genre-action-rpg', // Group with Action RPG
+	'Story RPG': 'genre-story-rpg',
 
-	// PURPLES / MAGENTAS
-	'Puzzle Platformer': 'bg-[#581c87] text-white', // Deep Violet
-	'Story Platformer': 'bg-[#7c3aed] text-white', // Royal Purple
-	'Classic RPG': 'bg-[#4f46e5] text-white', // Indigo
-	'Japanese RPG': 'bg-[#8b5cf6] text-white', // Medium Purple
-	'Sandbox RPG': 'bg-[#c026d3] text-white', // Magenta
-	'Story RPG': 'bg-[#db2777] text-white', // Deep Pink
-	FPS: 'bg-[#9f1239] text-white', // Wine Red
+	// Platformer genres
+	Platformer: 'genre-platformer',
+	'Puzzle Platformer': 'genre-puzzle-platformer',
+	'Story Platformer': 'genre-platformer', // Group with Platformer
 
-	// GREENS / CYANS / UTILITY
-	Puzzle: 'bg-[#15803d] text-white', // Dark Green (Base)
-	'Story Puzzle': 'bg-[#047871] text-white', // Deep Teal
-	'Story Horror': 'bg-[#065f46] text-white', // Forest Green
-	'Horror RPG': 'bg-[#4d7c0f] text-white', // Olive Green
-	'Survival Horror': 'bg-[#57534e] text-white', // Dark Slate Gray
-	Strategy: 'bg-[#44403c] text-white', // Dark Gray/Slate
-	Metroidvania: 'bg-[#a16207] text-white', // Dark Goldenrod
-	Roguelike: 'bg-[#0f766e] text-white' // Dark Cyan
+	// Puzzle genres
+	Puzzle: 'genre-puzzle',
+	'Story Puzzle': 'genre-story-puzzle',
+
+	// Horror genres
+	'Survival Horror': 'genre-survival-horror',
+	'Story Horror': 'genre-story-horror',
+	'Horror RPG': 'genre-survival-horror', // Group with Survival Horror
+
+	// Other genres
+	FPS: 'genre-fps',
+	Metroidvania: 'genre-metroidvania',
+	Roguelike: 'genre-roguelike',
+	Strategy: 'genre-strategy',
+	Survival: 'genre-survival-horror' // Group with Survival Horror
 };
 
-// Tier color mappings
+// Tier color mappings - use CSS classes from app.css
 export const TIER_COLORS: Record<string, string> = {
-	'S - Masterpiece': 'bg-[#dc2626] text-white',
-	'A - Amazing': 'bg-[#f97316] text-white',
-	'B - Great': 'bg-[#eab308] text-white',
-	'C - Good': 'bg-[#22c55e] text-white',
-	'D - Decent': 'bg-[#06b6d4] text-white',
-	'E - Bad': 'bg-[#6b7280] text-white'
+	'S - Masterpiece': 'tier-s',
+	'A - Amazing': 'tier-a',
+	'B - Great': 'tier-b',
+	'C - Good': 'tier-c',
+	'D - Decent': 'tier-d',
+	'E - Bad': 'tier-e'
 };
 
-// Co-op color mappings
+// Co-op is now shown as icon only, not badge
+// Keeping for backwards compatibility
 export const COOP_COLORS: Record<string, string> = {
-	Yes: 'bg-[#15803d] text-white', // Green
-	No: 'bg-[#b91c1c] text-white' // Red
+	Yes: 'coop-yes',
+	No: 'coop-no'
 };
 
 // Platform display names
 export const PLATFORM_LABELS: Record<string, string> = {
 	PC: 'PC',
+	PS5: 'PS5',
 	PS4: 'PlayStation 4',
 	PS3: 'PlayStation 3',
 	PS2: 'PlayStation 2',
@@ -81,6 +103,7 @@ export const PLATFORM_LABELS: Record<string, string> = {
 	'Game Boy Advance': 'Game Boy Advance',
 	Xbox: 'Xbox',
 	'Xbox 360': 'Xbox 360',
+	'Xbox Series X': 'Xbox Series X',
 	Dreamcast: 'Dreamcast'
 };
 
@@ -112,7 +135,7 @@ export const GENRE_LABELS: Record<string, string> = {
 	'Horror RPG': 'Horror RPG'
 };
 
-// Tier display names (for display purposes - maps single letters to full names)
+// Tier display names
 export const TIER_LABELS: Record<string, string> = {
 	S: 'S - Masterpiece',
 	A: 'A - Amazing',
@@ -120,4 +143,21 @@ export const TIER_LABELS: Record<string, string> = {
 	C: 'C - Good',
 	D: 'D - Decent',
 	E: 'E - Bad'
+};
+
+// Progress bar color based on rating value
+export function getRatingBarColor(rating: number | null): string {
+	if (rating === null) return 'progress-bar-fill-empty';
+	if (rating >= 8) return 'progress-bar-fill high';
+	if (rating >= 6) return 'progress-bar-fill medium';
+	if (rating >= 4) return 'progress-bar-fill low';
+	return 'progress-bar-fill very-low';
+}
+
+// Rating colors for text/icons
+export const RATING_COLORS = {
+	presentation: 'text-rose-500',
+	story: 'text-sky-500',
+	gameplay: 'text-emerald-500',
+	total: 'text-amber-500'
 };

@@ -67,9 +67,9 @@
 			const availableWidth = containerWidth - containerPadding - totalGapWidth;
 			const columnWidth = availableWidth / columns;
 			const coverHeight = columnWidth * 1.5;
-			const minInfoHeight = 195;
-			const maxInfoHeight = 240;
-			const baseInfoHeight = Math.max(minInfoHeight, Math.min(maxInfoHeight, columnWidth * 0.9));
+			const minInfoHeight = 280;
+			const maxInfoHeight = 360;
+			const baseInfoHeight = Math.max(minInfoHeight, Math.min(maxInfoHeight, columnWidth * 0.95));
 			const smallScreenBonus =
 				containerWidth < 480
 					? 45
@@ -174,7 +174,7 @@
 	.game-row {
 		display: flex;
 		justify-content: flex-start;
-		gap: clamp(0.5rem, 0.5rem + 2vw, 2.5rem);
+		gap: clamp(0.5rem, 0.5rem + 2vw, 1.5rem);
 		width: 100%;
 		padding-left: 0.5rem;
 		padding-right: 0.5rem;

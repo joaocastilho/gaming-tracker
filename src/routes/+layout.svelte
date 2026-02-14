@@ -572,7 +572,7 @@
 	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
 		<Header onAddGame={handleAddGame} onApplyChanges={handleApplyChanges} />
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
-			<div class="container mx-auto px-6">
+			<div class="mx-auto px-6" style="max-width: 1800px;">
 				{#if !isTierlistPage}
 					<!-- Filter toggle moved to Header.svelte -->
 
@@ -632,7 +632,7 @@
 			class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6"
 			class:search-open-mobile={isSearchOpen}
 		>
-			<div class="container mx-auto">
+			<div class="mx-auto" style="max-width: 1800px;">
 				{#if isGamesPage}
 					{#if hasActiveFilters && $filteredGames.length === 0}
 						<div

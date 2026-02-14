@@ -301,7 +301,7 @@
 		background: var(--color-hover);
 	}
 
-	.tabs-list button:hover .count-badge {
+	.tabs-list button:hover + .count-badge {
 		border-color: var(--color-accent);
 	}
 
@@ -321,7 +321,7 @@
 		opacity: 1;
 	}
 
-	.tabs-list button.active .count-badge {
+	.tabs-list button.active + .count-badge {
 		background: var(--color-accent);
 		color: var(--color-accent-foreground);
 		border-color: var(--color-accent);
