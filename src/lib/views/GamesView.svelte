@@ -67,21 +67,11 @@
 			const availableWidth = containerWidth - containerPadding - totalGapWidth;
 			const columnWidth = availableWidth / columns;
 			const coverHeight = columnWidth * 1.5;
-			const minInfoHeight = 280;
-			const maxInfoHeight = 360;
-			const baseInfoHeight = Math.max(minInfoHeight, Math.min(maxInfoHeight, columnWidth * 0.85));
-			const smallScreenBonus =
-				containerWidth < 480
-					? 45
-					: containerWidth < 540
-						? 35
-						: containerWidth < 600
-							? 25
-							: containerWidth < 768
-								? 10
-								: 0;
 
-			return coverHeight + baseInfoHeight + smallScreenBonus;
+			const infoRatio = 1.35;
+			const infoHeight = Math.max(220, Math.min(260, columnWidth * infoRatio));
+
+			return coverHeight + infoHeight;
 		})()
 	);
 

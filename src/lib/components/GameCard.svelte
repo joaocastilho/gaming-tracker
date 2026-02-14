@@ -512,6 +512,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		height: 100%;
 		min-width: 280px;
 		border-radius: 16px;
 		overflow: hidden;
@@ -522,7 +523,8 @@
 		cursor: pointer;
 		padding: 0;
 		text-align: left;
-		contain: layout style paint;
+		contain: layout style;
+		container-type: inline-size;
 	}
 
 	.game-card:hover,
@@ -642,11 +644,12 @@
 	}
 
 	.game-info {
-		padding: 16px 16px 0px 16px;
+		padding: 16px 16px 12px 16px;
 		display: flex;
 		flex-direction: column;
-		gap: 15px;
-		flex: 0 0 auto;
+		gap: 10px;
+		flex: 1;
+		justify-content: space-between;
 	}
 
 	.title-section {
@@ -812,9 +815,15 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
+		gap: clamp(4px, 2cqi, 8px);
 		flex: 1;
 		transition: transform var(--transition-fast);
+	}
+
+	.rating-item :global(svg) {
+		width: clamp(16px, 7cqi, 28px) !important;
+		height: clamp(16px, 7cqi, 28px) !important;
+		flex-shrink: 0;
 	}
 
 	.rating-item:hover {
@@ -828,7 +837,7 @@
 	}
 
 	.rating-value {
-		font-size: 2rem;
+		font-size: clamp(1.1rem, 5cqi, 2rem);
 		font-weight: 800;
 		line-height: 1;
 		color: var(--color-text-primary);
@@ -908,7 +917,7 @@
 	}
 
 	.rating-value {
-		font-size: 1.2rem;
+		font-size: clamp(1.1rem, 5cqi, 2rem);
 		font-weight: 700;
 		color: var(--color-text-primary);
 		min-width: 20px;
@@ -997,8 +1006,10 @@
 			font-size: 0.7rem !important;
 		}
 
+		/* Rating responsiveness now handled by clamp() */
+
 		.game-info {
-			padding: 12px 12px 0px 12px;
+			padding: 12px 12px 8px 12px;
 			gap: 8px;
 		}
 
@@ -1074,7 +1085,7 @@
 
 	@media (max-width: 480px) {
 		.game-info {
-			padding: 10px 10px 0px 10px;
+			padding: 10px 10px 6px 10px;
 			gap: 6px;
 		}
 
@@ -1120,6 +1131,8 @@
 			font-size: 0.7rem;
 			min-width: 16px;
 		}
+
+		/* Rating responsiveness now handled by clamp() */
 
 		.ratings-list {
 			padding: 6px 0;
