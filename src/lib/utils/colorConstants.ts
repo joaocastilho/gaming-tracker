@@ -145,15 +145,6 @@ export const TIER_LABELS: Record<string, string> = {
 	E: 'E - Bad'
 };
 
-// Progress bar color based on rating value
-export function getRatingBarColor(rating: number | null): string {
-	if (rating === null) return 'progress-bar-fill-empty';
-	if (rating >= 8) return 'progress-bar-fill high';
-	if (rating >= 6) return 'progress-bar-fill medium';
-	if (rating >= 4) return 'progress-bar-fill low';
-	return 'progress-bar-fill very-low';
-}
-
 // Rating colors for text/icons
 export const RATING_COLORS = {
 	presentation: 'text-rose-500',

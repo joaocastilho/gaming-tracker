@@ -69,7 +69,7 @@
 			const coverHeight = columnWidth * 1.5;
 			const minInfoHeight = 280;
 			const maxInfoHeight = 360;
-			const baseInfoHeight = Math.max(minInfoHeight, Math.min(maxInfoHeight, columnWidth * 0.95));
+			const baseInfoHeight = Math.max(minInfoHeight, Math.min(maxInfoHeight, columnWidth * 0.85));
 			const smallScreenBonus =
 				containerWidth < 480
 					? 45

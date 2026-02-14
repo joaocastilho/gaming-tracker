@@ -7,7 +7,7 @@
 	import { createGameSlug } from '../utils/slugUtils.js';
 	import { appStore } from '$lib/stores/app.svelte';
 	import type { Game } from '../types/game.js';
-	import { PLATFORM_COLORS, GENRE_COLORS } from '../utils/colorConstants';
+	import { getPlatformClasses, getGenreClasses } from '../utils/colorConstants';
 	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
 	import { generateSrcset, generateSizes } from '../utils/imageSrcset.js';
 	import {
@@ -656,22 +656,6 @@
 		}
 	}
 
-	function getPlatformColor(platform: string): string {
-		return PLATFORM_COLORS[platform] || 'bg-gray-600 text-white';
-	}
-
-	function getGenreColor(genre: string): string {
-		return GENRE_COLORS[genre] || 'bg-gray-600 text-white';
-	}
-
-	function getRatingBarColor(rating: number): string {
-		if (rating >= 8) return 'bg-gradient-to-r from-[#388E3C] to-[#4CAF50]';
-		if (rating >= 6) return 'bg-gradient-to-r from-[#A4D454] to-[#8BC34A]';
-		if (rating >= 5) return 'bg-gradient-to-r from-[#FFC107] to-[#FFEB3B]';
-		if (rating >= 3) return 'bg-gradient-to-r from-[#FF832B] to-[#FF9800]';
-		return 'bg-gradient-to-r from-[#D32F2F] to-[#F44336]';
-	}
-
 	async function shareGame() {
 		if (!browser || !$modalStore.activeGame) return;
 
@@ -904,10 +888,10 @@
 						</div>
 						<div class="parallax-badges-row">
 							<div class="parallax-badges">
-								<span class="parallax-badge {getPlatformColor(prevGamePreview.platform)}"
+								<span class="parallax-badge {getPlatformClasses(prevGamePreview.platform)}"
 									>{prevGamePreview.platform}</span
 								>
-								<span class="parallax-badge {getGenreColor(prevGamePreview.genre)}"
+								<span class="parallax-badge {getGenreClasses(prevGamePreview.genre)}"
 									>{prevGamePreview.genre}</span
 								>
 								{#if prevGamePreview.coOp === 'Yes'}
@@ -948,48 +932,37 @@
 						{#if prevGamePreview.status === 'Completed' && prevGamePreview.ratingPresentation !== null && prevGamePreview.ratingStory !== null && prevGamePreview.ratingGameplay !== null}
 							<div class="parallax-ratings">
 								<h4 class="parallax-ratings-title">Ratings</h4>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<Presentation size={20} class="parallax-rating-icon text-rose-500" />
-										<span class="parallax-rating-label">Presentation</span>
+								<div class="mt-2 flex justify-around gap-2">
+									<div class="flex flex-col items-center gap-1">
+										<Presentation size={24} class="text-rose-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>{prevGamePreview.ratingPresentation}</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Presentation</span
+										>
 									</div>
-									<div class="parallax-rating-bar">
-										<div
-											class="parallax-rating-fill {getRatingBarColor(
-												prevGamePreview.ratingPresentation
-											)}"
-											style="width: {prevGamePreview.ratingPresentation * 10}%"
-										></div>
+									<div class="flex flex-col items-center gap-1">
+										<NotebookPen size={24} class="text-sky-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>{prevGamePreview.ratingStory}</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Story</span
+										>
 									</div>
-									<span class="parallax-rating-value">{prevGamePreview.ratingPresentation}/10</span>
-								</div>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<NotebookPen size={20} class="parallax-rating-icon text-sky-500" />
-										<span class="parallax-rating-label">Story</span>
+									<div class="flex flex-col items-center gap-1">
+										<Gamepad2 size={24} class="text-emerald-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>{prevGamePreview.ratingGameplay}</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Gameplay</span
+										>
 									</div>
-									<div class="parallax-rating-bar">
-										<div
-											class="parallax-rating-fill {getRatingBarColor(prevGamePreview.ratingStory)}"
-											style="width: {prevGamePreview.ratingStory * 10}%"
-										></div>
-									</div>
-									<span class="parallax-rating-value">{prevGamePreview.ratingStory}/10</span>
-								</div>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<Gamepad2 size={20} class="parallax-rating-icon text-emerald-500" />
-										<span class="parallax-rating-label">Gameplay</span>
-									</div>
-									<div class="parallax-rating-bar">
-										<div
-											class="parallax-rating-fill {getRatingBarColor(
-												prevGamePreview.ratingGameplay
-											)}"
-											style="width: {prevGamePreview.ratingGameplay * 10}%"
-										></div>
-									</div>
-									<span class="parallax-rating-value">{prevGamePreview.ratingGameplay}/10</span>
 								</div>
 							</div>
 							<!-- Score Section -->
@@ -1002,35 +975,37 @@
 						{:else}
 							<div class="parallax-ratings">
 								<h4 class="parallax-ratings-title">Ratings</h4>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<Presentation size={20} class="parallax-rating-icon text-rose-500" />
-										<span class="parallax-rating-label">Presentation</span>
+								<div class="mt-2 flex justify-around gap-2 opacity-60">
+									<div class="flex flex-col items-center gap-1">
+										<Presentation size={24} class="text-rose-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>N/A</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Presentation</span
+										>
 									</div>
-									<div class="parallax-rating-bar">
-										<div class="parallax-rating-fill-empty"></div>
+									<div class="flex flex-col items-center gap-1">
+										<NotebookPen size={24} class="text-sky-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>N/A</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Story</span
+										>
 									</div>
-									<span class="parallax-rating-value">N/A</span>
-								</div>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<NotebookPen size={20} class="parallax-rating-icon text-sky-500" />
-										<span class="parallax-rating-label">Story</span>
+									<div class="flex flex-col items-center gap-1">
+										<Gamepad2 size={24} class="text-emerald-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>N/A</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Gameplay</span
+										>
 									</div>
-									<div class="parallax-rating-bar">
-										<div class="parallax-rating-fill-empty"></div>
-									</div>
-									<span class="parallax-rating-value">N/A</span>
-								</div>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<Gamepad2 size={20} class="parallax-rating-icon text-emerald-500" />
-										<span class="parallax-rating-label">Gameplay</span>
-									</div>
-									<div class="parallax-rating-bar">
-										<div class="parallax-rating-fill-empty"></div>
-									</div>
-									<span class="parallax-rating-value">N/A</span>
 								</div>
 							</div>
 							<div class="parallax-score-card parallax-pending-card">
@@ -1080,10 +1055,10 @@
 						</div>
 						<div class="parallax-badges-row">
 							<div class="parallax-badges">
-								<span class="parallax-badge {getPlatformColor(nextGamePreview.platform)}"
+								<span class="parallax-badge {getPlatformClasses(nextGamePreview.platform)}"
 									>{nextGamePreview.platform}</span
 								>
-								<span class="parallax-badge {getGenreColor(nextGamePreview.genre)}"
+								<span class="parallax-badge {getGenreClasses(nextGamePreview.genre)}"
 									>{nextGamePreview.genre}</span
 								>
 								{#if nextGamePreview.coOp === 'Yes'}
@@ -1124,48 +1099,37 @@
 						{#if nextGamePreview.status === 'Completed' && nextGamePreview.ratingPresentation !== null && nextGamePreview.ratingStory !== null && nextGamePreview.ratingGameplay !== null}
 							<div class="parallax-ratings">
 								<h4 class="parallax-ratings-title">Ratings</h4>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<Presentation size={20} class="parallax-rating-icon text-rose-500" />
-										<span class="parallax-rating-label">Presentation</span>
+								<div class="mt-2 flex justify-around gap-2">
+									<div class="flex flex-col items-center gap-1">
+										<Presentation size={24} class="text-rose-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>{nextGamePreview.ratingPresentation}</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Presentation</span
+										>
 									</div>
-									<div class="parallax-rating-bar">
-										<div
-											class="parallax-rating-fill {getRatingBarColor(
-												nextGamePreview.ratingPresentation
-											)}"
-											style="width: {nextGamePreview.ratingPresentation * 10}%"
-										></div>
+									<div class="flex flex-col items-center gap-1">
+										<NotebookPen size={24} class="text-sky-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>{nextGamePreview.ratingStory}</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Story</span
+										>
 									</div>
-									<span class="parallax-rating-value">{nextGamePreview.ratingPresentation}/10</span>
-								</div>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<NotebookPen size={20} class="parallax-rating-icon text-sky-500" />
-										<span class="parallax-rating-label">Story</span>
+									<div class="flex flex-col items-center gap-1">
+										<Gamepad2 size={24} class="text-emerald-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>{nextGamePreview.ratingGameplay}</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Gameplay</span
+										>
 									</div>
-									<div class="parallax-rating-bar">
-										<div
-											class="parallax-rating-fill {getRatingBarColor(nextGamePreview.ratingStory)}"
-											style="width: {nextGamePreview.ratingStory * 10}%"
-										></div>
-									</div>
-									<span class="parallax-rating-value">{nextGamePreview.ratingStory}/10</span>
-								</div>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<Gamepad2 size={20} class="parallax-rating-icon text-emerald-500" />
-										<span class="parallax-rating-label">Gameplay</span>
-									</div>
-									<div class="parallax-rating-bar">
-										<div
-											class="parallax-rating-fill {getRatingBarColor(
-												nextGamePreview.ratingGameplay
-											)}"
-											style="width: {nextGamePreview.ratingGameplay * 10}%"
-										></div>
-									</div>
-									<span class="parallax-rating-value">{nextGamePreview.ratingGameplay}/10</span>
 								</div>
 							</div>
 							<!-- Score Section -->
@@ -1178,35 +1142,37 @@
 						{:else}
 							<div class="parallax-ratings">
 								<h4 class="parallax-ratings-title">Ratings</h4>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<Presentation size={20} class="parallax-rating-icon text-rose-500" />
-										<span class="parallax-rating-label">Presentation</span>
+								<div class="mt-2 flex justify-around gap-2 opacity-60">
+									<div class="flex flex-col items-center gap-1">
+										<Presentation size={24} class="text-rose-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>N/A</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Presentation</span
+										>
 									</div>
-									<div class="parallax-rating-bar">
-										<div class="parallax-rating-fill-empty"></div>
+									<div class="flex flex-col items-center gap-1">
+										<NotebookPen size={24} class="text-sky-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>N/A</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Story</span
+										>
 									</div>
-									<span class="parallax-rating-value">N/A</span>
-								</div>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<NotebookPen size={20} class="parallax-rating-icon text-sky-500" />
-										<span class="parallax-rating-label">Story</span>
+									<div class="flex flex-col items-center gap-1">
+										<Gamepad2 size={24} class="text-emerald-500" />
+										<span class="text-lg font-bold" style="color: var(--color-text-primary);"
+											>N/A</span
+										>
+										<span
+											class="text-[10px] font-semibold uppercase"
+											style="color: var(--color-text-secondary);">Gameplay</span
+										>
 									</div>
-									<div class="parallax-rating-bar">
-										<div class="parallax-rating-fill-empty"></div>
-									</div>
-									<span class="parallax-rating-value">N/A</span>
-								</div>
-								<div class="parallax-rating-row">
-									<div class="parallax-rating-label-group">
-										<Gamepad2 size={20} class="parallax-rating-icon text-emerald-500" />
-										<span class="parallax-rating-label">Gameplay</span>
-									</div>
-									<div class="parallax-rating-bar">
-										<div class="parallax-rating-fill-empty"></div>
-									</div>
-									<span class="parallax-rating-value">N/A</span>
 								</div>
 							</div>
 							<div class="parallax-score-card parallax-pending-card">
@@ -1373,7 +1339,7 @@
 						>
 							<span
 								class="modal-title-text w-full font-bold"
-								style="font-size: clamp(1rem, 5vw, 1.65rem);"
+								style="font-size: clamp(1.5rem, 5vw, 2.5rem);"
 							>
 								{$modalStore.activeGame.mainTitle}
 							</span>
@@ -1446,14 +1412,14 @@
 					<div class="mb-3 flex items-center justify-between md:mb-4">
 						<div class="flex flex-wrap gap-2">
 							<span
-								class="rounded-md px-3 py-1.5 text-sm font-medium text-white md:text-sm {getPlatformColor(
+								class="rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
 									$modalStore.activeGame.platform
 								)}"
 							>
 								{$modalStore.activeGame.platform}
 							</span>
 							<span
-								class="rounded-md px-3 py-1.5 text-sm font-medium text-white md:text-sm {getGenreColor(
+								class="rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getGenreClasses(
 									$modalStore.activeGame.genre
 								)}"
 							>
@@ -1535,83 +1501,53 @@
 					</div>
 
 					{#if $modalStore.activeGame.status === 'Completed' && $modalStore.activeGame.ratingPresentation !== null && $modalStore.activeGame.ratingStory !== null && $modalStore.activeGame.ratingGameplay !== null}
-						<div class="mt-3 space-y-3 md:space-y-4">
+						<div class="mt-3 md:mt-4">
 							<h3
 								class="mb-3 text-base font-semibold md:mb-4 md:text-xl"
 								style="color: var(--color-text-primary);"
 							>
 								Ratings
 							</h3>
-							<div class="flex items-center gap-2">
-								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
-									<Presentation size={20} class="flex-shrink-0 text-rose-500" />
+
+							<div class="mt-3 grid grid-cols-3 gap-3 md:gap-4">
+								<div
+									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
+								>
+									<Presentation size={32} class="flex-shrink-0 text-rose-500" />
+									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
+										>{$modalStore.activeGame.ratingPresentation}</span
+									>
 									<span
-										class="text-xs font-medium md:text-sm"
+										class="text-xs font-semibold tracking-wider uppercase"
 										style="color: var(--color-text-secondary);">Presentation</span
 									>
 								</div>
-								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div
-										class="h-2 rounded-full {getRatingBarColor(
-											$modalStore.activeGame.ratingPresentation
-										)} transition-all duration-300"
-										style="width: {$modalStore.activeGame.ratingPresentation * 10}%"
-									></div>
-								</div>
-								<span
-									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									{$modalStore.activeGame.ratingPresentation}/10
-								</span>
-							</div>
 
-							<div class="flex items-center gap-2">
-								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
-									<NotebookPen size={20} class="flex-shrink-0 text-sky-500" />
+								<div
+									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
+								>
+									<NotebookPen size={32} class="flex-shrink-0 text-sky-500" />
+									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
+										>{$modalStore.activeGame.ratingStory}</span
+									>
 									<span
-										class="text-xs font-medium md:text-sm"
+										class="text-xs font-semibold tracking-wider uppercase"
 										style="color: var(--color-text-secondary);">Story</span
 									>
 								</div>
-								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div
-										class="h-2 rounded-full {getRatingBarColor(
-											$modalStore.activeGame.ratingStory
-										)} transition-all duration-300"
-										style="width: {$modalStore.activeGame.ratingStory * 10}%"
-									></div>
-								</div>
-								<span
-									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									{$modalStore.activeGame.ratingStory}/10
-								</span>
-							</div>
 
-							<div class="flex items-center gap-2">
-								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
-									<Gamepad2 size={20} class="flex-shrink-0 text-emerald-500" />
+								<div
+									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
+								>
+									<Gamepad2 size={32} class="flex-shrink-0 text-emerald-500" />
+									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
+										>{$modalStore.activeGame.ratingGameplay}</span
+									>
 									<span
-										class="text-xs font-medium md:text-sm"
+										class="text-xs font-semibold tracking-wider uppercase"
 										style="color: var(--color-text-secondary);">Gameplay</span
 									>
 								</div>
-								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div
-										class="h-2 rounded-full {getRatingBarColor(
-											$modalStore.activeGame.ratingGameplay
-										)} transition-all duration-300"
-										style="width: {$modalStore.activeGame.ratingGameplay * 10}%"
-									></div>
-								</div>
-								<span
-									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									{$modalStore.activeGame.ratingGameplay}/10
-								</span>
 							</div>
 
 							{#if $modalStore.activeGame.score !== null}
@@ -1631,7 +1567,7 @@
 							{/if}
 						</div>
 					{:else}
-						<div class="mt-3 space-y-3 md:space-y-4">
+						<div class="mt-3 md:mt-4">
 							<h3
 								class="mb-3 text-base font-semibold md:mb-4 md:text-xl"
 								style="color: var(--color-text-primary);"
@@ -1639,70 +1575,45 @@
 								Ratings
 							</h3>
 
-							<div class="flex items-center gap-2">
-								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
-									<Presentation size={20} class="flex-shrink-0 text-rose-500" />
+							<div class="mt-3 grid grid-cols-3 gap-3 opacity-60 md:gap-4">
+								<div
+									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5"
+								>
+									<Presentation size={32} class="flex-shrink-0 text-rose-500" />
+									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
+										>N/A</span
+									>
 									<span
-										class="text-xs font-medium md:text-sm"
+										class="text-xs font-semibold tracking-wider uppercase"
 										style="color: var(--color-text-secondary);">Presentation</span
 									>
 								</div>
-								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div
-										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
-										style="width: 0%"
-									></div>
-								</div>
-								<span
-									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									N/A
-								</span>
-							</div>
 
-							<div class="flex items-center gap-2">
-								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
-									<NotebookPen size={20} class="flex-shrink-0 text-sky-500" />
+								<div
+									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5"
+								>
+									<NotebookPen size={32} class="flex-shrink-0 text-sky-500" />
+									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
+										>N/A</span
+									>
 									<span
-										class="text-xs font-medium md:text-sm"
+										class="text-xs font-semibold tracking-wider uppercase"
 										style="color: var(--color-text-secondary);">Story</span
 									>
 								</div>
-								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div
-										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
-										style="width: 0%"
-									></div>
-								</div>
-								<span
-									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									N/A
-								</span>
-							</div>
 
-							<div class="flex items-center gap-2">
-								<div class="flex w-24 min-w-0 shrink-0 items-center gap-2 md:w-32">
-									<Gamepad2 size={20} class="flex-shrink-0 text-emerald-500" />
+								<div
+									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5"
+								>
+									<Gamepad2 size={32} class="flex-shrink-0 text-emerald-500" />
+									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
+										>N/A</span
+									>
 									<span
-										class="text-xs font-medium md:text-sm"
+										class="text-xs font-semibold tracking-wider uppercase"
 										style="color: var(--color-text-secondary);">Gameplay</span
 									>
 								</div>
-								<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-									<div
-										class="h-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 transition-all duration-300"
-										style="width: 0%"
-									></div>
-								</div>
-								<span
-									class="w-8 shrink-0 text-right text-xs font-semibold md:text-sm"
-									style="color: var(--color-text-primary);"
-								>
-									N/A
-								</span>
 							</div>
 
 							<div
@@ -2098,7 +2009,7 @@
 	.parallax-ratings {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: 8px;
 		margin-top: 12px;
 	}
 
@@ -2107,64 +2018,6 @@
 		font-weight: 600;
 		color: var(--color-text-primary);
 		margin: 0;
-	}
-
-	.parallax-rating-row {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.parallax-rating-label-group {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		flex-shrink: 0;
-		width: 110px;
-	}
-
-	.parallax-rating-icon {
-		flex-shrink: 0;
-	}
-
-	.parallax-rating-label {
-		font-size: 0.75rem;
-		font-weight: 500;
-		color: var(--color-text-secondary);
-	}
-
-	.parallax-rating-bar {
-		height: 0.5rem;
-		flex: 1;
-		border-radius: 9999px;
-		overflow: hidden;
-		background: #e5e7eb;
-	}
-
-	:global(.dark) .parallax-rating-bar {
-		background: #374151;
-	}
-
-	.parallax-rating-fill {
-		height: 100%;
-		border-radius: 9999px;
-		transition: width 0.3s ease;
-	}
-
-	.parallax-rating-fill-empty {
-		height: 100%;
-		width: 0%;
-		border-radius: 9999px;
-		background: linear-gradient(to right, #9ca3af, #6b7280);
-	}
-
-	.parallax-rating-value {
-		font-size: 0.75rem;
-		font-weight: 600;
-		color: var(--color-text-primary);
-		text-align: right;
-		width: 32px;
-		flex-shrink: 0;
 	}
 
 	.parallax-score-card {

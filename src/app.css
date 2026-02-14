@@ -909,3 +909,160 @@ canvas,
 .light .total-score-badge {
 	background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
 }
+
+/* ============================================
+   PLATFORM BADGE STYLES
+   ============================================ */
+.platform-pc-badge {
+	background: var(--color-platform-pc-bg);
+	color: var(--color-platform-pc-text);
+	border-color: var(--color-platform-pc-border);
+}
+
+.platform-ps5-badge {
+	background: var(--color-platform-ps5-bg);
+	color: var(--color-platform-ps5-text);
+	border-color: var(--color-platform-ps5-border);
+}
+
+.platform-ps4-badge {
+	background: var(--color-platform-ps4-bg);
+	color: var(--color-platform-ps4-text);
+	border-color: var(--color-platform-ps4-border);
+}
+
+.platform-ps2-badge,
+.platform-ps3-badge {
+	background: var(--color-platform-ps2-bg);
+	color: var(--color-platform-ps2-text);
+	border-color: var(--color-platform-ps2-border);
+}
+
+.platform-switch-badge {
+	background: var(--color-platform-switch-bg);
+	color: var(--color-platform-switch-text);
+	border-color: var(--color-platform-switch-border);
+}
+
+.platform-xbox-badge {
+	background: var(--color-platform-xbox-bg);
+	color: var(--color-platform-xbox-text);
+	border-color: var(--color-platform-xbox-border);
+}
+
+.platform-xbox-360-badge {
+	background: var(--color-platform-xbox-360-bg);
+	color: var(--color-platform-xbox-360-text);
+	border-color: var(--color-platform-xbox-360-border);
+}
+
+/* ============================================
+   GENRE BADGE STYLES
+   ============================================ */
+.genre-action-badge {
+	background: var(--color-genre-action-bg);
+	color: var(--color-genre-action-text);
+	border-color: var(--color-genre-action-border);
+}
+
+.genre-action-adventure-badge {
+	background: var(--color-genre-action-adventure-bg);
+	color: var(--color-genre-action-adventure-text);
+	border-color: var(--color-genre-action-adventure-border);
+}
+
+.genre-action-rpg-badge {
+	background: var(--color-genre-action-rpg-bg);
+	color: var(--color-genre-action-rpg-text);
+	border-color: var(--color-genre-action-rpg-border);
+}
+
+.genre-fps-badge {
+	background: var(--color-genre-fps-bg);
+	color: var(--color-genre-fps-text);
+	border-color: var(--color-genre-fps-border);
+}
+
+.genre-metroidvania-badge {
+	background: var(--color-genre-metroidvania-bg);
+	color: var(--color-genre-metroidvania-text);
+	border-color: var(--color-genre-metroidvania-border);
+}
+
+.genre-platformer-badge {
+	background: var(--color-genre-platformer-bg);
+	color: var(--color-genre-platformer-text);
+	border-color: var(--color-genre-platformer-border);
+}
+
+.genre-puzzle-badge {
+	background: var(--color-genre-puzzle-bg);
+	color: var(--color-genre-puzzle-text);
+	border-color: var(--color-genre-puzzle-border);
+}
+
+.genre-puzzle-platformer-badge {
+	background: var(--color-genre-puzzle-platformer-bg);
+	color: var(--color-genre-puzzle-platformer-text);
+	border-color: var(--color-genre-puzzle-platformer-border);
+}
+
+.genre-roguelike-badge {
+	background: var(--color-genre-roguelike-bg);
+	color: var(--color-genre-roguelike-text);
+	border-color: var(--color-genre-roguelike-border);
+}
+
+.genre-story-adventure-badge {
+	background: var(--color-genre-story-adventure-bg);
+	color: var(--color-genre-story-adventure-text);
+	border-color: var(--color-genre-story-adventure-border);
+}
+
+.genre-story-puzzle-badge {
+	background: var(--color-genre-story-puzzle-bg);
+	color: var(--color-genre-story-puzzle-text);
+	border-color: var(--color-genre-story-puzzle-border);
+}
+
+.genre-survival-horror-badge {
+	background: var(--color-genre-survival-horror-bg);
+	color: var(--color-genre-survival-horror-text);
+	border-color: var(--color-genre-survival-horror-border);
+}
+
+.genre-japanese-rpg-badge {
+	background: var(--color-genre-japanese-rpg-bg);
+	color: var(--color-genre-japanese-rpg-text);
+	border-color: var(--color-genre-japanese-rpg-border);
+}
+
+.genre-classic-rpg-badge {
+	background: var(--color-genre-classic-rpg-bg);
+	color: var(--color-genre-classic-rpg-text);
+	border-color: var(--color-genre-classic-rpg-border);
+}
+
+.genre-story-rpg-badge {
+	background: var(--color-genre-story-rpg-bg);
+	color: var(--color-genre-story-rpg-text);
+	border-color: var(--color-genre-story-rpg-border);
+}
+
+.genre-story-horror-badge {
+	background: var(--color-genre-story-horror-bg);
+	color: var(--color-genre-story-horror-text);
+	border-color: var(--color-genre-story-horror-border);
+}
+
+.genre-hack-slash-badge {
+	background: var(--color-genre-hack-slash-bg);
+	color: var(--color-genre-hack-slash-text);
+	border-color: var(--color-genre-hack-slash-border);
+}
+
+.genre-strategy-badge {
+	background: var(--color-genre-strategy-bg);
+	color: var(--color-genre-strategy-text);
+	border-color: var(--color-genre-strategy-border);
+}

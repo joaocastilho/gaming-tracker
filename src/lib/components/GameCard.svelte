@@ -9,11 +9,7 @@
 	import { editorStore } from '$lib/stores/editor.svelte';
 	import { offlineStore } from '$lib/stores/offline.svelte';
 	import type { Game } from '../types/game.js';
-	import {
-		getPlatformClasses,
-		getGenreClasses,
-		getRatingBarColor
-	} from '../utils/colorConstants.js';
+	import { getPlatformClasses, getGenreClasses } from '../utils/colorConstants.js';
 	import { getTierClass, getTierDisplayName } from '../utils/tierUtils.js';
 	import { generateSrcset, generateTinySrcset, generateSizes } from '../utils/imageSrcset.js';
 	import {
@@ -144,9 +140,9 @@
 		}
 
 		const isTierList = size === 'tierlist';
-		const minSize = isTierList ? 0.65 : 0.75;
-		const maxSize = isTierList ? 1.05 : 1.15;
-		const singleLineMinSize = isTierList ? 0.9 : 0.95;
+		const minSize = isTierList ? 0.65 : 0.85;
+		const maxSize = isTierList ? 1.05 : 1.4;
+		const singleLineMinSize = isTierList ? 0.9 : 1.1;
 
 		const containerWidth = width ?? node.clientWidth;
 		if (containerWidth === 0) return;
@@ -469,6 +465,28 @@
 				</div>
 			</div>
 
+			<!-- Ratings Section - Compact horizontal layout -->
+			{#if game.status === 'Completed' && game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null}
+				<div class="ratings-compact">
+					<div class="rating-item" title="Presentation: {game.ratingPresentation}/10">
+						<Presentation size={28} class="text-rose-500" />
+						<span class="rating-value">{game.ratingPresentation}</span>
+					</div>
+					<div class="rating-item" title="Story: {game.ratingStory}/10">
+						<NotebookPen size={28} class="text-sky-500" />
+						<span class="rating-value">{game.ratingStory}</span>
+					</div>
+					<div class="rating-item" title="Gameplay: {game.ratingGameplay}/10">
+						<Gamepad2 size={28} class="text-emerald-500" />
+						<span class="rating-value">{game.ratingGameplay}</span>
+					</div>
+				</div>
+			{:else}
+				<div class="ratings-placeholder">
+					<span>Ratings after completion</span>
+				</div>
+			{/if}
+
 			<!-- Total Score Section -->
 			{#if game.status === 'Completed' && game.score !== null}
 				<div class="total-score-badge">
@@ -478,52 +496,6 @@
 			{:else}
 				<div class="planned-indicator">
 					<span>PLANNED</span>
-				</div>
-			{/if}
-
-			<!-- Ratings Section - Compact horizontal layout -->
-			{#if game.status === 'Completed' && game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null}
-				<div class="ratings-compact">
-					<div class="rating-mini" title="Presentation: {game.ratingPresentation}/10">
-						<Presentation size={16} class="text-rose-500" />
-						<div class="mini-bar-container">
-							<div class="mini-progress-bar">
-								<div
-									class={getRatingBarColor(game.ratingPresentation)}
-									style="width: {game.ratingPresentation * 10}%"
-								></div>
-							</div>
-						</div>
-						<span class="mini-rating-value">{game.ratingPresentation}</span>
-					</div>
-					<div class="rating-mini" title="Story: {game.ratingStory}/10">
-						<NotebookPen size={16} class="text-sky-500" />
-						<div class="mini-bar-container">
-							<div class="mini-progress-bar">
-								<div
-									class={getRatingBarColor(game.ratingStory)}
-									style="width: {game.ratingStory * 10}%"
-								></div>
-							</div>
-						</div>
-						<span class="mini-rating-value">{game.ratingStory}</span>
-					</div>
-					<div class="rating-mini" title="Gameplay: {game.ratingGameplay}/10">
-						<Gamepad2 size={16} class="text-emerald-500" />
-						<div class="mini-bar-container">
-							<div class="mini-progress-bar">
-								<div
-									class={getRatingBarColor(game.ratingGameplay)}
-									style="width: {game.ratingGameplay * 10}%"
-								></div>
-							</div>
-						</div>
-						<span class="mini-rating-value">{game.ratingGameplay}</span>
-					</div>
-				</div>
-			{:else}
-				<div class="ratings-placeholder">
-					<span>Ratings after completion</span>
 				</div>
 			{/if}
 		{/if}
@@ -679,8 +651,8 @@
 
 	.title-section {
 		margin-bottom: 0;
-		min-height: 44px;
-		max-height: 44px;
+		min-height: 52px;
+		max-height: 52px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -764,159 +736,6 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 
-	/* Platform Badges - Dark Mode */
-	:global(:root) .platform-pc-badge {
-		background: var(--color-platform-pc-bg);
-		color: var(--color-platform-pc-text);
-		border-color: var(--color-platform-pc-border);
-	}
-
-	:global(:root) .platform-ps5-badge {
-		background: var(--color-platform-ps5-bg);
-		color: var(--color-platform-ps5-text);
-		border-color: var(--color-platform-ps5-border);
-	}
-
-	:global(:root) .platform-ps4-badge {
-		background: var(--color-platform-ps4-bg);
-		color: var(--color-platform-ps4-text);
-		border-color: var(--color-platform-ps4-border);
-	}
-
-	:global(:root) .platform-ps2-badge,
-	:global(:root) .platform-ps3-badge {
-		background: var(--color-platform-ps2-bg);
-		color: var(--color-platform-ps2-text);
-		border-color: var(--color-platform-ps2-border);
-	}
-
-	:global(:root) .platform-switch-badge {
-		background: var(--color-platform-switch-bg);
-		color: var(--color-platform-switch-text);
-		border-color: var(--color-platform-switch-border);
-	}
-
-	:global(:root) .platform-xbox-badge {
-		background: var(--color-platform-xbox-bg);
-		color: var(--color-platform-xbox-text);
-		border-color: var(--color-platform-xbox-border);
-	}
-
-	:global(:root) .platform-xbox-360-badge {
-		background: var(--color-platform-xbox-360-bg);
-		color: var(--color-platform-xbox-360-text);
-		border-color: var(--color-platform-xbox-360-border);
-	}
-
-	/* Genre Badges - Dark Mode */
-	:global(:root) .genre-action-badge {
-		background: var(--color-genre-action-bg);
-		color: var(--color-genre-action-text);
-		border-color: var(--color-genre-action-border);
-	}
-
-	:global(:root) .genre-action-adventure-badge {
-		background: var(--color-genre-action-adventure-bg);
-		color: var(--color-genre-action-adventure-text);
-		border-color: var(--color-genre-action-adventure-border);
-	}
-
-	:global(:root) .genre-action-rpg-badge {
-		background: var(--color-genre-action-rpg-bg);
-		color: var(--color-genre-action-rpg-text);
-		border-color: var(--color-genre-action-rpg-border);
-	}
-
-	:global(:root) .genre-fps-badge {
-		background: var(--color-genre-fps-bg);
-		color: var(--color-genre-fps-text);
-		border-color: var(--color-genre-fps-border);
-	}
-
-	:global(:root) .genre-metroidvania-badge {
-		background: var(--color-genre-metroidvania-bg);
-		color: var(--color-genre-metroidvania-text);
-		border-color: var(--color-genre-metroidvania-border);
-	}
-
-	:global(:root) .genre-platformer-badge {
-		background: var(--color-genre-platformer-bg);
-		color: var(--color-genre-platformer-text);
-		border-color: var(--color-genre-platformer-border);
-	}
-
-	:global(:root) .genre-puzzle-badge {
-		background: var(--color-genre-puzzle-bg);
-		color: var(--color-genre-puzzle-text);
-		border-color: var(--color-genre-puzzle-border);
-	}
-
-	:global(:root) .genre-puzzle-platformer-badge {
-		background: var(--color-genre-puzzle-platformer-bg);
-		color: var(--color-genre-puzzle-platformer-text);
-		border-color: var(--color-genre-puzzle-platformer-border);
-	}
-
-	:global(:root) .genre-roguelike-badge {
-		background: var(--color-genre-roguelike-bg);
-		color: var(--color-genre-roguelike-text);
-		border-color: var(--color-genre-roguelike-border);
-	}
-
-	:global(:root) .genre-story-adventure-badge {
-		background: var(--color-genre-story-adventure-bg);
-		color: var(--color-genre-story-adventure-text);
-		border-color: var(--color-genre-story-adventure-border);
-	}
-
-	:global(:root) .genre-story-puzzle-badge {
-		background: var(--color-genre-story-puzzle-bg);
-		color: var(--color-genre-story-puzzle-text);
-		border-color: var(--color-genre-story-puzzle-border);
-	}
-
-	:global(:root) .genre-survival-horror-badge {
-		background: var(--color-genre-survival-horror-bg);
-		color: var(--color-genre-survival-horror-text);
-		border-color: var(--color-genre-survival-horror-border);
-	}
-
-	:global(:root) .genre-japanese-rpg-badge {
-		background: var(--color-genre-japanese-rpg-bg);
-		color: var(--color-genre-japanese-rpg-text);
-		border-color: var(--color-genre-japanese-rpg-border);
-	}
-
-	:global(:root) .genre-classic-rpg-badge {
-		background: var(--color-genre-classic-rpg-bg);
-		color: var(--color-genre-classic-rpg-text);
-		border-color: var(--color-genre-classic-rpg-border);
-	}
-
-	:global(:root) .genre-story-rpg-badge {
-		background: var(--color-genre-story-rpg-bg);
-		color: var(--color-genre-story-rpg-text);
-		border-color: var(--color-genre-story-rpg-border);
-	}
-
-	:global(:root) .genre-story-horror-badge {
-		background: var(--color-genre-story-horror-bg);
-		color: var(--color-genre-story-horror-text);
-		border-color: var(--color-genre-story-horror-border);
-	}
-
-	:global(:root) .genre-hack-slash-badge {
-		background: var(--color-genre-hack-slash-bg);
-		color: var(--color-genre-hack-slash-text);
-		border-color: var(--color-genre-hack-slash-border);
-	}
-
-	:global(:root) .genre-strategy-badge {
-		background: var(--color-genre-strategy-bg);
-		color: var(--color-genre-strategy-text);
-		border-color: var(--color-genre-strategy-border);
-	}
-
 	/* Co-op Badge */
 	.coop-badge {
 		background: none;
@@ -934,10 +753,12 @@
 		align-items: center;
 		justify-content: center;
 		gap: 6px;
-		font-weight: 700;
-		font-size: 0.9rem;
+		font-weight: 800;
+		font-size: 1rem;
 		color: var(--color-rating-total);
-		padding: 2px 0;
+		padding: 8px 0 4px 0;
+		margin-top: 4px;
+		border-top: 1px dashed var(--color-border);
 	}
 
 	/* Planned Indicator - Simple text, no box */
@@ -946,11 +767,12 @@
 		align-items: center;
 		justify-content: center;
 		font-weight: 600;
-		font-size: 0.85rem;
+		font-size: 0.9rem;
 		color: var(--color-text-tertiary);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		padding: 2px 0;
+		padding: 12px 0;
+		margin-top: auto;
 	}
 
 	/* Time and Date Row */
@@ -964,7 +786,6 @@
 	}
 
 	.time-date-row.completed {
-		border-top: 1px solid var(--color-border);
 		padding-top: 8px;
 		margin-top: 4px;
 	}
@@ -979,47 +800,46 @@
 	/* Compact Ratings - Horizontal layout */
 	.ratings-compact {
 		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		padding: 0;
-	}
-
-	.rating-mini {
-		display: flex;
-		align-items: center;
+		justify-content: space-around;
 		gap: 8px;
-	}
-
-	.rating-mini :global(svg) {
-		flex-shrink: 0;
-	}
-
-	.mini-bar-container {
+		padding: 12px 4px 8px 4px;
+		margin-top: auto;
 		flex: 1;
+	}
+
+	.rating-item {
 		display: flex;
+		flex-direction: row;
 		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		flex: 1;
+		transition: transform var(--transition-fast);
 	}
 
-	.mini-progress-bar {
-		width: 100%;
-		height: 4px;
-		background: var(--color-border);
-		border-radius: 2px;
-		overflow: hidden;
+	.rating-item:hover {
+		transform: translateY(-2px);
 	}
 
-	.mini-progress-bar > div {
-		height: 100%;
-		border-radius: 2px;
-		transition: width 0.5s ease-out;
+	.rating-value-container {
+		display: flex;
+		align-items: baseline;
+		justify-content: center;
 	}
 
-	.mini-rating-value {
-		font-size: 0.8rem;
-		font-weight: 600;
+	.rating-value {
+		font-size: 2rem;
+		font-weight: 800;
+		line-height: 1;
 		color: var(--color-text-primary);
-		min-width: 18px;
-		text-align: right;
+	}
+
+	.rating-label {
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--color-text-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 	}
 
 	.ratings-placeholder {
@@ -1088,7 +908,7 @@
 	}
 
 	.rating-value {
-		font-size: 0.85rem;
+		font-size: 1.2rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		min-width: 20px;
