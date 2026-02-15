@@ -1632,9 +1632,7 @@
 								</div>
 							</div>
 
-							<div
-								class="score-result mt-6 rounded-lg border p-4 md:mt-8 dark:border-gray-700"
-							>
+							<div class="score-result mt-6 rounded-lg border p-4 md:mt-8 dark:border-gray-700">
 								<div class="flex items-center justify-center gap-2">
 									<Award size={24} class="text-gray-400" />
 									<span

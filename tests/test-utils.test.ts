@@ -8,53 +8,8 @@ import {
 	getTierColor
 } from '$lib/utils/filterOptions';
 import { formatRating } from '$lib/validation/game';
-import { memoize } from '$lib/utils/memoize';
 
 describe('Utility Tests', () => {
-	describe('Memoize', () => {
-		it('caches function results', () => {
-			const fn = vi.fn((x: number) => x * 2);
-			const memoized = memoize(fn);
-
-			expect(memoized(2)).toBe(4);
-			expect(memoized(2)).toBe(4);
-			expect(fn).toHaveBeenCalledTimes(1);
-
-			expect(memoized(3)).toBe(6);
-			expect(fn).toHaveBeenCalledTimes(2);
-		});
-
-		it('respects TTL', async () => {
-			const fn = vi.fn((x: number) => x * 2);
-			const memoized = memoize(fn, { ttl: 10 });
-
-			expect(memoized(2)).toBe(4);
-			expect(fn).toHaveBeenCalledTimes(1);
-
-			await new Promise((resolve) => setTimeout(resolve, 20));
-
-			expect(memoized(2)).toBe(4);
-			expect(fn).toHaveBeenCalledTimes(2);
-		});
-
-		it('respects maxSize', () => {
-			const fn = vi.fn((x: number) => x * 2);
-			const memoized = memoize(fn, { maxSize: 2 });
-
-			memoized(1);
-			memoized(2);
-			memoized(3); // Evicts 1
-
-			expect(fn).toHaveBeenCalledTimes(3);
-
-			memoized(2); // Cached
-			expect(fn).toHaveBeenCalledTimes(3);
-
-			memoized(1); // Re-calculated
-			expect(fn).toHaveBeenCalledTimes(4);
-		});
-	});
-
 	describe('Debounce', () => {
 		it('delays execution', async () => {
 			const fn = vi.fn(() => {});

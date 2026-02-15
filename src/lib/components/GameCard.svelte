@@ -793,11 +793,6 @@
 		margin-top: 4px;
 	}
 
-	.time-date-row.completed {
-		padding-top: 8px;
-		margin-top: 4px;
-	}
-
 	.time-item,
 	.date-item {
 		display: flex;
@@ -810,7 +805,7 @@
 		display: flex;
 		justify-content: space-around;
 		gap: 8px;
-		padding: 8x 4px 8px 4px;
+		padding: 8px 4px 8px 4px;
 		margin-top: auto;
 		flex: 1;
 	}
@@ -835,98 +830,11 @@
 		transform: translateY(-2px);
 	}
 
-	.rating-value-container {
-		display: flex;
-		align-items: baseline;
-		justify-content: center;
-	}
-
 	.rating-value {
 		font-size: clamp(1.1rem, 5cqi, 2rem);
 		font-weight: 800;
 		line-height: 1;
 		color: var(--color-text-primary);
-	}
-
-	.rating-label {
-		font-size: 0.7rem;
-		font-weight: 600;
-		color: var(--color-text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.ratings-placeholder {
-		text-align: center;
-		padding: 0;
-		font-size: 0.75rem;
-		color: var(--color-text-muted);
-		font-style: italic;
-	}
-
-	/* Legacy styles for compatibility */
-	.ratings-list {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		padding: 8px 0;
-	}
-
-	.rating-row {
-		display: flex;
-		flex-direction: column;
-		gap: 3px;
-	}
-
-	.rating-label {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		font-size: 0.75rem;
-		font-weight: 500;
-		color: var(--color-text-secondary);
-	}
-
-	.rating-bar-container {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-	}
-
-	.progress-bar {
-		flex: 1;
-		height: 5px;
-		background: var(--color-border);
-		border-radius: 3px;
-		overflow: hidden;
-	}
-
-	.progress-bar-fill.high {
-		background: linear-gradient(90deg, #22c55e, #4ade80);
-	}
-
-	.progress-bar-fill.medium {
-		background: linear-gradient(90deg, #eab308, #facc15);
-	}
-
-	.progress-bar-fill.low {
-		background: linear-gradient(90deg, #f97316, #fb923c);
-	}
-
-	.progress-bar-fill.very-low {
-		background: linear-gradient(90deg, #ef4444, #f87171);
-	}
-
-	.progress-bar-fill-empty {
-		background: var(--color-border);
-	}
-
-	.rating-value {
-		font-size: clamp(1.1rem, 5cqi, 2rem);
-		font-weight: 700;
-		color: var(--color-text-primary);
-		min-width: 20px;
-		text-align: right;
 	}
 
 	/* Editor Controls */
@@ -1060,19 +968,6 @@
 			gap: 3px;
 		}
 
-		.rating-mini {
-			gap: 5px;
-		}
-
-		.mini-rating-value {
-			font-size: 0.75rem;
-		}
-
-		.ratings-placeholder {
-			padding: 0;
-			font-size: 0.75rem;
-		}
-
 		.time-date-row {
 			font-size: 0.75rem;
 		}
@@ -1125,26 +1020,6 @@
 
 		.ratings-compact {
 			padding: 0;
-			gap: 2px;
-		}
-
-		.rating-mini {
-			gap: 4px;
-		}
-
-		.mini-rating-value {
-			font-size: 0.7rem;
-			min-width: 16px;
-		}
-
-		/* Rating responsiveness now handled by clamp() */
-
-		.ratings-list {
-			padding: 6px 0;
-			gap: 6px;
-		}
-
-		.rating-row {
 			gap: 2px;
 		}
 

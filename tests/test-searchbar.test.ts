@@ -62,7 +62,7 @@ describe('SearchBar Component', () => {
 	describe('Rendering', () => {
 		it('renders search input with placeholder', () => {
 			render(SearchBar);
-			const input = screen.getByPlaceholderText('Search games...');
+			const input = screen.getByPlaceholderText('Search games... (Ctrl+K)');
 			expect(input).toBeInTheDocument();
 		});
 

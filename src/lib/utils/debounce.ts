@@ -31,26 +31,3 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 		}
 	};
 }
-
-/**
- * Throttle utility function to limit the rate of function execution
- * @param func - The function to throttle
- * @param limit - The number of milliseconds to limit
- * @returns A throttled version of the function
- */
-export function throttle<T extends (...args: unknown[]) => unknown>(
-	func: T,
-	limit: number
-): (...args: Parameters<T>) => void {
-	let inThrottle = false;
-
-	return (...args: Parameters<T>) => {
-		if (!inThrottle) {
-			func(...args);
-			inThrottle = true;
-			setTimeout(() => {
-				inThrottle = false;
-			}, limit);
-		}
-	};
-}

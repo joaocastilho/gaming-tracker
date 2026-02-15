@@ -35,7 +35,6 @@ function parsePlaytime(time: string | null | undefined): number | null {
 }
 
 class FilteredGamesStore {
-	private cache = new Map<string, Game[]>();
 	private lastCacheKey: string | null = null;
 	private lastCachedResult: Game[] = [];
 
@@ -361,18 +360,9 @@ class FilteredGamesStore {
 	private updateCache(key: string, result: Game[]): void {
 		this.lastCacheKey = key;
 		this.lastCachedResult = result;
-
-		// Limit cache size to prevent memory leaks
-		if (this.cache.size >= 10) {
-			const firstKey = this.cache.keys().next().value;
-			this.cache.delete(firstKey);
-		}
-
-		this.cache.set(key, result);
 	}
 
 	clearCache(): void {
-		this.cache.clear();
 		this.lastCacheKey = null;
 		this.lastCachedResult = [];
 	}

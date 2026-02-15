@@ -81,60 +81,6 @@ export const TIER_COLORS: Record<string, string> = {
 	'E - Bad': 'tier-e'
 };
 
-// Co-op is now shown as icon only, not badge
-// Keeping for backwards compatibility
-export const COOP_COLORS: Record<string, string> = {
-	Yes: 'coop-yes',
-	No: 'coop-no'
-};
-
-// Platform display names
-export const PLATFORM_LABELS: Record<string, string> = {
-	PC: 'PC',
-	PS5: 'PS5',
-	PS4: 'PlayStation 4',
-	PS3: 'PlayStation 3',
-	PS2: 'PlayStation 2',
-	PS1: 'PlayStation 1',
-	Switch: 'Nintendo Switch',
-	'3DS': 'Nintendo 3DS',
-	N64: 'Nintendo 64',
-	GameCube: 'GameCube',
-	'Game Boy Advance': 'Game Boy Advance',
-	Xbox: 'Xbox',
-	'Xbox 360': 'Xbox 360',
-	'Xbox Series X': 'Xbox Series X',
-	Dreamcast: 'Dreamcast'
-};
-
-// Genre display names
-export const GENRE_LABELS: Record<string, string> = {
-	Platformer: 'Platformer',
-	'Action Platformer': 'Action Platformer',
-	'Puzzle Platformer': 'Puzzle Platformer',
-	'Story Platformer': 'Story Platformer',
-	'Story Adventure': 'Story Adventure',
-	'Action Adventure': 'Action Adventure',
-	'Survival Horror': 'Survival Horror',
-	'Story Puzzle': 'Story Puzzle',
-	Puzzle: 'Puzzle',
-	'Action RPG': 'Action RPG',
-	'Classic RPG': 'Classic RPG',
-	'Japanese RPG': 'Japanese RPG',
-	'Sandbox RPG': 'Sandbox RPG',
-	'Story RPG': 'Story RPG',
-	FPS: 'FPS',
-	Action: 'Action',
-	'Bullet Hell': 'Bullet Hell',
-	'Hack & Slash': 'Hack & Slash',
-	Survival: 'Survival',
-	Strategy: 'Strategy',
-	Metroidvania: 'Metroidvania',
-	Roguelike: 'Roguelike',
-	'Story Horror': 'Story Horror',
-	'Horror RPG': 'Horror RPG'
-};
-
 // Tier display names
 export const TIER_LABELS: Record<string, string> = {
 	S: 'S - Masterpiece',
@@ -145,10 +91,7 @@ export const TIER_LABELS: Record<string, string> = {
 	E: 'E - Bad'
 };
 
-// Rating colors for text/icons
-export const RATING_COLORS = {
-	presentation: 'text-rose-500',
-	story: 'text-sky-500',
-	gameplay: 'text-emerald-500',
-	total: 'text-amber-500'
+export const COOP_COLORS: Record<string, string> = {
+	Yes: 'coop-yes',
+	No: 'coop-no'
 };
