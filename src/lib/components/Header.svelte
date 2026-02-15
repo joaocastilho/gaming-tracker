@@ -93,6 +93,7 @@
 
 <header class="header-root mb-2 px-6 py-3 md:mb-6 md:py-1">
 	<div class="header-inner container mx-auto">
+		<div class="header-left invisible md:visible"></div>
 		<nav class="tabs-nav">
 			<ul class="tabs-list">
 				{#each navItems as item (item.id)}
@@ -211,7 +212,7 @@
 
 	.header-inner {
 		display: grid;
-		grid-template-columns: 1fr auto;
+		grid-template-columns: 1fr auto 1fr;
 		grid-template-rows: auto;
 		gap: 1rem;
 		max-width: 1000px;
@@ -220,12 +221,18 @@
 		align-items: center;
 	}
 
+	.header-left {
+		grid-row: 1;
+		grid-column: 1;
+		display: none;
+	}
+
 	.tabs-nav {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		grid-row: 1;
-		grid-column: 1;
+		grid-column: 2;
 	}
 
 	.tabs-list {
@@ -328,7 +335,7 @@
 		justify-content: flex-end;
 		gap: 0.5rem;
 		grid-row: 1;
-		grid-column: 2;
+		grid-column: 3;
 	}
 
 	.theme-toggle-wrapper {
@@ -482,6 +489,10 @@
 		.header-inner {
 			grid-template-columns: 1fr auto;
 			justify-content: space-between;
+		}
+
+		.header-left {
+			display: none;
 		}
 
 		.header-root {

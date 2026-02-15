@@ -54,7 +54,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		padding-top: 1.5rem;
+		padding-top: 0;
 	}
 
 	@media (max-width: 768px) {
