@@ -39,7 +39,7 @@
 	</h3>
 	<div class="tier-games-grid">
 		{#each displayedGames as game (game.id)}
-			<div>
+			<div class="tier-card-wrapper">
 				<GameCard
 					{game}
 					size="tierlist"
@@ -61,6 +61,7 @@
 		margin-bottom: 2rem;
 		content-visibility: auto;
 		contain-intrinsic-size: 1px 500px;
+		overflow: hidden;
 	}
 
 	.tier-header {
@@ -83,13 +84,24 @@
 
 	.tier-games-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 		gap: 1rem;
-		max-width: 100%;
 		width: 100%;
 	}
 
+	.tier-card-wrapper {
+		min-width: 0;
+		overflow: hidden;
+	}
+
 	@media (max-width: 768px) {
+		.tier-games-grid {
+			grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+			gap: 0.5rem;
+		}
+	}
+
+	@media (max-width: 480px) {
 		.tier-games-grid {
 			grid-template-columns: repeat(2, 1fr);
 			gap: 0.5rem;

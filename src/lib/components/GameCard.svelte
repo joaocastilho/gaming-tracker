@@ -500,8 +500,9 @@
 
 <style>
 	.game-card.tierlist-size {
-		width: 200px;
-		--cover-height: 300px;
+		width: 100%;
+		min-width: 0;
+		--cover-height: auto;
 	}
 
 	.game-card {
