@@ -5,7 +5,7 @@
 
 import { pushState, replaceState } from '$app/navigation';
 import { createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
-import { getTierDisplayName } from '$lib/utils/tierUtils';
+import { getTierDisplayName, getTierWeight } from '$lib/utils/tierUtils';
 import type { Game, TierValue } from '../types/game.js';
 import type { SortOption } from './filters.svelte';
 import { gamesStore } from './games.svelte';
@@ -345,6 +345,14 @@ class ModalStore {
 					break;
 				case 'planned':
 					filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
+					break;
+				case 'tierlist':
+					filteredGames = filteredGames.toSorted((a, b) => {
+						const weightA = getTierWeight(a.tier || '');
+						const weightB = getTierWeight(b.tier || '');
+						if (weightA !== weightB) return weightB - weightA; // Higher tier first
+						return a.title.localeCompare(b.title);
+					});
 					break;
 				default:
 					filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));

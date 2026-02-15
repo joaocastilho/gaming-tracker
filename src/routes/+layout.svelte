@@ -15,7 +15,7 @@
 	import { browser, dev } from '$app/environment';
 	import { onMount, untrack } from 'svelte';
 	import type { Game } from '$lib/types/game.js';
-	import { RotateCcw, SlidersHorizontal, Settings, Moon, LogIn, LogOut, Plus } from 'lucide-svelte';
+	import { RotateCcw } from 'lucide-svelte';
 
 	import GamesView from '$lib/views/GamesView.svelte';
 	import TierListView from '$lib/views/TierListView.svelte';
@@ -33,6 +33,8 @@
 	import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 	import FilterToggle from '$lib/components/FilterToggle.svelte';
 	import MobileFilters from '$lib/components/MobileFilters.svelte';
+	import MobileSearch from '$lib/components/layout/MobileSearch.svelte';
+	import MobileSettingsMenu from '$lib/components/layout/MobileSettingsMenu.svelte';
 
 	import DetailModal from '$lib/components/DetailModal.svelte';
 	import GameEditorModal from '$lib/components/GameEditorModal.svelte';
@@ -40,39 +42,7 @@
 	import LoginModal from '$lib/components/LoginModal.svelte';
 	import NoResults from '$lib/components/NoResults.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
-
-	function focusTrap(node: HTMLElement): { destroy: () => void } {
-		const focusableSelectors =
-			'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-		const focusableElements = node.querySelectorAll<HTMLElement>(focusableSelectors);
-		const firstFocusable = focusableElements[0];
-		const lastFocusable = focusableElements[focusableElements.length - 1];
-
-		function handleKeydown(e: KeyboardEvent) {
-			if (e.key !== 'Tab') return;
-
-			if (e.shiftKey) {
-				if (document.activeElement === firstFocusable) {
-					e.preventDefault();
-					lastFocusable?.focus();
-				}
-			} else {
-				if (document.activeElement === lastFocusable) {
-					e.preventDefault();
-					firstFocusable?.focus();
-				}
-			}
-		}
-
-		node.addEventListener('keydown', handleKeydown);
-		firstFocusable?.focus();
-
-		return {
-			destroy() {
-				node.removeEventListener('keydown', handleKeydown);
-			}
-		};
-	}
+	import { lastManualClearTime } from '$lib/stores/searchClearCoordinator';
 
 	let initialized = $state(true);
 	let gamesInitialized = $state(false);
@@ -239,8 +209,6 @@
 		}
 	});
 
-	import { lastManualClearTime } from '$lib/stores/searchClearCoordinator';
-
 	// Sync search term from URL on every navigation (for auto-switching and manual tab changes)
 	// BUT NOT when mobile search is open (to avoid interfering with active typing)
 	// Also NOT immediately after a manual clear (to prevent race condition)
@@ -267,24 +235,6 @@
 	$effect(() => {
 		if (initialized) {
 			if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
-		}
-	});
-
-	// Track if we just opened search to set initial value
-	let searchJustOpened = false;
-	$effect(() => {
-		if (isSearchOpen && searchInput) {
-			const searchTerm = $filtersStore?.searchTerm ?? '';
-
-			// Set initial value when search opens
-			if (!searchJustOpened) {
-				searchInput.value = searchTerm;
-				searchJustOpened = true;
-			}
-
-			searchInput.focus();
-		} else if (!isSearchOpen) {
-			searchJustOpened = false;
 		}
 	});
 
@@ -337,12 +287,10 @@
 	let isFiltersOpen = $state(false);
 	let isSettingsMenuOpen = $state(false);
 	let loginModalOpen = $state(false);
-	let isEditor = $derived(editorStore.editorMode);
 
 	// Desktop filters expanded state moved to filtersStore
 	let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
 
-	let searchInput = $state<HTMLInputElement | null>(null);
 	let savedScrollPosition = $state<number>(0);
 
 	// Scroll lock effect when filters modal is open
@@ -428,19 +376,6 @@
 		}
 	});
 
-	// Scroll to top when search term changes in mobile search
-	$effect(() => {
-		if (browser && isSearchOpen && window.innerWidth < 768) {
-			const searchTerm = $filtersStore?.searchTerm ?? '';
-			// Scroll to top when there's a search term or when results change
-			if (searchTerm) {
-				requestAnimationFrame(() => {
-					window.scrollTo({ top: 0, behavior: 'smooth' });
-				});
-			}
-		}
-	});
-
 	// Auto-switch to tab with results when current tab has no matches
 	let lastSearchTerm = '';
 	let lastActiveTab = '';
@@ -503,70 +438,6 @@
 
 	let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 	let canReset = $derived(hasActiveFilters || filtersStore.isSortModified());
-
-	// Handle mobile search input with debounce
-	let mobileSearchDebounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-	function handleMobileSearchInput(event: Event) {
-		const target = event.target as HTMLInputElement;
-		const newValue = target.value;
-
-		if (mobileSearchDebounceTimeout) {
-			clearTimeout(mobileSearchDebounceTimeout);
-		}
-
-		mobileSearchDebounceTimeout = setTimeout(() => {
-			// Check if we're searching from tierlist and user started typing
-			const isFromTierlist = page.state.fromTierlist;
-			if (isFromTierlist && newValue && appStore.activeTab === 'tierlist') {
-				// Redirect to Games page with search term
-				const searchParam = `?s=${encodeURIComponent(newValue)}`;
-				goto(`/${searchParam}`, {
-					keepFocus: true,
-					noScroll: true,
-					state: { showMobileSearch: true }
-				});
-				return;
-			}
-
-			// Update filter store FIRST to trigger filtering
-			filtersStore.setSearchTerm(newValue);
-
-			// Then update URL with search parameter using current location
-			if (browser) {
-				const url = new URL(window.location.href);
-				if (newValue) {
-					url.searchParams.set('s', newValue);
-				} else {
-					url.searchParams.delete('s');
-				}
-				// Use replaceState to update URL without navigation
-				replaceState(url.toString(), { ...page.state });
-			}
-		}, 300);
-	}
-
-	function clearMobileSearch() {
-		// Clear filter store first to trigger unfiltering
-		filtersStore.setSearchTerm('');
-
-		// Clear input value
-		if (searchInput) {
-			searchInput.value = '';
-		}
-
-		// Clear URL parameter
-		if (browser) {
-			const url = new URL(window.location.href);
-			url.searchParams.delete('s');
-			replaceState(url.toString(), page.state);
-		}
-
-		// Close search box
-		if (isSearchOpen) {
-			history.back();
-		}
-	}
 
 	let editorModalOpen = $state(false);
 	let editorModalMode = $state<'create' | 'edit'>('create');
@@ -643,9 +514,7 @@
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
 				{#if !isTierlistPage}
-					<!-- Filter toggle moved to Header.svelte -->
-
-					<!-- Collapsible filter content -->
+					<!-- Filters are shown on desktop via FilterDropdowns -->
 					{#if filtersStore.isDesktopFiltersExpanded}
 						<div class="filter-content mb-8 space-y-4">
 							<SearchBar />
@@ -772,49 +641,7 @@
 
 		<LoginModal bind:open={loginModalOpen} />
 
-		<!-- Mobile Search Input -->
-		{#if isSearchOpen}
-			<div class="mobile-search-container md:hidden" role="search">
-				<div class="mobile-search-bar-container">
-					<div class="mobile-search-bar">
-						<span class="mobile-search-icon" aria-hidden="true">🔍</span>
-						<input
-							bind:this={searchInput}
-							type="text"
-							placeholder="Search games..."
-							class="mobile-search-input"
-							oninput={handleMobileSearchInput}
-							onkeydown={(e) => {
-								if (e.key === 'Escape') {
-									onSearchToggle();
-								}
-							}}
-							aria-label="Search games"
-							autocomplete="off"
-							spellcheck="false"
-						/>
-						{#if $filtersStore?.searchTerm}
-							<button
-								type="button"
-								class="mobile-clear-button"
-								onclick={clearMobileSearch}
-								aria-label="Clear search"
-							>
-								✕
-							</button>
-						{/if}
-						<button
-							type="button"
-							class="mobile-close-button"
-							onclick={clearMobileSearch}
-							aria-label="Close search"
-						>
-							Close
-						</button>
-					</div>
-				</div>
-			</div>
-		{/if}
+		<MobileSearch isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
 
 		<!-- Mobile Filters Modal -->
 		<MobileFilters
@@ -825,113 +652,15 @@
 			onClose={() => (isFiltersOpen = false)}
 		/>
 
-		<!-- Mobile Settings Menu -->
-		{#if !$modalStore.isOpen && !isFiltersOpen}
-			<div class="mobile-settings-container md:hidden">
-				<!-- Filter button - prominent, always visible (not on tierlist) -->
-				{#if !isTierlistPage}
-					<button
-						type="button"
-						class="floating-action-button filter-fab"
-						onclick={onFiltersToggle}
-						aria-label="Open filters"
-						title="Filters"
-					>
-						<SlidersHorizontal size={20} />
-					</button>
-				{/if}
-
-				<!-- Main Settings FAB -->
-				<button
-					type="button"
-					class="floating-action-button settings-fab"
-					class:active={isSettingsMenuOpen}
-					onclick={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
-					aria-label={isSettingsMenuOpen ? 'Close settings' : 'Open settings'}
-					aria-expanded={isSettingsMenuOpen}
-					title="Settings"
-				>
-					<Settings size={20} class="settings-icon" />
-				</button>
-			</div>
-		{/if}
-
-		<!-- Settings Bottom Sheet -->
-		{#if isSettingsMenuOpen}
-			<div
-				class="settings-bottom-sheet-overlay md:hidden"
-				onclick={() => (isSettingsMenuOpen = false)}
-				onkeydown={(e) => e.key === 'Escape' && (isSettingsMenuOpen = false)}
-				role="button"
-				tabindex="0"
-			>
-				<div
-					class="settings-bottom-sheet"
-					onclick={(e) => e.stopPropagation()}
-					onkeydown={() => {}}
-					role="dialog"
-					aria-modal="true"
-					aria-label="Settings"
-					tabindex="-1"
-					use:focusTrap
-				>
-					<div class="sheet-handle"></div>
-					<div class="sheet-content">
-						<button
-							type="button"
-							class="sheet-item"
-							onclick={() => {
-								appStore.toggleTheme();
-								isSettingsMenuOpen = false;
-							}}
-						>
-							<Moon size={20} />
-							<span>{appStore.theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-						</button>
-
-						{#if isEditor && !isTierlistPage}
-							<button
-								type="button"
-								class="sheet-item sheet-item-green"
-								onclick={() => {
-									isSettingsMenuOpen = false;
-									handleAddGame();
-								}}
-							>
-								<Plus size={20} />
-								<span>Add Game</span>
-							</button>
-						{/if}
-
-						{#if isEditor}
-							<button
-								type="button"
-								class="sheet-item sheet-item-red"
-								onclick={async () => {
-									isSettingsMenuOpen = false;
-									await editorStore.logout();
-								}}
-							>
-								<LogOut size={20} />
-								<span>Logout</span>
-							</button>
-						{:else}
-							<button
-								type="button"
-								class="sheet-item sheet-item-blue"
-								onclick={() => {
-									isSettingsMenuOpen = false;
-									loginModalOpen = true;
-								}}
-							>
-								<LogIn size={20} />
-								<span>Login</span>
-							</button>
-						{/if}
-					</div>
-				</div>
-			</div>
-		{/if}
+		<MobileSettingsMenu
+			isOpen={isSettingsMenuOpen}
+			{isTierlistPage}
+			onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
+			onClose={() => (isSettingsMenuOpen = false)}
+			{onFiltersToggle}
+			onAddGame={handleAddGame}
+			onOpenLogin={() => (loginModalOpen = true)}
+		/>
 
 		<BottomNavigation {onSearchToggle} {onCloseSearchAndFilters} />
 		<ScrollToTopButton hideWhenFiltersOpen={isFiltersOpen} />
@@ -962,326 +691,8 @@
 		color: var(--color-text-primary);
 	}
 
-	/* Mobile Search Bar - matches desktop SearchBar styling */
-	.mobile-search-container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		z-index: 40;
-		background-color: var(--color-background);
-		padding: 12px 16px;
-		padding-top: calc(12px + env(safe-area-inset-top, 0px));
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-	}
-
 	/* Push content below the fixed search bar when search is open */
 	:global(main.search-open-mobile) {
 		padding-top: 75px !important;
-	}
-
-	.mobile-search-bar-container {
-		width: 100%;
-		max-width: 1000px;
-		margin: 0 auto;
-	}
-
-	.mobile-search-bar {
-		position: relative;
-		display: flex;
-		align-items: center;
-		width: 100%;
-		border-radius: 12px;
-		padding: 12px 16px;
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		transition: all var(--transition-fast);
-		gap: 8px;
-	}
-
-	.mobile-search-bar:focus-within {
-		border-color: var(--color-accent);
-		box-shadow: 0 0 0 3px var(--color-focus-ring);
-	}
-
-	.mobile-search-icon {
-		font-size: 1.1rem;
-		flex-shrink: 0;
-	}
-
-	.mobile-search-input {
-		flex: 1;
-		background: transparent;
-		border: none;
-		outline: none;
-		color: var(--color-text-primary);
-		font-size: 1rem;
-		line-height: 1.5;
-		min-width: 0;
-	}
-
-	.mobile-search-input::placeholder {
-		color: var(--color-text-muted);
-	}
-
-	.mobile-clear-button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
-		border: none;
-		background: var(--color-surface-elevated);
-		color: var(--color-text-secondary);
-		cursor: pointer;
-		border-radius: 6px;
-		transition: all var(--transition-fast);
-		flex-shrink: 0;
-		font-size: 0.9rem;
-	}
-
-	.mobile-clear-button:hover {
-		background: var(--color-hover);
-		color: var(--color-text-primary);
-	}
-
-	.mobile-close-button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 6px 12px;
-		border: none;
-		background: var(--color-hover);
-		color: var(--color-accent);
-		cursor: pointer;
-		border-radius: 6px;
-		transition:
-			background-color 0.2s ease,
-			color 0.2s ease;
-		flex-shrink: 0;
-		font-size: 0.85rem;
-		font-weight: 500;
-	}
-
-	:global(.light) .mobile-close-button {
-		background: rgba(59, 130, 246, 0.15);
-		color: #3b82f6;
-	}
-
-	.mobile-close-button:hover {
-		background-color: rgba(59, 130, 246, 0.2);
-	}
-
-	:global(.light) .mobile-close-button:hover {
-		background-color: rgba(59, 130, 246, 0.25);
-	}
-
-	/* Mobile Settings Menu */
-	.mobile-settings-container {
-		position: fixed;
-		right: 16px;
-		bottom: 70px;
-		z-index: 45;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 8px;
-	}
-
-	@media (min-width: 768px) {
-		.mobile-settings-container {
-			display: none;
-		}
-	}
-
-	.floating-action-button {
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-		transition: all 0.2s ease;
-		outline: none;
-	}
-
-	.floating-action-button:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-	}
-
-	.floating-action-button:active {
-		transform: translateY(0);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-	}
-
-	.floating-action-button:focus {
-		outline: none;
-	}
-
-	/* Settings FAB */
-	.settings-fab {
-		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-		border: none;
-		color: white;
-		opacity: 0.7;
-	}
-
-	.settings-fab:hover {
-		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-		opacity: 0.9;
-	}
-
-	.settings-fab.active {
-		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-		opacity: 0.9;
-	}
-
-	/* Light theme variations for settings FAB */
-	:global(.light) .settings-fab {
-		background: linear-gradient(135deg, #b8a99a 0%, #9c8b7a 100%);
-		box-shadow: 0 4px 12px rgba(61, 53, 48, 0.15);
-		opacity: 0.8;
-	}
-
-	:global(.light) .settings-fab:hover {
-		background: linear-gradient(135deg, #9c8b7a 0%, #8a7a6a 100%);
-		box-shadow: 0 6px 16px rgba(61, 53, 48, 0.25);
-		opacity: 0.95;
-	}
-
-	:global(.light) .settings-fab.active {
-		background: linear-gradient(135deg, #9c8b7a 0%, #8a7a6a 100%);
-	}
-
-	.settings-fab :global(.settings-icon) {
-		transition: transform 0.2s ease;
-	}
-
-	.settings-fab.active :global(.settings-icon) {
-		transform: rotate(90deg);
-	}
-
-	/* Filter FAB */
-	.filter-fab {
-		background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
-		border: none;
-		color: var(--color-accent-foreground);
-	}
-
-	.filter-fab:hover {
-		background: linear-gradient(135deg, var(--color-accent-hover) 0%, var(--color-accent) 100%);
-		box-shadow: var(--shadow-glow);
-	}
-
-	/* Settings Bottom Sheet */
-	.settings-bottom-sheet-overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 60;
-		background: rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(4px);
-		animation: fadeIn 0.15s ease-out;
-	}
-
-	.settings-bottom-sheet {
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background-color: var(--color-background);
-		border-radius: 20px 20px 0 0;
-		padding: 8px 16px 24px;
-		padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-		animation: slideUp 0.2s cubic-bezier(0.32, 0.72, 0, 1);
-		z-index: 61;
-		box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
-	}
-
-	.sheet-handle {
-		width: 36px;
-		height: 4px;
-		background-color: var(--color-border);
-		border-radius: 2px;
-		margin: 8px auto 16px;
-	}
-
-	.sheet-content {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.sheet-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 14px 16px;
-		border-radius: 12px;
-		border: none;
-		background-color: var(--color-surface);
-		color: var(--color-text-primary);
-		font-size: 1rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.12s ease-out;
-		text-align: left;
-	}
-
-	.sheet-item:hover {
-		background-color: var(--color-hover);
-	}
-
-	.sheet-item:active {
-		transform: scale(0.98);
-	}
-
-	.sheet-item-green {
-		color: #22c55e;
-	}
-
-	.sheet-item-green:hover {
-		background-color: rgba(34, 197, 94, 0.15);
-	}
-
-	.sheet-item-red {
-		color: #ef4444;
-	}
-
-	.sheet-item-red:hover {
-		background-color: rgba(239, 68, 68, 0.15);
-	}
-
-	.sheet-item-blue {
-		color: var(--color-accent);
-	}
-
-	.sheet-item-blue:hover {
-		background-color: var(--color-hover);
-	}
-
-	@media (max-width: 480px) {
-		.mobile-settings-container {
-			right: 16px;
-			bottom: 74px;
-		}
-
-		.floating-action-button {
-			width: 44px;
-			height: 44px;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.floating-action-button,
-		.settings-bottom-sheet,
-		.settings-bottom-sheet-overlay {
-			transition: none;
-			animation: none;
-		}
 	}
 </style>

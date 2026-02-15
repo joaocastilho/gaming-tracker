@@ -18,3 +18,20 @@ export function getTierClass(tier: string): string {
 export function getTierDisplayName(tier: string): string {
 	return TIER_LABELS[tier] || tier;
 }
+
+/**
+ * Get a numeric weight for a tier for sorting purposes
+ * S = 6, A = 5, B = 4, C = 3, D = 2, E = 1
+ * @param tier - The tier string
+ * @returns Numeric weight
+ */
+export function getTierWeight(tier: string): number {
+	if (!tier) return 0;
+	if (tier.startsWith('S')) return 6;
+	if (tier.startsWith('A')) return 5;
+	if (tier.startsWith('B')) return 4;
+	if (tier.startsWith('C')) return 3;
+	if (tier.startsWith('D')) return 2;
+	if (tier.startsWith('E')) return 1;
+	return 0;
+}
