@@ -62,10 +62,10 @@ export default [
 					varsIgnorePattern: '^_'
 				}
 			],
-			'@typescript-eslint/no-explicit-any': 'off',
-			'@typescript-eslint/no-non-null-assertion': 'off',
-			'@typescript-eslint/ban-ts-comment': 'off',
-			'svelte/no-at-html-tags': 'off',
+			'@typescript-eslint/no-explicit-any': 'warn',
+			'@typescript-eslint/no-non-null-assertion': 'warn',
+			'@typescript-eslint/ban-ts-comment': 'warn',
+			'svelte/no-at-html-tags': 'warn',
 			'svelte/no-navigation-without-resolve': 'off',
 			'svelte/prefer-svelte-reactivity': 'off'
 		}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { untrack } from 'svelte';
 	import type { Game } from '$lib/types/game';
 	import { GameSchema, computeScore, TIER_VALUES, formatRating } from '$lib/validation/game';
 	import { editorStore } from '$lib/stores/editor.svelte';
@@ -160,11 +160,20 @@
 	const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
 	const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
 
-	onMount(() => {
-		// Auto-focus title input when modal opens
-		setTimeout(() => {
-			titleInputRef?.focus();
-		}, 50);
+	// Auto-focus title input when it becomes available
+	$effect(() => {
+		if (titleInputRef) {
+			untrack(() => {
+				setTimeout(() => titleInputRef?.focus(), 50);
+			});
+		}
+	});
+
+	// One-time initialization + cleanup
+	let _initialized = false;
+	$effect(() => {
+		if (_initialized) return;
+		_initialized = true;
 
 		if (mode === 'edit' && initialGame) {
 			// structuredClone struggles with Svelte 5 proxies sometimes, so we use JSON scan
@@ -203,7 +212,6 @@
 			}
 		} else {
 			const now = new Date();
-			// We'll generate ID from title later, but for now init empty
 			working = {
 				id: '',
 				title: '',
@@ -231,17 +239,16 @@
 			coverPreview = null;
 			coverError = null;
 		}
-	});
 
-	// Clean up blob URLs when component unmounts
-	onDestroy(() => {
-		// Revoke all tracked blob URLs to prevent memory leaks
-		blobUrls.forEach((url) => {
-			if (url.startsWith('blob:')) {
-				URL.revokeObjectURL(url);
-			}
-		});
-		blobUrls = [];
+		// Cleanup blob URLs when component unmounts
+		return () => {
+			blobUrls.forEach((url) => {
+				if (url.startsWith('blob:')) {
+					URL.revokeObjectURL(url);
+				}
+			});
+			blobUrls = [];
+		};
 	});
 
 	// Sync dateInput to working.finishedDate

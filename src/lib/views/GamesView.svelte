@@ -4,7 +4,7 @@
 	import { editorStore } from '$lib/stores/editor.svelte';
 	import VirtualList from '$lib/components/VirtualList.svelte';
 	import SkeletonGrid from '$lib/components/SkeletonGrid.svelte';
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	interface Props {
 		filteredGames: Game[];
@@ -26,7 +26,7 @@
 	let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
 	const isEditor = $derived($editorStore.editorMode);
-	let mounted = $state(false);
+	let mounted = $state(browser);
 	let containerWidth = $state(1600);
 
 	let columns = $derived(
@@ -77,10 +77,6 @@
 			return coverHeight + infoHeight;
 		})()
 	);
-
-	onMount(() => {
-		mounted = true;
-	});
 
 	function handleOpenModal(game: Game) {
 		onOpenModal?.(game, displayedGames);

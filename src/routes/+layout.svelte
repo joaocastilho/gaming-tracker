@@ -606,7 +606,7 @@
 		}
 	}
 
-	onMount(() => {
+	$effect(() => {
 		if (browser) {
 			editorStore.restoreFromSession();
 
