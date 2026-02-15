@@ -994,7 +994,7 @@
 							{#if prevGamePreview.score !== null}
 								<div class="parallax-score-card">
 									<Award size={24} class="text-yellow-500" />
-									<span class="parallax-score">Total Score: {prevGamePreview.score}/20</span>
+									<span class="parallax-score">Score {prevGamePreview.score}</span>
 								</div>
 							{/if}
 						{:else}
@@ -1161,7 +1161,7 @@
 							{#if nextGamePreview.score !== null}
 								<div class="parallax-score-card">
 									<Award size={24} class="text-yellow-500" />
-									<span class="parallax-score">Total Score: {nextGamePreview.score}/20</span>
+									<span class="parallax-score">Score {nextGamePreview.score}/20</span>
 								</div>
 							{/if}
 						{:else}
@@ -1434,14 +1434,14 @@
 					<div class="mb-3 flex items-center justify-between md:mb-4">
 						<div class="flex flex-wrap gap-2">
 							<span
-								class="rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
+								class="badge rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
 									$modalStore.activeGame.platform
 								)}"
 							>
 								{$modalStore.activeGame.platform}
 							</span>
 							<span
-								class="rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getGenreClasses(
+								class="badge rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getGenreClasses(
 									$modalStore.activeGame.genre
 								)}"
 							>
@@ -1533,7 +1533,7 @@
 
 							<div class="mt-3 grid grid-cols-3 gap-3 md:gap-4">
 								<div
-									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200 hover:-translate-y-1"
+									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
 								>
 									<Presentation size={32} class="flex-shrink-0 text-rose-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
@@ -1546,7 +1546,7 @@
 								</div>
 
 								<div
-									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200 hover:-translate-y-1"
+									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
 								>
 									<NotebookPen size={32} class="flex-shrink-0 text-sky-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
@@ -1559,7 +1559,7 @@
 								</div>
 
 								<div
-									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200 hover:-translate-y-1"
+									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
 								>
 									<Gamepad2 size={32} class="flex-shrink-0 text-emerald-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
@@ -1574,7 +1574,7 @@
 
 							{#if $modalStore.activeGame.score !== null}
 								<div
-									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-8 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
+									class="score-result mt-6 rounded-lg border p-4 md:mt-8 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
 								>
 									<div class="flex items-center justify-center gap-2">
 										<Award size={24} class="text-yellow-500" />
@@ -1582,7 +1582,7 @@
 											class="text-sm font-bold md:text-lg"
 											style="color: var(--color-text-primary);"
 										>
-											Total Score: {$modalStore.activeGame.score}/20
+											Score {$modalStore.activeGame.score}
 										</span>
 									</div>
 								</div>
@@ -1633,7 +1633,7 @@
 							</div>
 
 							<div
-								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-8 dark:border-gray-700"
+								class="score-result mt-6 rounded-lg border p-4 md:mt-8 dark:border-gray-700"
 							>
 								<div class="flex items-center justify-center gap-2">
 									<Award size={24} class="text-gray-400" />
@@ -1744,9 +1744,23 @@
 		border: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
+	.score-result {
+		background-color: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
 	:global(.light) .rating-card {
-		background-color: #f9fafb;
-		border-color: #e5e7eb;
+		background-color: #d4cfc7;
+		border-color: #c2bbb2;
+	}
+
+	:global(.light) .score-result {
+		background-color: #d4cfc7;
+		border-color: #c2bbb2;
+	}
+
+	:global(.light) .badge {
+		border: 1px solid #c2bbb2;
 	}
 
 	@media (min-width: 768px) {
@@ -1792,11 +1806,11 @@
 	:global(.light) .modal-skeleton-loader {
 		background: linear-gradient(
 			90deg,
-			#f8f9fa 0%,
-			#f8f9fa 25%,
-			#e9ecef 50%,
-			#f8f9fa 75%,
-			#f8f9fa 100%
+			#ddd8d1 0%,
+			#ddd8d1 25%,
+			#cec8c0 50%,
+			#ddd8d1 75%,
+			#ddd8d1 100%
 		);
 	}
 
@@ -2087,8 +2101,8 @@
 	}
 
 	.parallax-score-card.parallax-pending-card {
-		border-color: #e5e7eb;
-		background: #f9fafb;
+		border-color: #c2bbb2;
+		background: #d4cfc7;
 	}
 
 	:global(.dark) .parallax-score-card.parallax-pending-card {

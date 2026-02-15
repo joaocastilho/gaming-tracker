@@ -268,213 +268,213 @@ html {
 }
 
 /* ============================================
-   LIGHT MODE - Warm Minimalist Theme
+   LIGHT MODE - Muted Warm Stone Theme
    ============================================ */
 .light {
-	/* Base Background Colors - Warm off-white tones */
-	--color-background: #faf9f7;
-	--color-background-rgb: 250, 249, 247;
-	--color-surface: #ffffff;
-	--color-surface-solid: #ffffff;
-	--color-surface-elevated: #f5f4f2;
-	--color-surface-elevated-solid: #f5f4f2;
-	--color-surface-completed: #f0efe9;
-	--color-surface-completed-solid: #f0efe9;
-	--color-border: rgba(0, 0, 0, 0.06);
-	--color-border-subtle: rgba(0, 0, 0, 0.04);
-	--color-border-solid: #e5e2dc;
+	/* Base Background Colors - Muted warm stone, not bright */
+	--color-background: #d0cbc4;
+	--color-background-rgb: 208, 203, 196;
+	--color-surface: #ddd8d1;
+	--color-surface-solid: #ddd8d1;
+	--color-surface-elevated: #d4cfc7;
+	--color-surface-elevated-solid: #d4cfc7;
+	--color-surface-completed: #d8d3cb;
+	--color-surface-completed-solid: #d8d3cb;
+	--color-border: rgba(0, 0, 0, 0.12);
+	--color-border-subtle: rgba(0, 0, 0, 0.08);
+	--color-border-solid: #c2bbb2;
 
-	/* Text Colors - Warm brown tones */
-	--color-text-primary: #2d2a26;
-	--color-text-secondary: #5c5349;
-	--color-text-tertiary: #7a6f63;
-	--color-text-muted: #9a8f80;
+	/* Text Colors - Strong contrast on muted backgrounds */
+	--color-text-primary: #1c1917;
+	--color-text-secondary: #44403c;
+	--color-text-tertiary: #57534e;
+	--color-text-muted: #78716c;
 
-	/* Accent Colors - Coral primary + Teal secondary */
-	--color-accent: #f97316;
-	--color-accent-hover: #fb923c;
-	--color-accent-secondary: #14b8a6;
-	--color-accent-secondary-hover: #2dd4bf;
-	--color-accent-rgb: 249, 115, 22;
+	/* Accent Colors - Deeper orange for visibility on muted bg */
+	--color-accent: #ea580c;
+	--color-accent-hover: #f97316;
+	--color-accent-secondary: #0d9488;
+	--color-accent-secondary-hover: #14b8a6;
+	--color-accent-rgb: 234, 88, 12;
 	--color-accent-foreground: #ffffff;
 	--color-primary: var(--color-accent);
 	--color-primary-rgb: var(--color-accent-rgb);
 
 	/* Interactive States */
-	--color-hover: rgba(249, 115, 22, 0.1);
-	--color-active: rgba(249, 115, 22, 0.2);
-	--color-focus-ring: rgba(249, 115, 22, 0.35);
+	--color-hover: rgba(234, 88, 12, 0.12);
+	--color-active: rgba(234, 88, 12, 0.22);
+	--color-focus-ring: rgba(234, 88, 12, 0.4);
 
-	/* Glassmorphism - Subtle for light mode */
-	--glass-bg: rgba(255, 255, 255, 0.95);
-	--glass-border: rgba(0, 0, 0, 0.08);
+	/* Glassmorphism - Semi-transparent for muted theme */
+	--glass-bg: rgba(221, 216, 209, 0.92);
+	--glass-border: rgba(0, 0, 0, 0.12);
 	--glass-backdrop: blur(16px) saturate(180%);
 
-	/* Shadows - Soft with warm brown tones */
-	--shadow-sm: 0 1px 2px rgba(45, 42, 38, 0.05);
-	--shadow-md: 0 4px 6px -1px rgba(45, 42, 38, 0.08), 0 2px 4px -2px rgba(45, 42, 38, 0.05);
-	--shadow-lg: 0 10px 15px -3px rgba(45, 42, 38, 0.1), 0 4px 6px -4px rgba(45, 42, 38, 0.08);
-	--shadow-xl: 0 20px 25px -5px rgba(45, 42, 38, 0.12), 0 8px 10px -6px rgba(45, 42, 38, 0.1);
-	--shadow-glow: 0 0 20px rgba(249, 115, 22, 0.2);
-	--shadow-glow-secondary: 0 0 20px rgba(20, 184, 166, 0.2);
+	/* Shadows - Slightly stronger for muted backgrounds */
+	--shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.08);
+	--shadow-md: 0 4px 6px -1px rgba(28, 25, 23, 0.1), 0 2px 4px -2px rgba(28, 25, 23, 0.06);
+	--shadow-lg: 0 10px 15px -3px rgba(28, 25, 23, 0.12), 0 4px 6px -4px rgba(28, 25, 23, 0.08);
+	--shadow-xl: 0 20px 25px -5px rgba(28, 25, 23, 0.15), 0 8px 10px -6px rgba(28, 25, 23, 0.1);
+	--shadow-glow: 0 0 20px rgba(234, 88, 12, 0.25);
+	--shadow-glow-secondary: 0 0 20px rgba(13, 148, 136, 0.25);
 
-	/* Platform Colors - Light Mode (solid backgrounds for visibility) */
-	--color-platform-pc-bg: #ede9fe;
-	--color-platform-pc-text: #7c3aed;
-	--color-platform-pc-border: #ddd6fe;
+	/* Platform Colors - Light Mode (richer, more visible on muted bg) */
+	--color-platform-pc-bg: #ddd6fe;
+	--color-platform-pc-text: #6d28d9;
+	--color-platform-pc-border: #c4b5fd;
 
-	--color-platform-ps5-bg: #e0f2fe;
-	--color-platform-ps5-text: #0284c7;
-	--color-platform-ps5-border: #bae6fd;
+	--color-platform-ps5-bg: #bae6fd;
+	--color-platform-ps5-text: #0369a1;
+	--color-platform-ps5-border: #7dd3fc;
 
-	--color-platform-xbox-bg: #dcfce7;
-	--color-platform-xbox-text: #16a34a;
-	--color-platform-xbox-border: #bbf7d0;
+	--color-platform-xbox-bg: #bbf7d0;
+	--color-platform-xbox-text: #15803d;
+	--color-platform-xbox-border: #86efac;
 
-	--color-platform-switch-bg: #ffedd5;
-	--color-platform-switch-text: #ea580c;
-	--color-platform-switch-border: #fed7aa;
+	--color-platform-switch-bg: #fed7aa;
+	--color-platform-switch-text: #c2410c;
+	--color-platform-switch-border: #fdba74;
 
-	--color-platform-ps4-bg: #dbeafe;
-	--color-platform-ps4-text: #2563eb;
-	--color-platform-ps4-border: #bfdbfe;
+	--color-platform-ps4-bg: #bfdbfe;
+	--color-platform-ps4-text: #1d4ed8;
+	--color-platform-ps4-border: #93c5fd;
 
-	--color-platform-ps2-bg: #f1f5f9;
-	--color-platform-ps2-text: #475569;
-	--color-platform-ps2-border: #e2e8f0;
+	--color-platform-ps2-bg: #e2e8f0;
+	--color-platform-ps2-text: #334155;
+	--color-platform-ps2-border: #cbd5e1;
 
-	--color-platform-ps3-bg: #f4f4f5;
-	--color-platform-ps3-text: #52525b;
-	--color-platform-ps3-border: #e4e4e7;
+	--color-platform-ps3-bg: #e4e4e7;
+	--color-platform-ps3-text: #3f3f46;
+	--color-platform-ps3-border: #d4d4d8;
 
-	--color-platform-xbox-360-bg: #dcfce7;
-	--color-platform-xbox-360-text: #16a34a;
-	--color-platform-xbox-360-border: #bbf7d0;
+	--color-platform-xbox-360-bg: #bbf7d0;
+	--color-platform-xbox-360-text: #15803d;
+	--color-platform-xbox-360-border: #86efac;
 
-	--color-platform-ps1-bg: #f3f4f6;
-	--color-platform-ps1-text: #6b7280;
-	--color-platform-ps1-border: #e5e7eb;
+	--color-platform-ps1-bg: #e5e7eb;
+	--color-platform-ps1-text: #4b5563;
+	--color-platform-ps1-border: #d1d5db;
 
-	--color-platform-3ds-bg: #fee2e2;
-	--color-platform-3ds-text: #dc2626;
-	--color-platform-3ds-border: #fecaca;
+	--color-platform-3ds-bg: #fecaca;
+	--color-platform-3ds-text: #b91c1c;
+	--color-platform-3ds-border: #fca5a5;
 
-	--color-platform-n64-bg: #dcfce7;
-	--color-platform-n64-text: #15803d;
-	--color-platform-n64-border: #bbf7d0;
+	--color-platform-n64-bg: #bbf7d0;
+	--color-platform-n64-text: #166534;
+	--color-platform-n64-border: #86efac;
 
-	--color-platform-gamecube-bg: #e0e7ff;
-	--color-platform-gamecube-text: #4338ca;
-	--color-platform-gamecube-border: #c7d2fe;
+	--color-platform-gamecube-bg: #c7d2fe;
+	--color-platform-gamecube-text: #3730a3;
+	--color-platform-gamecube-border: #a5b4fc;
 
-	--color-platform-gba-bg: #ede9fe;
-	--color-platform-gba-text: #7c3aed;
-	--color-platform-gba-border: #ddd6fe;
+	--color-platform-gba-bg: #ddd6fe;
+	--color-platform-gba-text: #6d28d9;
+	--color-platform-gba-border: #c4b5fd;
 
-	--color-platform-xbox-series-bg: #d1fae5;
-	--color-platform-xbox-series-text: #059669;
-	--color-platform-xbox-series-border: #a7f3d0;
+	--color-platform-xbox-series-bg: #a7f3d0;
+	--color-platform-xbox-series-text: #047857;
+	--color-platform-xbox-series-border: #6ee7b7;
 
-	--color-platform-dreamcast-bg: #ffe4e6;
-	--color-platform-dreamcast-text: #e11d48;
-	--color-platform-dreamcast-border: #fecdd3;
+	--color-platform-dreamcast-bg: #fecdd3;
+	--color-platform-dreamcast-text: #be123c;
+	--color-platform-dreamcast-border: #fda4af;
 
-	/* Genre Colors - Light Mode */
-	--color-genre-action-bg: #fee2e2;
-	--color-genre-action-text: #dc2626;
-	--color-genre-action-border: #fecaca;
+	/* Genre Colors - Light Mode (richer for muted backgrounds) */
+	--color-genre-action-bg: #fecaca;
+	--color-genre-action-text: #b91c1c;
+	--color-genre-action-border: #fca5a5;
 
-	--color-genre-action-adventure-bg: #cffafe;
-	--color-genre-action-adventure-text: #0891b2;
-	--color-genre-action-adventure-border: #a5f3fc;
+	--color-genre-action-adventure-bg: #a5f3fc;
+	--color-genre-action-adventure-text: #0e7490;
+	--color-genre-action-adventure-border: #67e8f9;
 
-	--color-genre-action-rpg-bg: #ede9fe;
-	--color-genre-action-rpg-text: #7c3aed;
-	--color-genre-action-rpg-border: #ddd6fe;
+	--color-genre-action-rpg-bg: #ddd6fe;
+	--color-genre-action-rpg-text: #6d28d9;
+	--color-genre-action-rpg-border: #c4b5fd;
 
-	--color-genre-fps-bg: #fef9c3;
-	--color-genre-fps-text: #ca8a04;
-	--color-genre-fps-border: #fde047;
+	--color-genre-fps-bg: #fde68a;
+	--color-genre-fps-text: #a16207;
+	--color-genre-fps-border: #fcd34d;
 
-	--color-genre-metroidvania-bg: #f3e8ff;
-	--color-genre-metroidvania-text: #9333ea;
-	--color-genre-metroidvania-border: #e9d5ff;
+	--color-genre-metroidvania-bg: #e9d5ff;
+	--color-genre-metroidvania-text: #7e22ce;
+	--color-genre-metroidvania-border: #d8b4fe;
 
-	--color-genre-platformer-bg: #fce7f3;
-	--color-genre-platformer-text: #db2777;
-	--color-genre-platformer-border: #fbcfe8;
+	--color-genre-platformer-bg: #fbcfe8;
+	--color-genre-platformer-text: #be185d;
+	--color-genre-platformer-border: #f9a8d4;
 
-	--color-genre-puzzle-bg: #fae8ff;
-	--color-genre-puzzle-text: #c026d3;
-	--color-genre-puzzle-border: #f0abfc;
+	--color-genre-puzzle-bg: #f0abfc;
+	--color-genre-puzzle-text: #a21caf;
+	--color-genre-puzzle-border: #e879f9;
 
-	--color-genre-puzzle-platformer-bg: #ffe4e6;
-	--color-genre-puzzle-platformer-text: #e11d48;
-	--color-genre-puzzle-platformer-border: #fecdd3;
+	--color-genre-puzzle-platformer-bg: #fecdd3;
+	--color-genre-puzzle-platformer-text: #be123c;
+	--color-genre-puzzle-platformer-border: #fda4af;
 
-	--color-genre-roguelike-bg: #fef3c7;
-	--color-genre-roguelike-text: #d97706;
-	--color-genre-roguelike-border: #fde68a;
+	--color-genre-roguelike-bg: #fde68a;
+	--color-genre-roguelike-text: #b45309;
+	--color-genre-roguelike-border: #fcd34d;
 
-	--color-genre-story-adventure-bg: #ccfbf1;
-	--color-genre-story-adventure-text: #0d9488;
-	--color-genre-story-adventure-border: #99f6e4;
+	--color-genre-story-adventure-bg: #99f6e4;
+	--color-genre-story-adventure-text: #0f766e;
+	--color-genre-story-adventure-border: #5eead4;
 
-	--color-genre-story-puzzle-bg: #ecfccb;
-	--color-genre-story-puzzle-text: #65a30d;
-	--color-genre-story-puzzle-border: #d9f99d;
+	--color-genre-story-puzzle-bg: #d9f99d;
+	--color-genre-story-puzzle-text: #4d7c0f;
+	--color-genre-story-puzzle-border: #bef264;
 
-	--color-genre-survival-horror-bg: #f3f4f6;
-	--color-genre-survival-horror-text: #4b5563;
-	--color-genre-survival-horror-border: #e5e7eb;
+	--color-genre-survival-horror-bg: #e5e7eb;
+	--color-genre-survival-horror-text: #374151;
+	--color-genre-survival-horror-border: #d1d5db;
 
-	--color-genre-japanese-rpg-bg: #dbeafe;
-	--color-genre-japanese-rpg-text: #2563eb;
-	--color-genre-japanese-rpg-border: #bfdbfe;
+	--color-genre-japanese-rpg-bg: #bfdbfe;
+	--color-genre-japanese-rpg-text: #1d4ed8;
+	--color-genre-japanese-rpg-border: #93c5fd;
 
-	--color-genre-classic-rpg-bg: #ede9fe;
-	--color-genre-classic-rpg-text: #7c3aed;
-	--color-genre-classic-rpg-border: #ddd6fe;
+	--color-genre-classic-rpg-bg: #ddd6fe;
+	--color-genre-classic-rpg-text: #6d28d9;
+	--color-genre-classic-rpg-border: #c4b5fd;
 
-	--color-genre-story-rpg-bg: #e0f2fe;
-	--color-genre-story-rpg-text: #0284c7;
-	--color-genre-story-rpg-border: #bae6fd;
+	--color-genre-story-rpg-bg: #bae6fd;
+	--color-genre-story-rpg-text: #0369a1;
+	--color-genre-story-rpg-border: #7dd3fc;
 
-	--color-genre-story-horror-bg: #f5f5f4;
-	--color-genre-story-horror-text: #57534e;
-	--color-genre-story-horror-border: #e7e5e4;
+	--color-genre-story-horror-bg: #e7e5e4;
+	--color-genre-story-horror-text: #44403c;
+	--color-genre-story-horror-border: #d6d3d1;
 
-	--color-genre-hack-slash-bg: #ffedd5;
-	--color-genre-hack-slash-text: #ea580c;
-	--color-genre-hack-slash-border: #fed7aa;
+	--color-genre-hack-slash-bg: #fed7aa;
+	--color-genre-hack-slash-text: #c2410c;
+	--color-genre-hack-slash-border: #fdba74;
 
-	--color-genre-strategy-bg: #dcfce7;
-	--color-genre-strategy-text: #16a34a;
-	--color-genre-strategy-border: #bbf7d0;
+	--color-genre-strategy-bg: #bbf7d0;
+	--color-genre-strategy-text: #15803d;
+	--color-genre-strategy-border: #86efac;
 
-	--color-genre-action-platformer-bg: #ffedd5;
-	--color-genre-action-platformer-text: #ea580c;
-	--color-genre-action-platformer-border: #fed7aa;
+	--color-genre-action-platformer-bg: #fed7aa;
+	--color-genre-action-platformer-text: #c2410c;
+	--color-genre-action-platformer-border: #fdba74;
 
-	--color-genre-bullet-hell-bg: #fee2e2;
-	--color-genre-bullet-hell-text: #b91c1c;
-	--color-genre-bullet-hell-border: #fecaca;
+	--color-genre-bullet-hell-bg: #fecaca;
+	--color-genre-bullet-hell-text: #991b1b;
+	--color-genre-bullet-hell-border: #fca5a5;
 
-	--color-genre-sandbox-rpg-bg: #d1fae5;
-	--color-genre-sandbox-rpg-text: #059669;
-	--color-genre-sandbox-rpg-border: #a7f3d0;
+	--color-genre-sandbox-rpg-bg: #a7f3d0;
+	--color-genre-sandbox-rpg-text: #047857;
+	--color-genre-sandbox-rpg-border: #6ee7b7;
 
-	--color-genre-story-platformer-bg: #f3e8ff;
-	--color-genre-story-platformer-text: #9333ea;
-	--color-genre-story-platformer-border: #e9d5ff;
+	--color-genre-story-platformer-bg: #e9d5ff;
+	--color-genre-story-platformer-text: #7e22ce;
+	--color-genre-story-platformer-border: #d8b4fe;
 
-	--color-genre-horror-rpg-bg: #f5f5f4;
-	--color-genre-horror-rpg-text: #57534e;
-	--color-genre-horror-rpg-border: #e7e5e4;
+	--color-genre-horror-rpg-bg: #e7e5e4;
+	--color-genre-horror-rpg-text: #44403c;
+	--color-genre-horror-rpg-border: #d6d3d1;
 
-	--color-genre-survival-bg: #fef3c7;
-	--color-genre-survival-text: #d97706;
-	--color-genre-survival-border: #fde68a;
+	--color-genre-survival-bg: #fde68a;
+	--color-genre-survival-text: #b45309;
+	--color-genre-survival-border: #fcd34d;
 }
 
 /* ============================================
@@ -580,7 +580,7 @@ canvas,
    ============================================ */
 .platform-badge,
 .genre-badge {
-	border: 1px solid transparent;
+	border: 1px solid;
 	transition: all var(--transition-fast);
 	font-size: 0.75rem;
 	font-weight: 500;
@@ -596,6 +596,13 @@ canvas,
 .genre-badge:hover {
 	transform: translateY(-1px);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Light mode - stronger badge borders for visibility */
+.light .platform-badge,
+.light .genre-badge {
+	border-color: var(--color-border-solid);
+	filter: saturate(1.1);
 }
 
 .coop-badge:hover {
@@ -750,7 +757,6 @@ canvas,
 
 .modal-content {
 	background: var(--color-surface);
-	border: 1px solid var(--color-border);
 	border-radius: 20px;
 	box-shadow: var(--shadow-xl);
 }
@@ -950,7 +956,6 @@ canvas,
 	border-radius: 16px;
 	overflow: hidden;
 	margin-bottom: 24px;
-	box-shadow: var(--shadow-md);
 }
 
 .tier-header {
@@ -1020,7 +1025,8 @@ canvas,
 }
 
 .light .total-score-badge {
-	background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+	background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(245, 158, 11, 0.12));
+	border-color: var(--color-border-solid);
 }
 
 /* ============================================
@@ -1267,7 +1273,7 @@ canvas,
 
 /* Light mode planned indicator */
 .light .planned-indicator {
-	color: #3b82f6;
-	background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
-	border-color: rgba(59, 130, 246, 0.25);
+	color: #2563eb;
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.12));
+	border-color: var(--color-border-solid);
 }

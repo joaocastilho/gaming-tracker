@@ -487,7 +487,7 @@
 			{#if game.status === 'Completed' && game.score !== null}
 				<div class="total-score-badge">
 					<Award size={20} class="text-amber-500" />
-					<span>SCORE: {game.score}</span>
+					<span>SCORE {game.score}</span>
 				</div>
 			{:else}
 				<div class="planned-indicator">
@@ -576,6 +576,10 @@
 			var(--color-surface-elevated) 75%,
 			var(--color-surface) 100%
 		);
+	}
+
+	:global(.light) .badge {
+		border: 1px solid #c2bbb2;
 	}
 
 	.cover-image {

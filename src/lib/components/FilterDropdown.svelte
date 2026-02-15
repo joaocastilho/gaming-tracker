@@ -143,7 +143,7 @@
 					{#each options as option (option)}
 						<button
 							type="button"
-							class="filter-option-item {getOptionColor(option)} {selectedOptions.includes(option)
+							class="badge filter-option-item {getOptionColor(option)} {selectedOptions.includes(option)
 								? 'selected'
 								: ''}"
 							onclick={() => toggleOption(option)}
@@ -183,6 +183,10 @@
 </div>
 
 <style>
+	:global(.light) .badge {
+		border: 1px solid #c2bbb2;
+	}
+
 	.filter-dropdown {
 		position: relative;
 		display: inline-block;

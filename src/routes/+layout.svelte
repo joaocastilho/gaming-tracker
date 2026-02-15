@@ -558,7 +558,7 @@
 
 <svelte:head>
 	<title>Gaming Tracker</title>
-	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0a0c10' : '#e8e2d9'} />
+	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0a0c10' : '#d0cbc4'} />
 	<meta
 		name="apple-mobile-web-app-status-bar-style"
 		content={appStore.theme === 'dark' ? 'black-translucent' : 'default'}

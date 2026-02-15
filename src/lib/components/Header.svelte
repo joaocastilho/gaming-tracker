@@ -155,26 +155,6 @@
 				</button>
 			{/if}
 
-			{#if isEditor}
-				<button
-					type="button"
-					class="editor-button logout-button"
-					onclick={handleLogout}
-					title="Logout"
-				>
-					<LogOut size={16} />
-				</button>
-			{:else}
-				<button
-					type="button"
-					class="editor-button login-button"
-					onclick={() => (loginModalOpen = true)}
-					title="Login"
-				>
-					<LogIn size={16} />
-				</button>
-			{/if}
-
 			{#if appStore.activeTab !== 'tierlist'}
 				<div class="filter-toggle-wrapper hidden md:block">
 					<button
@@ -195,6 +175,26 @@
 				</div>
 			{/if}
 
+			{#if isEditor}
+				<button
+					type="button"
+					class="editor-button logout-button"
+					onclick={handleLogout}
+					title="Logout"
+				>
+					<LogOut size={16} />
+				</button>
+			{:else}
+				<button
+					type="button"
+					class="editor-button login-button"
+					onclick={() => (loginModalOpen = true)}
+					title="Login"
+				>
+					<LogIn size={16} />
+				</button>
+			{/if}
+
 			<div class="theme-toggle-wrapper">
 				<ThemeToggle />
 			</div>
@@ -208,7 +208,6 @@
 	.header-root {
 		padding: 0.75rem 16px;
 		background: var(--color-background);
-		border-bottom: 1px solid var(--color-border);
 		position: sticky;
 		top: 0;
 		z-index: 40;
@@ -354,7 +353,8 @@
 		align-items: center;
 		justify-content: center;
 		gap: 6px;
-		padding: 8px 14px;
+		height: 40px;
+		padding: 0 14px;
 		border: 1px solid var(--color-border);
 		border-radius: 10px;
 		background-color: var(--color-surface);
