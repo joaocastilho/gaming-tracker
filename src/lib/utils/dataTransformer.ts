@@ -1,8 +1,8 @@
-export function transformGameData(game: Record<string, unknown>): Record<string, unknown> {
-	const transformed = { ...game };
+import type { Game } from '$lib/types/game';
 
-	// Ensure ID exists.
-	// If ID is missing, generate one (deterministic from title if available, otherwise random).
+export function transformGameData(game: Record<string, unknown>): Game {
+	const transformed: Record<string, unknown> = { ...game };
+
 	if (!transformed.id) {
 		if (transformed.title) {
 			transformed.id = generateDeterministicUUID(String(transformed.title));
@@ -11,7 +11,6 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 		}
 	}
 
-	// Only process date if it exists and is not already in ISO format
 	if (transformed.finishedDate && !isValidISODateTime(String(transformed.finishedDate))) {
 		const dateStr = String(transformed.finishedDate);
 		const dateMatch = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
@@ -21,29 +20,22 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 		}
 	}
 
-	// Consolidate playtime: prefer hoursPlayed (for completed games) over timeToBeat
-	// hoursPlayed comes as number (e.g. 2.5), timeToBeat as string (e.g. "2h 30m")
 	if (transformed.hoursPlayed && typeof transformed.hoursPlayed === 'number') {
 		const hours = Math.floor(transformed.hoursPlayed);
 		const minutes = Math.round((transformed.hoursPlayed - hours) * 60);
 		transformed.playtime = `${hours}h ${minutes}m`;
 	} else if (transformed.hoursPlayed && typeof transformed.hoursPlayed === 'string') {
-		// Already a string, use as playtime
 		transformed.playtime = transformed.hoursPlayed;
 	} else if (transformed.timeToBeat) {
-		// For planned games, use timeToBeat as playtime
 		transformed.playtime = transformed.timeToBeat;
 	}
-	// Remove legacy fields
 	delete transformed.hoursPlayed;
 	delete transformed.timeToBeat;
 
-	// Set default coOp value only if it doesn't exist
 	if (!transformed.coOp) {
 		transformed.coOp = 'No';
 	}
 
-	// Only process title if it exists
 	if (transformed.title) {
 		const titleStr = String(transformed.title);
 		const titleMatch = titleStr.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
@@ -60,7 +52,7 @@ export function transformGameData(game: Record<string, unknown>): Record<string,
 		transformed.subtitle = null;
 	}
 
-	return transformed;
+	return transformed as unknown as Game;
 }
 
 function isValidISODateTime(dateString: string): boolean {

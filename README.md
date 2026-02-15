@@ -120,4 +120,44 @@ gaming-tracker/
 
 ## 📖 Documentation
 
-For full technical details, see [docs/project.md](docs/project.md)
+| Document                                 | Purpose                     |
+| ---------------------------------------- | --------------------------- |
+| [docs/project.md](docs/project.md)       | Full project specification  |
+| [docs/TECHNICAL.md](docs/TECHNICAL.md)   | Architecture & data flow    |
+| [docs/test-audit.md](docs/test-audit.md) | Test suite analysis         |
+| [docs/test-plan.md](docs/test-plan.md)   | Test-first development plan |
+| [AGENTS.md](AGENTS.md)                   | AI agent instructions       |
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+bun test
+
+# Run specific test
+bun test tests/test-game-management.test.ts
+
+# Run with coverage
+bun test --coverage
+```
+
+**Test-First Development**: All refactors require tests written BEFORE implementation.
+
+---
+
+## 🎯 Quality Standards
+
+- **TypeScript**: Strict mode enabled, zero `any` types
+- **Tests**: 85%+ coverage, all tests passing
+- **Linting**: Zero ESLint warnings
+- **Formatting**: Prettier enforced
+- **Accessibility**: Zero axe-core violations
+- **Performance**: Lighthouse 95+ in all categories
+
+---
+
+## 🤝 Contributing
+
+See [AGENTS.md](AGENTS.md) for development workflows and standards.

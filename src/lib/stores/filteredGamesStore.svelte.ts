@@ -122,16 +122,18 @@ class FilteredGamesStore {
 	private filterGamesWithoutTabFilter(
 		games: Game[],
 		filters: {
-			searchTerm?: string;
-			platforms?: string[];
-			genres?: string[];
-			tiers?: string[];
-			coOp?: string[];
+			searchTerm: string;
+			platforms: string[];
+			genres: string[];
+			tiers: string[];
+			coOp: string[];
 		} | null
 	): Game[] {
 		let filteredGames = games;
 
-		if (filters?.searchTerm?.trim()) {
+		if (!filters) return filteredGames;
+
+		if (filters.searchTerm?.trim()) {
 			const query = filters.searchTerm.toLowerCase().trim();
 			filteredGames = filteredGames.filter((game) => {
 				return (
@@ -142,23 +144,27 @@ class FilteredGamesStore {
 			});
 		}
 
-		if (filters?.platforms?.length > 0) {
-			filteredGames = filteredGames.filter((game) => filters.platforms!.includes(game.platform));
+		if (filters.platforms.length > 0) {
+			filteredGames = filteredGames.filter((game) => filters.platforms.includes(game.platform));
 		}
-		if (filters?.genres?.length > 0) {
-			filteredGames = filteredGames.filter((game) => filters.genres!.includes(game.genre));
+		if (filters.genres.length > 0) {
+			filteredGames = filteredGames.filter((game) => filters.genres.includes(game.genre));
 		}
 
-		if (filters?.tiers?.length > 0) {
+		if (filters.tiers.length > 0) {
 			filteredGames = filteredGames.filter((game) => {
 				if (!game.tier) return false;
 				const gameTierFullName = getTierDisplayName(game.tier);
-				return filters.tiers!.includes(gameTierFullName);
+				return filters.tiers.includes(gameTierFullName);
 			});
 		}
 
-		if (filters?.coOp?.length > 0) {
-			filteredGames = filteredGames.filter((game) => filters.coOp!.includes(game.coOp));
+		if (filters.coOp.length > 0) {
+			filteredGames = filteredGames.filter((game) => filters.coOp.includes(game.coOp));
+		}
+
+		if (filters && filters.coOp.length > 0) {
+			filteredGames = filteredGames.filter((game) => filters.coOp.includes(game.coOp));
 		}
 
 		return filteredGames;
@@ -167,11 +173,11 @@ class FilteredGamesStore {
 	private filterGames(
 		games: Game[],
 		filters: {
-			searchTerm?: string;
-			platforms?: string[];
-			genres?: string[];
-			tiers?: string[];
-			coOp?: string[];
+			searchTerm: string;
+			platforms: string[];
+			genres: string[];
+			tiers: string[];
+			coOp: string[];
 		} | null,
 		activeTab: string
 	): Game[] {
@@ -337,8 +343,8 @@ class FilteredGamesStore {
 	}
 
 	private compareDates(a: string | null | undefined, b: string | null | undefined): number {
-		const aTime = parseDate(a);
-		const bTime = parseDate(b);
+		const aTime = parseDate(a ?? null);
+		const bTime = parseDate(b ?? null);
 
 		if (aTime === null && bTime === null) return 0;
 		if (aTime === null) return 1;

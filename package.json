@@ -25,6 +25,8 @@
 		"test:completed-games-caching": "vitest run tests/test-completed-games-caching.test.ts",
 		"test:cover-loading": "vitest run tests/test-cover-loading.test.ts",
 		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:bun": "bun test --preload ./tests/bun-setup.ts",
 		"validate": "bun run lint:fix && bun run format && bun run check && bun run test"
 	},
 	"dependencies": {
@@ -34,9 +36,8 @@
 	},
 	"devDependencies": {
 		"@opentelemetry/api": "^1.9.0",
-		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/adapter-static": "^3.0.10",
-		"@sveltejs/kit": "^2.51.0",
+		"@sveltejs/kit": "^2.52.0",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
 		"@tailwindcss/forms": "^0.5.11",
 		"@tailwindcss/postcss": "^4.1.18",
@@ -61,10 +62,10 @@
 		"prettier-plugin-tailwindcss": "^0.7.2",
 		"shadcn-svelte": "^1.1.1",
 		"sharp": "^0.34.5",
-		"svelte": "^5.51.0",
+		"svelte": "^5.51.1",
 		"svelte-check": "^4.4.0",
 		"tailwindcss": "^4.1.18",
-		"typescript": "^5.9.3",
+		"typescript": "^5.7.0",
 		"typescript-eslint": "^8.55.0",
 		"vite": "^7.3.1",
 		"vitest": "^4.0.18"

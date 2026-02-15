@@ -1,9 +1,68 @@
+import { vi } from 'vitest';
+import type { Game } from '$lib/types/game';
+
 /**
  * Flushes all pending promises by queuing a new macrotask.
  * Useful for waiting for Svelte stores or async operations to settle.
  */
 export function flushPromises() {
 	return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+/**
+ * Create a mock game object for testing
+ */
+export function createMockGame(overrides: Partial<Game> = {}): Game {
+	return {
+		id: crypto.randomUUID(),
+		title: 'Test Game',
+		mainTitle: 'Test Game',
+		subtitle: null,
+		platform: 'PC',
+		year: 2024,
+		genre: 'Action',
+		coOp: 'No',
+		status: 'Planned',
+		coverImage: 'covers/test.webp',
+		playtime: '10h 0m',
+		finishedDate: null,
+		ratingPresentation: null,
+		ratingStory: null,
+		ratingGameplay: null,
+		score: null,
+		tier: null,
+		...overrides
+	};
+}
+
+/**
+ * Create multiple mock games
+ */
+export function createMockGames(count: number, overrides: Partial<Game> = {}): Game[] {
+	return Array.from({ length: count }, (_, i) =>
+		createMockGame({
+			id: `test-game-id-${i}`,
+			...overrides,
+			title: `Test Game ${i + 1}`,
+			mainTitle: `Test Game ${i + 1}`
+		})
+	);
+}
+
+/**
+ * Suppress console methods during tests
+ */
+export function suppressConsole(): void {
+	vi.spyOn(console, 'log').mockImplementation(() => {});
+	vi.spyOn(console, 'warn').mockImplementation(() => {});
+	vi.spyOn(console, 'error').mockImplementation(() => {});
+}
+
+/**
+ * Restore console methods
+ */
+export function restoreConsole(): void {
+	vi.restoreAllMocks();
 }
 
 /**

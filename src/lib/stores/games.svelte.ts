@@ -55,7 +55,7 @@ class GamesStore {
 
 			const normalized = rawGames.map((gameRaw): Game => {
 				const transformed = transformGameData(gameRaw as Record<string, unknown>);
-				return transformed as unknown as Game;
+				return transformed;
 			});
 
 			this.games = normalized;

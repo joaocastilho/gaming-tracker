@@ -99,7 +99,7 @@
 				isPriority: boolean
 			)}
 				<div class="game-row pb-5" style="height: {itemHeight}px;">
-					{#each row.games as game, i (game.id ? `${game.id}-${i}` : `fallback-${row.id}-${i}`)}
+					{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
 						<div class="game-card-wrapper">
 							<GameCard
 								{game}
@@ -123,7 +123,7 @@
 		<div class="game-gallery-virtual">
 			{#each rows.slice(0, 4) as row (row.id)}
 				<div class="game-row pb-5">
-					{#each row.games as game, i (game.id ? `${game.id}-${i}` : `fallback-ssr-${row.id}-${i}`)}
+					{#each row.games as game, i (game.id ?? `fallback-ssr-${row.id}-${game.title || 'unknown'}`)}
 						<div class="game-card-wrapper">
 							<GameCard
 								{game}

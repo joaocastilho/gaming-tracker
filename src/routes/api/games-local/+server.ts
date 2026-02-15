@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import { spawn } from 'child_process';
 
 /** @type {import('./$types').RequestHandler} */
-export async function POST({ request }) {
+export async function POST({ request }: { request: Request }) {
 	// Only allow this in development mode for safety
 	if (import.meta.env.PROD) {
 		return new Response('Not found', { status: 404 });
@@ -13,7 +13,7 @@ export async function POST({ request }) {
 
 	try {
 		const contentType = request.headers.get('content-type') || '';
-		let payload: any;
+		let payload: unknown = await request.json();
 
 		if (contentType.includes('multipart/form-data')) {
 			const formData = await request.formData();
@@ -85,19 +85,16 @@ export async function POST({ request }) {
 			payload = await request.json();
 		}
 
-		// Ensure the payload has the expected structure
-		if (!payload || !Array.isArray(payload.games)) {
+		const data = payload as { games?: unknown[] };
+		const games = data?.games;
+		if (!games || !Array.isArray(games)) {
 			return json({ error: 'Invalid payload: games array required' }, { status: 400 });
 		}
 
-		// Path to static/games.json
 		const filePath = path.join(process.cwd(), 'static', 'games.json');
 
-		// Write the updated games list to the file, transforming dates back to DD/MM/YYYY
-		// to match user preference and existing file format.
-		const gamesForFile = payload.games.map((g: Record<string, unknown>) => {
-			// Clone to avoid mutating original payload
-			const gameHeader = { ...g };
+		const gamesForFile = games.map((g) => {
+			const gameHeader = { ...(g as Record<string, unknown>) };
 
 			if (gameHeader.finishedDate && typeof gameHeader.finishedDate === 'string') {
 				// Check if it looks like an ISO date or YYYY-MM-DD
@@ -127,16 +124,16 @@ export async function POST({ request }) {
 		});
 
 		// Sort games alphabetically by id
-		gamesForFile.sort((a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id));
+		const sortedGames = (gamesForFile as { id: string }[]).sort((a, b) => a.id.localeCompare(b.id));
 
 		const outputPayload = {
-			...payload,
-			games: gamesForFile
+			...data,
+			games: sortedGames
 		};
 
 		await fs.writeFile(filePath, JSON.stringify(outputPayload, null, 4), 'utf-8');
 
-		return json({ ok: true, saved: payload.games.length });
+		return json({ ok: true, saved: games.length });
 	} catch (error) {
 		console.error('[Dev API] Error processing request:', error);
 		return json(

@@ -392,7 +392,7 @@
 		<div class="title-section">
 			<h3
 				class="game-title"
-				use:fitTitle={{ title: game.mainTitle || game.title, subtitle: game.subtitle }}
+				use:fitTitle={{ title: game.mainTitle || game.title, subtitle: game.subtitle ?? undefined }}
 			>
 				{game.mainTitle || game.title}
 				{#if game.subtitle}

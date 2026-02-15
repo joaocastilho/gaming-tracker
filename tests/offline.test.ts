@@ -74,12 +74,16 @@ describe('Offline Support Logic', () => {
 	});
 
 	it('should update online status on window events', () => {
-		const onlineHandler = mockWindow.addEventListener.mock.calls.find(
-			(call) => call[0] === 'online'
-		)[1];
-		const offlineHandler = mockWindow.addEventListener.mock.calls.find(
+		const onlineCall = mockWindow.addEventListener.mock.calls.find((call) => call[0] === 'online');
+		const offlineCall = mockWindow.addEventListener.mock.calls.find(
 			(call) => call[0] === 'offline'
-		)[1];
+		);
+
+		expect(onlineCall).toBeDefined();
+		expect(offlineCall).toBeDefined();
+
+		const onlineHandler = onlineCall?.[1] as () => void;
+		const offlineHandler = offlineCall?.[1] as () => void;
 
 		offlineHandler();
 		expect(offlineStore.isOnline).toBe(false);
@@ -101,9 +105,10 @@ describe('Offline Support Logic', () => {
 		mockDb.sync_queue.get.mockResolvedValueOnce({ games: [{ id: '1', title: 'Test' }] } as any);
 		mockEditorStore.saveGames.mockResolvedValueOnce(true);
 
-		const onlineHandler = mockWindow.addEventListener.mock.calls.find(
-			(call) => call[0] === 'online'
-		)[1];
+		const onlineCall = mockWindow.addEventListener.mock.calls.find((call) => call[0] === 'online');
+
+		expect(onlineCall).toBeDefined();
+		const onlineHandler = onlineCall?.[1] as () => Promise<void>;
 
 		await onlineHandler();
 		await new Promise((resolve) => setTimeout(resolve, 0));

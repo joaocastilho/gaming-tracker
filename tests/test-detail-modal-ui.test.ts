@@ -62,7 +62,7 @@ const mockGames: Game[] = [
 		coOp: 'No',
 		status: 'Planned',
 		coverImage: 'covers/third.webp',
-		playtime: null,
+		playtime: '0h 0m',
 		finishedDate: null,
 		ratingPresentation: null,
 		ratingStory: null,

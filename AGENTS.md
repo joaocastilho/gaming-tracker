@@ -19,6 +19,19 @@
 
 ## Universal Rules (Always Apply)
 
+### 0. Test-First Development (CRITICAL)
+
+**MANDATORY for all refactors and bug fixes:**
+
+1. **Write the test FIRST** - Create a failing test that demonstrates the bug/missing feature
+2. **Run the test** - Verify it fails with a clear error message
+3. **Implement the fix** - Make the minimal change to make the test pass
+4. **Run the test** - Verify it now passes
+5. **Run full suite** - `bun test` - ensure no regressions
+6. **Proceed to quality checks** - Lint, typecheck, format
+
+**This is non-negotiable.** Every refactor must be covered by tests before implementation.
+
 ### 1. Ask Before Assuming
 
 **ASK when:**
@@ -28,6 +41,7 @@
 - Breaking changes to existing behavior
 - > 3 files need modification
 - User says "maybe" or "think about it"
+- **No existing test covers the change area**
 
 **DON'T ask when:**
 
@@ -178,9 +192,22 @@ bun test
 
 - [ ] All tests pass
 - [ ] New tests written for new functionality
+- [ ] Tests written **BEFORE** implementation (TDD)
 - [ ] No `.skip` or `.only` left in tests
+- [ ] Test covers both success and error cases
+- [ ] No `any` types in test code
 
 **If tests were already failing before your changes:** State this clearly to user.
+
+**Test-First Verification:**
+
+```
+I followed test-first development:
+- ✓ Test written before implementation
+- ✓ Test initially failed (RED)
+- ✓ Implementation makes test pass (GREEN)
+- ✓ Full suite passes (REGRESSION)
+```
 
 ### Step 7: Final Statement
 
@@ -189,11 +216,14 @@ Before generating commit message, state:
 ```
 I have completed the code workflow:
 - ✓ Requirements verified
+- ✓ Test-first development followed (test written before implementation)
 - ✓ Formatting and linting passed
 - ✓ TypeScript check passed (0 errors)
+- ✓ Strict mode compliance verified (no any types)
 - ✓ Debug code removed
 - ✓ Comments reviewed
-- ✓ All tests passing
+- ✓ All tests passing (including new tests)
+- ✓ No regressions introduced
 
 Ready to commit.
 ```
@@ -226,11 +256,15 @@ Ready to commit.
 </script>
 ```
 
-### TypeScript
+### TypeScript (STRICT MODE)
 
-- No `any` without justification comment
-- No `@ts-ignore` without explanation
+- **STRICT MODE ENABLED** - `strict: true` in tsconfig.json
+- **NO `any` TYPES** - Zero tolerance. Use `unknown` with type guards instead
+- **NO `@ts-ignore`** - Use `@ts-expect-error` with detailed explanation if absolutely necessary
+- **NO TYPE ASSERTIONS** - Avoid `as Type`. Fix types at the source
 - Use type guards for runtime checks
+- Explicit return types on all public methods
+- No implicit any in catch blocks - properly type errors
 
 ### Import Order
 

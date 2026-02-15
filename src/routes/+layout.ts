@@ -1,5 +1,6 @@
 import type { LayoutLoad } from './$types';
 import { browser } from '$app/environment';
+import { type GamingTrackerDB } from '$lib/db';
 
 export const load: LayoutLoad = async ({ fetch }) => {
 	// 1. Try to load from Dexie first (instant, works offline)
@@ -66,7 +67,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
  */
 async function refreshGamesInBackground(
 	fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
-	db: any
+	db: GamingTrackerDB
 ) {
 	try {
 		const res = await fetch('/games.json?t=' + Date.now(), {

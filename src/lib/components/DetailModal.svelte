@@ -827,12 +827,14 @@
 	>
 		<!-- Mobile swipe indicator (first time only) -->
 		{#if showSwipeIndicator && displayedGames.length > 1}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
 				class="swipe-hint-overlay md:hidden"
 				transition:fade={{ duration: 400 }}
 				onclick={dismissSwipeHint}
+				onkeydown={(e) => (e.key === 'Escape' || e.key === 'Enter') && dismissSwipeHint()}
+				role="button"
+				tabindex="0"
+				aria-label="Dismiss swipe hint"
 			>
 				<div class="swipe-hint-content">
 					<!-- SVG-based Simple Double Chevron Hint -->

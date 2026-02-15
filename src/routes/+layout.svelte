@@ -38,7 +38,41 @@
 	import GameEditorModal from '$lib/components/GameEditorModal.svelte';
 	import DeleteConfirmModal from '$lib/components/DeleteConfirmModal.svelte';
 	import LoginModal from '$lib/components/LoginModal.svelte';
+	import NoResults from '$lib/components/NoResults.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
+
+	function focusTrap(node: HTMLElement): { destroy: () => void } {
+		const focusableSelectors =
+			'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+		const focusableElements = node.querySelectorAll<HTMLElement>(focusableSelectors);
+		const firstFocusable = focusableElements[0];
+		const lastFocusable = focusableElements[focusableElements.length - 1];
+
+		function handleKeydown(e: KeyboardEvent) {
+			if (e.key !== 'Tab') return;
+
+			if (e.shiftKey) {
+				if (document.activeElement === firstFocusable) {
+					e.preventDefault();
+					lastFocusable?.focus();
+				}
+			} else {
+				if (document.activeElement === lastFocusable) {
+					e.preventDefault();
+					firstFocusable?.focus();
+				}
+			}
+		}
+
+		node.addEventListener('keydown', handleKeydown);
+		firstFocusable?.focus();
+
+		return {
+			destroy() {
+				node.removeEventListener('keydown', handleKeydown);
+			}
+		};
+	}
 
 	let initialized = $state(false);
 	let gamesInitialized = $state(false);
@@ -95,7 +129,9 @@
 	$effect(() => {
 		if (browser && 'serviceWorker' in navigator) {
 			const swPath = '/service-worker.js';
-			let intervalId: any;
+			let intervalId: ReturnType<typeof setInterval> | null = null;
+			let isPaused = false;
+			let visibilityHandler: (() => void) | null = null;
 
 			navigator.serviceWorker
 				.register(swPath, {
@@ -103,6 +139,9 @@
 				})
 				.then((registration) => {
 					const checkForUpdates = () => {
+						// Skip update check if tab is hidden to save battery/CPU
+						if (isPaused || document.hidden) return;
+
 						if (
 							registration.installing === null &&
 							registration.waiting === null &&
@@ -115,11 +154,25 @@
 					};
 
 					intervalId = setInterval(checkForUpdates, 60000);
+
+					// Handle page visibility changes to pause/resume polling
+					visibilityHandler = () => {
+						if (document.hidden) {
+							isPaused = true;
+						} else {
+							isPaused = false;
+						}
+					};
+
+					document.addEventListener('visibilitychange', visibilityHandler);
 				})
 				.catch(() => {});
 
 			return () => {
 				if (intervalId) clearInterval(intervalId);
+				if (visibilityHandler) {
+					document.removeEventListener('visibilitychange', visibilityHandler);
+				}
 			};
 		}
 	});
@@ -143,6 +196,15 @@
 	let isTierlistPage = $derived(
 		page.url.pathname === '/tierlist' || appStore.activeTab === 'tierlist'
 	);
+	let pageTitle = $derived.by(() => {
+		const path = page.url.pathname;
+		if (path === '/completed') return 'Completed Games';
+		if (path === '/planned') return 'Planned Games';
+		if (path === '/tierlist') return 'Tier List';
+		if (path === '/login') return 'Login';
+		return 'All Games';
+	});
+
 	let isPlannedPage = $derived(page.url.pathname === '/planned');
 
 	let showTiersFilter = $derived(!isTierlistPage && !isPlannedPage);
@@ -557,8 +619,16 @@
 </script>
 
 <svelte:head>
-	<title>Gaming Tracker</title>
+	<title>{pageTitle} | Gaming Tracker</title>
 	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0a0c10' : '#d0cbc4'} />
+	<meta property="og:title" content="{pageTitle} | Gaming Tracker" />
+	<meta property="og:type" content="website" />
+	<meta
+		property="og:description"
+		content="Track your gaming progress, completed games, and create tier lists."
+	/>
+	<meta property="og:url" content={page.url.origin + page.url.pathname} />
+	<link rel="canonical" href={page.url.origin + page.url.pathname} />
 	<meta
 		name="apple-mobile-web-app-status-bar-style"
 		content={appStore.theme === 'dark' ? 'black-translucent' : 'default'}
@@ -628,29 +698,22 @@
 			</div>
 		</section>
 
+		<a
+			href="#main-content"
+			class="focus:bg-background focus:text-foreground sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4"
+		>
+			Skip to main content
+		</a>
+
 		<main
+			id="main-content"
 			class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6"
 			class:search-open-mobile={isSearchOpen}
 		>
 			<div class="mx-auto" style="max-width: 1800px;">
 				{#if isGamesPage}
 					{#if hasActiveFilters && $filteredGames.length === 0}
-						<div
-							class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center"
-						>
-							<h2 class="font-semibold">No games match your current filters</h2>
-							<p class="text-gray-600 dark:text-gray-400">
-								Try adjusting or clearing your filters to see more games.
-							</p>
-							<button
-								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex h-[44px] w-[44px] items-center justify-center rounded-md transition-colors"
-								type="button"
-								onclick={resetFilters}
-								title="Reset all filters"
-							>
-								<RotateCcw size={18} />
-							</button>
-						</div>
+						<NoResults onReset={resetFilters} />
 					{:else}
 						<GamesView
 							filteredGames={$filteredGames}
@@ -808,7 +871,9 @@
 					onkeydown={() => {}}
 					role="dialog"
 					aria-modal="true"
+					aria-label="Settings"
 					tabindex="-1"
+					use:focusTrap
 				>
 					<div class="sheet-handle"></div>
 					<div class="sheet-content">

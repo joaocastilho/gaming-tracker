@@ -8,14 +8,13 @@
 	let { hideWhenFiltersOpen = false }: Props = $props();
 
 	let isVisible = $state(false);
-	let buttonElement = $state<HTMLButtonElement | undefined>();
 
 	$effect(() => {
 		const handleScroll = () => {
 			isVisible = window.scrollY > 300;
 		};
 
-		window.addEventListener('scroll', handleScroll);
+		window.addEventListener('scroll', handleScroll, { passive: true });
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
 		};
@@ -39,7 +38,6 @@
 
 {#if isVisible && !$modalStore.isOpen && !hideWhenFiltersOpen}
 	<button
-		bind:this={buttonElement}
 		type="button"
 		class="scroll-to-top-button"
 		aria-label="Scroll to top"

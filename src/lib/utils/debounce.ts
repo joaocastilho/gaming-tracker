@@ -5,7 +5,7 @@
  * @param immediate - Whether to execute the function on the leading edge instead of trailing
  * @returns A debounced version of the function
  */
-export function debounce<T extends (...args: unknown[]) => unknown>(
+export function debounce<T extends (...args: never[]) => unknown>(
 	func: T,
 	wait: number,
 	immediate = false

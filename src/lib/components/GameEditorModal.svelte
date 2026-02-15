@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import type { Game } from '$lib/types/game';
 	import { GameSchema, computeScore, TIER_VALUES, formatRating } from '$lib/validation/game';
 	import { editorStore } from '$lib/stores/editor.svelte';
@@ -38,6 +38,9 @@
 	let coverUrl = $state('');
 	let coverFile = $state<File | null>(null);
 	let coverPreview = $state<string | null>(null);
+
+	// Track blob URLs for cleanup
+	let blobUrls: string[] = [];
 
 	let coverError = $state<string | null>(null);
 	let fileInputRef = $state<HTMLInputElement>();
@@ -129,7 +132,13 @@
 
 			coverFile = file;
 			coverUrl = '';
+			// Revoke previous blob URL if exists
+			if (coverPreview?.startsWith('blob:')) {
+				URL.revokeObjectURL(coverPreview);
+				blobUrls = blobUrls.filter((url) => url !== coverPreview);
+			}
 			coverPreview = URL.createObjectURL(file);
+			blobUrls.push(coverPreview);
 		}
 	}
 
@@ -138,6 +147,7 @@
 		coverFile = null;
 		if (coverPreview && coverPreview.startsWith('blob:')) {
 			URL.revokeObjectURL(coverPreview);
+			blobUrls = blobUrls.filter((url) => url !== coverPreview);
 		}
 		coverPreview = null;
 		coverError = null;
@@ -160,13 +170,12 @@
 			// structuredClone struggles with Svelte 5 proxies sometimes, so we use JSON scan
 			working = JSON.parse(JSON.stringify(initialGame));
 			// Fix compatibility: Convert numeric playtime to string if needed
-			if (typeof (working.playtime as unknown) === 'number') {
-				// @ts-ignore - Runtime fix for data mismatch
-				working.playtime = formatDuration(working.playtime as number);
+			if (working && typeof working.playtime === 'number') {
+				working.playtime = formatDuration(working.playtime);
 			}
 
 			// Init hours/minutes from playtime string
-			if (working.playtime) {
+			if (working && working.playtime) {
 				const match = working.playtime.match(/(\d+)h\s*(\d+)m/);
 				if (match) {
 					hours = parseInt(match[1]);
@@ -174,18 +183,20 @@
 				}
 			}
 			// Init date input
-			if (working.finishedDate) {
+			if (working && working.finishedDate) {
 				dateInput = working.finishedDate.split('T')[0];
 			}
 			// Init completionOrder
-			completionOrderInput = working.completionOrder ?? null;
+			if (working) {
+				completionOrderInput = working.completionOrder ?? null;
+			}
 
 			// Reset cover upload state but show existing cover as preview
 			coverUrl = '';
 			coverFile = null;
 			coverError = null;
 			// Show existing cover image as preview if it exists
-			if (working.coverImage) {
+			if (working && working.coverImage) {
 				coverPreview = `/${working.coverImage}`;
 			} else {
 				coverPreview = null;
@@ -220,6 +231,17 @@
 			coverPreview = null;
 			coverError = null;
 		}
+	});
+
+	// Clean up blob URLs when component unmounts
+	onDestroy(() => {
+		// Revoke all tracked blob URLs to prevent memory leaks
+		blobUrls.forEach((url) => {
+			if (url.startsWith('blob:')) {
+				URL.revokeObjectURL(url);
+			}
+		});
+		blobUrls = [];
 	});
 
 	// Sync dateInput to working.finishedDate
@@ -406,6 +428,7 @@
 						bind:this={titleInputRef}
 						type="text"
 						bind:value={working.title}
+						name="title"
 						placeholder="Game Title"
 						required
 						autocomplete="off"
@@ -418,6 +441,7 @@
 					<input
 						type="text"
 						bind:value={working.platform}
+						name="platform"
 						list="platforms"
 						placeholder="Select or type..."
 						required
@@ -434,6 +458,7 @@
 					<input
 						type="text"
 						bind:value={working.genre}
+						name="genre"
 						list="genres"
 						placeholder="Select or type..."
 						required
@@ -447,7 +472,7 @@
 
 				<label class="full">
 					<span>Status</span>
-					<select bind:value={working.status}>
+					<select bind:value={working.status} name="status">
 						<option value="Planned">Planned</option>
 						<option value="Completed">Completed</option>
 					</select>
@@ -457,18 +482,32 @@
 				<div class="row-triple full">
 					<label class="year-col">
 						<span>Year</span>
-						<input type="number" bind:value={working.year} min="1980" max="2100" required />
+						<input
+							type="number"
+							bind:value={working.year}
+							name="year"
+							min="1980"
+							max="2100"
+							required
+						/>
 					</label>
 
 					<label class="time-col">
 						<span>{working.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}</span>
 						<div class="playtime-inputs">
 							<div class="input-group">
-								<input type="number" bind:value={hours} min="0" placeholder="0" />
+								<input type="number" bind:value={hours} name="hours" min="0" placeholder="0" />
 								<span class="unit">h</span>
 							</div>
 							<div class="input-group">
-								<input type="number" bind:value={minutes} min="0" max="59" placeholder="0" />
+								<input
+									type="number"
+									bind:value={minutes}
+									name="minutes"
+									min="0"
+									max="59"
+									placeholder="0"
+								/>
 								<span class="unit">m</span>
 							</div>
 						</div>
@@ -479,6 +518,7 @@
 						<div class="checkbox-simple">
 							<input
 								type="checkbox"
+								name="coOp"
 								checked={working.coOp === 'Yes'}
 								onchange={(e) => (working!.coOp = e.currentTarget.checked ? 'Yes' : 'No')}
 							/>

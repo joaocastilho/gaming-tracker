@@ -2,7 +2,17 @@
 	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
 		"skipLibCheck": true,
-		"types": ["svelte", "vite/client", "@types/bun"]
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"types": ["svelte", "vite/client", "@types/bun", "vitest/globals"],
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"sourceMap": true,
+		"allowJs": true
 	},
 	"include": [
 		"src/**/*.d.ts",
@@ -10,6 +20,7 @@
 		"src/**/*.svelte",
 		"functions/**/*.ts",
 		"tests/**/*.ts",
-		"vite.config.ts"
+		"vite.config.ts",
+		"vitest.config.ts"
 	]
 }

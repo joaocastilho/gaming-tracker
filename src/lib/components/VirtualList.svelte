@@ -1,9 +1,9 @@
-<script lang="ts">
+<script lang="ts" generics="T">
 	import type { Snippet } from 'svelte';
 
 	import { safeKeyExtractor } from '$lib/utils/safeKeyExtractor';
 
-	interface Props<T> {
+	interface Props {
 		items: T[];
 		itemHeight: number;
 		containerHeight?: number; // Optional now
@@ -25,7 +25,7 @@
 		className = '',
 		priorityCount = 6,
 		useWindowScroll = false
-	}: Props<any> = $props();
+	}: Props = $props();
 
 	let container = $state<HTMLDivElement>();
 	let scrollTop = $state(0);

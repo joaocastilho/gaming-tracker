@@ -4,7 +4,7 @@
  */
 
 import { pushState, replaceState } from '$app/navigation';
-import { createGameSlug } from '$lib/utils/slugUtils';
+import { createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
 import { getTierDisplayName } from '$lib/utils/tierUtils';
 import type { Game, TierValue } from '../types/game.js';
 import type { SortOption } from './filters.svelte';
@@ -558,7 +558,7 @@ class ModalStore {
 		if (this.isProgrammaticUpdate) return;
 
 		const gameSlug = searchParams.get('game');
-		if (gameSlug) {
+		if (gameSlug && isValidSlug(gameSlug)) {
 			let game = games.find((g) => {
 				const exactSlug = createGameSlug(g.title);
 				if (exactSlug === gameSlug) return true;

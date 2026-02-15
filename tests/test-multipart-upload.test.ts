@@ -9,7 +9,7 @@ class MockFile {
 	lastModified: number;
 	size: number;
 	type: string;
-	constructor(bits: any[], name: string, options?: any) {
+	constructor(_: any[], name: string, options?: any) {
 		this.name = name;
 		this.lastModified = Date.now();
 		this.size = 0;

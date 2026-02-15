@@ -19,7 +19,7 @@
 		route?: string;
 		count: number | null;
 		active: boolean;
-		icon: any;
+		icon: typeof Gamepad;
 	};
 
 	let navItems = $derived.by(() => {

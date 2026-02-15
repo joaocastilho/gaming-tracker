@@ -1,30 +1,8 @@
-import { vi } from 'vitest';
-import 'fake-indexeddb/auto'; // Mock indexedDB globally
+import { vi, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom/vitest'; // Import jest-dom matchers
 
-// Mock window.scrollTo
-Object.defineProperty(window, 'scrollTo', {
-	value: vi.fn(),
-	writable: true
-});
-
-// Mock window.scrollIntoView
-Element.prototype.scrollIntoView = vi.fn();
-
-// Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-	writable: true,
-	value: vi.fn().mockImplementation((query) => ({
-		matches: false,
-		media: query,
-		onchange: null,
-		addListener: vi.fn(),
-		removeListener: vi.fn(),
-		addEventListener: vi.fn(),
-		removeEventListener: vi.fn(),
-		dispatchEvent: vi.fn()
-	}))
-});
+// Initialize fake-indexeddb before any code runs
+import 'fake-indexeddb/auto';
 
 // Global Fetch Mock
 global.fetch = vi.fn(() =>
@@ -36,54 +14,115 @@ global.fetch = vi.fn(() =>
 	})
 ) as unknown as typeof fetch;
 
-// Global LocalStorage Mock
-const localStorageMock = (function () {
-	let store: Record<string, string> = {};
-	return {
-		getItem: vi.fn((key: string) => store[key] || null),
-		setItem: vi.fn((key: string, value: string) => {
-			store[key] = value.toString();
-		}),
-		removeItem: vi.fn((key: string) => {
-			delete store[key];
-		}),
-		clear: vi.fn(() => {
-			store = {};
-		}),
-		key: vi.fn((index: number) => Object.keys(store)[index] || null),
-		get length() {
-			return Object.keys(store).length;
-		}
-	};
-})();
+// Setup that runs before each test
+beforeEach(() => {
+	// Ensure window mocks are set up fresh for each test
+	if (typeof window !== 'undefined') {
+		// Mock window.scrollTo
+		Object.defineProperty(window, 'scrollTo', {
+			value: vi.fn(),
+			writable: true,
+			configurable: true
+		});
 
-Object.defineProperty(window, 'localStorage', {
-	value: localStorageMock
+		// Mock window.scrollIntoView
+		Element.prototype.scrollIntoView = vi.fn();
+
+		// Mock window.matchMedia
+		Object.defineProperty(window, 'matchMedia', {
+			writable: true,
+			configurable: true,
+			value: vi.fn().mockImplementation((query: string) => ({
+				matches: false,
+				media: query,
+				onchange: null,
+				addListener: vi.fn(),
+				removeListener: vi.fn(),
+				addEventListener: vi.fn(),
+				removeEventListener: vi.fn(),
+				dispatchEvent: vi.fn()
+			}))
+		});
+
+		// Mock IntersectionObserver
+		class MockIntersectionObserver {
+			observe = vi.fn();
+			disconnect = vi.fn();
+			unobserve = vi.fn();
+		}
+		Object.defineProperty(window, 'IntersectionObserver', {
+			writable: true,
+			configurable: true,
+			value: MockIntersectionObserver
+		});
+
+		// Mock ResizeObserver
+		class MockResizeObserver {
+			observe = vi.fn();
+			disconnect = vi.fn();
+			unobserve = vi.fn();
+		}
+		Object.defineProperty(window, 'ResizeObserver', {
+			writable: true,
+			configurable: true,
+			value: MockResizeObserver
+		});
+
+		// Mock navigator
+		Object.defineProperty(window, 'navigator', {
+			writable: true,
+			configurable: true,
+			value: {
+				...window.navigator,
+				onLine: true,
+				userAgent: 'test-user-agent',
+				clipboard: {
+					writeText: vi.fn(),
+					readText: vi.fn()
+				}
+			}
+		});
+	}
+
+	// Storage mocks
+	const createStorageMock = () => {
+		let store: Record<string, string> = {};
+		return {
+			getItem: vi.fn((key: string) => store[key] || null),
+			setItem: vi.fn((key: string, value: string) => {
+				store[key] = value.toString();
+			}),
+			removeItem: vi.fn((key: string) => {
+				delete store[key];
+			}),
+			clear: vi.fn(() => {
+				store = {};
+			}),
+			key: vi.fn((index: number) => Object.keys(store)[index] || null),
+			get length() {
+				return Object.keys(store).length;
+			}
+		};
+	};
+
+	if (typeof window !== 'undefined') {
+		Object.defineProperty(window, 'localStorage', {
+			value: createStorageMock(),
+			writable: true,
+			configurable: true
+		});
+
+		Object.defineProperty(window, 'sessionStorage', {
+			value: createStorageMock(),
+			writable: true,
+			configurable: true
+		});
+	}
 });
 
-// Global SessionStorage Mock (for swipe hint tests and filter expansion state)
-const sessionStorageMock = (function () {
-	let store: Record<string, string> = {};
-	return {
-		getItem: vi.fn((key: string) => store[key] || null),
-		setItem: vi.fn((key: string, value: string) => {
-			store[key] = value.toString();
-		}),
-		removeItem: vi.fn((key: string) => {
-			delete store[key];
-		}),
-		clear: vi.fn(() => {
-			store = {};
-		}),
-		key: vi.fn((index: number) => Object.keys(store)[index] || null),
-		get length() {
-			return Object.keys(store).length;
-		}
-	};
-})();
-
-Object.defineProperty(window, 'sessionStorage', {
-	value: sessionStorageMock
+// Cleanup after each test
+afterEach(() => {
+	vi.clearAllMocks();
 });
 
 // Touch Event Simulation Helpers
@@ -162,27 +201,7 @@ export function resetViewport(): void {
 	setViewportWidth(1024);
 }
 
-// Global Location Mock
-// JSDOM handles location, but sometimes we need to mock assign/replace
-const originalLocation = window.location;
-delete (window as any).location;
-
-Object.defineProperty(window, 'location', {
-	writable: true,
-	configurable: true,
-	value: {
-		...originalLocation,
-		assign: vi.fn(),
-		reload: vi.fn(),
-		replace: vi.fn(),
-		href: 'http://localhost:3000/',
-		origin: 'http://localhost:3000',
-		protocol: 'http:',
-		host: 'localhost:3000',
-		hostname: 'localhost',
-		port: '3000',
-		pathname: '/',
-		search: '',
-		hash: ''
-	}
-});
+// Helper to mock crypto.randomUUID
+if (typeof crypto !== 'undefined') {
+	crypto.randomUUID = vi.fn(() => 'test-uuid-1234') as unknown as typeof crypto.randomUUID;
+}

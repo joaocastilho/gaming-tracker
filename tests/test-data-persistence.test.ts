@@ -37,8 +37,17 @@ const TEST_SORT_STATE = {
 describe('Data Persistence', () => {
 	beforeEach(() => {
 		localStorage.clear();
-		// Reset location search
-		window.location.search = '';
+		// Mock window.location.search
+		Object.defineProperty(window, 'location', {
+			value: {
+				search: '',
+				pathname: '/',
+				assign: vi.fn(),
+				replace: vi.fn(),
+				reload: vi.fn()
+			},
+			writable: true
+		});
 	});
 
 	test('Theme Persistence', () => {

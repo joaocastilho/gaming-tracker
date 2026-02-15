@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 // They will only be loaded in dev mode
 
 /** @type {import('./$types').RequestHandler} */
-export async function POST({ request }) {
+export async function POST({ request }: { request: Request }) {
 	if (import.meta.env.PROD) {
 		return new Response('Not found', { status: 404 });
 	}
@@ -20,7 +20,7 @@ export async function POST({ request }) {
 
 		const filePath = path.join(process.cwd(), 'static', 'games.json');
 
-		const gamesForFile = payload.games.map((g) => {
+		const gamesForFile = payload.games.map((g: Record<string, unknown>) => {
 			const gameHeader = { ...g };
 
 			if (gameHeader.finishedDate && typeof gameHeader.finishedDate === 'string') {
