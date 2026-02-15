@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { Game } from '$lib/types/game';
-	import { GameSchema, computeScore, TIER_VALUES, formatRating } from '$lib/validation/game';
+	import { GameSchema, computeScore } from '$lib/validation/game';
 	import { editorStore } from '$lib/stores/editor.svelte';
 	import { dev } from '$app/environment';
 	import { invalidateAll } from '$app/navigation';
 	import { gamesStore } from '$lib/stores/games.svelte';
 	import GameFormIdDisplay from './game-editor/GameFormIdDisplay.svelte';
+	import GameFormBasicInfo from './game-editor/GameFormBasicInfo.svelte';
+	import GameFormCover from './game-editor/GameFormCover.svelte';
+	import GameFormRatings from './game-editor/GameFormRatings.svelte';
 
 	function formatDuration(decimalHours: number): string {
 		const h = Math.floor(decimalHours);
@@ -45,10 +48,6 @@
 	// Refs for focus management
 	let modalRef = $state<HTMLDivElement>();
 	let titleInputRef = $state<HTMLInputElement>();
-
-	// Derived unique lists for auto-complete
-	const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
-	const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
@@ -392,55 +391,9 @@
 			<div class="loading">Loading...</div>
 		{:else}
 			<div class="form-grid">
-				<!-- Title Block -->
-				<label class="full">
-					<span>Title</span>
-					<input
-						bind:this={titleInputRef}
-						type="text"
-						bind:value={working.title}
-						name="title"
-						placeholder="Game Title"
-						required
-						autocomplete="off"
-					/>
-				</label>
+				<GameFormBasicInfo {working} {allGames} />
 
-				<!-- Platform / Genre with Datalists -->
-				<label>
-					<span>Platform</span>
-					<input
-						type="text"
-						bind:value={working.platform}
-						name="platform"
-						list="platforms"
-						placeholder="Select or type..."
-						required
-					/>
-					<datalist id="platforms">
-						{#each uniquePlatforms as p (p)}
-							<option value={p}>{p}</option>
-						{/each}
-					</datalist>
-				</label>
-
-				<label>
-					<span>Genre</span>
-					<input
-						type="text"
-						bind:value={working.genre}
-						name="genre"
-						list="genres"
-						placeholder="Select or type..."
-						required
-					/>
-					<datalist id="genres">
-						{#each uniqueGenres as g (g)}
-							<option value={g}>{g}</option>
-						{/each}
-					</datalist>
-				</label>
-
+				<!-- Status -->
 				<label class="full">
 					<span>Status</span>
 					<select bind:value={working.status} name="status">
@@ -449,7 +402,7 @@
 					</select>
 				</label>
 
-				<!-- Combined Row: Year, Playtime, Co-op -->
+				<!-- Year, Playtime, Co-op -->
 				<div class="row-triple full">
 					<label class="year-col">
 						<span>Year</span>
@@ -498,6 +451,7 @@
 						</div>
 					</label>
 				</div>
+
 				{#if working.status === 'Completed'}
 					<label>
 						<span>Finished Date</span>
@@ -511,107 +465,18 @@
 
 				<GameFormIdDisplay gameId={working.id} onCopy={copyGameId} {copied} />
 
-				<!-- Cover Image Upload -->
-				<div class="full cover-upload-section">
-					<span class="label-text">Cover Image (Optional)</span>
-					<div class="cover-input-row">
-						<input
-							type="text"
-							placeholder="Paste image URL..."
-							bind:value={coverUrl}
-							oninput={(e) => handleCoverUrlChange(e.currentTarget.value)}
-							disabled={!!coverFile}
-							class="cover-url-input"
-						/>
-						<span class="or-divider">or</span>
-						<label class="file-upload-btn">
-							<input
-								bind:this={fileInputRef}
-								type="file"
-								accept=".png,image/png"
-								onchange={handleFileSelect}
-								style="display: none;"
-							/>
-							<span class="upload-btn">Upload PNG</span>
-						</label>
-					</div>
+				<GameFormCover
+					{coverUrl}
+					{coverPreview}
+					{coverError}
+					onUrlChange={handleCoverUrlChange}
+					onFileSelect={handleFileSelect}
+					onClear={clearCover}
+					bind:fileInputRef
+				/>
 
-					{#if coverError}
-						<div class="cover-error">{coverError}</div>
-					{/if}
-
-					{#if coverPreview}
-						<div class="cover-preview-wrap">
-							<img src={coverPreview} alt="Cover preview" class="cover-preview" />
-							<button
-								type="button"
-								class="clear-cover-btn"
-								onclick={clearCover}
-								title="Remove cover"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-								>
-									<line x1="18" y1="6" x2="6" y2="18"></line>
-									<line x1="6" y1="6" x2="18" y2="18"></line>
-								</svg>
-							</button>
-						</div>
-					{/if}
-				</div>
-
-				<!-- Ratings (Completed Only) -->
 				{#if working.status === 'Completed'}
-					<div class="full divider"></div>
-					<div class="full section-header">Ratings</div>
-
-					<!-- Rating Presentation & Story -->
-					<div class="rating-slider">
-						<div class="label-row">
-							<span>Presentation</span>
-							<span class="val">{formatRating(working.ratingPresentation)}</span>
-						</div>
-						<input type="range" min="0" max="10" step="1" bind:value={working.ratingPresentation} />
-					</div>
-
-					<div class="rating-slider">
-						<div class="label-row">
-							<span>Story</span>
-							<span class="val">{formatRating(working.ratingStory)}</span>
-						</div>
-						<input type="range" min="0" max="10" step="1" bind:value={working.ratingStory} />
-					</div>
-
-					<div class="rating-slider">
-						<div class="label-row">
-							<span>Gameplay</span>
-							<span class="val">{formatRating(working.ratingGameplay)}</span>
-						</div>
-						<input type="range" min="0" max="10" step="1" bind:value={working.ratingGameplay} />
-					</div>
-
-					<div class="score-display">
-						<span>Calculated Score:</span>
-						<strong>{working.score ?? '-'}</strong>
-					</div>
-
-					<label class="full">
-						<span>Tier</span>
-						<select bind:value={working.tier}>
-							<option value={null}>Select Tier...</option>
-							{#each TIER_VALUES as t (t)}
-								<option value={t}>{t}</option>
-							{/each}
-						</select>
-					</label>
+					<GameFormRatings {working} />
 				{/if}
 			</div>
 
@@ -758,162 +623,6 @@
 	.unit {
 		color: #94a3b8;
 		font-size: 0.8rem;
-	}
-
-	.cover-upload-section {
-		margin-top: 1.5rem;
-	}
-
-	.label-text {
-		display: block;
-		font-size: 0.8rem;
-		color: #94a3b8;
-		font-weight: 500;
-		margin-bottom: 0.35rem;
-	}
-
-	.cover-input-row {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-	}
-
-	.cover-url-input {
-		flex: 1;
-		padding: 0.5rem 0.75rem;
-		border-radius: 0.5rem;
-		border: 1px solid rgba(75, 85, 99, 0.4);
-		background: #0f172a;
-		color: #e5e7eb;
-		font-size: 0.9rem;
-	}
-
-	.cover-url-input:focus {
-		outline: none;
-		border-color: #6366f1;
-		background: #1e293b;
-	}
-
-	.cover-url-input:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.or-divider {
-		color: #64748b;
-		font-size: 0.85rem;
-	}
-
-	.file-upload-btn {
-		cursor: pointer;
-	}
-
-	.upload-btn {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.5rem 1rem;
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
-		border: 1px solid rgba(99, 102, 241, 0.3);
-		border-radius: 0.5rem;
-		font-size: 0.85rem;
-		transition: all 0.2s;
-	}
-
-	.file-upload-btn:hover .upload-btn {
-		background: rgba(99, 102, 241, 0.3);
-	}
-
-	.cover-error {
-		color: #ef4444;
-		font-size: 0.8rem;
-		margin-top: 0.5rem;
-	}
-
-	.cover-preview-wrap {
-		margin-top: 1rem;
-		display: flex;
-		align-items: flex-start;
-		gap: 1rem;
-	}
-
-	.cover-preview {
-		max-width: 150px;
-		max-height: 225px;
-		border-radius: 0.5rem;
-		object-fit: cover;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-	}
-
-	.clear-cover-btn {
-		padding: 0.5rem;
-		background: rgba(239, 68, 68, 0.2);
-		color: #fca5a5;
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 0.375rem;
-		cursor: pointer;
-		transition: all 0.2s;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.clear-cover-btn:hover {
-		background: rgba(239, 68, 68, 0.3);
-	}
-
-	.divider {
-		height: 1px;
-		background: rgba(255, 255, 255, 0.1);
-		margin: 0.5rem 0;
-	}
-
-	.section-header {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: #e2e8f0;
-		margin-bottom: 0.5rem;
-	}
-
-	.rating-slider {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.label-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.label-row span:first-child {
-		color: #94a3b8;
-	}
-
-	.val {
-		color: #fff;
-		font-weight: 600;
-	}
-
-	input[type='range'] {
-		width: 100%;
-		accent-color: #6366f1;
-		cursor: pointer;
-	}
-
-	.score-display {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		justify-content: flex-end;
-		font-size: 1rem;
-		color: #cbd5e1;
-	}
-
-	.score-display strong {
-		color: #818cf8;
-		font-size: 1.2rem;
 	}
 
 	select {
