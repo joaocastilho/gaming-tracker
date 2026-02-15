@@ -821,8 +821,8 @@
 	}
 
 	.rating-item :global(svg) {
-		width: clamp(16px, 7cqi, 28px) !important;
-		height: clamp(16px, 7cqi, 28px) !important;
+		width: clamp(16px, 7cqi, 28px);
+		height: clamp(16px, 7cqi, 28px);
 		flex-shrink: 0;
 	}
 
@@ -916,7 +916,7 @@
 		}
 
 		.game-subtitle {
-			font-size: 0.7rem !important;
+			font-size: 0.7rem;
 		}
 
 		/* Rating responsiveness now handled by clamp() */
