@@ -437,7 +437,7 @@
 							aria-label="Filter by Co-op"
 							title="Co-op Available"
 						>
-							<Users size={16} class="text-blue-500" />
+							<Users size={18} class="text-blue-500" />
 						</button>
 					{/if}
 				</div>
@@ -456,7 +456,7 @@
 					class="date-item"
 					title={game.status === 'Completed' ? 'Completed On' : 'Expected Completion'}
 				>
-					<CalendarDays size={16} />
+					<CalendarDays size={18} />
 					<span
 						>{game.status === 'Completed' && game.finishedDate
 							? formatDate(game.finishedDate)
@@ -486,8 +486,8 @@
 			<!-- Total Score Section -->
 			{#if game.status === 'Completed' && game.score !== null}
 				<div class="total-score-badge">
-					<Award size={16} class="text-amber-500" />
-					<span>TOTAL: {game.score}/20</span>
+					<Award size={20} class="text-amber-500" />
+					<span>SCORE: {game.score}</span>
 				</div>
 			{:else}
 				<div class="planned-indicator">
@@ -751,13 +751,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 6px;
+		gap: 8px;
 		font-weight: 800;
 		font-size: 1rem;
 		color: var(--color-rating-total);
-		padding: 8px 0 4px 0;
-		margin-top: 4px;
-		border-top: 1px dashed var(--color-border);
+		padding: 6px 6px;
+		margin-top: auto;
 	}
 
 	/* Planned Indicator - Blue box matching total-score-badge style */
@@ -766,7 +765,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		font-weight: 700;
+		font-weight: 800;
 		font-size: 1rem;
 		color: #60a5fa;
 		text-transform: uppercase;
@@ -774,7 +773,7 @@
 		background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
 		border: 1px solid rgba(59, 130, 246, 0.3);
 		border-radius: 12px;
-		padding: 12px 16px;
+		padding: 6px 6px;
 		margin-top: auto;
 	}
 
