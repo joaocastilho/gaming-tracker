@@ -74,7 +74,7 @@
 		};
 	}
 
-	let initialized = $state(false);
+	let initialized = $state(true);
 	let gamesInitialized = $state(false);
 	let urlUpdateTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -227,14 +227,13 @@
 	});
 
 	$effect(() => {
-		if (typeof window !== 'undefined' && !initialized) {
-			initialized = true;
+		if (browser) {
 			// Initialize search from URL
 			filtersStore.readSearchFromURL(page.url.searchParams);
 
 			// Auto-open mobile search if URL has search parameter
 			const searchParam = page.url.searchParams.get('s');
-			if (searchParam && browser && window.innerWidth < 768) {
+			if (searchParam && window.innerWidth < 768) {
 				pushState(page.url, { showMobileSearch: true });
 			}
 		}
