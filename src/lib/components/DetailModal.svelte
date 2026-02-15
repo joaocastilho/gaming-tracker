@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	// Svelte 5 Runes - no legacy lifecycle imports needed
 	import { fade, fly } from 'svelte/transition';
 	import { cubicOut, backOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
@@ -189,32 +189,46 @@
 		sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
 	}
 
-	onMount(() => {
-		if (browser) {
+	// Effect to manage keyboard event listeners based on modal state
+	$effect(() => {
+		if (!browser) return;
+
+		// Only add listener when modal is open in view mode
+		if ($modalStore.isOpen && $modalStore.mode === 'view') {
 			document.addEventListener('keydown', handleKeydown, true);
+
+			// Cleanup function removes listener when modal closes or component destroys
+			return () => {
+				document.removeEventListener('keydown', handleKeydown, true);
+			};
 		}
 	});
 
-	onDestroy(() => {
-		if (browser) {
-			document.removeEventListener('keydown', handleKeydown, true);
+	// Effect to manage body overflow when modal opens/closes
+	$effect(() => {
+		if (!browser) return;
+
+		if ($modalStore.isOpen) {
+			document.body.style.overflow = 'hidden';
+			document.documentElement.style.overflow = 'hidden';
+		} else {
 			document.body.style.overflow = '';
 			document.documentElement.style.overflow = '';
 		}
-		if (swipeIndicatorTimeout) clearTimeout(swipeIndicatorTimeout);
-		if (swipeHideTimeout) clearTimeout(swipeHideTimeout);
+
+		// Cleanup to ensure styles are reset when component destroys
+		return () => {
+			document.body.style.overflow = '';
+			document.documentElement.style.overflow = '';
+		};
 	});
 
+	// Effect to clear swipe timeouts when component is destroyed
 	$effect(() => {
-		if (browser) {
-			if ($modalStore.isOpen) {
-				document.body.style.overflow = 'hidden';
-				document.documentElement.style.overflow = 'hidden';
-			} else {
-				document.body.style.overflow = '';
-				document.documentElement.style.overflow = '';
-			}
-		}
+		return () => {
+			if (swipeIndicatorTimeout) clearTimeout(swipeIndicatorTimeout);
+			if (swipeHideTimeout) clearTimeout(swipeHideTimeout);
+		};
 	});
 </script>
 

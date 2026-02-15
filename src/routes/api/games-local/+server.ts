@@ -13,7 +13,7 @@ export async function POST({ request }: { request: Request }) {
 
 	try {
 		const contentType = request.headers.get('content-type') || '';
-		let payload: unknown = await request.json();
+		let payload: unknown;
 
 		if (contentType.includes('multipart/form-data')) {
 			const formData = await request.formData();

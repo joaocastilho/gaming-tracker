@@ -4,9 +4,10 @@
 	import { GameSchema, computeScore, TIER_VALUES, formatRating } from '$lib/validation/game';
 	import { editorStore } from '$lib/stores/editor.svelte';
 	import { dev } from '$app/environment';
+	import { invalidateAll } from '$app/navigation';
+	import { gamesStore } from '$lib/stores/games.svelte';
+	import GameFormIdDisplay from './game-editor/GameFormIdDisplay.svelte';
 
-	// Helper to format implicit "Xh Ym" from a decimal number (e.g. 2.5 -> "2h 30m")
-	// Used to auto-fill timeToBeat from hoursPlayed if needed, or just for display.
 	function formatDuration(decimalHours: number): string {
 		const h = Math.floor(decimalHours);
 		const m = Math.round((decimalHours - h) * 60);
@@ -31,17 +32,13 @@
 	let hours = $state(0);
 	let minutes = $state(0);
 	let completionOrderInput = $state<number | null>(null);
-
 	let copied = $state(false);
 
 	// Cover image upload state
 	let coverUrl = $state('');
 	let coverFile = $state<File | null>(null);
 	let coverPreview = $state<string | null>(null);
-
-	// Track blob URLs for cleanup
 	let blobUrls: string[] = [];
-
 	let coverError = $state<string | null>(null);
 	let fileInputRef = $state<HTMLInputElement>();
 
@@ -49,7 +46,10 @@
 	let modalRef = $state<HTMLDivElement>();
 	let titleInputRef = $state<HTMLInputElement>();
 
-	// Focus trap: keep focus within the modal
+	// Derived unique lists for auto-complete
+	const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
+	const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
+
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			event.preventDefault();
@@ -69,13 +69,11 @@
 			const lastElement = focusableArray[focusableArray.length - 1];
 
 			if (event.shiftKey) {
-				// Shift+Tab: if on first element, go to last
 				if (document.activeElement === firstElement) {
 					event.preventDefault();
 					lastElement.focus();
 				}
 			} else {
-				// Tab: if on last element, go to first
 				if (document.activeElement === lastElement) {
 					event.preventDefault();
 					firstElement.focus();
@@ -94,24 +92,22 @@
 		}
 	}
 
-	// Cover image handling functions
-	function isValidImageUrl(url: string): boolean {
-		try {
-			const parsed = new URL(url);
-			return ['http:', 'https:'].includes(parsed.protocol);
-		} catch {
-			return false;
-		}
-	}
-
-	function handleCoverUrlChange() {
+	function handleCoverUrlChange(url: string) {
 		coverError = null;
-		if (coverUrl && isValidImageUrl(coverUrl)) {
-			coverPreview = coverUrl;
-			coverFile = null;
-		} else if (coverUrl) {
-			coverError = 'Invalid URL';
-			coverPreview = null;
+		if (url) {
+			try {
+				const parsed = new URL(url);
+				if (['http:', 'https:'].includes(parsed.protocol)) {
+					coverPreview = url;
+					coverFile = null;
+				} else {
+					coverError = 'Invalid URL';
+					coverPreview = null;
+				}
+			} catch {
+				coverError = 'Invalid URL';
+				coverPreview = null;
+			}
 		} else {
 			coverPreview = null;
 		}
@@ -132,7 +128,6 @@
 
 			coverFile = file;
 			coverUrl = '';
-			// Revoke previous blob URL if exists
 			if (coverPreview?.startsWith('blob:')) {
 				URL.revokeObjectURL(coverPreview);
 				blobUrls = blobUrls.filter((url) => url !== coverPreview);
@@ -156,13 +151,12 @@
 		}
 	}
 
-	// Derived unique lists for auto-complete
-	const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
-	const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
+	// One-time initialization flag (must be outside effects)
+	let _initialized = $state(false);
 
 	// Auto-focus title input when it becomes available
 	$effect(() => {
-		if (titleInputRef) {
+		if (titleInputRef && _initialized) {
 			untrack(() => {
 				setTimeout(() => titleInputRef?.focus(), 50);
 			});
@@ -170,20 +164,16 @@
 	});
 
 	// One-time initialization + cleanup
-	let _initialized = false;
 	$effect(() => {
 		if (_initialized) return;
 		_initialized = true;
 
 		if (mode === 'edit' && initialGame) {
-			// structuredClone struggles with Svelte 5 proxies sometimes, so we use JSON scan
 			working = JSON.parse(JSON.stringify(initialGame));
-			// Fix compatibility: Convert numeric playtime to string if needed
 			if (working && typeof working.playtime === 'number') {
 				working.playtime = formatDuration(working.playtime);
 			}
 
-			// Init hours/minutes from playtime string
 			if (working && working.playtime) {
 				const match = working.playtime.match(/(\d+)h\s*(\d+)m/);
 				if (match) {
@@ -191,20 +181,16 @@
 					minutes = parseInt(match[2]);
 				}
 			}
-			// Init date input
 			if (working && working.finishedDate) {
 				dateInput = working.finishedDate.split('T')[0];
 			}
-			// Init completionOrder
 			if (working) {
 				completionOrderInput = working.completionOrder ?? null;
 			}
 
-			// Reset cover upload state but show existing cover as preview
 			coverUrl = '';
 			coverFile = null;
 			coverError = null;
-			// Show existing cover image as preview if it exists
 			if (working && working.coverImage) {
 				coverPreview = `/${working.coverImage}`;
 			} else {
@@ -232,15 +218,12 @@
 				finishedDate: null
 			} as Game;
 			completionOrderInput = null;
-
-			// Reset cover upload state for new game
 			coverUrl = '';
 			coverFile = null;
 			coverPreview = null;
 			coverError = null;
 		}
 
-		// Cleanup blob URLs when component unmounts
 		return () => {
 			blobUrls.forEach((url) => {
 				if (url.startsWith('blob:')) {
@@ -254,7 +237,6 @@
 	// Sync dateInput to working.finishedDate
 	$effect(() => {
 		if (!working) return;
-		// Only update if status is Completed, otherwise finishedDate should be null (handled by validateGame/cleanup but good to keep clean)
 		if (working.status === 'Completed') {
 			if (dateInput) {
 				working.finishedDate = `${dateInput}T00:00:00.000Z`;
@@ -262,7 +244,6 @@
 				working.finishedDate = null;
 			}
 		} else {
-			// If not completed, these should be null
 			working.finishedDate = null;
 		}
 	});
@@ -271,13 +252,9 @@
 	$effect(() => {
 		if (!working) return;
 
-		// 1. Auto MainTitle (always same as Title now)
 		working.mainTitle = working.title;
-		working.subtitle = null; // No longer used as input
+		working.subtitle = null;
 
-		// 2. Auto ID and Cover for NEW games only (or if editing allows ID change? usually restricted)
-		// For consistency, let's only do this if mode is Create, OR if we want to enforce it on Edit too.
-		// Usually changing ID is risky if images are matched by ID. Logic says "the generated covers will use this id".
 		if (mode === 'create' && working.title) {
 			const slug = working.title
 				.toLowerCase()
@@ -287,7 +264,6 @@
 			working.coverImage = `covers/${slug}.webp`;
 		}
 
-		// 3. Score Calc (auto)
 		if (
 			working.status === 'Completed' &&
 			working.ratingPresentation != null &&
@@ -317,7 +293,6 @@
 	});
 
 	function validateGame(game: Game): string | null {
-		// Field cleanups before validation
 		if (game.status === 'Planned') {
 			game.finishedDate = null;
 			game.ratingPresentation = null;
@@ -332,7 +307,6 @@
 		if (!game.platform) return 'Platform is required.';
 		if (!game.genre) return 'Genre is required.';
 
-		// Zod validation
 		const result = GameSchema.safeParse(game);
 		if (!result.success) {
 			const first = result.error.issues[0];
@@ -341,9 +315,6 @@
 
 		return null;
 	}
-
-	import { invalidateAll } from '$app/navigation';
-	import { gamesStore } from '$lib/stores/games.svelte';
 
 	async function handleSave() {
 		if (!working) return;
@@ -357,18 +328,15 @@
 		saving = true;
 
 		try {
-			// Update the pending store with the game and optional cover file
 			if (mode === 'create') {
 				editorStore.addPendingGame(working, coverFile);
 			} else {
 				editorStore.editPendingGame(working.id, working, coverFile);
 			}
 
-			// In development mode, we save immediately to local JSON file via the store
 			if (dev) {
 				const currentGames = gamesStore.games;
 
-				// Safety check
 				if (currentGames.length === 0 && mode === 'edit') {
 					throw new Error(
 						'Cannot save: games data appears to be missing. Please refresh the page.'
@@ -377,8 +345,6 @@
 
 				const success = await editorStore.saveLocally(currentGames);
 				if (success) {
-					// Directly update the games store to bypass Vite's static file cache
-					// Note: saveLocally clears pending changes on success
 					const finalGames = editorStore.buildFinalGames(currentGames);
 					gamesStore.setAllGames(finalGames);
 					await invalidateAll();
@@ -388,8 +354,6 @@
 					saving = false;
 				}
 			} else {
-				// Production mode: just close after queueing to store.
-				// User will click "Apply Changes" globally to trigger the full save including files.
 				onClose();
 			}
 		} catch (err) {
@@ -545,58 +509,7 @@
 					</label>
 				{/if}
 
-				<div class="full cover-path" style="margin-top: 1.5rem;">
-					<span class="label-text">Game ID</span>
-					<!-- Read-only auto-generated path visualization + copy -->
-					<div
-						class="read-only-field copyable large-id"
-						role="button"
-						tabindex="0"
-						onclick={copyGameId}
-						onkeydown={(e) => {
-							if (e.key === 'Enter' || e.key === ' ') {
-								e.preventDefault();
-								copyGameId();
-							}
-						}}
-						title="Click to copy ID"
-					>
-						{#if copied}
-							<span style="color: #4ade80; font-weight: 600;">Copied!</span>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="#4ade80"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							>
-								<polyline points="20 6 9 17 4 12" />
-							</svg>
-						{:else}
-							<span>{working.id || '(Auto-generated)'}</span>
-							<!-- Clipboard Icon -->
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								class="icon-copy"
-							>
-								<rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-								<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-							</svg>
-						{/if}
-					</div>
-				</div>
+				<GameFormIdDisplay gameId={working.id} onCopy={copyGameId} {copied} />
 
 				<!-- Cover Image Upload -->
 				<div class="full cover-upload-section">
@@ -606,7 +519,7 @@
 							type="text"
 							placeholder="Paste image URL..."
 							bind:value={coverUrl}
-							oninput={handleCoverUrlChange}
+							oninput={(e) => handleCoverUrlChange(e.currentTarget.value)}
 							disabled={!!coverFile}
 							class="cover-url-input"
 						/>
@@ -773,7 +686,6 @@
 		grid-column: 1 / -1;
 	}
 
-	/* Remove spinner buttons */
 	input[type='number']::-webkit-inner-spin-button,
 	input[type='number']::-webkit-outer-spin-button {
 		-webkit-appearance: none;
@@ -798,7 +710,7 @@
 	.checkbox-simple {
 		display: flex;
 		align-items: center;
-		padding: 0.5rem 0; /* Align with input height approx */
+		padding: 0.5rem 0;
 		height: 38px;
 	}
 
@@ -827,51 +739,127 @@
 		background-size: 80%;
 	}
 
-	.large-id {
-		font-size: 1rem;
-		padding: 0.75rem 1rem;
-		/* Make it visually pop a bit more */
-		background: rgba(0, 0, 0, 0.3);
-		border-color: rgba(148, 163, 253, 0.2);
+	.playtime-inputs {
+		display: flex;
+		gap: 0.5rem;
 	}
 
-	span {
+	.input-group {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.input-group input {
+		width: 60px;
+		text-align: center;
+	}
+
+	.unit {
 		color: #94a3b8;
 		font-size: 0.8rem;
-		font-weight: 500;
 	}
 
-	input[type='text'],
-	input[type='number'],
-	input[type='date'],
-	select {
+	.cover-upload-section {
+		margin-top: 1.5rem;
+	}
+
+	.label-text {
+		display: block;
+		font-size: 0.8rem;
+		color: #94a3b8;
+		font-weight: 500;
+		margin-bottom: 0.35rem;
+	}
+
+	.cover-input-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.cover-url-input {
+		flex: 1;
 		padding: 0.5rem 0.75rem;
 		border-radius: 0.5rem;
 		border: 1px solid rgba(75, 85, 99, 0.4);
 		background: #0f172a;
 		color: #e5e7eb;
 		font-size: 0.9rem;
-		width: 100%;
-		transition:
-			border-color 0.2s,
-			background-color 0.2s;
 	}
 
-	input:focus,
-	select:focus {
+	.cover-url-input:focus {
 		outline: none;
 		border-color: #6366f1;
 		background: #1e293b;
 	}
 
-	.read-only-field {
-		padding: 0.5rem 0.75rem;
-		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		border-radius: 0.5rem;
+	.cover-url-input:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.or-divider {
 		color: #64748b;
-		font-family: monospace;
+		font-size: 0.85rem;
+	}
+
+	.file-upload-btn {
+		cursor: pointer;
+	}
+
+	.upload-btn {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.5rem 1rem;
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
+		border: 1px solid rgba(99, 102, 241, 0.3);
+		border-radius: 0.5rem;
+		font-size: 0.85rem;
+		transition: all 0.2s;
+	}
+
+	.file-upload-btn:hover .upload-btn {
+		background: rgba(99, 102, 241, 0.3);
+	}
+
+	.cover-error {
+		color: #ef4444;
 		font-size: 0.8rem;
+		margin-top: 0.5rem;
+	}
+
+	.cover-preview-wrap {
+		margin-top: 1rem;
+		display: flex;
+		align-items: flex-start;
+		gap: 1rem;
+	}
+
+	.cover-preview {
+		max-width: 150px;
+		max-height: 225px;
+		border-radius: 0.5rem;
+		object-fit: cover;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	}
+
+	.clear-cover-btn {
+		padding: 0.5rem;
+		background: rgba(239, 68, 68, 0.2);
+		color: #fca5a5;
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 0.375rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.clear-cover-btn:hover {
+		background: rgba(239, 68, 68, 0.3);
 	}
 
 	.divider {
@@ -888,10 +876,6 @@
 	}
 
 	.rating-slider {
-		grid-column: 1 / -1;
-		background: rgba(255, 255, 255, 0.03);
-		padding: 0.75rem;
-		border-radius: 0.5rem;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -900,6 +884,11 @@
 	.label-row {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
+	}
+
+	.label-row span:first-child {
+		color: #94a3b8;
 	}
 
 	.val {
@@ -914,7 +903,6 @@
 	}
 
 	.score-display {
-		grid-column: 1 / -1;
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -926,6 +914,21 @@
 	.score-display strong {
 		color: #818cf8;
 		font-size: 1.2rem;
+	}
+
+	select {
+		padding: 0.5rem 0.75rem;
+		border-radius: 0.5rem;
+		border: 1px solid rgba(75, 85, 99, 0.4);
+		background: #0f172a;
+		color: #e5e7eb;
+		font-size: 0.9rem;
+	}
+
+	select:focus {
+		outline: none;
+		border-color: #6366f1;
+		background: #1e293b;
 	}
 
 	.actions {
@@ -979,148 +982,9 @@
 		background: rgba(255, 255, 255, 0.05);
 	}
 
-	.read-only-field.copyable {
-		cursor: pointer;
-		transition:
-			background 0.2s,
-			color 0.2s;
-	}
-
-	.read-only-field.copyable:hover {
-		background: rgba(255, 255, 255, 0.1);
-		color: #e2e8f0;
-	}
-
-	.read-only-field.copyable:active {
-		background: rgba(255, 255, 255, 0.15);
-	}
-
-	.read-only-field.large-id {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.icon-copy {
-		opacity: 0.6;
-	}
-
-	.read-only-field.copyable:hover .icon-copy {
-		opacity: 1;
-	}
-
-	.playtime-inputs {
-		display: flex;
-		gap: 1rem;
-	}
-
-	.input-group {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		flex: 1;
-	}
-
-	.input-group input {
-		text-align: right;
-	}
-
-	.unit {
+	.loading {
+		text-align: center;
+		padding: 2rem;
 		color: #94a3b8;
-		font-size: 0.85rem;
-		font-weight: 500;
-	}
-
-	/* Cover Upload Styles */
-	.cover-upload-section {
-		margin-top: 1rem;
-		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	.cover-input-row {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		margin-top: 0.5rem;
-	}
-
-	.cover-url-input {
-		flex: 1;
-	}
-
-	.or-divider {
-		color: #64748b;
-		font-size: 0.75rem;
-		font-weight: 500;
-		text-transform: uppercase;
-	}
-
-	.file-upload-btn {
-		cursor: pointer;
-	}
-
-	.upload-btn {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.5rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.3);
-		border-radius: 0.5rem;
-		color: #818cf8;
-		font-size: 0.85rem;
-		font-weight: 500;
-		transition: all 0.2s;
-	}
-
-	.upload-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.5);
-	}
-
-	.cover-error {
-		margin-top: 0.5rem;
-		padding: 0.4rem 0.6rem;
-		border-radius: 0.375rem;
-		background: rgba(239, 68, 68, 0.1);
-		color: #fca5a5;
-		font-size: 0.8rem;
-		border: 1px solid rgba(239, 68, 68, 0.2);
-	}
-
-	.cover-preview-wrap {
-		position: relative;
-		margin-top: 0.75rem;
-		display: inline-block;
-	}
-
-	.cover-preview {
-		width: 100px;
-		height: 150px;
-		object-fit: cover;
-		border-radius: 0.5rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	.clear-cover-btn {
-		position: absolute;
-		top: -8px;
-		right: -8px;
-		width: 24px;
-		height: 24px;
-		padding: 0;
-		border-radius: 50%;
-		background: #ef4444;
-		color: white;
-		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: transform 0.1s;
-	}
-
-	.clear-cover-btn:hover {
-		transform: scale(1.1);
 	}
 </style>

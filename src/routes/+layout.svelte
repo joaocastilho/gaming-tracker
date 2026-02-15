@@ -13,7 +13,7 @@
 	import { appStore } from '$lib/stores/app.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { browser, dev } from '$app/environment';
-	import { onMount, untrack } from 'svelte';
+	import { untrack } from 'svelte';
 	import type { Game } from '$lib/types/game.js';
 	import { RotateCcw } from 'lucide-svelte';
 
@@ -56,24 +56,29 @@
 		}
 	});
 
-	onMount(() => {
+	// Effect for one-time initialization (replaces onMount)
+	$effect.pre(() => {
+		if (!browser) return;
+
+		// Load from IDB and handle promise-based games data
 		gamesStore.loadFromIDB();
 
-		if (data.games) {
-			// Handle promise case (client-side only)
-			if (data.games instanceof Promise) {
-				data.games
-					.then((resolvedGames) => {
-						gamesStore.initializeGames(resolvedGames);
-						gamesInitialized = true;
-					})
-					.catch((error) => {
-						console.error('Failed to load games:', error);
-					});
-			}
+		if (data.games && data.games instanceof Promise) {
+			data.games
+				.then((resolvedGames) => {
+					gamesStore.initializeGames(resolvedGames);
+					gamesInitialized = true;
+				})
+				.catch((error) => {
+					console.error('Failed to load games:', error);
+				});
 		}
+	});
 
-		// Auto-collapse filters on scroll (desktop only)
+	// Effect for scroll-based filter collapse (desktop only)
+	$effect(() => {
+		if (!browser) return;
+
 		let lastScrollY = window.scrollY;
 		const handleScroll = () => {
 			if (window.innerWidth < 768) return; // Skip on mobile
@@ -444,14 +449,21 @@
 		}
 	}
 
-	$effect(() => {
-		if (browser) {
-			editorStore.restoreFromSession();
+	// Initialize editor state once on mount
+	let editorInitialized = $state(false);
+	$effect.pre(() => {
+		if (!browser || editorInitialized) return;
+		editorInitialized = true;
 
+		// Restore editor mode from session storage
+		editorStore.restoreFromSession();
+
+		// Check session validity if in editor mode (production only)
+		untrack(() => {
 			if (editorStore.editorMode && !dev) {
 				editorStore.checkSession();
 			}
-		}
+		});
 	});
 </script>
 
