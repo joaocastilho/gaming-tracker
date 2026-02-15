@@ -125,8 +125,7 @@
 <style>
 	.title-section {
 		margin-bottom: 0;
-		min-height: 52px;
-		max-height: 52px;
+		min-height: 70px;
 		display: flex;
 		align-items: center;
 		justify-content: center;

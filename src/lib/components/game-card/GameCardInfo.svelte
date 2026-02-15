@@ -68,9 +68,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 8px 0;
-		border-top: 1px solid var(--color-border-subtle);
-		border-bottom: 1px solid var(--color-border-subtle);
+		padding: 12px 0px 5px 0px;
 	}
 
 	.time-item,
@@ -87,7 +85,6 @@
 		justify-content: space-around;
 		align-items: center;
 		padding: 8px 0;
-		border-bottom: 1px solid var(--color-border-subtle);
 	}
 
 	.rating-item {
@@ -126,7 +123,6 @@
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
-		border: 1px solid rgba(59, 130, 246, 0.3);
 		border-radius: 12px;
 		padding: 6px;
 		margin-top: auto;

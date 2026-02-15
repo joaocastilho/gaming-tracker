@@ -124,10 +124,9 @@
 	}
 
 	.game-info {
-		padding: 16px 16px 12px 16px;
+		padding: 0px 16px 10px 16px;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
 		flex: 1;
 		justify-content: space-between;
 	}
