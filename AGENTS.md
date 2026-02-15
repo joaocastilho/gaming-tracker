@@ -8,6 +8,7 @@
 
 - `docs/project-audit.md` - Comprehensive codebase audit
 - `docs/implementation-roadmap.md` - Path to 10/10 implementation
+- `docs/manual-audit-guide.md` - Step-by-step manual audit instructions
 - `docs/TECHNICAL.md` - Architecture documentation
 
 ---
