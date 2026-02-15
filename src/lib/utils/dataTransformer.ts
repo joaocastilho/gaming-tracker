@@ -1,58 +1,75 @@
-import type { Game } from '$lib/types/game';
+import type { Game, CoOpStatus } from '$lib/types/game';
+
+interface RawGameData extends Record<string, unknown> {
+	title?: string;
+	id?: string;
+	finishedDate?: string;
+	hoursPlayed?: number | string;
+	timeToBeat?: string;
+	coOp?: CoOpStatus;
+}
 
 export function transformGameData(game: Record<string, unknown>): Game {
-	const transformed: Record<string, unknown> = { ...game };
+	// Work with the raw data that may have temporary fields
+	const data = game as RawGameData;
 
-	if (!transformed.id) {
-		if (transformed.title) {
-			transformed.id = generateDeterministicUUID(String(transformed.title));
+	// Build up the Game object with proper typing
+	const gameData: Partial<Game> = { ...data };
+
+	// Ensure id is set
+	if (!gameData.id) {
+		if (data.title) {
+			gameData.id = generateDeterministicUUID(data.title);
 		} else {
-			transformed.id = crypto.randomUUID();
+			gameData.id = crypto.randomUUID();
 		}
 	}
 
-	if (transformed.finishedDate && !isValidISODateTime(String(transformed.finishedDate))) {
-		const dateStr = String(transformed.finishedDate);
-		const dateMatch = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+	// Convert date format if needed
+	if (data.finishedDate && !isValidISODateTime(data.finishedDate)) {
+		const dateMatch = data.finishedDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
 		if (dateMatch) {
 			const [, day, month, year] = dateMatch;
-			transformed.finishedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00.000Z`;
+			gameData.finishedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00.000Z`;
 		}
 	}
 
-	if (transformed.hoursPlayed && typeof transformed.hoursPlayed === 'number') {
-		const hours = Math.floor(transformed.hoursPlayed);
-		const minutes = Math.round((transformed.hoursPlayed - hours) * 60);
-		transformed.playtime = `${hours}h ${minutes}m`;
-	} else if (transformed.hoursPlayed && typeof transformed.hoursPlayed === 'string') {
-		transformed.playtime = transformed.hoursPlayed;
-	} else if (transformed.timeToBeat) {
-		transformed.playtime = transformed.timeToBeat;
-	}
-	delete transformed.hoursPlayed;
-	delete transformed.timeToBeat;
-
-	if (!transformed.coOp) {
-		transformed.coOp = 'No';
+	// Handle playtime conversion from hoursPlayed
+	if (data.hoursPlayed !== undefined) {
+		if (typeof data.hoursPlayed === 'number') {
+			const hours = Math.floor(data.hoursPlayed);
+			const minutes = Math.round((data.hoursPlayed - hours) * 60);
+			gameData.playtime = `${hours}h ${minutes}m`;
+		} else if (typeof data.hoursPlayed === 'string') {
+			gameData.playtime = data.hoursPlayed;
+		}
+	} else if (data.timeToBeat) {
+		gameData.playtime = data.timeToBeat;
 	}
 
-	if (transformed.title) {
-		const titleStr = String(transformed.title);
-		const titleMatch = titleStr.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+	// Ensure coOp has a default value
+	if (!gameData.coOp) {
+		gameData.coOp = 'No';
+	}
+
+	// Parse title into mainTitle and subtitle
+	if (data.title) {
+		const titleMatch = data.title.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
 
 		if (titleMatch) {
-			transformed.mainTitle = titleMatch[1].trim();
-			transformed.subtitle = `(${titleMatch[2]})`;
+			gameData.mainTitle = titleMatch[1].trim();
+			gameData.subtitle = `(${titleMatch[2]})`;
 		} else {
-			transformed.mainTitle = titleStr;
-			transformed.subtitle = null;
+			gameData.mainTitle = data.title;
+			gameData.subtitle = null;
 		}
 	} else {
-		transformed.mainTitle = '';
-		transformed.subtitle = null;
+		gameData.mainTitle = '';
+		gameData.subtitle = null;
 	}
 
-	return transformed as unknown as Game;
+	// Cast to Game type - the transformation above should have populated all required fields
+	return gameData as Game;
 }
 
 function isValidISODateTime(dateString: string): boolean {

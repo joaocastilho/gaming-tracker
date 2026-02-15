@@ -334,7 +334,7 @@
 	let selectedTiers = $derived($filtersStore?.tiers ?? []);
 	let selectedCoOp = $derived($filtersStore?.coOp ?? []);
 
-	let isSearchOpen = $derived(!!(page.state as any).showMobileSearch);
+	let isSearchOpen = $derived(!!page.state.showMobileSearch);
 	let isFiltersOpen = $state(false);
 	let isSettingsMenuOpen = $state(false);
 	let loginModalOpen = $state(false);
@@ -518,7 +518,7 @@
 
 		mobileSearchDebounceTimeout = setTimeout(() => {
 			// Check if we're searching from tierlist and user started typing
-			const isFromTierlist = (page.state as any)?.fromTierlist;
+			const isFromTierlist = page.state.fromTierlist;
 			if (isFromTierlist && newValue && appStore.activeTab === 'tierlist') {
 				// Redirect to Games page with search term
 				const searchParam = `?s=${encodeURIComponent(newValue)}`;
