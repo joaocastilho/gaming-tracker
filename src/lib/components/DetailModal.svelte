@@ -123,6 +123,7 @@
 
 	let modalElement = $state<HTMLDivElement>();
 	let modalImageElement = $state<HTMLImageElement>();
+	let titleElement = $state<HTMLSpanElement>();
 	let isImageFullScreen = $state(false);
 
 	// When offline, use data URI directly since network requests will fail
@@ -692,6 +693,30 @@
 		}
 	});
 
+	// Auto-fit title font size to container width
+	$effect(() => {
+		const game = $modalStore.activeGame;
+		if (!browser || !titleElement || !game) return;
+
+		// Reset to max size first
+		const maxSize = 2.5; // rem
+		const minSize = 0.85; // rem
+		const step = 0.05; // rem
+
+		titleElement.style.fontSize = `${maxSize}rem`;
+
+		// Use requestAnimationFrame to ensure layout is computed
+		requestAnimationFrame(() => {
+			if (!titleElement) return;
+			let currentSize = maxSize;
+
+			while (currentSize > minSize && titleElement.scrollWidth > titleElement.clientWidth) {
+				currentSize -= step;
+				titleElement.style.fontSize = `${currentSize}rem`;
+			}
+		});
+	});
+
 	$effect(() => {
 		if (browser) {
 			if ($modalStore.isOpen) {
@@ -1189,7 +1214,7 @@
 		{#if currentGameIndex > 0}
 			<button
 				onclick={navigateToPrevious}
-				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
+				class="nav-arrow-btn absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
 				style="left: calc(50% - 500px - 120px);"
 				aria-label="Previous game"
 			>
@@ -1202,7 +1227,7 @@
 		})()}
 			<button
 				onclick={navigateToNext}
-				class="absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white/90 transition-all outline-none hover:scale-110 hover:bg-black/40 focus:outline-none md:flex"
+				class="nav-arrow-btn absolute top-1/2 z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
 				style="right: calc(50% - 500px - 120px);"
 				aria-label="Next game"
 			>
@@ -1337,10 +1362,7 @@
 							class="flex min-w-0 flex-1 flex-col justify-start md:h-auto"
 							style="color: var(--color-text-primary);"
 						>
-							<span
-								class="modal-title-text w-full font-bold"
-								style="font-size: clamp(1.5rem, 5vw, 2.5rem);"
-							>
+							<span bind:this={titleElement} class="modal-title-text w-full font-bold">
 								{$modalStore.activeGame.mainTitle}
 							</span>
 							{#if $modalStore.activeGame.subtitle}
@@ -1503,7 +1525,7 @@
 					{#if $modalStore.activeGame.status === 'Completed' && $modalStore.activeGame.ratingPresentation !== null && $modalStore.activeGame.ratingStory !== null && $modalStore.activeGame.ratingGameplay !== null}
 						<div class="mt-3 md:mt-4">
 							<h3
-								class="mb-3 text-base font-semibold md:mb-4 md:text-xl"
+								class="mb-3 text-base font-semibold md:mb-6 md:text-xl"
 								style="color: var(--color-text-primary);"
 							>
 								Ratings
@@ -1511,7 +1533,7 @@
 
 							<div class="mt-3 grid grid-cols-3 gap-3 md:gap-4">
 								<div
-									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
+									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200 hover:-translate-y-1"
 								>
 									<Presentation size={32} class="flex-shrink-0 text-rose-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
@@ -1524,7 +1546,7 @@
 								</div>
 
 								<div
-									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
+									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200 hover:-translate-y-1"
 								>
 									<NotebookPen size={32} class="flex-shrink-0 text-sky-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
@@ -1537,7 +1559,7 @@
 								</div>
 
 								<div
-									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-white/5"
+									class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200 hover:-translate-y-1"
 								>
 									<Gamepad2 size={32} class="flex-shrink-0 text-emerald-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
@@ -1552,7 +1574,7 @@
 
 							{#if $modalStore.activeGame.score !== null}
 								<div
-									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-6 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
+									class="mt-6 rounded-lg border border-blue-200 from-blue-50 to-purple-50 p-4 md:mt-8 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
 								>
 									<div class="flex items-center justify-center gap-2">
 										<Award size={24} class="text-yellow-500" />
@@ -1569,16 +1591,14 @@
 					{:else}
 						<div class="mt-3 md:mt-4">
 							<h3
-								class="mb-3 text-base font-semibold md:mb-4 md:text-xl"
+								class="mb-3 text-base font-semibold md:mb-6 md:text-xl"
 								style="color: var(--color-text-primary);"
 							>
 								Ratings
 							</h3>
 
 							<div class="mt-3 grid grid-cols-3 gap-3 opacity-60 md:gap-4">
-								<div
-									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5"
-								>
+								<div class="rating-card flex flex-col items-center gap-2 rounded-xl p-3">
 									<Presentation size={32} class="flex-shrink-0 text-rose-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
 										>N/A</span
@@ -1589,9 +1609,7 @@
 									>
 								</div>
 
-								<div
-									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5"
-								>
+								<div class="rating-card flex flex-col items-center gap-2 rounded-xl p-3">
 									<NotebookPen size={32} class="flex-shrink-0 text-sky-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
 										>N/A</span
@@ -1602,9 +1620,7 @@
 									>
 								</div>
 
-								<div
-									class="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5"
-								>
+								<div class="rating-card flex flex-col items-center gap-2 rounded-xl p-3">
 									<Gamepad2 size={32} class="flex-shrink-0 text-emerald-500" />
 									<span class="text-2xl font-bold" style="color: var(--color-text-primary);"
 										>N/A</span
@@ -1617,7 +1633,7 @@
 							</div>
 
 							<div
-								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-6 dark:border-gray-700"
+								class="mt-6 rounded-lg border border-gray-200 from-gray-50 to-gray-50 p-4 md:mt-8 dark:border-gray-700"
 							>
 								<div class="flex items-center justify-center gap-2">
 									<Award size={24} class="text-gray-400" />
@@ -1673,6 +1689,10 @@
 {/if}
 
 <style>
+	.items-start {
+		min-height: 85px;
+	}
+
 	.modal-image-wrapper {
 		position: relative;
 		width: 100%;
@@ -1695,7 +1715,38 @@
 	}
 
 	#modal-title {
-		min-height: 65px;
+		min-height: 40px;
+	}
+
+	.modal-title-text {
+		white-space: nowrap;
+		overflow: visible;
+		display: block;
+		font-size: 2.5rem;
+	}
+
+	.nav-arrow-btn {
+		border: none !important;
+		outline: none !important;
+		box-shadow: none !important;
+	}
+
+	.nav-arrow-btn:focus,
+	.nav-arrow-btn:focus-visible,
+	.nav-arrow-btn:active {
+		border: none !important;
+		outline: none !important;
+		box-shadow: none !important;
+	}
+
+	.rating-card {
+		background-color: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	:global(.light) .rating-card {
+		background-color: #f9fafb;
+		border-color: #e5e7eb;
 	}
 
 	@media (min-width: 768px) {
@@ -1714,7 +1765,7 @@
 		}
 
 		#modal-title {
-			min-height: 90px;
+			min-height: 50px;
 		}
 	}
 
