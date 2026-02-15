@@ -147,7 +147,7 @@ describe('FilteredGamesStore Integration', () => {
 			filtersStore.setSort({ key: 'score', direction: 'desc' });
 			await flushPromises();
 			const games = filteredGamesStore.games;
-			expect(games[0].score).toBeGreaterThan(games[1].score!);
+			expect(games[0].score).toBeGreaterThan(games[1].score ?? 0);
 		});
 
 		it('sorts alphabetically', async () => {

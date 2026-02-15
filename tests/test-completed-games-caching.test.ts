@@ -94,9 +94,10 @@ describe('Completed Games Caching', () => {
 		expect(cachedGames?.length).toBe(3);
 
 		// Verify sorting (most recent first - descending order)
-		const dates = cachedGames!.map((g) => g.finishedDate);
+		const games = cachedGames as Game[];
+		const dates = games.map((g) => g.finishedDate);
 		const isSorted = dates.every(
-			(date, i) => i === 0 || new Date(date!) <= new Date(dates[i - 1]!)
+			(date, i) => i === 0 || new Date(date as string) <= new Date(dates[i - 1] as string)
 		);
 		expect(isSorted).toBe(true);
 	});
@@ -144,7 +145,7 @@ describe('Completed Games Caching', () => {
 				if (!a.finishedDate && !b.finishedDate) return 0;
 				if (!a.finishedDate) return 1;
 				if (!b.finishedDate) return -1;
-				return new Date(b.finishedDate!).getTime() - new Date(a.finishedDate!).getTime();
+				return new Date(b.finishedDate as string).getTime() - new Date(a.finishedDate as string).getTime();
 			});
 
 		// Simulate sorting with cache (new method)
@@ -166,7 +167,7 @@ describe('Completed Games Caching', () => {
 				if (!a.finishedDate && !b.finishedDate) return 0;
 				if (!a.finishedDate) return 1;
 				if (!b.finishedDate) return -1;
-				return new Date(b.finishedDate!).getTime() - new Date(a.finishedDate!).getTime();
+				return new Date(b.finishedDate as string).getTime() - new Date(a.finishedDate as string).getTime();
 			});
 
 		const cachedResult = completedGamesCache.getCachedCompletedGames(mockGames);

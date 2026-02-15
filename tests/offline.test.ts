@@ -50,9 +50,9 @@ vi.mock('$lib/stores/games.svelte', () => ({
 import { db } from '$lib/db';
 import { editorStore } from '$lib/stores/editor.svelte';
 
-// Cast to any to avoid complex type mocking issues
-const mockDb = db as any;
-const mockEditorStore = editorStore as any;
+// Cast to Record to avoid complex type mocking issues
+const mockDb = db as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>;
+const mockEditorStore = editorStore as unknown as Record<string, ReturnType<typeof vi.fn>>;
 
 describe('Offline Support Logic', () => {
 	let offlineStore: {
@@ -102,7 +102,7 @@ describe('Offline Support Logic', () => {
 	});
 
 	it('should try to sync when coming online if there is pending sync', async () => {
-		mockDb.sync_queue.get.mockResolvedValueOnce({ games: [{ id: '1', title: 'Test' }] } as any);
+		mockDb.sync_queue.get.mockResolvedValueOnce({ games: [{ id: '1', title: 'Test' }] } as unknown);
 		mockEditorStore.saveGames.mockResolvedValueOnce(true);
 
 		const onlineCall = mockWindow.addEventListener.mock.calls.find((call) => call[0] === 'online');

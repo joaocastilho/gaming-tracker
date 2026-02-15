@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 // We'll simulate the normalization logic from the API
-function normalizeGame(g: any) {
+function normalizeGame(g: Record<string, unknown>) {
 	const game = { ...g };
 	// Simulate the deletions that happen in the API
-	delete (game as any).mainTitle;
-	delete (game as any).subtitle;
+	delete game.mainTitle;
+	delete game.subtitle;
 
 	if (game.sortPriority === null || game.sortPriority === undefined) {
 		delete game.sortPriority;

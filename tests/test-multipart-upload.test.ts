@@ -9,19 +9,19 @@ class MockFile {
 	lastModified: number;
 	size: number;
 	type: string;
-	constructor(_: any[], name: string, options?: any) {
+	constructor(_: unknown[], name: string, options?: Record<string, string>) {
 		this.name = name;
 		this.lastModified = Date.now();
 		this.size = 0;
 		this.type = options?.type || '';
 	}
 }
-global.File = MockFile as any;
+global.File = MockFile as unknown as typeof File;
 
 // Mock FormData
 class MockFormData {
-	data = new Map<string, any>();
-	append(key: string, value: any) {
+	data = new Map<string, unknown>();
+	append(key: string, value: unknown) {
 		this.data.set(key, value);
 	}
 	get(key: string) {
@@ -31,7 +31,7 @@ class MockFormData {
 		return this.data.entries();
 	}
 }
-global.FormData = MockFormData as any;
+global.FormData = MockFormData as unknown as typeof FormData;
 
 describe('Editor Store Multipart Upload', () => {
 	beforeEach(() => {
@@ -45,7 +45,7 @@ describe('Editor Store Multipart Upload', () => {
 			ok: true,
 			json: async () => ({ ok: true })
 		});
-		global.fetch = fetchMock as any;
+		global.fetch = fetchMock as unknown as typeof fetch;
 
 		// Create a dummy game
 		const gameId = 'test-game-123';
@@ -73,7 +73,7 @@ describe('Editor Store Multipart Upload', () => {
 		const mockFile = new File([''], 'cover.png', { type: 'image/png' });
 
 		// Add pending game with file
-		editorStore.addPendingGame(newGame, mockFile as any);
+		editorStore.addPendingGame(newGame, mockFile as unknown as File);
 
 		expect(editorStore.hasPendingChanges).toBe(true);
 		expect(editorStore.pendingAdds.length).toBe(1);
@@ -95,13 +95,13 @@ describe('Editor Store Multipart Upload', () => {
 		// Verify payload
 		const gamesJson = body.get('games');
 		expect(gamesJson).toBeDefined();
-		const parsed = JSON.parse(gamesJson);
+		const parsed = JSON.parse(gamesJson as string);
 		expect(parsed.games).toHaveLength(1);
 		expect(parsed.games[0].title).toBe('Test Game');
 
 		// Verify file attached with correct key
 		const coverFile = body.get(`cover_${gameId}`);
 		expect(coverFile).toBeDefined();
-		expect(coverFile.name).toBe('cover.png');
+		expect((coverFile as { name: string }).name).toBe('cover.png');
 	});
 });

@@ -361,7 +361,8 @@ describe('GamesStore API', () => {
 			const games = gamesStore.games;
 			const firstGameId = games[0]?.id;
 			expect(firstGameId).toBeDefined();
-			const game = gamesStore.getGameById(firstGameId!);
+			if (!firstGameId) return;
+			const game = gamesStore.getGameById(firstGameId);
 			expect(game).toBeDefined();
 			expect(game?.id).toBe(firstGameId);
 		});

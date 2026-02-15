@@ -21,7 +21,7 @@ async function generateFavicons(): Promise<void> {
 
 		// Generate single-size favicon.ico (32x32)
 		console.log('\n🔸 Generating favicon.ico (32x32)...');
-		// @ts-ignore Sharp types missing .ico() but runtime supports it
+		// @ts-expect-error Sharp types missing .ico() but runtime supports it
 		await sharp(inputPath)
 			.resize(32, 32, {
 				fit: 'contain',

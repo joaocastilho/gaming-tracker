@@ -240,7 +240,7 @@ class ModalStore {
 		);
 
 		let updatedActiveGame = this._state.activeGame;
-		if (updatedActiveGame && !updatedDisplayedGames.find((g) => g.id === updatedActiveGame!.id)) {
+		if (updatedActiveGame && !updatedDisplayedGames.find((g) => g.id === updatedActiveGame?.id)) {
 			updatedActiveGame = null;
 		}
 
@@ -633,11 +633,9 @@ class ModalStore {
 		filterContext?: Partial<ModalState['filterContext']>
 	): void {
 		const state = this._state;
-		if (
-			state.pendingGameFromURL &&
-			displayedGames.some((g) => g.id === state.pendingGameFromURL!.id)
-		) {
-			this.openViewModal(state.pendingGameFromURL, displayedGames, filterContext);
+		const pendingGame = state.pendingGameFromURL;
+		if (pendingGame && displayedGames.some((g) => g.id === pendingGame.id)) {
+			this.openViewModal(pendingGame, displayedGames, filterContext);
 		}
 	}
 

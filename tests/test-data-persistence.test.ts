@@ -212,19 +212,19 @@ describe('Data Persistence', () => {
 
 		expect(importedData.games.length).toBe(2);
 
-		const game1 = importedData.games.find((g: any) => g.id === 'test-game-1');
+		const game1 = importedData.games.find((g: Record<string, unknown>) => g.id === 'test-game-1');
 		expect(game1).toBeDefined();
 		expect(game1.title).toBe('Test Persistence Game');
 		expect(game1.ratingPresentation).toBe(8);
 		expect(game1.tier).toBe('A');
 
-		const game2 = importedData.games.find((g: any) => g.id === 'test-game-2');
+		const game2 = importedData.games.find((g: Record<string, unknown>) => g.id === 'test-game-2');
 		expect(game2).toBeDefined();
 		expect(game2.title).toBe('Second Test Game');
 		expect(game2.platform).toBe('PlayStation 5');
 		expect(game2.tier).toBe('S');
 
-		importedData.games.forEach((game: any) => {
+		importedData.games.forEach((game: Record<string, unknown>) => {
 			expect(game.id).toBeDefined();
 			expect(game.title).toBeDefined();
 			expect(game.status).toBeDefined();

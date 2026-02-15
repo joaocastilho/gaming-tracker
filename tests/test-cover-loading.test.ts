@@ -4,8 +4,8 @@ import { generateSizes, generateSrcset, generateTinySrcset } from '$lib/utils/im
 // Mock imageCache for testing without SvelteKit dependencies
 const mockImageCache = {
 	preload: (_src: string) => Promise.resolve(),
-	setLoaded: (_src: string) => {},
-	setError: (_src: string) => {},
+	setLoaded: (_src: string) => { },
+	setError: (_src: string) => { },
 	getImage: (_src: string) => ({ isLoaded: false, hasError: false })
 };
 
@@ -58,7 +58,7 @@ class MockIntersectionObserver {
 
 describe('Cover Loading Optimization', () => {
 	beforeEach(() => {
-		(global as any).IntersectionObserver = MockIntersectionObserver;
+		(global as Record<string, unknown>).IntersectionObserver = MockIntersectionObserver;
 
 		if (!global.document) {
 			Object.defineProperty(global, 'document', {

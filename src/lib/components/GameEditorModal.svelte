@@ -527,7 +527,9 @@
 								type="checkbox"
 								name="coOp"
 								checked={working.coOp === 'Yes'}
-								onchange={(e) => (working!.coOp = e.currentTarget.checked ? 'Yes' : 'No')}
+								onchange={(e) => {
+									if (working) working.coOp = e.currentTarget.checked ? 'Yes' : 'No';
+								}}
 							/>
 						</div>
 					</label>

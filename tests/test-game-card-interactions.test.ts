@@ -108,16 +108,16 @@ describe('GameCard Component', () => {
 
 		// Mock ResizeObserver
 		global.ResizeObserver = class ResizeObserver {
-			observe() {}
-			unobserve() {}
-			disconnect() {}
+			observe() { }
+			unobserve() { }
+			disconnect() { }
 		};
 
 		// Capture original createElement to avoid recursion
 		const originalCreateElement = document.createElement.bind(document);
 
 		vi.spyOn(document, 'createElement').mockImplementation((tagName, options) => {
-			if (tagName === 'canvas') return mockCanvas as any;
+			if (tagName === 'canvas') return mockCanvas as unknown as HTMLCanvasElement;
 			return originalCreateElement(tagName, options);
 		});
 	});

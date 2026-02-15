@@ -43,7 +43,7 @@ describe('BottomNavigation', () => {
 
 	afterEach(() => {
 		// Restore original state
-		appStore.setActiveTab(originalActiveTab as any);
+		appStore.setActiveTab(originalActiveTab as 'all' | 'completed' | 'planned' | 'tierlist');
 	});
 
 	describe('Tab Switching', () => {

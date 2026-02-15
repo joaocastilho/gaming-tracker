@@ -15,7 +15,7 @@ describe('Store Subscribe Methods', () => {
 
 		it('should call subscriber immediately with current value (SSR compatibility)', async () => {
 			// Ensure we're in SSR mode (mock as empty window)
-			globalThis.window = {} as any;
+			globalThis.window = {} as unknown as Window & typeof globalThis;
 
 			const { gamesStore } = await import('$lib/stores/games.svelte');
 			const callback = vi.fn();
@@ -52,7 +52,7 @@ describe('Store Subscribe Methods', () => {
 
 		it('should call subscriber immediately with current value (SSR compatibility)', async () => {
 			// Ensure we're in SSR mode (mock as empty window)
-			globalThis.window = {} as any;
+			globalThis.window = {} as unknown as Window & typeof globalThis;
 
 			const { filtersStore } = await import('$lib/stores/filters.svelte');
 			const callback = vi.fn();
@@ -83,7 +83,7 @@ describe('Store Subscribe Methods', () => {
 
 		it('should call subscriber immediately with current value (SSR compatibility)', async () => {
 			// Ensure we're in SSR mode (mock as empty window)
-			globalThis.window = {} as any;
+			globalThis.window = {} as unknown as Window & typeof globalThis;
 
 			const { filteredGames } = await import('$lib/stores/filteredGamesStore.svelte');
 			const callback = vi.fn();

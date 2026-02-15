@@ -487,7 +487,8 @@
 				games
 					.filter((game) => game.status === 'Completed' && game.tier)
 					.forEach((game) => {
-						const tierKey = tierMapping[game.tier!] || game.tier!;
+						const tier = game.tier as string;
+						const tierKey = tierMapping[tier] || tier;
 						if (!gamesByTier[tierKey]) {
 							gamesByTier[tierKey] = [];
 						}
@@ -534,7 +535,7 @@
 		sourceGames
 			.filter((game) => game.tier)
 			.forEach((game) => {
-				const tier = game.tier!;
+				const tier = game.tier as string;
 				if (gamesByTier[tier]) {
 					gamesByTier[tier].push(game);
 				}

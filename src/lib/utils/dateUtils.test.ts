@@ -13,7 +13,8 @@ describe('parseDate', () => {
 	it('should parse DD/MM/YYYY format correctly', () => {
 		// 12th May 2023
 		const timestamp = parseDate('12/05/2023');
-		const date = new Date(timestamp!);
+		expect(timestamp).not.toBeNull();
+		const date = new Date(timestamp as number);
 		expect(date.getFullYear()).toBe(2023);
 		expect(date.getMonth()).toBe(4); // May is 4
 		expect(date.getDate()).toBe(12);
@@ -22,7 +23,8 @@ describe('parseDate', () => {
 	it('should parse DD-MM-YYYY format correctly', () => {
 		// 12th May 2023
 		const timestamp = parseDate('12-05-2023');
-		const date = new Date(timestamp!);
+		expect(timestamp).not.toBeNull();
+		const date = new Date(timestamp as number);
 		expect(date.getFullYear()).toBe(2023);
 		expect(date.getMonth()).toBe(4);
 		expect(date.getDate()).toBe(12);
@@ -31,7 +33,8 @@ describe('parseDate', () => {
 	it('should parse DD MM YYYY format correctly', () => {
 		// 12th May 2023
 		const timestamp = parseDate('12 05 2023');
-		const date = new Date(timestamp!);
+		expect(timestamp).not.toBeNull();
+		const date = new Date(timestamp as number);
 		expect(date.getFullYear()).toBe(2023);
 		expect(date.getMonth()).toBe(4);
 		expect(date.getDate()).toBe(12);
@@ -40,7 +43,8 @@ describe('parseDate', () => {
 	it('should prioritize DD/MM/YYYY over MM/DD/YYYY', () => {
 		// 01/02/2023 should be 1st Feb, not 2nd Jan
 		const timestamp = parseDate('01/02/2023');
-		const date = new Date(timestamp!);
+		expect(timestamp).not.toBeNull();
+		const date = new Date(timestamp as number);
 		expect(date.getFullYear()).toBe(2023);
 		expect(date.getMonth()).toBe(1); // Feb is 1
 		expect(date.getDate()).toBe(1);
@@ -49,7 +53,8 @@ describe('parseDate', () => {
 	it('should parse DD Month YYYY format correctly (short month)', () => {
 		// 12 Jan 2023
 		const timestamp = parseDate('12 Jan 2023');
-		const date = new Date(timestamp!);
+		expect(timestamp).not.toBeNull();
+		const date = new Date(timestamp as number);
 		expect(date.getFullYear()).toBe(2023);
 		expect(date.getMonth()).toBe(0); // Jan is 0
 		expect(date.getDate()).toBe(12);
@@ -58,7 +63,8 @@ describe('parseDate', () => {
 	it('should parse DD Month YYYY format correctly (long month)', () => {
 		// 12 January 2023
 		const timestamp = parseDate('12 January 2023');
-		const date = new Date(timestamp!);
+		expect(timestamp).not.toBeNull();
+		const date = new Date(timestamp as number);
 		expect(date.getFullYear()).toBe(2023);
 		expect(date.getMonth()).toBe(0); // Jan is 0
 		expect(date.getDate()).toBe(12);
@@ -67,7 +73,8 @@ describe('parseDate', () => {
 	it('should parse ISO format correctly', () => {
 		// 2023-05-12
 		const timestamp = parseDate('2023-05-12');
-		const date = new Date(timestamp!);
+		expect(timestamp).not.toBeNull();
+		const date = new Date(timestamp as number);
 		expect(date.getFullYear()).toBe(2023);
 		expect(date.getMonth()).toBe(4); // May is 4
 		expect(date.getDate()).toBe(12);

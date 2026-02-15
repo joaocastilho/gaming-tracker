@@ -22,7 +22,7 @@ vi.mock('$lib/stores/filters.svelte', () => {
 		coOp: [],
 		subscribe: vi.fn((run) => {
 			run({ searchTerm: '' });
-			return () => {};
+			return () => { };
 		})
 	};
 	return {
@@ -127,7 +127,8 @@ describe('MobileFilters Component', () => {
 
 		// Open Platforms sub-menu (assuming logic stays: click category -> open popup)
 		const platformsBtn = screen.getByText('Platforms').closest('button');
-		await fireEvent.click(platformsBtn!);
+		expect(platformsBtn).not.toBeNull();
+		await fireEvent.click(platformsBtn as HTMLElement);
 		await tick();
 
 		// Should see platform options now
@@ -159,7 +160,8 @@ describe('MobileFilters Component', () => {
 
 		// Simulating selection: Open Platforms -> Select 'PC' -> Accept
 		const platformsBtn = screen.getByText('Platforms').closest('button');
-		await fireEvent.click(platformsBtn!);
+		expect(platformsBtn).not.toBeNull();
+		await fireEvent.click(platformsBtn as HTMLElement);
 		await tick();
 		await fireEvent.click(screen.getByText('PC'));
 		await fireEvent.click(screen.getByLabelText('Accept selection'));

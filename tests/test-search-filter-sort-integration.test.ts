@@ -465,7 +465,7 @@ describe('Sorting Functionality', () => {
 		// Elden Ring has null score so should be last
 		const gamesWithScores = results.filter((g) => g.score !== null);
 		for (let i = 0; i < gamesWithScores.length - 1; i++) {
-			expect(gamesWithScores[i].score).toBeGreaterThanOrEqual(gamesWithScores[i + 1].score!);
+			expect(gamesWithScores[i].score).toBeGreaterThanOrEqual(gamesWithScores[i + 1].score ?? 0);
 		}
 	});
 
@@ -481,7 +481,7 @@ describe('Sorting Functionality', () => {
 		const results = filteredGamesStore.games;
 		const gamesWithScores = results.filter((g) => g.score !== null);
 		for (let i = 0; i < gamesWithScores.length - 1; i++) {
-			expect(gamesWithScores[i].score).toBeLessThanOrEqual(gamesWithScores[i + 1].score!);
+			expect(gamesWithScores[i].score).toBeLessThanOrEqual(gamesWithScores[i + 1].score ?? 0);
 		}
 	});
 
@@ -528,7 +528,7 @@ describe('Sorting Functionality', () => {
 		const gamesWithRating = results.filter((g) => g.ratingGameplay !== null);
 		for (let i = 0; i < gamesWithRating.length - 1; i++) {
 			expect(gamesWithRating[i].ratingGameplay).toBeGreaterThanOrEqual(
-				gamesWithRating[i + 1].ratingGameplay!
+				gamesWithRating[i + 1].ratingGameplay ?? 0
 			);
 		}
 	});
@@ -546,7 +546,7 @@ describe('Sorting Functionality', () => {
 		const gamesWithRating = results.filter((g) => g.ratingPresentation !== null);
 		for (let i = 0; i < gamesWithRating.length - 1; i++) {
 			expect(gamesWithRating[i].ratingPresentation).toBeGreaterThanOrEqual(
-				gamesWithRating[i + 1].ratingPresentation!
+				gamesWithRating[i + 1].ratingPresentation ?? 0
 			);
 		}
 	});
@@ -564,7 +564,7 @@ describe('Sorting Functionality', () => {
 		const gamesWithRating = results.filter((g) => g.ratingStory !== null);
 		for (let i = 0; i < gamesWithRating.length - 1; i++) {
 			expect(gamesWithRating[i].ratingStory).toBeGreaterThanOrEqual(
-				gamesWithRating[i + 1].ratingStory!
+				gamesWithRating[i + 1].ratingStory ?? 0
 			);
 		}
 	});
@@ -603,7 +603,7 @@ describe('Combined Filters', () => {
 		// Hollow Knight (92) should come before Dark Souls (88)
 		const scores = results.filter((g) => g.score !== null).map((g) => g.score);
 		for (let i = 0; i < scores.length - 1; i++) {
-			expect(scores[i]).toBeGreaterThanOrEqual(scores[i + 1]!);
+			expect(scores[i]).toBeGreaterThanOrEqual(scores[i + 1] ?? 0);
 		}
 	});
 

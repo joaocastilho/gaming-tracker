@@ -115,7 +115,7 @@ describe('Theme Switching', () => {
 		dom = new MockDOM();
 
 		// We assume localStorage is already mocked globally in setup.ts
-		(global as any).document = {
+		(global as Record<string, unknown>).document = {
 			documentElement: dom.createElement('html'),
 			body: dom.createElement('body'),
 			querySelector: (selector: string) => dom.querySelector(selector),
@@ -182,7 +182,7 @@ describe('Theme Switching', () => {
 		expect(storedTheme).toBe('dark');
 
 		// Apply restored theme
-		document.documentElement.className = storedTheme!;
+		document.documentElement.className = storedTheme ?? '';
 		expect(document.documentElement.className).toBe('dark');
 
 		// Test with light theme
@@ -190,7 +190,7 @@ describe('Theme Switching', () => {
 		const storedLightTheme = localStorage.getItem('theme');
 		expect(storedLightTheme).toBe('light');
 
-		document.documentElement.className = storedLightTheme!;
+		document.documentElement.className = storedLightTheme ?? '';
 		expect(document.documentElement.className).toBe('light');
 	});
 
@@ -319,8 +319,8 @@ describe('Theme Switching', () => {
 		// Mock system prefers dark color scheme
 		const mockMediaQuery = {
 			matches: true,
-			addEventListener: () => {},
-			removeEventListener: () => {}
+			addEventListener: () => { },
+			removeEventListener: () => { }
 		};
 
 		// Simulate no stored preference - should use system preference

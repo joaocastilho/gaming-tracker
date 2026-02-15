@@ -25,7 +25,7 @@
 		games
 			.filter((game) => game.tier)
 			.forEach((game) => {
-				const tier = game.tier!;
+				const tier = game.tier as string;
 				if (gamesByTier[tier]) {
 					gamesByTier[tier].push(game);
 				}
