@@ -71,6 +71,7 @@
 		</div>
 	</div>
 
+	<!-- Keep first row second column empty for alignment as per screenshots -->
 	<div></div>
 
 	<div>
@@ -78,7 +79,7 @@
 			Finished Date
 		</div>
 		<div class="text-base font-semibold md:text-base" style="color: var(--color-text-primary);">
-			{formatDate(game.finishedDate)}
+			{game.finishedDate ? formatDate(game.finishedDate) : '-'}
 		</div>
 	</div>
 
@@ -88,7 +89,7 @@
 				Hours Played
 			</div>
 			<div class="text-base font-semibold md:text-base" style="color: var(--color-text-primary);">
-				{game.playtime || 'Not completed'}
+				{game.playtime}
 			</div>
 		</div>
 	{:else}
@@ -97,7 +98,7 @@
 				Time to Beat
 			</div>
 			<div class="text-base font-semibold md:text-base" style="color: var(--color-text-primary);">
-				{game.playtime}
+				{game.playtime || '-'}
 			</div>
 		</div>
 	{/if}

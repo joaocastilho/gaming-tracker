@@ -16,6 +16,32 @@
 
 	let linkToGame = $state('');
 	let titleElement = $state<HTMLElement>();
+	let containerWidth = $state(0);
+
+	let canvasSingleton: HTMLCanvasElement;
+	let contextSingleton: CanvasRenderingContext2D | null;
+	let cachedFont: string = '';
+
+	function getFont(node: HTMLElement): string {
+		if (cachedFont) return cachedFont;
+		if (typeof getComputedStyle === 'undefined') return '700 2.5rem sans-serif';
+		const style = getComputedStyle(node);
+		cachedFont = `700 2.5rem ${style.fontFamily}`;
+		return cachedFont;
+	}
+
+	function getTextWidth(text: string, font: string): number {
+		if (!browser) return 0;
+		if (!canvasSingleton) {
+			canvasSingleton = document.createElement('canvas');
+			contextSingleton = canvasSingleton.getContext('2d');
+		}
+		if (contextSingleton) {
+			contextSingleton.font = font;
+			return contextSingleton.measureText(text).width;
+		}
+		return 0;
+	}
 
 	async function shareGame() {
 		if (!browser || !game) return;
@@ -39,32 +65,35 @@
 		}
 	}
 
-	// Auto-fit title font size
+	// Auto-fit title font size using Svelte 5 effect and Canvas measurement
 	$effect(() => {
-		if (!browser || !titleElement || !game) return;
+		if (!browser || !titleElement || !game || containerWidth === 0) return;
 
 		const maxSize = 2.5;
 		const minSize = 0.85;
-		const step = 0.05;
 
-		titleElement.style.fontSize = `${maxSize}rem`;
+		const text = game.mainTitle || '';
+		const font = getFont(titleElement);
+		const textWidthAtBase = getTextWidth(text, font);
 
-		requestAnimationFrame(() => {
-			if (!titleElement) return;
-			let currentSize = maxSize;
+		if (textWidthAtBase === 0) return;
 
-			while (currentSize > minSize && titleElement.scrollWidth > titleElement.clientWidth) {
-				currentSize -= step;
-				titleElement.style.fontSize = `${currentSize}rem`;
-			}
-		});
+		// Calculate exact size needed to fit container. textWidthAtBase is measured at maxSize (2.5rem).
+		let newSize = (containerWidth / textWidthAtBase) * maxSize;
+
+		if (newSize > maxSize) newSize = maxSize;
+		if (newSize < minSize) newSize = minSize;
+
+		titleElement.style.fontSize = `${newSize}rem`;
+		titleElement.style.whiteSpace = 'nowrap';
 	});
 </script>
 
 <div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
 	<h1
 		id="modal-title"
-		class="flex min-w-0 flex-1 flex-col justify-start md:h-auto"
+		bind:clientWidth={containerWidth}
+		class="flex min-w-0 flex-1 flex-col justify-start overflow-hidden md:h-auto"
 		style="color: var(--color-text-primary);"
 	>
 		<span bind:this={titleElement} class="modal-title-text w-full font-bold">
@@ -73,8 +102,10 @@
 		{#if game.subtitle}
 			<span
 				class="w-full truncate text-sm font-semibold md:text-lg"
-				style="line-height: 1.2; color: var(--color-text-secondary);">{game.subtitle}</span
+				style="line-height: 1.2; color: var(--color-text-secondary);"
 			>
+				{game.subtitle}
+			</span>
 		{/if}
 	</h1>
 
@@ -132,3 +163,9 @@
 		</button>
 	</div>
 </div>
+
+<style>
+	#modal-title {
+		min-height: 85px;
+	}
+</style>
