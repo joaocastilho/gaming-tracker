@@ -472,7 +472,384 @@ bun run format:check
 
 ---
 
-## 19. Final Validation Pipeline
+## 19. Modern Svelte 5.1+ Features
+
+- [ ] Verify `{#snippet}` is used for reusable template fragments
+- [ ] Verify `$effect.active()` is used for conditional effect execution
+- [ ] Verify `$effect.root()` is used for root-level effects with cleanup
+- [ ] Verify `@render` tag is used for component composition
+- [ ] Verify `$state.snapshot()` is used for immutable snapshots
+- [ ] Verify `$state.is()` is used for reactive equality checking
+- [ ] Verify `$props()` uses proper TypeScript typing
+
+---
+
+## 20. Tailwind CSS v4 Best Practices
+
+```bash
+# Verify Tailwind v4 CSS-first configuration
+grep -n "@theme" src/app.css
+grep -n "@import \"tailwindcss\"" src/app.css
+```
+
+- [ ] Configuration uses `@theme` directive (CSS-first)
+- [ ] Custom theme extensions use `--color-*`, `--font-*` syntax
+- [ ] Uses `@import "tailwindcss"` instead of `@tailwind`
+- [ ] No `@apply` anti-patterns for composition
+- [ ] Uses v4 container queries (`@container`, `@min-*`)
+- [ ] Uses v4 text wrap utilities (`text-wrap`, `text-balance`)
+- [ ] CSS variables follow naming conventions
+- [ ] Dark mode uses `dark:` variant properly
+
+---
+
+## 21. Core Web Vitals 2024/2025
+
+```bash
+# Run production build and test with Lighthouse
+bun run build
+bun run preview
+# Open Chrome DevTools > Lighthouse > Mobile and Desktop
+```
+
+### 21.1 Primary Metrics (2024 Standard)
+
+- [ ] INP (Interaction to Next Paint) < 200ms "Good"
+- [ ] LCP (Largest Contentful Paint) < 2.5s
+- [ ] CLS (Cumulative Layout Shift) < 0.1
+- [ ] TTFB (Time to First Byte) < 800ms
+- [ ] FCP (First Contentful Paint) < 1.8s
+
+### 21.2 Supporting Metrics
+
+- [ ] TBT (Total Blocking Time) < 200ms
+- [ ] Speed Index < 3.4s
+
+### 21.3 INP Optimization
+
+- [ ] Verify `scheduler.yield()` or `setTimeout` used for long tasks
+- [ ] No forced synchronous layouts (read/write separation)
+- [ ] Event handlers are debounced/throttled
+- [ ] `content-visibility` used on off-screen content
+- [ ] Virtual scrolling implemented for long lists
+
+---
+
+## 22. Bun-Specific Optimizations
+
+```bash
+# Verify Bun lockfile is committed
+ls -la bun.lock
+
+# Verify Bun-specific scripts work
+bun install --frozen-lockfile
+bun run build
+```
+
+- [ ] `bun.lock` is committed (not package-lock.json or yarn.lock)
+- [ ] All scripts use Bun (`bun install`, `bun run`)
+- [ ] TypeScript config includes `@types/bun`
+- [ ] Bun's built-in bundler considered for edge cases
+- [ ] Bun's file I/O APIs used where beneficial (`Bun.file()`)
+- [ ] Cloudflare Workers compatible with Bun runtime features
+- [ ] `bun:test` runner works if applicable
+
+---
+
+## 23. Advanced Security
+
+### 23.1 Content Security Policy (CSP)
+
+```bash
+# Check CSP headers in build output
+grep -rn "Content-Security-Policy" build/ .svelte-kit/
+```
+
+- [ ] CSP headers configured via `svelte.config.js` or meta tags
+- [ ] `default-src 'self'` as baseline policy
+- [ ] `script-src` uses nonces or hashes (no `unsafe-inline`)
+- [ ] `style-src 'unsafe-inline'` documented if needed for Tailwind
+- [ ] `img-src` includes `data:` and `blob:` if used
+- [ ] `connect-src` restricts API endpoints
+- [ ] `frame-ancestors` prevents clickjacking
+- [ ] Report-only mode tested before enforcement
+
+### 23.2 Subresource Integrity (SRI)
+
+- [ ] External scripts have integrity attributes
+- [ ] External stylesheets have integrity attributes
+- [ ] SRI hashes verified during build
+
+### 23.3 Trusted Types
+
+- [ ] Trusted Types policy defined if using DOM XSS sinks
+- [ ] `require-trusted-types-for 'script'` in CSP
+
+### 23.4 Permissions Policy
+
+- [ ] `Permissions-Policy` header restricts unused features
+- [ ] Unused features disabled (geolocation, camera, microphone)
+- [ ] Only required features enabled
+
+### 23.5 Security Headers
+
+- [ ] `X-Content-Type-Options: nosniff`
+- [ ] `Referrer-Policy: strict-origin-when-cross-origin`
+- [ ] `X-Frame-Options: DENY` or `SAMEORIGIN`
+- [ ] `Strict-Transport-Security` (HSTS) for HTTPS
+- [ ] `Cross-Origin-Embedder-Policy: require-corp`
+- [ ] `Cross-Origin-Opener-Policy: same-origin`
+
+---
+
+## 24. Modern Web APIs
+
+### 24.1 View Transitions API
+
+- [ ] View Transitions API used for page navigations
+- [ ] `document.startViewTransition()` is feature-detected
+- [ ] CSS `view-transition-name` applied to shared elements
+- [ ] Fallback behavior for unsupported browsers
+
+### 24.2 Speculation Rules API
+
+- [ ] Speculation rules configured for prerender/prefetch
+- [ ] Rules target high-probability navigation paths
+- [ ] `eagerness` tuned (immediate, eager, moderate, conservative)
+
+### 24.3 Import Maps
+
+- [ ] Import map defined for module resolution
+- [ ] CDN URLs use integrity hashes
+- [ ] Scoped imports used where appropriate
+
+### 24.4 Other Modern APIs
+
+- [ ] `navigator.storage` API for quota management
+- [ ] `BroadcastChannel` for cross-tab communication
+- [ ] `Page Visibility API` for pausing expensive operations
+- [ ] `Performance Observer` for custom metrics
+- [ ] `Intersection Observer v2` for visibility
+- [ ] `Resize Observer` for responsive components
+
+---
+
+## 25. Progressive Web App (PWA)
+
+### 25.1 Service Worker
+
+```bash
+# Verify service worker is generated
+ls -la build/service-worker.js 2>/dev/null || echo "No service worker found"
+```
+
+- [ ] Service worker is registered and installs correctly
+- [ ] Cache-first strategy for static assets
+- [ ] Network-first or stale-while-revalidate for API calls
+- [ ] Background sync for offline mutations
+- [ ] Service worker updates gracefully (skip waiting)
+- [ ] Service worker size under 100KB
+- [ ] Push notifications handled if implemented
+
+### 25.2 Web App Manifest
+
+```bash
+# Verify manifest exists
+ls -la static/manifest.json
+```
+
+- [ ] `manifest.json` exists and is valid
+- [ ] All required fields present
+- [ ] Icons include 192x192 and 512x512 sizes
+- [ ] `theme_color` and `background_color` match app theme
+- [ ] `display: standalone` or `minimal-ui`
+- [ ] `categories` and `screenshots` provided
+- [ ] `shortcuts` defined for quick actions
+
+### 25.3 Offline Experience
+
+- [ ] Offline indicator shows when connection lost
+- [ ] Critical functionality works offline
+- [ ] Data syncs when connection restored
+- [ ] IndexedDB/Dexie provides offline persistence
+- [ ] Background fetch API for large downloads
+- [ ] Periodic background sync for updates
+
+### 25.4 Install Experience
+
+- [ ] `beforeinstallprompt` event handled
+- [ ] PWA passes Lighthouse PWA audit
+- [ ] App works as standalone without browser chrome
+
+---
+
+## 26. Zod v4 Features
+
+```bash
+# Verify Zod version
+bun list zod
+```
+
+- [ ] Use `z.interface()` for better performance
+- [ ] Use branded types (`z.brand()`) for nominal typing
+- [ ] Use pipeline API (`z.pipeline()`) for transformations
+- [ ] Use `z.coerce` for type coercion
+- [ ] Use `z.strictObject()` when extra properties not allowed
+- [ ] Improved error messages with custom issues
+- [ ] Use generics with schemas for reusable validation
+- [ ] Async refinements for async validation
+- [ ] Use `z.preprocess()` for input sanitization
+- [ ] Schema composition with `z.union()`, `z.intersection()`
+
+---
+
+## 27. Developer Experience (DX)
+
+### 27.1 Git Hooks
+
+```bash
+# Verify git hooks are configured
+ls -la .git/hooks/
+```
+
+- [ ] `lefthook` or `husky` configured for pre-commit hooks
+- [ ] `lint-staged` runs linting on staged files
+- [ ] Pre-commit hook runs: lint, format, type-check
+- [ ] Commit message hook enforces conventional commits
+
+### 27.2 Editor Configuration
+
+```bash
+# Verify editor config files exist
+ls -la .editorconfig .vscode/
+```
+
+- [ ] `.editorconfig` exists with consistent settings
+- [ ] `.vscode/extensions.json` recommends extensions
+- [ ] `.vscode/settings.json` configures editor
+- [ ] TypeScript plugin recommendations included
+- [ ] Svelte extension and settings configured
+
+### 27.3 Scripts & Automation
+
+- [ ] `package.json` scripts well-organized and documented
+- [ ] Composite scripts exist (e.g., `validate`)
+- [ ] Script naming follows conventions
+- [ ] `Makefile` or task runner for complex workflows
+- [ ] Health check script verifies environment
+
+### 27.4 Versioning & Releases
+
+- [ ] `package.json` version follows semantic versioning
+- [ ] `CHANGELOG.md` exists and maintained
+- [ ] Git tags used for releases
+- [ ] Version displayed in app UI
+
+### 27.5 Documentation
+
+- [ ] `CONTRIBUTING.md` exists for contributors
+- [ ] Architecture Decision Records (ADRs) for major decisions
+- [ ] API documentation auto-generated
+- [ ] Component documentation/storybook if applicable
+- [ ] Setup troubleshooting guide
+
+---
+
+## 28. Cloudflare Platform Features
+
+### 28.1 Workers & Edge
+
+```bash
+# Verify wrangler.toml
+cat wrangler.toml
+```
+
+- [ ] `wrangler.toml` properly configured with all bindings
+- [ ] Durable Objects used for coordination if needed
+- [ ] R2 integration for object storage
+- [ ] D1 database bindings if using SQLite at edge
+- [ ] Queues for background job processing
+- [ ] Analytics Engine for metrics
+- [ ] Proper error handling and logging in Workers
+- [ ] Workers use `compatibility_date` and `compatibility_flags`
+
+### 28.2 Pages & Deployment
+
+- [ ] Cloudflare Pages build command configured
+- [ ] Environment variables managed via Cloudflare dashboard
+- [ ] Preview deployments enabled for branches
+- [ ] Custom domains configured if applicable
+- [ ] Redirect rules configured in `_redirects`
+- [ ] Headers configured in `_headers`
+
+### 28.3 Performance Features
+
+- [ ] Cloudflare Images used for optimization
+- [ ] Early Hints (HTTP 103) enabled
+- [ ] Auto Minify enabled for CSS/JS/HTML
+- [ ] Brotli compression enabled
+- [ ] Cache rules configured for static assets
+- [ ] Smart Placement configured for Workers
+
+---
+
+## 29. Additional 10/10 Requirements
+
+### 29.1 Code Quality Excellence
+
+```bash
+# Verify zero warnings
+bun run lint
+bun run check
+```
+
+- [ ] Zero lint warnings (not just errors)
+- [ ] Cyclomatic complexity < 10 per function
+- [ ] Functions have single responsibility
+- [ ] No code duplication (DRY principle)
+- [ ] Meaningful variable and function names
+- [ ] JSDoc comments for public APIs
+- [ ] No commented-out code
+- [ ] Consistent code style throughout
+
+### 29.2 Performance Excellence
+
+- [ ] Lighthouse score 100 (not just 95+)
+- [ ] Core Web Vitals "Good" on all metrics
+- [ ] Bundle size under budget limits
+- [ ] Zero render-blocking resources
+- [ ] Critical CSS inlined
+- [ ] Font loading optimized (FOUT elimination)
+
+### 29.3 Accessibility Excellence
+
+```bash
+# Run axe-core audit
+npx axe-core --help 2>/dev/null || echo "Install axe-core CLI for automated testing"
+```
+
+- [ ] WCAG 2.2 Level AA compliance
+- [ ] Tested with actual screen readers
+- [ ] Keyboard-only navigation fully functional
+- [ ] High contrast mode support
+- [ ] Focus visible on all interactive elements
+- [ ] Skip links implemented
+- [ ] Form error messages clearly associated
+
+### 29.4 User Experience Excellence
+
+- [ ] Loading states for all async operations
+- [ ] Error boundaries prevent app crashes
+- [ ] Empty states guide users
+- [ ] Confirmation dialogs for destructive actions
+- [ ] Undo functionality for critical actions
+- [ ] Smooth transitions and micro-interactions
+- [ ] Responsive images with art direction
+- [ ] Touch gestures work correctly
+
+---
+
+## 30. Final Validation Pipeline
 
 Run the complete validation pipeline in order:
 
@@ -541,10 +918,23 @@ grep -rn '\$inspect' src/ || echo "✓ No $inspect"
 | 15. Cloudflare Functions | 9 | ☐ |
 | 16. Data Layer | 9 | ☐ |
 | 17. Images & Assets | 8 | ☐ |
-| 18. Offline | 5 | ☐ |
-| 19. Final Validation | 10 | ☐ |
-| **Total** | **~245** | ☐ |
+| 18. Progressive Enhancement & Offline | 5 | ☐ |
+| 19. Modern Svelte 5.1+ Features | 7 | ☐ |
+| 20. Tailwind CSS v4 Best Practices | 8 | ☐ |
+| 21. Core Web Vitals 2024/2025 | 12 | ☐ |
+| 22. Bun-Specific Optimizations | 7 | ☐ |
+| 23. Advanced Security | 22 | ☐ |
+| 24. Modern Web APIs | 12 | ☐ |
+| 25. Progressive Web App (PWA) | 20 | ☐ |
+| 26. Zod v4 Features | 10 | ☐ |
+| 27. Developer Experience (DX) | 20 | ☐ |
+| 28. Cloudflare Platform Features | 18 | ☐ |
+| 29. Additional 10/10 Requirements | 28 | ☐ |
+| 30. Final Validation | 10 | ☐ |
+| **Total** | **~400** | ☐ |
 
 ---
 
-*When all 245 checks pass, the project is verified at 10/10 quality.*
+*When all ~400 checks pass, the project is verified at 10/10 quality.*
+
+*Last Updated: 15 February 2026*

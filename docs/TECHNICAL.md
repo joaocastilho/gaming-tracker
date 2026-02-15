@@ -695,13 +695,43 @@ export const gamesStore = new GamesStore();
 
 - **Dexie**: IndexedDB wrapper for offline storage
 - **Zod**: Runtime validation
-- **Lucide**: Icon library
-- **Tailwind**: Utility CSS
+- **Lucide**: **Tailwind**: Icon library
+- Utility CSS
 
-### Environment Variables
+### Progressive Web App (PWA)
 
-None required - pure client-side app.
+The app includes full PWA support for offline-first functionality:
 
----
+#### Web App Manifest
+Located at `static/site.webmanifest`:
+- App name: "Gaming Tracker"
+- Display: "standalone" (launches without browser chrome)
+- Theme color: Matches app dark theme
+- Icons: 192x192 and 512x512 with maskable variants
+- Categories: entertainment, games
 
-*End of Technical Documentation*
+#### Service Worker
+Located at `static/service-worker.js`:
+- **Cache-first** for navigation requests and app shell
+- **Cache-first with background update** for static assets (JS, CSS, images)
+- **Network-first** for dynamic content
+- **Background sync** for offline mutations
+
+#### Offline Support
+
+| Feature | Implementation |
+|---------|----------------|
+| Data Storage | IndexedDB via Dexie.js |
+| Offline Detection | `navigator.onLine` + window events |
+| Offline Indicator | `OfflineIndicator` component in Header |
+| Sync Queue | `offline.svelte.ts` store |
+| Install Prompt | `beforeinstallprompt` event handler |
+
+#### Install Prompt Flow
+
+1. App listens for `beforeinstallprompt` event in `+layout.svelte`
+2. User clicks "Install App" in MobileSettingsMenu
+3. Native browser install dialog appears
+4. App installs as standalone PWA
+
+### File Naming Conventions

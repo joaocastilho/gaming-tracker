@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { appStore } from '$lib/stores/app.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
-	import { SlidersHorizontal, Settings, Moon, LogIn, LogOut, Plus } from 'lucide-svelte';
+	import { SlidersHorizontal, Settings, Moon, LogIn, LogOut, Plus, Download } from 'lucide-svelte';
 	import { focusTrap } from '$lib/utils/focusTrap';
 
 	interface Props {
@@ -12,6 +12,8 @@
 		onFiltersToggle: () => void;
 		onAddGame: () => void;
 		onOpenLogin: () => void;
+		canInstall?: boolean;
+		onInstall?: () => void;
 	}
 
 	let {
@@ -21,7 +23,9 @@
 		onClose,
 		onFiltersToggle,
 		onAddGame,
-		onOpenLogin
+		onOpenLogin,
+		canInstall = false,
+		onInstall = () => {}
 	}: Props = $props();
 
 	let isEditor = $derived(editorStore.editorMode);
@@ -76,6 +80,20 @@
 		>
 			<div class="sheet-handle"></div>
 			<div class="sheet-content">
+				{#if canInstall}
+					<button
+						type="button"
+						class="sheet-item sheet-item-blue"
+						onclick={() => {
+							onClose();
+							onInstall();
+						}}
+					>
+						<Download size={20} />
+						<span>Install App</span>
+					</button>
+				{/if}
+
 				<button
 					type="button"
 					class="sheet-item"

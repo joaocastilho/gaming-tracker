@@ -57,6 +57,7 @@ Manually assign games to tiers based on overall assessment:
 - Works without internet after initial load
 - All data stored locally in the browser via IndexedDB
 - 🔄 JSON export/import for data backup and restoration
+- 📲 Installable as a PWA (Progressive Web App) for native-like experience
 
 ## 🛠️ Tech Stack
 

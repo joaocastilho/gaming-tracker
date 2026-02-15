@@ -1,8 +1,9 @@
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `gaming-tracker-${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `gaming-tracker-static-${CACHE_VERSION}`;
 const IMAGE_CACHE_NAME = `gaming-tracker-images-${CACHE_VERSION}`;
 const APP_SHELL_CACHE_NAME = `gaming-tracker-app-${CACHE_VERSION}`;
+const OFFLINE_QUEUE_NAME = 'gaming-tracker-offline-queue';
 
 const STATIC_ASSETS = [
 	'/',
@@ -290,3 +291,40 @@ self.addEventListener('fetch', (event) => {
 			})
 	);
 });
+
+// Background Sync for offline mutations
+self.addEventListener('sync', (event) => {
+	if (event.tag === 'sync-games') {
+		event.waitUntil(syncOfflineQueue());
+	}
+});
+
+async function syncOfflineQueue() {
+	try {
+		const cache = await caches.open(OFFLINE_QUEUE_NAME);
+		const requests = await cache.keys();
+		
+		for (const request of requests) {
+			const data = await cache.match(request);
+			if (data) {
+				const body = await data.json();
+				
+				try {
+					const response = await fetch(body.url, {
+						method: body.method,
+						headers: body.headers,
+						body: body.method !== 'GET' ? JSON.stringify(body.body) : undefined
+					});
+					
+					if (response.ok) {
+						await cache.delete(request);
+					}
+				} catch {
+					console.log('Failed to sync request:', request.url);
+				}
+			}
+		}
+	} catch (e) {
+		console.error('Background sync failed:', e);
+	}
+}

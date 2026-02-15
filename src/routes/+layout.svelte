@@ -46,6 +46,8 @@
 	let initialized = $state(true);
 	let gamesInitialized = $state(false);
 	let urlUpdateTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
+	let deferredPrompt = $state<Event | null>(null);
+	let canInstall = $state(false);
 
 	// Initialize games reactively (SSR support)
 	$effect(() => {
@@ -465,6 +467,40 @@
 			}
 		});
 	});
+
+	// PWA Install prompt handler
+	$effect(() => {
+		if (!browser) return;
+
+		const handleBeforeInstallPrompt = (e: Event) => {
+			e.preventDefault();
+			deferredPrompt = e;
+			canInstall = true;
+		};
+
+		window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+		return () => {
+			window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+		};
+	});
+
+	async function installApp() {
+		if (!deferredPrompt) return;
+
+		const promptEvent = deferredPrompt as unknown as {
+			prompt: () => Promise<void>;
+			userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+		};
+
+		await promptEvent.prompt();
+		const { outcome } = await promptEvent.userChoice;
+
+		if (outcome === 'accepted') {
+			deferredPrompt = null;
+			canInstall = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -639,6 +675,8 @@
 			{onFiltersToggle}
 			onAddGame={handleAddGame}
 			onOpenLogin={() => (loginModalOpen = true)}
+			{canInstall}
+			onInstall={installApp}
 		/>
 
 		<BottomNavigation {onSearchToggle} {onCloseSearchAndFilters} />
