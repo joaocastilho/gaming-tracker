@@ -481,10 +481,6 @@
 						<span class="rating-value">{game.ratingGameplay}</span>
 					</div>
 				</div>
-			{:else}
-				<div class="ratings-placeholder">
-					<span>Ratings after completion</span>
-				</div>
 			{/if}
 
 			<!-- Total Score Section -->
@@ -764,17 +760,21 @@
 		border-top: 1px dashed var(--color-border);
 	}
 
-	/* Planned Indicator - Simple text, no box */
+	/* Planned Indicator - Blue box matching total-score-badge style */
 	.planned-indicator {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-weight: 600;
-		font-size: 0.9rem;
-		color: var(--color-text-tertiary);
+		gap: 8px;
+		font-weight: 700;
+		font-size: 1rem;
+		color: #60a5fa;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		padding: 12px 0;
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+		border: 1px solid rgba(59, 130, 246, 0.3);
+		border-radius: 12px;
+		padding: 12px 16px;
 		margin-top: auto;
 	}
 
@@ -786,6 +786,7 @@
 		font-size: 0.9rem;
 		color: var(--color-text-secondary);
 		padding: 0;
+		margin-top: 4px;
 	}
 
 	.time-date-row.completed {
@@ -797,7 +798,7 @@
 	.date-item {
 		display: flex;
 		align-items: center;
-		gap: 4px;
+		gap: 8px;
 	}
 
 	/* Compact Ratings - Horizontal layout */
@@ -805,7 +806,7 @@
 		display: flex;
 		justify-content: space-around;
 		gap: 8px;
-		padding: 12px 4px 8px 4px;
+		padding: 8x 4px 8px 4px;
 		margin-top: auto;
 		flex: 1;
 	}

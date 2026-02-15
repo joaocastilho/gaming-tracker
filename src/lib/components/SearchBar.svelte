@@ -73,6 +73,24 @@
 	}
 
 	function handleGlobalKeydown(event: KeyboardEvent) {
+		// Ctrl+K / Cmd+K to focus search
+		if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+			event.preventDefault();
+			event.stopPropagation();
+
+			// Expand the filters section if collapsed
+			if (!filtersStore.isDesktopFiltersExpanded) {
+				filtersStore.setDesktopFiltersExpanded(true);
+			}
+
+			// Focus the search input after a tick to allow DOM to update
+			requestAnimationFrame(() => {
+				inputElement?.focus();
+				inputElement?.select();
+			});
+			return;
+		}
+
 		if (event.key === 'Escape' && inputElement) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -105,7 +123,7 @@
 			id="search-input"
 			bind:this={inputElement}
 			type="text"
-			placeholder="Search games..."
+			placeholder="Search games...  (Ctrl+K)"
 			oninput={handleInput}
 			onkeydown={handleKeydown}
 			class="search-input"

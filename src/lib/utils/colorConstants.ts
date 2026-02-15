@@ -18,24 +18,24 @@ export const PLATFORM_COLORS: Record<string, string> = {
 	PS4: 'platform-ps4',
 	PS3: 'platform-ps3',
 	PS2: 'platform-ps2',
-	PS1: 'platform-ps2', // Group with PS2
+	PS1: 'platform-ps1',
 	Switch: 'platform-switch',
-	'3DS': 'platform-switch', // Group with Switch
-	N64: 'platform-switch', // Group with Switch
-	GameCube: 'platform-switch', // Group with Switch
-	'Game Boy Advance': 'platform-switch', // Group with Switch
+	'3DS': 'platform-3ds',
+	N64: 'platform-n64',
+	GameCube: 'platform-gamecube',
+	'Game Boy Advance': 'platform-gba',
 	Xbox: 'platform-xbox',
 	'Xbox 360': 'platform-xbox-360',
-	'Xbox Series X': 'platform-xbox',
-	Dreamcast: 'platform-xbox' // Use Xbox colors
+	'Xbox Series X': 'platform-xbox-series',
+	Dreamcast: 'platform-dreamcast'
 };
 
 // Genre color mappings using CSS variables
 export const GENRE_COLORS: Record<string, string> = {
 	// Action genres
 	Action: 'genre-action',
-	'Action Platformer': 'genre-action',
-	'Bullet Hell': 'genre-action',
+	'Action Platformer': 'genre-action-platformer',
+	'Bullet Hell': 'genre-bullet-hell',
 	'Hack & Slash': 'genre-hack-slash',
 
 	// Adventure genres
@@ -46,13 +46,13 @@ export const GENRE_COLORS: Record<string, string> = {
 	'Action RPG': 'genre-action-rpg',
 	'Classic RPG': 'genre-classic-rpg',
 	'Japanese RPG': 'genre-japanese-rpg',
-	'Sandbox RPG': 'genre-action-rpg', // Group with Action RPG
+	'Sandbox RPG': 'genre-sandbox-rpg',
 	'Story RPG': 'genre-story-rpg',
 
 	// Platformer genres
 	Platformer: 'genre-platformer',
 	'Puzzle Platformer': 'genre-puzzle-platformer',
-	'Story Platformer': 'genre-platformer', // Group with Platformer
+	'Story Platformer': 'genre-story-platformer',
 
 	// Puzzle genres
 	Puzzle: 'genre-puzzle',
@@ -61,14 +61,14 @@ export const GENRE_COLORS: Record<string, string> = {
 	// Horror genres
 	'Survival Horror': 'genre-survival-horror',
 	'Story Horror': 'genre-story-horror',
-	'Horror RPG': 'genre-survival-horror', // Group with Survival Horror
+	'Horror RPG': 'genre-horror-rpg',
 
 	// Other genres
 	FPS: 'genre-fps',
 	Metroidvania: 'genre-metroidvania',
 	Roguelike: 'genre-roguelike',
 	Strategy: 'genre-strategy',
-	Survival: 'genre-survival-horror' // Group with Survival Horror
+	Survival: 'genre-survival'
 };
 
 // Tier color mappings - use CSS classes from app.css

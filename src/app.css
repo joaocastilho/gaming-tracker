@@ -129,6 +129,34 @@ html {
 	--color-platform-xbox-360-text: #86efac;
 	--color-platform-xbox-360-border: rgba(34, 197, 94, 0.3);
 
+	--color-platform-ps1-bg: rgba(156, 163, 175, 0.15);
+	--color-platform-ps1-text: #e5e7eb;
+	--color-platform-ps1-border: rgba(156, 163, 175, 0.3);
+
+	--color-platform-3ds-bg: rgba(220, 38, 38, 0.15);
+	--color-platform-3ds-text: #fca5a5;
+	--color-platform-3ds-border: rgba(220, 38, 38, 0.3);
+
+	--color-platform-n64-bg: rgba(22, 163, 74, 0.15);
+	--color-platform-n64-text: #86efac;
+	--color-platform-n64-border: rgba(22, 163, 74, 0.3);
+
+	--color-platform-gamecube-bg: rgba(79, 70, 229, 0.15);
+	--color-platform-gamecube-text: #a5b4fc;
+	--color-platform-gamecube-border: rgba(79, 70, 229, 0.3);
+
+	--color-platform-gba-bg: rgba(124, 58, 237, 0.15);
+	--color-platform-gba-text: #c4b5fd;
+	--color-platform-gba-border: rgba(124, 58, 237, 0.3);
+
+	--color-platform-xbox-series-bg: rgba(16, 185, 129, 0.15);
+	--color-platform-xbox-series-text: #6ee7b7;
+	--color-platform-xbox-series-border: rgba(16, 185, 129, 0.3);
+
+	--color-platform-dreamcast-bg: rgba(244, 63, 94, 0.15);
+	--color-platform-dreamcast-text: #fda4af;
+	--color-platform-dreamcast-border: rgba(244, 63, 94, 0.3);
+
 	/* Genres */
 	--color-genre-action-bg: rgba(239, 68, 68, 0.15);
 	--color-genre-action-text: #fca5a5;
@@ -201,6 +229,30 @@ html {
 	--color-genre-strategy-bg: rgba(34, 197, 94, 0.15);
 	--color-genre-strategy-text: #86efac;
 	--color-genre-strategy-border: rgba(34, 197, 94, 0.3);
+
+	--color-genre-action-platformer-bg: rgba(251, 146, 60, 0.15);
+	--color-genre-action-platformer-text: #fdba74;
+	--color-genre-action-platformer-border: rgba(251, 146, 60, 0.3);
+
+	--color-genre-bullet-hell-bg: rgba(220, 38, 38, 0.18);
+	--color-genre-bullet-hell-text: #fca5a5;
+	--color-genre-bullet-hell-border: rgba(220, 38, 38, 0.35);
+
+	--color-genre-sandbox-rpg-bg: rgba(16, 185, 129, 0.15);
+	--color-genre-sandbox-rpg-text: #6ee7b7;
+	--color-genre-sandbox-rpg-border: rgba(16, 185, 129, 0.3);
+
+	--color-genre-story-platformer-bg: rgba(168, 85, 247, 0.15);
+	--color-genre-story-platformer-text: #d8b4fe;
+	--color-genre-story-platformer-border: rgba(168, 85, 247, 0.3);
+
+	--color-genre-horror-rpg-bg: rgba(120, 113, 108, 0.18);
+	--color-genre-horror-rpg-text: #d6d3d1;
+	--color-genre-horror-rpg-border: rgba(120, 113, 108, 0.35);
+
+	--color-genre-survival-bg: rgba(245, 158, 11, 0.15);
+	--color-genre-survival-text: #fcd34d;
+	--color-genre-survival-border: rgba(245, 158, 11, 0.3);
 
 	/* Rating Colors - Enhanced visibility */
 	--color-rating-presentation: #f43f5e;
@@ -299,6 +351,34 @@ html {
 	--color-platform-xbox-360-text: #16a34a;
 	--color-platform-xbox-360-border: #bbf7d0;
 
+	--color-platform-ps1-bg: #f3f4f6;
+	--color-platform-ps1-text: #6b7280;
+	--color-platform-ps1-border: #e5e7eb;
+
+	--color-platform-3ds-bg: #fee2e2;
+	--color-platform-3ds-text: #dc2626;
+	--color-platform-3ds-border: #fecaca;
+
+	--color-platform-n64-bg: #dcfce7;
+	--color-platform-n64-text: #15803d;
+	--color-platform-n64-border: #bbf7d0;
+
+	--color-platform-gamecube-bg: #e0e7ff;
+	--color-platform-gamecube-text: #4338ca;
+	--color-platform-gamecube-border: #c7d2fe;
+
+	--color-platform-gba-bg: #ede9fe;
+	--color-platform-gba-text: #7c3aed;
+	--color-platform-gba-border: #ddd6fe;
+
+	--color-platform-xbox-series-bg: #d1fae5;
+	--color-platform-xbox-series-text: #059669;
+	--color-platform-xbox-series-border: #a7f3d0;
+
+	--color-platform-dreamcast-bg: #ffe4e6;
+	--color-platform-dreamcast-text: #e11d48;
+	--color-platform-dreamcast-border: #fecdd3;
+
 	/* Genre Colors - Light Mode */
 	--color-genre-action-bg: #fee2e2;
 	--color-genre-action-text: #dc2626;
@@ -371,6 +451,30 @@ html {
 	--color-genre-strategy-bg: #dcfce7;
 	--color-genre-strategy-text: #16a34a;
 	--color-genre-strategy-border: #bbf7d0;
+
+	--color-genre-action-platformer-bg: #ffedd5;
+	--color-genre-action-platformer-text: #ea580c;
+	--color-genre-action-platformer-border: #fed7aa;
+
+	--color-genre-bullet-hell-bg: #fee2e2;
+	--color-genre-bullet-hell-text: #b91c1c;
+	--color-genre-bullet-hell-border: #fecaca;
+
+	--color-genre-sandbox-rpg-bg: #d1fae5;
+	--color-genre-sandbox-rpg-text: #059669;
+	--color-genre-sandbox-rpg-border: #a7f3d0;
+
+	--color-genre-story-platformer-bg: #f3e8ff;
+	--color-genre-story-platformer-text: #9333ea;
+	--color-genre-story-platformer-border: #e9d5ff;
+
+	--color-genre-horror-rpg-bg: #f5f5f4;
+	--color-genre-horror-rpg-text: #57534e;
+	--color-genre-horror-rpg-border: #e7e5e4;
+
+	--color-genre-survival-bg: #fef3c7;
+	--color-genre-survival-text: #d97706;
+	--color-genre-survival-border: #fde68a;
 }
 
 /* ============================================
@@ -701,11 +805,13 @@ canvas,
    ANIMATION KEYFRAMES
    ============================================ */
 @keyframes strongPulse {
+
 	0%,
 	100% {
 		opacity: 1;
 		transform: scale(1);
 	}
+
 	50% {
 		opacity: 0.7;
 		transform: scale(1.02);
@@ -716,6 +822,7 @@ canvas,
 	0% {
 		transform: translateX(-100%);
 	}
+
 	100% {
 		transform: translateX(100%);
 	}
@@ -725,6 +832,7 @@ canvas,
 	from {
 		opacity: 0;
 	}
+
 	to {
 		opacity: 1;
 	}
@@ -735,6 +843,7 @@ canvas,
 		transform: translateY(20px);
 		opacity: 0;
 	}
+
 	to {
 		transform: translateY(0);
 		opacity: 1;
@@ -742,10 +851,12 @@ canvas,
 }
 
 @keyframes glow {
+
 	0%,
 	100% {
 		box-shadow: 0 0 5px var(--color-accent);
 	}
+
 	50% {
 		box-shadow:
 			0 0 20px var(--color-accent),
@@ -782,6 +893,7 @@ canvas,
    REDUCED MOTION
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
+
 	*,
 	*::before,
 	*::after {
@@ -823,6 +935,7 @@ canvas,
    SAFARI COMPATIBILITY
    ============================================ */
 @supports (-webkit-backdrop-filter: none) {
+
 	.backdrop-blur-sm,
 	.backdrop-blur-\[8px\] {
 		-webkit-backdrop-filter: blur(8px);
@@ -931,8 +1044,7 @@ canvas,
 	border-color: var(--color-platform-ps4-border);
 }
 
-.platform-ps2-badge,
-.platform-ps3-badge {
+.platform-ps2-badge {
 	background: var(--color-platform-ps2-bg);
 	color: var(--color-platform-ps2-text);
 	border-color: var(--color-platform-ps2-border);
@@ -1065,4 +1177,97 @@ canvas,
 	background: var(--color-genre-strategy-bg);
 	color: var(--color-genre-strategy-text);
 	border-color: var(--color-genre-strategy-border);
+}
+
+/* New unique platform badges */
+.platform-ps1-badge {
+	background: var(--color-platform-ps1-bg);
+	color: var(--color-platform-ps1-text);
+	border-color: var(--color-platform-ps1-border);
+}
+
+.platform-ps3-badge {
+	background: var(--color-platform-ps3-bg);
+	color: var(--color-platform-ps3-text);
+	border-color: var(--color-platform-ps3-border);
+}
+
+.platform-3ds-badge {
+	background: var(--color-platform-3ds-bg);
+	color: var(--color-platform-3ds-text);
+	border-color: var(--color-platform-3ds-border);
+}
+
+.platform-n64-badge {
+	background: var(--color-platform-n64-bg);
+	color: var(--color-platform-n64-text);
+	border-color: var(--color-platform-n64-border);
+}
+
+.platform-gamecube-badge {
+	background: var(--color-platform-gamecube-bg);
+	color: var(--color-platform-gamecube-text);
+	border-color: var(--color-platform-gamecube-border);
+}
+
+.platform-gba-badge {
+	background: var(--color-platform-gba-bg);
+	color: var(--color-platform-gba-text);
+	border-color: var(--color-platform-gba-border);
+}
+
+.platform-xbox-series-badge {
+	background: var(--color-platform-xbox-series-bg);
+	color: var(--color-platform-xbox-series-text);
+	border-color: var(--color-platform-xbox-series-border);
+}
+
+.platform-dreamcast-badge {
+	background: var(--color-platform-dreamcast-bg);
+	color: var(--color-platform-dreamcast-text);
+	border-color: var(--color-platform-dreamcast-border);
+}
+
+/* New unique genre badges */
+.genre-action-platformer-badge {
+	background: var(--color-genre-action-platformer-bg);
+	color: var(--color-genre-action-platformer-text);
+	border-color: var(--color-genre-action-platformer-border);
+}
+
+.genre-bullet-hell-badge {
+	background: var(--color-genre-bullet-hell-bg);
+	color: var(--color-genre-bullet-hell-text);
+	border-color: var(--color-genre-bullet-hell-border);
+}
+
+.genre-sandbox-rpg-badge {
+	background: var(--color-genre-sandbox-rpg-bg);
+	color: var(--color-genre-sandbox-rpg-text);
+	border-color: var(--color-genre-sandbox-rpg-border);
+}
+
+.genre-story-platformer-badge {
+	background: var(--color-genre-story-platformer-bg);
+	color: var(--color-genre-story-platformer-text);
+	border-color: var(--color-genre-story-platformer-border);
+}
+
+.genre-horror-rpg-badge {
+	background: var(--color-genre-horror-rpg-bg);
+	color: var(--color-genre-horror-rpg-text);
+	border-color: var(--color-genre-horror-rpg-border);
+}
+
+.genre-survival-badge {
+	background: var(--color-genre-survival-bg);
+	color: var(--color-genre-survival-text);
+	border-color: var(--color-genre-survival-border);
+}
+
+/* Light mode planned indicator */
+.light .planned-indicator {
+	color: #3b82f6;
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+	border-color: rgba(59, 130, 246, 0.25);
 }
