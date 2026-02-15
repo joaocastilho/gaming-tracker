@@ -179,14 +179,24 @@
 	let showTiersFilter = $derived(!isTierlistPage && !isPlannedPage);
 	let showCoOpFilter = $derived(!isTierlistPage);
 
+	// Sync Store to URL whenever state changes
 	$effect(() => {
 		if (browser) {
-			// Trigger on URL change
+			void $filtersStore;
+			untrack(() => filtersStore.writeSearchToURL({}));
+		}
+	});
+
+	$effect(() => {
+		if (browser) {
+			// Trigger on URL change OR when games are initialized/loaded
 			const searchParams = page.url.searchParams;
+			void $gamesStore;
+
 			// Restore state from URL on navigation
 			// Use untrack so manual state changes don't trigger an immediate clobbering restoration
 			untrack(() => {
-				filtersStore.readSearchFromURL(searchParams);
+				filtersStore.readSearchFromURL(searchParams, page.url.pathname);
 			});
 
 			// Auto-open mobile search if URL has search parameter
@@ -217,14 +227,6 @@
 		}
 
 		appStore.setActiveTab(targetTab);
-
-		// Reset sort to default if not specified in URL
-		// This ensures that switching tabs applies the tab's default sort
-		// unless the user specifically navigated to a sorted URL
-		const hasSortInUrl = page.url.searchParams.has('sort');
-		if (!hasSortInUrl) {
-			untrack(() => filtersStore.setSort(null));
-		}
 	});
 
 	// Handle URL reading for modal (Global)

@@ -1,5 +1,7 @@
 import { goto } from '$app/navigation';
 import { appStore } from '$lib/stores/app.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { toSlug } from './slugUtils';
 
 export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -23,22 +25,32 @@ const DEFAULT_OPTIONS: NavigationOptions = {
 export async function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
-	// Build target URL with current filters
+	// Build target URL with current filters from store
 	const route = getRoutePath(target);
 	const url = new URL(
 		route,
 		typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
 	);
 
-	// Preserve filters in URL if it exists
-	if (opts.preserveFilters && typeof window !== 'undefined') {
-		const currentUrl = new URL(window.location.href);
-		const paramsToPreserve = ['s', 'platform', 'genre', 'status', 'tier', 'coop', 'sort', 'dir'];
+	// Preserve filters in URL if needed and we're NOT going to the tierlist
+	if (opts.preserveFilters && target !== 'tierlist') {
+		const state = filtersStore.state;
+		if (state) {
+			if (state.searchTerm) url.searchParams.set('s', state.searchTerm);
 
-		paramsToPreserve.forEach((param) => {
-			const values = currentUrl.searchParams.getAll(param);
-			values.forEach((val) => url.searchParams.append(param, val));
-		});
+			state.platforms.forEach((p) => url.searchParams.append('platform', toSlug(p)));
+			state.genres.forEach((g) => url.searchParams.append('genre', toSlug(g)));
+			state.statuses.forEach((s) => url.searchParams.append('status', toSlug(s)));
+			state.tiers.forEach((t) => url.searchParams.append('tier', toSlug(t)));
+			state.coOp.forEach((c) => url.searchParams.append('coop', toSlug(c)));
+
+			if (state.sortOption) {
+				url.searchParams.set('sort', state.sortOption.key);
+				url.searchParams.set('dir', state.sortOption.direction);
+			}
+		}
+	} else if (target === 'tierlist') {
+		// Going to Tier List, skipping params injection for clean URL
 	}
 
 	appStore.setActiveTab(target, true);

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { filtersStore } from '../src/lib/stores/filters.svelte';
+import { gamesStore } from '../src/lib/stores/games.svelte';
 
 // Mock SvelteKit base modules
 vi.mock('$app/navigation', () => ({
@@ -8,6 +9,12 @@ vi.mock('$app/navigation', () => ({
 
 describe('FiltersStore URL Sync', () => {
 	beforeEach(() => {
+		// Initialize gamesStore with some mock data so de-slugification works
+		gamesStore.initializeGames([
+			{ id: '1', title: 'Test', platform: 'PC', genre: 'RPG', status: 'Completed' },
+			{ id: '2', title: 'Test 2', platform: 'PS5', genre: 'Action' }
+		]);
+
 		// Reset store state
 		filtersStore.resetFilters();
 		vi.clearAllMocks();
@@ -20,7 +27,8 @@ describe('FiltersStore URL Sync', () => {
 	});
 
 	it('should restore platform filters from URL', () => {
-		const params = new URLSearchParams('?platform=PC&platform=PS5');
+		// Using slugs in URL
+		const params = new URLSearchParams('?platform=pc&platform=ps5');
 		filtersStore.readSearchFromURL(params);
 
 		expect(filtersStore.selectedPlatforms).toContain('PC');
@@ -28,7 +36,8 @@ describe('FiltersStore URL Sync', () => {
 	});
 
 	it('should restore genre filters from URL', () => {
-		const params = new URLSearchParams('?genre=RPG&genre=Action');
+		// Using slugs in URL
+		const params = new URLSearchParams('?genre=rpg&genre=action');
 		filtersStore.readSearchFromURL(params);
 
 		expect(filtersStore.selectedGenres).toContain('RPG');
@@ -36,7 +45,8 @@ describe('FiltersStore URL Sync', () => {
 	});
 
 	it('should restore status filters from URL', () => {
-		const params = new URLSearchParams('?status=Completed');
+		// Using slugs in URL
+		const params = new URLSearchParams('?status=completed');
 		filtersStore.readSearchFromURL(params);
 
 		expect(filtersStore.state?.statuses).toContain('Completed');
@@ -46,6 +56,9 @@ describe('FiltersStore URL Sync', () => {
 		filtersStore.togglePlatform('PC');
 		filtersStore.toggleGenre('RPG');
 		filtersStore.setSearchTerm('Zelda');
+
+		// Manually trigger the write since the automated effect is in +layout.svelte
+		filtersStore.writeSearchToURL({});
 
 		// Wait for debounce (300ms + buffer)
 		await new Promise((resolve) => setTimeout(resolve, 400));
@@ -58,7 +71,7 @@ describe('FiltersStore URL Sync', () => {
 		const url = new URL(urlString);
 
 		expect(url.searchParams.get('s')).toBe('Zelda');
-		expect(url.searchParams.getAll('platform')).toContain('PC');
-		expect(url.searchParams.getAll('genre')).toContain('RPG');
+		expect(url.searchParams.getAll('platform')).toContain('pc');
+		expect(url.searchParams.getAll('genre')).toContain('rpg');
 	});
 });

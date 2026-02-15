@@ -5,6 +5,11 @@
 import { replaceState } from '$app/navigation';
 import { browser } from '$app/environment';
 import { debounce } from '$lib/utils/debounce';
+import { appStore } from './app.svelte';
+import { toSlug, fromSlug } from '$lib/utils/slugUtils';
+import { extractFilterOptions } from '$lib/utils/filterOptions';
+import { gamesStore } from './games.svelte';
+import { get } from 'svelte/store';
 
 export type SortKey =
 	| 'presentation'
@@ -56,6 +61,7 @@ class FiltersStore {
 	public isDesktopFiltersExpanded = $state(true);
 
 	private static readonly FILTERS_EXPANDED_KEY = 'filtersExpanded';
+	private static readonly FILTERS_STATE_KEY = 'filtersState';
 
 	constructor() {
 		// Initialize filters if in browser
@@ -67,15 +73,8 @@ class FiltersStore {
 				this.isDesktopFiltersExpanded = savedExpanded === 'true';
 			}
 
-			// Setup effects for URL sync and tab-based resets
-			$effect.root(() => {
-				// Sync to URL whenever state changes
-				$effect(() => {
-					// Access state to create dependency
-					void this.state;
-					this.writeSearchToURL({});
-				});
-			});
+			// Restore filter state from sessionStorage (for hidden Tier List context)
+			this.loadFromSession();
 		}
 	}
 
@@ -270,16 +269,71 @@ class FiltersStore {
 		}
 	}
 
-	readSearchFromURL(searchParams: URLSearchParams): void {
+	saveToSession(): void {
+		if (!browser || !this._state) return;
+		sessionStorage.setItem(FiltersStore.FILTERS_STATE_KEY, JSON.stringify(this._state));
+	}
+
+	loadFromSession(): void {
+		if (!browser) return;
+		const saved = sessionStorage.getItem(FiltersStore.FILTERS_STATE_KEY);
+		if (saved) {
+			try {
+				const parsed = JSON.parse(saved);
+				this.state = { ...initialFilters, ...parsed };
+			} catch (e) {
+				console.error('Failed to parse saved filters', e);
+			}
+		}
+	}
+
+	readSearchFromURL(searchParams: URLSearchParams, pathname?: string): void {
 		if (!this._state) return;
+
+		// Use provided pathname or fallback to window.location
+		const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+
+		// If we are on tierlist and the URL is clean, we don't reset to defaults
+		// because we want to preserve the hidden memory/session context.
+		const isCleanUrl = Array.from(searchParams.keys()).length === 0;
+		if ((currentPath === '/tierlist' || appStore.activeTab === 'tierlist') && isCleanUrl) {
+			return;
+		}
+
+		// To de-slugify correctly, we need the available options
+		const games = get(gamesStore);
+		const options = extractFilterOptions(games);
+
+		// If we have specific catalog-dependent parameters but the options are empty,
+		// it means the games haven't loaded or initialized yet. We return early to
+		// avoid wiping the current state (or session state) until the catalog is ready.
+		// The layout effect's dependency on gamesStore will trigger a re-run once loaded.
+		if (searchParams.has('platform') && options.platforms.length === 0) return;
+		if (searchParams.has('genre') && options.genres.length === 0) return;
+		if (searchParams.has('tier') && options.tiers.length === 0) return;
 
 		const newState: FilterState = {
 			searchTerm: searchParams.get('s') ?? '',
-			platforms: searchParams.getAll('platform'),
-			genres: searchParams.getAll('genre'),
-			statuses: searchParams.getAll('status'),
-			tiers: searchParams.getAll('tier'),
-			coOp: searchParams.getAll('coop'),
+			platforms: searchParams
+				.getAll('platform')
+				.map((slug) => fromSlug(slug, options.platforms))
+				.filter((v): v is string => !!v),
+			genres: searchParams
+				.getAll('genre')
+				.map((slug) => fromSlug(slug, options.genres))
+				.filter((v): v is string => !!v),
+			statuses: searchParams
+				.getAll('status')
+				.map((slug) => fromSlug(slug, ['Completed', 'Planned', 'Dropped', 'Playing']))
+				.filter((v): v is string => !!v),
+			tiers: searchParams
+				.getAll('tier')
+				.map((slug) => fromSlug(slug, options.tiers))
+				.filter((v): v is string => !!v),
+			coOp: searchParams
+				.getAll('coop')
+				.map((slug) => fromSlug(slug, ['Yes', 'No']))
+				.filter((v): v is string => !!v),
 			sortOption: null
 		};
 
@@ -311,23 +365,29 @@ class FiltersStore {
 			const state = this._state;
 			if (!state) return;
 
+			// Always save to session storage as a silent backup
+			this.saveToSession();
+
 			const url = new URL(window.location.href);
 			const newParams = new URLSearchParams();
 
-			// Search
-			if (state.searchTerm) newParams.set('s', state.searchTerm);
+			// If we are on the tierlist tab, we keep the URL clean
+			if (appStore.activeTab !== 'tierlist' && url.pathname !== '/tierlist') {
+				// Search
+				if (state.searchTerm) newParams.set('s', state.searchTerm);
 
-			// Multi-select filters
-			state.platforms.forEach((p) => newParams.append('platform', p));
-			state.genres.forEach((g) => newParams.append('genre', g));
-			state.statuses.forEach((s) => newParams.append('status', s));
-			state.tiers.forEach((t) => newParams.append('tier', t));
-			state.coOp.forEach((c) => newParams.append('coop', c));
+				// Multi-select filters using lowercase slugs
+				state.platforms.forEach((p) => newParams.append('platform', toSlug(p)));
+				state.genres.forEach((g) => newParams.append('genre', toSlug(g)));
+				state.statuses.forEach((s) => newParams.append('status', toSlug(s)));
+				state.tiers.forEach((t) => newParams.append('tier', toSlug(t)));
+				state.coOp.forEach((c) => newParams.append('coop', toSlug(c)));
 
-			// Sort
-			if (state.sortOption) {
-				newParams.set('sort', state.sortOption.key);
-				newParams.set('dir', state.sortOption.direction);
+				// Sort
+				if (state.sortOption) {
+					newParams.set('sort', state.sortOption.key);
+					newParams.set('dir', state.sortOption.direction);
+				}
 			}
 
 			// Only replace state if the search params actually changed
