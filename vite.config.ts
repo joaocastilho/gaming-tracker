@@ -6,12 +6,27 @@ import { readFileSync } from 'fs';
 // Read package.json version at build time
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
+// Custom plugin to strip HTML comments in production
+function stripHtmlComments() {
+	return {
+		name: 'strip-html-comments',
+		apply: 'build' as const,
+		transformIndexHtml(html: string) {
+			// Match HTML comments but exclude Svelte's internal markers
+			// Svelte markers: <!--[!-->, <!--]-->, <!---->
+			// We want to keep Svelte markers but remove developer comments
+			return html.replace(/<!--(?!\[\[!-?-?])(?:\s|[\S\s])*?-->/g, '');
+		}
+	};
+}
+
 export default defineConfig({
 	define: {
 		__APP_VERSION__: JSON.stringify(pkg.version)
 	},
 	plugins: [
 		sveltekit(),
+		stripHtmlComments(),
 		{
 			name: 'fix-mjs-content-type',
 			configureServer(server) {

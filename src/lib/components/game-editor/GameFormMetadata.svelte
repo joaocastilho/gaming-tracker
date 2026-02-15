@@ -34,9 +34,10 @@
 <div class="metadata-section">
 	<div class="form-row time-row">
 		<div class="form-group time-group">
-			<label>Playtime</label>
+			<label for="playtimeHours">Playtime</label>
 			<div class="time-inputs">
 				<input
+					id="playtimeHours"
 					type="number"
 					min="0"
 					max="999"
@@ -136,7 +137,6 @@
 		font-size: 0.875rem;
 	}
 
-	input[type='text'],
 	input[type='number'],
 	input[type='date'] {
 		padding: 0.5rem 0.75rem;

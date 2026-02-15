@@ -26,10 +26,11 @@
 </script>
 
 <div class="cover-section">
-	<label class="section-header">Cover Image</label>
+	<label for="coverUrlInput" class="section-header">Cover Image</label>
 
 	<div class="cover-inputs">
 		<input
+			id="coverUrlInput"
 			type="text"
 			placeholder="Or enter image URL..."
 			value={coverUrl}

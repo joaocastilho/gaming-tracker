@@ -60,7 +60,6 @@
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.4.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
-		"rollup-plugin-visualizer": "^6.0.5",
 		"shadcn-svelte": "^1.1.1",
 		"sharp": "^0.34.5",
 		"svelte": "^5.51.2",
