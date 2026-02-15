@@ -40,8 +40,11 @@ export const load: LayoutLoad = async ({ fetch }) => {
 
 			// 3. Seed Dexie with fresh data for next time
 			if (browser && games.length > 0) {
-				import('$lib/db').then(({ db }) => {
-					db.games.bulkPut(games).catch((err) => console.error('Failed to seed Dexie:', err));
+				import('$lib/db').then(async ({ db }) => {
+					await db.transaction('rw', db.games, async () => {
+						await db.games.clear();
+						await db.games.bulkPut(games);
+					}).catch((err) => console.error('Failed to seed Dexie:', err));
 				});
 			}
 
@@ -79,12 +82,11 @@ async function refreshGamesInBackground(
 		if (res.ok) {
 			const data = await res.json();
 			if (data.games?.length > 0) {
-				// Update Dexie with fresh data
-				await db.games.bulkPut(data.games);
-
-				// Optional: Check if we need to remove deleted games
-				// (For now assuming bulkPut overwrites is same as simple sync,
-				// full sync might need more logic but this is a starter)
+				// Update Dexie with fresh data within a transaction
+				await db.transaction('rw', db.games, async () => {
+					await db.games.clear();
+					await db.games.bulkPut(data.games);
+				});
 			}
 		}
 	} catch (e) {
