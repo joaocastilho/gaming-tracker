@@ -42,7 +42,6 @@
 	import LoginModal from '$lib/components/LoginModal.svelte';
 	import NoResults from '$lib/components/NoResults.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
-	import { lastManualClearTime } from '$lib/stores/searchClearCoordinator';
 
 	let initialized = $state(true);
 	let gamesInitialized = $state(false);
@@ -181,53 +180,19 @@
 	let showCoOpFilter = $derived(!isTierlistPage);
 
 	$effect(() => {
-		if (!initialized) return;
-
-		const tab = appStore.activeTab;
-
-		if (tab === 'tierlist') {
-			// Only reset if filters are actually applied to avoid infinite loop
-			if (filtersStore.isAnyFilterApplied()) {
-				filtersStore.resetAllFilters();
-			}
-			if (filtersStore.state?.searchTerm) {
-				filtersStore.setSearchTerm('');
-			}
-		}
-	});
-
-	$effect(() => {
 		if (browser) {
-			// Initialize search from URL
-			filtersStore.readSearchFromURL(page.url.searchParams);
+			// Trigger on URL change
+			const searchParams = page.url.searchParams;
+			// Restore state from URL on navigation
+			// Use untrack so manual state changes don't trigger an immediate clobbering restoration
+			untrack(() => {
+				filtersStore.readSearchFromURL(searchParams);
+			});
 
 			// Auto-open mobile search if URL has search parameter
-			const searchParam = page.url.searchParams.get('s');
-			if (searchParam && window.innerWidth < 768) {
+			const searchParam = searchParams.get('s');
+			if (searchParam && window.innerWidth < 768 && !isSearchOpen) {
 				pushState(page.url, { showMobileSearch: true });
-			}
-		}
-	});
-
-	// Sync search term from URL on every navigation (for auto-switching and manual tab changes)
-	// BUT NOT when mobile search is open (to avoid interfering with active typing)
-	// Also NOT immediately after a manual clear (to prevent race condition)
-	$effect(() => {
-		if (initialized && browser && !isSearchOpen) {
-			const searchParam = page.url.searchParams.get('s');
-			const currentSearchTerm = $filtersStore?.searchTerm ?? '';
-
-			// Skip sync if we just manually cleared (within 100ms)
-			const timeSinceLastClear = Date.now() - lastManualClearTime;
-			if (timeSinceLastClear < 100) {
-				return;
-			}
-
-			// Only update if URL search differs from current state to avoid loops
-			if (searchParam !== currentSearchTerm) {
-				if (searchParam) {
-					filtersStore.setSearchTerm(searchParam);
-				}
 			}
 		}
 	});
@@ -256,7 +221,7 @@
 		// Reset sort to default if not specified in URL
 		// This ensures that switching tabs applies the tab's default sort
 		// unless the user specifically navigated to a sorted URL
-		const hasSortInUrl = page.url.searchParams.has('sortBy');
+		const hasSortInUrl = page.url.searchParams.has('sort');
 		if (!hasSortInUrl) {
 			untrack(() => filtersStore.setSort(null));
 		}

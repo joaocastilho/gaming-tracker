@@ -14,6 +14,7 @@ interface FilterCacheKey {
 	searchTerm: string;
 	platforms: string[];
 	genres: string[];
+	statuses: string[];
 	tiers: string[];
 	coOp: string[];
 	activeTab: string;
@@ -95,6 +96,7 @@ class FilteredGamesStore {
 			searchTerm?: string;
 			platforms?: string[];
 			genres?: string[];
+			statuses?: string[];
 			tiers?: string[];
 			coOp?: string[];
 			sortOption?: { key: string; direction: 'asc' | 'desc' } | null;
@@ -105,6 +107,7 @@ class FilteredGamesStore {
 			searchTerm: filters?.searchTerm || '',
 			platforms: filters?.platforms || [],
 			genres: filters?.genres || [],
+			statuses: filters?.statuses || [],
 			tiers: filters?.tiers || [],
 			coOp: filters?.coOp || [],
 			activeTab,
@@ -125,6 +128,7 @@ class FilteredGamesStore {
 			searchTerm: string;
 			platforms: string[];
 			genres: string[];
+			statuses: string[];
 			tiers: string[];
 			coOp: string[];
 		} | null
@@ -150,6 +154,9 @@ class FilteredGamesStore {
 		if (filters.genres.length > 0) {
 			filteredGames = filteredGames.filter((game) => filters.genres.includes(game.genre));
 		}
+		if (filters.statuses.length > 0) {
+			filteredGames = filteredGames.filter((game) => filters.statuses.includes(game.status));
+		}
 
 		if (filters.tiers.length > 0) {
 			filteredGames = filteredGames.filter((game) => {
@@ -172,6 +179,7 @@ class FilteredGamesStore {
 			searchTerm: string;
 			platforms: string[];
 			genres: string[];
+			statuses: string[];
 			tiers: string[];
 			coOp: string[];
 		} | null,
@@ -189,8 +197,8 @@ class FilteredGamesStore {
 				filteredGames = filteredGames.filter((game) => game.status === 'Planned');
 				break;
 			case 'tierlist':
-				filteredGames = filteredGames.filter((game) => game.tier);
-				break;
+				// Context preservation: ignore other filters on tierlist
+				return games.filter((game) => game.tier);
 			default:
 				break;
 		}

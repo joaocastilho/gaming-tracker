@@ -1,6 +1,5 @@
 import { goto } from '$app/navigation';
 import { appStore } from '$lib/stores/app.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
 
 export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -31,12 +30,15 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 		typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
 	);
 
-	// Preserve search term in URL if it exists
-	if (opts.preserveFilters) {
-		const searchTerm = filtersStore.state?.searchTerm;
-		if (searchTerm) {
-			url.searchParams.set('s', searchTerm);
-		}
+	// Preserve filters in URL if it exists
+	if (opts.preserveFilters && typeof window !== 'undefined') {
+		const currentUrl = new URL(window.location.href);
+		const paramsToPreserve = ['s', 'platform', 'genre', 'status', 'tier', 'coop', 'sort', 'dir'];
+
+		paramsToPreserve.forEach((param) => {
+			const values = currentUrl.searchParams.getAll(param);
+			values.forEach((val) => url.searchParams.append(param, val));
+		});
 	}
 
 	appStore.setActiveTab(target, true);
@@ -60,9 +62,6 @@ export async function navigateToAndReset(
 	options: Omit<NavigationOptions, 'preserveFilters'> = {}
 ) {
 	const opts = { ...DEFAULT_OPTIONS, ...options, preserveFilters: false };
-
-	filtersStore.resetAllFilters();
-	filtersStore.setSearchTerm('');
 
 	appStore.setActiveTab(target, true);
 

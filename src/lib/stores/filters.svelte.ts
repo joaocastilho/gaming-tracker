@@ -3,9 +3,8 @@
  * Manages filter state for games filtering
  */
 import { replaceState } from '$app/navigation';
+import { browser } from '$app/environment';
 import { debounce } from '$lib/utils/debounce';
-
-const browser = typeof window !== 'undefined';
 
 export type SortKey =
 	| 'presentation'
@@ -67,6 +66,16 @@ class FiltersStore {
 			if (savedExpanded !== null) {
 				this.isDesktopFiltersExpanded = savedExpanded === 'true';
 			}
+
+			// Setup effects for URL sync and tab-based resets
+			$effect.root(() => {
+				// Sync to URL whenever state changes
+				$effect(() => {
+					// Access state to create dependency
+					void this.state;
+					this.writeSearchToURL({});
+				});
+			});
 		}
 	}
 
@@ -262,10 +271,28 @@ class FiltersStore {
 	}
 
 	readSearchFromURL(searchParams: URLSearchParams): void {
-		const search = searchParams.get('s');
-		if (search) {
-			this.setSearchTerm(search);
+		if (!this._state) return;
+
+		const newState: FilterState = {
+			searchTerm: searchParams.get('s') ?? '',
+			platforms: searchParams.getAll('platform'),
+			genres: searchParams.getAll('genre'),
+			statuses: searchParams.getAll('status'),
+			tiers: searchParams.getAll('tier'),
+			coOp: searchParams.getAll('coop'),
+			sortOption: null
+		};
+
+		const sortKey = searchParams.get('sort') as SortKey | null;
+		const sortDir = searchParams.get('dir') as SortDirection | null;
+		if (sortKey && sortDir) {
+			newState.sortOption = { key: sortKey, direction: sortDir };
 		}
+
+		// Deep equality check to prevent loops
+		if (JSON.stringify(this._state) === JSON.stringify(newState)) return;
+
+		this.state = newState;
 	}
 
 	/**
@@ -282,12 +309,31 @@ class FiltersStore {
 		if (typeof window === 'undefined') return;
 		try {
 			const state = this._state;
+			if (!state) return;
+
 			const url = new URL(window.location.href);
-			if (state?.searchTerm) {
-				url.searchParams.set('s', state.searchTerm);
-			} else {
-				url.searchParams.delete('s');
+			const newParams = new URLSearchParams();
+
+			// Search
+			if (state.searchTerm) newParams.set('s', state.searchTerm);
+
+			// Multi-select filters
+			state.platforms.forEach((p) => newParams.append('platform', p));
+			state.genres.forEach((g) => newParams.append('genre', g));
+			state.statuses.forEach((s) => newParams.append('status', s));
+			state.tiers.forEach((t) => newParams.append('tier', t));
+			state.coOp.forEach((c) => newParams.append('coop', c));
+
+			// Sort
+			if (state.sortOption) {
+				newParams.set('sort', state.sortOption.key);
+				newParams.set('dir', state.sortOption.direction);
 			}
+
+			// Only replace state if the search params actually changed
+			if (url.searchParams.toString() === newParams.toString()) return;
+
+			url.search = newParams.toString();
 			await replaceState(url.toString(), pageState);
 		} catch {
 			// Ignore router initialization errors

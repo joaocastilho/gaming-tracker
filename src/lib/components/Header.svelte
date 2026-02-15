@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { navigateTo, navigateToAndReset } from '$lib/utils/navigationUtils';
+	import { navigateTo } from '$lib/utils/navigationUtils';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	import { appStore } from '$lib/stores/app.svelte';
@@ -71,11 +71,7 @@
 	});
 
 	async function handleNavClick(target: NavId) {
-		if (target === 'tierlist') {
-			await navigateToAndReset(target);
-		} else {
-			await navigateTo(target);
-		}
+		await navigateTo(target);
 	}
 
 	function handleAddGame() {

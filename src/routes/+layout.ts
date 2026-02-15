@@ -41,10 +41,12 @@ export const load: LayoutLoad = async ({ fetch }) => {
 			// 3. Seed Dexie with fresh data for next time
 			if (browser && games.length > 0) {
 				import('$lib/db').then(async ({ db }) => {
-					await db.transaction('rw', db.games, async () => {
-						await db.games.clear();
-						await db.games.bulkPut(games);
-					}).catch((err) => console.error('Failed to seed Dexie:', err));
+					await db
+						.transaction('rw', db.games, async () => {
+							await db.games.clear();
+							await db.games.bulkPut(games);
+						})
+						.catch((err) => console.error('Failed to seed Dexie:', err));
 				});
 			}
 
