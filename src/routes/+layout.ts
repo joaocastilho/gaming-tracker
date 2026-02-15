@@ -2,6 +2,8 @@ import type { LayoutLoad } from './$types';
 import { browser } from '$app/environment';
 import { type GamingTrackerDB } from '$lib/db';
 
+export const prerender = true;
+
 export const load: LayoutLoad = async ({ fetch }) => {
 	// 1. Try to load from Dexie first (instant, works offline)
 	if (browser) {

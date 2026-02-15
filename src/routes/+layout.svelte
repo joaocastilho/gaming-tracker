@@ -719,6 +719,7 @@
 							onOpenModal={openModalWithFilterContext}
 							onEditGame={handleEditGame}
 							onDeleteGame={handleDeleteGame}
+							loading={!gamesInitialized}
 						/>
 					{/if}
 

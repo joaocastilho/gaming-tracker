@@ -3,6 +3,7 @@
 	import GameCard from '$lib/components/GameCard.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
 	import VirtualList from '$lib/components/VirtualList.svelte';
+	import SkeletonGrid from '$lib/components/SkeletonGrid.svelte';
 	import { onMount } from 'svelte';
 
 	interface Props {
@@ -11,6 +12,7 @@
 		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 		onEditGame?: (game: Game) => void;
 		onDeleteGame?: (game: Game) => void;
+		loading?: boolean;
 	}
 
 	let {
@@ -18,7 +20,8 @@
 		displayedGames: displayedGamesProp,
 		onOpenModal,
 		onEditGame,
-		onDeleteGame
+		onDeleteGame,
+		loading = false
 	}: Props = $props();
 	let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
@@ -143,6 +146,8 @@
 				</div>
 			{/each}
 		</div>
+	{:else if loading || !mounted}
+		<SkeletonGrid {containerWidth} />
 	{:else if isEditor}
 		<div class="empty-editor-hint">
 			<p>No games found for this view.</p>

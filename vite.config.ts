@@ -1,5 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import devtoolsJson from 'vite-plugin-devtools-json';
 import { readFileSync } from 'fs';
 
 // Read package.json version at build time
@@ -24,7 +25,8 @@ export default defineConfig({
 					next();
 				});
 			}
-		}
+		},
+		devtoolsJson()
 	],
 	build: {
 		rollupOptions: {

@@ -27,7 +27,8 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:bun": "bun test --preload ./tests/bun-setup.ts",
-		"validate": "bun run lint:fix && bun run format && bun run check && bun run test"
+		"validate": "bun run lint:fix && bun run format && bun run check && bun run test",
+		"clean": "bun -e \"const fs = require('fs'); ['node_modules', '.svelte-kit', 'build', '.vercel', 'bun.lock'].forEach(f => fs.rmSync(f, { recursive: true, force: true }));\" && bun install"
 	},
 	"dependencies": {
 		"dexie": "^4.3.0",
@@ -69,6 +70,7 @@
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.55.0",
 		"vite": "^7.3.1",
+		"vite-plugin-devtools-json": "^1.0.0",
 		"vitest": "^4.0.18"
 	}
 }
