@@ -1,86 +1,51 @@
 import { describe, expect, test } from 'vitest';
 import { completedGamesCache } from '$lib/stores/completedGamesCache.svelte';
-import type { Game } from '$lib/types/game';
+import { createCompletedGame, createTestGame } from './helpers/factories';
 
-// Mock games data
+// Mock games data — fully typed via factory functions
 const mockGames = [
-	{
+	createCompletedGame({
 		id: 'game1',
 		title: 'Game 1',
-		mainTitle: 'Game 1',
-		subtitle: null,
-		platform: 'PC',
-		year: 2024,
 		genre: 'Action',
-		coOp: 'No' as const,
-		status: 'Completed' as const,
-		coverImage: 'game1.webp',
-		playtime: '10h 0m',
 		finishedDate: '2024-01-15',
 		ratingPresentation: 8,
 		ratingStory: 7,
 		ratingGameplay: 9,
 		score: 8,
-		tier: 'A - Amazing' as const
-	},
-	{
+		tier: 'A - Amazing'
+	}),
+	createCompletedGame({
 		id: 'game2',
 		title: 'Game 2',
-		mainTitle: 'Game 2',
-		subtitle: null,
-		platform: 'PC',
-		year: 2024,
 		genre: 'RPG',
-		coOp: 'No' as const,
-		status: 'Completed' as const,
-		coverImage: 'game2.webp',
-		playtime: '50h 0m',
 		finishedDate: '2024-02-20',
 		ratingPresentation: 9,
 		ratingStory: 9,
 		ratingGameplay: 8,
 		score: 8.7,
-		tier: 'S - Masterpiece' as const
-	},
-	{
+		tier: 'S - Masterpiece'
+	}),
+	createTestGame({
 		id: 'game3',
 		title: 'Game 3',
-		mainTitle: 'Game 3',
-		subtitle: null,
-		platform: 'PC',
-		year: 2024,
 		genre: 'Adventure',
-		coOp: 'No' as const,
-		status: 'Planned' as const,
-		coverImage: 'game3.webp',
-		playtime: '20h 0m',
-		finishedDate: null,
-		ratingPresentation: null,
-		ratingStory: null,
-		ratingGameplay: null,
-		score: null,
-		tier: null
-	},
-	{
+		status: 'Planned',
+		playtime: '20h 0m'
+	}),
+	createCompletedGame({
 		id: 'game4',
 		title: 'Game 4',
-		mainTitle: 'Game 4',
-		subtitle: null,
-		platform: 'PC',
-		year: 2024,
 		genre: 'Action',
-		coOp: 'No' as const,
-		status: 'Completed' as const,
-		coverImage: 'game4.webp',
-		playtime: '5h 0m',
 		finishedDate: '2024-01-01',
 		ratingPresentation: 7,
 		ratingStory: 6,
 		ratingGameplay: 8,
 		score: 7,
-		tier: 'B - Great' as const
-	}
-] as Game[];
+		tier: 'B - Great',
+		playtime: '5h 0m'
+	})
+];
 
 describe('Completed Games Caching', () => {
 	test('Initial cache update and retrieval', async () => {
@@ -94,35 +59,31 @@ describe('Completed Games Caching', () => {
 		expect(cachedGames?.length).toBe(3);
 
 		// Verify sorting (most recent first - descending order)
-		const games = cachedGames as Game[];
-		const dates = games.map((g) => g.finishedDate);
-		const isSorted = dates.every(
-			(date, i) => i === 0 || new Date(date as string) <= new Date(dates[i - 1] as string)
-		);
-		expect(isSorted).toBe(true);
+		if (cachedGames) {
+			const dates = cachedGames.map((g) => g.finishedDate);
+			const isSorted = dates.every(
+				(date, i) => i === 0 || new Date(date as string) <= new Date(dates[i - 1] as string)
+			);
+			expect(isSorted).toBe(true);
+		}
 	});
 
 	test('Cache invalidation on data change', async () => {
-		const modifiedGames = [...mockGames];
-		modifiedGames.push({
-			id: 'game5',
-			title: 'Game 5',
-			mainTitle: 'Game 5',
-			subtitle: null,
-			platform: 'PC',
-			year: 2024,
-			genre: 'Strategy',
-			coOp: 'No' as const,
-			status: 'Completed' as const,
-			coverImage: 'game5.webp',
-			playtime: '15h 0m',
-			finishedDate: '2024-03-01',
-			ratingPresentation: 8,
-			ratingStory: 8,
-			ratingGameplay: 7,
-			score: 7.7,
-			tier: 'A - Amazing' as const
-		} as Game);
+		const modifiedGames = [
+			...mockGames,
+			createCompletedGame({
+				id: 'game5',
+				title: 'Game 5',
+				genre: 'Strategy',
+				finishedDate: '2024-03-01',
+				ratingPresentation: 8,
+				ratingStory: 8,
+				ratingGameplay: 7,
+				score: 7.7,
+				tier: 'A - Amazing',
+				playtime: '15h 0m'
+			})
+		];
 
 		completedGamesCache.updateCache(modifiedGames);
 		// Wait for debounce timeout

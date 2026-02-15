@@ -8,6 +8,7 @@ import {
 	getTierColor
 } from '$lib/utils/filterOptions';
 import { formatRating } from '$lib/validation/game';
+import { createCompletedGame } from './helpers/factories';
 
 describe('Utility Tests', () => {
 	describe('Debounce', () => {
@@ -43,11 +44,11 @@ describe('Utility Tests', () => {
 	});
 
 	describe('Filter Options', () => {
-		const mockGames = [
-			{ platform: 'PC', genre: 'RPG', tier: 'S - Masterpiece' },
-			{ platform: 'PS5', genre: 'Action', tier: 'A - Amazing' },
-			{ platform: 'PC', genre: 'Action', tier: 'S - Masterpiece' }
-		] as Game[];
+		const mockGames: Game[] = [
+			createCompletedGame({ platform: 'PC', genre: 'RPG', tier: 'S - Masterpiece' }),
+			createCompletedGame({ platform: 'PS5', genre: 'Action', tier: 'A - Amazing' }),
+			createCompletedGame({ platform: 'PC', genre: 'Action', tier: 'S - Masterpiece' })
+		];
 
 		it('extracts unique options', () => {
 			const options = extractFilterOptions(mockGames);

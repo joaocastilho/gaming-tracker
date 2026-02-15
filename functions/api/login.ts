@@ -4,6 +4,35 @@ type Env = {
 	SESSION_SECRET?: string;
 };
 
+/**
+ * Timing-safe string comparison using HMAC digests.
+ * Compares HMAC(a) vs HMAC(b) byte-by-byte to avoid timing side-channels.
+ */
+async function timingSafeEqual(a: string, b: string): Promise<boolean> {
+	const encoder = new TextEncoder();
+	// Use a fixed key — we don't need secrecy here, just constant-time comparison
+	const keyData = encoder.encode('timing-safe-compare-key');
+	const key = await crypto.subtle.importKey(
+		'raw',
+		keyData,
+		{ name: 'HMAC', hash: 'SHA-256' },
+		false,
+		['sign']
+	);
+	const [macA, macB] = await Promise.all([
+		crypto.subtle.sign('HMAC', key, encoder.encode(a)),
+		crypto.subtle.sign('HMAC', key, encoder.encode(b))
+	]);
+	const bytesA = new Uint8Array(macA);
+	const bytesB = new Uint8Array(macB);
+	if (bytesA.length !== bytesB.length) return false;
+	let result = 0;
+	for (let i = 0; i < bytesA.length; i++) {
+		result |= bytesA[i] ^ bytesB[i];
+	}
+	return result === 0;
+}
+
 async function hmacSign(payload: string, secret: string): Promise<string> {
 	const encoder = new TextEncoder();
 	const key = await crypto.subtle.importKey(
@@ -76,7 +105,12 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			});
 		}
 
-		if (body.username !== username || body.password !== password) {
+		const [usernameMatch, passwordMatch] = await Promise.all([
+			timingSafeEqual(body.username, username),
+			timingSafeEqual(body.password, password)
+		]);
+
+		if (!usernameMatch || !passwordMatch) {
 			console.warn(
 				JSON.stringify({
 					event: 'auth_failed',

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { appStore } from '$lib/stores/app.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
-import type { Game } from '$lib/types/game';
+import { createTestGame } from './helpers/factories';
 
 describe('Game Management Flows', () => {
 	beforeEach(() => {
@@ -12,29 +12,15 @@ describe('Game Management Flows', () => {
 	let addedGameId: string;
 
 	test('Add New Game', () => {
-		const newGameData = {
+		const gameToAdd = createTestGame({
 			title: 'Test Game Flow',
 			platform: 'PC',
 			year: 2024,
 			genre: 'Action',
 			coOp: 'No',
 			status: 'Planned',
-			playtime: '8h 0m',
-			finishedDate: null,
-			ratingPresentation: null,
-			ratingStory: null,
-			ratingGameplay: null,
-			score: null,
-			tier: null
-		} as Game;
-
-		const gameToAdd = {
-			...newGameData,
-			id: crypto.randomUUID(),
-			mainTitle: newGameData.title,
-			subtitle: null,
-			coverImage: 'covers/test.webp'
-		} as Game;
+			playtime: '8h 0m'
+		});
 
 		gamesStore.addGame(gameToAdd);
 		addedGameId = gameToAdd.id;
@@ -48,22 +34,15 @@ describe('Game Management Flows', () => {
 
 	test('Complete Game with Ratings', () => {
 		// Setup: Add a game first
-		const gameToAdd = {
-			id: crypto.randomUUID(),
+		const gameToAdd = createTestGame({
 			title: 'Test Game Flow',
 			platform: 'PC',
 			year: 2024,
 			genre: 'Action',
 			coOp: 'No',
 			status: 'Planned',
-			playtime: '8h 0m',
-			finishedDate: null,
-			ratingPresentation: null,
-			ratingStory: null,
-			ratingGameplay: null,
-			score: null,
-			tier: null
-		} as Game;
+			playtime: '8h 0m'
+		});
 		gamesStore.addGame(gameToAdd);
 		addedGameId = gameToAdd.id;
 
@@ -73,7 +52,7 @@ describe('Game Management Flows', () => {
 
 		if (!game) return;
 
-		const updatedGame = {
+		const updatedGame = createTestGame({
 			...game,
 			status: 'Completed',
 			playtime: '12h 30m',
@@ -83,7 +62,7 @@ describe('Game Management Flows', () => {
 			ratingGameplay: 9,
 			score: 16,
 			tier: 'A - Amazing'
-		} as Game;
+		});
 
 		gamesStore.updateGame(addedGameId, updatedGame);
 

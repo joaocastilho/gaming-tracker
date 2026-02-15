@@ -134,7 +134,16 @@ async function verifySession(cookieHeader: string | null, secret: string): Promi
 
 	const expected = btoa(base64).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 
-	return sig === expected;
+	// Timing-safe comparison: decode both base64 strings to bytes and compare
+	if (sig.length !== expected.length) return false;
+	const encoder2 = new TextEncoder();
+	const sigBytes = encoder2.encode(sig);
+	const expectedBytes = encoder2.encode(expected);
+	let diff = 0;
+	for (let i = 0; i < sigBytes.length; i++) {
+		diff |= sigBytes[i] ^ expectedBytes[i];
+	}
+	return diff === 0;
 }
 
 /**
