@@ -145,7 +145,10 @@ describe('Completed Games Caching', () => {
 				if (!a.finishedDate && !b.finishedDate) return 0;
 				if (!a.finishedDate) return 1;
 				if (!b.finishedDate) return -1;
-				return new Date(b.finishedDate as string).getTime() - new Date(a.finishedDate as string).getTime();
+				return (
+					new Date(b.finishedDate as string).getTime() -
+					new Date(a.finishedDate as string).getTime()
+				);
 			});
 
 		// Simulate sorting with cache (new method)
@@ -167,7 +170,10 @@ describe('Completed Games Caching', () => {
 				if (!a.finishedDate && !b.finishedDate) return 0;
 				if (!a.finishedDate) return 1;
 				if (!b.finishedDate) return -1;
-				return new Date(b.finishedDate as string).getTime() - new Date(a.finishedDate as string).getTime();
+				return (
+					new Date(b.finishedDate as string).getTime() -
+					new Date(a.finishedDate as string).getTime()
+				);
 			});
 
 		const cachedResult = completedGamesCache.getCachedCompletedGames(mockGames);

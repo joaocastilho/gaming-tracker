@@ -163,10 +163,6 @@ class FilteredGamesStore {
 			filteredGames = filteredGames.filter((game) => filters.coOp.includes(game.coOp));
 		}
 
-		if (filters && filters.coOp.length > 0) {
-			filteredGames = filteredGames.filter((game) => filters.coOp.includes(game.coOp));
-		}
-
 		return filteredGames;
 	}
 

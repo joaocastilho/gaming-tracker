@@ -108,9 +108,9 @@ describe('GameCard Component', () => {
 
 		// Mock ResizeObserver
 		global.ResizeObserver = class ResizeObserver {
-			observe() { }
-			unobserve() { }
-			disconnect() { }
+			observe() {}
+			unobserve() {}
+			disconnect() {}
 		};
 
 		// Capture original createElement to avoid recursion

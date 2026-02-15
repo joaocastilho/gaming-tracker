@@ -22,7 +22,7 @@ vi.mock('$lib/stores/filters.svelte', () => {
 		coOp: [],
 		subscribe: vi.fn((run) => {
 			run({ searchTerm: '' });
-			return () => { };
+			return () => {};
 		})
 	};
 	return {

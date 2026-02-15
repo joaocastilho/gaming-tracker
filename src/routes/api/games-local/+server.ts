@@ -46,7 +46,7 @@ export async function POST({ request }: { request: Request }) {
 						// Run the optimization script synchronously
 						const scriptPath = path.join(process.cwd(), 'scripts', 'optimize-covers-full.ts');
 
-						console.log(`[Dev API] optimizing cover for ${sanitizedGameId}...`);
+						console.info(`[Dev API] optimizing cover for ${sanitizedGameId}...`);
 
 						try {
 							await new Promise<void>((resolve, reject) => {
@@ -73,7 +73,7 @@ export async function POST({ request }: { request: Request }) {
 									reject(err);
 								});
 							});
-							console.log(`[Dev API] Optimization complete for ${sanitizedGameId}`);
+							console.info(`[Dev API] Optimization complete for ${sanitizedGameId}`);
 						} catch (optErr) {
 							console.error(`[Dev API] optimization failed for ${sanitizedGameId}`, optErr);
 							// Don't fail the whole request, just log

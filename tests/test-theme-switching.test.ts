@@ -319,8 +319,8 @@ describe('Theme Switching', () => {
 		// Mock system prefers dark color scheme
 		const mockMediaQuery = {
 			matches: true,
-			addEventListener: () => { },
-			removeEventListener: () => { }
+			addEventListener: () => {},
+			removeEventListener: () => {}
 		};
 
 		// Simulate no stored preference - should use system preference

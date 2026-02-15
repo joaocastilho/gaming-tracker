@@ -224,7 +224,7 @@ async function triggerOptimizeWorkflow(gameId: string, env: Env): Promise<void> 
 	const branch = env.GH_BRANCH || 'main';
 
 	if (!token || !owner || !repo) {
-		console.log('GitHub not configured, skipping workflow trigger');
+		console.warn('GitHub not configured, skipping workflow trigger');
 		return;
 	}
 
