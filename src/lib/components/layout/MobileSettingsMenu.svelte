@@ -1,7 +1,16 @@
 <script lang="ts">
 	import { appStore } from '$lib/stores/app.svelte';
 	import { editorStore } from '$lib/stores/editor.svelte';
-	import { SlidersHorizontal, Settings, Moon, LogIn, LogOut, Plus, Download } from 'lucide-svelte';
+	import {
+		SlidersHorizontal,
+		Settings,
+		Moon,
+		Sun,
+		LogIn,
+		LogOut,
+		Plus,
+		Download
+	} from 'lucide-svelte';
 	import { focusTrap } from '$lib/utils/focusTrap';
 
 	interface Props {
@@ -102,7 +111,11 @@
 						onClose();
 					}}
 				>
-					<Moon size={20} />
+					{#if appStore.theme === 'dark'}
+						<Sun size={20} />
+					{:else}
+						<Moon size={20} />
+					{/if}
 					<span>{appStore.theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
 				</button>
 

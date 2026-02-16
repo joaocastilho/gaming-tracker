@@ -20,7 +20,7 @@
 	<div class="icon-container">
 		<svg
 			class="sun-icon"
-			class:visible={theme === 'light'}
+			class:visible={theme === 'dark'}
 			width="18"
 			height="18"
 			viewBox="0 0 24 24"
@@ -39,7 +39,7 @@
 
 		<svg
 			class="moon-icon"
-			class:visible={theme === 'dark'}
+			class:visible={theme === 'light'}
 			width="18"
 			height="18"
 			viewBox="0 0 24 24"
@@ -129,7 +129,7 @@
 	}
 
 	.moon-icon {
-		color: #a5b4fc;
+		color: #6366f1;
 	}
 
 	.glow-effect {
