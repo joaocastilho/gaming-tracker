@@ -93,7 +93,7 @@
 	<h1
 		id="modal-title"
 		bind:clientWidth={containerWidth}
-		class="flex min-w-0 flex-1 flex-col justify-start overflow-hidden md:h-auto"
+		class="flex min-w-0 flex-1 flex-col items-center justify-start overflow-hidden text-center md:h-auto md:items-start md:text-left"
 		style="color: var(--color-text-primary);"
 	>
 		<span bind:this={titleElement} class="modal-title-text w-full font-bold">
@@ -101,7 +101,7 @@
 		</span>
 		{#if game.subtitle}
 			<span
-				class="w-full truncate text-sm font-semibold md:text-lg"
+				class="w-full truncate text-base font-semibold md:text-lg"
 				style="line-height: 1.2; color: var(--color-text-secondary);"
 			>
 				{game.subtitle}

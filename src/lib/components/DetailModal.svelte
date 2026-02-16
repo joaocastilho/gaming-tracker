@@ -357,7 +357,7 @@
 
 		<!-- Main Modal Content -->
 		<div
-			class="modal-content relative flex h-auto w-full max-w-[500px] flex-col overflow-hidden rounded-xl shadow-2xl md:max-h-[85vh] md:w-[95%] md:max-w-[1000px]"
+			class="modal-content relative flex h-full w-full flex-col overflow-hidden bg-neutral-900 md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
 			class:ios-modal={isIOS}
 			class:android-modal={isAndroid}
 			class:swiping-close={swipe.isClosingGesture}
@@ -382,18 +382,18 @@
 		>
 			<button
 				onclick={() => modalStore.closeModal()}
-				class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/30 md:top-4 md:right-4"
+				class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/40 md:top-4 md:right-4"
 				aria-label="Close modal"
 			>
 				<X size={20} />
 			</button>
 
 			<div
-				class="modal-layout flex h-full flex-col md:grid md:grid-cols-[350px_1fr] lg:grid-cols-[400px_1fr]"
+				class="modal-layout flex h-full min-h-0 flex-col overflow-y-auto md:grid md:grid-cols-[350px_1fr] md:overflow-hidden lg:grid-cols-[400px_1fr]"
 			>
 				<!-- Image Section -->
 				<div
-					class="modal-image-container relative flex-1 overflow-hidden rounded-t-xl md:flex-none md:shrink-0 md:rounded-l-xl md:rounded-tr-none"
+					class="modal-image-container relative min-h-[30vh] flex-1 shrink-0 overflow-hidden rounded-t-xl md:h-full md:flex-none md:rounded-l-xl md:rounded-tr-none"
 				>
 					<div class="modal-image-wrapper h-full bg-gray-900">
 						{#if isTransitioningImage && transitionImage}
