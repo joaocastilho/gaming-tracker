@@ -84,8 +84,10 @@
 		<GameCardHeader {game} {size} />
 
 		{#if size === 'small'}
-			<GameCardBadges {game} />
-			<GameCardInfo {game} />
+			<div class="card-content-bottom">
+				<GameCardBadges {game} />
+				<GameCardInfo {game} />
+			</div>
 		{/if}
 	</div>
 </div>
@@ -109,6 +111,7 @@
 		text-align: left;
 		contain: layout style;
 		container-type: inline-size;
+		container-name: game-card;
 	}
 
 	.game-card.tierlist-size {
@@ -125,11 +128,18 @@
 	}
 
 	.game-info {
-		padding: 0px 16px 10px 16px;
+		padding: 6px 16px 10px 16px; /* Added 6px top padding for breathing room from cover */
 		display: flex;
 		flex-direction: column;
 		flex: 1;
-		justify-content: space-between;
+		gap: 2px; /* Reduced from 8px to bring content closer to header */
+	}
+
+	.card-content-bottom {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		flex: 1;
 	}
 
 	/* Responsive Styles */

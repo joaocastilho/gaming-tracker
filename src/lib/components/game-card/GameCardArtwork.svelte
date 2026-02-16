@@ -353,8 +353,8 @@
 		box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
 	}
 
-	/* Responsive Styles */
-	@media (max-width: 768px) {
+	/* Responsive Styles using Container Queries */
+	@container game-card (max-width: 420px) {
 		.editor-controls {
 			opacity: 1;
 			bottom: 8px;
@@ -366,13 +366,6 @@
 		}
 
 		.tier-badge {
-			padding: 5px 10px;
-			font-size: 0.75rem;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.tier-badge {
 			padding: 4px 8px;
 			min-width: 26px;
 			top: 8px;
@@ -380,7 +373,7 @@
 		}
 
 		.tier-text {
-			font-size: 0.8rem;
+			font-size: clamp(0.7rem, 5cqi, 0.85rem);
 		}
 	}
 </style>

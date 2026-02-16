@@ -139,46 +139,25 @@
 		align-items: center;
 		justify-content: center;
 		transition: opacity 0.2s;
-		min-width: 44px;
-		min-height: 44px;
+		/* Removed min dimensions to align with text badges */
+		/* min-width: 44px; */
+		/* min-height: 44px; */
 	}
 
-	/* Responsive Styles */
-	@media (max-width: 768px) {
-		.metadata-row {
-			gap: 8px;
-			align-items: center;
-		}
-
-		.badges-left {
-			gap: 6px;
-			flex-wrap: nowrap;
-			overflow: hidden;
-		}
-
-		.year-right {
-			font-size: 0.8rem;
-			gap: 4px;
-		}
-
-		.badge {
-			font-size: 0.725rem;
-			padding: 4px 10px;
-			max-width: 160px;
-		}
-	}
-
-	@media (max-width: 480px) {
+	/* Responsive Styles using Container Queries */
+	@container game-card (max-width: 420px) {
 		.metadata-row {
 			gap: 4px;
 		}
 
 		.badges-left {
 			gap: 3px;
+			flex-wrap: nowrap;
+			overflow: hidden;
 		}
 
 		.year-right {
-			font-size: 0.75rem;
+			font-size: clamp(0.75rem, 10cqi, 0.8rem);
 			gap: 3px;
 		}
 

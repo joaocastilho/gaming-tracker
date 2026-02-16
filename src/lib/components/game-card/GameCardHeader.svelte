@@ -33,48 +33,65 @@
 		return 0;
 	}
 
-	function adjustTitleSize(node: HTMLElement, hasSubtitle: boolean, width?: number) {
-		const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+	function adjustTitleSize(
+		node: HTMLElement,
+		hasSubtitle: boolean,
+		titleText: string,
+		width?: number
+	) {
+		const containerWidth = width ?? node.clientWidth;
 		const isTierList = size === 'tierlist';
 
-		const minSize = isMobile ? 0.75 : isTierList ? 0.65 : 0.85;
-		const maxSize = isMobile ? 1.1 : isTierList ? 1.05 : 1.4;
-		const singleLineMinSize = isTierList ? 0.9 : 1.1;
+		// Mobile/Desktop split matters less now as we just want single-line consistent look
+		// Lower minSize significantly to allow long titles (e.g. "A Plague Tale: Innocence") to fit on one line
+		const minSize = isTierList ? 0.5 : 0.6;
 
-		const containerWidth = width ?? node.clientWidth;
+		// Unify max size: Always allow big titles (2.5), unless it's a specific tiny list
+		const maxSize = isTierList ? 1.05 : 1.5;
+
 		if (containerWidth === 0) return;
 
-		const text = node.textContent || '';
+		// Use the passed titleText for measurement
 		const font = getFont(node);
-		const textWidthAt1Rem = getTextWidth(text, font);
+		const textWidthAt1Rem = getTextWidth(titleText, font);
 
-		if (isMobile) {
+		if (hasSubtitle) {
+			// Case 1: Has Subtitle -> Force Single Line
+			node.style.whiteSpace = 'nowrap';
+			node.style.overflow = 'hidden';
+			node.style.textOverflow = 'ellipsis';
+			node.style.display = 'block';
+			node.style.webkitLineClamp = 'none';
+
+			// Calculate size to fit width exactly
+			// Add a safety buffer (0.95) to prevent ellipsis flicker
+			let newSize = (containerWidth * 0.95) / textWidthAt1Rem;
+
+			// Clamp
+			if (newSize > maxSize) newSize = maxSize;
+			// Allow shrinking quite a bit but keep a sensible floor
+			if (newSize < minSize) newSize = minSize;
+
+			node.style.fontSize = `${newSize}rem`;
+		} else {
+			// Case 2: No Subtitle -> Allow Wrapping (up to 2 lines)
 			node.style.whiteSpace = 'normal';
-			let newSize = (1.8 * containerWidth) / textWidthAt1Rem;
+			node.style.display = '-webkit-box';
+			node.style.webkitLineClamp = '2';
+			node.style.webkitBoxOrient = 'vertical';
+			node.style.overflow = 'hidden';
+			node.style.textOverflow = 'ellipsis';
+
+			// For wrapping titles, we prefer to keep them larger (consistent) and let them wrap
+			// But if it's REALLY long (more than 2 lines at max size), we should shrink it.
+			// Approximate check: 2 lines width = 2 * containerWidth
+			let newSize = (2.0 * containerWidth * 0.95) / textWidthAt1Rem;
+
 			if (newSize > maxSize) newSize = maxSize;
 			if (newSize < minSize) newSize = minSize;
+
 			node.style.fontSize = `${newSize}rem`;
-			return;
 		}
-
-		if (!hasSubtitle) {
-			let newSize = containerWidth / textWidthAt1Rem;
-			if (newSize > maxSize) newSize = maxSize;
-
-			if (newSize >= singleLineMinSize) {
-				node.style.whiteSpace = 'nowrap';
-				node.style.fontSize = `${newSize}rem`;
-				return;
-			}
-		}
-
-		node.style.whiteSpace = 'normal';
-		let newSize = (1.9 * containerWidth) / textWidthAt1Rem;
-
-		if (newSize > maxSize) newSize = maxSize;
-		if (newSize < minSize) newSize = minSize;
-
-		node.style.fontSize = `${newSize}rem`;
 	}
 
 	function fitTitle(node: HTMLElement, params: { title: string; subtitle?: string }) {
@@ -82,7 +99,12 @@
 
 		const resizeObserver = new ResizeObserver((entries) => {
 			for (const entry of entries) {
-				adjustTitleSize(node, !!currentParams.subtitle, entry.contentRect.width);
+				adjustTitleSize(
+					node,
+					!!currentParams.subtitle,
+					currentParams.title,
+					entry.contentRect.width
+				);
 			}
 		});
 		resizeObserver.observe(node);
@@ -90,7 +112,7 @@
 		return {
 			update(newParams: { title: string; subtitle?: string }) {
 				currentParams = newParams;
-				adjustTitleSize(node, !!newParams.subtitle);
+				adjustTitleSize(node, !!newParams.subtitle, newParams.title);
 			},
 			destroy() {
 				resizeObserver.disconnect();
@@ -130,26 +152,24 @@
 <style>
 	.title-section {
 		margin-bottom: 0;
-		min-height: 70px;
+		height: 64px; /* Reduced from 72px to pull content even closer */
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
+		/* overflow: hidden;  <-- We might need to allow overflow if we shrink too much, but let's keep it for safety */
 		overflow: hidden;
+		padding: 0 4px;
 	}
 
 	.game-title {
-		font-size: 1.1rem;
-		font-weight: 600;
-		margin: 0;
-		line-height: 1.25;
-		word-wrap: break-word;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		text-align: center;
-		width: 100%;
+		font-size: 1.3rem;
+		font-weight: 700;
+		margin: 0; /* Removing margins to tighten spacing */
+		line-height: 1.15;
+		/* Base styles, overridden by JS for wrapping/nowrap logic */
 		overflow: hidden;
+		width: 100%;
 		color: var(--color-text-primary);
 	}
 
@@ -165,8 +185,8 @@
 		font-size: 0.75rem;
 	}
 
-	/* Responsive Styles */
-	@media (max-width: 768px) {
+	/* Responsive Styles using Container Queries */
+	@container game-card (max-width: 420px) {
 		.title-section {
 			min-height: 32px;
 			max-height: none;
@@ -180,12 +200,6 @@
 		.game-subtitle {
 			font-size: 0.75rem;
 			margin-top: 1px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.title-section {
-			min-height: 28px;
 		}
 	}
 </style>

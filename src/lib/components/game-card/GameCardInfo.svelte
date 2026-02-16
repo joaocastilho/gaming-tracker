@@ -12,19 +12,23 @@
 		const date = new Date(dateString);
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	}
+
+	const hasPresentation = $derived(game.status === 'Completed' && game.ratingPresentation !== null);
+	const hasStory = $derived(game.status === 'Completed' && game.ratingStory !== null);
+	const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay !== null);
 </script>
 
 <!-- Time and Date Section -->
 <div class="time-date-row">
 	<div class="time-item" title={game.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}>
-		<Timer size={16} />
+		<Timer size={18} />
 		<span>{game.playtime ?? 'N/A'}</span>
 	</div>
 	<div
 		class="date-item"
 		title={game.status === 'Completed' ? 'Completed On' : 'Expected Completion'}
 	>
-		<CalendarDays size={18} />
+		<CalendarDays size={20} />
 		<span
 			>{game.status === 'Completed' && game.finishedDate
 				? formatDate(game.finishedDate)
@@ -34,22 +38,37 @@
 </div>
 
 <!-- Ratings Section -->
-{#if game.status === 'Completed' && game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null}
-	<div class="ratings-compact">
-		<div class="rating-item" title="Presentation: {game.ratingPresentation}/10">
-			<Presentation size={28} class="text-rose-500" />
+<div class="ratings-compact">
+	<div
+		class="rating-item {hasPresentation ? '' : 'placeholder'}"
+		title={hasPresentation ? `Presentation: ${game.ratingPresentation}/10` : 'Presentation'}
+	>
+		<Presentation size={32} class={hasPresentation ? 'text-rose-500' : 'text-muted'} />
+		{#if hasPresentation}
 			<span class="rating-value">{game.ratingPresentation}</span>
-		</div>
-		<div class="rating-item" title="Story: {game.ratingStory}/10">
-			<NotebookPen size={28} class="text-sky-500" />
-			<span class="rating-value">{game.ratingStory}</span>
-		</div>
-		<div class="rating-item" title="Gameplay: {game.ratingGameplay}/10">
-			<Gamepad2 size={28} class="text-emerald-500" />
-			<span class="rating-value">{game.ratingGameplay}</span>
-		</div>
+		{/if}
 	</div>
-{/if}
+
+	<div
+		class="rating-item {hasStory ? '' : 'placeholder'}"
+		title={hasStory ? `Story: ${game.ratingStory}/10` : 'Story'}
+	>
+		<NotebookPen size={32} class={hasStory ? 'text-sky-500' : 'text-muted'} />
+		{#if hasStory}
+			<span class="rating-value">{game.ratingStory}</span>
+		{/if}
+	</div>
+
+	<div
+		class="rating-item {hasGameplay ? '' : 'placeholder'}"
+		title={hasGameplay ? `Gameplay: ${game.ratingGameplay}/10` : 'Gameplay'}
+	>
+		<Gamepad2 size={32} class={hasGameplay ? 'text-emerald-500' : 'text-muted'} />
+		{#if hasGameplay}
+			<span class="rating-value">{game.ratingGameplay}</span>
+		{/if}
+	</div>
+</div>
 
 <!-- Total Score Section -->
 {#if game.status === 'Completed' && game.score !== null}
@@ -68,7 +87,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 12px 0px 5px 0px;
+		padding: 4px 0px 5px 0px;
 	}
 
 	.time-item,
@@ -84,7 +103,10 @@
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
-		padding: 8px 0;
+		padding: 4px 0;
+		/* Center the ratings vertically between the top content (Timer) and bottom (Status) */
+		margin: auto 0;
+		width: 100%;
 	}
 
 	.rating-item {
@@ -94,10 +116,25 @@
 		gap: 2px;
 	}
 
+	.rating-item.placeholder {
+		opacity: 0.3;
+		filter: grayscale(1);
+	}
+
+	/* Text Colors handled by tailwind classes usually, but define muted here if needed */
+	:global(.text-muted) {
+		color: var(--color-text-tertiary, #888);
+	}
+
 	.rating-value {
-		font-size: 0.875rem;
-		font-weight: 700;
+		font-size: 1.1rem;
+		font-weight: 800;
 		color: var(--color-text-primary);
+	}
+
+	.rating-item :global(svg) {
+		width: 32px;
+		height: 32px;
 	}
 
 	.status-indicator {
@@ -108,7 +145,8 @@
 		font-weight: 800;
 		font-size: 0.95rem;
 		padding: 8px;
-		margin-top: 10px;
+		/* box-shadow handled below */
+		margin-top: 4px; /* Default small gap */
 		border-radius: 12px;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
@@ -142,18 +180,24 @@
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
-	/* Responsive Styles */
-	@media (max-width: 768px) {
+	/* Responsive Styles using Container Queries */
+	@container game-card (max-width: 420px) {
 		.time-date-row {
 			font-size: clamp(0.7rem, 6cqi, 0.85rem);
 			padding: 6px 0 2px 0;
 			gap: 4px;
 		}
 
+		.time-item,
+		.date-item {
+			white-space: nowrap;
+		}
+
 		.ratings-compact {
 			padding: 4px 0;
-			justify-content: center;
-			gap: 12px;
+			justify-content: space-evenly;
+			gap: 2px;
+			width: 100%;
 		}
 
 		.rating-item {
@@ -163,13 +207,14 @@
 		}
 
 		.rating-item :global(svg) {
-			width: 18px;
-			height: 18px;
+			width: 32px;
+			height: 32px;
 		}
 
 		.rating-value {
-			font-size: clamp(0.8rem, 7cqi, 0.9rem);
+			font-size: 1.1rem;
 			font-weight: 800;
+			color: var(--color-text-primary);
 		}
 
 		.status-indicator {
@@ -185,7 +230,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@container game-card (max-width: 320px) {
 		.ratings-compact {
 			padding: 0;
 			gap: 2px;
