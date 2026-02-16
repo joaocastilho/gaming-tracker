@@ -46,8 +46,19 @@
 	let initialized = $state(true);
 	let gamesInitialized = $state(false);
 	let urlUpdateTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
-	let deferredPrompt = $state<Event | null>(null);
 	let canInstall = $state(false);
+
+	// BeforeInstallPromptEvent interface for PWA install
+	interface BeforeInstallPromptEvent extends Event {
+		prompt: () => Promise<void>;
+		userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+	}
+
+	function isBeforeInstallPromptEvent(event: Event | null): event is BeforeInstallPromptEvent {
+		return event !== null && 'prompt' in event && 'userChoice' in event;
+	}
+
+	let deferredPrompt = $state<BeforeInstallPromptEvent | null>(null);
 
 	// Initialize games reactively (SSR support)
 	$effect(() => {
@@ -474,8 +485,10 @@
 
 		const handleBeforeInstallPrompt = (e: Event) => {
 			e.preventDefault();
-			deferredPrompt = e;
-			canInstall = true;
+			if (isBeforeInstallPromptEvent(e)) {
+				deferredPrompt = e;
+				canInstall = true;
+			}
 		};
 
 		window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -488,13 +501,8 @@
 	async function installApp() {
 		if (!deferredPrompt) return;
 
-		const promptEvent = deferredPrompt as unknown as {
-			prompt: () => Promise<void>;
-			userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-		};
-
-		await promptEvent.prompt();
-		const { outcome } = await promptEvent.userChoice;
+		await deferredPrompt.prompt();
+		const { outcome } = await deferredPrompt.userChoice;
 
 		if (outcome === 'accepted') {
 			deferredPrompt = null;
