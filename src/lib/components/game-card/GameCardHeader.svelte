@@ -42,11 +42,10 @@
 		const containerWidth = width ?? node.clientWidth;
 		const isTierList = size === 'tierlist';
 
-		// Mobile/Desktop split matters less now as we just want single-line consistent look
-		// Lower minSize significantly to allow long titles (e.g. "A Plague Tale: Innocence") to fit on one line
-		const minSize = isTierList ? 0.5 : 0.6;
+		// Lower minSize to virtually nothing to guarantee fit
+		const minSize = 0.1;
 
-		// Unify max size: Always allow big titles (2.5), unless it's a specific tiny list
+		// Unify max size
 		const maxSize = isTierList ? 1.05 : 1.5;
 
 		if (containerWidth === 0) return;
@@ -63,34 +62,49 @@
 			node.style.display = 'block';
 			node.style.webkitLineClamp = 'none';
 
-			// Calculate size to fit width exactly
-			// Add a safety buffer (0.95) to prevent ellipsis flicker
-			let newSize = (containerWidth * 0.95) / textWidthAt1Rem;
-
-			// Clamp
+			// Initial guess
+			let newSize = (containerWidth * 0.9) / textWidthAt1Rem;
 			if (newSize > maxSize) newSize = maxSize;
-			// Allow shrinking quite a bit but keep a sensible floor
 			if (newSize < minSize) newSize = minSize;
 
 			node.style.fontSize = `${newSize}rem`;
+
+			// Iterative check for single line overflow
+			// For single line with ellipsis, scrollWidth == clientWidth usually,
+			// so we can't rely on that easily without temporarily removing overflow: hidden
+			// However, our initial guess for single line is extremely accurate because it's simple math.
+			// We will rely on the guess + the safety buffer (0.9) for this case.
 		} else {
 			// Case 2: No Subtitle -> Allow Wrapping (up to 2 lines)
 			node.style.whiteSpace = 'normal';
+			// Ensure word breaking to avoid overflowing horizontal space with long words
+			node.style.wordBreak = 'break-word';
 			node.style.display = '-webkit-box';
 			node.style.webkitLineClamp = '2';
 			node.style.webkitBoxOrient = 'vertical';
 			node.style.overflow = 'hidden';
 			node.style.textOverflow = 'ellipsis';
 
-			// For wrapping titles, we prefer to keep them larger (consistent) and let them wrap
-			// But if it's REALLY long (more than 2 lines at max size), we should shrink it.
-			// Approximate check: 2 lines width = 2 * containerWidth
-			let newSize = (2.0 * containerWidth * 0.95) / textWidthAt1Rem;
+			// Initial Conservative Estimate
+			const availableWidth = containerWidth * 1.8;
+			let newSize = availableWidth / textWidthAt1Rem;
 
 			if (newSize > maxSize) newSize = maxSize;
 			if (newSize < minSize) newSize = minSize;
 
 			node.style.fontSize = `${newSize}rem`;
+
+			// Iterative Check: If scrollHeight > clientHeight, it means we have truncation (more than 2 lines content)
+			// We loop a few times to shrink it down until it fits.
+			// Limit iterations to prevent any potential performance freeze.
+			let iterations = 0;
+			while (node.scrollHeight > node.clientHeight && newSize > minSize && iterations < 10) {
+				// Reduce size by ~10% each step
+				newSize *= 0.9;
+				if (newSize < minSize) newSize = minSize;
+				node.style.fontSize = `${newSize}rem`;
+				iterations++;
+			}
 		}
 	}
 

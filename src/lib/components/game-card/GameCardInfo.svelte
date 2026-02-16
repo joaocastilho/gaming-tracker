@@ -237,6 +237,58 @@
 		}
 
 		.time-date-row {
+			font-size: 0.825rem;
+		}
+
+		.time-item,
+		.date-item {
+			font-size: 0.825rem;
+		}
+
+		.time-item :global(svg),
+		.date-item :global(svg) {
+			width: 14px;
+			height: 14px;
+		}
+
+		.rating-item :global(svg) {
+			width: 24px;
+			height: 24px;
+		}
+
+		.rating-value {
+			font-size: 0.95rem;
+		}
+	}
+
+	@container game-card (max-width: 240px) {
+		.time-date-row {
+			font-size: 0.7rem;
+			gap: 2px;
+		}
+
+		.time-item,
+		.date-item {
+			font-size: 0.7rem;
+		}
+
+		.time-item :global(svg),
+		.date-item :global(svg) {
+			width: 12px;
+			height: 12px;
+		}
+
+		.rating-item :global(svg) {
+			width: 20px;
+			height: 20px;
+		}
+
+		.rating-value {
+			font-size: 0.85rem;
+		}
+
+		.status-indicator {
+			padding: 6px;
 			font-size: 0.75rem;
 		}
 	}

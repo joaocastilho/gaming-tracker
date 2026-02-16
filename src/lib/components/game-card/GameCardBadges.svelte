@@ -68,9 +68,6 @@
 		>
 			{game.genre}
 		</button>
-	</div>
-	<div class="year-right">
-		<span class="game-year">{game.year}</span>
 		{#if game.coOp === 'Yes'}
 			<button
 				class="coop-badge"
@@ -82,6 +79,9 @@
 				<Users size={18} class="text-blue-500" />
 			</button>
 		{/if}
+	</div>
+	<div class="year-right">
+		<span class="game-year">{game.year}</span>
 	</div>
 </div>
 
@@ -165,6 +165,14 @@
 			font-size: clamp(0.65rem, 5.5cqi, 0.75rem);
 			padding: 3px 6px;
 			max-width: 42cqi;
+		}
+	}
+
+	/* Disable badge interactions on mobile to ensure card click works */
+	@media (max-width: 768px) {
+		.badge,
+		.coop-badge {
+			pointer-events: none;
 		}
 	}
 </style>
