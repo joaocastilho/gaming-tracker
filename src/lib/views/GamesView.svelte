@@ -30,7 +30,17 @@
 	let containerWidth = $state(1600);
 
 	let columns = $derived(
-		!containerWidth || containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320))
+		(() => {
+			if (!containerWidth) return 1;
+			// Minimum card width of 185px -> allows 2 columns at ~400px (185*2 + 12 gap = 382)
+			// But we also want 1 column at < 400px.
+			// 400px / 2 = 200px.
+			// Let's use 185px to be safe for 414px/428px devices.
+			const minCardWidth = 185;
+			const gap = 12;
+			const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
+			return Math.min(5, Math.max(1, calculatedColumns));
+		})()
 	);
 
 	let rows = $derived(

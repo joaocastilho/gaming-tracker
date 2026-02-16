@@ -53,12 +53,12 @@
 
 <!-- Total Score Section -->
 {#if game.status === 'Completed' && game.score !== null}
-	<div class="total-score-badge">
-		<Award size={20} class="text-amber-500" />
+	<div class="status-indicator score-badge">
+		<Award size={18} class="text-amber-400" />
 		<span>SCORE {game.score}</span>
 	</div>
 {:else}
-	<div class="planned-indicator">
+	<div class="status-indicator planned-badge">
 		<span>PLANNED</span>
 	</div>
 {/if}
@@ -100,57 +100,88 @@
 		color: var(--color-text-primary);
 	}
 
-	.total-score-badge {
+	.status-indicator {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
 		font-weight: 800;
-		font-size: 1rem;
-		color: var(--color-rating-total, #f59e0b);
-		padding: 6px;
-		margin-top: auto;
+		font-size: 0.95rem;
+		padding: 8px;
+		margin-top: 10px;
+		border-radius: 12px;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		transition: all var(--transition-normal);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
-	.planned-indicator {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		font-weight: 800;
-		font-size: 1rem;
+	.score-badge {
+		color: #fbbf24;
+		background: rgba(245, 158, 11, 0.15);
+		border-color: rgba(245, 158, 11, 0.25);
+		box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+	}
+
+	.planned-badge {
 		color: #60a5fa;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
-		border-radius: 12px;
-		padding: 6px;
-		margin-top: auto;
+		background: rgba(59, 130, 246, 0.15);
+		border-color: rgba(59, 130, 246, 0.25);
+		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+	}
+
+	:global(.light) .score-badge {
+		background: rgba(245, 158, 11, 0.1);
+		border-color: rgba(245, 158, 11, 0.2);
+	}
+
+	:global(.light) .planned-badge {
+		background: rgba(59, 130, 246, 0.1);
+		border-color: rgba(59, 130, 246, 0.2);
 	}
 
 	/* Responsive Styles */
 	@media (max-width: 768px) {
 		.time-date-row {
-			font-size: 0.75rem;
-			padding: 6px 0;
+			font-size: clamp(0.7rem, 6cqi, 0.85rem);
+			padding: 6px 0 2px 0;
+			gap: 4px;
 		}
 
 		.ratings-compact {
-			padding: 0;
-			gap: 3px;
+			padding: 4px 0;
+			justify-content: center;
+			gap: 12px;
+		}
+
+		.rating-item {
+			flex-direction: row;
+			align-items: center;
+			gap: 4px;
+		}
+
+		.rating-item :global(svg) {
+			width: 18px;
+			height: 18px;
 		}
 
 		.rating-value {
-			font-size: clamp(1.1rem, 5cqi, 2rem);
+			font-size: clamp(0.8rem, 7cqi, 0.9rem);
+			font-weight: 800;
 		}
 
-		.total-score-badge {
-			padding: 8px 12px;
-			font-size: 0.85rem;
+		.status-indicator {
+			padding: 8px;
+			font-size: clamp(0.75rem, 6cqi, 0.85rem);
+			margin-top: 6px;
+			border-radius: 10px;
 		}
 
-		.planned-indicator {
-			font-size: 0.8rem;
+		.status-indicator :global(svg) {
+			width: 16px;
+			height: 16px;
 		}
 	}
 

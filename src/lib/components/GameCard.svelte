@@ -96,7 +96,8 @@
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
-		min-width: 280px;
+		min-width: 180px;
+		max-width: 100%;
 		border-radius: 16px;
 		overflow: hidden;
 		background: var(--color-surface);
@@ -135,18 +136,19 @@
 	@media (max-width: 768px) {
 		.game-card {
 			min-width: auto;
+			border-radius: 12px;
 		}
 
 		.game-info {
-			padding: 12px 12px 8px 12px;
-			gap: 8px;
+			padding: 8px 10px 8px 10px;
+			gap: 4px;
 		}
 	}
 
 	@media (max-width: 480px) {
 		.game-info {
-			padding: 10px 10px 6px 10px;
-			gap: 6px;
+			padding: 8px 10px 8px 10px;
+			gap: 4px;
 		}
 	}
 </style>

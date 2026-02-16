@@ -143,11 +143,14 @@
 	/* Responsive Styles */
 	@media (max-width: 768px) {
 		.metadata-row {
-			gap: 6px;
+			gap: 8px;
+			align-items: center;
 		}
 
 		.badges-left {
-			gap: 4px;
+			gap: 6px;
+			flex-wrap: nowrap;
+			overflow: hidden;
 		}
 
 		.year-right {
@@ -156,9 +159,9 @@
 		}
 
 		.badge {
-			font-size: 0.7rem;
-			padding: 3px 8px;
-			max-width: 120px;
+			font-size: 0.725rem;
+			padding: 4px 10px;
+			max-width: 160px;
 		}
 	}
 
@@ -177,9 +180,9 @@
 		}
 
 		.badge {
-			font-size: 0.65rem;
-			padding: 2px 6px;
-			max-width: 100px;
+			font-size: clamp(0.65rem, 5.5cqi, 0.75rem);
+			padding: 3px 6px;
+			max-width: 42cqi;
 		}
 	}
 </style>

@@ -34,15 +34,11 @@
 	}
 
 	function adjustTitleSize(node: HTMLElement, hasSubtitle: boolean, width?: number) {
-		if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-			node.style.whiteSpace = '';
-			node.style.fontSize = '';
-			return;
-		}
-
+		const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 		const isTierList = size === 'tierlist';
-		const minSize = isTierList ? 0.65 : 0.85;
-		const maxSize = isTierList ? 1.05 : 1.4;
+
+		const minSize = isMobile ? 0.75 : isTierList ? 0.65 : 0.85;
+		const maxSize = isMobile ? 1.1 : isTierList ? 1.05 : 1.4;
 		const singleLineMinSize = isTierList ? 0.9 : 1.1;
 
 		const containerWidth = width ?? node.clientWidth;
@@ -51,6 +47,15 @@
 		const text = node.textContent || '';
 		const font = getFont(node);
 		const textWidthAt1Rem = getTextWidth(text, font);
+
+		if (isMobile) {
+			node.style.whiteSpace = 'normal';
+			let newSize = (1.8 * containerWidth) / textWidthAt1Rem;
+			if (newSize > maxSize) newSize = maxSize;
+			if (newSize < minSize) newSize = minSize;
+			node.style.fontSize = `${newSize}rem`;
+			return;
+		}
 
 		if (!hasSubtitle) {
 			let newSize = containerWidth / textWidthAt1Rem;
@@ -137,7 +142,7 @@
 		font-size: 1.1rem;
 		font-weight: 600;
 		margin: 0;
-		line-height: 1.2;
+		line-height: 1.25;
 		word-wrap: break-word;
 		display: flex;
 		flex-direction: column;
@@ -163,29 +168,24 @@
 	/* Responsive Styles */
 	@media (max-width: 768px) {
 		.title-section {
-			min-height: 40px;
-			max-height: 40px;
+			min-height: 32px;
+			max-height: none;
+			margin-bottom: 4px;
 		}
 
 		.game-title {
-			font-size: 0.95rem;
-			line-height: 1.15;
+			line-height: 1.2;
 		}
 
 		.game-subtitle {
-			font-size: 0.7rem;
+			font-size: 0.75rem;
+			margin-top: 1px;
 		}
 	}
 
 	@media (max-width: 480px) {
 		.title-section {
-			min-height: 36px;
-			max-height: 36px;
-		}
-
-		.game-title {
-			font-size: 0.9rem;
-			line-height: 1.15;
+			min-height: 28px;
 		}
 	}
 </style>
