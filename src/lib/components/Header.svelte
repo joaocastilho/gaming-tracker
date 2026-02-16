@@ -262,7 +262,7 @@
 		cursor: pointer;
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--color-text-tertiary);
+		color: var(--color-text-secondary);
 		transition: all var(--transition-fast);
 		border-radius: 8px;
 	}
@@ -275,11 +275,11 @@
 		min-width: 1.5rem;
 		padding: 0.15rem 0.5rem;
 		border-radius: 999px;
-		font-size: 0.7rem;
+		font-size: 0.9rem;
 		font-weight: 600;
 		text-align: center;
 		background: var(--color-surface-elevated);
-		color: var(--color-accent);
+		color: var(--color-text-secondary);
 		border: 1px solid var(--color-border);
 		transition: all var(--transition-fast);
 	}
@@ -305,6 +305,7 @@
 
 	.tabs-list button:hover + .count-badge {
 		border-color: var(--color-accent);
+		color: var(--color-accent);
 	}
 
 	.tabs-list button:hover::after {
@@ -324,9 +325,9 @@
 	}
 
 	.tabs-list button.active + .count-badge {
-		background: var(--color-accent);
-		color: var(--color-accent-foreground);
-		border-color: var(--color-accent);
+		background: color-mix(in srgb, var(--color-accent), black 15%);
+		color: #ffffff;
+		border-color: transparent;
 	}
 
 	.header-right {
