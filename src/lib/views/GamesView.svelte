@@ -175,7 +175,7 @@
 	.game-row {
 		display: flex;
 		justify-content: flex-start;
-		gap: clamp(0.5rem, 0.5rem + 2vw, 1.5rem);
+		gap: clamp(0.75rem, 0.75rem + 2vw, 1.5rem);
 		width: 100%;
 		padding-left: 0.5rem;
 		padding-right: 0.5rem;

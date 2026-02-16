@@ -137,7 +137,10 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		transition: opacity 0.2s;
+		min-width: 44px;
+		min-height: 44px;
 	}
 
 	/* Responsive Styles */
