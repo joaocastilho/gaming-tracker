@@ -95,7 +95,7 @@
 
 	.badges-left {
 		display: flex;
-		gap: 6px;
+		gap: 12px;
 		flex-wrap: wrap;
 	}
 
@@ -151,7 +151,7 @@
 		}
 
 		.badges-left {
-			gap: 3px;
+			gap: 6px;
 			flex-wrap: nowrap;
 			overflow: hidden;
 		}

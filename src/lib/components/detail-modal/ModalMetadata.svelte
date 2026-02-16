@@ -25,7 +25,7 @@
 </script>
 
 <div class="mb-3 flex items-center justify-between md:mb-4">
-	<div class="flex flex-wrap gap-2">
+	<div class="flex flex-wrap gap-6">
 		<span
 			class="badge rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
 				game.platform

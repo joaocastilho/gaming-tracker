@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Game } from '$lib/types/game';
-	import { Presentation, NotebookPen, Gamepad2, Award } from 'lucide-svelte';
+	import { Presentation, NotebookPen, Gamepad2 } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
@@ -66,13 +66,17 @@
 	</div>
 
 	<div
-		class="score-result mt-6 rounded-lg border p-4 md:mt-8 dark:border-blue-800 dark:from-blue-900/80 dark:to-purple-900/80"
+		class="score-result mt-6 rounded-lg border p-4 md:mt-8"
+		style="background-color: var(--color-surface-elevated); border-color: var(--color-border);"
 		class:opacity-40={game.score === null}
 	>
-		<div class="flex items-center justify-center gap-2">
-			<Award size={24} class="text-yellow-500" />
-			<span class="text-sm font-bold md:text-lg" style="color: var(--color-text-primary);">
-				Score {game.score ?? '-'}
+		<div class="flex flex-col items-center justify-center gap-1">
+			<span
+				class="text-xs font-bold tracking-widest uppercase md:text-sm"
+				style="color: var(--color-text-secondary);">Score</span
+			>
+			<span class="text-3xl font-extrabold md:text-4xl" style="color: var(--color-rating-total);">
+				{game.score ?? '-'}
 			</span>
 		</div>
 	</div>

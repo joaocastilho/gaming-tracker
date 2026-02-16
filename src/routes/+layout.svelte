@@ -100,7 +100,8 @@
 			if (
 				currentScrollY > 80 &&
 				currentScrollY > lastScrollY &&
-				filtersStore.isDesktopFiltersExpanded
+				filtersStore.isDesktopFiltersExpanded &&
+				!filtersStore.isAnyFilterApplied()
 			) {
 				filtersStore.setDesktopFiltersExpanded(false);
 			}
@@ -215,12 +216,25 @@
 			// Use untrack so manual state changes don't trigger an immediate clobbering restoration
 			untrack(() => {
 				filtersStore.readSearchFromURL(searchParams, page.url.pathname);
+				// Auto-open filters if we have active filters (desktop only)
+				if (filtersStore.isAnyFilterApplied() && window.innerWidth >= 768) {
+					filtersStore.setDesktopFiltersExpanded(true);
+				}
 			});
 
 			// Auto-open mobile search if URL has search parameter
 			const searchParam = searchParams.get('s');
 			if (searchParam && window.innerWidth < 768 && !isSearchOpen) {
 				pushState(page.url, { showMobileSearch: true });
+			}
+		}
+	});
+
+	// Aggressively force desktop filters open if any filter is active
+	$effect(() => {
+		if (browser && window.innerWidth >= 768) {
+			if (filtersStore.isAnyFilterApplied()) {
+				filtersStore.setDesktopFiltersExpanded(true);
 			}
 		}
 	});
