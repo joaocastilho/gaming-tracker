@@ -94,22 +94,26 @@
 	let isTransitioningImage = $state(false);
 	let modalImageElement = $state<HTMLImageElement>();
 
-	function navigateToPrevious() {
+	function navigateToPrevious(skipTransition = false) {
 		if (currentGameIndex > 0) {
 			const prevGame = displayedGames[currentGameIndex - 1];
-			// Pre-set transition
-			transitionImage = getPreviewImageSrc(prevGame.coverImage);
-			isTransitioningImage = true;
+			// Only trigger image transition if NOT swiping (e.g. keyboard/button nav)
+			if (!skipTransition) {
+				transitionImage = getPreviewImageSrc(prevGame.coverImage);
+				isTransitioningImage = true;
+			}
 			modalStore.openViewModal(prevGame, displayedGames);
 		}
 	}
 
-	function navigateToNext() {
+	function navigateToNext(skipTransition = false) {
 		if (currentGameIndex < displayedGames.length - 1) {
 			const nextGame = displayedGames[currentGameIndex + 1];
-			// Pre-set transition
-			transitionImage = getPreviewImageSrc(nextGame.coverImage);
-			isTransitioningImage = true;
+			// Only trigger image transition if NOT swiping (e.g. keyboard/button nav)
+			if (!skipTransition) {
+				transitionImage = getPreviewImageSrc(nextGame.coverImage);
+				isTransitioningImage = true;
+			}
 			modalStore.openViewModal(nextGame, displayedGames);
 		}
 	}
@@ -301,17 +305,31 @@
 		{#if prevGamePreview && swipe.swipeDirection === 'right' && Math.abs(swipe.swipeOffsetX) > 0}
 			<div
 				class="parallax-preview parallax-left"
-				style="transform: translateX({100 + swipe.parallaxOffset}%); opacity: {Math.min(
-					Math.abs(swipe.swipeOffsetX) / 50,
+				style="transform: translateX({15 + swipe.parallaxOffset * 0.5}%) scale({0.9 +
+					(Math.abs(swipe.swipeOffsetX) / window.innerWidth) * 0.1}); opacity: {Math.min(
+					Math.abs(swipe.swipeOffsetX) / 100,
 					1
-				)}; background-color: {prevGamePreview.status === 'Completed'
-					? 'var(--color-surface-completed)'
-					: 'var(--color-surface)'};"
+				)};"
 			>
-				<div class="parallax-title-container p-4">
-					<h3 class="parallax-title text-xl font-bold">
+				<div
+					class="absolute inset-0 bg-cover bg-center"
+					style="background-image: url('{getPreviewImageSrc(prevGamePreview.coverImage)}');"
+				></div>
+				<div
+					class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+					style="background-color: {prevGamePreview.status === 'Completed'
+						? 'rgba(46, 26, 71, 0.85)' // var(--color-surface-completed) with opacity
+						: 'rgba(26, 26, 46, 0.85)'};"
+				></div>
+
+				<div class="relative z-10 flex h-full flex-col justify-end p-6 pb-20">
+					<h3 class="parallax-title text-2xl font-bold text-white/90">
 						{prevGamePreview.mainTitle || prevGamePreview.title}
 					</h3>
+					<div class="mt-2 flex items-center gap-2 text-sm text-white/60">
+						<span>Swipe to view</span>
+						<ChevronLeft size={16} />
+					</div>
 				</div>
 			</div>
 		{/if}
@@ -320,17 +338,31 @@
 		{#if nextGamePreview && swipe.swipeDirection === 'left' && Math.abs(swipe.swipeOffsetX) > 0}
 			<div
 				class="parallax-preview parallax-right"
-				style="transform: translateX({-100 + swipe.parallaxOffset}%); opacity: {Math.min(
-					Math.abs(swipe.swipeOffsetX) / 50,
+				style="transform: translateX({-15 + swipe.parallaxOffset * 0.5}%) scale({0.9 +
+					(Math.abs(swipe.swipeOffsetX) / window.innerWidth) * 0.1}); opacity: {Math.min(
+					Math.abs(swipe.swipeOffsetX) / 100,
 					1
-				)}; background-color: {nextGamePreview.status === 'Completed'
-					? 'var(--color-surface-completed)'
-					: 'var(--color-surface)'};"
+				)};"
 			>
-				<div class="parallax-title-container p-4">
-					<h3 class="parallax-title text-xl font-bold">
+				<div
+					class="absolute inset-0 bg-cover bg-center"
+					style="background-image: url('{getPreviewImageSrc(nextGamePreview.coverImage)}');"
+				></div>
+				<div
+					class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+					style="background-color: {nextGamePreview.status === 'Completed'
+						? 'rgba(46, 26, 71, 0.85)' // var(--color-surface-completed) with opacity
+						: 'rgba(26, 26, 46, 0.85)'};"
+				></div>
+
+				<div class="relative z-10 flex h-full flex-col justify-end p-6 pb-20">
+					<h3 class="parallax-title text-2xl font-bold text-white/90">
 						{nextGamePreview.mainTitle || nextGamePreview.title}
 					</h3>
+					<div class="mt-2 flex items-center gap-2 text-sm text-white/60">
+						<span>Swipe to view</span>
+						<ChevronRight size={16} />
+					</div>
 				</div>
 			</div>
 		{/if}
@@ -338,7 +370,7 @@
 		<!-- Desktop Nav Arrows -->
 		{#if currentGameIndex > 0}
 			<button
-				onclick={navigateToPrevious}
+				onclick={() => navigateToPrevious()}
 				class="nav-arrow-btn absolute top-1/2 left-[calc(50%-600px)] z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
 				aria-label="Previous game"
 			>
@@ -347,7 +379,7 @@
 		{/if}
 		{#if currentGameIndex < displayedGames.length - 1}
 			<button
-				onclick={navigateToNext}
+				onclick={() => navigateToNext()}
 				class="nav-arrow-btn absolute top-1/2 right-[calc(50%-600px)] z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
 				aria-label="Next game"
 			>
@@ -505,25 +537,52 @@
 
 	.parallax-preview {
 		position: fixed;
-		top: 50%;
-		left: 50%;
-		width: 90vw;
-		max-width: 450px;
-		height: 80vh;
-		max-height: 800px;
-		border-radius: 16px;
+		top: 0;
+		bottom: 0;
+		width: 100%;
+		max-width: 100%;
+		height: 100%;
 		overflow: hidden;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 		z-index: 55;
-		margin-left: -45vw;
-		margin-top: -40vh;
 		pointer-events: none;
+		display: flex;
+		flex-direction: column;
 	}
+	.parallax-left {
+		left: -20%;
+	}
+	.parallax-right {
+		right: -20%;
+		align-items: flex-end; /* Align content to the right for next card */
+		text-align: right;
+	}
+	.parallax-right .flex.items-center {
+		/* Ensure text content inside aligns properly if needed */
+		align-items: flex-end;
+		justify-content: flex-end;
+	}
+
 	@media (min-width: 768px) {
 		.parallax-preview {
+			top: 50%;
+			left: 50%;
 			width: 60vw;
 			max-width: 900px;
+			height: 80vh;
+			max-height: 800px;
 			margin-left: -30vw;
+			margin-top: -40vh;
+			border-radius: 16px;
+		}
+		.parallax-left {
+			left: 50%;
+			margin-left: -75vw; /* Position to the left */
+		}
+		.parallax-right {
+			right: auto;
+			left: 50%;
+			margin-left: 15vw; /* Position to the right */
 		}
 	}
 </style>

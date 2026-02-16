@@ -25,14 +25,14 @@ export class SwipeController {
 	private readonly VELOCITY_THRESHOLD = 0.8;
 
 	// Callbacks
-	private onNavigateNext: () => void;
-	private onNavigatePrev: () => void;
+	private onNavigateNext: (skipTransition?: boolean) => void;
+	private onNavigatePrev: (skipTransition?: boolean) => void;
 	private getNextGame: () => Game | null;
 	private getPrevGame: () => Game | null;
 
 	constructor(
-		onNavigateNext: () => void,
-		onNavigatePrev: () => void,
+		onNavigateNext: (skipTransition?: boolean) => void,
+		onNavigatePrev: (skipTransition?: boolean) => void,
 		getNextGame: () => Game | null,
 		getPrevGame: () => Game | null
 	) {
@@ -190,7 +190,9 @@ export class SwipeController {
 
 	private animateSwipeTransition(direction: 'left' | 'right') {
 		this.isSwipeTransitioning = true;
-		const targetOffset = direction === 'left' ? -300 : 300;
+		const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 300;
+		// Use a slightly larger offset than screen width to ensure it's fully off-screen
+		const targetOffset = direction === 'left' ? -(screenWidth + 50) : (screenWidth + 50);
 		const startOffset = this.swipeOffsetX;
 		const startParallax = this.parallaxOffset;
 		const targetParallax = 0;
@@ -211,9 +213,9 @@ export class SwipeController {
 				requestAnimationFrame(animate);
 			} else {
 				if (direction === 'left') {
-					this.onNavigateNext();
+					this.onNavigateNext(true);
 				} else {
-					this.onNavigatePrev();
+					this.onNavigatePrev(true);
 				}
 				this.swipeOffsetX = 0;
 				this.parallaxOffset = 0;
