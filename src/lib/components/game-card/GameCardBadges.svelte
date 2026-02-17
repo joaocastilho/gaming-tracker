@@ -97,6 +97,7 @@
 		display: flex;
 		gap: 12px;
 		flex-wrap: wrap;
+		align-items: center;
 	}
 
 	.year-right {
@@ -140,8 +141,9 @@
 		justify-content: center;
 		transition: opacity 0.2s;
 		/* Removed min dimensions to align with text badges */
-		/* min-width: 44px; */
-		/* min-height: 44px; */
+		min-width: 44px;
+		min-height: 44px;
+		margin-left: -8px;
 	}
 
 	/* Responsive Styles using Container Queries */

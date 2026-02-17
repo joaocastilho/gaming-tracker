@@ -2,6 +2,7 @@
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { filtersStore } from '$lib/stores/filters.svelte';
 	import { RotateCcw } from 'lucide-svelte';
+	import { browser } from '$app/environment';
 
 	interface Props {
 		hideWhenFiltersOpen?: boolean;
@@ -38,7 +39,7 @@
 	}
 
 	let hasActiveFilters = $derived(
-		(isVisible || window.innerWidth < 768) && // Show when scrolled OR always on mobile if we want (but requirement says "above scroll to top", implying scroll logic)
+		(isVisible || (browser && window.innerWidth < 768)) && // Show when scrolled OR always on mobile if we want (but requirement says "above scroll to top", implying scroll logic)
 			// Actually, let's stick to "visible when scroll to top is visible" to start, or maybe distinct.
 			// Re-reading: "hover button above the scroll to top".
 			// Let's use the same isVisible logic for consistency.
