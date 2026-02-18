@@ -104,7 +104,7 @@
 					aria-label={`${item.label}${item.count !== null ? ` (${item.count})` : ''}`}
 				>
 					<div class="icon-wrapper relative">
-						<Icon size={22} strokeWidth={item.active ? 2.5 : 2} />
+						<Icon size={26} strokeWidth={item.active ? 2.5 : 2} />
 						{#if item.count !== null && item.count > 0}
 							<span class="count-badge">
 								{item.count}
@@ -120,7 +120,7 @@
 
 <style>
 	.bottom-navigation {
-		height: 64px;
+		height: 80px;
 		padding-bottom: env(safe-area-inset-bottom, 0);
 		background-color: var(--color-background);
 		border-color: var(--color-border);
@@ -156,7 +156,7 @@
 	}
 
 	.label {
-		font-size: 0.65rem;
+		font-size: 0.75rem;
 		font-weight: 500;
 		line-height: 1;
 		margin-top: 2px;
@@ -168,19 +168,19 @@
 
 	.count-badge {
 		position: absolute;
-		top: -6px;
-		right: -10px;
+		top: -8px;
+		right: -12px;
 		background-color: var(--color-surface-completed);
 		color: var(--color-text-primary);
-		font-size: 0.6rem;
+		font-size: 0.7rem;
 		font-weight: 700;
-		min-width: 16px;
-		height: 16px;
-		border-radius: 8px;
+		min-width: 20px;
+		height: 20px;
+		border-radius: 10px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0 3px;
+		padding: 0 4px;
 		border: 1px solid var(--color-border);
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 	}
@@ -188,7 +188,7 @@
 	@supports (padding-bottom: env(safe-area-inset-bottom)) {
 		.bottom-navigation {
 			padding-bottom: calc(env(safe-area-inset-bottom, 0));
-			height: calc(64px + env(safe-area-inset-bottom, 0));
+			height: calc(80px + env(safe-area-inset-bottom, 0));
 		}
 	}
 

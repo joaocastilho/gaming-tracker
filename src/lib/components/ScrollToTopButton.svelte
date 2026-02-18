@@ -195,7 +195,7 @@
 
 	@media (max-width: 768px) {
 		.scroll-to-top-button {
-			bottom: 120px;
+			bottom: 136px;
 			right: 16px;
 			width: 48px;
 			height: 48px;
@@ -203,7 +203,7 @@
 		}
 
 		.reset-filters-fab {
-			bottom: 180px; /* 120px + 48px + 12px */
+			bottom: 196px; /* 136px + 48px + 12px */
 			right: 16px; /* Match scroll btn right */
 			width: 48px;
 			height: 48px;
@@ -212,7 +212,7 @@
 
 	@media (max-width: 480px) {
 		.scroll-to-top-button {
-			bottom: 125px;
+			bottom: 141px;
 			right: 16px;
 			width: 44px;
 			height: 44px;
@@ -220,7 +220,7 @@
 		}
 
 		.reset-filters-fab {
-			bottom: 180px; /* 125px + 44px + 11px */
+			bottom: 196px; /* 141px + 44px + 11px */
 			right: 16px;
 			width: 44px;
 			height: 44px;

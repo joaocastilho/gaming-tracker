@@ -168,7 +168,7 @@
 	.mobile-settings-container {
 		position: fixed;
 		right: 16px;
-		bottom: 70px;
+		bottom: 86px;
 		z-index: 45;
 		display: flex;
 		flex-direction: row;
@@ -373,7 +373,7 @@
 	@media (max-width: 480px) {
 		.mobile-settings-container {
 			right: 16px;
-			bottom: 74px;
+			bottom: 90px;
 		}
 
 		.floating-action-button {
