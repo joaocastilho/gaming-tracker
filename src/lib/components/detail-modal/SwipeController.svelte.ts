@@ -191,13 +191,13 @@ export class SwipeController {
 	private animateSwipeTransition(direction: 'left' | 'right') {
 		this.isSwipeTransitioning = true;
 		const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 300;
-		// Target exact screen width to avoid overshoot/bounce
-		const targetOffset = direction === 'left' ? -screenWidth : screenWidth;
+		// Include the 20px gap used in DetailModal.svelte to ensure seamless alignment
+		const targetOffset = direction === 'left' ? -(screenWidth + 20) : screenWidth + 20;
 		const startOffset = this.swipeOffsetX;
 		const startParallax = this.parallaxOffset;
 		const targetParallax = 0;
 		const startTime = performance.now();
-		const duration = 250; // Slightly faster for snappier feel
+		const duration = 180; // Snappier feel as requested
 
 		const easeOutQuad = (t: number): number => t * (2 - t);
 
@@ -213,21 +213,24 @@ export class SwipeController {
 				requestAnimationFrame(animate);
 			} else {
 				// Animation complete
-				// 1. Reset state IMMEDIATELY while hidden/off-screen
-				this.swipeOffsetX = 0;
-				this.parallaxOffset = 0;
-				this.swipeDirection = null;
-
-				// 2. Perform navigation which updates the "active" game
+				// 1. Perform navigation FIRST which updates the "active" game
 				if (direction === 'left') {
 					this.onNavigateNext(true);
 				} else {
 					this.onNavigatePrev(true);
 				}
 
-				// 3. unlock interactions
+				// 2. Reset state after navigation so the next frame shows the new game at 0 offset
+				// We use requestAnimationFrame to ensure the store update has propagated
 				requestAnimationFrame(() => {
-					this.isSwipeTransitioning = false;
+					this.swipeOffsetX = 0;
+					this.parallaxOffset = 0;
+					this.swipeDirection = null;
+
+					// 3. unlock interactions in the subsequent frame
+					requestAnimationFrame(() => {
+						this.isSwipeTransitioning = false;
+					});
 				});
 			}
 		};
