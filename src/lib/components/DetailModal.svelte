@@ -4,17 +4,12 @@
 	import { cubicOut, backOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 	import { modalStore } from '$lib/stores/modal.svelte';
-	import { editorStore } from '$lib/stores/editor.svelte';
-	import { offlineStore } from '$lib/stores/offline.svelte';
 	import { gamesStore } from '$lib/stores/games.svelte';
 	import type { Game } from '$lib/types/game.js';
-	import { generateSrcset, generateSizes } from '../utils/imageSrcset.js';
-	import { X, ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
-	import ModalHeader from './detail-modal/ModalHeader.svelte';
-	import ModalMetadata from './detail-modal/ModalMetadata.svelte';
-	import ModalRatings from './detail-modal/ModalRatings.svelte';
 	import { SwipeController } from './detail-modal/SwipeController.svelte';
+	import GameDetailCard from './detail-modal/GameDetailCard.svelte';
 
 	interface Props {
 		onEditGame?: (game: Game) => void;
@@ -22,9 +17,6 @@
 	}
 
 	let { onEditGame, onDeleteGame }: Props = $props();
-
-	let isEditor = $derived(editorStore.editorMode);
-	let isOffline = $derived(!offlineStore.isOnline);
 
 	// Platform detection
 	let isIOS = $state(false);
@@ -42,29 +34,11 @@
 
 	// Placeholders
 	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
-	const PLACEHOLDER_DETAIL_SRC = 'covers/placeholder_cover-detail.webp';
-	const PLACEHOLDER_SRCSET =
-		'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
 	const OFFLINE_FALLBACK_DATA_URI =
 		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
 
-	// Image logic
-	const detailImageSrc = $derived.by(() => {
-		if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
-		const coverImage = $modalStore.activeGame?.coverImage;
-		return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
-	});
-
-	const detailImageSizes = $derived(generateSizes('modal'));
-
-	const detailImageSrcset = $derived.by(() => {
-		if (isOffline) return '';
-		const src = detailImageSrc;
-		if (src.includes('placeholder_cover')) return PLACEHOLDER_SRCSET;
-		return generateSrcset(src.replace('-detail.webp', ''));
-	});
-
 	function getPreviewImageSrc(coverImage: string | undefined): string {
+		let isOffline = !offlineStore.isOnline;
 		if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
 		return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
 	}
@@ -92,7 +66,6 @@
 	// Image transition state
 	let transitionImage = $state('');
 	let isTransitioningImage = $state(false);
-	let modalImageElement = $state<HTMLImageElement>();
 
 	function navigateToPrevious(skipTransition = false) {
 		if (currentGameIndex > 0) {
@@ -140,25 +113,6 @@
 			event.preventDefault();
 			navigateToNext();
 		}
-	}
-
-	function handleImageLoad() {
-		setTimeout(() => {
-			isTransitioningImage = false;
-		}, 50);
-	}
-
-	function handleImageError() {
-		if (modalImageElement) {
-			if (!modalImageElement.src.includes('placeholder_cover')) {
-				modalImageElement.src = PLACEHOLDER_DETAIL_SRC;
-				modalImageElement.srcset = PLACEHOLDER_SRCSET;
-			} else {
-				modalImageElement.src = OFFLINE_FALLBACK_DATA_URI;
-				modalImageElement.srcset = '';
-			}
-		}
-		isTransitioningImage = false;
 	}
 
 	// Swipe Hint Logic
@@ -301,68 +255,44 @@
 			</div>
 		{/if}
 
-		<!-- Parallax Preview: Previous -->
-		{#if prevGamePreview && swipe.swipeDirection === 'right' && Math.abs(swipe.swipeOffsetX) > 0}
+		<!-- Previous Game Card (Full Preview) -->
+		{#if prevGamePreview && swipe.swipeDirection === 'right'}
 			<div
-				class="parallax-preview parallax-left"
-				style="transform: translateX({15 + swipe.parallaxOffset * 0.5}%) scale({0.9 +
-					(Math.abs(swipe.swipeOffsetX) / window.innerWidth) * 0.1}); opacity: {Math.min(
-					Math.abs(swipe.swipeOffsetX) / 100,
-					1
-				)};"
+				class="pointer-events-none absolute inset-0 z-[59] flex items-center justify-center p-3 md:p-4"
 			>
 				<div
-					class="absolute inset-0 bg-cover bg-center"
-					style="background-image: url('{getPreviewImageSrc(prevGamePreview.coverImage)}');"
-				></div>
-				<div
-					class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-					style="background-color: {prevGamePreview.status === 'Completed'
-						? 'rgba(46, 26, 71, 0.85)' // var(--color-surface-completed) with opacity
-						: 'rgba(26, 26, 46, 0.85)'};"
-				></div>
-
-				<div class="relative z-10 flex h-full flex-col justify-end p-6 pb-20">
-					<h3 class="parallax-title text-2xl font-bold text-white/90">
-						{prevGamePreview.mainTitle || prevGamePreview.title}
-					</h3>
-					<div class="mt-2 flex items-center gap-2 text-sm text-white/60">
-						<span>Swipe to view</span>
-						<ChevronLeft size={16} />
-					</div>
+					class="modal-content flex h-full w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
+					class:ios-modal={isIOS}
+					class:android-modal={isAndroid}
+					style="
+						background-color: {prevGamePreview.status === 'Completed'
+						? 'var(--color-surface-completed)'
+						: 'var(--color-surface)'};
+						transform: translateX(calc(-100% - 20px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px);
+					"
+				>
+					<GameDetailCard game={prevGamePreview} />
 				</div>
 			</div>
 		{/if}
 
-		<!-- Parallax Preview: Next -->
-		{#if nextGamePreview && swipe.swipeDirection === 'left' && Math.abs(swipe.swipeOffsetX) > 0}
+		<!-- Next Game Card (Full Preview) -->
+		{#if nextGamePreview && swipe.swipeDirection === 'left'}
 			<div
-				class="parallax-preview parallax-right"
-				style="transform: translateX({-15 + swipe.parallaxOffset * 0.5}%) scale({0.9 +
-					(Math.abs(swipe.swipeOffsetX) / window.innerWidth) * 0.1}); opacity: {Math.min(
-					Math.abs(swipe.swipeOffsetX) / 100,
-					1
-				)};"
+				class="pointer-events-none absolute inset-0 z-[59] flex items-center justify-center p-3 md:p-4"
 			>
 				<div
-					class="absolute inset-0 bg-cover bg-center"
-					style="background-image: url('{getPreviewImageSrc(nextGamePreview.coverImage)}');"
-				></div>
-				<div
-					class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-					style="background-color: {nextGamePreview.status === 'Completed'
-						? 'rgba(46, 26, 71, 0.85)' // var(--color-surface-completed) with opacity
-						: 'rgba(26, 26, 46, 0.85)'};"
-				></div>
-
-				<div class="relative z-10 flex h-full flex-col justify-end p-6 pb-20">
-					<h3 class="parallax-title text-2xl font-bold text-white/90">
-						{nextGamePreview.mainTitle || nextGamePreview.title}
-					</h3>
-					<div class="mt-2 flex items-center gap-2 text-sm text-white/60">
-						<span>Swipe to view</span>
-						<ChevronRight size={16} />
-					</div>
+					class="modal-content flex h-full w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
+					class:ios-modal={isIOS}
+					class:android-modal={isAndroid}
+					style="
+						background-color: {nextGamePreview.status === 'Completed'
+						? 'var(--color-surface-completed)'
+						: 'var(--color-surface)'};
+						transform: translateX(calc(100% + 20px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px);
+					"
+				>
+					<GameDetailCard game={nextGamePreview} />
 				</div>
 			</div>
 		{/if}
@@ -396,10 +326,8 @@
 			style="background-color: {$modalStore.activeGame.status === 'Completed'
 				? 'var(--color-surface-completed)'
 				: 'var(--color-surface)'}; 
-				transform: translateX({swipe.swipeOffsetX}px) translateY({swipe.swipeOffsetY}px) scale({1 -
-				Math.abs(swipe.swipeOffsetX) * 0.0003 -
-				swipe.swipeOffsetY * 0.0008}); 
-				opacity: {1 - Math.abs(swipe.swipeOffsetX) * 0.002 - swipe.swipeOffsetY * 0.002};
+				transform: translateX({swipe.swipeOffsetX}px) translateY({swipe.swipeOffsetY}px); 
+				opacity: {1 - Math.abs(swipe.swipeOffsetX) * 0.0005 - swipe.swipeOffsetY * 0.0005};
 				border-radius: {12 + swipe.swipeOffsetY * 0.1}px;"
 			role="document"
 			ontouchstart={(e: TouchEvent) => swipe.handleTouchStart(e)}
@@ -412,62 +340,14 @@
 			}}
 			out:fly={{ y: isIOS ? 100 : 30, duration: isIOS ? 300 : 200, easing: cubicOut }}
 		>
-			<button
-				onclick={() => modalStore.closeModal()}
-				class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/40 md:top-4 md:right-4"
-				aria-label="Close modal"
-			>
-				<X size={20} />
-			</button>
-
-			<div
-				class="modal-layout flex h-full min-h-0 flex-col overflow-y-auto md:grid md:grid-cols-[350px_1fr] md:overflow-hidden lg:grid-cols-[400px_1fr]"
-			>
-				<!-- Image Section -->
-				<div
-					class="modal-image-container relative min-h-[30vh] flex-1 shrink-0 overflow-hidden rounded-t-xl md:h-full md:flex-none md:rounded-l-xl md:rounded-tr-none"
-				>
-					<div class="modal-image-wrapper h-full bg-gray-900">
-						{#if isTransitioningImage && transitionImage}
-							<img
-								src={transitionImage}
-								alt="Transitioning..."
-								class="absolute inset-0 z-10 h-full w-full object-cover"
-								aria-hidden="true"
-							/>
-						{/if}
-
-						<button class="contents" onclick={() => {}} aria-label="View full screen">
-							<img
-								bind:this={modalImageElement}
-								src={detailImageSrc}
-								srcset={detailImageSrcset}
-								sizes={detailImageSizes}
-								alt="{$modalStore.activeGame.title} cover"
-								class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
-								class:swiping={swipe.isSwipeTransitioning}
-								loading="eager"
-								onload={handleImageLoad}
-								onerror={handleImageError}
-							/>
-						</button>
-					</div>
-				</div>
-
-				<!-- Details Section -->
-				<div
-					class="modal-details-section shrink-0 overflow-hidden px-5 pt-4 pb-4 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
-				>
-					<ModalHeader
-						game={$modalStore.activeGame}
-						{isEditor}
-						onEdit={onEditGame}
-						onDelete={onDeleteGame}
-					/>
-					<ModalMetadata game={$modalStore.activeGame} />
-					<ModalRatings game={$modalStore.activeGame} />
-				</div>
-			</div>
+			<GameDetailCard
+				game={$modalStore.activeGame}
+				{onEditGame}
+				{onDeleteGame}
+				onClose={() => modalStore.closeModal()}
+				{isTransitioningImage}
+				{transitionImage}
+			/>
 		</div>
 	</div>
 {/if}
@@ -532,57 +412,6 @@
 		50% {
 			transform: translateY(10px);
 			opacity: 1;
-		}
-	}
-
-	.parallax-preview {
-		position: fixed;
-		top: 0;
-		bottom: 0;
-		width: 100%;
-		max-width: 100%;
-		height: 100%;
-		overflow: hidden;
-		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-		z-index: 55;
-		pointer-events: none;
-		display: flex;
-		flex-direction: column;
-	}
-	.parallax-left {
-		left: -20%;
-	}
-	.parallax-right {
-		right: -20%;
-		align-items: flex-end; /* Align content to the right for next card */
-		text-align: right;
-	}
-	.parallax-right .flex.items-center {
-		/* Ensure text content inside aligns properly if needed */
-		align-items: flex-end;
-		justify-content: flex-end;
-	}
-
-	@media (min-width: 768px) {
-		.parallax-preview {
-			top: 50%;
-			left: 50%;
-			width: 60vw;
-			max-width: 900px;
-			height: 80vh;
-			max-height: 800px;
-			margin-left: -30vw;
-			margin-top: -40vh;
-			border-radius: 16px;
-		}
-		.parallax-left {
-			left: 50%;
-			margin-left: -75vw; /* Position to the left */
-		}
-		.parallax-right {
-			right: auto;
-			left: 50%;
-			margin-left: 15vw; /* Position to the right */
 		}
 	}
 </style>

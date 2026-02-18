@@ -191,20 +191,20 @@ export class SwipeController {
 	private animateSwipeTransition(direction: 'left' | 'right') {
 		this.isSwipeTransitioning = true;
 		const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 300;
-		// Use a slightly larger offset than screen width to ensure it's fully off-screen
-		const targetOffset = direction === 'left' ? -(screenWidth + 50) : (screenWidth + 50);
+		// Target exact screen width to avoid overshoot/bounce
+		const targetOffset = direction === 'left' ? -screenWidth : screenWidth;
 		const startOffset = this.swipeOffsetX;
 		const startParallax = this.parallaxOffset;
 		const targetParallax = 0;
 		const startTime = performance.now();
-		const duration = 280;
+		const duration = 250; // Slightly faster for snappier feel
 
-		const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+		const easeOutQuad = (t: number): number => t * (2 - t);
 
 		const animate = (currentTime: number) => {
 			const elapsed = currentTime - startTime;
 			const progress = Math.min(elapsed / duration, 1);
-			const eased = easeOutCubic(progress);
+			const eased = easeOutQuad(progress);
 
 			this.swipeOffsetX = startOffset + (targetOffset - startOffset) * eased;
 			this.parallaxOffset = startParallax + (targetParallax - startParallax) * eased;
@@ -212,14 +212,20 @@ export class SwipeController {
 			if (progress < 1) {
 				requestAnimationFrame(animate);
 			} else {
+				// Animation complete
+				// 1. Reset state IMMEDIATELY while hidden/off-screen
+				this.swipeOffsetX = 0;
+				this.parallaxOffset = 0;
+				this.swipeDirection = null;
+
+				// 2. Perform navigation which updates the "active" game
 				if (direction === 'left') {
 					this.onNavigateNext(true);
 				} else {
 					this.onNavigatePrev(true);
 				}
-				this.swipeOffsetX = 0;
-				this.parallaxOffset = 0;
-				this.swipeDirection = null;
+
+				// 3. unlock interactions
 				requestAnimationFrame(() => {
 					this.isSwipeTransitioning = false;
 				});
