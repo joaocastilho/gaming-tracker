@@ -213,24 +213,23 @@ export class SwipeController {
 				requestAnimationFrame(animate);
 			} else {
 				// Animation complete
-				// 1. Perform navigation FIRST which updates the "active" game
+				// 1. Perform navigation which updates the "active" game
 				if (direction === 'left') {
 					this.onNavigateNext(true);
 				} else {
 					this.onNavigatePrev(true);
 				}
 
-				// 2. Reset state after navigation so the next frame shows the new game at 0 offset
-				// We use requestAnimationFrame to ensure the store update has propagated
-				requestAnimationFrame(() => {
-					this.swipeOffsetX = 0;
-					this.parallaxOffset = 0;
-					this.swipeDirection = null;
+				// 2. Reset state IMMEDIATELY in the same tick
+				// This ensures the main card moves to 0 offset at the same time its content updates,
+				// and the preview card is removed before its content can update prematurely.
+				this.swipeOffsetX = 0;
+				this.parallaxOffset = 0;
+				this.swipeDirection = null;
 
-					// 3. unlock interactions in the subsequent frame
-					requestAnimationFrame(() => {
-						this.isSwipeTransitioning = false;
-					});
+				// 3. Unlock interactions in the NEXT frame to prevent immediate re-swiping
+				requestAnimationFrame(() => {
+					this.isSwipeTransitioning = false;
 				});
 			}
 		};

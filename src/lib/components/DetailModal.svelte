@@ -72,8 +72,9 @@
 		if (currentGameIndex > 0) {
 			const prevGame = displayedGames[currentGameIndex - 1];
 			// Only trigger image transition if NOT swiping (e.g. keyboard/button nav)
-			if (!skipTransition) {
-				transitionImage = getPreviewImageSrc(prevGame.coverImage);
+			if (!skipTransition && $modalStore.activeGame) {
+				// Use CURRENT game image as placeholder while NEXT game loads
+				transitionImage = getPreviewImageSrc($modalStore.activeGame.coverImage);
 				isTransitioningImage = true;
 			}
 			modalStore.openViewModal(prevGame, displayedGames);
@@ -84,8 +85,9 @@
 		if (currentGameIndex < displayedGames.length - 1) {
 			const nextGame = displayedGames[currentGameIndex + 1];
 			// Only trigger image transition if NOT swiping (e.g. keyboard/button nav)
-			if (!skipTransition) {
-				transitionImage = getPreviewImageSrc(nextGame.coverImage);
+			if (!skipTransition && $modalStore.activeGame) {
+				// Use CURRENT game image as placeholder while NEXT game loads
+				transitionImage = getPreviewImageSrc($modalStore.activeGame.coverImage);
 				isTransitioningImage = true;
 			}
 			modalStore.openViewModal(nextGame, displayedGames);
@@ -346,6 +348,7 @@
 				{onEditGame}
 				{onDeleteGame}
 				onClose={() => modalStore.closeModal()}
+				onImageLoad={() => (isTransitioningImage = false)}
 				{isTransitioningImage}
 				{transitionImage}
 			/>

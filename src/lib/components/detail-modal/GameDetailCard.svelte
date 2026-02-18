@@ -13,6 +13,7 @@
 		onEditGame?: (game: Game) => void;
 		onDeleteGame?: (game: Game) => void;
 		onClose?: () => void;
+		onImageLoad?: () => void;
 		// Optional transition props
 		isTransitioningImage?: boolean;
 		transitionImage?: string;
@@ -23,6 +24,7 @@
 		onEditGame,
 		onDeleteGame,
 		onClose,
+		onImageLoad,
 		isTransitioningImage = false,
 		transitionImage = ''
 	}: Props = $props();
@@ -57,7 +59,7 @@
 	let modalImageElement = $state<HTMLImageElement>();
 
 	function handleImageLoad() {
-		// Handled by parent or self if needed
+		onImageLoad?.();
 	}
 
 	function handleImageError() {
