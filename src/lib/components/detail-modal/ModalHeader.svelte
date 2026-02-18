@@ -69,8 +69,8 @@
 	$effect(() => {
 		if (!browser || !titleElement || !game || containerWidth === 0) return;
 
-		const maxSize = 2.5;
-		const minSize = 0.85;
+		const maxSize = 2.25;
+		const minSize = 0.8;
 
 		const text = game.mainTitle || '';
 		const font = getFont(titleElement);
@@ -166,7 +166,7 @@
 
 <style>
 	#modal-title {
-		min-height: 85px;
+		min-height: 60px;
 	}
 
 	@media (orientation: landscape) and (max-height: 1000px) {

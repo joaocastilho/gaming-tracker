@@ -86,11 +86,11 @@
 {/if}
 
 <div
-	class="modal-layout flex h-full min-h-0 flex-col overflow-y-auto md:grid md:grid-cols-[250px_1fr] md:overflow-hidden lg:grid-cols-[350px_1fr] xl:grid-cols-[400px_1fr]"
+	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto md:grid md:grid-cols-[250px_1fr] md:overflow-hidden lg:grid-cols-[350px_1fr] xl:grid-cols-[400px_1fr]"
 >
 	<!-- Image Section -->
 	<div
-		class="modal-image-container relative min-h-[30vh] flex-1 shrink-0 overflow-hidden rounded-t-xl md:h-full md:flex-none md:rounded-l-xl md:rounded-tr-none"
+		class="modal-image-container relative min-h-[20vh] max-h-[35vh] flex-1 shrink-0 overflow-hidden rounded-t-xl md:h-full md:max-h-none md:flex-none md:rounded-l-xl md:rounded-tr-none"
 	>
 		<div class="modal-image-wrapper h-full bg-gray-900">
 			{#if isTransitioningImage && transitionImage}
@@ -120,11 +120,14 @@
 
 	<!-- Details Section -->
 	<div
-		class="modal-details-section shrink-0 overflow-hidden px-5 pt-4 pb-4 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
+		class="modal-details-section flex-none px-5 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
 	>
 		<ModalHeader {game} {isEditor} onEdit={onEditGame} onDelete={onDeleteGame} />
 		<ModalMetadata {game} />
 		<ModalRatings {game} />
+		
+		<!-- Visual bottom spacer to ensure content clears rounded corners -->
+		<div class="mt-4 md:hidden"></div>
 	</div>
 </div>
 

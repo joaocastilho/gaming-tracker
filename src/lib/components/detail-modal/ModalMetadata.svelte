@@ -24,7 +24,7 @@
 	}
 </script>
 
-<div class="mb-3 flex items-center justify-between md:mb-4">
+<div class="mb-2 flex items-center justify-between md:mb-4">
 	<div class="flex flex-wrap gap-2">
 		<span
 			class="badge rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
@@ -61,7 +61,7 @@
 	{/if}
 </div>
 
-<div class="metadata-grid mb-3 grid grid-cols-2 gap-3 md:mb-8">
+<div class="metadata-grid mb-2 grid grid-cols-2 gap-3 md:mb-8">
 	<div class="metadata-item">
 		<div class="metadata-label mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
 			Year Released

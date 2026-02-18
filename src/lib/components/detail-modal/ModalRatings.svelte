@@ -13,15 +13,15 @@
 	);
 </script>
 
-<div class="ratings-wrapper mt-3 md:mt-4">
+<div class="ratings-wrapper mt-1 md:mt-4">
 	<h3
-		class="landscape-hidden-title mb-3 text-base font-semibold md:mb-6 md:text-xl"
+		class="landscape-hidden-title mb-2 text-base font-semibold md:mb-6 md:text-xl"
 		style="color: var(--color-text-primary);"
 	>
 		Ratings
 	</h3>
 
-	<div class="ratings-container mt-3 grid grid-cols-3 gap-3 md:gap-4">
+	<div class="ratings-container mt-2 grid grid-cols-3 gap-2 md:gap-4">
 		<div
 			class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
 			class:opacity-40={!hasRatings}
@@ -76,7 +76,7 @@
 	</div>
 
 	<div
-		class="score-result mt-6 rounded-lg border p-4 md:mt-8"
+		class="score-result mt-2 rounded-lg border p-2 md:mt-8"
 		style="background-color: var(--color-surface-elevated); border-color: var(--color-border);"
 		class:opacity-40={game.score === null}
 	>

@@ -264,7 +264,7 @@
 				class="pointer-events-none absolute inset-0 z-[59] flex items-center justify-center p-3 md:p-4"
 			>
 				<div
-					class="modal-content flex h-full w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
+					class="modal-content flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
 					class:ios-modal={isIOS}
 					class:android-modal={isAndroid}
 					style="
@@ -285,7 +285,7 @@
 				class="pointer-events-none absolute inset-0 z-[59] flex items-center justify-center p-3 md:p-4"
 			>
 				<div
-					class="modal-content flex h-full w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
+					class="modal-content flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
 					class:ios-modal={isIOS}
 					class:android-modal={isAndroid}
 					style="
@@ -322,7 +322,7 @@
 
 		<!-- Main Modal Content -->
 		<div
-			class="modal-content relative flex h-full w-full flex-col overflow-hidden bg-neutral-900 md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
+			class="modal-content relative flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
 			class:ios-modal={isIOS}
 			class:android-modal={isAndroid}
 			class:swiping-close={swipe.isClosingGesture}
