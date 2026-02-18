@@ -63,12 +63,12 @@ Manually assign games to tiers based on overall assessment:
 
 | Category       | Technology                                     | Version   |
 | -------------- | ---------------------------------------------- | --------- |
-| **Framework**  | [SvelteKit](https://kit.svelte.dev/)           | `v2.50.2` |
-| **UI Library** | [Svelte](https://svelte.dev/)                  | `v5.50.2` |
+| **Framework**  | [SvelteKit](https://kit.svelte.dev/)           | `v2.52.0` |
+| **UI Library** | [Svelte](https://svelte.dev/)                  | `v5.51.5` |
 | **Language**   | [TypeScript](https://www.typescriptlang.org/)  | `v5.9.3`  |
-| **Styling**    | [Tailwind CSS](https://tailwindcss.com/)       | `v4.1.18` |
+| **Styling**    | [Tailwind CSS](https://tailwindcss.com/)       | `v4.2.0`  |
 | **Storage**    | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.3.0`  |
-| **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.8`  |
+| **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.9`  |
 | **Build Tool** | [Vite](https://vite.dev/)                      | `v7.3.1`  |
 
 ## 🚀 Running Locally
