@@ -84,7 +84,7 @@
 {/if}
 
 <div
-	class="modal-layout flex h-full min-h-0 flex-col overflow-y-auto md:grid md:grid-cols-[350px_1fr] md:overflow-hidden lg:grid-cols-[400px_1fr]"
+	class="modal-layout flex h-full min-h-0 flex-col overflow-y-auto md:grid md:grid-cols-[250px_1fr] md:overflow-hidden lg:grid-cols-[350px_1fr] xl:grid-cols-[400px_1fr]"
 >
 	<!-- Image Section -->
 	<div
@@ -125,3 +125,27 @@
 		<ModalRatings {game} />
 	</div>
 </div>
+
+<style>
+	@media (orientation: landscape) and (max-height: 1000px) {
+		.modal-layout {
+			/* Force grid layout even if some styles try to override */
+			display: grid !important;
+			/* Ensure we have 2 columns. Adjust width as needed for smaller screens */
+			grid-template-columns: 250px 1fr !important;
+			overflow: hidden !important;
+		}
+
+		.modal-image-container {
+			height: 100% !important;
+			flex: 0 0 auto !important; /* Fixed syntax error 'flex: mb-auto' ? no, assuming flex: none or similar. 'mb-auto' is invalid. */
+			border-radius: 0 !important;
+		}
+
+		.modal-details-section {
+			overflow-y: auto !important;
+			height: 100% !important;
+			padding: 1.5rem !important;
+		}
+	}
+</style>

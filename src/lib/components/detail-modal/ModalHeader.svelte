@@ -168,4 +168,18 @@
 	#modal-title {
 		min-height: 85px;
 	}
+
+	@media (orientation: landscape) and (max-height: 1000px) {
+		#modal-title {
+			min-height: auto !important;
+			margin-bottom: 1rem !important;
+		}
+
+		/* Target the dynamically sized span specifically if needed, or the container */
+		#modal-title :global(.modal-title-text) {
+			font-size: 2.25rem !important;
+			white-space: normal !important; /* Allow wrap to save width if needed, or keep nowrap */
+			line-height: 1.1 !important;
+		}
+	}
 </style>

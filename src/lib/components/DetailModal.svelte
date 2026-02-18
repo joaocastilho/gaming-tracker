@@ -5,6 +5,7 @@
 	import { browser } from '$app/environment';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { gamesStore } from '$lib/stores/games.svelte';
+	import { offlineStore } from '$lib/stores/offline.svelte';
 	import type { Game } from '$lib/types/game.js';
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
@@ -412,6 +413,15 @@
 		50% {
 			transform: translateY(10px);
 			opacity: 1;
+		}
+	}
+	@media (orientation: landscape) and (max-height: 1000px) {
+		:global(.modal-content) {
+			height: 100% !important;
+			max-height: none !important;
+			max-width: none !important;
+			width: 100% !important;
+			border-radius: 0 !important;
 		}
 	}
 </style>

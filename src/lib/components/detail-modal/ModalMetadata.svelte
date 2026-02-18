@@ -2,7 +2,7 @@
 	import type { Game } from '$lib/types/game';
 	import { getPlatformClasses, getGenreClasses } from '$lib/utils/colorConstants';
 	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
-	import { Users } from 'lucide-svelte';
+	import { Users, Calendar, Flag, Clock } from 'lucide-svelte';
 
 	interface Props {
 		game: Game;
@@ -61,45 +61,101 @@
 	{/if}
 </div>
 
-<div class="mb-3 grid grid-cols-2 gap-3 md:mb-8">
-	<div>
-		<div class="mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
+<div class="metadata-grid mb-3 grid grid-cols-2 gap-3 md:mb-8">
+	<div class="metadata-item">
+		<div class="metadata-label mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
 			Year Released
 		</div>
-		<div class="text-base font-semibold md:text-base" style="color: var(--color-text-primary);">
+		<div
+			class="metadata-value flex items-center gap-2 text-base font-semibold md:text-base"
+			style="color: var(--color-text-primary);"
+		>
+			<Calendar size={16} class="landscape-icon hidden" />
 			{game.year}
 		</div>
 	</div>
 
 	<!-- Keep first row second column empty for alignment as per screenshots -->
-	<div></div>
+	<div class="spacer-div"></div>
 
-	<div>
-		<div class="mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
+	<div class="metadata-item">
+		<div class="metadata-label mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
 			Finished Date
 		</div>
-		<div class="text-base font-semibold md:text-base" style="color: var(--color-text-primary);">
+		<div
+			class="metadata-value flex items-center gap-2 text-base font-semibold md:text-base"
+			style="color: var(--color-text-primary);"
+		>
+			<Flag size={16} class="landscape-icon hidden" />
 			{game.finishedDate ? formatDate(game.finishedDate) : '-'}
 		</div>
 	</div>
 
 	{#if game.status === 'Completed'}
-		<div>
-			<div class="mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
+		<div class="metadata-item">
+			<div
+				class="metadata-label mb-1 text-sm md:text-sm"
+				style="color: var(--color-text-tertiary);"
+			>
 				Hours Played
 			</div>
-			<div class="text-base font-semibold md:text-base" style="color: var(--color-text-primary);">
+			<div
+				class="metadata-value flex items-center gap-2 text-base font-semibold md:text-base"
+				style="color: var(--color-text-primary);"
+			>
+				<Clock size={16} class="landscape-icon hidden" />
 				{game.playtime}
 			</div>
 		</div>
 	{:else}
-		<div>
-			<div class="mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
+		<div class="metadata-item">
+			<div
+				class="metadata-label mb-1 text-sm md:text-sm"
+				style="color: var(--color-text-tertiary);"
+			>
 				Time to Beat
 			</div>
-			<div class="text-base font-semibold md:text-base" style="color: var(--color-text-primary);">
+			<div
+				class="metadata-value flex items-center gap-2 text-base font-semibold md:text-base"
+				style="color: var(--color-text-primary);"
+			>
+				<Clock size={16} class="landscape-icon hidden" />
 				{game.playtime || '-'}
 			</div>
 		</div>
 	{/if}
 </div>
+
+<style>
+	@media (orientation: landscape) and (max-height: 1000px) {
+		.metadata-grid {
+			display: grid !important;
+			grid-template-columns: repeat(3, 1fr) !important; /* 3 Columns: Year | Date | Time */
+			gap: 1.5rem !important;
+			margin-bottom: 2rem !important;
+			align-items: start !important;
+		}
+
+		.metadata-item {
+			display: block !important; /* Stack vertical */
+		}
+
+		.metadata-label {
+			display: block !important; /* Show Label */
+			margin-bottom: 0.5rem !important;
+			font-size: 0.875rem !important;
+		}
+
+		.metadata-value {
+			font-size: 1rem !important; /* Restore normal size */
+		}
+
+		:global(.landscape-icon) {
+			display: none !important; /* Hide Icon */
+		}
+
+		.spacer-div {
+			display: none !important; /* Hide Spacer */
+		}
+	}
+</style>
