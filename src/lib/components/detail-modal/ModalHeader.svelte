@@ -89,11 +89,11 @@
 	});
 </script>
 
-<div class="mb-2 flex items-start justify-between gap-4 md:mb-4">
+<div class="mb-2 flex items-start justify-between pt-4 md:pt-6">
 	<h1
 		id="modal-title"
 		bind:clientWidth={containerWidth}
-		class="flex min-w-0 flex-1 flex-col items-center justify-start overflow-hidden text-center md:h-auto md:items-start md:text-left"
+		class="flex min-w-0 flex-1 flex-col items-center justify-start overflow-hidden text-center md:items-start md:text-left"
 		style="color: var(--color-text-primary);"
 	>
 		<span bind:this={titleElement} class="modal-title-text w-full font-bold">
@@ -166,7 +166,7 @@
 
 <style>
 	#modal-title {
-		min-height: 60px;
+		min-height: 80px;
 	}
 
 	@media (orientation: landscape) and (max-height: 1000px) {
