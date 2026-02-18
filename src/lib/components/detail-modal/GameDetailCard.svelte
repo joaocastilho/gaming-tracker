@@ -88,46 +88,49 @@
 <div
 	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto md:grid md:grid-cols-[250px_1fr] md:overflow-hidden lg:grid-cols-[350px_1fr] xl:grid-cols-[400px_1fr]"
 >
-	<!-- Image Section -->
-	<div
-		class="modal-image-container relative min-h-[20vh] max-h-[35vh] flex-1 shrink-0 overflow-hidden rounded-t-xl md:h-full md:max-h-none md:flex-none md:rounded-l-xl md:rounded-tr-none"
-	>
-		<div class="modal-image-wrapper h-full bg-gray-900">
-			{#if isTransitioningImage && transitionImage}
-				<img
-					src={transitionImage}
-					alt="Transitioning..."
-					class="absolute inset-0 z-10 h-full w-full object-cover"
-					aria-hidden="true"
-				/>
-			{/if}
+	<!-- Mobile flexible wrapper (display: contents on desktop to preserve grid) -->
+	<div class="flex min-h-full flex-col md:contents">
+		<!-- Image Section -->
+		<div
+			class="modal-image-container relative min-h-[20vh] flex-1 shrink-0 overflow-hidden rounded-t-xl md:h-full md:flex-none md:rounded-l-xl md:rounded-tr-none"
+		>
+			<div class="modal-image-wrapper h-full bg-gray-900">
+				{#if isTransitioningImage && transitionImage}
+					<img
+						src={transitionImage}
+						alt="Transitioning..."
+						class="absolute inset-0 z-10 h-full w-full object-cover"
+						aria-hidden="true"
+					/>
+				{/if}
 
-			<button class="contents" onclick={() => {}} aria-label="View full screen">
-				<img
-					bind:this={modalImageElement}
-					src={detailImageSrc}
-					srcset={detailImageSrcset}
-					sizes={detailImageSizes}
-					alt="{game.title} cover"
-					class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
-					loading="eager"
-					onload={handleImageLoad}
-					onerror={handleImageError}
-				/>
-			</button>
+				<button class="contents" onclick={() => {}} aria-label="View full screen">
+					<img
+						bind:this={modalImageElement}
+						src={detailImageSrc}
+						srcset={detailImageSrcset}
+						sizes={detailImageSizes}
+						alt="{game.title} cover"
+						class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
+						loading="eager"
+						onload={handleImageLoad}
+						onerror={handleImageError}
+					/>
+				</button>
+			</div>
 		</div>
-	</div>
 
-	<!-- Details Section -->
-	<div
-		class="modal-details-section flex-none px-5 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
-	>
-		<ModalHeader {game} {isEditor} onEdit={onEditGame} onDelete={onDeleteGame} />
-		<ModalMetadata {game} />
-		<ModalRatings {game} />
-		
-		<!-- Visual bottom spacer to ensure content clears rounded corners -->
-		<div class="mt-4 md:hidden"></div>
+		<!-- Details Section -->
+		<div
+			class="modal-details-section flex-none px-5 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
+		>
+			<ModalHeader {game} {isEditor} onEdit={onEditGame} onDelete={onDeleteGame} />
+			<ModalMetadata {game} />
+			<ModalRatings {game} />
+			
+			<!-- Visual bottom spacer to ensure content clears rounded corners -->
+			<div class="mt-4 md:hidden"></div>
+		</div>
 	</div>
 </div>
 
