@@ -7,7 +7,6 @@ const OFFLINE_QUEUE_NAME = 'gaming-tracker-offline-queue';
 
 const STATIC_ASSETS = [
 	'/',
-	'/index.html',
 	'/games.json',
 	'/site.webmanifest',
 	'/favicon.ico',
@@ -303,19 +302,19 @@ async function syncOfflineQueue() {
 	try {
 		const cache = await caches.open(OFFLINE_QUEUE_NAME);
 		const requests = await cache.keys();
-		
+
 		for (const request of requests) {
 			const data = await cache.match(request);
 			if (data) {
 				const body = await data.json();
-				
+
 				try {
 					const response = await fetch(body.url, {
 						method: body.method,
 						headers: body.headers,
 						body: body.method !== 'GET' ? JSON.stringify(body.body) : undefined
 					});
-					
+
 					if (response.ok) {
 						await cache.delete(request);
 					}
