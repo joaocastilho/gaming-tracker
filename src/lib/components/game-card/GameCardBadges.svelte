@@ -46,6 +46,18 @@
 		}
 		filtersStore.toggleCoOp('Yes');
 	}
+
+	let isMobile = $state(false);
+
+	$effect(() => {
+		const checkMobile = () => {
+			isMobile = window.innerWidth < 768;
+		};
+
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+		return () => window.removeEventListener('resize', checkMobile);
+	});
 </script>
 
 <div class="metadata-row">
@@ -56,6 +68,7 @@
 			onkeydown={handlePlatformClick}
 			aria-label="Filter by {game.platform}"
 			title="Platform: {game.platform}"
+			disabled={isMobile}
 		>
 			{game.platform}
 		</button>
@@ -65,6 +78,7 @@
 			onkeydown={handleGenreClick}
 			aria-label="Filter by {game.genre}"
 			title="Genre: {game.genre}"
+			disabled={isMobile}
 		>
 			{game.genre}
 		</button>
@@ -75,6 +89,7 @@
 				onkeydown={handleCoOpClick}
 				aria-label="Filter by Co-op"
 				title="Co-op Available"
+				disabled={isMobile}
 			>
 				<Users size={18} class="text-blue-500" />
 			</button>
