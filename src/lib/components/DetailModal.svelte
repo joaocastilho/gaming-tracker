@@ -227,7 +227,7 @@
 		<!-- Swipe Hint Overlay -->
 		{#if showSwipeIndicator}
 			<div
-				class="swipe-hint-overlay md:hidden pointer-events-none"
+				class="swipe-hint-overlay pointer-events-none md:hidden"
 				transition:fade={{ duration: 400 }}
 				aria-hidden="true"
 			>

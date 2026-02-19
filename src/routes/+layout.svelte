@@ -703,7 +703,7 @@
 
 		<!-- Discreet Last Updated Indicator -->
 		<div
-			class="pointer-events-none fixed bottom-[82px] left-2 z-50 select-none text-[10px] opacity-30 text-foreground/50 md:bottom-2 md:left-4"
+			class="text-foreground/50 pointer-events-none fixed bottom-[82px] left-2 z-50 text-[10px] opacity-30 select-none md:bottom-2 md:left-4"
 			aria-hidden="true"
 		>
 			Last updated: {__BUILD_DATE__}

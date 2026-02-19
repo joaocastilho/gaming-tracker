@@ -129,7 +129,7 @@
 			<ModalHeader {game} {isEditor} onEdit={onEditGame} onDelete={onDeleteGame} />
 			<ModalMetadata {game} />
 			<ModalRatings {game} />
-			
+
 			<!-- Visual bottom spacer to ensure content clears rounded corners -->
 			<div class="mt-4 md:hidden"></div>
 		</div>

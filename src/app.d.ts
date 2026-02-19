@@ -18,4 +18,4 @@ declare module '*.svelte' {
 	export default component;
 }
 
-export { };
+export {};
