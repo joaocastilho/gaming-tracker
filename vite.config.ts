@@ -22,7 +22,10 @@ function stripHtmlComments() {
 
 export default defineConfig({
 	define: {
-		__APP_VERSION__: JSON.stringify(pkg.version)
+		__APP_VERSION__: JSON.stringify(pkg.version),
+		__BUILD_DATE__: JSON.stringify(
+			new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date())
+		)
 	},
 	plugins: [
 		sveltekit(),

@@ -9,6 +9,7 @@ declare global {
 
 	// Vite define constant for app version from package.json
 	const __APP_VERSION__: string;
+	const __BUILD_DATE__: string;
 }
 
 declare module '*.svelte' {
@@ -17,4 +18,4 @@ declare module '*.svelte' {
 	export default component;
 }
 
-export {};
+export { };
