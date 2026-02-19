@@ -12,10 +12,26 @@ function stripHtmlComments() {
 		name: 'strip-html-comments',
 		apply: 'build' as const,
 		transformIndexHtml(html: string) {
-			// Match HTML comments but exclude Svelte's internal markers
-			// Svelte markers: <!--[!-->, <!--]-->, <!---->
-			// We want to keep Svelte markers but remove developer comments
 			return html.replace(/<!--(?!\[\[!-?-?])(?:\s|[\S\s])*?-->/g, '');
+		}
+	};
+}
+
+function injectBuildMeta() {
+	const buildDate = new Intl.DateTimeFormat('en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric'
+	}).format(new Date());
+	const appVersion = pkg.version;
+
+	return {
+		name: 'inject-build-meta',
+		transformIndexHtml(html: string) {
+			return html.replace(
+				'</head>',
+				`	<meta name="build-date" content="${buildDate}" />\n\t<meta name="app-version" content="${appVersion}" />\n</head>`
+			);
 		}
 	};
 }
@@ -32,6 +48,7 @@ export default defineConfig({
 	plugins: [
 		sveltekit(),
 		stripHtmlComments(),
+		injectBuildMeta(),
 		{
 			name: 'fix-mjs-content-type',
 			configureServer(server) {
