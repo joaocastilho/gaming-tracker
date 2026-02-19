@@ -3,10 +3,8 @@ import { defineConfig } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { readFileSync } from 'fs';
 
-// Read package.json version at build time
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
-// Custom plugin to strip HTML comments in production
 function stripHtmlComments() {
 	return {
 		name: 'strip-html-comments',
@@ -17,24 +15,7 @@ function stripHtmlComments() {
 	};
 }
 
-function injectBuildMeta() {
-	const buildDate = new Intl.DateTimeFormat('en-US', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric'
-	}).format(new Date());
-	const appVersion = pkg.version;
 
-	return {
-		name: 'inject-build-meta',
-		transformIndexHtml(html: string) {
-			return html.replace(
-				'</head>',
-				`	<meta name="build-date" content="${buildDate}" />\n\t<meta name="app-version" content="${appVersion}" />\n</head>`
-			);
-		}
-	};
-}
 
 export default defineConfig({
 	define: {
@@ -48,7 +29,6 @@ export default defineConfig({
 	plugins: [
 		sveltekit(),
 		stripHtmlComments(),
-		injectBuildMeta(),
 		{
 			name: 'fix-mjs-content-type',
 			configureServer(server) {
@@ -69,7 +49,6 @@ export default defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks(id) {
-					// Application-specific chunks
 					if (id.includes('$lib/components/FilterDropdown.svelte')) {
 						return 'filters';
 					}
@@ -89,7 +68,6 @@ export default defineConfig({
 						return 'virtual-list';
 					}
 
-					// Vendor chunks
 					if (id.includes('node_modules')) {
 						if (id.includes('lucide-svelte')) {
 							return 'vendor-ui';

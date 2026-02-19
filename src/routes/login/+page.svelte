@@ -8,6 +8,7 @@
 
 	// Get version from Vite define (set at build time)
 	const appVersion = __APP_VERSION__;
+	const buildDate = __BUILD_DATE__;
 
 	$effect(() => {
 		if (editorMode) {
@@ -22,7 +23,7 @@
 	<div class="login-container">
 		<h1>Owner Access</h1>
 		<p>Please sign in to access editor mode.</p>
-		<span class="version">v{appVersion}</span>
+		<span class="version">v{appVersion} ({buildDate})</span>
 	</div>
 </div>
 
