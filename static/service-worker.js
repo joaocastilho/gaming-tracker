@@ -10,7 +10,6 @@ const STATIC_ASSETS = [
 	'/games.json',
 	'/site.webmanifest',
 	'/favicon.ico',
-	'/logo.png',
 	'/covers/placeholder_cover.webp',
 	'/covers/placeholder_cover-200w.webp',
 	'/covers/placeholder_cover-detail.webp'
