@@ -7,7 +7,7 @@
 	import { gamesStore } from '$lib/stores/games.svelte';
 	import { offlineStore } from '$lib/stores/offline.svelte';
 	import type { Game } from '$lib/types/game.js';
-	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight, X } from 'lucide-svelte';
 
 	import { SwipeController } from './detail-modal/SwipeController.svelte';
 	import GameDetailCard from './detail-modal/GameDetailCard.svelte';
@@ -99,8 +99,18 @@
 		navigateToNext,
 		navigateToPrevious,
 		() => nextGamePreview,
-		() => prevGamePreview
+		() => prevGamePreview,
+		dismissSwipeHint
 	);
+
+	// Full-screen Image Logic
+	let isImageExpanded = $state(false);
+
+	function toggleImageExpansion() {
+		if (window.innerWidth < 768) {
+			isImageExpanded = !isImageExpanded;
+		}
+	}
 
 	// Interaction Handlers
 	function handleKeydown(event: KeyboardEvent) {
@@ -108,13 +118,19 @@
 
 		if (event.key === 'Escape') {
 			event.preventDefault();
-			modalStore.closeModal();
-		} else if (event.key === 'ArrowLeft') {
-			event.preventDefault();
-			navigateToPrevious();
-		} else if (event.key === 'ArrowRight') {
-			event.preventDefault();
-			navigateToNext();
+			if (isImageExpanded) {
+				isImageExpanded = false;
+			} else {
+				modalStore.closeModal();
+			}
+		} else if (!isImageExpanded) {
+			if (event.key === 'ArrowLeft') {
+				event.preventDefault();
+				navigateToPrevious();
+			} else if (event.key === 'ArrowRight') {
+				event.preventDefault();
+				navigateToNext();
+			}
 		}
 	}
 
@@ -169,7 +185,7 @@
 	$effect(() => {
 		if (!browser) return;
 
-		if ($modalStore.isOpen) {
+		if ($modalStore.isOpen || isImageExpanded) {
 			document.body.style.overflow = 'hidden';
 			document.documentElement.style.overflow = 'hidden';
 		} else {
@@ -211,14 +227,9 @@
 		<!-- Swipe Hint Overlay -->
 		{#if showSwipeIndicator}
 			<div
-				class="swipe-hint-overlay md:hidden"
+				class="swipe-hint-overlay md:hidden pointer-events-none"
 				transition:fade={{ duration: 400 }}
-				onclick={dismissSwipeHint}
-				onkeydown={(e: KeyboardEvent) =>
-					(e.key === 'Escape' || e.key === 'Enter') && dismissSwipeHint()}
-				role="button"
-				tabindex="0"
-				aria-label="Dismiss swipe hint"
+				aria-hidden="true"
 			>
 				<div class="swipe-hint-content">
 					<svg
@@ -253,7 +264,6 @@
 						/>
 					</svg>
 					<span class="swipe-hint-text">Swipe to navigate</span>
-					<span class="swipe-hint-dismiss">Tap to dismiss</span>
 				</div>
 			</div>
 		{/if}
@@ -271,7 +281,7 @@
 						background-color: {prevGamePreview.status === 'Completed'
 						? 'var(--color-surface-completed)'
 						: 'var(--color-surface)'};
-						transform: translateX(calc(-100% - 20px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px);
+						transform: translateX(calc(-{swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px);
 					"
 				>
 					<GameDetailCard game={prevGamePreview} />
@@ -292,7 +302,7 @@
 						background-color: {nextGamePreview.status === 'Completed'
 						? 'var(--color-surface-completed)'
 						: 'var(--color-surface)'};
-						transform: translateX(calc(100% + 20px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px);
+						transform: translateX(calc({swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px);
 					"
 				>
 					<GameDetailCard game={nextGamePreview} />
@@ -351,8 +361,38 @@
 				onImageLoad={() => (isTransitioningImage = false)}
 				{isTransitioningImage}
 				{transitionImage}
+				onImageClick={toggleImageExpansion}
 			/>
 		</div>
+
+		<!-- Full-screen Image Overlay -->
+		{#if isImageExpanded}
+			<div
+				class="fixed inset-0 z-[100] flex items-center justify-center bg-black transition-opacity"
+				transition:fade={{ duration: 250 }}
+				onclick={toggleImageExpansion}
+				onkeydown={(e: KeyboardEvent) =>
+					(e.key === 'Escape' || e.key === 'Enter') && toggleImageExpansion()}
+				role="button"
+				tabindex="0"
+				aria-label="Close full screen view"
+			>
+				<img
+					src={getPreviewImageSrc($modalStore.activeGame.coverImage)}
+					alt="{$modalStore.activeGame.title} cover full screen"
+					class="max-h-full max-w-full object-contain"
+				/>
+				<button
+					class="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md"
+					onclick={(e) => {
+						e.stopPropagation();
+						toggleImageExpansion();
+					}}
+				>
+					<X size={24} />
+				</button>
+			</div>
+		{/if}
 	</div>
 {/if}
 

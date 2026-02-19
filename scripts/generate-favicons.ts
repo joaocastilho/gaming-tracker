@@ -25,9 +25,9 @@ async function generateFavicons(): Promise<void> {
 		await sharp(inputPath)
 			.resize(32, 32, {
 				fit: 'contain',
-				background: { r: 255, g: 255, b: 255, alpha: 1 }
+				background: { r: 0, g: 0, b: 0, alpha: 0 }
 			})
-			.ico()
+			.png() // Fallback to PNG as .ico() is not natively supported by sharp
 			.toFile(join(outputDir, 'favicon.ico'));
 
 		const icoStats = await stat(join(outputDir, 'favicon.ico'));
@@ -48,7 +48,7 @@ async function generateFavicons(): Promise<void> {
 			await sharp(inputPath)
 				.resize(size, size, {
 					fit: 'contain',
-					background: { r: 255, g: 255, b: 255, alpha: 1 } // White background for favicons
+					background: { r: 0, g: 0, b: 0, alpha: 0 } // Transparent background
 				})
 				.png({
 					quality: 95,

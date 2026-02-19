@@ -10,6 +10,10 @@ export class SwipeController {
 	isClosingGesture = $state(false);
 	parallaxOffset = $state(0);
 
+	get offsetMagnitude() {
+		return (typeof window !== 'undefined' ? window.innerWidth : 300) + 20;
+	}
+
 	// Touch tracking
 	private touchStartX = 0;
 	private touchStartY = 0;
@@ -29,21 +33,26 @@ export class SwipeController {
 	private onNavigatePrev: (skipTransition?: boolean) => void;
 	private getNextGame: () => Game | null;
 	private getPrevGame: () => Game | null;
+	private onSwipeStart?: () => void;
 
 	constructor(
 		onNavigateNext: (skipTransition?: boolean) => void,
 		onNavigatePrev: (skipTransition?: boolean) => void,
 		getNextGame: () => Game | null,
-		getPrevGame: () => Game | null
+		getPrevGame: () => Game | null,
+		onSwipeStart?: () => void
 	) {
 		this.onNavigateNext = onNavigateNext;
 		this.onNavigatePrev = onNavigatePrev;
 		this.getNextGame = getNextGame;
 		this.getPrevGame = getPrevGame;
+		this.onSwipeStart = onSwipeStart;
 	}
 
 	handleTouchStart(e: TouchEvent) {
 		if (this.isSwipeTransitioning) return;
+
+		this.onSwipeStart?.();
 
 		const touch = e.touches[0];
 		this.touchStartX = touch.screenX;
@@ -75,8 +84,10 @@ export class SwipeController {
 		) {
 			if (Math.abs(diffY) > Math.abs(diffX) * 1.5) {
 				this.isVerticalSwipe = true;
+				this.onSwipeStart?.();
 			} else if (Math.abs(diffX) > Math.abs(diffY)) {
 				this.isHorizontalSwipe = true;
+				this.onSwipeStart?.();
 			}
 		}
 
@@ -190,21 +201,19 @@ export class SwipeController {
 
 	private animateSwipeTransition(direction: 'left' | 'right') {
 		this.isSwipeTransitioning = true;
-		const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 300;
-		// Include the 20px gap used in DetailModal.svelte to ensure seamless alignment
-		const targetOffset = direction === 'left' ? -(screenWidth + 20) : screenWidth + 20;
+		const targetOffset = direction === 'left' ? -this.offsetMagnitude : this.offsetMagnitude;
 		const startOffset = this.swipeOffsetX;
 		const startParallax = this.parallaxOffset;
 		const targetParallax = 0;
 		const startTime = performance.now();
-		const duration = 180; // Snappier feel as requested
+		const duration = 250; // Slightly longer for smoother feel
 
-		const easeOutQuad = (t: number): number => t * (2 - t);
+		const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
 
 		const animate = (currentTime: number) => {
 			const elapsed = currentTime - startTime;
 			const progress = Math.min(elapsed / duration, 1);
-			const eased = easeOutQuad(progress);
+			const eased = easeOutCubic(progress);
 
 			this.swipeOffsetX = startOffset + (targetOffset - startOffset) * eased;
 			this.parallaxOffset = startParallax + (targetParallax - startParallax) * eased;
@@ -213,24 +222,17 @@ export class SwipeController {
 				requestAnimationFrame(animate);
 			} else {
 				// Animation complete
-				// 1. Perform navigation which updates the "active" game
+				// Reset all state in the same tick as navigation to prevent bleeping
 				if (direction === 'left') {
 					this.onNavigateNext(true);
 				} else {
 					this.onNavigatePrev(true);
 				}
 
-				// 2. Reset state IMMEDIATELY in the same tick
-				// This ensures the main card moves to 0 offset at the same time its content updates,
-				// and the preview card is removed before its content can update prematurely.
 				this.swipeOffsetX = 0;
 				this.parallaxOffset = 0;
 				this.swipeDirection = null;
-
-				// 3. Unlock interactions in the NEXT frame to prevent immediate re-swiping
-				requestAnimationFrame(() => {
-					this.isSwipeTransitioning = false;
-				});
+				this.isSwipeTransitioning = false;
 			}
 		};
 

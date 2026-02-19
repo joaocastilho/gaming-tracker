@@ -17,6 +17,7 @@
 		// Optional transition props
 		isTransitioningImage?: boolean;
 		transitionImage?: string;
+		onImageClick?: () => void;
 	}
 
 	let {
@@ -26,7 +27,8 @@
 		onClose,
 		onImageLoad,
 		isTransitioningImage = false,
-		transitionImage = ''
+		transitionImage = '',
+		onImageClick
 	}: Props = $props();
 
 	let isEditor = $derived(editorStore.editorMode);
@@ -104,7 +106,7 @@
 					/>
 				{/if}
 
-				<button class="contents" onclick={() => {}} aria-label="View full screen">
+				<button class="contents" onclick={onImageClick} aria-label="View full screen">
 					<img
 						bind:this={modalImageElement}
 						src={detailImageSrc}
