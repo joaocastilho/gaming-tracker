@@ -21,7 +21,6 @@ async function generateFavicons(): Promise<void> {
 
 		// Generate single-size favicon.ico (32x32)
 		console.log('\n🔸 Generating favicon.ico (32x32)...');
-		// @ts-expect-error Sharp types missing .ico() but runtime supports it
 		await sharp(inputPath)
 			.resize(32, 32, {
 				fit: 'contain',
@@ -61,6 +60,44 @@ async function generateFavicons(): Promise<void> {
 			console.log(`  📁 ${formatBytes(stats.size)}`);
 		}
 
+		// Generate maskable PNG icons
+		const maskableSizes = [
+			{ name: 'android-chrome-maskable-192x192', size: 192 },
+			{ name: 'android-chrome-maskable-512x512', size: 512 }
+		];
+
+		const THEME_COLOR = { r: 15, g: 20, b: 25 }; // #0f1419
+
+		for (const { name, size } of maskableSizes) {
+			console.log(`🔸 Generating ${name}.png (${size}x${size})...`);
+			const outputPath = join(outputDir, `${name}.png`);
+			const innerSize = Math.round(size * 0.8);
+			const padding = Math.floor((size - innerSize) / 2);
+
+			await sharp(inputPath)
+				.resize(innerSize, innerSize, {
+					fit: 'contain',
+					background: { r: 0, g: 0, b: 0, alpha: 0 }
+				})
+				.extend({
+					top: padding,
+					bottom: size - innerSize - padding,
+					left: padding,
+					right: size - innerSize - padding,
+					background: { r: 0, g: 0, b: 0, alpha: 0 }
+				})
+				.flatten({ background: THEME_COLOR })
+				.png({
+					quality: 95,
+					adaptiveFiltering: true,
+					compressionLevel: 9
+				})
+				.toFile(outputPath);
+
+			const stats = await stat(outputPath);
+			console.log(`  📁 ${formatBytes(stats.size)}`);
+		}
+
 		console.log('\n✅ All favicon files generated successfully!');
 		console.log('📁 Files created in static/:');
 		console.log('   - favicon.ico');
@@ -69,6 +106,8 @@ async function generateFavicons(): Promise<void> {
 		console.log('   - apple-touch-icon.png');
 		console.log('   - android-chrome-192x192.png');
 		console.log('   - android-chrome-512x512.png');
+		console.log('   - android-chrome-maskable-192x192.png');
+		console.log('   - android-chrome-maskable-512x512.png');
 		console.log('\n💡 Your site.webmanifest already references android-chrome icons.');
 		console.log('💡 Add these to src/app.html <head>:');
 		console.log('   <link rel="icon" type="image/x-icon" href="/favicon.ico">');
