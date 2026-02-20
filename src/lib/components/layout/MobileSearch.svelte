@@ -93,6 +93,7 @@
 		// Clear input value
 		if (searchInput) {
 			searchInput.value = '';
+			searchInput.focus();
 		}
 
 		// Clear URL parameter
@@ -101,9 +102,6 @@
 			url.searchParams.delete('s');
 			replaceState(url.toString(), page.state);
 		}
-
-		// Close search box
-		onClose();
 	}
 </script>
 
