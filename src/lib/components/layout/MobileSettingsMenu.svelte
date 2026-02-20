@@ -158,6 +158,9 @@
 						<span>Login</span>
 					</button>
 				{/if}
+				<div class="mt-2 text-center text-xs text-neutral-500">
+					Last Update: {__BUILD_DATE__}
+				</div>
 			</div>
 		</div>
 	</div>
