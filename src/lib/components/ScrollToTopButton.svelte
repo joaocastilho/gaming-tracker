@@ -88,7 +88,7 @@
 	/* Reset FAB Styles */
 	.reset-filters-fab {
 		position: fixed;
-		bottom: 130px; /* 65px + 52px + 13px gap */
+		bottom: calc(130px + env(safe-area-inset-bottom, 0px)); /* 65px + 52px + 13px gap */
 		right: 24px;
 		width: 52px;
 		height: 52px;
@@ -130,7 +130,7 @@
 	/* Existing Scroll Button Styles */
 	.scroll-to-top-button {
 		position: fixed;
-		bottom: 65px;
+		bottom: calc(65px + env(safe-area-inset-bottom, 0px));
 		right: 24px;
 		width: 52px;
 		height: 52px;
@@ -195,7 +195,7 @@
 
 	@media (max-width: 768px) {
 		.scroll-to-top-button {
-			bottom: 136px;
+			bottom: calc(136px + env(safe-area-inset-bottom, 0px));
 			right: 16px;
 			width: 48px;
 			height: 48px;
@@ -203,7 +203,7 @@
 		}
 
 		.reset-filters-fab {
-			bottom: 196px; /* 136px + 48px + 12px */
+			bottom: calc(196px + env(safe-area-inset-bottom, 0px)); /* 136px + 48px + 12px */
 			right: 16px; /* Match scroll btn right */
 			width: 48px;
 			height: 48px;
@@ -212,7 +212,7 @@
 
 	@media (max-width: 480px) {
 		.scroll-to-top-button {
-			bottom: 141px;
+			bottom: calc(141px + env(safe-area-inset-bottom, 0px));
 			right: 16px;
 			width: 44px;
 			height: 44px;
@@ -220,7 +220,7 @@
 		}
 
 		.reset-filters-fab {
-			bottom: 196px; /* 141px + 44px + 11px */
+			bottom: calc(196px + env(safe-area-inset-bottom, 0px)); /* 141px + 44px + 11px */
 			right: 16px;
 			width: 44px;
 			height: 44px;
