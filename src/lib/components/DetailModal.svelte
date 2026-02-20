@@ -64,9 +64,18 @@
 		currentGameIndex > 0 ? displayedGames[currentGameIndex - 1] : null
 	);
 
-	// Image transition state
-	let transitionImage = $state('');
-	let isTransitioningImage = $state(false);
+	let visibleGames = $derived.by(() => {
+		const result = [];
+		if (prevGamePreview) result.push({ game: prevGamePreview, pos: -1 });
+		if ($modalStore.activeGame) result.push({ game: $modalStore.activeGame, pos: 0 });
+		if (nextGamePreview) result.push({ game: nextGamePreview, pos: 1 });
+		return result;
+	});
+
+	function conditionalFly(node: HTMLElement, { condition, ...config }: any) {
+		if (!condition) return { duration: 0, delay: 0 };
+		return fly(node, config);
+	}
 
 	function navigateToPrevious(skipTransition = false) {
 		if (currentGameIndex > 0) {
@@ -256,99 +265,53 @@
 			</div>
 		{/if}
 
-		<!-- Previous Game Card (Full Preview) -->
-		{#if prevGamePreview && swipe.swipeDirection === 'right'}
+		{#each visibleGames as { game, pos } (game.id)}
+			{@const isCurrent = pos === 0}
+			{@const isVisible =
+				isCurrent ||
+				(pos === -1 && swipe.swipeDirection === 'right') ||
+				(pos === 1 && swipe.swipeDirection === 'left')}
+
 			<div
-				class="pointer-events-none absolute inset-0 z-[59] flex items-center justify-center p-3 md:p-4"
+				class="absolute inset-0 flex items-center justify-center p-3 md:p-4 {isCurrent ? 'z-[60]' : 'z-[59] pointer-events-none'}"
+				style="visibility: {isVisible ? 'visible' : 'hidden'};"
 			>
 				<div
-					class="modal-content flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
-					class:ios-modal={isIOS}
-					class:android-modal={isAndroid}
+					class="modal-content relative flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl {isIOS ? 'ios-modal' : ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture ? 'swiping-close' : ''}"
 					style="
-						background-color: {prevGamePreview.status === 'Completed'
-						? 'var(--color-surface-completed)'
-						: 'var(--color-surface)'};
-						transform: translateX(calc(-{swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px);
+						background-color: {game.status === 'Completed' ? 'var(--color-surface-completed)' : 'var(--color-surface)'}; 
+						transform: translateX(calc({pos * swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px); 
+						opacity: {isCurrent ? 1 - Math.abs(swipe.swipeOffsetX) * 0.0005 - Math.max(0, swipe.swipeOffsetY) * 0.0005 : 1};
+						border-radius: {isCurrent ? 12 + Math.max(0, swipe.swipeOffsetY) * 0.1 : 12}px;
+						will-change: transform;
 					"
+					role={isCurrent ? 'document' : undefined}
+					ontouchstart={isCurrent ? (e) => swipe.handleTouchStart(e) : undefined}
+					ontouchmove={isCurrent ? (e) => swipe.handleTouchMove(e) : undefined}
+					ontouchend={isCurrent ? () => swipe.handleTouchEnd() : undefined}
+					in:conditionalFly={{
+						condition: isCurrent,
+						y: isIOS ? 60 : 40,
+						duration: isIOS ? 400 : 250,
+						easing: isIOS ? backOut : cubicOut
+					}}
+					out:conditionalFly={{
+						condition: isCurrent,
+						y: isIOS ? 100 : 30,
+						duration: isIOS ? 300 : 200,
+						easing: cubicOut
+					}}
 				>
-					<GameDetailCard game={prevGamePreview} />
+					<GameDetailCard
+						{game}
+						onEditGame={isCurrent ? onEditGame : undefined}
+						onDeleteGame={isCurrent ? onDeleteGame : undefined}
+						onClose={isCurrent ? () => modalStore.closeModal() : undefined}
+						onImageClick={isCurrent ? toggleImageExpansion : undefined}
+					/>
 				</div>
 			</div>
-		{/if}
-
-		<!-- Next Game Card (Full Preview) -->
-		{#if nextGamePreview && swipe.swipeDirection === 'left'}
-			<div
-				class="pointer-events-none absolute inset-0 z-[59] flex items-center justify-center p-3 md:p-4"
-			>
-				<div
-					class="modal-content flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
-					class:ios-modal={isIOS}
-					class:android-modal={isAndroid}
-					style="
-						background-color: {nextGamePreview.status === 'Completed'
-						? 'var(--color-surface-completed)'
-						: 'var(--color-surface)'};
-						transform: translateX(calc({swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px);
-					"
-				>
-					<GameDetailCard game={nextGamePreview} />
-				</div>
-			</div>
-		{/if}
-
-		<!-- Desktop Nav Arrows -->
-		{#if currentGameIndex > 0}
-			<button
-				onclick={() => navigateToPrevious()}
-				class="nav-arrow-btn absolute top-1/2 left-[calc(50%-600px)] z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
-				aria-label="Previous game"
-			>
-				<ChevronLeft size={28} />
-			</button>
-		{/if}
-		{#if currentGameIndex < displayedGames.length - 1}
-			<button
-				onclick={() => navigateToNext()}
-				class="nav-arrow-btn absolute top-1/2 right-[calc(50%-600px)] z-[61] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
-				aria-label="Next game"
-			>
-				<ChevronRight size={28} />
-			</button>
-		{/if}
-
-		<!-- Main Modal Content -->
-		<div
-			class="modal-content relative flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl"
-			class:ios-modal={isIOS}
-			class:android-modal={isAndroid}
-			class:swiping-close={swipe.isClosingGesture}
-			style="background-color: {$modalStore.activeGame.status === 'Completed'
-				? 'var(--color-surface-completed)'
-				: 'var(--color-surface)'}; 
-				transform: translateX({swipe.swipeOffsetX}px) translateY({swipe.swipeOffsetY}px); 
-				opacity: {1 - Math.abs(swipe.swipeOffsetX) * 0.0005 - swipe.swipeOffsetY * 0.0005};
-				border-radius: {12 + swipe.swipeOffsetY * 0.1}px;"
-			role="document"
-			ontouchstart={(e: TouchEvent) => swipe.handleTouchStart(e)}
-			ontouchmove={(e: TouchEvent) => swipe.handleTouchMove(e)}
-			ontouchend={() => swipe.handleTouchEnd()}
-			in:fly={{
-				y: isIOS ? 60 : 40,
-				duration: isIOS ? 400 : 250,
-				easing: isIOS ? backOut : cubicOut
-			}}
-			out:fly={{ y: isIOS ? 100 : 30, duration: isIOS ? 300 : 200, easing: cubicOut }}
-		>
-			<GameDetailCard
-				game={$modalStore.activeGame}
-				{onEditGame}
-				{onDeleteGame}
-				onClose={() => modalStore.closeModal()}
-				onImageClick={toggleImageExpansion}
-			/>
-		</div>
+		{/each}
 
 		<!-- Full-screen Image Overlay -->
 		{#if isImageExpanded}

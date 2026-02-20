@@ -93,19 +93,17 @@
 		>
 			<div class="modal-image-wrapper h-full bg-gray-900">
 				<button class="contents" onclick={onImageClick} aria-label="View full screen">
-					{#key game.id}
-						<img
-							bind:this={modalImageElement}
-							src={detailImageSrc}
-							srcset={detailImageSrcset}
-							sizes={detailImageSizes}
-							alt="{game.title} cover"
-							class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
-							loading="eager"
-							onload={handleImageLoad}
-							onerror={handleImageError}
-						/>
-					{/key}
+					<img
+						bind:this={modalImageElement}
+						src={detailImageSrc}
+						srcset={detailImageSrcset}
+						sizes={detailImageSizes}
+						alt="{game.title} cover"
+						class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
+						loading="eager"
+						onload={handleImageLoad}
+						onerror={handleImageError}
+					/>
 				</button>
 			</div>
 		</div>
