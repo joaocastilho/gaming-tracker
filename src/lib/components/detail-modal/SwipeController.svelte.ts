@@ -206,7 +206,7 @@ export class SwipeController {
 		const startParallax = this.parallaxOffset;
 		const targetParallax = 0;
 		const startTime = performance.now();
-		const duration = 180; // Faster and more responsive
+		const duration = 120; // Very fast and responsive
 
 		const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
 
@@ -244,7 +244,7 @@ export class SwipeController {
 		const startOffset = this.swipeOffsetX;
 		const startParallax = this.parallaxOffset;
 		const startTime = performance.now();
-		const duration = 180;
+		const duration = 120;
 
 		const easeOutExpo = (t: number): number => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
