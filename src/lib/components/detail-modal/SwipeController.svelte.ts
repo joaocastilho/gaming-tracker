@@ -156,7 +156,7 @@ export class SwipeController {
 		const startOffset = this.swipeOffsetY;
 		const targetOffset = window.innerHeight;
 		const startTime = performance.now();
-		const duration = 300;
+		const duration = 200;
 
 		const animate = (currentTime: number) => {
 			const elapsed = currentTime - startTime;
@@ -180,7 +180,7 @@ export class SwipeController {
 	private resetVerticalPosition() {
 		const startOffset = this.swipeOffsetY;
 		const startTime = performance.now();
-		const duration = 300;
+		const duration = 200;
 
 		const animate = (currentTime: number) => {
 			const elapsed = currentTime - startTime;
