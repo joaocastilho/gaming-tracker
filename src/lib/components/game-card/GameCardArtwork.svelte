@@ -357,7 +357,7 @@
 	@container game-card (max-width: 420px) {
 		.editor-controls {
 			opacity: 1;
-			bottom: 8px;
+			bottom: 48px;
 		}
 
 		.editor-control-btn {
