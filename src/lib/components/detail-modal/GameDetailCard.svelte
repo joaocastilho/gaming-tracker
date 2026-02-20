@@ -14,9 +14,6 @@
 		onDeleteGame?: (game: Game) => void;
 		onClose?: () => void;
 		onImageLoad?: () => void;
-		// Optional transition props
-		isTransitioningImage?: boolean;
-		transitionImage?: string;
 		onImageClick?: () => void;
 	}
 
@@ -26,8 +23,6 @@
 		onDeleteGame,
 		onClose,
 		onImageLoad,
-		isTransitioningImage = false,
-		transitionImage = '',
 		onImageClick
 	}: Props = $props();
 
@@ -97,15 +92,6 @@
 			class="modal-image-container relative min-h-[20vh] flex-1 shrink-0 overflow-hidden rounded-t-xl md:h-full md:flex-none md:rounded-l-xl md:rounded-tr-none"
 		>
 			<div class="modal-image-wrapper h-full bg-gray-900">
-				{#if isTransitioningImage && transitionImage}
-					<img
-						src={transitionImage}
-						alt="Transitioning..."
-						class="absolute inset-0 z-10 h-full w-full object-cover"
-						aria-hidden="true"
-					/>
-				{/if}
-
 				<button class="contents" onclick={onImageClick} aria-label="View full screen">
 					<img
 						bind:this={modalImageElement}

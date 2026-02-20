@@ -71,12 +71,6 @@
 	function navigateToPrevious(skipTransition = false) {
 		if (currentGameIndex > 0) {
 			const prevGame = displayedGames[currentGameIndex - 1];
-			// Only trigger image transition if NOT swiping (e.g. keyboard/button nav)
-			if (!skipTransition && $modalStore.activeGame) {
-				// Use CURRENT game image as placeholder while NEXT game loads
-				transitionImage = getPreviewImageSrc($modalStore.activeGame.coverImage);
-				isTransitioningImage = true;
-			}
 			modalStore.openViewModal(prevGame, displayedGames);
 		}
 	}
@@ -84,12 +78,6 @@
 	function navigateToNext(skipTransition = false) {
 		if (currentGameIndex < displayedGames.length - 1) {
 			const nextGame = displayedGames[currentGameIndex + 1];
-			// Only trigger image transition if NOT swiping (e.g. keyboard/button nav)
-			if (!skipTransition && $modalStore.activeGame) {
-				// Use CURRENT game image as placeholder while NEXT game loads
-				transitionImage = getPreviewImageSrc($modalStore.activeGame.coverImage);
-				isTransitioningImage = true;
-			}
 			modalStore.openViewModal(nextGame, displayedGames);
 		}
 	}
@@ -358,9 +346,6 @@
 				{onEditGame}
 				{onDeleteGame}
 				onClose={() => modalStore.closeModal()}
-				onImageLoad={() => (isTransitioningImage = false)}
-				{isTransitioningImage}
-				{transitionImage}
 				onImageClick={toggleImageExpansion}
 			/>
 		</div>
