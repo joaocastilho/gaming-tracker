@@ -17,14 +17,7 @@
 		onImageClick?: () => void;
 	}
 
-	let {
-		game,
-		onEditGame,
-		onDeleteGame,
-		onClose,
-		onImageLoad,
-		onImageClick
-	}: Props = $props();
+	let { game, onEditGame, onDeleteGame, onClose, onImageLoad, onImageClick }: Props = $props();
 
 	let isEditor = $derived(editorStore.editorMode);
 	let isOffline = $derived(!offlineStore.isOnline);

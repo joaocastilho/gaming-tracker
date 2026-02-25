@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Svelte 5 Runes - no legacy lifecycle imports needed
-	import { fade, fly } from 'svelte/transition';
+	import { fade, fly, type FlyParams } from 'svelte/transition';
 	import { cubicOut, backOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 	import { modalStore } from '$lib/stores/modal.svelte';
@@ -72,19 +72,22 @@
 		return result;
 	});
 
-	function conditionalFly(node: HTMLElement, { condition, ...config }: any) {
+	function conditionalFly(
+		node: HTMLElement,
+		{ condition, ...config }: FlyParams & { condition?: boolean }
+	) {
 		if (!condition) return { duration: 0, delay: 0 };
 		return fly(node, config);
 	}
 
-	function navigateToPrevious(skipTransition = false) {
+	function navigateToPrevious() {
 		if (currentGameIndex > 0) {
 			const prevGame = displayedGames[currentGameIndex - 1];
 			modalStore.openViewModal(prevGame, displayedGames);
 		}
 	}
 
-	function navigateToNext(skipTransition = false) {
+	function navigateToNext() {
 		if (currentGameIndex < displayedGames.length - 1) {
 			const nextGame = displayedGames[currentGameIndex + 1];
 			modalStore.openViewModal(nextGame, displayedGames);
@@ -265,6 +268,34 @@
 			</div>
 		{/if}
 
+		<!-- Desktop Nav Arrows -->
+		{#if !isIOS && !isAndroid && displayedGames.length > 1}
+			{#if currentGameIndex > 0}
+				<button
+					onclick={(e) => {
+						e.stopPropagation();
+						navigateToPrevious();
+					}}
+					class="nav-arrow-btn absolute top-1/2 left-[calc(50%-600px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
+					aria-label="Previous game"
+				>
+					<ChevronLeft size={28} />
+				</button>
+			{/if}
+			{#if currentGameIndex < displayedGames.length - 1}
+				<button
+					onclick={(e) => {
+						e.stopPropagation();
+						navigateToNext();
+					}}
+					class="nav-arrow-btn absolute top-1/2 right-[calc(50%-600px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
+					aria-label="Next game"
+				>
+					<ChevronRight size={28} />
+				</button>
+			{/if}
+		{/if}
+
 		{#each visibleGames as { game, pos } (game.id)}
 			{@const isCurrent = pos === 0}
 			{@const isVisible =
@@ -272,16 +303,32 @@
 				(pos === -1 && swipe.swipeDirection === 'right') ||
 				(pos === 1 && swipe.swipeDirection === 'left')}
 
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
-				class="absolute inset-0 flex items-center justify-center p-3 md:p-4 {isCurrent ? 'z-[60]' : 'z-[59] pointer-events-none'}"
+				class="absolute inset-0 flex items-center justify-center p-3 md:p-4 {isCurrent
+					? 'z-[60]'
+					: 'pointer-events-none z-[59]'}"
 				style="visibility: {isVisible ? 'visible' : 'hidden'};"
+				onclick={(e: MouseEvent) => {
+					if (isCurrent && e.target === e.currentTarget) modalStore.closeModal();
+				}}
 			>
 				<div
-					class="modal-content relative flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl {isIOS ? 'ios-modal' : ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture ? 'swiping-close' : ''}"
+					class="modal-content relative flex h-full min-h-0 max-w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[85vh] md:max-w-[1000px] md:rounded-xl md:shadow-2xl {isIOS
+						? 'ios-modal'
+						: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
+						? 'swiping-close'
+						: ''}"
 					style="
-						background-color: {game.status === 'Completed' ? 'var(--color-surface-completed)' : 'var(--color-surface)'}; 
-						transform: translateX(calc({pos * swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px); 
-						opacity: {isCurrent ? 1 - Math.abs(swipe.swipeOffsetX) * 0.0005 - Math.max(0, swipe.swipeOffsetY) * 0.0005 : 1};
+						background-color: {game.status === 'Completed'
+						? 'var(--color-surface-completed)'
+						: 'var(--color-surface)'}; 
+						transform: translateX(calc({pos *
+						swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px); 
+						opacity: {isCurrent
+						? 1 - Math.abs(swipe.swipeOffsetX) * 0.0005 - Math.max(0, swipe.swipeOffsetY) * 0.0005
+						: 1};
 						border-radius: {isCurrent ? 12 + Math.max(0, swipe.swipeOffsetY) * 0.1 : 12}px;
 						will-change: transform;
 					"
