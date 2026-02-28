@@ -4173,15 +4173,16 @@
       "year": 2018,
       "genre": "Action RPG",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Completed",
       "coverImage": "covers/kingdom-come-deliverance.webp",
-      "playtime": "40h 6m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "33h 30m",
+      "finishedDate": "28/02/2026",
+      "ratingPresentation": 7,
+      "ratingStory": 7,
+      "ratingGameplay": 6,
+      "score": 13,
+      "tier": "C - Good",
+      "completionOrder": null
     },
     {
       "id": "kingdom-come-deliverance-ii",
@@ -9595,6 +9596,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-01-31T01:07:55.428Z"
+    "lastUpdated": "2026-02-28T13:30:26.598Z"
   }
 }
