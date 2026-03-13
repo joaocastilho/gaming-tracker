@@ -1,13 +1,13 @@
-# <img src="/favicon-32x32.png" alt="Gaming Tracker" width="32" height="32"> Gaming Tracker
+# <img src="static/favicon-32x32.png" alt="Gaming Tracker" width="32" height="32"> Gaming Tracker
 
-Personal project for tracking my own video game collection. Includes tier lists, ratings, search, filters, and works offline.
+A personal project for tracking my own video game collection. Includes tier lists, ratings, search, filters, and works offline. Built for personal use only.
 
 [![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)
 
-## What's Included
+## What This Personal Project Includes
 
 ### 🎯 Game Tracking
 
