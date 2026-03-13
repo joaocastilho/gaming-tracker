@@ -1,6 +1,6 @@
 # [<img src="/favicon-32x32.png" alt="Gaming Tracker" width="32" height="32">](https://gaming-tracker.example.com) Gaming Tracker
 
-A personal game library to track, rate, and organize your video game collection. Features tier lists, detailed ratings, search & filters, and works offline.
+Personal project for tracking my own video game collection. Includes tier lists, ratings, search, filters, and works offline.
 
 [![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
