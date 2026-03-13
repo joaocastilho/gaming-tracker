@@ -69,7 +69,7 @@ Manually assign games to tiers based on overall assessment:
 | **Styling**    | [Tailwind CSS](https://tailwindcss.com/)       | `v4.2.1`   |
 | **Storage**    | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.3.0`   |
 | **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.10`  |
-| **Build Tool** | [Vite](https://vite.dev/)                      | `v8.0.0`   |
+| **Build Tool** | [Vite](https://vite.dev/)                      | `v7.3.1`   |
 
 ## 🚀 Running Locally
 
