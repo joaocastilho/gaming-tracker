@@ -5,10 +5,12 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises } from './utils';
+import { filtersStore } from '$lib/stores/filters.svelte';
 
 describe('Store Subscriber Reactivity', () => {
 	beforeEach(() => {
 		vi.resetModules();
+		filtersStore.initializeForTesting();
 	});
 
 	describe('filtersStore subscriber notifications', () => {

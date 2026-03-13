@@ -4,10 +4,12 @@
  * which could cause infinite effect loops in Svelte components
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { filtersStore } from '$lib/stores/filters.svelte';
 
 describe('Filter Store Idempotency', () => {
 	beforeEach(() => {
 		vi.resetModules();
+		filtersStore.initializeForTesting();
 	});
 
 	describe('setSearchTerm', () => {

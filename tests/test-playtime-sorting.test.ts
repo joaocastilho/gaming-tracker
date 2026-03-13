@@ -68,8 +68,10 @@ const createPlannedGame = (overrides: Partial<MockGame>): MockGame => ({
 });
 
 describe('Hours Played Sorting (Completed Games)', () => {
-	beforeEach(() => {
+	beforeEach(async () => {
 		vi.resetModules();
+		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		filtersStore.initializeForTesting();
 	});
 
 	const completedGames: MockGame[] = [

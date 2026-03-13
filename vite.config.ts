@@ -48,7 +48,7 @@ export default defineConfig({
 		devtoolsJson()
 	],
 	build: {
-		rollupOptions: {
+		rolldownOptions: {
 			output: {
 				manualChunks(id) {
 					if (id.includes('$lib/components/FilterDropdown.svelte')) {
@@ -92,7 +92,7 @@ export default defineConfig({
 		},
 		target: 'es2020',
 		cssCodeSplit: true,
-		minify: 'esbuild',
+		minify: 'oxc',
 		sourcemap: false,
 		assetsInlineLimit: 4096,
 		chunkSizeWarningLimit: 1000,
@@ -102,7 +102,11 @@ export default defineConfig({
 	},
 	optimizeDeps: {
 		include: ['lucide-svelte', 'date-fns'],
-		exclude: ['web-vitals']
+		exclude: ['web-vitals'],
+		rolldownOptions: {
+			// Convert esbuild options to rolldown options automatically
+			// Tree shaking is enabled by default in Rolldown
+		}
 	},
 	server: {
 		fs: {
