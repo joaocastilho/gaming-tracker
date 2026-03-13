@@ -1,4 +1,4 @@
-# [<img src="/favicon-32x32.png" alt="Gaming Tracker" width="32" height="32">](https://gaming-tracker.example.com) Gaming Tracker
+# <img src="/favicon-32x32.png" alt="Gaming Tracker" width="32" height="32"> Gaming Tracker
 
 Personal project for tracking my own video game collection. Includes tier lists, ratings, search, filters, and works offline.
 
@@ -43,21 +43,20 @@ Manually assign games to tiers based on overall assessment:
 
 - Real-time title search
 - Filter by platform, genre, or tier
-- Filter by rating ranges (presentation, story, gameplay, or total score)
+- Filter by rating ranges
 
-### 🎨 Modern UI
+### 🎨 UI
 
-- 🌙 Dark and light mode themes
-- ✨ Glassmorphism design effects
-- 📱 Responsive layout for desktop and mobile
-- ⚡ Smooth animations and transitions
+- Dark and light mode themes
+- Glassmorphism design effects
+- Responsive layout for desktop and mobile
+- Smooth animations and transitions
 
-### 📦 Offline Support
+### 📦 Offline
 
+- Data stored locally in the browser via IndexedDB
+- JSON export/import for backup
 - Works without internet after initial load
-- All data stored locally in the browser via IndexedDB
-- 🔄 JSON export/import for data backup and restoration
-- 📲 Installable as a PWA (Progressive Web App) for native-like experience
 
 ## 🛠️ Tech Stack
 
@@ -134,5 +133,5 @@ gaming-tracker/
 ## 🧪 Testing
 
 ```bash
-bun test
+bun run test
 ```
