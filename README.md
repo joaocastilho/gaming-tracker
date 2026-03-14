@@ -1,24 +1,24 @@
 # <img src="static/favicon-32x32.png" alt="Gaming Tracker" width="32" height="32"> Gaming Tracker
 
-A personal project for tracking my own video game collection. Includes tier lists, ratings, search, filters, and works offline. Built for personal use only.
+A personal project for tracking my own video game collection. Includes tier lists, ratings, search, filters, and works offline.
 
 [![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)
 
-## What This Personal Project Includes
+## Features
 
 ### 🎯 Game Tracking
 
-Organize games into two categories:
+Games are organized into two categories:
 
 - **Planned** — Games in the backlog waiting to be played
 - **Completed** — Finished games with full rating data
 
 ### ⭐ Rating System
 
-Rate completed games across three dimensions (0-10 scale):
+Completed games are rated across three dimensions (0-10 scale):
 
 - **Presentation** - Visuals, art style, sound design, and music. How the game looks, feels, and immerses the player.
 - **Story** - Narrative, characters, and world-building. How the plot, dialogue, and themes create a compelling story.
@@ -28,7 +28,7 @@ The total score is automatically calculated using the formula: `(Presentation + 
 
 ### 🏆 Tier Lists
 
-Manually assign games to tiers based on overall assessment:
+Manually assigned tiers to games based on overall assessment:
 
 | Tier     | Meaning     |
 | :------- | :---------- |
@@ -124,14 +124,4 @@ gaming-tracker/
 | ---------------------------------------- | --------------------------- |
 | [docs/project.md](docs/project.md)       | Full project specification  |
 | [docs/TECHNICAL.md](docs/TECHNICAL.md)   | Architecture & data flow    |
-| [docs/test-audit.md](docs/test-audit.md) | Test suite analysis         |
-| [docs/test-plan.md](docs/test-plan.md)   | Test-first development plan |
 | [AGENTS.md](AGENTS.md)                   | AI agent instructions       |
-
----
-
-## 🧪 Testing
-
-```bash
-bun run test
-```
