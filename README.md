@@ -1,64 +1,64 @@
-# <img src="static/favicon-32x32.png" alt="Gaming Tracker" width="32" height="32"> Gaming Tracker
+# 🎮 Gaming Tracker - My Personal Game Backlog Companion
 
-A personal project for tracking my own video game collection. Includes tier lists, ratings, search, filters, and works offline. Built for personal use only.
+_Because even I forget which games I actually finished..._
 
-[![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)
+## 📖 The Story Behind This Project
 
-## What This Personal Project Includes
+Let's be honest: I have way too many games in my backlog. Steam sales, humble bundles, that one time I bought a game because the cover looked cool... We've all been there.
 
-### 🎯 Game Tracking
+I kept losing track of what I actually played versus what I just bought and forgot about. So I built this little tracker to solve _my_ problem. It's not meant to be the next big gaming platform - it's just my personal solution to gaming chaos.
 
-Organize games into two categories:
+Think of it as a digital gaming journal that actually works (unlike that notebook I tried to maintain for 3 weeks before abandoning).
 
-- **Planned** — Games in the backlog waiting to be played
-- **Completed** — Finished games with full rating data
+## ✨ What Makes This Mine (and Maybe Yours Too)
 
-### ⭐ Rating System
+### 🎯 Two Simple Categories
 
-Rate completed games across three dimensions (0-10 scale):
+- **Planned**: The endless backlog of "I'll get to this someday" games
+- **Completed**: Games I actually finished, with ratings to prove it
 
-- **Presentation** - Visuals, art style, sound design, and music. How the game looks, feels, and immerses the player.
-- **Story** - Narrative, characters, and world-building. How the plot, dialogue, and themes create a compelling story.
-- **Gameplay** - Mechanics, progression systems, and interactivity. How engaging the game's systems and challenges are.
+### ⭐ My Personal Rating System
 
-The total score is automatically calculated using the formula: `(Presentation + Story + Gameplay) / 3 × 2` resulting in a **0-20 score**.
+I rate finished games across three dimensions (because "it was good" isn't specific enough):
 
-### 🏆 Tier Lists
+- **Presentation** - How it looks, sounds, and feels (0-10)
+- **Story** - Narrative, characters, world-building (0-10)
+- **Gameplay** - Mechanics, fun factor, "just one more level" syndrome (0-10)
 
-Manually assign games to tiers based on overall assessment:
+Your final score? `(Presentation + Story + Gameplay) / 3 × 2` = 0-20 scale. Yeah, I like math.
 
-| Tier     | Meaning     |
-| :------- | :---------- |
-| 🏅 **S** | Masterpiece |
-| 🥇 **A** | Amazing     |
-| 🥈 **B** | Great       |
-| 🥉 **C** | Good        |
-| 🎖️ **D** | Decent      |
-| ❌ **E** | Bad         |
+### 🏆 Tier Lists (Because We All Need to Feel Judgmental)
 
-### 🔍 Search & Filter
+Manually sort your completed games into tiers:
 
-- Real-time title search
-- Filter by platform, genre, or tier
-- Filter by rating ranges
+- 🏅 **S** - Masterpiece (Life-changing. Play it twice.)
+- 🥇 **A** - Amazing (Really damn good)
+- 🥈 **B** - Great (Worth your time)
+- 🥉 **C** - Good (Solid, but forgettable)
+- 🎖️ **D** - Decent ("Meh" but not awful)
+- ❌ **E** - Bad (Why did I play this?)
 
-### 🎨 UI
+### 🔍 Find What You're Looking For
 
-- Dark and light mode themes
-- Glassmorphism design effects
-- Responsive layout for desktop and mobile
-- Smooth animations and transitions
+- Search by title (because scrolling sucks)
+- Filter by platform, genre, tier, or rating range
+- Actually find that JRPG you swore you owned
 
-### 📦 Offline
+### 🎨 Pretty Enough to Look At
 
-- Data stored locally in the browser via IndexedDB
-- JSON export/import for backup
-- Works without internet after initial load
+- Dark/Light mode (for those late-night gaming sessions)
+- Glassmorphism (because it looks fancy)
+- Works on phone and desktop (yes, I tested it on my phone during boring meetings)
 
-## 🛠️ Tech Stack
+### 📦 Actually Works Offline
+
+- All data stored locally in your browser (IndexedDB via Dexie.js)
+- Export/Import JSON for backups (because I don't trust cloud saves)
+- Zero internet needed after first load (play on the plane, track on the plane)
+
+## 🛠️ Under the Hood (The Nerdy Stuff)
+
+This is built with the tools I enjoy using:
 
 | Category       | Technology                                     | Version    |
 | -------------- | ---------------------------------------------- | ---------- |
@@ -70,68 +70,76 @@ Manually assign games to tiers based on overall assessment:
 | **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.10`  |
 | **Build Tool** | [Vite](https://vite.dev/)                      | `v7.3.1`   |
 
-## 🚀 Running Locally
+## 🚀 Getting It Running (If You Want To)
 
 ```bash
-# Start development server
+# Clone it (if you're into that sort of thing)
+git clone https://github.com/joaocastilho/gaming-tracker.git
+cd gaming-tracker
+
+# Install deps with Bun (because npm is so 2010s)
+bun install
+
+# Start the dev server
 bun run dev
 
-# Build for production
+# Build for production when you're ready to show off
 bun run build
 
-# Preview production build
+# Preview your production build
 bun run preview
 ```
 
-## 📁 Project Structure
+## 📁 Where Everything Lives
 
 ```
 gaming-tracker/
 ├── src/
 │   ├── lib/
-│   │   ├── components/      # UI components (GameCard, Header, etc.)
-│   │   ├── stores/          # Svelte 5 stores for state
-│   │   ├── utils/           # Helper functions
-│   │   └── types/           # TypeScript types
-│   ├── routes/              # SvelteKit routes
-│   ├── app.css              # Global styles
-│   └── app.html             # HTML template
+│   │   ├── components/      # Reusable UI bits (GameCard, Header, etc.)
+│   │   ├── stores/          # Svelte 5 state management (no more prop drilling!)
+│   │   ├── utils/           # Helper functions I keep reinventing
+│   │   └── types/           # TypeScript interfaces (because safety first)
+│   ├── routes/              # SvelteKit pages and endpoints
+│   ├── app.css              # Global styles (mostly Tailwind overrides)
+│   └── app.html             # The base HTML template
 ├── static/
-│   ├── games.json           # Game data
-│   ├── covers/              # Game cover images (WebP)
-│   └── service-worker.js    # Offline support
-├── scripts/                 # Build scripts
-│   └── optimize-covers.ts   # Image optimizer
-├── tests/                   # Unit tests
+│   ├── games.json           # Starter game data (feel free to replace)
+│   ├── covers/              # Game cover images (optimized WebP)
+│   └── service-worker.js    # Makes the offline magic happen
+├── scripts/                 # Build-time helper scripts
+│   └── optimize-covers.ts   # Squishes those cover images
+├── tests/                   # Because I pretend to care about testing
 └── docs/
-    └── project.md           # Full documentation
+    └── project.md           # The boring technical specification
 ```
 
-## 📜 Available Scripts
+## 📜 Scripts I Actually Use
 
-| Script           | Description            |
-| ---------------- | ---------------------- |
-| `bun run dev`    | Start dev server       |
-| `bun run build`  | Build for production   |
-| `bun run check`  | TypeScript type check  |
-| `bun run lint`   | Check code with ESLint |
-| `bun run format` | Format with Prettier   |
-| `bun run test`   | Run tests              |
+| Script           | What It Does                                   |
+| ---------------- | ---------------------------------------------- |
+| `bun run dev`    | Starts the dev server with hot reload          |
+| `bun run build`  | Makes a production-ready build                 |
+| `bun run check`  | TypeScript type checking (catches my mistakes) |
+| `bun run lint`   | ESLint scolding me for bad code                |
+| `bun run format` | Prettier making my code look nice              |
+| `bun run test`   | Runs the test suite (yes, there are tests)     |
 
-## 📖 Documentation
+## 📚 Want to Know More?
 
-| Document                                 | Purpose                     |
-| ---------------------------------------- | --------------------------- |
-| [docs/project.md](docs/project.md)       | Full project specification  |
-| [docs/TECHNICAL.md](docs/TECHNICAL.md)   | Architecture & data flow    |
-| [docs/test-audit.md](docs/test-audit.md) | Test suite analysis         |
-| [docs/test-plan.md](docs/test-plan.md)   | Test-first development plan |
-| [AGENTS.md](AGENTS.md)                   | AI agent instructions       |
+- [Full project specs](docs/project.md) - For when you're really bored
+- [Technical deep dive](docs/TECHNICAL.md) - How the sausage is made
+- [Testing strategy](docs/test-plan.md) - How I try not to break things
+- [AI agent instructions](AGENTS.md) - For robots that want to help
+
+## 🙅‍♂️ Disclaimer
+
+This is **my** personal project. I built it to scratch my own itch. If you find it useful, awesome! If not, that's cool too. I'm not accepting feature requests (unless they align with what I want), but feel free to fork it and make it your own.
+
+Remember: The best software solves a problem you actually have. Mine was forgetting what games I played. What's yours?
+
+Now if you'll excuse me, I have a backlog to track. 🎮
 
 ---
 
-## 🧪 Testing
-
-```bash
-bun run test
-```
+_Built with Svelte, TypeScript, and mild obsession._
