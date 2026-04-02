@@ -4,6 +4,7 @@
 	import { createGameSlug } from '$lib/utils/slugUtils';
 	import { browser } from '$app/environment';
 	import { modalStore } from '$lib/stores/modal.svelte';
+	import { prepareWithSegments, walkLineRanges } from '@chenglou/pretext';
 
 	interface Props {
 		game: Game;
@@ -18,8 +19,6 @@
 	let titleElement = $state<HTMLElement>();
 	let containerWidth = $state(0);
 
-	let canvasSingleton: HTMLCanvasElement;
-	let contextSingleton: CanvasRenderingContext2D | null;
 	let cachedFont: string = '';
 
 	function getFont(node: HTMLElement): string {
@@ -32,15 +31,12 @@
 
 	function getTextWidth(text: string, font: string): number {
 		if (!browser) return 0;
-		if (!canvasSingleton) {
-			canvasSingleton = document.createElement('canvas');
-			contextSingleton = canvasSingleton.getContext('2d');
-		}
-		if (contextSingleton) {
-			contextSingleton.font = font;
-			return contextSingleton.measureText(text).width;
-		}
-		return 0;
+		const prepared = prepareWithSegments(text, font);
+		let maxW = 0;
+		walkLineRanges(prepared, 999999, (line) => {
+			if (line.width > maxW) maxW = line.width;
+		});
+		return maxW;
 	}
 
 	async function shareGame() {

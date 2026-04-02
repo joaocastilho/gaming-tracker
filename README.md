@@ -120,8 +120,8 @@ gaming-tracker/
 
 ## 📖 Documentation
 
-| Document                                 | Purpose                     |
-| ---------------------------------------- | --------------------------- |
-| [docs/project.md](docs/project.md)       | Full project specification  |
-| [docs/TECHNICAL.md](docs/TECHNICAL.md)   | Architecture & data flow    |
-| [AGENTS.md](AGENTS.md)                   | AI agent instructions       |
+| Document                               | Purpose                    |
+| -------------------------------------- | -------------------------- |
+| [docs/project.md](docs/project.md)     | Full project specification |
+| [docs/TECHNICAL.md](docs/TECHNICAL.md) | Architecture & data flow   |
+| [AGENTS.md](AGENTS.md)                 | AI agent instructions      |

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Game } from '../../types/game.js';
+	import { prepare, prepareWithSegments, walkLineRanges, layout } from '@chenglou/pretext';
 
 	interface Props {
 		game: Game;
@@ -8,8 +9,6 @@
 
 	let { game, size = 'small' }: Props = $props();
 
-	let canvasSingleton: HTMLCanvasElement;
-	let contextSingleton: CanvasRenderingContext2D | null;
 	let cachedFont: string = '';
 
 	function getFont(node: HTMLElement): string {
@@ -22,15 +21,12 @@
 
 	function getTextWidth(text: string, font: string): number {
 		if (typeof document === 'undefined') return 0;
-		if (!canvasSingleton) {
-			canvasSingleton = document.createElement('canvas');
-			contextSingleton = canvasSingleton.getContext('2d');
-		}
-		if (contextSingleton) {
-			contextSingleton.font = font;
-			return contextSingleton.measureText(text).width;
-		}
-		return 0;
+		const prepared = prepareWithSegments(text, font);
+		let maxW = 0;
+		walkLineRanges(prepared, 999999, (line) => {
+			if (line.width > maxW) maxW = line.width;
+		});
+		return maxW;
 	}
 
 	function adjustTitleSize(
@@ -92,19 +88,24 @@
 			if (newSize > maxSize) newSize = maxSize;
 			if (newSize < minSize) newSize = minSize;
 
-			node.style.fontSize = `${newSize}rem`;
-
-			// Iterative Check: If scrollHeight > clientHeight, it means we have truncation (more than 2 lines content)
-			// We loop a few times to shrink it down until it fits.
-			// Limit iterations to prevent any potential performance freeze.
+			// Iterative Check: Use Pretext to calculate wrapped lines without DOM reflow
 			let iterations = 0;
-			while (node.scrollHeight > node.clientHeight && newSize > minSize && iterations < 10) {
-				// Reduce size by ~10% each step
+			const fontFamily = font.replace('600 1rem ', '');
+			while (newSize > minSize && iterations < 10) {
+				const testFont = `600 ${newSize}rem ${fontFamily}`;
+				const testPrepared = prepare(titleText, testFont);
+				const { lineCount } = layout(testPrepared, containerWidth, 100);
+
+				if (lineCount <= 2) {
+					break;
+				}
+
 				newSize *= 0.9;
 				if (newSize < minSize) newSize = minSize;
-				node.style.fontSize = `${newSize}rem`;
 				iterations++;
 			}
+
+			node.style.fontSize = `${newSize}rem`;
 		}
 	}
 
