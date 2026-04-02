@@ -103,7 +103,7 @@ export default defineConfig({
 		}
 	},
 	optimizeDeps: {
-		include: ['lucide-svelte', 'date-fns'],
+		include: ['lucide-svelte', 'date-fns', 'zod', 'dexie'],
 		exclude: ['web-vitals', '@chenglou/pretext']
 	},
 	ssr: {
