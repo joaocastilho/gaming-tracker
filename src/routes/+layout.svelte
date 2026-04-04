@@ -348,6 +348,44 @@
 		isFiltersOpen = false;
 	}
 
+	// Global shortcut for search (Ctrl + /)
+	$effect(() => {
+		if (!browser) return;
+
+		const handleGlobalKeydown = (event: KeyboardEvent) => {
+			if (event.key === '/' && (event.ctrlKey || event.metaKey)) {
+				event.preventDefault();
+
+				if (window.innerWidth < 768) {
+					// Mobile
+					if (!isSearchOpen) {
+						onSearchToggle();
+					}
+					requestAnimationFrame(() => {
+						const input = document.querySelector('.mobile-search-input') as HTMLInputElement;
+						input?.focus();
+						input?.select();
+					});
+				} else {
+					// Desktop
+					if (!filtersStore.isDesktopFiltersExpanded) {
+						filtersStore.setDesktopFiltersExpanded(true);
+					}
+					requestAnimationFrame(() => {
+						const input = document.getElementById('search-input') as HTMLInputElement;
+						input?.focus();
+						input?.select();
+					});
+				}
+			}
+		};
+
+		window.addEventListener('keydown', handleGlobalKeydown);
+		return () => {
+			window.removeEventListener('keydown', handleGlobalKeydown);
+		};
+	});
+
 	// Clear search term when search closes (e.g. via back button)
 	let wasSearchOpen = false;
 	$effect(() => {

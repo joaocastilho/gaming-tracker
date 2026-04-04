@@ -113,7 +113,7 @@
 				<input
 					bind:this={searchInput}
 					type="text"
-					placeholder="Search games..."
+					placeholder="Search games... (Ctrl + /)"
 					class="mobile-search-input"
 					oninput={handleMobileSearchInput}
 					onkeydown={(e) => {

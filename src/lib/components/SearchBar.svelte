@@ -73,36 +73,6 @@
 	}
 
 	function handleGlobalKeydown(event: KeyboardEvent) {
-		// '/' to focus search
-		if (event.key === '/' && !event.ctrlKey && !event.metaKey) {
-			// Don't trigger if user is typing in an input/textarea
-			const activeElement = document.activeElement;
-			if (
-				activeElement &&
-				(activeElement.tagName === 'INPUT' ||
-					activeElement.tagName === 'TEXTAREA' ||
-					activeElement.tagName === 'SELECT' ||
-					(activeElement as HTMLElement).isContentEditable)
-			) {
-				return;
-			}
-
-			event.preventDefault();
-			event.stopPropagation();
-
-			// Expand the filters section if collapsed
-			if (!filtersStore.isDesktopFiltersExpanded) {
-				filtersStore.setDesktopFiltersExpanded(true);
-			}
-
-			// Focus the search input after a tick to allow DOM to update
-			requestAnimationFrame(() => {
-				inputElement?.focus();
-				inputElement?.select();
-			});
-			return;
-		}
-
 		if (event.key === 'Escape' && inputElement) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -135,7 +105,7 @@
 			id="search-input"
 			bind:this={inputElement}
 			type="text"
-			placeholder="Search games...  (/)"
+			placeholder="Search games... (Ctrl + /)"
 			oninput={handleInput}
 			onkeydown={handleKeydown}
 			class="search-input"
