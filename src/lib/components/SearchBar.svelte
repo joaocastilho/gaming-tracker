@@ -73,8 +73,20 @@
 	}
 
 	function handleGlobalKeydown(event: KeyboardEvent) {
-		// Ctrl+K / Cmd+K to focus search
-		if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+		// '/' to focus search
+		if (event.key === '/' && !event.ctrlKey && !event.metaKey) {
+			// Don't trigger if user is typing in an input/textarea
+			const activeElement = document.activeElement;
+			if (
+				activeElement &&
+				(activeElement.tagName === 'INPUT' ||
+					activeElement.tagName === 'TEXTAREA' ||
+					activeElement.tagName === 'SELECT' ||
+					(activeElement as HTMLElement).isContentEditable)
+			) {
+				return;
+			}
+
 			event.preventDefault();
 			event.stopPropagation();
 
@@ -123,7 +135,7 @@
 			id="search-input"
 			bind:this={inputElement}
 			type="text"
-			placeholder="Search games...  (Ctrl+K)"
+			placeholder="Search games...  (/)"
 			oninput={handleInput}
 			onkeydown={handleKeydown}
 			class="search-input"

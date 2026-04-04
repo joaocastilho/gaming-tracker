@@ -18,7 +18,11 @@ class AppStore {
 
 	constructor() {
 		// Initialize from localStorage immediately to avoid hydration mismatch
-		if (typeof window !== 'undefined') {
+		if (
+			typeof window !== 'undefined' &&
+			typeof localStorage !== 'undefined' &&
+			typeof localStorage.getItem === 'function'
+		) {
 			const savedTheme = localStorage.getItem('gaming-tracker-theme') as ThemeValue | null;
 			if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
 				this.theme = savedTheme;
@@ -27,7 +31,9 @@ class AppStore {
 			$effect.root(() => {
 				$effect(() => {
 					// Sync state to localStorage and DOM
-					localStorage.setItem('gaming-tracker-theme', this.theme);
+					if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+						localStorage.setItem('gaming-tracker-theme', this.theme);
+					}
 					document.documentElement.classList.remove('light', 'dark');
 					document.documentElement.classList.add(this.theme);
 				});
