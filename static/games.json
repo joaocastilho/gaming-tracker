@@ -4306,7 +4306,7 @@
     {
       "id": "legacy-of-kain-soul-reaver",
       "title": "Legacy of Kain: Soul Reaver (Remastered)",
-      "platform": "Dreamcast",
+      "platform": "PC",
       "year": 2024,
       "genre": "Action",
       "coOp": "No",
@@ -9597,6 +9597,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-04-05T14:58:16.531Z"
+    "lastUpdated": "2026-04-05T15:00:16.575Z"
   }
 }
