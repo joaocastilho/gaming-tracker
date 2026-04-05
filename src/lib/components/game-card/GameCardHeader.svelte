@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Game } from '../../types/game.js';
-	import { prepare, prepareWithSegments, walkLineRanges, layout } from '@chenglou/pretext';
 
 	interface Props {
 		game: Game;
@@ -9,103 +8,52 @@
 
 	let { game, size = 'small' }: Props = $props();
 
-	let cachedFont: string = '';
-
-	function getFont(node: HTMLElement): string {
-		if (cachedFont) return cachedFont;
-		if (typeof getComputedStyle === 'undefined') return '600 1rem sans-serif';
-		const style = getComputedStyle(node);
-		cachedFont = `600 1rem ${style.fontFamily}`;
-		return cachedFont;
-	}
-
-	function getTextWidth(text: string, font: string): number {
-		if (typeof document === 'undefined') return 0;
-		const prepared = prepareWithSegments(text, font);
-		let maxW = 0;
-		walkLineRanges(prepared, 999999, (line) => {
-			if (line.width > maxW) maxW = line.width;
-		});
-		return maxW;
-	}
-
 	function adjustTitleSize(
 		node: HTMLElement,
 		hasSubtitle: boolean,
-		titleText: string,
-		width?: number
+		_titleText: string,
+		_width?: number
 	) {
-		const containerWidth = width ?? node.clientWidth;
+		const containerWidth = _width ?? node.clientWidth;
 		const isTierList = size === 'tierlist';
 
-		// Lower minSize to virtually nothing to guarantee fit
 		const minSize = 0.1;
-
-		// Unify max size
 		const maxSize = isTierList ? 1.05 : 1.5;
+		const step = 0.05;
 
 		if (containerWidth === 0) return;
 
-		// Use the passed titleText for measurement
-		const font = getFont(node);
-		const textWidthAt1Rem = getTextWidth(titleText, font);
-
 		if (hasSubtitle) {
-			// Case 1: Has Subtitle -> Force Single Line
+			// Single line — shrink until it fits
 			node.style.whiteSpace = 'nowrap';
-			node.style.overflow = 'hidden';
-			node.style.textOverflow = 'ellipsis';
+			node.style.overflow = 'visible';
+			node.style.textOverflow = 'clip';
 			node.style.display = 'block';
-			node.style.webkitLineClamp = 'none';
+			node.style.fontSize = `${maxSize}rem`;
 
-			// Initial guess
-			let newSize = (containerWidth * 0.9) / textWidthAt1Rem;
-			if (newSize > maxSize) newSize = maxSize;
-			if (newSize < minSize) newSize = minSize;
-
-			node.style.fontSize = `${newSize}rem`;
-
-			// Iterative check for single line overflow
-			// For single line with ellipsis, scrollWidth == clientWidth usually,
-			// so we can't rely on that easily without temporarily removing overflow: hidden
-			// However, our initial guess for single line is extremely accurate because it's simple math.
-			// We will rely on the guess + the safety buffer (0.9) for this case.
-		} else {
-			// Case 2: No Subtitle -> Allow Wrapping (up to 2 lines)
-			node.style.whiteSpace = 'normal';
-			// Ensure word breaking to avoid overflowing horizontal space with long words
-			node.style.wordBreak = 'break-word';
-			node.style.display = '-webkit-box';
-			node.style.webkitLineClamp = '2';
-			node.style.webkitBoxOrient = 'vertical';
-			node.style.overflow = 'hidden';
-			node.style.textOverflow = 'ellipsis';
-
-			// Initial Conservative Estimate
-			const availableWidth = containerWidth * 1.8;
-			let newSize = availableWidth / textWidthAt1Rem;
-
-			if (newSize > maxSize) newSize = maxSize;
-			if (newSize < minSize) newSize = minSize;
-
-			// Iterative Check: Use Pretext to calculate wrapped lines without DOM reflow
-			let iterations = 0;
-			const fontFamily = font.replace('600 1rem ', '');
-			while (newSize > minSize && iterations < 10) {
-				const testFont = `600 ${newSize}rem ${fontFamily}`;
-				const testPrepared = prepare(titleText, testFont);
-				const { lineCount } = layout(testPrepared, containerWidth, 100);
-
-				if (lineCount <= 2) {
-					break;
-				}
-
-				newSize *= 0.9;
-				if (newSize < minSize) newSize = minSize;
-				iterations++;
+			let size = maxSize;
+			while (size > minSize && node.scrollWidth > containerWidth + 1) {
+				size -= step;
+				node.style.fontSize = `${size}rem`;
 			}
+		} else {
+			// Multi-line (up to 2 lines) — shrink until height fits
+			node.style.whiteSpace = 'normal';
+			node.style.wordBreak = 'break-word';
+			node.style.display = 'block';
+			node.style.overflow = 'visible';
+			node.style.textOverflow = 'clip';
+			node.style.fontSize = `${maxSize}rem`;
 
-			node.style.fontSize = `${newSize}rem`;
+			// Max height = 2 lines at current font size
+			let size = maxSize;
+			const lineHeight = 1.3;
+			while (size > minSize) {
+				const maxHeight = size * 16 * lineHeight * 2 + 2; // 2 lines + tolerance
+				if (node.scrollHeight <= maxHeight) break;
+				size -= step;
+				node.style.fontSize = `${size}rem`;
+			}
 		}
 	}
 
@@ -172,8 +120,7 @@
 		align-items: center;
 		justify-content: center;
 		text-align: center;
-		/* overflow: hidden;  <-- We might need to allow overflow if we shrink too much, but let's keep it for safety */
-		overflow: hidden;
+		overflow: visible;
 		padding: 0 4px;
 	}
 

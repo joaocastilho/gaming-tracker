@@ -3,7 +3,10 @@
 	import { offlineStore } from '$lib/stores/offline.svelte';
 	import type { Game } from '$lib/types/game.js';
 	import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
-	import { X } from 'lucide-svelte';
+	import { X, Pencil, Trash2 } from 'lucide-svelte';
+	import { modalStore } from '$lib/stores/modal.svelte';
+	import { createGameSlug } from '$lib/utils/slugUtils';
+	import { browser } from '$app/environment';
 	import ModalHeader from './ModalHeader.svelte';
 	import ModalMetadata from './ModalMetadata.svelte';
 	import ModalRatings from './ModalRatings.svelte';
@@ -21,6 +24,23 @@
 
 	let isEditor = $derived(editorStore.editorMode);
 	let isOffline = $derived(!offlineStore.isOnline);
+
+	let linkCopied = $state('');
+
+	async function shareGame() {
+		if (!browser || !game) return;
+		try {
+			const url = new URL(window.location.href);
+			const slug = createGameSlug(game.title);
+			url.searchParams.set('game', slug);
+			await navigator.clipboard.writeText(url.toString());
+			linkCopied = 'Copied';
+			setTimeout(() => { linkCopied = ''; }, 2000);
+		} catch {
+			linkCopied = 'Failed';
+			setTimeout(() => { linkCopied = ''; }, 2000);
+		}
+	}
 
 	// Placeholders
 	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
@@ -65,10 +85,11 @@
 	}
 </script>
 
+
 {#if onClose}
 	<button
 		onclick={onClose}
-		class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/40 md:top-4 md:right-4"
+		class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/40 md:hidden"
 		aria-label="Close modal"
 	>
 		<X size={20} />
@@ -99,13 +120,45 @@
 					/>
 				</button>
 			</div>
+
+
+
+			{#if isEditor}
+				<!-- Edit/delete buttons - bottom left -->
+				<div class="absolute bottom-3 left-3 z-10 hidden items-center gap-1 md:flex">
+					<button
+						onclick={(e) => {
+							e.stopPropagation();
+							modalStore.closeModal();
+							onEditGame?.(game);
+						}}
+						class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/10 text-white/80 transition-colors hover:bg-black/25"
+						title="Edit game"
+						aria-label="Edit {game.title}"
+					>
+						<Pencil size={18} />
+					</button>
+					<button
+						onclick={(e) => {
+							e.stopPropagation();
+							modalStore.closeModal();
+							onDeleteGame?.(game);
+						}}
+						class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/10 text-red-400/80 transition-colors hover:bg-red-500/20"
+						title="Delete game"
+						aria-label="Delete {game.title}"
+					>
+						<Trash2 size={18} />
+					</button>
+				</div>
+			{/if}
 		</div>
 
 		<!-- Details Section -->
 		<div
 			class="modal-details-section flex-none px-5 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
 		>
-			<ModalHeader {game} {isEditor} onEdit={onEditGame} onDelete={onDeleteGame} />
+			<ModalHeader {game} onClose={onClose} onShare={shareGame} {linkCopied} />
 			<ModalMetadata {game} />
 			<ModalRatings {game} />
 

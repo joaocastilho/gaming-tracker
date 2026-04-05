@@ -265,6 +265,7 @@
 		color: var(--color-text-secondary);
 		transition: all var(--transition-fast);
 		border-radius: 8px;
+		white-space: nowrap;
 	}
 
 	.tabs-list button .label {
@@ -399,6 +400,7 @@
 		transition: all var(--transition-fast);
 		font-size: 0.85rem;
 		font-weight: 500;
+		white-space: nowrap;
 	}
 
 	.editor-button:hover:not(:disabled) {
