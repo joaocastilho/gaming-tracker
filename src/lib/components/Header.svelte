@@ -168,9 +168,7 @@ async function handleLogout() {
 							size={16}
 							class="filter-chevron-icon"
 							style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
-						/>{#if !filtersStore.isDesktopFiltersExpanded}<span class="filter-shortcut"
-								>Ctrl + /</span
-							>{/if}
+						/><span class="filter-shortcut">Ctrl + /</span>
 					</button>
 				</div>
 			{/if}
@@ -389,12 +387,13 @@ async function handleLogout() {
 	}
 
 	.filter-shortcut {
-		font-size: 0.75rem;
+		font-size: 0.65rem;
 		font-weight: 600;
-		padding: 2px 6px;
+		padding: 1px 4px;
 		background: var(--color-surface-elevated);
-		border-radius: 4px;
+		border-radius: 3px;
 		margin-left: 4px;
+		opacity: 0.7;
 	}
 
 	/* Editor button styles */
