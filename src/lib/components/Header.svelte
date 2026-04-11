@@ -361,7 +361,7 @@ async function handleLogout() {
 		gap: 6px;
 		height: 40px;
 		padding: 0 16px;
-		min-width: 120px;
+		min-width: 140px;
 		border: 1px solid var(--color-border);
 		border-radius: 10px;
 		background-color: var(--color-surface);
