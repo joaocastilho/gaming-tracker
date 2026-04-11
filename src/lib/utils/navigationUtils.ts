@@ -3,7 +3,7 @@ import { appStore } from '$lib/stores/app.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { toSlug } from './slugUtils';
 
-export type NavTarget = 'all' | 'completed' | 'timeline' | 'planned' | 'tierlist';
+export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist';
 
 export interface NavigationOptions {
 	scrollToTop?: boolean;

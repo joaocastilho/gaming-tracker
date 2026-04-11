@@ -5,7 +5,7 @@ import { untrack } from 'svelte';
  */
 
 export type ThemeValue = 'dark' | 'light';
-export type TabValue = 'all' | 'completed' | 'timeline' | 'planned' | 'tierlist';
+export type TabValue = 'all' | 'completed' | 'planned' | 'tierlist';
 
 export interface AppState {
 	theme: ThemeValue;

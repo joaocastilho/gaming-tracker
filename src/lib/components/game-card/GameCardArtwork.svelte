@@ -22,7 +22,7 @@
 		size = 'small',
 		showTierBadge = true,
 		isAboveFold = false,
-		isPriority = false,
+		isPriority: _isPriority = false,
 		onEditGame,
 		onDeleteGame
 	}: Props = $props();
@@ -30,7 +30,6 @@
 	let isEditor = $derived(editorStore.editorMode);
 	let isOffline = $derived(!offlineStore.isOnline);
 	let imageElement = $state<HTMLImageElement>();
-	let isVisible = $state(true);
 
 	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
 	const PLACEHOLDER_SRCSET =
@@ -113,6 +112,14 @@
 		detailImg.src = imgPath.replace('.webp', '-detail.webp');
 	}
 
+	function getCompletionDay(dateStr: string | null): string {
+		if (!dateStr) return '';
+		const parts = dateStr.split('/');
+		if (parts.length !== 3) return '';
+		const day = parseInt(parts[0], 10);
+		return isNaN(day) ? '' : String(day);
+	}
+
 	$effect(() => {
 		if (!imageElement) return;
 
@@ -128,15 +135,12 @@
 	<div class="image-wrapper">
 		<div class="skeleton-loader"></div>
 		<img
-			bind:this={imageElement}
 			src={effectiveImageSrc()}
 			srcset={effectiveImageSrcset()}
 			sizes={imageSizes()}
-			alt=""
+			alt={game.title}
 			class="cover-image"
-			class:visible={isVisible}
-			loading={isPriority ? 'eager' : 'lazy'}
-			fetchpriority={isPriority ? 'high' : undefined}
+			loading="lazy"
 			decoding="async"
 			onload={handleImageLoad}
 			onerror={handleImageError}
@@ -155,6 +159,15 @@
 		>
 			<span class="tier-text">{getTierDisplayName(game.tier)}</span>
 		</button>
+	{/if}
+
+	{#if game.status === 'Completed' && game.finishedDate}
+		{@const completionDay = getCompletionDay(game.finishedDate)}
+		{#if completionDay}
+			<div class="completion-badge">
+				<span class="completion-day">{completionDay}</span>
+			</div>
+		{/if}
 	{/if}
 
 	{#if isEditor}
@@ -295,6 +308,35 @@
 	.tier-text {
 		font-size: 0.85rem;
 		font-weight: 700;
+	}
+
+	.completion-badge {
+		position: absolute;
+		bottom: 10px;
+		left: 10px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 36px;
+		min-height: 36px;
+		background: linear-gradient(
+			135deg,
+			var(--color-primary) 0%,
+			var(--color-primary-dark, #6366f1) 100%
+		);
+		border-radius: 10px;
+		font-weight: 800;
+		z-index: 10;
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.45);
+		border: 2px solid rgba(255, 255, 255, 0.25);
+	}
+
+	.completion-day {
+		font-size: 1rem;
+		font-weight: 800;
+		color: white;
+		line-height: 1;
+		letter-spacing: -0.02em;
 	}
 
 	.editor-controls {
