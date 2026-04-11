@@ -77,9 +77,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		title={hasPresentation ? `Presentation: ${game.ratingPresentation}/10` : 'Presentation'}
 	>
 		<Presentation size={32} class={hasPresentation ? 'text-rose-500' : 'text-muted'} />
-		{#if hasPresentation}
-			<span class="rating-value">{game.ratingPresentation}</span>
-		{/if}
+		<span class="rating-value" style="visibility: {hasPresentation ? 'visible' : 'hidden'};">
+			{hasPresentation ? game.ratingPresentation : '0'}
+		</span>
 	</div>
 
 	<div
@@ -87,9 +87,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		title={hasStory ? `Story: ${game.ratingStory}/10` : 'Story'}
 	>
 		<NotebookPen size={32} class={hasStory ? 'text-sky-500' : 'text-muted'} />
-		{#if hasStory}
-			<span class="rating-value">{game.ratingStory}</span>
-		{/if}
+		<span class="rating-value" style="visibility: {hasStory ? 'visible' : 'hidden'};">
+			{hasStory ? game.ratingStory : '0'}
+		</span>
 	</div>
 
 	<div
@@ -97,9 +97,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		title={hasGameplay ? `Gameplay: ${game.ratingGameplay}/10` : 'Gameplay'}
 	>
 		<Gamepad2 size={32} class={hasGameplay ? 'text-emerald-500' : 'text-muted'} />
-		{#if hasGameplay}
-			<span class="rating-value">{game.ratingGameplay}</span>
-		{/if}
+		<span class="rating-value" style="visibility: {hasGameplay ? 'visible' : 'hidden'};">
+			{hasGameplay ? game.ratingGameplay : '0'}
+		</span>
 	</div>
 </div>
 
@@ -120,7 +120,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 4px 0px 5px 0px;
+		padding: 2px 0px 3px 0px;
+		flex: 1;
+		min-width: 0;
 	}
 
 	.time-item,
@@ -130,23 +132,26 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		gap: 6px;
 		font-size: 0.875rem;
 		color: var(--color-text-secondary);
+		flex-shrink: 0;
 	}
 
 	.ratings-compact {
 		display: flex;
-		justify-content: space-around;
-		align-items: center;
-		padding: 4px 0;
-		/* Center the ratings vertically between the top content (Timer) and bottom (Status) */
-		margin: auto 0;
-		width: 100%;
+		justify-content: space-evenly;
+		align-items: stretch;
+		padding: 0;
+		flex: 1;
+		gap: 8px;
 	}
 
 	.rating-item {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 2px;
+		justify-content: center;
+		gap: 4px;
+		flex: 1;
+		min-width: 0;
 	}
 
 	.rating-item.placeholder {
@@ -178,9 +183,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		font-weight: 800;
 		font-size: 0.95rem;
 		padding: 8px;
-		/* box-shadow handled below */
-		margin-top: 4px; /* Default small gap */
-		border-radius: 12px;
+		flex: 1;
+		border-radius: 8px;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
 		transition: all var(--transition-normal);
@@ -213,116 +217,5 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
-	/* Responsive Styles using Container Queries */
-	@container game-card (max-width: 420px) {
-		.time-date-row {
-			font-size: clamp(0.7rem, 6cqi, 0.85rem);
-			padding: 6px 0 2px 0;
-			gap: 4px;
-		}
 
-		.time-item,
-		.date-item {
-			white-space: nowrap;
-		}
-
-		.ratings-compact {
-			padding: 4px 0;
-			justify-content: space-evenly;
-			gap: 2px;
-			width: 100%;
-		}
-
-		.rating-item {
-			flex-direction: row;
-			align-items: center;
-			gap: 4px;
-		}
-
-		.rating-item :global(svg) {
-			width: 32px;
-			height: 32px;
-		}
-
-		.rating-value {
-			font-size: 1.1rem;
-			font-weight: 800;
-			color: var(--color-text-primary);
-		}
-
-		.status-indicator {
-			padding: 8px;
-			font-size: clamp(0.75rem, 6cqi, 0.85rem);
-			margin-top: 6px;
-			border-radius: 10px;
-		}
-
-		.status-indicator :global(svg) {
-			width: 16px;
-			height: 16px;
-		}
-	}
-
-	@container game-card (max-width: 320px) {
-		.ratings-compact {
-			padding: 0;
-			gap: 2px;
-		}
-
-		.time-date-row {
-			font-size: 0.825rem;
-		}
-
-		.time-item,
-		.date-item {
-			font-size: 0.825rem;
-		}
-
-		.time-item :global(svg),
-		.date-item :global(svg) {
-			width: 14px;
-			height: 14px;
-		}
-
-		.rating-item :global(svg) {
-			width: 24px;
-			height: 24px;
-		}
-
-		.rating-value {
-			font-size: 0.95rem;
-		}
-	}
-
-	@container game-card (max-width: 240px) {
-		.time-date-row {
-			font-size: 0.7rem;
-			gap: 2px;
-		}
-
-		.time-item,
-		.date-item {
-			font-size: 0.7rem;
-		}
-
-		.time-item :global(svg),
-		.date-item :global(svg) {
-			width: 12px;
-			height: 12px;
-		}
-
-		.rating-item :global(svg) {
-			width: 20px;
-			height: 20px;
-		}
-
-		.rating-value {
-			font-size: 0.85rem;
-		}
-
-		.status-indicator {
-			padding: 6px;
-			font-size: 0.75rem;
-		}
-	}
 </style>

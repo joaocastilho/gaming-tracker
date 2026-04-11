@@ -1,7 +1,9 @@
 <script lang="ts">
 import type { Game } from '$lib/types/game';
 import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
+import { gamesStore } from '$lib/stores/games.svelte';
 import GameCard from '$lib/components/GameCard.svelte';
+import { CARD_WIDTHS } from '$lib/constants/fonts';
 
 interface Props {
 	tierName: string;
@@ -14,6 +16,29 @@ let { tierName, games, allGames, onOpenModal }: Props = $props();
 
 let displayedCount = $state(20);
 let displayedGames = $derived(games.slice(0, displayedCount));
+
+const tierColumnMin = 180;
+const tierGap = 16;
+
+const estimatedRowHeight = $derived(() => {
+	if (games.length === 0) return 300;
+	const containerWidth = typeof window !== 'undefined' ? window.innerWidth - 32 : 1200;
+	const columns = Math.max(1, Math.floor((containerWidth - tierGap) / (tierColumnMin + tierGap)));
+	const rows = Math.ceil(games.length / columns);
+
+	let maxHeight = 0;
+	for (let i = 0; i < Math.min(games.length, columns); i++) {
+		const game = games[i];
+		const heights = gamesStore.cardHeights.get(game.id)?.[CARD_WIDTHS.small];
+		if (heights) {
+			maxHeight = Math.max(maxHeight, heights.totalHeight);
+		}
+	}
+
+	const headerHeight = 60;
+	const rowHeight = maxHeight || 350;
+	return headerHeight + rows * rowHeight + (rows - 1) * tierGap;
+});
 
 function intersectionObserver(node: HTMLElement) {
 	const observer = new IntersectionObserver((entries) => {
@@ -32,7 +57,7 @@ function intersectionObserver(node: HTMLElement) {
 }
 </script>
 
-<div class="tier-section">
+<div class="tier-section" style="contain-intrinsic-size: 1px {estimatedRowHeight()}px;">
 	<h3 class="tier-header {getTierClass(tierName)}">
 		{getTierDisplayName(tierName)}
 		<span class="tier-count">{games.length} {games.length === 1 ? 'game' : 'games'}</span>
@@ -60,7 +85,6 @@ function intersectionObserver(node: HTMLElement) {
 	.tier-section {
 		margin-bottom: 2rem;
 		content-visibility: auto;
-		contain-intrinsic-size: 1px 500px;
 		overflow: hidden;
 	}
 

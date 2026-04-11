@@ -32,10 +32,6 @@ let containerWidth = $state(1600);
 let columns = $derived(
 	(() => {
 		if (!containerWidth) return 1;
-		// Minimum card width of 185px -> allows 2 columns at ~400px (185*2 + 12 gap = 382)
-		// But we also want 1 column at < 400px.
-		// 400px / 2 = 200px.
-		// Let's use 185px to be safe for 414px/428px devices.
 		const minCardWidth = 185;
 		const gap = 12;
 		const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
@@ -74,16 +70,14 @@ let rows = $derived(
 
 let itemHeight = $derived(
 	(() => {
+		if (!containerWidth || columns === 0) return 450;
 		const containerPadding = 16;
 		const gap = 12;
 		const totalGapWidth = (columns - 1) * gap;
 		const availableWidth = containerWidth - containerPadding - totalGapWidth;
-		const columnWidth = availableWidth / columns;
+		const columnWidth = Math.max(180, availableWidth / columns);
 		const coverHeight = columnWidth * 1.5;
-
-		const infoRatio = 1.35;
-		const infoHeight = Math.max(220, Math.min(260, columnWidth * infoRatio));
-
+		const infoHeight = 285;
 		return coverHeight + infoHeight;
 	})()
 );
@@ -131,7 +125,7 @@ function handleOpenModal(game: Game) {
 	{:else if filteredGames.length > 0}
 		<div class="game-gallery-virtual">
 			{#each rows.slice(0, 4) as row (row.id)}
-				<div class="game-row pb-5">
+				<div class="game-row pb-5" style="height: {itemHeight}px;">
 					{#each row.games as game, i (game.id ?? `fallback-ssr-${row.id}-${game.title || 'unknown'}`)}
 						<div class="game-card-wrapper">
 							<GameCard

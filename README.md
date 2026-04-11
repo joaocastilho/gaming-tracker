@@ -51,6 +51,7 @@ Manually assigned tiers to games based on overall assessment:
 - Glassmorphism design effects
 - Responsive layout for desktop and mobile
 - Smooth animations and transitions
+- Variable-height cards with pre-computed text measurements for optimal scrolling
 
 ### 📦 Offline
 
@@ -60,16 +61,17 @@ Manually assigned tiers to games based on overall assessment:
 
 ## 🛠️ Tech Stack
 
-| Category       | Technology                                     | Version   |
-| -------------- | ---------------------------------------------- | --------- |
-| **Framework**  | [SvelteKit](https://kit.svelte.dev/)           | `v2.57.1` |
-| **UI Library** | [Svelte](https://svelte.dev/)                  | `v5.55.3` |
-| **Language**   | [TypeScript](https://www.typescriptlang.org/)  | `v5.9.3`  |
-| **Styling**    | [Tailwind CSS](https://tailwindcss.com/)       | `v4.2.2`  |
-| **Linter**     | [Biome](https://biomejs.dev/)                  | `v2.4.11` |
-| **Storage**    | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.4.2`  |
-| **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.11` |
-| **Build Tool** | [Vite](https://vite.dev/)                      | `v8.0.8`  |
+| Category             | Technology                                     | Version   |
+| -------------------- | ---------------------------------------------- | --------- |
+| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.57.1` |
+| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.55.3` |
+| **Language**         | [TypeScript](https://www.typescriptlang.org/)  | `v5.9.3`  |
+| **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.2.2`  |
+| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.4.11` |
+| **Storage**          | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.4.2`  |
+| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.11` |
+| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.0.8`  |
+| **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.5`  |
 
 ## 🚀 Running Locally
 

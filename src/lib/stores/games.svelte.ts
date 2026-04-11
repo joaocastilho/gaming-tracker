@@ -4,12 +4,20 @@ import { transformGameData } from '$lib/utils/dataTransformer';
 import { createGameSlug } from '$lib/utils/slugUtils';
 import { db } from '$lib/db';
 import { completedGamesCache } from './completedGamesCache.svelte';
+import { computeAllCardHeights, type CardHeights } from '$lib/utils/textMeasure';
+import { CARD_WIDTHS } from '$lib/constants/fonts';
 
 class GamesStore {
 	private _games = $state<Game[]>([]);
 	private subscribers = new Set<(value: Game[]) => void>();
 	loading = $state<boolean>(true);
 	error = $state<string | null>(null);
+
+	private _cardHeights = $state<Map<string, Record<number, CardHeights>>>(new Map());
+
+	get cardHeights(): Map<string, Record<number, CardHeights>> {
+		return this._cardHeights;
+	}
 
 	get games(): Game[] {
 		return this._games;
@@ -59,9 +67,9 @@ class GamesStore {
 			});
 
 			this.games = normalized;
+			this.updateCardHeights();
 
 			if (browser && typeof indexedDB !== 'undefined') {
-				// Clone to plain objects to avoid DataCloneError with reactive proxies
 				const plainGames = JSON.parse(JSON.stringify(normalized)) as Game[];
 				db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
 			}
@@ -91,19 +99,31 @@ class GamesStore {
 	addGame(newGame: Game): void {
 		this.games = [...this._games, newGame];
 		completedGamesCache.updateCache(this._games);
+		this.updateCardHeights();
+	}
+
+	updateCardHeights(): void {
+		const widthValues = Object.values(CARD_WIDTHS).map((w) => w as number);
+		this._cardHeights = computeAllCardHeights(this._games, widthValues);
+	}
+
+	getCardHeight(gameId: string, cardWidth: number): CardHeights | undefined {
+		const widthKey = Math.round(cardWidth);
+		return this._cardHeights.get(gameId)?.[widthKey];
 	}
 
 	updateGame(id: string, updatedGame: Partial<Game>): void {
 		this.games = this._games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
 		completedGamesCache.updateCache(this._games);
+		this.updateCardHeights();
 	}
 
 	setAllGames(games: Game[]): void {
 		this.games = games;
 		completedGamesCache.updateCache(this._games);
+		this.updateCardHeights();
 
 		if (browser && typeof indexedDB !== 'undefined') {
-			// Clone to plain objects to avoid DataCloneError with Svelte 5 reactive proxies
 			const plainGames = JSON.parse(JSON.stringify(games)) as Game[];
 			db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
 		}

@@ -16,8 +16,7 @@ let itemHeight = $derived(
 		const columnWidth = availableWidth / columns;
 		const coverHeight = columnWidth * 1.5;
 
-		const infoRatio = 1.35;
-		const infoHeight = Math.max(220, Math.min(260, columnWidth * infoRatio));
+		const infoHeight = 285;
 
 		return coverHeight + infoHeight;
 	})()

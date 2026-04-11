@@ -110,7 +110,7 @@ $effect(() => {
 
 	.badges-left {
 		display: flex;
-		gap: 12px;
+		gap: 8px;
 		flex-wrap: wrap;
 		align-items: center;
 	}
@@ -128,9 +128,9 @@ $effect(() => {
 	}
 
 	.badge {
-		font-size: 0.75rem;
+		font-size: clamp(0.65rem, 5.5cqi, 0.75rem);
 		font-weight: 500;
-		padding: 4px 10px;
+		padding: 4px 8px;
 		border-radius: 6px;
 		white-space: nowrap;
 		cursor: pointer;
@@ -156,34 +156,10 @@ $effect(() => {
 		justify-content: center;
 		transition: opacity 0.2s;
 		/* Removed min dimensions to align with text badges */
-		min-width: 44px;
-		min-height: 44px;
 		margin-left: -8px;
 	}
 
-	/* Responsive Styles using Container Queries */
-	@container game-card (max-width: 420px) {
-		.metadata-row {
-			gap: 4px;
-		}
 
-		.badges-left {
-			gap: 6px;
-			flex-wrap: nowrap;
-			overflow: hidden;
-		}
-
-		.year-right {
-			font-size: clamp(0.75rem, 10cqi, 0.8rem);
-			gap: 3px;
-		}
-
-		.badge {
-			font-size: clamp(0.65rem, 5.5cqi, 0.75rem);
-			padding: 3px 6px;
-			max-width: 42cqi;
-		}
-	}
 
 	/* Disable badge interactions on mobile to ensure card click works */
 	@media (max-width: 768px) {

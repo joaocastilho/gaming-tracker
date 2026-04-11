@@ -81,7 +81,7 @@ function handleKeyDown(event: KeyboardEvent) {
 	/>
 
 	<div class="game-info">
-		<GameCardHeader {game} {size} />
+		<GameCardHeader {game} />
 
 		{#if size === 'small'}
 			<div class="card-content-bottom">
@@ -129,37 +129,18 @@ function handleKeyDown(event: KeyboardEvent) {
 	}
 
 	.game-info {
-		padding: 6px 16px 10px 16px; /* Added 6px top padding for breathing room from cover */
+		padding: 12px 14px 14px 14px;
 		display: flex;
 		flex-direction: column;
-		flex: 1;
-		gap: 2px; /* Reduced from 8px to bring content closer to header */
+		gap: 12px;
+		flex-grow: 1;
 	}
 
 	.card-content-bottom {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
-		flex: 1;
+		gap: 12px;
+		margin-top: auto;
 	}
 
-	/* Responsive Styles */
-	@media (max-width: 768px) {
-		.game-card {
-			min-width: auto;
-			border-radius: 12px;
-		}
-
-		.game-info {
-			padding: 8px 10px 8px 10px;
-			gap: 4px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.game-info {
-			padding: 8px 10px 8px 10px;
-			gap: 4px;
-		}
-	}
 </style>
