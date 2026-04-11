@@ -69,7 +69,7 @@ Manually assigned tiers to games based on overall assessment:
 | **Linter**     | [Biome](https://biomejs.dev/)                  | `v2.4.11` |
 | **Storage**    | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.4.2`  |
 | **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.11` |
-| **Build Tool** | [Vite](https://vite.dev/)                      | `v7.3.2`  |
+| **Build Tool** | [Vite](https://vite.dev/)                      | `v8.0.8`  |
 | **Text Utils** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.4`  |
 
 ## 🚀 Running Locally

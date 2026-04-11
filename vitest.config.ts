@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 
@@ -13,4 +14,4 @@ export default defineConfig({
 	resolve: {
 		conditions: ['browser'],
 	},
-});
+} as Parameters<typeof defineConfig>[0]);
