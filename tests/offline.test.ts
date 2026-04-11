@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const { mockNavigator, mockWindow } = vi.hoisted(() => ({
 	mockNavigator: { onLine: true },
-	mockWindow: { addEventListener: vi.fn(), removeEventListener: vi.fn() }
+	mockWindow: { addEventListener: vi.fn(), removeEventListener: vi.fn() },
 }));
 
 vi.stubGlobal('navigator', mockNavigator);
@@ -16,19 +16,19 @@ vi.mock('$lib/db', () => ({
 			clear: vi.fn(),
 			get: vi.fn(),
 			put: vi.fn(),
-			delete: vi.fn()
+			delete: vi.fn(),
 		},
 		sync_queue: {
 			get: vi.fn(),
 			put: vi.fn(),
-			delete: vi.fn()
-		}
-	}
+			delete: vi.fn(),
+		},
+	},
 }));
 
 vi.mock('$app/environment', () => ({
 	browser: true,
-	dev: false
+	dev: false,
 }));
 
 vi.mock('$lib/stores/editor.svelte', () => ({
@@ -37,14 +37,14 @@ vi.mock('$lib/stores/editor.svelte', () => ({
 		applyAllChanges: vi.fn(),
 		saveGames: vi.fn(),
 		discardAllChanges: vi.fn(),
-		buildFinalGames: vi.fn()
-	}
+		buildFinalGames: vi.fn(),
+	},
 }));
 
 vi.mock('$lib/stores/games.svelte', () => ({
 	gamesStore: {
-		setAllGames: vi.fn()
-	}
+		setAllGames: vi.fn(),
+	},
 }));
 
 import { db } from '$lib/db';
@@ -75,9 +75,7 @@ describe('Offline Support Logic', () => {
 
 	it('should update online status on window events', () => {
 		const onlineCall = mockWindow.addEventListener.mock.calls.find((call) => call[0] === 'online');
-		const offlineCall = mockWindow.addEventListener.mock.calls.find(
-			(call) => call[0] === 'offline'
-		);
+		const offlineCall = mockWindow.addEventListener.mock.calls.find((call) => call[0] === 'offline');
 
 		expect(onlineCall).toBeDefined();
 		expect(offlineCall).toBeDefined();

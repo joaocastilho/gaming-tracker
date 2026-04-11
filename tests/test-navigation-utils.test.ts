@@ -6,7 +6,7 @@ import { navigateTo } from '$lib/utils/navigationUtils';
 
 // Mock goto
 vi.mock('$app/navigation', () => ({
-	goto: vi.fn(() => Promise.resolve())
+	goto: vi.fn(() => Promise.resolve()),
 }));
 
 const mockGoto = goto as unknown as ReturnType<typeof vi.fn>;

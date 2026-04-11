@@ -1,55 +1,55 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
-	import { invalidateAll } from '$app/navigation';
-	import { editorStore } from '$lib/stores/editor.svelte';
-	import { gamesStore } from '$lib/stores/games.svelte';
-	import type { Game } from '$lib/types/game';
+import { dev } from '$app/environment';
+import { invalidateAll } from '$app/navigation';
+import { editorStore } from '$lib/stores/editor.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
+import type { Game } from '$lib/types/game';
 
-	interface Props {
-		game: Game | null;
-		open?: boolean;
-		onConfirm?: () => void;
-		onCancel?: () => void;
-	}
+interface Props {
+	game: Game | null;
+	open?: boolean;
+	onConfirm?: () => void;
+	onCancel?: () => void;
+}
 
-	let { game, open = $bindable(false), onConfirm, onCancel }: Props = $props();
+let { game, open = $bindable(false), onConfirm, onCancel }: Props = $props();
 
-	async function handleConfirm() {
-		if (game) {
-			editorStore.deletePendingGame(game.id);
+async function handleConfirm() {
+	if (game) {
+		editorStore.deletePendingGame(game.id);
 
-			// In dev mode: save immediately to local JSON file
-			if (dev) {
-				const currentGames = gamesStore.games;
-				const finalGames = editorStore.buildFinalGames(currentGames);
-				const success = await editorStore.saveLocally(currentGames);
-				if (success) {
-					gamesStore.setAllGames(finalGames);
-					await invalidateAll();
-				}
+		// In dev mode: save immediately to local JSON file
+		if (dev) {
+			const currentGames = gamesStore.games;
+			const finalGames = editorStore.buildFinalGames(currentGames);
+			const success = await editorStore.saveLocally(currentGames);
+			if (success) {
+				gamesStore.setAllGames(finalGames);
+				await invalidateAll();
 			}
 		}
-		open = false;
-		onConfirm?.();
 	}
+	open = false;
+	onConfirm?.();
+}
 
-	function handleCancel() {
-		open = false;
-		onCancel?.();
-	}
+function handleCancel() {
+	open = false;
+	onCancel?.();
+}
 
-	function handleBackdropClick(event: MouseEvent) {
-		if (event.target === event.currentTarget) {
-			handleCancel();
-		}
+function handleBackdropClick(event: MouseEvent) {
+	if (event.target === event.currentTarget) {
+		handleCancel();
 	}
+}
 
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			event.preventDefault();
-			handleCancel();
-		}
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === 'Escape') {
+		event.preventDefault();
+		handleCancel();
 	}
+}
 </script>
 
 {#if open && game}

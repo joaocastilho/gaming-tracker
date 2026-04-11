@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { Game } from '$lib/types/game';
-	import { Presentation, NotebookPen, Gamepad2 } from 'lucide-svelte';
+import type { Game } from '$lib/types/game';
+import { Presentation, NotebookPen, Gamepad2 } from 'lucide-svelte';
 
-	interface Props {
-		game: Game;
-	}
+interface Props {
+	game: Game;
+}
 
-	let { game }: Props = $props();
+let { game }: Props = $props();
 
-	const hasRatings = $derived(
-		game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null
-	);
+const hasRatings = $derived(
+	game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null
+);
 </script>
 
 <div class="ratings-wrapper mt-1 md:mt-4">

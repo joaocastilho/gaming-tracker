@@ -12,7 +12,7 @@ import type { Game } from '$lib/types/game';
 
 const mockGames: Partial<Game>[] = [
 	{ id: '1', title: 'Elden Ring', platform: 'PC', genre: 'Action RPG', status: 'Planned' },
-	{ id: '2', title: 'Dark Souls III', platform: 'PC', genre: 'Action RPG', status: 'Completed' }
+	{ id: '2', title: 'Dark Souls III', platform: 'PC', genre: 'Action RPG', status: 'Completed' },
 ];
 
 function resetStores() {

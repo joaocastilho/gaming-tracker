@@ -77,11 +77,7 @@ export class SwipeController {
 		const diffX = this.touchCurrentX - this.touchStartX;
 		const diffY = this.touchCurrentY - this.touchStartY;
 
-		if (
-			!this.isVerticalSwipe &&
-			!this.isHorizontalSwipe &&
-			(Math.abs(diffX) > 10 || Math.abs(diffY) > 10)
-		) {
+		if (!this.isVerticalSwipe && !this.isHorizontalSwipe && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
 			if (Math.abs(diffY) > Math.abs(diffX) * 1.5) {
 				this.isVerticalSwipe = true;
 				this.onSwipeStart?.();

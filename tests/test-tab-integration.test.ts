@@ -32,7 +32,7 @@ const mockGames: Game[] = [
 		ratingStory: 9,
 		ratingGameplay: 10,
 		score: 97,
-		tier: 'S - Masterpiece'
+		tier: 'S - Masterpiece',
 	},
 	{
 		id: '2',
@@ -51,7 +51,7 @@ const mockGames: Game[] = [
 		ratingStory: 8,
 		ratingGameplay: 10,
 		score: 90,
-		tier: 'A - Amazing'
+		tier: 'A - Amazing',
 	},
 	{
 		id: '3',
@@ -70,7 +70,7 @@ const mockGames: Game[] = [
 		ratingStory: 8,
 		ratingGameplay: 9,
 		score: 87,
-		tier: 'A - Amazing'
+		tier: 'A - Amazing',
 	},
 	{
 		id: '4',
@@ -89,7 +89,7 @@ const mockGames: Game[] = [
 		ratingStory: null,
 		ratingGameplay: null,
 		score: null,
-		tier: null
+		tier: null,
 	},
 	{
 		id: '5',
@@ -108,7 +108,7 @@ const mockGames: Game[] = [
 		ratingStory: null,
 		ratingGameplay: null,
 		score: null,
-		tier: null
+		tier: null,
 	},
 	{
 		id: '6',
@@ -127,8 +127,8 @@ const mockGames: Game[] = [
 		ratingStory: 7,
 		ratingGameplay: 9,
 		score: 80,
-		tier: 'B - Great'
-	}
+		tier: 'B - Great',
+	},
 ];
 
 describe('Tab Integration', () => {

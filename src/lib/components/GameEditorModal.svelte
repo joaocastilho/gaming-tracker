@@ -1,365 +1,363 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
-	import type { Game } from '$lib/types/game';
-	import { GameSchema, computeScore } from '$lib/validation/game';
-	import { editorStore } from '$lib/stores/editor.svelte';
-	import { dev } from '$app/environment';
-	import { invalidateAll } from '$app/navigation';
-	import { gamesStore } from '$lib/stores/games.svelte';
-	import GameFormIdDisplay from './game-editor/GameFormIdDisplay.svelte';
-	import GameFormBasicInfo from './game-editor/GameFormBasicInfo.svelte';
-	import GameFormCover from './game-editor/GameFormCover.svelte';
-	import GameFormRatings from './game-editor/GameFormRatings.svelte';
+import { untrack } from 'svelte';
+import type { Game } from '$lib/types/game';
+import { GameSchema, computeScore } from '$lib/validation/game';
+import { editorStore } from '$lib/stores/editor.svelte';
+import { dev } from '$app/environment';
+import { invalidateAll } from '$app/navigation';
+import { gamesStore } from '$lib/stores/games.svelte';
+import GameFormIdDisplay from './game-editor/GameFormIdDisplay.svelte';
+import GameFormBasicInfo from './game-editor/GameFormBasicInfo.svelte';
+import GameFormCover from './game-editor/GameFormCover.svelte';
+import GameFormRatings from './game-editor/GameFormRatings.svelte';
 
-	function formatDuration(decimalHours: number): string {
-		const h = Math.floor(decimalHours);
-		const m = Math.round((decimalHours - h) * 60);
-		return `${h}h ${m}m`;
+function formatDuration(decimalHours: number): string {
+	const h = Math.floor(decimalHours);
+	const m = Math.round((decimalHours - h) * 60);
+	return `${h}h ${m}m`;
+}
+
+type Mode = 'create' | 'edit';
+
+interface Props {
+	mode: Mode;
+	initialGame?: Game | null;
+	allGames: Game[];
+	onClose: () => void;
+}
+
+let { mode, initialGame = null, allGames, onClose }: Props = $props();
+
+let working = $state<Game>();
+let error = $state<string | null>(null);
+let saving = $state(false);
+let dateInput = $state('');
+let hours = $state(0);
+let minutes = $state(0);
+let completionOrderInput = $state<number | null>(null);
+let copied = $state(false);
+
+// Cover image upload state
+let coverUrl = $state('');
+let coverFile = $state<File | null>(null);
+let coverPreview = $state<string | null>(null);
+let blobUrls: string[] = [];
+let coverError = $state<string | null>(null);
+let fileInputRef = $state<HTMLInputElement>();
+
+// Refs for focus management
+let modalRef = $state<HTMLDivElement>();
+let titleInputRef = $state<HTMLInputElement>();
+
+function handleKeyDown(event: KeyboardEvent) {
+	if (event.key === 'Escape') {
+		event.preventDefault();
+		onClose();
+		return;
 	}
 
-	type Mode = 'create' | 'edit';
+	if (event.key === 'Tab' && modalRef) {
+		const focusableElements = modalRef.querySelectorAll<HTMLElement>(
+			'input:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+		);
+		const focusableArray = Array.from(focusableElements);
 
-	interface Props {
-		mode: Mode;
-		initialGame?: Game | null;
-		allGames: Game[];
-		onClose: () => void;
-	}
+		if (focusableArray.length === 0) return;
 
-	let { mode, initialGame = null, allGames, onClose }: Props = $props();
+		const firstElement = focusableArray[0];
+		const lastElement = focusableArray[focusableArray.length - 1];
 
-	let working = $state<Game>();
-	let error = $state<string | null>(null);
-	let saving = $state(false);
-	let dateInput = $state('');
-	let hours = $state(0);
-	let minutes = $state(0);
-	let completionOrderInput = $state<number | null>(null);
-	let copied = $state(false);
-
-	// Cover image upload state
-	let coverUrl = $state('');
-	let coverFile = $state<File | null>(null);
-	let coverPreview = $state<string | null>(null);
-	let blobUrls: string[] = [];
-	let coverError = $state<string | null>(null);
-	let fileInputRef = $state<HTMLInputElement>();
-
-	// Refs for focus management
-	let modalRef = $state<HTMLDivElement>();
-	let titleInputRef = $state<HTMLInputElement>();
-
-	function handleKeyDown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			event.preventDefault();
-			onClose();
-			return;
-		}
-
-		if (event.key === 'Tab' && modalRef) {
-			const focusableElements = modalRef.querySelectorAll<HTMLElement>(
-				'input:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-			);
-			const focusableArray = Array.from(focusableElements);
-
-			if (focusableArray.length === 0) return;
-
-			const firstElement = focusableArray[0];
-			const lastElement = focusableArray[focusableArray.length - 1];
-
-			if (event.shiftKey) {
-				if (document.activeElement === firstElement) {
-					event.preventDefault();
-					lastElement.focus();
-				}
-			} else {
-				if (document.activeElement === lastElement) {
-					event.preventDefault();
-					firstElement.focus();
-				}
+		if (event.shiftKey) {
+			if (document.activeElement === firstElement) {
+				event.preventDefault();
+				lastElement.focus();
+			}
+		} else {
+			if (document.activeElement === lastElement) {
+				event.preventDefault();
+				firstElement.focus();
 			}
 		}
 	}
+}
 
-	function copyGameId() {
-		if (working?.id) {
-			navigator.clipboard.writeText(working.id);
-			copied = true;
-			setTimeout(() => {
-				copied = false;
-			}, 2000);
-		}
+function copyGameId() {
+	if (working?.id) {
+		navigator.clipboard.writeText(working.id);
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 2000);
 	}
+}
 
-	function handleCoverUrlChange(url: string) {
-		coverError = null;
-		if (url) {
-			try {
-				const parsed = new URL(url);
-				if (['http:', 'https:'].includes(parsed.protocol)) {
-					coverPreview = url;
-					coverFile = null;
-				} else {
-					coverError = 'Invalid URL';
-					coverPreview = null;
-				}
-			} catch {
+function handleCoverUrlChange(url: string) {
+	coverError = null;
+	if (url) {
+		try {
+			const parsed = new URL(url);
+			if (['http:', 'https:'].includes(parsed.protocol)) {
+				coverPreview = url;
+				coverFile = null;
+			} else {
 				coverError = 'Invalid URL';
 				coverPreview = null;
 			}
-		} else {
+		} catch {
+			coverError = 'Invalid URL';
 			coverPreview = null;
 		}
-	}
-
-	function handleFileSelect(event: Event) {
-		const target = event.target as HTMLInputElement;
-		const file = target.files?.[0];
-		coverError = null;
-
-		if (file) {
-			if (!file.type.includes('png') && !file.name.toLowerCase().endsWith('.png')) {
-				coverError = 'Only PNG files are accepted';
-				coverFile = null;
-				coverPreview = null;
-				return;
-			}
-
-			coverFile = file;
-			coverUrl = '';
-			if (coverPreview?.startsWith('blob:')) {
-				URL.revokeObjectURL(coverPreview);
-				blobUrls = blobUrls.filter((url) => url !== coverPreview);
-			}
-			coverPreview = URL.createObjectURL(file);
-			blobUrls.push(coverPreview);
-		}
-	}
-
-	function clearCover() {
-		coverUrl = '';
-		coverFile = null;
-		if (coverPreview && coverPreview.startsWith('blob:')) {
-			URL.revokeObjectURL(coverPreview);
-			blobUrls = blobUrls.filter((url) => url !== coverPreview);
-		}
+	} else {
 		coverPreview = null;
-		coverError = null;
-		if (fileInputRef) {
-			fileInputRef.value = '';
-		}
 	}
+}
 
-	// One-time initialization flag (must be outside effects)
-	let _initialized = $state(false);
+function handleFileSelect(event: Event) {
+	const target = event.target as HTMLInputElement;
+	const file = target.files?.[0];
+	coverError = null;
 
-	// Auto-focus title input when it becomes available
-	$effect(() => {
-		if (titleInputRef && _initialized) {
-			untrack(() => {
-				setTimeout(() => titleInputRef?.focus(), 50);
-			});
-		}
-	});
-
-	// One-time initialization + cleanup
-	$effect(() => {
-		if (_initialized) return;
-		_initialized = true;
-
-		if (mode === 'edit' && initialGame) {
-			working = JSON.parse(JSON.stringify(initialGame));
-			if (working && typeof working.playtime === 'number') {
-				working.playtime = formatDuration(working.playtime);
-			}
-
-			if (working && working.playtime) {
-				const match = working.playtime.match(/(\d+)h\s*(\d+)m/);
-				if (match) {
-					hours = parseInt(match[1]);
-					minutes = parseInt(match[2]);
-				}
-			}
-			if (working && working.finishedDate) {
-				dateInput = working.finishedDate.split('T')[0];
-			}
-			if (working) {
-				completionOrderInput = working.completionOrder ?? null;
-			}
-
-			coverUrl = '';
-			coverFile = null;
-			coverError = null;
-			if (working && working.coverImage) {
-				coverPreview = `/${working.coverImage}`;
-			} else {
-				coverPreview = null;
-			}
-		} else {
-			const now = new Date();
-			working = {
-				id: '',
-				title: '',
-				mainTitle: '',
-				subtitle: null,
-				platform: '',
-				genre: '',
-				status: 'Planned',
-				year: now.getFullYear(),
-				coverImage: '',
-				coOp: 'No',
-				ratingPresentation: null,
-				ratingStory: null,
-				ratingGameplay: null,
-				score: null,
-				tier: null,
-				playtime: '0h 0m',
-				finishedDate: null
-			} as Game;
-			completionOrderInput = null;
-			coverUrl = '';
+	if (file) {
+		if (!file.type.includes('png') && !file.name.toLowerCase().endsWith('.png')) {
+			coverError = 'Only PNG files are accepted';
 			coverFile = null;
 			coverPreview = null;
-			coverError = null;
-		}
-
-		return () => {
-			blobUrls.forEach((url) => {
-				if (url.startsWith('blob:')) {
-					URL.revokeObjectURL(url);
-				}
-			});
-			blobUrls = [];
-		};
-	});
-
-	// Sync dateInput to working.finishedDate
-	$effect(() => {
-		if (!working) return;
-		if (working.status === 'Completed') {
-			if (dateInput) {
-				working.finishedDate = `${dateInput}T00:00:00.000Z`;
-			} else {
-				working.finishedDate = null;
-			}
-		} else {
-			working.finishedDate = null;
-		}
-	});
-
-	// Auto-generate ID and Cover Path, and MainTitle/Subtitle logic from Title
-	$effect(() => {
-		if (!working) return;
-
-		working.mainTitle = working.title;
-		working.subtitle = null;
-
-		if (mode === 'create' && working.title) {
-			const slug = working.title
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '-')
-				.replace(/^-|-$/g, '');
-			working.id = slug;
-			working.coverImage = `covers/${slug}.webp`;
-		}
-
-		if (
-			working.status === 'Completed' &&
-			working.ratingPresentation != null &&
-			working.ratingStory != null &&
-			working.ratingGameplay != null
-		) {
-			working.score = computeScore({
-				ratingPresentation: working.ratingPresentation,
-				ratingStory: working.ratingStory,
-				ratingGameplay: working.ratingGameplay
-			});
-		}
-	});
-
-	// Sync hours/minutes to playtime string
-	$effect(() => {
-		if (working) {
-			working.playtime = `${hours}h ${minutes}m`;
-		}
-	});
-
-	// Sync completionOrderInput to working.completionOrder
-	$effect(() => {
-		if (working) {
-			working.completionOrder = completionOrderInput;
-		}
-	});
-
-	function validateGame(game: Game): string | null {
-		if (game.status === 'Planned') {
-			game.finishedDate = null;
-			game.ratingPresentation = null;
-			game.ratingStory = null;
-			game.ratingGameplay = null;
-			game.score = null;
-			game.tier = null;
-			delete game.completionOrder;
-		}
-
-		if (!game.title) return 'Title is required.';
-		if (!game.platform) return 'Platform is required.';
-		if (!game.genre) return 'Genre is required.';
-
-		const result = GameSchema.safeParse(game);
-		if (!result.success) {
-			const first = result.error.issues[0];
-			return `${first.path.join('.')}: ${first.message}`;
-		}
-
-		return null;
-	}
-
-	async function handleSave() {
-		if (!working) return;
-		error = null;
-		const validationError = validateGame(working);
-		if (validationError) {
-			error = validationError;
 			return;
 		}
 
-		saving = true;
-
-		try {
-			if (mode === 'create') {
-				editorStore.addPendingGame(working, coverFile);
-			} else {
-				editorStore.editPendingGame(working.id, working, coverFile);
-			}
-
-			if (dev) {
-				const currentGames = gamesStore.games;
-
-				if (currentGames.length === 0 && mode === 'edit') {
-					throw new Error(
-						'Cannot save: games data appears to be missing. Please refresh the page.'
-					);
-				}
-
-				const success = await editorStore.saveLocally(currentGames);
-				if (success) {
-					const finalGames = editorStore.buildFinalGames(currentGames);
-					gamesStore.setAllGames(finalGames);
-					await invalidateAll();
-					onClose();
-				} else {
-					error = editorStore.saveError || 'Failed to save changes locally.';
-					saving = false;
-				}
-			} else {
-				onClose();
-			}
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Save failed';
-			saving = false;
+		coverFile = file;
+		coverUrl = '';
+		if (coverPreview?.startsWith('blob:')) {
+			URL.revokeObjectURL(coverPreview);
+			blobUrls = blobUrls.filter((url) => url !== coverPreview);
 		}
+		coverPreview = URL.createObjectURL(file);
+		blobUrls.push(coverPreview);
 	}
+}
+
+function clearCover() {
+	coverUrl = '';
+	coverFile = null;
+	if (coverPreview && coverPreview.startsWith('blob:')) {
+		URL.revokeObjectURL(coverPreview);
+		blobUrls = blobUrls.filter((url) => url !== coverPreview);
+	}
+	coverPreview = null;
+	coverError = null;
+	if (fileInputRef) {
+		fileInputRef.value = '';
+	}
+}
+
+// One-time initialization flag (must be outside effects)
+let _initialized = $state(false);
+
+// Auto-focus title input when it becomes available
+$effect(() => {
+	if (titleInputRef && _initialized) {
+		untrack(() => {
+			setTimeout(() => titleInputRef?.focus(), 50);
+		});
+	}
+});
+
+// One-time initialization + cleanup
+$effect(() => {
+	if (_initialized) return;
+	_initialized = true;
+
+	if (mode === 'edit' && initialGame) {
+		working = JSON.parse(JSON.stringify(initialGame));
+		if (working && typeof working.playtime === 'number') {
+			working.playtime = formatDuration(working.playtime);
+		}
+
+		if (working && working.playtime) {
+			const match = working.playtime.match(/(\d+)h\s*(\d+)m/);
+			if (match) {
+				hours = parseInt(match[1]);
+				minutes = parseInt(match[2]);
+			}
+		}
+		if (working && working.finishedDate) {
+			dateInput = working.finishedDate.split('T')[0];
+		}
+		if (working) {
+			completionOrderInput = working.completionOrder ?? null;
+		}
+
+		coverUrl = '';
+		coverFile = null;
+		coverError = null;
+		if (working && working.coverImage) {
+			coverPreview = `/${working.coverImage}`;
+		} else {
+			coverPreview = null;
+		}
+	} else {
+		const now = new Date();
+		working = {
+			id: '',
+			title: '',
+			mainTitle: '',
+			subtitle: null,
+			platform: '',
+			genre: '',
+			status: 'Planned',
+			year: now.getFullYear(),
+			coverImage: '',
+			coOp: 'No',
+			ratingPresentation: null,
+			ratingStory: null,
+			ratingGameplay: null,
+			score: null,
+			tier: null,
+			playtime: '0h 0m',
+			finishedDate: null,
+		} as Game;
+		completionOrderInput = null;
+		coverUrl = '';
+		coverFile = null;
+		coverPreview = null;
+		coverError = null;
+	}
+
+	return () => {
+		blobUrls.forEach((url) => {
+			if (url.startsWith('blob:')) {
+				URL.revokeObjectURL(url);
+			}
+		});
+		blobUrls = [];
+	};
+});
+
+// Sync dateInput to working.finishedDate
+$effect(() => {
+	if (!working) return;
+	if (working.status === 'Completed') {
+		if (dateInput) {
+			working.finishedDate = `${dateInput}T00:00:00.000Z`;
+		} else {
+			working.finishedDate = null;
+		}
+	} else {
+		working.finishedDate = null;
+	}
+});
+
+// Auto-generate ID and Cover Path, and MainTitle/Subtitle logic from Title
+$effect(() => {
+	if (!working) return;
+
+	working.mainTitle = working.title;
+	working.subtitle = null;
+
+	if (mode === 'create' && working.title) {
+		const slug = working.title
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-|-$/g, '');
+		working.id = slug;
+		working.coverImage = `covers/${slug}.webp`;
+	}
+
+	if (
+		working.status === 'Completed' &&
+		working.ratingPresentation != null &&
+		working.ratingStory != null &&
+		working.ratingGameplay != null
+	) {
+		working.score = computeScore({
+			ratingPresentation: working.ratingPresentation,
+			ratingStory: working.ratingStory,
+			ratingGameplay: working.ratingGameplay,
+		});
+	}
+});
+
+// Sync hours/minutes to playtime string
+$effect(() => {
+	if (working) {
+		working.playtime = `${hours}h ${minutes}m`;
+	}
+});
+
+// Sync completionOrderInput to working.completionOrder
+$effect(() => {
+	if (working) {
+		working.completionOrder = completionOrderInput;
+	}
+});
+
+function validateGame(game: Game): string | null {
+	if (game.status === 'Planned') {
+		game.finishedDate = null;
+		game.ratingPresentation = null;
+		game.ratingStory = null;
+		game.ratingGameplay = null;
+		game.score = null;
+		game.tier = null;
+		delete game.completionOrder;
+	}
+
+	if (!game.title) return 'Title is required.';
+	if (!game.platform) return 'Platform is required.';
+	if (!game.genre) return 'Genre is required.';
+
+	const result = GameSchema.safeParse(game);
+	if (!result.success) {
+		const first = result.error.issues[0];
+		return `${first.path.join('.')}: ${first.message}`;
+	}
+
+	return null;
+}
+
+async function handleSave() {
+	if (!working) return;
+	error = null;
+	const validationError = validateGame(working);
+	if (validationError) {
+		error = validationError;
+		return;
+	}
+
+	saving = true;
+
+	try {
+		if (mode === 'create') {
+			editorStore.addPendingGame(working, coverFile);
+		} else {
+			editorStore.editPendingGame(working.id, working, coverFile);
+		}
+
+		if (dev) {
+			const currentGames = gamesStore.games;
+
+			if (currentGames.length === 0 && mode === 'edit') {
+				throw new Error('Cannot save: games data appears to be missing. Please refresh the page.');
+			}
+
+			const success = await editorStore.saveLocally(currentGames);
+			if (success) {
+				const finalGames = editorStore.buildFinalGames(currentGames);
+				gamesStore.setAllGames(finalGames);
+				await invalidateAll();
+				onClose();
+			} else {
+				error = editorStore.saveError || 'Failed to save changes locally.';
+				saving = false;
+			}
+		} else {
+			onClose();
+		}
+	} catch (err) {
+		error = err instanceof Error ? err.message : 'Save failed';
+		saving = false;
+	}
+}
 </script>
 
 <svelte:window

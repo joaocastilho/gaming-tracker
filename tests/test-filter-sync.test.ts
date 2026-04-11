@@ -4,7 +4,7 @@ import { gamesStore } from '../src/lib/stores/games.svelte';
 
 // Mock SvelteKit base modules
 vi.mock('$app/navigation', () => ({
-	replaceState: vi.fn(() => Promise.resolve())
+	replaceState: vi.fn(() => Promise.resolve()),
 }));
 
 describe('FiltersStore URL Sync', () => {
@@ -12,7 +12,7 @@ describe('FiltersStore URL Sync', () => {
 		// Initialize gamesStore with some mock data so de-slugification works
 		gamesStore.initializeGames([
 			{ id: '1', title: 'Test', platform: 'PC', genre: 'RPG', status: 'Completed' },
-			{ id: '2', title: 'Test 2', platform: 'PS5', genre: 'Action' }
+			{ id: '2', title: 'Test 2', platform: 'PS5', genre: 'Action' },
 		]);
 
 		// Reset store state
@@ -22,7 +22,7 @@ describe('FiltersStore URL Sync', () => {
 		// Setup window.location mock
 		Object.defineProperty(window, 'location', {
 			value: new URL('http://localhost/'),
-			writable: true
+			writable: true,
 		});
 	});
 

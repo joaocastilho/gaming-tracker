@@ -13,7 +13,7 @@ const mockGames = [
 		ratingStory: 7,
 		ratingGameplay: 9,
 		score: 8,
-		tier: 'A - Amazing'
+		tier: 'A - Amazing',
 	}),
 	createCompletedGame({
 		id: 'game2',
@@ -24,14 +24,14 @@ const mockGames = [
 		ratingStory: 9,
 		ratingGameplay: 8,
 		score: 8.7,
-		tier: 'S - Masterpiece'
+		tier: 'S - Masterpiece',
 	}),
 	createTestGame({
 		id: 'game3',
 		title: 'Game 3',
 		genre: 'Adventure',
 		status: 'Planned',
-		playtime: '20h 0m'
+		playtime: '20h 0m',
 	}),
 	createCompletedGame({
 		id: 'game4',
@@ -43,8 +43,8 @@ const mockGames = [
 		ratingGameplay: 8,
 		score: 7,
 		tier: 'B - Great',
-		playtime: '5h 0m'
-	})
+		playtime: '5h 0m',
+	}),
 ];
 
 describe('Completed Games Caching', () => {
@@ -81,8 +81,8 @@ describe('Completed Games Caching', () => {
 				ratingGameplay: 7,
 				score: 7.7,
 				tier: 'A - Amazing',
-				playtime: '15h 0m'
-			})
+				playtime: '15h 0m',
+			}),
 		];
 
 		completedGamesCache.updateCache(modifiedGames);
@@ -106,10 +106,7 @@ describe('Completed Games Caching', () => {
 				if (!a.finishedDate && !b.finishedDate) return 0;
 				if (!a.finishedDate) return 1;
 				if (!b.finishedDate) return -1;
-				return (
-					new Date(b.finishedDate as string).getTime() -
-					new Date(a.finishedDate as string).getTime()
-				);
+				return new Date(b.finishedDate as string).getTime() - new Date(a.finishedDate as string).getTime();
 			});
 
 		// Simulate sorting with cache (new method)
@@ -131,16 +128,11 @@ describe('Completed Games Caching', () => {
 				if (!a.finishedDate && !b.finishedDate) return 0;
 				if (!a.finishedDate) return 1;
 				if (!b.finishedDate) return -1;
-				return (
-					new Date(b.finishedDate as string).getTime() -
-					new Date(a.finishedDate as string).getTime()
-				);
+				return new Date(b.finishedDate as string).getTime() - new Date(a.finishedDate as string).getTime();
 			});
 
 		const cachedResult = completedGamesCache.getCachedCompletedGames(mockGames);
 
-		expect(JSON.stringify(oldMethodResult.map((g) => g.id))).toBe(
-			JSON.stringify(cachedResult?.map((g) => g.id) || [])
-		);
+		expect(JSON.stringify(oldMethodResult.map((g) => g.id))).toBe(JSON.stringify(cachedResult?.map((g) => g.id) || []));
 	});
 });

@@ -26,7 +26,7 @@ describe('GameEditorModal Object URL lifecycle', () => {
 			}),
 			revokeObjectURL: vi.fn((url: string) => {
 				revokedUrls.push(url);
-			})
+			}),
 		});
 	});
 

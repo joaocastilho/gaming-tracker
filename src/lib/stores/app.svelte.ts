@@ -44,7 +44,7 @@ class AppStore {
 	get appState(): AppState {
 		return {
 			theme: this.theme,
-			activeTab: this.activeTab
+			activeTab: this.activeTab,
 		};
 	}
 

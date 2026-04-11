@@ -1,46 +1,40 @@
 <script lang="ts">
-	import { filtersStore } from '$lib/stores/filters.svelte';
-	import type { SortKey, SortOption } from '$lib/stores/filters.svelte';
-	import {
-		Presentation,
-		NotebookPen,
-		Gamepad2,
-		Award,
-		ArrowUp,
-		ArrowDown,
-		Calendar,
-		AArrowDown,
-		Clock,
-		Timer
-	} from 'lucide-svelte';
-	import { appStore } from '$lib/stores/app.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import type { SortKey, SortOption } from '$lib/stores/filters.svelte';
+import {
+	Presentation,
+	NotebookPen,
+	Gamepad2,
+	Award,
+	ArrowUp,
+	ArrowDown,
+	Calendar,
+	AArrowDown,
+	Clock,
+	Timer,
+} from 'lucide-svelte';
+import { appStore } from '$lib/stores/app.svelte';
 
-	// Get sortOption from filters store state
-	let sortOption = $derived(($filtersStore?.sortOption ?? null) as SortOption | null);
-	let currentTab = $derived(appStore.activeTab);
+// Get sortOption from filters store state
+let sortOption = $derived(($filtersStore?.sortOption ?? null) as SortOption | null);
+let currentTab = $derived(appStore.activeTab);
 
-	let activeKey = $derived(
-		sortOption?.key ??
-			(currentTab === 'completed'
-				? 'finishedDate'
-				: currentTab === 'planned'
-					? 'alphabetical'
-					: 'alphabetical')
-	);
+let activeKey = $derived(
+	sortOption?.key ??
+		(currentTab === 'completed' ? 'finishedDate' : currentTab === 'planned' ? 'alphabetical' : 'alphabetical')
+);
 
-	let activeDirection = $derived(
-		sortOption?.direction ?? (currentTab === 'completed' ? 'desc' : 'asc')
-	);
+let activeDirection = $derived(sortOption?.direction ?? (currentTab === 'completed' ? 'desc' : 'asc'));
 
-	function handleSort(key: SortKey) {
-		if (activeKey === key) {
-			const newDirection = activeDirection === 'asc' ? 'desc' : 'asc';
-			filtersStore.setSort({ key, direction: newDirection });
-		} else {
-			const direction = key === 'alphabetical' ? 'asc' : 'desc';
-			filtersStore.setSort({ key, direction });
-		}
+function handleSort(key: SortKey) {
+	if (activeKey === key) {
+		const newDirection = activeDirection === 'asc' ? 'desc' : 'asc';
+		filtersStore.setSort({ key, direction: newDirection });
+	} else {
+		const direction = key === 'alphabetical' ? 'asc' : 'desc';
+		filtersStore.setSort({ key, direction });
 	}
+}
 </script>
 
 <div class="ratings-sort">

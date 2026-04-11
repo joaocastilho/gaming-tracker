@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/state';
+import { page } from '$app/state';
 
-	let status = $derived(page.status);
-	let message = $derived(page.error?.message || 'Something went wrong');
+let status = $derived(page.status);
+let message = $derived(page.error?.message || 'Something went wrong');
 </script>
 
 <svelte:head>

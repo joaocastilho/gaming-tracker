@@ -13,27 +13,27 @@ import { filtersStore } from '$lib/stores/filters.svelte';
 // Mock the stores and app modules
 vi.mock('$app/state', () => ({
 	page: {
-		state: {}
-	}
+		state: {},
+	},
 }));
 
 vi.mock('$app/navigation', () => ({
-	replaceState: vi.fn()
+	replaceState: vi.fn(),
 }));
 
 vi.mock('$app/environment', () => ({
-	browser: true
+	browser: true,
 }));
 
 vi.mock('$lib/stores/searchClearCoordinator', () => ({
-	markSearchCleared: vi.fn()
+	markSearchCleared: vi.fn(),
 }));
 
 // Mock Lucide icons
 vi.mock('lucide-svelte', () => {
 	const MockIcon = () => null;
 	return {
-		X: MockIcon
+		X: MockIcon,
 	};
 });
 

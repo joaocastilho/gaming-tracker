@@ -10,10 +10,10 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"format": "prettier --write .",
-		"format:check": "prettier --check .",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"format": "biome format --write .",
+		"format:check": "biome format .",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint --write .",
 		"generate-favicons": "bun scripts/generate-favicons.ts",
 		"optimize-covers": "bun scripts/optimize-covers-full.ts",
 		"optimize-logo": "bun scripts/optimize-logo.ts",
@@ -37,6 +37,7 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^2.4.11",
 		"@eslint/js": "^10.0.1",
 		"@playwright/test": "^1.59.1",
 		"@sveltejs/adapter-static": "^3.0.10",

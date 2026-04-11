@@ -21,7 +21,7 @@ const mockGames = [
 		tier: 'S',
 		score: 9.8,
 		finishedDate: '2023-06-15',
-		coOp: 'No'
+		coOp: 'No',
 	},
 	{
 		id: '2',
@@ -32,7 +32,7 @@ const mockGames = [
 		tier: 'A',
 		score: 9.2,
 		finishedDate: '2023-03-20',
-		coOp: 'No'
+		coOp: 'No',
 	},
 	{
 		id: '3',
@@ -43,7 +43,7 @@ const mockGames = [
 		tier: null,
 		score: null,
 		finishedDate: null,
-		coOp: 'Yes'
+		coOp: 'Yes',
 	},
 	{
 		id: '4',
@@ -54,8 +54,8 @@ const mockGames = [
 		tier: 'A',
 		score: 8.5,
 		finishedDate: '2022-11-10',
-		coOp: 'No'
-	}
+		coOp: 'No',
+	},
 ];
 
 describe('FilteredGamesStore Integration', () => {

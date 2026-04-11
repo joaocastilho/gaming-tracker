@@ -15,7 +15,7 @@ function createMockPage() {
 		error: null,
 		data: {},
 		form: undefined,
-		state: {}
+		state: {},
 	});
 
 	return {
@@ -25,7 +25,7 @@ function createMockPage() {
 		// Helper to set URL for tests
 		_setUrl(url: string) {
 			update((p) => ({ ...p, url: new URL(url) }));
-		}
+		},
 	};
 }
 

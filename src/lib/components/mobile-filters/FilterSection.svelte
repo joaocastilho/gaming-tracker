@@ -1,32 +1,32 @@
 <script lang="ts">
-	import { SlidersHorizontal } from 'lucide-svelte';
-	import FilterCategoryButton from './FilterCategoryButton.svelte';
+import { SlidersHorizontal } from 'lucide-svelte';
+import FilterCategoryButton from './FilterCategoryButton.svelte';
 
-	interface Props {
-		showTiersFilter?: boolean;
-		showCoOpFilter?: boolean;
-		platformCount?: number;
-		genreCount?: number;
-		tierCount?: number;
-		coOpSelected?: boolean;
-		onPlatformClick: () => void;
-		onGenreClick: () => void;
-		onTierClick: () => void;
-		onCoOpClick: () => void;
-	}
+interface Props {
+	showTiersFilter?: boolean;
+	showCoOpFilter?: boolean;
+	platformCount?: number;
+	genreCount?: number;
+	tierCount?: number;
+	coOpSelected?: boolean;
+	onPlatformClick: () => void;
+	onGenreClick: () => void;
+	onTierClick: () => void;
+	onCoOpClick: () => void;
+}
 
-	let {
-		showTiersFilter = true,
-		showCoOpFilter = true,
-		platformCount = 0,
-		genreCount = 0,
-		tierCount = 0,
-		coOpSelected = false,
-		onPlatformClick,
-		onGenreClick,
-		onTierClick,
-		onCoOpClick
-	}: Props = $props();
+let {
+	showTiersFilter = true,
+	showCoOpFilter = true,
+	platformCount = 0,
+	genreCount = 0,
+	tierCount = 0,
+	coOpSelected = false,
+	onPlatformClick,
+	onGenreClick,
+	onTierClick,
+	onCoOpClick,
+}: Props = $props();
 </script>
 
 <div class="mobile-filter-section">

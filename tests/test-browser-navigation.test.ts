@@ -82,8 +82,7 @@ describe('Browser Navigation', () => {
 	});
 
 	test('Browser Refresh', () => {
-		const refreshURL =
-			'http://localhost:5173/?searchTerm=mario&tab=completed&platforms=Nintendo+Switch&genres=Action';
+		const refreshURL = 'http://localhost:5173/?searchTerm=mario&tab=completed&platforms=Nintendo+Switch&genres=Action';
 
 		expect(refreshURL).toContain('searchTerm=mario');
 		expect(refreshURL).toContain('tab=completed');

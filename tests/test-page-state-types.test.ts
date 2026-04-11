@@ -9,7 +9,7 @@ describe('Page state type safety', () => {
 		const pageState: App.PageState = {
 			showMobileSearch: true,
 			fromTierlist: false,
-			noscroll: true
+			noscroll: true,
 		};
 
 		// Act & Assert: Properties should be accessible with proper types
@@ -21,7 +21,7 @@ describe('Page state type safety', () => {
 	test('page state should accept partial properties', () => {
 		// Arrange: Define a partial page state
 		const partialState: App.PageState = {
-			showMobileSearch: true
+			showMobileSearch: true,
 		};
 
 		// Act & Assert: Optional properties should work

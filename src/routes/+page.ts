@@ -6,6 +6,6 @@ export const load: PageLoad = async ({ parent }) => {
 	return {
 		games: parentData.games,
 		meta: parentData.meta,
-		source: parentData.source
+		source: parentData.source,
 	};
 };

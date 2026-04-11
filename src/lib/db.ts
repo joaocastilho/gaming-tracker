@@ -13,7 +13,7 @@ export class GamingTrackerDB extends Dexie {
 		super('gaming-tracker');
 		this.version(1).stores({
 			games: 'id, status, genre, platform, tier, finishedDate, score, year',
-			sync_queue: ''
+			sync_queue: '',
 		});
 	}
 }

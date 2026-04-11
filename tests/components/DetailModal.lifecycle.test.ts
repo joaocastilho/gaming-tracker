@@ -5,7 +5,7 @@ vi.mock('$app/environment', () => ({
 	browser: true,
 	dev: true,
 	building: false,
-	version: 'test-version'
+	version: 'test-version',
 }));
 
 vi.mock('$app/navigation', () => ({
@@ -15,7 +15,7 @@ vi.mock('$app/navigation', () => ({
 	beforeNavigate: vi.fn(),
 	afterNavigate: vi.fn(),
 	onNavigate: vi.fn(),
-	disableScrollHandling: vi.fn()
+	disableScrollHandling: vi.fn(),
 }));
 
 // Now import the component module to test its internal logic
@@ -41,14 +41,14 @@ const mockGame: Game = {
 	ratingStory: 8,
 	ratingGameplay: 9,
 	score: 9,
-	tier: 'A - Amazing'
+	tier: 'A - Amazing',
 };
 
 const mockGame2: Game = {
 	...mockGame,
 	id: '2',
 	title: 'Test Game 2',
-	mainTitle: 'Test Game 2'
+	mainTitle: 'Test Game 2',
 };
 
 const mockGames = [mockGame, mockGame2];
@@ -71,10 +71,10 @@ describe('DetailModal Lifecycle Behavior', () => {
 				getItem: (key: string) => mockSessionStorage.get(key) || null,
 				setItem: (key: string, value: string) => mockSessionStorage.set(key, value),
 				removeItem: (key: string) => mockSessionStorage.delete(key),
-				clear: () => mockSessionStorage.clear()
+				clear: () => mockSessionStorage.clear(),
 			},
 			writable: true,
-			configurable: true
+			configurable: true,
 		});
 
 		// Reset overflow styles

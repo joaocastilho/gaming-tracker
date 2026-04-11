@@ -30,7 +30,7 @@ const initialState: EditorState = {
 	savePending: false,
 	saveSuccess: false,
 	saveError: null,
-	lastSnapshot: null
+	lastSnapshot: null,
 };
 
 class EditorStore {
@@ -39,7 +39,7 @@ class EditorStore {
 		adds: [],
 		edits: new Map(),
 		deletes: new Set(),
-		files: new Map()
+		files: new Map(),
 	});
 
 	// ... [Getters omitted for brevity, effectively keeping unchanged] ...
@@ -100,11 +100,7 @@ class EditorStore {
 	}
 
 	get hasPendingChanges(): boolean {
-		return (
-			this._pending.adds.length > 0 ||
-			this._pending.edits.size > 0 ||
-			this._pending.deletes.size > 0
-		);
+		return this._pending.adds.length > 0 || this._pending.edits.size > 0 || this._pending.deletes.size > 0;
 	}
 
 	get pendingChangesCount(): number {
@@ -121,7 +117,7 @@ class EditorStore {
 		this._pending = {
 			...this._pending,
 			adds: [...this._pending.adds, game],
-			files: newFiles
+			files: newFiles,
 		};
 	}
 
@@ -137,7 +133,7 @@ class EditorStore {
 		this._pending = {
 			...this._pending,
 			edits: newEdits,
-			files: newFiles
+			files: newFiles,
 		};
 	}
 
@@ -155,7 +151,7 @@ class EditorStore {
 			this._pending = {
 				...this._pending,
 				adds: newAdds,
-				files: newFiles
+				files: newFiles,
 			};
 			return;
 		}
@@ -171,7 +167,7 @@ class EditorStore {
 			...this._pending,
 			edits: newEdits,
 			deletes: newDeletes,
-			files: newFiles
+			files: newFiles,
 		};
 	}
 
@@ -180,7 +176,7 @@ class EditorStore {
 			adds: [],
 			edits: new Map(),
 			deletes: new Set(),
-			files: new Map()
+			files: new Map(),
 		};
 	}
 
@@ -261,7 +257,7 @@ class EditorStore {
 			...this._state,
 			savePending: true,
 			saveSuccess: false,
-			saveError: null
+			saveError: null,
 		};
 
 		try {
@@ -277,7 +273,7 @@ class EditorStore {
 
 			const res = await fetch('/api/games-local', {
 				method: 'POST',
-				body: formData
+				body: formData,
 			});
 
 			if (!res.ok) {
@@ -286,7 +282,7 @@ class EditorStore {
 					...this._state,
 					savePending: false,
 					saveSuccess: false,
-					saveError: (errorData as { error?: string }).error || 'Failed to save locally.'
+					saveError: (errorData as { error?: string }).error || 'Failed to save locally.',
 				};
 				return false;
 			}
@@ -295,7 +291,7 @@ class EditorStore {
 				...this._state,
 				savePending: false,
 				saveSuccess: true,
-				saveError: null
+				saveError: null,
 			};
 
 			this.discardAllChanges();
@@ -305,7 +301,7 @@ class EditorStore {
 				...this._state,
 				savePending: false,
 				saveSuccess: false,
-				saveError: `Local save failed: ${error instanceof Error ? error.message : String(error)}`
+				saveError: `Local save failed: ${error instanceof Error ? error.message : String(error)}`,
 			};
 			return false;
 		}
@@ -318,7 +314,7 @@ class EditorStore {
 		try {
 			const res = await fetch('/api/auth/check', {
 				method: 'GET',
-				credentials: 'include'
+				credentials: 'include',
 			});
 
 			if (!res.ok) {
@@ -346,10 +342,10 @@ class EditorStore {
 			const res = await fetch('/api/login', {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({ username, password }),
-				credentials: 'include'
+				credentials: 'include',
 			});
 
 			if (!res.ok) {
@@ -357,7 +353,7 @@ class EditorStore {
 					...this._state,
 					loginPending: false,
 					editorMode: false,
-					loginError: 'Login failed. Please try again.'
+					loginError: 'Login failed. Please try again.',
 				};
 				return false;
 			}
@@ -366,7 +362,7 @@ class EditorStore {
 				...this._state,
 				loginPending: false,
 				loginError: null,
-				editorMode: true
+				editorMode: true,
 			};
 
 			// Persist to session storage
@@ -384,7 +380,7 @@ class EditorStore {
 				...this._state,
 				loginPending: false,
 				editorMode: false,
-				loginError: 'Login failed. Please try again.'
+				loginError: 'Login failed. Please try again.',
 			};
 			return false;
 		}
@@ -408,7 +404,7 @@ class EditorStore {
 				try {
 					await fetch('/api/auth/logout', {
 						method: 'POST',
-						credentials: 'include'
+						credentials: 'include',
 					});
 				} catch {
 					// Ignore API errors - local state is already cleared
@@ -465,7 +461,7 @@ class EditorStore {
 			savePending: true,
 			saveSuccess: false,
 			saveError: null,
-			lastSnapshot: snapshot
+			lastSnapshot: snapshot,
 		};
 
 		try {
@@ -481,7 +477,7 @@ class EditorStore {
 			const res = await fetch('/api/games', {
 				method: 'POST',
 				body: formData,
-				credentials: 'include'
+				credentials: 'include',
 			});
 
 			if (!res.ok) {
@@ -490,7 +486,7 @@ class EditorStore {
 					...this._state,
 					savePending: false,
 					saveSuccess: false,
-					saveError: 'Save failed. Please try again.'
+					saveError: 'Save failed. Please try again.',
 				};
 				return false;
 			}
@@ -501,7 +497,7 @@ class EditorStore {
 				...this._state,
 				savePending: false,
 				saveSuccess: true,
-				saveError: null
+				saveError: null,
 			};
 
 			if (data && typeof data === 'object' && 'games' in data) {
@@ -514,7 +510,7 @@ class EditorStore {
 				...this._state,
 				savePending: false,
 				saveSuccess: false,
-				saveError: 'Save failed. Please try again.'
+				saveError: 'Save failed. Please try again.',
 			};
 			return false;
 		}

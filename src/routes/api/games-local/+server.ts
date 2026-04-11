@@ -52,7 +52,7 @@ export async function POST({ request }: { request: Request }) {
 							await new Promise<void>((resolve, reject) => {
 								const child = spawn('bun', ['run', scriptPath, sanitizedGameId], {
 									cwd: process.cwd(),
-									stdio: 'pipe'
+									stdio: 'pipe',
 								});
 
 								let stderr = '';
@@ -128,7 +128,7 @@ export async function POST({ request }: { request: Request }) {
 
 		const outputPayload = {
 			...data,
-			games: sortedGames
+			games: sortedGames,
 		};
 
 		await fs.writeFile(filePath, JSON.stringify(outputPayload, null, 4), 'utf-8');
@@ -139,7 +139,7 @@ export async function POST({ request }: { request: Request }) {
 		return json(
 			{
 				error: 'Failed to save games',
-				message: error instanceof Error ? error.message : String(error)
+				message: error instanceof Error ? error.message : String(error),
 			},
 			{ status: 500 }
 		);

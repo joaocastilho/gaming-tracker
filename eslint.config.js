@@ -7,7 +7,7 @@ import globals from 'globals';
 export default [
 	// Global ignores
 	{
-		ignores: ['node_modules/**', '.svelte-kit/**', 'build/**', 'dist/**', '.git/**', '.wrangler/**']
+		ignores: ['node_modules/**', '.svelte-kit/**', 'build/**', 'dist/**', '.git/**', '.wrangler/**'],
 	},
 
 	// Base JS config
@@ -26,9 +26,9 @@ export default [
 				...globals.browser,
 				...globals.node,
 				__APP_VERSION__: 'readonly',
-				__BUILD_DATE__: 'readonly'
-			}
-		}
+				__BUILD_DATE__: 'readonly',
+			},
+		},
 	},
 
 	// TypeScript files including .svelte.ts
@@ -37,9 +37,9 @@ export default [
 		languageOptions: {
 			parser: tseslint.parser,
 			parserOptions: {
-				extraFileExtensions: ['.svelte']
-			}
-		}
+				extraFileExtensions: ['.svelte'],
+			},
+		},
 	},
 
 	// Svelte file settings
@@ -47,9 +47,9 @@ export default [
 		files: ['**/*.svelte'],
 		languageOptions: {
 			parserOptions: {
-				parser: tseslint.parser
-			}
-		}
+				parser: tseslint.parser,
+			},
+		},
 	},
 
 	// Custom rules for all files
@@ -60,15 +60,15 @@ export default [
 				'warn',
 				{
 					argsIgnorePattern: '^_',
-					varsIgnorePattern: '^_'
-				}
+					varsIgnorePattern: '^_',
+				},
 			],
 			'@typescript-eslint/no-explicit-any': 'error',
 			'@typescript-eslint/no-non-null-assertion': 'warn',
 			'@typescript-eslint/ban-ts-comment': 'warn',
 			'svelte/no-at-html-tags': 'warn',
 			'svelte/no-navigation-without-resolve': 'off',
-			'svelte/prefer-svelte-reactivity': 'off'
-		}
-	}
+			'svelte/prefer-svelte-reactivity': 'off',
+		},
+	},
 ];

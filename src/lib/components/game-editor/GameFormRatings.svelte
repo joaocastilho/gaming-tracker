@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { formatRating, TIER_VALUES } from '../../validation/game.js';
-	import type { Game } from '../../types/game.js';
+import { formatRating, TIER_VALUES } from '../../validation/game.js';
+import type { Game } from '../../types/game.js';
 
-	interface Props {
-		working: Game;
-	}
+interface Props {
+	working: Game;
+}
 
-	let { working }: Props = $props();
+let { working }: Props = $props();
 </script>
 
 <div class="ratings-section">

@@ -7,14 +7,14 @@ import type { Game } from '$lib/types/game';
 
 // Use hoisted state for editor mode to allow changing it in tests
 const mocks = vi.hoisted(() => ({
-	editorMode: false
+	editorMode: false,
 }));
 
 // Mock stores
 vi.mock('$lib/stores/modal.svelte', () => ({
 	modalStore: {
-		openViewModal: vi.fn()
-	}
+		openViewModal: vi.fn(),
+	},
 }));
 
 vi.mock('$lib/stores/filters.svelte', () => ({
@@ -23,24 +23,24 @@ vi.mock('$lib/stores/filters.svelte', () => ({
 		toggleGenre: vi.fn(),
 		toggleTier: vi.fn(),
 		toggleCoOp: vi.fn(),
-		subscribe: vi.fn()
-	}
+		subscribe: vi.fn(),
+	},
 }));
 
 vi.mock('$lib/stores/editor.svelte', () => ({
 	editorStore: {
 		get editorMode() {
 			return mocks.editorMode;
-		}
-	}
+		},
+	},
 }));
 
 vi.mock('$lib/stores/offline.svelte', () => ({
 	offlineStore: {
 		get isOnline() {
 			return true;
-		}
-	}
+		},
+	},
 }));
 
 // Mock Lucide icons
@@ -55,24 +55,24 @@ vi.mock('lucide-svelte', () => {
 		CalendarDays: MockIcon,
 		Users: MockIcon,
 		Pencil: MockIcon,
-		Trash2: MockIcon
+		Trash2: MockIcon,
 	};
 });
 
 // Mock Canvas for text measurement
 const mockContext = {
 	measureText: vi.fn(() => ({ width: 50 })),
-	font: ''
+	font: '',
 };
 const mockCanvas = {
-	getContext: vi.fn(() => mockContext)
+	getContext: vi.fn(() => mockContext),
 };
 
 // Mock utils
 vi.mock('../utils/imageSrcset.js', () => ({
 	generateSrcset: () => 'srcset',
 	generateTinySrcset: () => 'tiny-srcset',
-	generateSizes: () => 'sizes'
+	generateSizes: () => 'sizes',
 }));
 
 describe('GameCard Component', () => {
@@ -93,7 +93,7 @@ describe('GameCard Component', () => {
 		tier: 'S - Masterpiece',
 		coverImage: 'cover.webp',
 		subtitle: 'Subtitle',
-		coOp: 'Yes'
+		coOp: 'Yes',
 	};
 
 	const mockDisplayedGames = [mockGame];
@@ -127,7 +127,7 @@ describe('GameCard Component', () => {
 		Object.defineProperty(window, 'innerWidth', {
 			writable: true,
 			configurable: true,
-			value: originalInnerWidth
+			value: originalInnerWidth,
 		});
 	});
 
@@ -196,7 +196,7 @@ describe('GameCard Component', () => {
 		it('should call onOpenModal callback if provided', async () => {
 			const onOpenModal = vi.fn();
 			render(GameCard, {
-				props: { game: mockGame, displayedGames: mockDisplayedGames, onOpenModal }
+				props: { game: mockGame, displayedGames: mockDisplayedGames, onOpenModal },
 			});
 			const card = screen.getByRole('button', { name: /View details for Test Game/i });
 			await fireEvent.click(card);
@@ -211,7 +211,7 @@ describe('GameCard Component', () => {
 			Object.defineProperty(window, 'innerWidth', {
 				writable: true,
 				configurable: true,
-				value: 1024
+				value: 1024,
 			});
 		});
 
@@ -280,7 +280,7 @@ describe('GameCard Component', () => {
 			Object.defineProperty(window, 'innerWidth', {
 				writable: true,
 				configurable: true,
-				value: 500
+				value: 500,
 			});
 		});
 
@@ -341,7 +341,7 @@ describe('GameCard Component', () => {
 		it('should call onEditGame when edit button is clicked', async () => {
 			const onEditGame = vi.fn();
 			render(GameCard, {
-				props: { game: mockGame, displayedGames: mockDisplayedGames, onEditGame }
+				props: { game: mockGame, displayedGames: mockDisplayedGames, onEditGame },
 			});
 			const editButton = screen.getByTitle('Edit game');
 			await fireEvent.click(editButton);
@@ -351,7 +351,7 @@ describe('GameCard Component', () => {
 		it('should call onDeleteGame when delete button is clicked', async () => {
 			const onDeleteGame = vi.fn();
 			render(GameCard, {
-				props: { game: mockGame, displayedGames: mockDisplayedGames, onDeleteGame }
+				props: { game: mockGame, displayedGames: mockDisplayedGames, onDeleteGame },
 			});
 			const deleteButton = screen.getByTitle('Delete game');
 			await fireEvent.click(deleteButton);
@@ -361,7 +361,7 @@ describe('GameCard Component', () => {
 		it('should not open modal when edit button is clicked', async () => {
 			const onEditGame = vi.fn();
 			render(GameCard, {
-				props: { game: mockGame, displayedGames: mockDisplayedGames, onEditGame }
+				props: { game: mockGame, displayedGames: mockDisplayedGames, onEditGame },
 			});
 			const editButton = screen.getByTitle('Edit game');
 			await fireEvent.click(editButton);
@@ -371,7 +371,7 @@ describe('GameCard Component', () => {
 		it('should not open modal when delete button is clicked', async () => {
 			const onDeleteGame = vi.fn();
 			render(GameCard, {
-				props: { game: mockGame, displayedGames: mockDisplayedGames, onDeleteGame }
+				props: { game: mockGame, displayedGames: mockDisplayedGames, onDeleteGame },
 			});
 			const deleteButton = screen.getByTitle('Delete game');
 			await fireEvent.click(deleteButton);
@@ -388,9 +388,7 @@ describe('GameCard Component', () => {
 	describe('Accessibility', () => {
 		it('should have proper aria-label on card', () => {
 			render(GameCard, { props: { game: mockGame, displayedGames: mockDisplayedGames } });
-			expect(
-				screen.getByRole('button', { name: /View details for Test Game/i })
-			).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: /View details for Test Game/i })).toBeInTheDocument();
 		});
 
 		it('should have proper tabindex for keyboard navigation', () => {

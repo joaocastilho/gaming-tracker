@@ -1,109 +1,104 @@
 <script lang="ts">
-	import { filtersStore } from '$lib/stores/filters.svelte';
-	import {
-		getPlatformColor,
-		getGenreColor,
-		getTierColor,
-		getCoOpColor
-	} from '$lib/utils/filterOptions.js';
-	import { getTierDisplayName } from '$lib/utils/tierUtils';
-	import { Monitor, Tag, Trophy, ChevronDown, Users, RotateCcw } from 'lucide-svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { getPlatformColor, getGenreColor, getTierColor, getCoOpColor } from '$lib/utils/filterOptions.js';
+import { getTierDisplayName } from '$lib/utils/tierUtils';
+import { Monitor, Tag, Trophy, ChevronDown, Users, RotateCcw } from 'lucide-svelte';
 
-	interface Props {
-		type: 'platforms' | 'genres' | 'tiers' | 'coOp';
-		label: string;
-		options: string[];
-		selectedOptions: string[];
+interface Props {
+	type: 'platforms' | 'genres' | 'tiers' | 'coOp';
+	label: string;
+	options: string[];
+	selectedOptions: string[];
+}
+
+let { type, label, options, selectedOptions = [] }: Props = $props();
+
+let isOpen = $state(false);
+let dropdownElement = $state<HTMLDivElement | undefined>(undefined);
+
+function handleClickOutside(event: MouseEvent) {
+	const target = event.target as Node;
+
+	if (dropdownElement && !dropdownElement.contains(target)) {
+		isOpen = false;
 	}
+}
 
-	let { type, label, options, selectedOptions = [] }: Props = $props();
-
-	let isOpen = $state(false);
-	let dropdownElement = $state<HTMLDivElement | undefined>(undefined);
-
-	function handleClickOutside(event: MouseEvent) {
-		const target = event.target as Node;
-
-		if (dropdownElement && !dropdownElement.contains(target)) {
-			isOpen = false;
-		}
-	}
-
-	$effect(() => {
-		if (isOpen) {
-			document.addEventListener('click', handleClickOutside);
-			return () => {
-				document.removeEventListener('click', handleClickOutside);
-			};
-		}
-	});
-
-	function toggleOption(option: string) {
-		if (type === 'platforms') {
-			filtersStore.togglePlatform(option);
-		} else if (type === 'genres') {
-			filtersStore.toggleGenre(option);
-		} else if (type === 'tiers') {
-			filtersStore.toggleTier(option);
-		} else if (type === 'coOp') {
-			filtersStore.toggleCoOp(option);
-		}
-	}
-
-	function selectAll() {
-		selectedOptions.forEach((option) => {
-			if (type === 'platforms') {
-				filtersStore.removePlatform(option);
-			} else if (type === 'genres') {
-				filtersStore.removeGenre(option);
-			} else if (type === 'tiers') {
-				filtersStore.removeTier(option);
-			} else if (type === 'coOp') {
-				filtersStore.removeCoOp(option);
-			}
-		});
-	}
-
-	function getOptionColor(option: string): string {
-		if (type === 'platforms') {
-			return getPlatformColor(option);
-		} else if (type === 'genres') {
-			return getGenreColor(option);
-		} else if (type === 'tiers') {
-			return getTierColor(option);
-		} else if (type === 'coOp') {
-			return getCoOpColor(option);
-		}
-		return 'bg-gray-600 text-white';
-	}
-
-	function getButtonColorClasses(): string {
-		if (selectedOptions.length === 0) {
-			return 'bg-surface hover:bg-accent hover:text-accent-foreground border-0';
-		} else {
-			return 'bg-accent text-accent-foreground border-0';
-		}
-	}
-
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			isOpen = false;
-			event.preventDefault();
-		} else if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			isOpen = !isOpen;
-		} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-			event.preventDefault();
-		}
-	}
-
-	function getAriaAttributes() {
-		return {
-			'aria-expanded': isOpen,
-			'aria-haspopup': 'listbox' as const,
-			'aria-label': `Filter by ${label.toLowerCase()}`
+$effect(() => {
+	if (isOpen) {
+		document.addEventListener('click', handleClickOutside);
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
 		};
 	}
+});
+
+function toggleOption(option: string) {
+	if (type === 'platforms') {
+		filtersStore.togglePlatform(option);
+	} else if (type === 'genres') {
+		filtersStore.toggleGenre(option);
+	} else if (type === 'tiers') {
+		filtersStore.toggleTier(option);
+	} else if (type === 'coOp') {
+		filtersStore.toggleCoOp(option);
+	}
+}
+
+function selectAll() {
+	selectedOptions.forEach((option) => {
+		if (type === 'platforms') {
+			filtersStore.removePlatform(option);
+		} else if (type === 'genres') {
+			filtersStore.removeGenre(option);
+		} else if (type === 'tiers') {
+			filtersStore.removeTier(option);
+		} else if (type === 'coOp') {
+			filtersStore.removeCoOp(option);
+		}
+	});
+}
+
+function getOptionColor(option: string): string {
+	if (type === 'platforms') {
+		return getPlatformColor(option);
+	} else if (type === 'genres') {
+		return getGenreColor(option);
+	} else if (type === 'tiers') {
+		return getTierColor(option);
+	} else if (type === 'coOp') {
+		return getCoOpColor(option);
+	}
+	return 'bg-gray-600 text-white';
+}
+
+function getButtonColorClasses(): string {
+	if (selectedOptions.length === 0) {
+		return 'bg-surface hover:bg-accent hover:text-accent-foreground border-0';
+	} else {
+		return 'bg-accent text-accent-foreground border-0';
+	}
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === 'Escape') {
+		isOpen = false;
+		event.preventDefault();
+	} else if (event.key === 'Enter' || event.key === ' ') {
+		event.preventDefault();
+		isOpen = !isOpen;
+	} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+		event.preventDefault();
+	}
+}
+
+function getAriaAttributes() {
+	return {
+		'aria-expanded': isOpen,
+		'aria-haspopup': 'listbox' as const,
+		'aria-label': `Filter by ${label.toLowerCase()}`,
+	};
+}
 </script>
 
 <div class="filter-dropdown" bind:this={dropdownElement}>

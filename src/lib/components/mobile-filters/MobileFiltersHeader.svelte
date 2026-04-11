@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { RotateCcw, Check, X } from 'lucide-svelte';
+import { RotateCcw, Check, X } from 'lucide-svelte';
 
-	interface Props {
-		title?: string;
-		onApply: () => void;
-		onReset: () => void;
-		onClose: () => void;
-	}
+interface Props {
+	title?: string;
+	onApply: () => void;
+	onReset: () => void;
+	onClose: () => void;
+}
 
-	let { title = 'Filters and Sorting', onApply, onReset, onClose }: Props = $props();
+let { title = 'Filters and Sorting', onApply, onReset, onClose }: Props = $props();
 </script>
 
 <div class="mobile-filters-header">

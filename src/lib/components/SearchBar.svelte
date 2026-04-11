@@ -1,101 +1,101 @@
 <script lang="ts">
-	import { filtersStore } from '$lib/stores/filters.svelte';
-	import { page } from '$app/state';
-	import { replaceState } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import { X } from 'lucide-svelte';
-	import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { page } from '$app/state';
+import { replaceState } from '$app/navigation';
+import { browser } from '$app/environment';
+import { X } from 'lucide-svelte';
+import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
 
-	let inputElement = $state<HTMLInputElement | undefined>(undefined);
-	let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
+let inputElement = $state<HTMLInputElement | undefined>(undefined);
+let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-	let searchTerm = $derived($filtersStore?.searchTerm ?? '');
+let searchTerm = $derived($filtersStore?.searchTerm ?? '');
 
-	// Initialize input value once on mount
-	let initialized = $state(false);
-	$effect(() => {
-		if (inputElement && !initialized) {
-			inputElement.value = searchTerm;
-			initialized = true;
-			inputElement.focus();
-		}
-	});
+// Initialize input value once on mount
+let initialized = $state(false);
+$effect(() => {
+	if (inputElement && !initialized) {
+		inputElement.value = searchTerm;
+		initialized = true;
+		inputElement.focus();
+	}
+});
 
-	function handleInput(event: Event) {
-		const target = event.target as HTMLInputElement;
-		const newValue = target.value;
+function handleInput(event: Event) {
+	const target = event.target as HTMLInputElement;
+	const newValue = target.value;
 
-		if (debounceTimeout) {
-			clearTimeout(debounceTimeout);
-		}
-
-		debounceTimeout = setTimeout(() => {
-			filtersStore.setSearchTerm(newValue);
-			filtersStore.writeSearchToURL(page.state);
-		}, 300);
+	if (debounceTimeout) {
+		clearTimeout(debounceTimeout);
 	}
 
-	function clearSearch() {
-		// Cancel any pending debounced writes
-		if (debounceTimeout) {
-			clearTimeout(debounceTimeout);
-		}
+	debounceTimeout = setTimeout(() => {
+		filtersStore.setSearchTerm(newValue);
+		filtersStore.writeSearchToURL(page.state);
+	}, 300);
+}
 
-		// Clear URL parameter FIRST (synchronously) before touching the store
-		// This prevents the URL sync effect from restoring the value
-		if (browser) {
-			const url = new URL(window.location.href);
-			url.searchParams.delete('s');
-			replaceState(url.toString(), page.state);
-		}
+function clearSearch() {
+	// Cancel any pending debounced writes
+	if (debounceTimeout) {
+		clearTimeout(debounceTimeout);
+	}
 
-		// Mark the clear timestamp to prevent URL sync effect from running
-		markSearchCleared();
+	// Clear URL parameter FIRST (synchronously) before touching the store
+	// This prevents the URL sync effect from restoring the value
+	if (browser) {
+		const url = new URL(window.location.href);
+		url.searchParams.delete('s');
+		replaceState(url.toString(), page.state);
+	}
 
-		// Then clear store to trigger filtering
-		filtersStore.setSearchTerm('');
+	// Mark the clear timestamp to prevent URL sync effect from running
+	markSearchCleared();
 
-		// Finally clear input value
+	// Then clear store to trigger filtering
+	filtersStore.setSearchTerm('');
+
+	// Finally clear input value
+	if (inputElement) {
+		inputElement.value = '';
+		requestAnimationFrame(() => {
+			inputElement?.focus();
+		});
+	}
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === 'Escape') {
 		if (inputElement) {
-			inputElement.value = '';
-			requestAnimationFrame(() => {
-				inputElement?.focus();
-			});
-		}
-	}
-
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			if (inputElement) {
-				inputElement.select();
-			}
-		}
-	}
-
-	function handleGlobalKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape' && inputElement) {
-			event.preventDefault();
-			event.stopPropagation();
-
-			inputElement.focus();
 			inputElement.select();
-
-			requestAnimationFrame(() => {
-				const headerHeight = 110;
-				window.scrollTo({
-					top: -headerHeight,
-					behavior: 'smooth'
-				});
-			});
 		}
 	}
+}
 
-	$effect(() => {
-		document.addEventListener('keydown', handleGlobalKeydown, { capture: true });
-		return () => {
-			document.removeEventListener('keydown', handleGlobalKeydown, { capture: true });
-		};
-	});
+function handleGlobalKeydown(event: KeyboardEvent) {
+	if (event.key === 'Escape' && inputElement) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		inputElement.focus();
+		inputElement.select();
+
+		requestAnimationFrame(() => {
+			const headerHeight = 110;
+			window.scrollTo({
+				top: -headerHeight,
+				behavior: 'smooth',
+			});
+		});
+	}
+}
+
+$effect(() => {
+	document.addEventListener('keydown', handleGlobalKeydown, { capture: true });
+	return () => {
+		document.removeEventListener('keydown', handleGlobalKeydown, { capture: true });
+	};
+});
 </script>
 
 <div class="search-bar-container">

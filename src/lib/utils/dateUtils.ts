@@ -26,20 +26,7 @@ export function parseDate(dateStr: string | null): number | null {
 		const monthStr = textParts[2].toLowerCase();
 		const year = parseInt(textParts[3], 10);
 
-		const months = [
-			'jan',
-			'feb',
-			'mar',
-			'apr',
-			'may',
-			'jun',
-			'jul',
-			'aug',
-			'sep',
-			'oct',
-			'nov',
-			'dec'
-		];
+		const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 		// Check against first 3 chars of month name
 		const monthIndex = months.findIndex((m) => monthStr.startsWith(m));
 

@@ -92,7 +92,7 @@ describe('parseDate', () => {
 			{ id: 2, finishedDate: null },
 			{ id: 3, finishedDate: '01/01/2023' },
 			{ id: 4, finishedDate: '' },
-			{ id: 5, finishedDate: '20/05/2023' }
+			{ id: 5, finishedDate: '20/05/2023' },
 		];
 
 		const sortedAsc = [...games].toSorted((a, b) => {

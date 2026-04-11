@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { ArrowUpDown } from 'lucide-svelte';
-	import RatingsSort from '$lib/components/RatingsSort.svelte';
+import { ArrowUpDown } from 'lucide-svelte';
+import RatingsSort from '$lib/components/RatingsSort.svelte';
 </script>
 
 <div class="mobile-filter-section">

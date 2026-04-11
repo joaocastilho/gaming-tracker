@@ -1,69 +1,69 @@
 <script lang="ts">
-	import { gamesStore } from '$lib/stores/games.svelte';
-	import { format, parse } from 'date-fns';
-	import { parseToDate } from '$lib/utils/dateUtils';
-	import GameCard from '$lib/components/GameCard.svelte';
-	import { modalStore } from '$lib/stores/modal.svelte';
-	import { ArrowDown, ArrowUp, Gamepad2 } from 'lucide-svelte';
-	import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { format, parse } from 'date-fns';
+import { parseToDate } from '$lib/utils/dateUtils';
+import GameCard from '$lib/components/GameCard.svelte';
+import { modalStore } from '$lib/stores/modal.svelte';
+import { ArrowDown, ArrowUp, Gamepad2 } from 'lucide-svelte';
+import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
 
-	type SortOption = 'newest' | 'oldest';
+type SortOption = 'newest' | 'oldest';
 
-	let sortOption = $state<SortOption>('newest');
+let sortOption = $state<SortOption>('newest');
 
-	let completedGames = $derived.by(() => {
-		const games = gamesStore.games;
-		const all = games.filter((g) => g.status === 'Completed' && g.finishedDate);
-		const sorted = [...all].sort((a, b) => {
-			const tsA = parseToDate(a.finishedDate)?.getTime() ?? 0;
-			const tsB = parseToDate(b.finishedDate)?.getTime() ?? 0;
-			if (tsA === 0 || tsB === 0) return 0;
-			if (sortOption === 'newest') {
-				return tsB - tsA;
-			}
-			return tsA - tsB;
-		});
-		return sorted;
-	});
-
-	let groupedGames = $derived.by(() => {
-		const games = completedGames;
-		const groups: Record<string, typeof games> = {};
-
-		for (const game of games) {
-			const date = parseToDate(game.finishedDate);
-			if (!date) continue;
-
-			const key = format(date, 'yyyy MMMM');
-			if (!groups[key]) {
-				groups[key] = [];
-			}
-			groups[key].push(game);
+let completedGames = $derived.by(() => {
+	const games = gamesStore.games;
+	const all = games.filter((g) => g.status === 'Completed' && g.finishedDate);
+	const sorted = [...all].sort((a, b) => {
+		const tsA = parseToDate(a.finishedDate)?.getTime() ?? 0;
+		const tsB = parseToDate(b.finishedDate)?.getTime() ?? 0;
+		if (tsA === 0 || tsB === 0) return 0;
+		if (sortOption === 'newest') {
+			return tsB - tsA;
 		}
-
-		return groups;
+		return tsA - tsB;
 	});
+	return sorted;
+});
 
-	let sortedGroupKeys = $derived.by(() => {
-		const groups = groupedGames;
-		const keys = Object.keys(groups);
-		const sorted = [...keys].sort((a, b) => {
-			const dateA = parse(a, 'yyyy MMMM', new Date(2000, 0, 1));
-			const dateB = parse(b, 'yyyy MMMM', new Date(2000, 0, 1));
-			if (sortOption === 'newest') {
-				return dateB.getTime() - dateA.getTime();
-			}
-			return dateA.getTime() - dateB.getTime();
-		});
-		return sorted;
-	});
+let groupedGames = $derived.by(() => {
+	const games = completedGames;
+	const groups: Record<string, typeof games> = {};
 
-	function handleItemClick(gameId: string) {
-		const game = gamesStore.getGameById(gameId);
-		if (game) {
-			modalStore.openViewModal(game, completedGames);
+	for (const game of games) {
+		const date = parseToDate(game.finishedDate);
+		if (!date) continue;
+
+		const key = format(date, 'yyyy MMMM');
+		if (!groups[key]) {
+			groups[key] = [];
 		}
+		groups[key].push(game);
 	}
+
+	return groups;
+});
+
+let sortedGroupKeys = $derived.by(() => {
+	const groups = groupedGames;
+	const keys = Object.keys(groups);
+	const sorted = [...keys].sort((a, b) => {
+		const dateA = parse(a, 'yyyy MMMM', new Date(2000, 0, 1));
+		const dateB = parse(b, 'yyyy MMMM', new Date(2000, 0, 1));
+		if (sortOption === 'newest') {
+			return dateB.getTime() - dateA.getTime();
+		}
+		return dateA.getTime() - dateB.getTime();
+	});
+	return sorted;
+});
+
+function handleItemClick(gameId: string) {
+	const game = gamesStore.getGameById(gameId);
+	if (game) {
+		modalStore.openViewModal(game, completedGames);
+	}
+}
 </script>
 
 <div class="timeline-page">

@@ -24,7 +24,7 @@ export function createTestGame(overrides: Partial<Game> = {}): Game {
 		ratingGameplay: null,
 		score: null,
 		tier: null,
-		...overrides
+		...overrides,
 	};
 }
 
@@ -40,6 +40,6 @@ export function createCompletedGame(overrides: Partial<Game> = {}): Game {
 		ratingGameplay: 9,
 		score: 8,
 		tier: 'A - Amazing' as TierValue,
-		...overrides
+		...overrides,
 	});
 }

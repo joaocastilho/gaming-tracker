@@ -1,63 +1,63 @@
 <script lang="ts">
-	import { filtersStore } from '../../stores/filters.svelte';
-	import { getPlatformClasses, getGenreClasses } from '../../utils/colorConstants.js';
-	import type { Game } from '../../types/game.js';
-	import { Users } from 'lucide-svelte';
+import { filtersStore } from '../../stores/filters.svelte';
+import { getPlatformClasses, getGenreClasses } from '../../utils/colorConstants.js';
+import type { Game } from '../../types/game.js';
+import { Users } from 'lucide-svelte';
 
-	interface Props {
-		game: Game;
+interface Props {
+	game: Game;
+}
+
+let { game }: Props = $props();
+
+function isValidKeyboardAction(event: KeyboardEvent): boolean {
+	return event.key === 'Enter' || event.key === ' ';
+}
+
+function handlePlatformClick(event: MouseEvent | KeyboardEvent) {
+	event.stopPropagation();
+	if (typeof window !== 'undefined' && window.innerWidth < 768) {
+		return;
 	}
-
-	let { game }: Props = $props();
-
-	function isValidKeyboardAction(event: KeyboardEvent): boolean {
-		return event.key === 'Enter' || event.key === ' ';
+	if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
+		return;
 	}
+	filtersStore.togglePlatform(game.platform);
+}
 
-	function handlePlatformClick(event: MouseEvent | KeyboardEvent) {
-		event.stopPropagation();
-		if (typeof window !== 'undefined' && window.innerWidth < 768) {
-			return;
-		}
-		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
-			return;
-		}
-		filtersStore.togglePlatform(game.platform);
+function handleGenreClick(event: MouseEvent | KeyboardEvent) {
+	event.stopPropagation();
+	if (typeof window !== 'undefined' && window.innerWidth < 768) {
+		return;
 	}
-
-	function handleGenreClick(event: MouseEvent | KeyboardEvent) {
-		event.stopPropagation();
-		if (typeof window !== 'undefined' && window.innerWidth < 768) {
-			return;
-		}
-		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
-			return;
-		}
-		filtersStore.toggleGenre(game.genre);
+	if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
+		return;
 	}
+	filtersStore.toggleGenre(game.genre);
+}
 
-	function handleCoOpClick(event: MouseEvent | KeyboardEvent) {
-		event.stopPropagation();
-		if (typeof window !== 'undefined' && window.innerWidth < 768) {
-			return;
-		}
-		if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
-			return;
-		}
-		filtersStore.toggleCoOp('Yes');
+function handleCoOpClick(event: MouseEvent | KeyboardEvent) {
+	event.stopPropagation();
+	if (typeof window !== 'undefined' && window.innerWidth < 768) {
+		return;
 	}
+	if (event instanceof KeyboardEvent && !isValidKeyboardAction(event)) {
+		return;
+	}
+	filtersStore.toggleCoOp('Yes');
+}
 
-	let isMobile = $state(false);
+let isMobile = $state(false);
 
-	$effect(() => {
-		const checkMobile = () => {
-			isMobile = window.innerWidth < 768;
-		};
+$effect(() => {
+	const checkMobile = () => {
+		isMobile = window.innerWidth < 768;
+	};
 
-		checkMobile();
-		window.addEventListener('resize', checkMobile);
-		return () => window.removeEventListener('resize', checkMobile);
-	});
+	checkMobile();
+	window.addEventListener('resize', checkMobile);
+	return () => window.removeEventListener('resize', checkMobile);
+});
 </script>
 
 <div class="metadata-row">

@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import LoginModal from '$lib/components/LoginModal.svelte';
-	import { editorStore } from '$lib/stores/editor.svelte';
+import { goto } from '$app/navigation';
+import LoginModal from '$lib/components/LoginModal.svelte';
+import { editorStore } from '$lib/stores/editor.svelte';
 
-	let isModalOpen = $state(true);
-	let editorMode = $derived(editorStore.editorMode);
+let isModalOpen = $state(true);
+let editorMode = $derived(editorStore.editorMode);
 
-	// Get version from Vite define (set at build time)
-	const appVersion = __APP_VERSION__;
-	const buildDate = __BUILD_DATE__;
+// Get version from Vite define (set at build time)
+const appVersion = __APP_VERSION__;
+const buildDate = __BUILD_DATE__;
 
-	$effect(() => {
-		if (editorMode) {
-			goto('/');
-		}
-	});
+$effect(() => {
+	if (editorMode) {
+		goto('/');
+	}
+});
 </script>
 
 <LoginModal bind:open={isModalOpen} />

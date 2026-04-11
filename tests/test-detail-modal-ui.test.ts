@@ -30,7 +30,7 @@ const mockGames: Game[] = [
 		ratingStory: 9,
 		ratingGameplay: 8,
 		score: 85,
-		tier: 'A - Amazing'
+		tier: 'A - Amazing',
 	},
 	{
 		id: '2',
@@ -49,7 +49,7 @@ const mockGames: Game[] = [
 		ratingStory: 7,
 		ratingGameplay: 9,
 		score: 90,
-		tier: 'S - Masterpiece'
+		tier: 'S - Masterpiece',
 	},
 	{
 		id: '3',
@@ -68,8 +68,8 @@ const mockGames: Game[] = [
 		ratingStory: null,
 		ratingGameplay: null,
 		score: null,
-		tier: null
-	}
+		tier: null,
+	},
 ];
 
 describe('DetailModal UI Logic', () => {
@@ -151,9 +151,7 @@ describe('DetailModal UI Logic', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
 
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			// At first game, index is 0
 			expect(currentIndex).toBe(0);
@@ -165,9 +163,7 @@ describe('DetailModal UI Logic', () => {
 			modalStore.openViewModal(mockGames[2], mockGames);
 
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			// At last game, index is 2
 			expect(currentIndex).toBe(2);
@@ -180,9 +176,7 @@ describe('DetailModal UI Logic', () => {
 		it('should correctly identify if can navigate forward', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			const canNavigateForward = currentIndex < state.displayedGames.length - 1;
 			expect(canNavigateForward).toBe(true);
@@ -191,9 +185,7 @@ describe('DetailModal UI Logic', () => {
 		it('should correctly identify if can navigate backward', () => {
 			modalStore.openViewModal(mockGames[2], mockGames);
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			const canNavigateBackward = currentIndex > 0;
 			expect(canNavigateBackward).toBe(true);
@@ -225,7 +217,7 @@ describe('DetailModal UI Logic', () => {
 				statuses: [],
 				tiers: [],
 				sortOption: null,
-				activeTab: 'completed' as const
+				activeTab: 'completed' as const,
 			};
 
 			modalStore.openViewModal(mockGames[0], mockGames, filterContext);
@@ -253,7 +245,7 @@ describe('DetailModal UI Logic', () => {
 				statuses: [],
 				tiers: [],
 				sortOption: null,
-				activeTab: 'all' as const
+				activeTab: 'all' as const,
 			};
 
 			modalStore.openViewModal(mockGames[0], mockGames, filterContext);
@@ -274,9 +266,7 @@ describe('DetailModal UI Logic', () => {
 		it('should calculate correct next index', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			const nextIndex = currentIndex + 1;
 			expect(nextIndex).toBe(1);
@@ -286,9 +276,7 @@ describe('DetailModal UI Logic', () => {
 		it('should calculate correct previous index', () => {
 			modalStore.openViewModal(mockGames[1], mockGames);
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			const prevIndex = currentIndex - 1;
 			expect(prevIndex).toBe(0);
@@ -298,9 +286,7 @@ describe('DetailModal UI Logic', () => {
 		it('should get next game from displayed games', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			if (currentIndex < state.displayedGames.length - 1) {
 				const nextGame = state.displayedGames[currentIndex + 1];
@@ -312,9 +298,7 @@ describe('DetailModal UI Logic', () => {
 		it('should get previous game from displayed games', () => {
 			modalStore.openViewModal(mockGames[2], mockGames);
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			if (currentIndex > 0) {
 				const prevGame = state.displayedGames[currentIndex - 1];
@@ -373,9 +357,7 @@ describe('DetailModal UI Logic', () => {
 		it('should validate swipe can navigate in direction', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
 			const state = modalStore.getState();
-			const currentIndex = state.displayedGames.findIndex(
-				(g) => g.id === modalStore.activeGame?.id
-			);
+			const currentIndex = state.displayedGames.findIndex((g) => g.id === modalStore.activeGame?.id);
 
 			// At first game (index 0): can swipe left (next), cannot swipe right (prev)
 			const canSwipeLeft = currentIndex < state.displayedGames.length - 1;

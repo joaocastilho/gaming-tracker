@@ -27,7 +27,7 @@ export const PLATFORM_COLORS: Record<string, string> = {
 	Xbox: 'platform-xbox',
 	'Xbox 360': 'platform-xbox-360',
 	'Xbox Series X': 'platform-xbox-series',
-	Dreamcast: 'platform-dreamcast'
+	Dreamcast: 'platform-dreamcast',
 };
 
 // Genre color mappings using CSS variables
@@ -68,7 +68,7 @@ export const GENRE_COLORS: Record<string, string> = {
 	Metroidvania: 'genre-metroidvania',
 	Roguelike: 'genre-roguelike',
 	Strategy: 'genre-strategy',
-	Survival: 'genre-survival'
+	Survival: 'genre-survival',
 };
 
 // Tier color mappings - use CSS classes from app.css
@@ -78,7 +78,7 @@ export const TIER_COLORS: Record<string, string> = {
 	'B - Great': 'tier-b',
 	'C - Good': 'tier-c',
 	'D - Decent': 'tier-d',
-	'E - Bad': 'tier-e'
+	'E - Bad': 'tier-e',
 };
 
 // Tier display names
@@ -88,10 +88,10 @@ export const TIER_LABELS: Record<string, string> = {
 	B: 'B - Great',
 	C: 'C - Good',
 	D: 'D - Decent',
-	E: 'E - Bad'
+	E: 'E - Bad',
 };
 
 export const COOP_COLORS: Record<string, string> = {
 	Yes: 'coop-yes',
-	No: 'coop-no'
+	No: 'coop-no',
 };

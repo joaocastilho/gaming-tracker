@@ -1,35 +1,35 @@
 <script lang="ts">
-	import type { Game } from '$lib/types/game';
-	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
-	import GameCard from '$lib/components/GameCard.svelte';
+import type { Game } from '$lib/types/game';
+import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
+import GameCard from '$lib/components/GameCard.svelte';
 
-	interface Props {
-		tierName: string;
-		games: Game[];
-		allGames: Game[];
-		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
-	}
+interface Props {
+	tierName: string;
+	games: Game[];
+	allGames: Game[];
+	onOpenModal?: (game: Game, displayedGames: Game[]) => void;
+}
 
-	let { tierName, games, allGames, onOpenModal }: Props = $props();
+let { tierName, games, allGames, onOpenModal }: Props = $props();
 
-	let displayedCount = $state(20);
-	let displayedGames = $derived(games.slice(0, displayedCount));
+let displayedCount = $state(20);
+let displayedGames = $derived(games.slice(0, displayedCount));
 
-	function intersectionObserver(node: HTMLElement) {
-		const observer = new IntersectionObserver((entries) => {
-			if (entries[0].isIntersecting) {
-				displayedCount += 20;
-			}
-		});
+function intersectionObserver(node: HTMLElement) {
+	const observer = new IntersectionObserver((entries) => {
+		if (entries[0].isIntersecting) {
+			displayedCount += 20;
+		}
+	});
 
-		observer.observe(node);
+	observer.observe(node);
 
-		return {
-			destroy() {
-				observer.disconnect();
-			}
-		};
-	}
+	return {
+		destroy() {
+			observer.disconnect();
+		},
+	};
+}
 </script>
 
 <div class="tier-section">

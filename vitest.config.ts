@@ -8,9 +8,9 @@ export default defineConfig({
 		globals: true,
 		include: ['tests/**/*.{test,spec}.{js,ts}'],
 		setupFiles: ['fake-indexeddb/auto', 'tests/setup.ts'],
-		restoreMocks: true
+		restoreMocks: true,
 	},
 	resolve: {
-		conditions: ['browser']
-	}
+		conditions: ['browser'],
+	},
 });

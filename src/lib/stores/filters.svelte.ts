@@ -11,14 +11,7 @@ import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { gamesStore } from './games.svelte';
 import { get } from 'svelte/store';
 
-export type SortKey =
-	| 'presentation'
-	| 'story'
-	| 'gameplay'
-	| 'score'
-	| 'finishedDate'
-	| 'alphabetical'
-	| 'playtime';
+export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishedDate' | 'alphabetical' | 'playtime';
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -38,7 +31,7 @@ export interface FilterState {
 }
 
 const baseFilters: Pick<FilterState, 'searchTerm'> = {
-	searchTerm: ''
+	searchTerm: '',
 };
 
 const initialFilters: FilterState = {
@@ -48,7 +41,7 @@ const initialFilters: FilterState = {
 	statuses: [],
 	tiers: [],
 	coOp: [],
-	sortOption: null
+	sortOption: null,
 };
 
 class FiltersStore {
@@ -193,7 +186,7 @@ class FiltersStore {
 		if (!this._state) return;
 		this.state = {
 			...this._state,
-			platforms: this._state.platforms.filter((p) => p !== platform)
+			platforms: this._state.platforms.filter((p) => p !== platform),
 		};
 	}
 
@@ -251,10 +244,7 @@ class FiltersStore {
 	toggleDesktopFiltersExpanded(): void {
 		this.isDesktopFiltersExpanded = !this.isDesktopFiltersExpanded;
 		if (browser) {
-			sessionStorage.setItem(
-				FiltersStore.FILTERS_EXPANDED_KEY,
-				String(this.isDesktopFiltersExpanded)
-			);
+			sessionStorage.setItem(FiltersStore.FILTERS_EXPANDED_KEY, String(this.isDesktopFiltersExpanded));
 		}
 	}
 
@@ -262,10 +252,7 @@ class FiltersStore {
 		if (this.isDesktopFiltersExpanded === expanded) return;
 		this.isDesktopFiltersExpanded = expanded;
 		if (browser) {
-			sessionStorage.setItem(
-				FiltersStore.FILTERS_EXPANDED_KEY,
-				String(this.isDesktopFiltersExpanded)
-			);
+			sessionStorage.setItem(FiltersStore.FILTERS_EXPANDED_KEY, String(this.isDesktopFiltersExpanded));
 		}
 	}
 
@@ -334,7 +321,7 @@ class FiltersStore {
 				.getAll('coop')
 				.map((slug) => fromSlug(slug, ['Yes', 'No']))
 				.filter((v): v is string => !!v),
-			sortOption: null
+			sortOption: null,
 		};
 
 		const sortKey = searchParams.get('sort') as SortKey | null;

@@ -77,7 +77,7 @@ class CompletedGamesCacheStore {
 				this._cache = {
 					sortedCompletedGames,
 					lastUpdated: Date.now(),
-					gamesVersion
+					gamesVersion,
 				};
 
 				this.lastUpdateId = updateId;

@@ -96,7 +96,7 @@ describe('EditorStore', () => {
 		it('login returns true on success', async () => {
 			mockFetch({
 				ok: true,
-				json: () => Promise.resolve({ success: true })
+				json: () => Promise.resolve({ success: true }),
 			});
 
 			const result = await editorStore.login('admin', 'password');
@@ -108,7 +108,7 @@ describe('EditorStore', () => {
 		it('login returns false on failure', async () => {
 			mockFetch({
 				ok: false,
-				json: () => Promise.resolve({ error: 'Invalid' })
+				json: () => Promise.resolve({ error: 'Invalid' }),
 			});
 
 			const result = await editorStore.login('wrong', 'wrong');
@@ -130,7 +130,7 @@ describe('EditorStore', () => {
 		it('saveGames returns true on success', async () => {
 			mockFetch({
 				ok: true,
-				json: () => Promise.resolve({ games: [] })
+				json: () => Promise.resolve({ games: [] }),
 			});
 
 			const result = await editorStore.saveGames(() => ({ games: [{ id: '1' }] }));
@@ -143,7 +143,7 @@ describe('EditorStore', () => {
 		it('saveGames returns false on failure', async () => {
 			mockFetch({
 				ok: false,
-				text: () => Promise.resolve('Error')
+				text: () => Promise.resolve('Error'),
 			});
 
 			const result = await editorStore.saveGames(() => ({ games: [] }));
@@ -164,7 +164,7 @@ describe('EditorStore', () => {
 		it('saveGames captures snapshot', async () => {
 			mockFetch({
 				ok: true,
-				json: () => Promise.resolve({ games: [] })
+				json: () => Promise.resolve({ games: [] }),
 			});
 
 			const testPayload = { games: [{ id: 'captured' }] };
@@ -193,7 +193,7 @@ describe('EditorStore', () => {
 			ratingStory: null,
 			ratingGameplay: null,
 			score: null,
-			tier: null
+			tier: null,
 		};
 
 		it('saveLocally returns true when no pending changes', async () => {
@@ -204,7 +204,7 @@ describe('EditorStore', () => {
 		it('saveLocally calls /api/games-local endpoint', async () => {
 			const mockResponse = {
 				ok: true,
-				json: () => Promise.resolve({ ok: true, saved: 1 })
+				json: () => Promise.resolve({ ok: true, saved: 1 }),
 			} as Response;
 			mockFetch(mockResponse);
 
@@ -215,7 +215,7 @@ describe('EditorStore', () => {
 				'/api/games-local',
 				expect.objectContaining({
 					method: 'POST',
-					body: expect.any(FormData)
+					body: expect.any(FormData),
 				})
 			);
 		});
@@ -223,7 +223,7 @@ describe('EditorStore', () => {
 		it('saveLocally clears pending changes on success', async () => {
 			mockFetch({
 				ok: true,
-				json: () => Promise.resolve({ ok: true, saved: 1 })
+				json: () => Promise.resolve({ ok: true, saved: 1 }),
 			});
 
 			editorStore.addPendingGame(mockGame);
@@ -237,7 +237,7 @@ describe('EditorStore', () => {
 		it('saveLocally returns false on failure', async () => {
 			mockFetch({
 				ok: false,
-				json: () => Promise.resolve({ error: 'Write failed' })
+				json: () => Promise.resolve({ error: 'Write failed' }),
 			});
 
 			editorStore.addPendingGame(mockGame);
@@ -292,7 +292,7 @@ describe('EditorStore', () => {
 			ratingStory: null,
 			ratingGameplay: null,
 			score: null,
-			tier: null
+			tier: null,
 		};
 
 		it('starts with no pending changes', () => {
@@ -366,7 +366,7 @@ describe('EditorStore', () => {
 			const existingGames = [
 				{ ...mockGame, id: 'existing-1', title: 'Existing 1' },
 				{ ...mockGame, id: 'existing-2', title: 'Existing 2' },
-				{ ...mockGame, id: 'existing-3', title: 'Existing 3' }
+				{ ...mockGame, id: 'existing-3', title: 'Existing 3' },
 			];
 
 			// Add a new game
@@ -376,7 +376,7 @@ describe('EditorStore', () => {
 			editorStore.editPendingGame('existing-1', {
 				...mockGame,
 				id: 'existing-1',
-				title: 'Edited Existing 1'
+				title: 'Edited Existing 1',
 			});
 
 			// Delete existing-3
@@ -396,7 +396,7 @@ describe('EditorStore', () => {
 		it('checkSession returns true when session is valid', async () => {
 			mockFetch({
 				ok: true,
-				json: () => Promise.resolve({ valid: true })
+				json: () => Promise.resolve({ valid: true }),
 			});
 
 			editorStore.setEditorModeFromSessionCheck(true);
@@ -409,7 +409,7 @@ describe('EditorStore', () => {
 		it('checkSession returns false and disables editor mode when session is invalid', async () => {
 			mockFetch({
 				ok: true,
-				json: () => Promise.resolve({ valid: false })
+				json: () => Promise.resolve({ valid: false }),
 			});
 
 			editorStore.setEditorModeFromSessionCheck(true);

@@ -1,108 +1,108 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { replaceState, goto } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import { filtersStore } from '$lib/stores/filters.svelte';
-	import { appStore } from '$lib/stores/app.svelte';
+import { page } from '$app/state';
+import { replaceState, goto } from '$app/navigation';
+import { browser } from '$app/environment';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { appStore } from '$lib/stores/app.svelte';
 
-	interface Props {
-		isOpen: boolean;
-		onClose: () => void;
+interface Props {
+	isOpen: boolean;
+	onClose: () => void;
+}
+
+let { isOpen, onClose }: Props = $props();
+
+let searchInput = $state<HTMLInputElement | null>(null);
+let mobileSearchDebounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+// Track if we just opened search to set initial value
+let searchJustOpened = false;
+
+$effect(() => {
+	if (isOpen && searchInput) {
+		const searchTerm = $filtersStore?.searchTerm ?? '';
+
+		// Set initial value when search opens
+		if (!searchJustOpened) {
+			searchInput.value = searchTerm;
+			searchJustOpened = true;
+		}
+
+		searchInput.focus();
+	} else if (!isOpen) {
+		searchJustOpened = false;
+	}
+});
+
+// Scroll to top when search term changes in mobile search
+$effect(() => {
+	if (browser && isOpen && window.innerWidth < 768) {
+		const searchTerm = $filtersStore?.searchTerm ?? '';
+		// Scroll to top when there's a search term or when results change
+		if (searchTerm) {
+			requestAnimationFrame(() => {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			});
+		}
+	}
+});
+
+function handleMobileSearchInput(event: Event) {
+	const target = event.target as HTMLInputElement;
+	const newValue = target.value;
+
+	if (mobileSearchDebounceTimeout) {
+		clearTimeout(mobileSearchDebounceTimeout);
 	}
 
-	let { isOpen, onClose }: Props = $props();
-
-	let searchInput = $state<HTMLInputElement | null>(null);
-	let mobileSearchDebounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-	// Track if we just opened search to set initial value
-	let searchJustOpened = false;
-
-	$effect(() => {
-		if (isOpen && searchInput) {
-			const searchTerm = $filtersStore?.searchTerm ?? '';
-
-			// Set initial value when search opens
-			if (!searchJustOpened) {
-				searchInput.value = searchTerm;
-				searchJustOpened = true;
-			}
-
-			searchInput.focus();
-		} else if (!isOpen) {
-			searchJustOpened = false;
-		}
-	});
-
-	// Scroll to top when search term changes in mobile search
-	$effect(() => {
-		if (browser && isOpen && window.innerWidth < 768) {
-			const searchTerm = $filtersStore?.searchTerm ?? '';
-			// Scroll to top when there's a search term or when results change
-			if (searchTerm) {
-				requestAnimationFrame(() => {
-					window.scrollTo({ top: 0, behavior: 'smooth' });
-				});
-			}
-		}
-	});
-
-	function handleMobileSearchInput(event: Event) {
-		const target = event.target as HTMLInputElement;
-		const newValue = target.value;
-
-		if (mobileSearchDebounceTimeout) {
-			clearTimeout(mobileSearchDebounceTimeout);
+	mobileSearchDebounceTimeout = setTimeout(() => {
+		// Check if we're searching from tierlist and user started typing
+		const isFromTierlist = page.state.fromTierlist;
+		if (isFromTierlist && newValue && appStore.activeTab === 'tierlist') {
+			// Redirect to Games page with search term
+			const searchParam = `?s=${encodeURIComponent(newValue)}`;
+			goto(`/${searchParam}`, {
+				keepFocus: true,
+				noScroll: true,
+				state: { showMobileSearch: true },
+			});
+			return;
 		}
 
-		mobileSearchDebounceTimeout = setTimeout(() => {
-			// Check if we're searching from tierlist and user started typing
-			const isFromTierlist = page.state.fromTierlist;
-			if (isFromTierlist && newValue && appStore.activeTab === 'tierlist') {
-				// Redirect to Games page with search term
-				const searchParam = `?s=${encodeURIComponent(newValue)}`;
-				goto(`/${searchParam}`, {
-					keepFocus: true,
-					noScroll: true,
-					state: { showMobileSearch: true }
-				});
-				return;
-			}
+		// Update filter store FIRST to trigger filtering
+		filtersStore.setSearchTerm(newValue);
 
-			// Update filter store FIRST to trigger filtering
-			filtersStore.setSearchTerm(newValue);
-
-			// Then update URL with search parameter using current location
-			if (browser) {
-				const url = new URL(window.location.href);
-				if (newValue) {
-					url.searchParams.set('s', newValue);
-				} else {
-					url.searchParams.delete('s');
-				}
-				// Use replaceState to update URL without navigation
-				replaceState(url.toString(), { ...page.state });
-			}
-		}, 300);
-	}
-
-	function clearMobileSearch() {
-		// Clear filter store first to trigger unfiltering
-		filtersStore.setSearchTerm('');
-
-		// Clear input value
-		if (searchInput) {
-			searchInput.value = '';
-			searchInput.focus();
-		}
-
-		// Clear URL parameter
+		// Then update URL with search parameter using current location
 		if (browser) {
 			const url = new URL(window.location.href);
-			url.searchParams.delete('s');
-			replaceState(url.toString(), page.state);
+			if (newValue) {
+				url.searchParams.set('s', newValue);
+			} else {
+				url.searchParams.delete('s');
+			}
+			// Use replaceState to update URL without navigation
+			replaceState(url.toString(), { ...page.state });
 		}
+	}, 300);
+}
+
+function clearMobileSearch() {
+	// Clear filter store first to trigger unfiltering
+	filtersStore.setSearchTerm('');
+
+	// Clear input value
+	if (searchInput) {
+		searchInput.value = '';
+		searchInput.focus();
 	}
+
+	// Clear URL parameter
+	if (browser) {
+		const url = new URL(window.location.href);
+		url.searchParams.delete('s');
+		replaceState(url.toString(), page.state);
+	}
+}
 </script>
 
 {#if isOpen}

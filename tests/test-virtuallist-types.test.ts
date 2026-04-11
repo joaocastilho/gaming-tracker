@@ -26,7 +26,7 @@ describe('VirtualList generic types', () => {
 
 		const items: TestItem[] = [
 			{ id: '1', name: 'Item 1' },
-			{ id: '2', name: 'Item 2' }
+			{ id: '2', name: 'Item 2' },
 		];
 
 		// VirtualList should preserve TestItem type

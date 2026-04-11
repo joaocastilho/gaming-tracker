@@ -282,12 +282,7 @@ describe('AppStore API', () => {
 		});
 
 		it('setActiveTab supports all tabs', () => {
-			const tabs: ('all' | 'completed' | 'planned' | 'tierlist')[] = [
-				'all',
-				'completed',
-				'planned',
-				'tierlist'
-			];
+			const tabs: ('all' | 'completed' | 'planned' | 'tierlist')[] = ['all', 'completed', 'planned', 'tierlist'];
 			tabs.forEach((tab) => {
 				appStore.setActiveTab(tab);
 				expect(appStore.activeTab).toBe(tab);
@@ -315,7 +310,7 @@ describe('GamesStore API', () => {
 			genre: 'RPG',
 			status: 'Completed',
 			tier: 'S',
-			coOp: 'No'
+			coOp: 'No',
 		},
 		{
 			id: '2',
@@ -324,8 +319,8 @@ describe('GamesStore API', () => {
 			genre: 'Action',
 			status: 'Planned',
 			tier: null,
-			coOp: 'Yes'
-		}
+			coOp: 'Yes',
+		},
 	];
 
 	beforeEach(() => {
@@ -413,7 +408,7 @@ describe('GamesStore API', () => {
 				finishedDate: null,
 				ratingPresentation: null,
 				ratingStory: null,
-				ratingGameplay: null
+				ratingGameplay: null,
 			};
 			gamesStore.addGame(newGame);
 			const games = gamesStore.games;

@@ -48,7 +48,7 @@ export async function POST({ request }: { request: Request }) {
 
 		const outputPayload = {
 			...payload,
-			games: gamesForFile
+			games: gamesForFile,
 		};
 
 		await fs.writeFile(filePath, JSON.stringify(outputPayload, null, 4), 'utf-8');

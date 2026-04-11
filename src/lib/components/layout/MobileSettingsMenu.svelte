@@ -1,43 +1,34 @@
 <script lang="ts">
-	import { appStore } from '$lib/stores/app.svelte';
-	import { editorStore } from '$lib/stores/editor.svelte';
-	import {
-		SlidersHorizontal,
-		Settings,
-		Moon,
-		Sun,
-		LogIn,
-		LogOut,
-		Plus,
-		Download
-	} from 'lucide-svelte';
-	import { focusTrap } from '$lib/utils/focusTrap';
+import { appStore } from '$lib/stores/app.svelte';
+import { editorStore } from '$lib/stores/editor.svelte';
+import { SlidersHorizontal, Settings, Moon, Sun, LogIn, LogOut, Plus, Download } from 'lucide-svelte';
+import { focusTrap } from '$lib/utils/focusTrap';
 
-	interface Props {
-		isOpen: boolean;
-		isTierlistPage: boolean;
-		onToggle: () => void;
-		onClose: () => void;
-		onFiltersToggle: () => void;
-		onAddGame: () => void;
-		onOpenLogin: () => void;
-		canInstall?: boolean;
-		onInstall?: () => void;
-	}
+interface Props {
+	isOpen: boolean;
+	isTierlistPage: boolean;
+	onToggle: () => void;
+	onClose: () => void;
+	onFiltersToggle: () => void;
+	onAddGame: () => void;
+	onOpenLogin: () => void;
+	canInstall?: boolean;
+	onInstall?: () => void;
+}
 
-	let {
-		isOpen,
-		isTierlistPage,
-		onToggle,
-		onClose,
-		onFiltersToggle,
-		onAddGame,
-		onOpenLogin,
-		canInstall = false,
-		onInstall = () => {}
-	}: Props = $props();
+let {
+	isOpen,
+	isTierlistPage,
+	onToggle,
+	onClose,
+	onFiltersToggle,
+	onAddGame,
+	onOpenLogin,
+	canInstall = false,
+	onInstall = () => {},
+}: Props = $props();
 
-	let isEditor = $derived(editorStore.editorMode);
+let isEditor = $derived(editorStore.editorMode);
 </script>
 
 <div class="mobile-settings-container md:hidden">

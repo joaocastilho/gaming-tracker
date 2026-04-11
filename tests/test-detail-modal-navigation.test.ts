@@ -21,7 +21,7 @@ const mockGame = {
 	ratingStory: 9,
 	ratingGameplay: 10,
 	score: 10,
-	tier: 'S'
+	tier: 'S',
 } as unknown as import('$lib/types/game').Game;
 
 const mockGames = [mockGame];
@@ -45,8 +45,8 @@ describe('Detail Modal Navigation', () => {
 		global.window = {
 			location: {
 				href: mockUrl.href,
-				toString: () => mockUrl.href
-			}
+				toString: () => mockUrl.href,
+			},
 		} as unknown as Window & typeof globalThis;
 
 		// Reset mocks

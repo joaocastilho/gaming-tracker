@@ -1,10 +1,7 @@
 {
 	"name": "Gaming Tracker",
 	"short_name": "Game Tracker",
-	"categories": [
-		"entertainment",
-		"games"
-	],
+	"categories": ["entertainment", "games"],
 	"icons": [
 		{
 			"src": "android-chrome-192x192.png",

@@ -5,7 +5,7 @@ import type { Game } from '$lib/types/game';
 
 // Use hoisted state for mutable mock values
 const mocks = vi.hoisted(() => ({
-	isEditorMode: true
+	isEditorMode: true,
 }));
 
 // Mock stores
@@ -14,25 +14,25 @@ vi.mock('$lib/stores/editor.svelte', () => ({
 		get editorMode() {
 			return mocks.isEditorMode;
 		},
-		saveLocally: vi.fn().mockResolvedValue(undefined)
-	}
+		saveLocally: vi.fn().mockResolvedValue(undefined),
+	},
 }));
 
 vi.mock('$lib/stores/games.svelte', () => ({
 	gamesStore: {
 		games: [],
 		addGame: vi.fn(),
-		updateGame: vi.fn()
-	}
+		updateGame: vi.fn(),
+	},
 }));
 
 vi.mock('$app/navigation', () => ({
-	invalidateAll: vi.fn().mockResolvedValue(undefined)
+	invalidateAll: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('$app/environment', () => ({
 	dev: true,
-	browser: true
+	browser: true,
 }));
 
 // Mock Lucide icons
@@ -43,7 +43,7 @@ vi.mock('lucide-svelte', () => {
 		Upload: MockIcon,
 		Link: MockIcon,
 		Image: MockIcon,
-		Trash2: MockIcon
+		Trash2: MockIcon,
 	};
 });
 
@@ -65,7 +65,7 @@ describe('GameEditorModal Component', () => {
 		ratingStory: 8,
 		ratingGameplay: 9,
 		score: 9,
-		tier: 'A - Amazing'
+		tier: 'A - Amazing',
 	};
 
 	const mockAllGames: Game[] = [mockGame];
@@ -83,8 +83,8 @@ describe('GameEditorModal Component', () => {
 					mode: 'create',
 					initialGame: undefined,
 					allGames: mockAllGames,
-					onClose: mockOnClose
-				}
+					onClose: mockOnClose,
+				},
 			});
 
 			expect(screen.getByText('Add Game')).toBeInTheDocument();
@@ -96,8 +96,8 @@ describe('GameEditorModal Component', () => {
 					mode: 'edit',
 					initialGame: mockGame,
 					allGames: mockAllGames,
-					onClose: mockOnClose
-				}
+					onClose: mockOnClose,
+				},
 			});
 
 			expect(screen.getByText('Edit Game')).toBeInTheDocument();
@@ -111,8 +111,8 @@ describe('GameEditorModal Component', () => {
 					mode: 'edit',
 					initialGame: mockGame,
 					allGames: mockAllGames,
-					onClose: mockOnClose
-				}
+					onClose: mockOnClose,
+				},
 			});
 
 			const titleInput = screen.getByLabelText(/title/i) as HTMLInputElement;
@@ -125,8 +125,8 @@ describe('GameEditorModal Component', () => {
 					mode: 'create',
 					initialGame: undefined,
 					allGames: mockAllGames,
-					onClose: mockOnClose
-				}
+					onClose: mockOnClose,
+				},
 			});
 
 			const titleInput = screen.getByLabelText(/title/i) as HTMLInputElement;
@@ -141,8 +141,8 @@ describe('GameEditorModal Component', () => {
 					mode: 'create',
 					initialGame: undefined,
 					allGames: mockAllGames,
-					onClose: mockOnClose
-				}
+					onClose: mockOnClose,
+				},
 			});
 
 			await fireEvent.keyDown(window, { key: 'Escape' });

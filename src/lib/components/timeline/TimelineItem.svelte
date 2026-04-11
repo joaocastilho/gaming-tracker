@@ -1,30 +1,30 @@
 <script lang="ts">
-	import type { Game } from '$lib/types/game';
-	import { ChevronRight } from 'lucide-svelte';
+import type { Game } from '$lib/types/game';
+import { ChevronRight } from 'lucide-svelte';
 
-	interface Props {
-		game: Game;
-		day: string;
-		onclick?: () => void;
+interface Props {
+	game: Game;
+	day: string;
+	onclick?: () => void;
+}
+
+let { game, day, onclick }: Props = $props();
+let isHovered = $state(false);
+
+function handleKeyDown(event: KeyboardEvent) {
+	if (event.key === 'Enter' || event.key === ' ') {
+		event.preventDefault();
+		onclick?.();
 	}
+}
 
-	let { game, day, onclick }: Props = $props();
-	let isHovered = $state(false);
+function handleMouseEnter() {
+	isHovered = true;
+}
 
-	function handleKeyDown(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			onclick?.();
-		}
-	}
-
-	function handleMouseEnter() {
-		isHovered = true;
-	}
-
-	function handleMouseLeave() {
-		isHovered = false;
-	}
+function handleMouseLeave() {
+	isHovered = false;
+}
 </script>
 
 <div

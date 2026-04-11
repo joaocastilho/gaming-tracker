@@ -43,7 +43,7 @@ describe('Editor Store Multipart Upload', () => {
 		// Mock fetch
 		const fetchMock = vi.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ({ ok: true })
+			json: async () => ({ ok: true }),
 		});
 		global.fetch = fetchMock as unknown as typeof fetch;
 
@@ -66,7 +66,7 @@ describe('Editor Store Multipart Upload', () => {
 			ratingGameplay: null,
 			score: null,
 			tier: null,
-			coverImage: `covers/${gameId}.webp`
+			coverImage: `covers/${gameId}.webp`,
 		};
 
 		// Create a mock file

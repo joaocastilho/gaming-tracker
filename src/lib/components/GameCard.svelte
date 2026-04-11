@@ -1,61 +1,61 @@
 <script lang="ts">
-	import { modalStore } from '$lib/stores/modal.svelte';
-	import type { Game } from '../types/game.js';
-	import GameCardArtwork from './game-card/GameCardArtwork.svelte';
-	import GameCardHeader from './game-card/GameCardHeader.svelte';
-	import GameCardBadges from './game-card/GameCardBadges.svelte';
-	import GameCardInfo from './game-card/GameCardInfo.svelte';
+import { modalStore } from '$lib/stores/modal.svelte';
+import type { Game } from '../types/game.js';
+import GameCardArtwork from './game-card/GameCardArtwork.svelte';
+import GameCardHeader from './game-card/GameCardHeader.svelte';
+import GameCardBadges from './game-card/GameCardBadges.svelte';
+import GameCardInfo from './game-card/GameCardInfo.svelte';
 
-	interface Props {
-		game: Game;
-		size?: 'small' | 'large' | 'tiny' | 'tierlist';
-		showTierBadge?: boolean;
-		isAboveFold?: boolean;
-		isPriority?: boolean;
-		displayedGames?: Game[];
-		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
-		onEditGame?: (game: Game) => void;
-		onDeleteGame?: (game: Game) => void;
+interface Props {
+	game: Game;
+	size?: 'small' | 'large' | 'tiny' | 'tierlist';
+	showTierBadge?: boolean;
+	isAboveFold?: boolean;
+	isPriority?: boolean;
+	displayedGames?: Game[];
+	onOpenModal?: (game: Game, displayedGames: Game[]) => void;
+	onEditGame?: (game: Game) => void;
+	onDeleteGame?: (game: Game) => void;
+}
+
+let {
+	game,
+	size = 'small',
+	showTierBadge = true,
+	isAboveFold = false,
+	isPriority = false,
+	displayedGames = [],
+	onOpenModal,
+	onEditGame,
+	onDeleteGame,
+}: Props = $props();
+
+let cardElement = $state<HTMLDivElement>();
+
+function handleCardClick() {
+	const rect = cardElement?.getBoundingClientRect();
+	const cardRect = rect
+		? {
+				x: rect.x,
+				y: rect.y,
+				width: rect.width,
+				height: rect.height,
+			}
+		: undefined;
+
+	if (onOpenModal) {
+		onOpenModal(game, displayedGames);
+	} else {
+		modalStore.openViewModal(game, displayedGames, undefined, cardRect);
 	}
+}
 
-	let {
-		game,
-		size = 'small',
-		showTierBadge = true,
-		isAboveFold = false,
-		isPriority = false,
-		displayedGames = [],
-		onOpenModal,
-		onEditGame,
-		onDeleteGame
-	}: Props = $props();
-
-	let cardElement = $state<HTMLDivElement>();
-
-	function handleCardClick() {
-		const rect = cardElement?.getBoundingClientRect();
-		const cardRect = rect
-			? {
-					x: rect.x,
-					y: rect.y,
-					width: rect.width,
-					height: rect.height
-				}
-			: undefined;
-
-		if (onOpenModal) {
-			onOpenModal(game, displayedGames);
-		} else {
-			modalStore.openViewModal(game, displayedGames, undefined, cardRect);
-		}
+function handleKeyDown(event: KeyboardEvent) {
+	if (event.key === 'Enter' || event.key === ' ') {
+		event.preventDefault();
+		handleCardClick();
 	}
-
-	function handleKeyDown(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			handleCardClick();
-		}
-	}
+}
 </script>
 
 <div

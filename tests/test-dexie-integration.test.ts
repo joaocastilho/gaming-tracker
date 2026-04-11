@@ -24,7 +24,7 @@ const mockGames: Game[] = [
 		ratingStory: 9,
 		ratingGameplay: 10,
 		score: 19,
-		tier: 'S - Masterpiece'
+		tier: 'S - Masterpiece',
 	},
 	{
 		id: '2',
@@ -43,7 +43,7 @@ const mockGames: Game[] = [
 		ratingStory: 10,
 		ratingGameplay: 9,
 		score: 18,
-		tier: 'A - Amazing'
+		tier: 'A - Amazing',
 	},
 	{
 		id: '3',
@@ -62,8 +62,8 @@ const mockGames: Game[] = [
 		ratingStory: null,
 		ratingGameplay: null,
 		score: null,
-		tier: null
-	}
+		tier: null,
+	},
 ];
 
 describe('Dexie Integration with Stores', () => {

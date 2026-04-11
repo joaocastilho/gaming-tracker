@@ -1,212 +1,205 @@
 <script lang="ts">
-	// Svelte 5 Runes - no legacy lifecycle imports needed
-	import { fade, fly, type FlyParams } from 'svelte/transition';
-	import { cubicOut, backOut } from 'svelte/easing';
-	import { browser } from '$app/environment';
-	import { modalStore } from '$lib/stores/modal.svelte';
-	import { gamesStore } from '$lib/stores/games.svelte';
-	import { offlineStore } from '$lib/stores/offline.svelte';
-	import type { Game } from '$lib/types/game.js';
-	import { ChevronLeft, ChevronRight, X } from 'lucide-svelte';
+// Svelte 5 Runes - no legacy lifecycle imports needed
+import { fade, fly, type FlyParams } from 'svelte/transition';
+import { cubicOut, backOut } from 'svelte/easing';
+import { browser } from '$app/environment';
+import { modalStore } from '$lib/stores/modal.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { offlineStore } from '$lib/stores/offline.svelte';
+import type { Game } from '$lib/types/game.js';
+import { ChevronLeft, ChevronRight, X } from 'lucide-svelte';
 
-	import { SwipeController } from './detail-modal/SwipeController.svelte';
-	import GameDetailCard from './detail-modal/GameDetailCard.svelte';
+import { SwipeController } from './detail-modal/SwipeController.svelte';
+import GameDetailCard from './detail-modal/GameDetailCard.svelte';
 
-	interface Props {
-		onEditGame?: (game: Game) => void;
-		onDeleteGame?: (game: Game) => void;
+interface Props {
+	onEditGame?: (game: Game) => void;
+	onDeleteGame?: (game: Game) => void;
+}
+
+let { onEditGame, onDeleteGame }: Props = $props();
+
+// Platform detection
+let isIOS = $state(false);
+let isAndroid = $state(false);
+
+$effect(() => {
+	if (browser) {
+		const ua = navigator.userAgent;
+		isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+		isAndroid = /Android/.test(ua);
 	}
+});
 
-	let { onEditGame, onDeleteGame }: Props = $props();
+// Placeholders
+const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
+const OFFLINE_FALLBACK_DATA_URI =
+	'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
 
-	// Platform detection
-	let isIOS = $state(false);
-	let isAndroid = $state(false);
+function getPreviewImageSrc(coverImage: string | undefined): string {
+	let isOffline = !offlineStore.isOnline;
+	if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
+	return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
+}
 
-	$effect(() => {
-		if (browser) {
-			const ua = navigator.userAgent;
-			isIOS =
-				/iPad|iPhone|iPod/.test(ua) ||
-				(navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-			isAndroid = /Android/.test(ua);
+// Navigation Logic
+let displayedGames = $derived.by(() => {
+	if ($modalStore.displayedGames.length > 0) return $modalStore.displayedGames;
+	const allGames = $gamesStore;
+	if (allGames.length === 0) return [];
+	return modalStore.getReactiveNavigationGames(allGames);
+});
+
+let currentGameIndex = $derived.by(() => {
+	if (!$modalStore.activeGame) return -1;
+	return displayedGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
+});
+
+let nextGamePreview = $derived(
+	currentGameIndex < displayedGames.length - 1 ? displayedGames[currentGameIndex + 1] : null
+);
+let prevGamePreview = $derived(currentGameIndex > 0 ? displayedGames[currentGameIndex - 1] : null);
+
+let visibleGames = $derived.by(() => {
+	const result = [];
+	if (prevGamePreview) result.push({ game: prevGamePreview, pos: -1 });
+	if ($modalStore.activeGame) result.push({ game: $modalStore.activeGame, pos: 0 });
+	if (nextGamePreview) result.push({ game: nextGamePreview, pos: 1 });
+	return result;
+});
+
+function conditionalFly(node: HTMLElement, { condition, ...config }: FlyParams & { condition?: boolean }) {
+	if (!condition) return { duration: 0, delay: 0 };
+	return fly(node, config);
+}
+
+function navigateToPrevious() {
+	if (currentGameIndex > 0) {
+		const prevGame = displayedGames[currentGameIndex - 1];
+		modalStore.openViewModal(prevGame, displayedGames);
+	}
+}
+
+function navigateToNext() {
+	if (currentGameIndex < displayedGames.length - 1) {
+		const nextGame = displayedGames[currentGameIndex + 1];
+		modalStore.openViewModal(nextGame, displayedGames);
+	}
+}
+
+// Swipe Controller
+const swipe = new SwipeController(
+	navigateToNext,
+	navigateToPrevious,
+	() => nextGamePreview,
+	() => prevGamePreview,
+	dismissSwipeHint
+);
+
+// Full-screen Image Logic
+let isImageExpanded = $state(false);
+
+function toggleImageExpansion() {
+	if (window.innerWidth < 768) {
+		isImageExpanded = !isImageExpanded;
+	}
+}
+
+// Interaction Handlers
+function handleKeydown(event: KeyboardEvent) {
+	if (!$modalStore.isOpen || $modalStore.mode !== 'view') return;
+
+	if (event.key === 'Escape') {
+		event.preventDefault();
+		if (isImageExpanded) {
+			isImageExpanded = false;
+		} else {
+			modalStore.closeModal();
 		}
-	});
-
-	// Placeholders
-	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
-	const OFFLINE_FALLBACK_DATA_URI =
-		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
-
-	function getPreviewImageSrc(coverImage: string | undefined): string {
-		let isOffline = !offlineStore.isOnline;
-		if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
-		return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
-	}
-
-	// Navigation Logic
-	let displayedGames = $derived.by(() => {
-		if ($modalStore.displayedGames.length > 0) return $modalStore.displayedGames;
-		const allGames = $gamesStore;
-		if (allGames.length === 0) return [];
-		return modalStore.getReactiveNavigationGames(allGames);
-	});
-
-	let currentGameIndex = $derived.by(() => {
-		if (!$modalStore.activeGame) return -1;
-		return displayedGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
-	});
-
-	let nextGamePreview = $derived(
-		currentGameIndex < displayedGames.length - 1 ? displayedGames[currentGameIndex + 1] : null
-	);
-	let prevGamePreview = $derived(
-		currentGameIndex > 0 ? displayedGames[currentGameIndex - 1] : null
-	);
-
-	let visibleGames = $derived.by(() => {
-		const result = [];
-		if (prevGamePreview) result.push({ game: prevGamePreview, pos: -1 });
-		if ($modalStore.activeGame) result.push({ game: $modalStore.activeGame, pos: 0 });
-		if (nextGamePreview) result.push({ game: nextGamePreview, pos: 1 });
-		return result;
-	});
-
-	function conditionalFly(
-		node: HTMLElement,
-		{ condition, ...config }: FlyParams & { condition?: boolean }
-	) {
-		if (!condition) return { duration: 0, delay: 0 };
-		return fly(node, config);
-	}
-
-	function navigateToPrevious() {
-		if (currentGameIndex > 0) {
-			const prevGame = displayedGames[currentGameIndex - 1];
-			modalStore.openViewModal(prevGame, displayedGames);
-		}
-	}
-
-	function navigateToNext() {
-		if (currentGameIndex < displayedGames.length - 1) {
-			const nextGame = displayedGames[currentGameIndex + 1];
-			modalStore.openViewModal(nextGame, displayedGames);
-		}
-	}
-
-	// Swipe Controller
-	const swipe = new SwipeController(
-		navigateToNext,
-		navigateToPrevious,
-		() => nextGamePreview,
-		() => prevGamePreview,
-		dismissSwipeHint
-	);
-
-	// Full-screen Image Logic
-	let isImageExpanded = $state(false);
-
-	function toggleImageExpansion() {
-		if (window.innerWidth < 768) {
-			isImageExpanded = !isImageExpanded;
-		}
-	}
-
-	// Interaction Handlers
-	function handleKeydown(event: KeyboardEvent) {
-		if (!$modalStore.isOpen || $modalStore.mode !== 'view') return;
-
-		if (event.key === 'Escape') {
+	} else if (!isImageExpanded) {
+		if (event.key === 'ArrowLeft') {
 			event.preventDefault();
-			if (isImageExpanded) {
-				isImageExpanded = false;
-			} else {
-				modalStore.closeModal();
-			}
-		} else if (!isImageExpanded) {
-			if (event.key === 'ArrowLeft') {
-				event.preventDefault();
-				navigateToPrevious();
-			} else if (event.key === 'ArrowRight') {
-				event.preventDefault();
-				navigateToNext();
-			}
+			navigateToPrevious();
+		} else if (event.key === 'ArrowRight') {
+			event.preventDefault();
+			navigateToNext();
 		}
 	}
+}
 
-	// Swipe Hint Logic
-	const SWIPE_HINT_KEY = 'gaming-tracker-swipe-hint-seen';
-	let showSwipeIndicator = $state(false);
-	let swipeIndicatorTimeout: ReturnType<typeof setTimeout> | null = null;
-	let swipeHideTimeout: ReturnType<typeof setTimeout> | null = null;
-	let hasTriggeredHint = false;
+// Swipe Hint Logic
+const SWIPE_HINT_KEY = 'gaming-tracker-swipe-hint-seen';
+let showSwipeIndicator = $state(false);
+let swipeIndicatorTimeout: ReturnType<typeof setTimeout> | null = null;
+let swipeHideTimeout: ReturnType<typeof setTimeout> | null = null;
+let hasTriggeredHint = false;
 
-	$effect(() => {
-		const games = displayedGames;
-		if (!browser || !$modalStore.isOpen || $modalStore.mode !== 'view') return;
+$effect(() => {
+	const games = displayedGames;
+	if (!browser || !$modalStore.isOpen || $modalStore.mode !== 'view') return;
 
-		if (sessionStorage.getItem(SWIPE_HINT_KEY)) return;
-		if (window.innerWidth >= 768 || games.length <= 1) return;
-		if (hasTriggeredHint || showSwipeIndicator) return;
+	if (sessionStorage.getItem(SWIPE_HINT_KEY)) return;
+	if (window.innerWidth >= 768 || games.length <= 1) return;
+	if (hasTriggeredHint || showSwipeIndicator) return;
 
-		hasTriggeredHint = true;
-		swipeIndicatorTimeout = setTimeout(() => {
-			showSwipeIndicator = true;
-			swipeHideTimeout = setTimeout(() => {
-				showSwipeIndicator = false;
-				sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
-			}, 5000);
-		}, 300);
-	});
+	hasTriggeredHint = true;
+	swipeIndicatorTimeout = setTimeout(() => {
+		showSwipeIndicator = true;
+		swipeHideTimeout = setTimeout(() => {
+			showSwipeIndicator = false;
+			sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
+		}, 5000);
+	}, 300);
+});
 
-	function dismissSwipeHint() {
+function dismissSwipeHint() {
+	if (swipeIndicatorTimeout) clearTimeout(swipeIndicatorTimeout);
+	if (swipeHideTimeout) clearTimeout(swipeHideTimeout);
+	showSwipeIndicator = false;
+	sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
+}
+
+// Effect to manage keyboard event listeners based on modal state
+$effect(() => {
+	if (!browser) return;
+
+	// Only add listener when modal is open in view mode
+	if ($modalStore.isOpen && $modalStore.mode === 'view') {
+		document.addEventListener('keydown', handleKeydown, true);
+
+		// Cleanup function removes listener when modal closes or component destroys
+		return () => {
+			document.removeEventListener('keydown', handleKeydown, true);
+		};
+	}
+});
+
+// Effect to manage body overflow when modal opens/closes
+$effect(() => {
+	if (!browser) return;
+
+	if ($modalStore.isOpen || isImageExpanded) {
+		document.body.style.overflow = 'hidden';
+		document.documentElement.style.overflow = 'hidden';
+	} else {
+		document.body.style.overflow = '';
+		document.documentElement.style.overflow = '';
+	}
+
+	// Cleanup to ensure styles are reset when component destroys
+	return () => {
+		document.body.style.overflow = '';
+		document.documentElement.style.overflow = '';
+	};
+});
+
+// Effect to clear swipe timeouts when component is destroyed
+$effect(() => {
+	return () => {
 		if (swipeIndicatorTimeout) clearTimeout(swipeIndicatorTimeout);
 		if (swipeHideTimeout) clearTimeout(swipeHideTimeout);
-		showSwipeIndicator = false;
-		sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
-	}
-
-	// Effect to manage keyboard event listeners based on modal state
-	$effect(() => {
-		if (!browser) return;
-
-		// Only add listener when modal is open in view mode
-		if ($modalStore.isOpen && $modalStore.mode === 'view') {
-			document.addEventListener('keydown', handleKeydown, true);
-
-			// Cleanup function removes listener when modal closes or component destroys
-			return () => {
-				document.removeEventListener('keydown', handleKeydown, true);
-			};
-		}
-	});
-
-	// Effect to manage body overflow when modal opens/closes
-	$effect(() => {
-		if (!browser) return;
-
-		if ($modalStore.isOpen || isImageExpanded) {
-			document.body.style.overflow = 'hidden';
-			document.documentElement.style.overflow = 'hidden';
-		} else {
-			document.body.style.overflow = '';
-			document.documentElement.style.overflow = '';
-		}
-
-		// Cleanup to ensure styles are reset when component destroys
-		return () => {
-			document.body.style.overflow = '';
-			document.documentElement.style.overflow = '';
-		};
-	});
-
-	// Effect to clear swipe timeouts when component is destroyed
-	$effect(() => {
-		return () => {
-			if (swipeIndicatorTimeout) clearTimeout(swipeIndicatorTimeout);
-			if (swipeHideTimeout) clearTimeout(swipeHideTimeout);
-		};
-	});
+	};
+});
 </script>
 
 {#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}

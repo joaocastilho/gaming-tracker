@@ -1,89 +1,89 @@
 <script lang="ts">
-	import { navigateTo } from '$lib/utils/navigationUtils';
-	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
-	import { appStore } from '$lib/stores/app.svelte';
-	import { Gamepad, CheckCircle, Calendar, List, Search } from 'lucide-svelte';
+import { navigateTo } from '$lib/utils/navigationUtils';
+import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
+import { appStore } from '$lib/stores/app.svelte';
+import { Gamepad, CheckCircle, Calendar, List, Search } from 'lucide-svelte';
 
-	interface Props {
-		onSearchToggle?: () => void;
-		onCloseSearchAndFilters?: () => void;
+interface Props {
+	onSearchToggle?: () => void;
+	onCloseSearchAndFilters?: () => void;
+}
+
+let { onSearchToggle }: Props = $props();
+
+type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search';
+
+type NavItem = {
+	id: NavId;
+	label: string;
+	route?: string;
+	count: number | null;
+	active: boolean;
+	icon: typeof Gamepad;
+};
+
+let navItems = $derived.by(() => {
+	const counts = filteredCountsStore.counts;
+	const currentTab = appStore.activeTab;
+
+	return [
+		{
+			id: 'all' as NavId,
+			label: 'Games',
+			route: '/',
+			count: counts.all,
+			active: currentTab === 'all',
+			icon: Gamepad,
+		},
+		{
+			id: 'completed' as NavId,
+			label: 'Completed',
+			route: '/completed',
+			count: counts.completed,
+			active: currentTab === 'completed',
+			icon: CheckCircle,
+		},
+		{
+			id: 'planned' as NavId,
+			label: 'Planned',
+			route: '/planned',
+			count: counts.planned,
+			active: currentTab === 'planned',
+			icon: Calendar,
+		},
+		{
+			id: 'tierlist' as NavId,
+			label: 'Tier List',
+			route: '/tierlist',
+			count: null,
+			active: currentTab === 'tierlist',
+			icon: List,
+		},
+		{
+			id: 'search' as NavId,
+			label: 'Search',
+			count: null,
+			active: false,
+			icon: Search,
+		},
+	] as NavItem[];
+});
+
+function handleNavClick(target: NavId) {
+	if (target === 'search') {
+		onSearchToggle?.();
+	} else {
+		// Navigate to tab page
+		navigateTo(target);
 	}
+}
 
-	let { onSearchToggle }: Props = $props();
-
-	type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search';
-
-	type NavItem = {
-		id: NavId;
-		label: string;
-		route?: string;
-		count: number | null;
-		active: boolean;
-		icon: typeof Gamepad;
-	};
-
-	let navItems = $derived.by(() => {
-		const counts = filteredCountsStore.counts;
-		const currentTab = appStore.activeTab;
-
-		return [
-			{
-				id: 'all' as NavId,
-				label: 'Games',
-				route: '/',
-				count: counts.all,
-				active: currentTab === 'all',
-				icon: Gamepad
-			},
-			{
-				id: 'completed' as NavId,
-				label: 'Completed',
-				route: '/completed',
-				count: counts.completed,
-				active: currentTab === 'completed',
-				icon: CheckCircle
-			},
-			{
-				id: 'planned' as NavId,
-				label: 'Planned',
-				route: '/planned',
-				count: counts.planned,
-				active: currentTab === 'planned',
-				icon: Calendar
-			},
-			{
-				id: 'tierlist' as NavId,
-				label: 'Tier List',
-				route: '/tierlist',
-				count: null,
-				active: currentTab === 'tierlist',
-				icon: List
-			},
-			{
-				id: 'search' as NavId,
-				label: 'Search',
-				count: null,
-				active: false,
-				icon: Search
-			}
-		] as NavItem[];
-	});
-
-	function handleNavClick(target: NavId) {
-		if (target === 'search') {
-			onSearchToggle?.();
-		} else {
-			// Navigate to tab page
-			navigateTo(target);
-		}
+function handleKeyDown(event: KeyboardEvent, target: NavId) {
+	if (event.key === 'Enter' || event.key === ' ') {
+		event.preventDefault();
+		handleNavClick(target);
 	}
-
-	function handleKeyDown(event: KeyboardEvent, target: NavId) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			handleNavClick(target);
-		}
-	}
+}
 </script>
 
 <nav

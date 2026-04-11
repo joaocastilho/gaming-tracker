@@ -1,15 +1,15 @@
 <script lang="ts">
-	interface Props {
-		message?: string;
-		description?: string;
-		onReset?: () => void;
-	}
+interface Props {
+	message?: string;
+	description?: string;
+	onReset?: () => void;
+}
 
-	let {
-		message = 'No games match your filters',
-		description = 'Try adjusting your selection or clearing all filters to see more results.',
-		onReset
-	}: Props = $props();
+let {
+	message = 'No games match your filters',
+	description = 'Try adjusting your selection or clearing all filters to see more results.',
+	onReset,
+}: Props = $props();
 </script>
 
 <div class="no-results-container flex w-full flex-col items-center justify-center px-4 py-16">

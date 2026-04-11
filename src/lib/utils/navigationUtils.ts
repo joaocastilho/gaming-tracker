@@ -16,7 +16,7 @@ const DEFAULT_OPTIONS: NavigationOptions = {
 	scrollToTop: true,
 	preserveFilters: true,
 	replaceState: false,
-	noScroll: false
+	noScroll: false,
 };
 
 /**
@@ -27,10 +27,7 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 
 	// Build target URL with current filters from store
 	const route = getRoutePath(target);
-	const url = new URL(
-		route,
-		typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
-	);
+	const url = new URL(route, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
 
 	// Preserve filters in URL if needed and we're NOT going to the tierlist
 	if (opts.preserveFilters && target !== 'tierlist') {
@@ -58,7 +55,7 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 	await goto(url.toString(), {
 		replaceState: opts.replaceState ?? false,
 		noScroll: opts.noScroll ?? false,
-		keepFocus: true
+		keepFocus: true,
 	});
 
 	if (opts.scrollToTop) {
@@ -69,10 +66,7 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 /**
  * Navigate to tab and reset filters (e.g. tierlist)
  */
-export async function navigateToAndReset(
-	target: NavTarget,
-	options: Omit<NavigationOptions, 'preserveFilters'> = {}
-) {
+export async function navigateToAndReset(target: NavTarget, options: Omit<NavigationOptions, 'preserveFilters'> = {}) {
 	const opts = { ...DEFAULT_OPTIONS, ...options, preserveFilters: false };
 
 	appStore.setActiveTab(target, true);
@@ -81,7 +75,7 @@ export async function navigateToAndReset(
 	await goto(route, {
 		replaceState: opts.replaceState ?? false,
 		noScroll: opts.noScroll ?? false,
-		keepFocus: true
+		keepFocus: true,
 	});
 
 	if (opts.scrollToTop) {
@@ -110,7 +104,7 @@ export function scrollToTop() {
 	if (typeof window !== 'undefined') {
 		window.scrollTo({
 			top: 0,
-			behavior: 'smooth'
+			behavior: 'smooth',
 		});
 	}
 }
@@ -122,7 +116,7 @@ export function scrollToTopInstant() {
 	if (typeof window !== 'undefined') {
 		window.scrollTo({
 			top: 0,
-			behavior: 'auto'
+			behavior: 'auto',
 		});
 	}
 }

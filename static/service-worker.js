@@ -12,7 +12,7 @@ const STATIC_ASSETS = [
 	'/favicon.ico',
 	'/covers/placeholder_cover.webp',
 	'/covers/placeholder_cover-200w.webp',
-	'/covers/placeholder_cover-detail.webp'
+	'/covers/placeholder_cover-detail.webp',
 ];
 
 // Install event - cache static assets with optimized strategy
@@ -146,7 +146,7 @@ self.addEventListener('fetch', (event) => {
 								new Response('Offline - Please check your connection', {
 									status: 503,
 									statusText: 'Service Unavailable',
-									headers: { 'Content-Type': 'text/html' }
+									headers: { 'Content-Type': 'text/html' },
 								})
 						);
 					});
@@ -217,7 +217,7 @@ self.addEventListener('fetch', (event) => {
 							// Return a fallback response for missing images
 							return new Response('Image not available', {
 								status: 404,
-								statusText: 'Not Found'
+								statusText: 'Not Found',
 							});
 						});
 				});
@@ -282,7 +282,7 @@ self.addEventListener('fetch', (event) => {
 						cachedResponse ||
 						new Response('Offline - Resource not available', {
 							status: 503,
-							statusText: 'Service Unavailable'
+							statusText: 'Service Unavailable',
 						})
 					);
 				});
@@ -311,7 +311,7 @@ async function syncOfflineQueue() {
 					const response = await fetch(body.url, {
 						method: body.method,
 						headers: body.headers,
-						body: body.method !== 'GET' ? JSON.stringify(body.body) : undefined
+						body: body.method !== 'GET' ? JSON.stringify(body.body) : undefined,
 					});
 
 					if (response.ok) {

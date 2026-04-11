@@ -16,7 +16,7 @@ const TEST_GAME_DATA = {
 	ratingStory: 7,
 	ratingGameplay: 9,
 	totalScore: 16,
-	tier: 'A'
+	tier: 'A',
 };
 
 const TEST_FILTER_STATE = {
@@ -26,12 +26,12 @@ const TEST_FILTER_STATE = {
 	ratingPresentation: [7, 10],
 	ratingStory: [6, 9],
 	ratingGameplay: [8, 10],
-	totalScore: [12, 20]
+	totalScore: [12, 20],
 };
 
 const TEST_SORT_STATE = {
 	sortBy: 'title',
-	sortDirection: 'asc' as const
+	sortDirection: 'asc' as const,
 };
 
 describe('Data Persistence', () => {
@@ -44,9 +44,9 @@ describe('Data Persistence', () => {
 				pathname: '/',
 				assign: vi.fn(),
 				replace: vi.fn(),
-				reload: vi.fn()
+				reload: vi.fn(),
 			},
-			writable: true
+			writable: true,
 		});
 	});
 
@@ -87,18 +87,9 @@ describe('Data Persistence', () => {
 			'ratingPresentation',
 			`${TEST_FILTER_STATE.ratingPresentation[0]}-${TEST_FILTER_STATE.ratingPresentation[1]}`
 		);
-		params.set(
-			'ratingStory',
-			`${TEST_FILTER_STATE.ratingStory[0]}-${TEST_FILTER_STATE.ratingStory[1]}`
-		);
-		params.set(
-			'ratingGameplay',
-			`${TEST_FILTER_STATE.ratingGameplay[0]}-${TEST_FILTER_STATE.ratingGameplay[1]}`
-		);
-		params.set(
-			'totalScore',
-			`${TEST_FILTER_STATE.totalScore[0]}-${TEST_FILTER_STATE.totalScore[1]}`
-		);
+		params.set('ratingStory', `${TEST_FILTER_STATE.ratingStory[0]}-${TEST_FILTER_STATE.ratingStory[1]}`);
+		params.set('ratingGameplay', `${TEST_FILTER_STATE.ratingGameplay[0]}-${TEST_FILTER_STATE.ratingGameplay[1]}`);
+		params.set('totalScore', `${TEST_FILTER_STATE.totalScore[0]}-${TEST_FILTER_STATE.totalScore[1]}`);
 
 		// Manually update the mock location search
 		window.location.search = params.toString();
@@ -141,7 +132,7 @@ describe('Data Persistence', () => {
 		const exportData = {
 			games,
 			exportDate: new Date().toISOString(),
-			version: '1.0.0'
+			version: '1.0.0',
 		};
 
 		const jsonString = JSON.stringify(exportData, null, 2);
@@ -167,7 +158,7 @@ describe('Data Persistence', () => {
 		const exportData = {
 			games: [TEST_GAME_DATA],
 			exportDate: new Date().toISOString(),
-			version: '1.0.0'
+			version: '1.0.0',
 		};
 
 		const jsonString = JSON.stringify(exportData);
@@ -197,14 +188,14 @@ describe('Data Persistence', () => {
 				id: 'test-game-2',
 				title: 'Second Test Game',
 				platform: 'PlayStation 5',
-				tier: 'S'
-			}
+				tier: 'S',
+			},
 		];
 
 		const exportData = {
 			games: originalGames,
 			exportDate: new Date().toISOString(),
-			version: '1.0.0'
+			version: '1.0.0',
 		};
 
 		const jsonString = JSON.stringify(exportData, null, 2);
@@ -261,13 +252,13 @@ describe('Data Persistence', () => {
 				theme: 'dark',
 				notifications: {
 					email: true,
-					push: false
-				}
+					push: false,
+				},
 			},
 			history: [
 				{ id: 1, action: 'login', timestamp: 123456789 },
-				{ id: 2, action: 'view_game', details: { gameId: 'g1' } }
-			]
+				{ id: 2, action: 'view_game', details: { gameId: 'g1' } },
+			],
 		};
 
 		const jsonString = JSON.stringify(complexData);
@@ -290,7 +281,7 @@ describe('Data Persistence', () => {
 			id: `game-${i}`,
 			title: `Game ${i}`,
 			platform: i % 2 === 0 ? 'PC' : 'Console',
-			year: 2000 + (i % 20)
+			year: 2000 + (i % 20),
 		}));
 
 		const exportData = { games: largeGames };

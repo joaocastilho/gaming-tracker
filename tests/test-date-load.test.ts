@@ -6,7 +6,7 @@ describe('Data Transformer - Date Loading', () => {
 		const input = {
 			id: 'test-game',
 			title: 'Test Game',
-			finishedDate: '16/11/2025' // Format seen in games.json
+			finishedDate: '16/11/2025', // Format seen in games.json
 		};
 
 		const result = transformGameData(input);
@@ -20,7 +20,7 @@ describe('Data Transformer - Date Loading', () => {
 		const input = {
 			id: 'test-game-iso',
 			title: 'Test ISO',
-			finishedDate: '2023-06-18T00:00:00.000Z'
+			finishedDate: '2023-06-18T00:00:00.000Z',
 		};
 		const result = transformGameData(input);
 		expect(result.finishedDate).toBe('2023-06-18T00:00:00.000Z');

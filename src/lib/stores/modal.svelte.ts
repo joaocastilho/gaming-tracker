@@ -56,8 +56,8 @@ const initialState: ModalState = {
 		statuses: [],
 		tiers: [],
 		sortOption: null,
-		activeTab: 'all'
-	}
+		activeTab: 'all',
+	},
 };
 
 class ModalStore {
@@ -128,8 +128,7 @@ class ModalStore {
 		let finalDisplayedGames = displayedGames;
 
 		if (displayedGames.length === 0 && !filterContext) {
-			finalDisplayedGames =
-				this._state.displayedGames.length > 0 ? this._state.displayedGames : gamesStore.games;
+			finalDisplayedGames = this._state.displayedGames.length > 0 ? this._state.displayedGames : gamesStore.games;
 		}
 
 		this._state = {
@@ -143,9 +142,7 @@ class ModalStore {
 			displayedGames: finalDisplayedGames,
 			pendingGameFromURL: null,
 			cardRect: cardRect ?? null,
-			filterContext: filterContext
-				? { ...this._state.filterContext, ...filterContext }
-				: this._state.filterContext
+			filterContext: filterContext ? { ...this._state.filterContext, ...filterContext } : this._state.filterContext,
 		};
 		this.notifySubscribers();
 		this.writeToURL();
@@ -162,9 +159,7 @@ class ModalStore {
 			isSubmitting: false,
 			displayedGames: [],
 			pendingGameFromURL: null,
-			filterContext: filterContext
-				? { ...this._state.filterContext, ...filterContext }
-				: this._state.filterContext
+			filterContext: filterContext ? { ...this._state.filterContext, ...filterContext } : this._state.filterContext,
 		};
 		this.notifySubscribers();
 	}
@@ -177,15 +172,13 @@ class ModalStore {
 			mode: 'add',
 			formData: {
 				status: 'Planned',
-				coOp: 'No'
+				coOp: 'No',
 			},
 			validationErrors: {},
 			isSubmitting: false,
 			displayedGames: [],
 			pendingGameFromURL: null,
-			filterContext: filterContext
-				? { ...this._state.filterContext, ...filterContext }
-				: this._state.filterContext
+			filterContext: filterContext ? { ...this._state.filterContext, ...filterContext } : this._state.filterContext,
 		};
 		this.notifySubscribers();
 	}
@@ -201,7 +194,7 @@ class ModalStore {
 			isSubmitting: false,
 			displayedGames: [],
 			pendingGameFromURL: null,
-			cardRect: null
+			cardRect: null,
 		};
 
 		this.notifySubscribers();
@@ -211,7 +204,7 @@ class ModalStore {
 	toggleModal(): void {
 		this._state = {
 			...this._state,
-			isOpen: !this._state.isOpen
+			isOpen: !this._state.isOpen,
 		};
 		this.notifySubscribers();
 	}
@@ -219,7 +212,7 @@ class ModalStore {
 	setActiveGame(game: Game | null): void {
 		this._state = {
 			...this._state,
-			activeGame: game
+			activeGame: game,
 		};
 		this.notifySubscribers();
 	}
@@ -227,7 +220,7 @@ class ModalStore {
 	setMode(mode: 'view' | 'edit' | 'add'): void {
 		this._state = {
 			...this._state,
-			mode
+			mode,
 		};
 		this.notifySubscribers();
 	}
@@ -235,10 +228,7 @@ class ModalStore {
 	updateFilterContext(context: Partial<ModalState['filterContext']>): void {
 		const newFilterContext = { ...this._state.filterContext, ...context };
 
-		const updatedDisplayedGames = this.getReactiveNavigationGamesFromContext(
-			gamesStore.games,
-			newFilterContext
-		);
+		const updatedDisplayedGames = this.getReactiveNavigationGamesFromContext(gamesStore.games, newFilterContext);
 
 		let updatedActiveGame = this._state.activeGame;
 		if (updatedActiveGame && !updatedDisplayedGames.find((g) => g.id === updatedActiveGame?.id)) {
@@ -249,15 +239,12 @@ class ModalStore {
 			...this._state,
 			filterContext: newFilterContext,
 			displayedGames: updatedDisplayedGames,
-			activeGame: updatedActiveGame
+			activeGame: updatedActiveGame,
 		};
 		this.notifySubscribers();
 	}
 
-	getReactiveNavigationGamesFromContext(
-		allGames: Game[],
-		filterContext: ModalState['filterContext']
-	): Game[] {
+	getReactiveNavigationGamesFromContext(allGames: Game[], filterContext: ModalState['filterContext']): Game[] {
 		if (!filterContext) return allGames;
 
 		let filteredGames = [...allGames];
@@ -273,9 +260,7 @@ class ModalStore {
 		}
 
 		if (filterContext.platforms.length > 0) {
-			filteredGames = filteredGames.filter((game) =>
-				filterContext.platforms.includes(game.platform)
-			);
+			filteredGames = filteredGames.filter((game) => filterContext.platforms.includes(game.platform));
 		}
 
 		if (filterContext.genres.length > 0) {
@@ -376,12 +361,12 @@ class ModalStore {
 			...this._state,
 			formData: {
 				...this._state.formData,
-				[field]: value
+				[field]: value,
 			},
 			validationErrors: {
 				...this._state.validationErrors,
-				[field]: ''
-			}
+				[field]: '',
+			},
 		};
 	}
 
@@ -391,17 +376,17 @@ class ModalStore {
 				...this._state,
 				formData: { ...this._state.activeGame },
 				validationErrors: {},
-				isSubmitting: false
+				isSubmitting: false,
 			};
 		} else {
 			this._state = {
 				...this._state,
 				formData: {
 					status: 'Planned',
-					coOp: 'No'
+					coOp: 'No',
 				},
 				validationErrors: {},
-				isSubmitting: false
+				isSubmitting: false,
 			};
 		}
 	}
@@ -435,10 +420,7 @@ class ModalStore {
 			if (!state.formData.finishedDate) {
 				errors.finishedDate = 'Finished date is required for completed games';
 			}
-			if (
-				state.formData.ratingPresentation === null ||
-				state.formData.ratingPresentation === undefined
-			) {
+			if (state.formData.ratingPresentation === null || state.formData.ratingPresentation === undefined) {
 				errors.ratingPresentation = 'Presentation rating is required for completed games';
 			}
 			if (state.formData.ratingStory === null || state.formData.ratingStory === undefined) {
@@ -473,7 +455,7 @@ class ModalStore {
 
 		this._state = {
 			...this._state,
-			validationErrors: errors
+			validationErrors: errors,
 		};
 
 		return Object.keys(errors).length === 0;
@@ -485,13 +467,13 @@ class ModalStore {
 		this._state = {
 			...this._state,
 			isSubmitting: true,
-			validationErrors: {}
+			validationErrors: {},
 		};
 
 		if (!this.validateForm()) {
 			this._state = {
 				...this._state,
-				isSubmitting: false
+				isSubmitting: false,
 			};
 			return false;
 		}
@@ -511,10 +493,7 @@ class ModalStore {
 					id: crypto.randomUUID(),
 					coverImage: `covers/${state.formData.title?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'game'}.webp`,
 					score,
-					tier:
-						state.formData.status === 'Completed' && score !== null
-							? this.getTierFromScore(score)
-							: null
+					tier: state.formData.status === 'Completed' && score !== null ? this.getTierFromScore(score) : null,
 				};
 
 				gamesStore.addGame(newGame);
@@ -536,7 +515,7 @@ class ModalStore {
 							? this.getTierFromScore(score)
 							: state.formData.status === 'Planned'
 								? null
-								: state.activeGame.tier
+								: state.activeGame.tier,
 				};
 
 				gamesStore.updateGame(state.activeGame.id, updatedGame);
@@ -549,8 +528,8 @@ class ModalStore {
 				...this._state,
 				isSubmitting: false,
 				validationErrors: {
-					submit: 'An error occurred while saving the game. Please try again.'
-				}
+					submit: 'An error occurred while saving the game. Please try again.',
+				},
 			};
 			return false;
 		}
@@ -639,10 +618,7 @@ class ModalStore {
 		}
 	}
 
-	openPendingGameFromURL(
-		displayedGames: Game[],
-		filterContext?: Partial<ModalState['filterContext']>
-	): void {
+	openPendingGameFromURL(displayedGames: Game[], filterContext?: Partial<ModalState['filterContext']>): void {
 		const state = this._state;
 		const pendingGame = state.pendingGameFromURL;
 		if (pendingGame && displayedGames.some((g) => g.id === pendingGame.id)) {
@@ -654,7 +630,7 @@ class ModalStore {
 		if (this._state.isOpen) {
 			this._state = {
 				...this._state,
-				isOpen: false
+				isOpen: false,
 			};
 			this.notifySubscribers();
 		}

@@ -1,134 +1,133 @@
 <script lang="ts">
-	import { editorStore } from '../../stores/editor.svelte';
-	import { offlineStore } from '../../stores/offline.svelte';
-	import { filtersStore } from '../../stores/filters.svelte';
-	import { getTierClass, getTierDisplayName } from '../../utils/tierUtils.js';
-	import { generateSrcset, generateTinySrcset, generateSizes } from '../../utils/imageSrcset.js';
-	import type { Game } from '../../types/game.js';
-	import { Pencil, Trash2 } from 'lucide-svelte';
+import { editorStore } from '../../stores/editor.svelte';
+import { offlineStore } from '../../stores/offline.svelte';
+import { filtersStore } from '../../stores/filters.svelte';
+import { getTierClass, getTierDisplayName } from '../../utils/tierUtils.js';
+import { generateSrcset, generateTinySrcset, generateSizes } from '../../utils/imageSrcset.js';
+import type { Game } from '../../types/game.js';
+import { Pencil, Trash2 } from 'lucide-svelte';
 
-	interface Props {
-		game: Game;
-		size?: 'small' | 'large' | 'tiny' | 'tierlist';
-		showTierBadge?: boolean;
-		isAboveFold?: boolean;
-		isPriority?: boolean;
-		onEditGame?: (game: Game) => void;
-		onDeleteGame?: (game: Game) => void;
+interface Props {
+	game: Game;
+	size?: 'small' | 'large' | 'tiny' | 'tierlist';
+	showTierBadge?: boolean;
+	isAboveFold?: boolean;
+	isPriority?: boolean;
+	onEditGame?: (game: Game) => void;
+	onDeleteGame?: (game: Game) => void;
+}
+
+let {
+	game,
+	size = 'small',
+	showTierBadge = true,
+	isAboveFold = false,
+	isPriority: _isPriority = false,
+	onEditGame,
+	onDeleteGame,
+}: Props = $props();
+
+let isEditor = $derived(editorStore.editorMode);
+let isOffline = $derived(!offlineStore.isOnline);
+let imageElement = $state<HTMLImageElement>();
+
+const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
+const PLACEHOLDER_SRCSET = 'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
+const OFFLINE_FALLBACK_DATA_URI =
+	'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
+
+const effectiveImageSrc = $derived(() => {
+	if (isOffline) {
+		return OFFLINE_FALLBACK_DATA_URI;
 	}
+	if (size === 'tiny') {
+		return (game.coverImage || PLACEHOLDER_SRC).replace('.webp', '-200w.webp');
+	}
+	return game.coverImage || PLACEHOLDER_SRC;
+});
 
-	let {
-		game,
-		size = 'small',
-		showTierBadge = true,
-		isAboveFold = false,
-		isPriority: _isPriority = false,
-		onEditGame,
-		onDeleteGame
-	}: Props = $props();
+const effectiveImageSrcset = $derived(() => {
+	if (isOffline) {
+		return '';
+	}
+	if (size === 'tiny') {
+		return generateTinySrcset(game.coverImage);
+	}
+	return generateSrcset(game.coverImage);
+});
 
-	let isEditor = $derived(editorStore.editorMode);
-	let isOffline = $derived(!offlineStore.isOnline);
-	let imageElement = $state<HTMLImageElement>();
+const imageSizes = $derived(() => {
+	if (size === 'tiny') {
+		return generateSizes('tiny');
+	}
+	return generateSizes(isAboveFold ? 'card' : 'gallery');
+});
 
-	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
-	const PLACEHOLDER_SRCSET =
-		'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
-	const OFFLINE_FALLBACK_DATA_URI =
-		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
-
-	const effectiveImageSrc = $derived(() => {
-		if (isOffline) {
-			return OFFLINE_FALLBACK_DATA_URI;
+function handleImageLoad() {
+	if (imageElement) {
+		imageElement.classList.add('loaded');
+		const skeleton = imageElement.previousElementSibling as HTMLElement;
+		if (skeleton && skeleton.classList.contains('skeleton-loader')) {
+			skeleton.style.opacity = '0';
 		}
-		if (size === 'tiny') {
-			return (game.coverImage || PLACEHOLDER_SRC).replace('.webp', '-200w.webp');
+	}
+}
+
+function handleImageError() {
+	if (imageElement) {
+		imageElement.classList.add('loaded');
+		const skeleton = imageElement.previousElementSibling as HTMLElement;
+		if (skeleton && skeleton.classList.contains('skeleton-loader')) {
+			skeleton.style.opacity = '0';
 		}
-		return game.coverImage || PLACEHOLDER_SRC;
+
+		if (!imageElement.src.includes('placeholder_cover')) {
+			imageElement.src = PLACEHOLDER_SRC;
+			imageElement.srcset = PLACEHOLDER_SRCSET;
+		} else {
+			imageElement.src =
+				'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
+			imageElement.srcset = '';
+		}
+	}
+}
+
+function handleTierClick(event: MouseEvent | KeyboardEvent) {
+	event.stopPropagation();
+	if (typeof window !== 'undefined' && window.innerWidth < 768) {
+		return;
+	}
+	if (event instanceof KeyboardEvent && !(event.key === 'Enter' || event.key === ' ')) {
+		return;
+	}
+	if (game.tier) {
+		filtersStore.toggleTier(game.tier);
+	}
+}
+
+function preloadDetailImage() {
+	const imgPath = game.coverImage || 'covers/placeholder_cover.webp';
+	const detailImg = new Image();
+	detailImg.src = imgPath.replace('.webp', '-detail.webp');
+}
+
+function getCompletionDay(dateStr: string | null): string {
+	if (!dateStr) return '';
+	const parts = dateStr.split('/');
+	if (parts.length !== 3) return '';
+	const day = parseInt(parts[0], 10);
+	return isNaN(day) ? '' : String(day);
+}
+
+$effect(() => {
+	if (!imageElement) return;
+
+	queueMicrotask(() => {
+		if (imageElement && imageElement.complete && imageElement.naturalHeight !== 0) {
+			handleImageLoad();
+		}
 	});
-
-	const effectiveImageSrcset = $derived(() => {
-		if (isOffline) {
-			return '';
-		}
-		if (size === 'tiny') {
-			return generateTinySrcset(game.coverImage);
-		}
-		return generateSrcset(game.coverImage);
-	});
-
-	const imageSizes = $derived(() => {
-		if (size === 'tiny') {
-			return generateSizes('tiny');
-		}
-		return generateSizes(isAboveFold ? 'card' : 'gallery');
-	});
-
-	function handleImageLoad() {
-		if (imageElement) {
-			imageElement.classList.add('loaded');
-			const skeleton = imageElement.previousElementSibling as HTMLElement;
-			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
-				skeleton.style.opacity = '0';
-			}
-		}
-	}
-
-	function handleImageError() {
-		if (imageElement) {
-			imageElement.classList.add('loaded');
-			const skeleton = imageElement.previousElementSibling as HTMLElement;
-			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
-				skeleton.style.opacity = '0';
-			}
-
-			if (!imageElement.src.includes('placeholder_cover')) {
-				imageElement.src = PLACEHOLDER_SRC;
-				imageElement.srcset = PLACEHOLDER_SRCSET;
-			} else {
-				imageElement.src =
-					'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
-				imageElement.srcset = '';
-			}
-		}
-	}
-
-	function handleTierClick(event: MouseEvent | KeyboardEvent) {
-		event.stopPropagation();
-		if (typeof window !== 'undefined' && window.innerWidth < 768) {
-			return;
-		}
-		if (event instanceof KeyboardEvent && !(event.key === 'Enter' || event.key === ' ')) {
-			return;
-		}
-		if (game.tier) {
-			filtersStore.toggleTier(game.tier);
-		}
-	}
-
-	function preloadDetailImage() {
-		const imgPath = game.coverImage || 'covers/placeholder_cover.webp';
-		const detailImg = new Image();
-		detailImg.src = imgPath.replace('.webp', '-detail.webp');
-	}
-
-	function getCompletionDay(dateStr: string | null): string {
-		if (!dateStr) return '';
-		const parts = dateStr.split('/');
-		if (parts.length !== 3) return '';
-		const day = parseInt(parts[0], 10);
-		return isNaN(day) ? '' : String(day);
-	}
-
-	$effect(() => {
-		if (!imageElement) return;
-
-		queueMicrotask(() => {
-			if (imageElement && imageElement.complete && imageElement.naturalHeight !== 0) {
-				handleImageLoad();
-			}
-		});
-	});
+});
 </script>
 
 <div class="cover-container">

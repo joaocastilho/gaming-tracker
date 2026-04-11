@@ -1,39 +1,39 @@
 <script lang="ts">
-	import type { Game } from '$lib/types/game';
-	import { browser } from '$app/environment';
-	import { Link, X } from 'lucide-svelte';
+import type { Game } from '$lib/types/game';
+import { browser } from '$app/environment';
+import { Link, X } from 'lucide-svelte';
 
-	interface Props {
-		game: Game;
-		onClose?: () => void;
-		onShare?: () => void;
-		linkCopied?: string;
+interface Props {
+	game: Game;
+	onClose?: () => void;
+	onShare?: () => void;
+	linkCopied?: string;
+}
+
+let { game, onClose, onShare, linkCopied = '' }: Props = $props();
+
+let titleElement = $state<HTMLElement>();
+let containerWidth = $state(0);
+
+// Auto-fit title font size using DOM scrollWidth check
+$effect(() => {
+	if (!browser || !titleElement || !game || containerWidth === 0) return;
+
+	const maxSize = 2.25;
+	const minSize = 0.8;
+	const step = 0.05;
+
+	// Reset to max size first
+	titleElement.style.whiteSpace = 'nowrap';
+	titleElement.style.fontSize = `${maxSize}rem`;
+
+	// Shrink until text fits container (scrollWidth forces reflow for accurate measurement)
+	let size = maxSize;
+	while (size > minSize && titleElement.scrollWidth > containerWidth + 1) {
+		size -= step;
+		titleElement.style.fontSize = `${size}rem`;
 	}
-
-	let { game, onClose, onShare, linkCopied = '' }: Props = $props();
-
-	let titleElement = $state<HTMLElement>();
-	let containerWidth = $state(0);
-
-	// Auto-fit title font size using DOM scrollWidth check
-	$effect(() => {
-		if (!browser || !titleElement || !game || containerWidth === 0) return;
-
-		const maxSize = 2.25;
-		const minSize = 0.8;
-		const step = 0.05;
-
-		// Reset to max size first
-		titleElement.style.whiteSpace = 'nowrap';
-		titleElement.style.fontSize = `${maxSize}rem`;
-
-		// Shrink until text fits container (scrollWidth forces reflow for accurate measurement)
-		let size = maxSize;
-		while (size > minSize && titleElement.scrollWidth > containerWidth + 1) {
-			size -= step;
-			titleElement.style.fontSize = `${size}rem`;
-		}
-	});
+});
 </script>
 
 <div class="mb-2 flex items-start gap-2 pt-4 md:pt-6">

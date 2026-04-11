@@ -1,38 +1,38 @@
 <script lang="ts">
-	import type { Game } from '$lib/types/game';
-	import TierRow from '$lib/components/TierRow.svelte';
+import type { Game } from '$lib/types/game';
+import TierRow from '$lib/components/TierRow.svelte';
 
-	interface Props {
-		filteredGames: Game[];
-		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
-	}
+interface Props {
+	filteredGames: Game[];
+	onOpenModal?: (game: Game, displayedGames: Game[]) => void;
+}
 
-	let { filteredGames = [], onOpenModal }: Props = $props();
+let { filteredGames = [], onOpenModal }: Props = $props();
 
-	let tierList = $derived(buildTierList(filteredGames ?? []));
-	let allGames = $derived(Object.values(tierList).flat());
+let tierList = $derived(buildTierList(filteredGames ?? []));
+let allGames = $derived(Object.values(tierList).flat());
 
-	function buildTierList(games: Game[]): Record<string, Game[]> {
-		const gamesByTier: Record<string, Game[]> = {
-			'S - Masterpiece': [],
-			'A - Amazing': [],
-			'B - Great': [],
-			'C - Good': [],
-			'D - Decent': [],
-			'E - Bad': []
-		};
+function buildTierList(games: Game[]): Record<string, Game[]> {
+	const gamesByTier: Record<string, Game[]> = {
+		'S - Masterpiece': [],
+		'A - Amazing': [],
+		'B - Great': [],
+		'C - Good': [],
+		'D - Decent': [],
+		'E - Bad': [],
+	};
 
-		games
-			.filter((game) => game.tier)
-			.forEach((game) => {
-				const tier = game.tier as string;
-				if (gamesByTier[tier]) {
-					gamesByTier[tier].push(game);
-				}
-			});
+	games
+		.filter((game) => game.tier)
+		.forEach((game) => {
+			const tier = game.tier as string;
+			if (gamesByTier[tier]) {
+				gamesByTier[tier].push(game);
+			}
+		});
 
-		return gamesByTier;
-	}
+	return gamesByTier;
+}
 </script>
 
 {#if Object.values(tierList).every((games) => games.length === 0)}

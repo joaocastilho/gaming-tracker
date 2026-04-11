@@ -1,17 +1,17 @@
 <script lang="ts">
-	import type { Game } from '../../types/game.js';
+import type { Game } from '../../types/game.js';
 
-	interface Props {
-		working: Game;
-		allGames: Game[];
-	}
+interface Props {
+	working: Game;
+	allGames: Game[];
+}
 
-	let { working, allGames }: Props = $props();
+let { working, allGames }: Props = $props();
 
-	const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
-	const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
-	const currentYear = new Date().getFullYear();
-	const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
+const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
 </script>
 
 <div class="form-row">

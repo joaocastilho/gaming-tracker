@@ -23,20 +23,20 @@ vi.mock('lucide-svelte', () => {
 		Monitor: MockIcon,
 		Tag: MockIcon,
 		Trophy: MockIcon,
-		Users: MockIcon
+		Users: MockIcon,
 	};
 });
 
 // Mock the RatingsSort component
 vi.mock('$lib/components/RatingsSort.svelte', () => ({
-	default: () => null
+	default: () => null,
 }));
 
 describe('MobileFilters UI', () => {
 	const mockFilterOptions = {
 		platforms: ['PC', 'PlayStation', 'Nintendo Switch', 'Xbox'],
 		genres: ['RPG', 'Action', 'Adventure', 'Platformer'],
-		tiers: ['S - Masterpiece', 'A - Amazing', 'B - Good', 'C - Okay']
+		tiers: ['S - Masterpiece', 'A - Amazing', 'B - Good', 'C - Okay'],
 	};
 
 	beforeEach(() => {
@@ -53,14 +53,14 @@ describe('MobileFilters UI', () => {
 	describe('Modal Opening and Closing', () => {
 		it('should render when isOpen is true', () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 			expect(screen.getByRole('dialog')).toBeInTheDocument();
 		});
 
 		it('should not render when isOpen is false', () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: false }
+				props: { filterOptions: mockFilterOptions, isOpen: false },
 			});
 			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 		});
@@ -68,7 +68,7 @@ describe('MobileFilters UI', () => {
 		it('should call onClose when X button is clicked', async () => {
 			const onClose = vi.fn();
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true, onClose }
+				props: { filterOptions: mockFilterOptions, isOpen: true, onClose },
 			});
 			const closeButton = screen.getByRole('button', { name: /close without applying/i });
 			await fireEvent.click(closeButton);
@@ -78,7 +78,7 @@ describe('MobileFilters UI', () => {
 		it('should call onClose when backdrop is clicked', async () => {
 			const onClose = vi.fn();
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true, onClose }
+				props: { filterOptions: mockFilterOptions, isOpen: true, onClose },
 			});
 			const dialog = screen.getByRole('dialog');
 			await fireEvent.click(dialog);
@@ -88,7 +88,7 @@ describe('MobileFilters UI', () => {
 		it('should call onClose when Escape is pressed', async () => {
 			const onClose = vi.fn();
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true, onClose }
+				props: { filterOptions: mockFilterOptions, isOpen: true, onClose },
 			});
 			const dialog = screen.getByRole('dialog');
 			await fireEvent.keyDown(dialog, { key: 'Escape' });
@@ -102,7 +102,7 @@ describe('MobileFilters UI', () => {
 			filtersStore.togglePlatform('PC');
 
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			// Open platforms popup
@@ -118,7 +118,7 @@ describe('MobileFilters UI', () => {
 
 		it('should show count badge when pending items are selected', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			// Open platforms popup
@@ -144,7 +144,7 @@ describe('MobileFilters UI', () => {
 			const togglePlatformSpy = vi.spyOn(filtersStore, 'togglePlatform');
 
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			// Open platforms popup
@@ -164,7 +164,7 @@ describe('MobileFilters UI', () => {
 		it('should apply pending filters to store when Apply is clicked', async () => {
 			const onClose = vi.fn();
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true, onClose }
+				props: { filterOptions: mockFilterOptions, isOpen: true, onClose },
 			});
 
 			// Open platforms popup and select
@@ -190,7 +190,7 @@ describe('MobileFilters UI', () => {
 		it('should NOT apply pending filters when close without apply is clicked', async () => {
 			const onClose = vi.fn();
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true, onClose }
+				props: { filterOptions: mockFilterOptions, isOpen: true, onClose },
 			});
 
 			// Open platforms popup and select
@@ -217,7 +217,7 @@ describe('MobileFilters UI', () => {
 	describe('Sub-popup Interactions', () => {
 		it('should open platforms popup when Platforms button is clicked', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			const platformsButton = screen.getByRole('button', { name: /Platforms/i });
@@ -233,7 +233,7 @@ describe('MobileFilters UI', () => {
 
 		it('should open genres popup when Genres button is clicked', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			const genresButton = screen.getByRole('button', { name: /Genres/i });
@@ -248,7 +248,7 @@ describe('MobileFilters UI', () => {
 
 		it('should open tiers popup when Tiers button is clicked', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			const tiersButton = screen.getByRole('button', { name: /Tiers/i });
@@ -262,7 +262,7 @@ describe('MobileFilters UI', () => {
 
 		it('should toggle co-op directly without popup', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			const coOpButton = screen.getByRole('button', { name: /Co-op/i });
@@ -274,7 +274,7 @@ describe('MobileFilters UI', () => {
 
 		it('should close popup when backdrop is clicked', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			// Open platforms popup
@@ -294,7 +294,7 @@ describe('MobileFilters UI', () => {
 
 		it('should close popup on Escape key', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			// Open platforms popup
@@ -317,7 +317,7 @@ describe('MobileFilters UI', () => {
 	describe('Reset Functionality', () => {
 		it('should clear all pending filters when Reset is clicked', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			// Select some filters
@@ -343,7 +343,7 @@ describe('MobileFilters UI', () => {
 
 		it('should reset current category pending when Reset in popup is clicked', async () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			// Open platforms popup and select
@@ -369,7 +369,7 @@ describe('MobileFilters UI', () => {
 			const setSortSpy = vi.spyOn(filtersStore, 'setSort');
 
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			const resetButton = screen.getByRole('button', { name: /Reset all filters/i });
@@ -383,7 +383,7 @@ describe('MobileFilters UI', () => {
 	describe('Scroll Lock', () => {
 		it('should lock body scroll when modal is open', () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			expect(document.body.style.overflow).toBe('hidden');
@@ -391,7 +391,7 @@ describe('MobileFilters UI', () => {
 
 		it('should unlock body scroll when component is unmounted', async () => {
 			const { unmount } = render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 
 			expect(document.body.style.overflow).toBe('hidden');
@@ -409,14 +409,14 @@ describe('MobileFilters UI', () => {
 	describe('Accessibility', () => {
 		it('should have dialog role', () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 			expect(screen.getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
 		});
 
 		it('should have proper aria-labels on action buttons', () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true }
+				props: { filterOptions: mockFilterOptions, isOpen: true },
 			});
 			expect(screen.getByRole('button', { name: /Apply filters/i })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: /Reset all filters/i })).toBeInTheDocument();
@@ -425,7 +425,7 @@ describe('MobileFilters UI', () => {
 
 		it('should show correct title', () => {
 			render(MobileFilters, {
-				props: { filterOptions: mockFilterOptions, isOpen: true, title: 'Custom Title' }
+				props: { filterOptions: mockFilterOptions, isOpen: true, title: 'Custom Title' },
 			});
 			expect(screen.getByText('Custom Title')).toBeInTheDocument();
 		});

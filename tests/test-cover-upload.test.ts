@@ -105,7 +105,7 @@ describe('Cover Upload API', () => {
 			const mockFn = vi.fn(() =>
 				Promise.resolve({
 					ok: true,
-					json: () => Promise.resolve({ success: true })
+					json: () => Promise.resolve({ success: true }),
 				} as Response)
 			);
 			globalThis.fetch = mockFn as unknown as typeof fetch;
@@ -116,15 +116,15 @@ describe('Cover Upload API', () => {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					url: 'https://example.com/cover.png',
-					gameId: 'test-game'
-				})
+					gameId: 'test-game',
+				}),
 			});
 
 			expect(mockFn).toHaveBeenCalledWith(
 				'/api/cover-upload-local',
 				expect.objectContaining({
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' }
+					headers: { 'Content-Type': 'application/json' },
 				})
 			);
 		});
@@ -135,14 +135,14 @@ describe('Cover Upload API', () => {
 				json: () =>
 					Promise.resolve({
 						success: true,
-						coverPath: 'covers/test-game.webp'
-					})
+						coverPath: 'covers/test-game.webp',
+					}),
 			});
 
 			const response = await fetch('/api/cover-upload-local', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ url: 'https://example.com/cover.png', gameId: 'test-game' })
+				body: JSON.stringify({ url: 'https://example.com/cover.png', gameId: 'test-game' }),
 			});
 
 			expect(response.ok).toBe(true);
@@ -153,13 +153,13 @@ describe('Cover Upload API', () => {
 		it('handles upload failure response', async () => {
 			globalThis.fetch = mockFetch({
 				ok: false,
-				json: () => Promise.resolve({ error: 'Failed to download image' })
+				json: () => Promise.resolve({ error: 'Failed to download image' }),
 			});
 
 			const response = await fetch('/api/cover-upload-local', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ url: 'https://invalid.com/missing.png', gameId: 'test-game' })
+				body: JSON.stringify({ url: 'https://invalid.com/missing.png', gameId: 'test-game' }),
 			});
 
 			expect(response.ok).toBe(false);
@@ -172,7 +172,7 @@ describe('Cover Upload API', () => {
 				fetch('/api/cover-upload-local', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ url: 'https://example.com/cover.png', gameId: 'test-game' })
+					body: JSON.stringify({ url: 'https://example.com/cover.png', gameId: 'test-game' }),
 				})
 			).rejects.toThrow('Network error');
 		});
@@ -183,7 +183,7 @@ describe('Cover Upload API', () => {
 			const mockFn = vi.fn(() =>
 				Promise.resolve({
 					ok: true,
-					json: () => Promise.resolve({ success: true })
+					json: () => Promise.resolve({ success: true }),
 				} as Response)
 			);
 			globalThis.fetch = mockFn as unknown as typeof fetch;
@@ -194,13 +194,13 @@ describe('Cover Upload API', () => {
 
 			await fetch('/api/cover-upload-local', {
 				method: 'POST',
-				body: formData
+				body: formData,
 			});
 
 			expect(mockFn).toHaveBeenCalledWith(
 				'/api/cover-upload-local',
 				expect.objectContaining({
-					method: 'POST'
+					method: 'POST',
 				})
 			);
 		});

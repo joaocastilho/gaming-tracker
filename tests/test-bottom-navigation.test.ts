@@ -14,7 +14,7 @@ import { appStore } from '$lib/stores/app.svelte';
 // Mock the navigation utility
 const mockNavigateTo = vi.fn();
 vi.mock('$lib/utils/navigationUtils', () => ({
-	navigateTo: (tab: string) => mockNavigateTo(tab)
+	navigateTo: (tab: string) => mockNavigateTo(tab),
 }));
 
 // Mock Lucide icons
@@ -25,7 +25,7 @@ vi.mock('lucide-svelte', () => {
 		CheckCircle: MockIcon,
 		Calendar: MockIcon,
 		List: MockIcon,
-		Search: MockIcon
+		Search: MockIcon,
 	};
 });
 

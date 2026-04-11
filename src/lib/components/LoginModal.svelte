@@ -1,47 +1,47 @@
 <script lang="ts">
-	import { editorStore } from '$lib/stores/editor.svelte';
-	import { dev } from '$app/environment';
+import { editorStore } from '$lib/stores/editor.svelte';
+import { dev } from '$app/environment';
 
-	interface Props {
-		open?: boolean;
+interface Props {
+	open?: boolean;
+}
+
+let { open = $bindable(false) }: Props = $props();
+let username = $state('');
+let password = $state('');
+
+// Derive login state from editor store
+let loginPending = $derived(editorStore.loginPending);
+let loginError = $derived(editorStore.loginError);
+
+// Reset form when modal opens
+$effect(() => {
+	if (open) {
+		username = '';
+		password = '';
 	}
+});
 
-	let { open = $bindable(false) }: Props = $props();
-	let username = $state('');
-	let password = $state('');
+function closeModal() {
+	if (loginPending) return;
+	open = false;
+}
 
-	// Derive login state from editor store
-	let loginPending = $derived(editorStore.loginPending);
-	let loginError = $derived(editorStore.loginError);
+async function handleSubmit(event: SubmitEvent) {
+	event.preventDefault();
+	if (!username || !password || loginPending) return;
 
-	// Reset form when modal opens
-	$effect(() => {
-		if (open) {
-			username = '';
-			password = '';
-		}
-	});
-
-	function closeModal() {
-		if (loginPending) return;
+	const ok = await editorStore.login(username, password);
+	if (ok) {
 		open = false;
 	}
+}
 
-	async function handleSubmit(event: SubmitEvent) {
-		event.preventDefault();
-		if (!username || !password || loginPending) return;
-
-		const ok = await editorStore.login(username, password);
-		if (ok) {
-			open = false;
-		}
-	}
-
-	// Dev mode bypass - enables editor without API call
-	function enableDevMode() {
-		editorStore.setEditorModeFromSessionCheck(true);
-		open = false;
-	}
+// Dev mode bypass - enables editor without API call
+function enableDevMode() {
+	editorStore.setEditorModeFromSessionCheck(true);
+	open = false;
+}
 </script>
 
 {#if open}

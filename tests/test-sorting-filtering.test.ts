@@ -18,7 +18,7 @@ const mockGames = [
 		ratingGameplay: 10,
 		score: 10,
 		finishedDate: '2023-01-01T00:00:00.000Z',
-		coOp: 'No'
+		coOp: 'No',
 	},
 	{
 		id: '2',
@@ -32,7 +32,7 @@ const mockGames = [
 		ratingGameplay: 9,
 		score: 9,
 		finishedDate: '2023-02-01T00:00:00.000Z',
-		coOp: 'No'
+		coOp: 'No',
 	},
 	{
 		id: '3',
@@ -46,7 +46,7 @@ const mockGames = [
 		ratingGameplay: null,
 		score: null,
 		finishedDate: null,
-		coOp: 'Yes'
+		coOp: 'Yes',
 	},
 	{
 		id: '4',
@@ -60,8 +60,8 @@ const mockGames = [
 		ratingGameplay: 9,
 		score: 8,
 		finishedDate: '2022-12-01T00:00:00.000Z',
-		coOp: 'No'
-	}
+		coOp: 'No',
+	},
 ];
 
 describe('Sorting and Filtering Logic', () => {
@@ -178,8 +178,8 @@ describe('Sorting and Filtering Logic', () => {
 				ratingGameplay: 7,
 				score: 7,
 				finishedDate: null,
-				coOp: 'No'
-			}
+				coOp: 'No',
+			},
 		];
 		gamesStore.initializeGames(gamesWithNull);
 		appStore.setActiveTab('completed');

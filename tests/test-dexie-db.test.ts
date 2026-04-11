@@ -19,7 +19,7 @@ const mockGame: Game = {
 	ratingStory: 7,
 	ratingGameplay: 9,
 	score: 16,
-	tier: 'A - Amazing'
+	tier: 'A - Amazing',
 };
 
 describe('Dexie Database', () => {
@@ -49,7 +49,7 @@ describe('Dexie Database', () => {
 		await db.games.bulkPut([
 			{ ...mockGame, id: '1', status: 'Completed' },
 			{ ...mockGame, id: '2', status: 'Planned' },
-			{ ...mockGame, id: '3', status: 'Completed' }
+			{ ...mockGame, id: '3', status: 'Completed' },
 		]);
 		const completed = await db.games.where('status').equals('Completed').toArray();
 		expect(completed.length).toBe(2);
@@ -59,7 +59,7 @@ describe('Dexie Database', () => {
 		await db.games.bulkPut([
 			{ ...mockGame, id: '1', platform: 'PC' },
 			{ ...mockGame, id: '2', platform: 'PS5' },
-			{ ...mockGame, id: '3', platform: 'PC' }
+			{ ...mockGame, id: '3', platform: 'PC' },
 		]);
 		const pcGames = await db.games.where('platform').equals('PC').toArray();
 		expect(pcGames.length).toBe(2);
@@ -68,7 +68,7 @@ describe('Dexie Database', () => {
 	it('should query by genre index', async () => {
 		await db.games.bulkPut([
 			{ ...mockGame, id: '1', genre: 'Action' },
-			{ ...mockGame, id: '2', genre: 'RPG' }
+			{ ...mockGame, id: '2', genre: 'RPG' },
 		]);
 		const actionGames = await db.games.where('genre').equals('Action').toArray();
 		expect(actionGames.length).toBe(1);
@@ -78,7 +78,7 @@ describe('Dexie Database', () => {
 		await db.games.bulkPut([
 			{ ...mockGame, id: '1', tier: 'S - Masterpiece' },
 			{ ...mockGame, id: '2', tier: 'A - Amazing' },
-			{ ...mockGame, id: '3', tier: 'S - Masterpiece' }
+			{ ...mockGame, id: '3', tier: 'S - Masterpiece' },
 		]);
 		const masterpieces = await db.games.where('tier').equals('S - Masterpiece').toArray();
 		expect(masterpieces.length).toBe(2);
@@ -101,7 +101,7 @@ describe('Dexie Database', () => {
 	it('should clear all games', async () => {
 		await db.games.bulkPut([
 			{ ...mockGame, id: '1' },
-			{ ...mockGame, id: '2' }
+			{ ...mockGame, id: '2' },
 		]);
 		await db.games.clear();
 		const count = await db.games.count();
@@ -112,7 +112,7 @@ describe('Dexie Database', () => {
 		await db.games.bulkPut([
 			{ ...mockGame, id: '1' },
 			{ ...mockGame, id: '2' },
-			{ ...mockGame, id: '3' }
+			{ ...mockGame, id: '3' },
 		]);
 		const count = await db.games.count();
 		expect(count).toBe(3);

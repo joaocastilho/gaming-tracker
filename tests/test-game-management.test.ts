@@ -19,7 +19,7 @@ describe('Game Management Flows', () => {
 			genre: 'Action',
 			coOp: 'No',
 			status: 'Planned',
-			playtime: '8h 0m'
+			playtime: '8h 0m',
 		});
 
 		gamesStore.addGame(gameToAdd);
@@ -41,7 +41,7 @@ describe('Game Management Flows', () => {
 			genre: 'Action',
 			coOp: 'No',
 			status: 'Planned',
-			playtime: '8h 0m'
+			playtime: '8h 0m',
 		});
 		gamesStore.addGame(gameToAdd);
 		addedGameId = gameToAdd.id;
@@ -61,7 +61,7 @@ describe('Game Management Flows', () => {
 			ratingStory: 7,
 			ratingGameplay: 9,
 			score: 16,
-			tier: 'A - Amazing'
+			tier: 'A - Amazing',
 		});
 
 		gamesStore.updateGame(addedGameId, updatedGame);

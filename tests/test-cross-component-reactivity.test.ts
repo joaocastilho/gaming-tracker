@@ -33,7 +33,7 @@ const mockGames: Game[] = [
 		ratingStory: 9,
 		ratingGameplay: 10,
 		score: 97,
-		tier: 'S - Masterpiece'
+		tier: 'S - Masterpiece',
 	},
 	{
 		id: '2',
@@ -52,7 +52,7 @@ const mockGames: Game[] = [
 		ratingStory: 8,
 		ratingGameplay: 10,
 		score: 90,
-		tier: 'A - Amazing'
+		tier: 'A - Amazing',
 	},
 	{
 		id: '3',
@@ -71,7 +71,7 @@ const mockGames: Game[] = [
 		ratingStory: 8,
 		ratingGameplay: 9,
 		score: 87,
-		tier: 'A - Amazing'
+		tier: 'A - Amazing',
 	},
 	{
 		id: '4',
@@ -90,7 +90,7 @@ const mockGames: Game[] = [
 		ratingStory: null,
 		ratingGameplay: null,
 		score: null,
-		tier: null
+		tier: null,
 	},
 	{
 		id: '5',
@@ -109,8 +109,8 @@ const mockGames: Game[] = [
 		ratingStory: null,
 		ratingGameplay: null,
 		score: null,
-		tier: null
-	}
+		tier: null,
+	},
 ];
 
 describe('Cross-Component Reactivity', () => {
@@ -303,7 +303,7 @@ describe('Cross-Component Reactivity', () => {
 				statuses: [],
 				tiers: [],
 				sortOption: null,
-				activeTab: 'all' as const
+				activeTab: 'all' as const,
 			};
 
 			filtersStore.togglePlatform('PC');
@@ -333,9 +333,7 @@ describe('Cross-Component Reactivity', () => {
 
 			const filteredGames = filteredGamesStore.games;
 			const expectedTiers = ['S - Masterpiece', 'A - Amazing'];
-			expect(filteredGames.every((g) => g.tier !== null && expectedTiers.includes(g.tier))).toBe(
-				true
-			);
+			expect(filteredGames.every((g) => g.tier !== null && expectedTiers.includes(g.tier))).toBe(true);
 			expect(filteredGames.length).toBe(3); // Zelda, Dark Souls, Hollow Knight
 		});
 	});
@@ -461,7 +459,7 @@ describe('Cross-Component Reactivity', () => {
 				ratingStory: null,
 				ratingGameplay: null,
 				score: null,
-				tier: null
+				tier: null,
 			};
 
 			gamesStore.addGame(newGame);
@@ -489,7 +487,7 @@ describe('Cross-Component Reactivity', () => {
 				ratingStory: 7,
 				ratingGameplay: 8,
 				score: 77,
-				tier: 'B - Great'
+				tier: 'B - Great',
 			};
 
 			const initialCount = gamesStore.games.length;
@@ -527,7 +525,7 @@ describe('Cross-Component Reactivity', () => {
 				ratingStory: 8,
 				ratingGameplay: 7,
 				score: 73,
-				tier: 'C - Good'
+				tier: 'C - Good',
 			};
 
 			gamesStore.addGame(newGame);

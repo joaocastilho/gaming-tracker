@@ -43,7 +43,7 @@ const createCompletedGame = (overrides: Partial<MockGame>): MockGame => ({
 	ratingGameplay: 8,
 	score: 8.0,
 	tier: 'A',
-	...overrides
+	...overrides,
 });
 
 const createPlannedGame = (overrides: Partial<MockGame>): MockGame => ({
@@ -64,7 +64,7 @@ const createPlannedGame = (overrides: Partial<MockGame>): MockGame => ({
 	ratingGameplay: null,
 	score: null,
 	tier: null,
-	...overrides
+	...overrides,
 });
 
 describe('Hours Played Sorting (Completed Games)', () => {
@@ -78,7 +78,7 @@ describe('Hours Played Sorting (Completed Games)', () => {
 		createCompletedGame({ id: '1', title: 'Short Game', playtime: '5h 30m' }),
 		createCompletedGame({ id: '2', title: 'Long Game', playtime: '100h 0m' }),
 		createCompletedGame({ id: '3', title: 'Medium Game', playtime: '25h 45m' }),
-		createCompletedGame({ id: '4', title: 'Quick Game', playtime: '2h 15m' })
+		createCompletedGame({ id: '4', title: 'Quick Game', playtime: '2h 15m' }),
 	];
 
 	it('should sort by hours played in ascending order (shortest first)', async () => {
@@ -125,7 +125,7 @@ describe('Hours Played Sorting (Completed Games)', () => {
 
 		const gamesWithNull: MockGame[] = [
 			...completedGames,
-			createCompletedGame({ id: '5', title: 'No Hours Game', playtime: '' })
+			createCompletedGame({ id: '5', title: 'No Hours Game', playtime: '' }),
 		];
 		gamesStore.initializeGames(gamesWithNull);
 		appStore.setActiveTab('completed');
@@ -173,7 +173,7 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		createPlannedGame({ id: '1', title: 'Long RPG', playtime: '80h 0m' }),
 		createPlannedGame({ id: '2', title: 'Short Indie', playtime: '6h 30m' }),
 		createPlannedGame({ id: '3', title: 'Medium Adventure', playtime: '20h 0m' }),
-		createPlannedGame({ id: '4', title: 'Quick Puzzle', playtime: '3h 0m' })
+		createPlannedGame({ id: '4', title: 'Quick Puzzle', playtime: '3h 0m' }),
 	];
 
 	it('should sort by time to beat in ascending order (shortest first)', async () => {
@@ -221,7 +221,7 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		const gamesWithSameTime: MockGame[] = [
 			createPlannedGame({ id: '1', title: 'Game A', playtime: '10h 0m' }),
 			createPlannedGame({ id: '2', title: 'Game B', playtime: '10h 0m' }),
-			createPlannedGame({ id: '3', title: 'Game C', playtime: '10h 0m' })
+			createPlannedGame({ id: '3', title: 'Game C', playtime: '10h 0m' }),
 		];
 		gamesStore.initializeGames(gamesWithSameTime);
 		appStore.setActiveTab('planned');
@@ -271,7 +271,7 @@ describe('Cross-tab Sorting Behavior', () => {
 		createCompletedGame({ id: '1', title: 'Completed A', playtime: '50h 0m' }),
 		createCompletedGame({ id: '2', title: 'Completed B', playtime: '10h 0m' }),
 		createPlannedGame({ id: '3', title: 'Planned A', playtime: '30h 0m' }),
-		createPlannedGame({ id: '4', title: 'Planned B', playtime: '5h 0m' })
+		createPlannedGame({ id: '4', title: 'Planned B', playtime: '5h 0m' }),
 	];
 
 	it('should only show hoursPlayed sort option results for completed tab', async () => {
@@ -324,7 +324,7 @@ describe('Playtime Parsing Edge Cases', () => {
 			createCompletedGame({ id: '1', title: 'Zero Minutes', playtime: '10h 0m' }),
 			createCompletedGame({ id: '2', title: 'With Minutes', playtime: '10h 30m' }),
 			createCompletedGame({ id: '3', title: 'Zero Hours', playtime: '0h 45m' }),
-			createCompletedGame({ id: '4', title: 'Large Hours', playtime: '999h 59m' })
+			createCompletedGame({ id: '4', title: 'Large Hours', playtime: '999h 59m' }),
 		];
 		gamesStore.initializeGames(edgeCaseGames);
 		appStore.setActiveTab('completed');

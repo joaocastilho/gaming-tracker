@@ -46,23 +46,19 @@ async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
 	const branch = env.GH_BRANCH || 'main';
 
 	if (!token || !owner || !repo || !path) {
-		throw new Error(
-			`GitHub sync not configured: token=${!!token}, owner=${owner}, repo=${repo}, path=${path}`
-		);
+		throw new Error(`GitHub sync not configured: token=${!!token}, owner=${owner}, repo=${repo}, path=${path}`);
 	}
 
 	const apiBase = 'https://api.github.com';
 
 	const getRes = await fetch(
-		`${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(
-			branch
-		)}`,
+		`${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(branch)}`,
 		{
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: 'application/vnd.github+json',
-				'User-Agent': 'gaming-tracker-cloudflare'
-			}
+				'User-Agent': 'gaming-tracker-cloudflare',
+			},
 		}
 	);
 
@@ -79,24 +75,21 @@ async function syncGamesToGitHub(data: GamesPayload, env: Env): Promise<void> {
 		return;
 	}
 
-	const putRes = await fetch(
-		`${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`,
-		{
-			method: 'PUT',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				Accept: 'application/vnd.github+json',
-				'Content-Type': 'application/json',
-				'User-Agent': 'gaming-tracker-cloudflare'
-			},
-			body: JSON.stringify({
-				message: 'chore(data): update games.json via cloudflare editor',
-				content: utf8ToBase64(nextContent),
-				sha: fileJson.sha,
-				branch
-			})
-		}
-	);
+	const putRes = await fetch(`${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
+		method: 'PUT',
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: 'application/vnd.github+json',
+			'Content-Type': 'application/json',
+			'User-Agent': 'gaming-tracker-cloudflare',
+		},
+		body: JSON.stringify({
+			message: 'chore(data): update games.json via cloudflare editor',
+			content: utf8ToBase64(nextContent),
+			sha: fileJson.sha,
+			branch,
+		}),
+	});
 
 	if (!putRes.ok) {
 		const errorBody = await putRes.text().catch(() => 'no body');
@@ -117,13 +110,9 @@ async function verifySession(cookieHeader: string | null, secret: string): Promi
 	if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) return false;
 
 	const encoder = new TextEncoder();
-	const key = await crypto.subtle.importKey(
-		'raw',
-		encoder.encode(secret),
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign']
-	);
+	const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, [
+		'sign',
+	]);
 	const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(expiresRaw));
 	const bytes = new Uint8Array(signature);
 
@@ -160,12 +149,7 @@ function binaryToBase64(bytes: Uint8Array): string {
 /**
  * Commit a file to GitHub via the Contents API
  */
-async function commitFileToGitHub(
-	filePath: string,
-	content: Uint8Array,
-	message: string,
-	env: Env
-): Promise<void> {
+async function commitFileToGitHub(filePath: string, content: Uint8Array, message: string, env: Env): Promise<void> {
 	const token = env.GITHUB_TOKEN;
 	const owner = env.GH_REPO_OWNER;
 	const repo = env.GH_REPO_NAME;
@@ -180,15 +164,13 @@ async function commitFileToGitHub(
 	// Get current file SHA if it exists
 	let sha: string | undefined;
 	const getRes = await fetch(
-		`${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(
-			branch
-		)}`,
+		`${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(branch)}`,
 		{
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: 'application/vnd.github+json',
-				'User-Agent': 'gaming-tracker-cloudflare'
-			}
+				'User-Agent': 'gaming-tracker-cloudflare',
+			},
 		}
 	);
 
@@ -198,24 +180,21 @@ async function commitFileToGitHub(
 	}
 
 	// Create or update the file
-	const putRes = await fetch(
-		`${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(filePath)}`,
-		{
-			method: 'PUT',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				Accept: 'application/vnd.github+json',
-				'Content-Type': 'application/json',
-				'User-Agent': 'gaming-tracker-cloudflare'
-			},
-			body: JSON.stringify({
-				message,
-				content: binaryToBase64(content),
-				sha,
-				branch
-			})
-		}
-	);
+	const putRes = await fetch(`${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(filePath)}`, {
+		method: 'PUT',
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: 'application/vnd.github+json',
+			'Content-Type': 'application/json',
+			'User-Agent': 'gaming-tracker-cloudflare',
+		},
+		body: JSON.stringify({
+			message,
+			content: binaryToBase64(content),
+			sha,
+			branch,
+		}),
+	});
 
 	if (!putRes.ok) {
 		const errorBody = await putRes.text().catch(() => 'no body');
@@ -239,24 +218,21 @@ async function triggerOptimizeWorkflow(gameId: string, env: Env): Promise<void> 
 
 	const apiBase = 'https://api.github.com';
 
-	const res = await fetch(
-		`${apiBase}/repos/${owner}/${repo}/actions/workflows/optimize-covers.yml/dispatches`,
-		{
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				Accept: 'application/vnd.github+json',
-				'Content-Type': 'application/json',
-				'User-Agent': 'gaming-tracker-cloudflare'
+	const res = await fetch(`${apiBase}/repos/${owner}/${repo}/actions/workflows/optimize-covers.yml/dispatches`, {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: 'application/vnd.github+json',
+			'Content-Type': 'application/json',
+			'User-Agent': 'gaming-tracker-cloudflare',
+		},
+		body: JSON.stringify({
+			ref: branch,
+			inputs: {
+				game_id: gameId,
 			},
-			body: JSON.stringify({
-				ref: branch,
-				inputs: {
-					game_id: gameId
-				}
-			})
-		}
-	);
+		}),
+	});
 
 	if (!res.ok) {
 		const errorBody = await res.text().catch(() => 'no body');
@@ -274,12 +250,12 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 				JSON.stringify({
 					event: 'config_error',
 					target: 'games_write',
-					reason: 'missing_session_secret'
+					reason: 'missing_session_secret',
 				})
 			);
 			return new Response(JSON.stringify({ error: 'Session not configured' }), {
 				status: 500,
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 
@@ -289,12 +265,12 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 				JSON.stringify({
 					event: 'auth_failed',
 					target: 'games_write',
-					reason: 'invalid_session'
+					reason: 'invalid_session',
 				})
 			);
 			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
 				status: 401,
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 
@@ -308,7 +284,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			if (!gamesJson) {
 				return new Response(JSON.stringify({ error: 'Invalid payload: games JSON required' }), {
 					status: 400,
-					headers: { 'Content-Type': 'application/json' }
+					headers: { 'Content-Type': 'application/json' },
 				});
 			}
 			body = JSON.parse(gamesJson);
@@ -343,16 +319,13 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 					event: 'validation_failed',
 					target: 'games_write',
 					reason: 'invalid_content_type',
-					contentType
+					contentType,
 				})
 			);
-			return new Response(
-				JSON.stringify({ error: 'Expected application/json or multipart/form-data' }),
-				{
-					status: 400,
-					headers: { 'Content-Type': 'application/json' }
-				}
-			);
+			return new Response(JSON.stringify({ error: 'Expected application/json or multipart/form-data' }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' },
+			});
 		}
 
 		if (!body || !Array.isArray(body.games)) {
@@ -360,12 +333,12 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 				JSON.stringify({
 					event: 'validation_failed',
 					target: 'games_write',
-					reason: 'missing_or_invalid_games_array'
+					reason: 'missing_or_invalid_games_array',
 				})
 			);
 			return new Response(JSON.stringify({ error: 'Invalid games payload' }), {
 				status: 400,
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 
@@ -375,17 +348,17 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 				JSON.stringify({
 					event: 'validation_failed',
 					target: 'games_write',
-					issues: parsed.error.issues
+					issues: parsed.error.issues,
 				})
 			);
 			return new Response(
 				JSON.stringify({
 					error: 'Validation failed',
-					issues: parsed.error.issues
+					issues: parsed.error.issues,
 				}),
 				{
 					status: 400,
-					headers: { 'Content-Type': 'application/json' }
+					headers: { 'Content-Type': 'application/json' },
 				}
 			);
 		}
@@ -396,15 +369,11 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 			// Compute score for completed games
 			if (game.status === 'Completed') {
-				if (
-					game.ratingPresentation != null &&
-					game.ratingStory != null &&
-					game.ratingGameplay != null
-				) {
+				if (game.ratingPresentation != null && game.ratingStory != null && game.ratingGameplay != null) {
 					game.score = computeScore({
 						ratingPresentation: game.ratingPresentation,
 						ratingStory: game.ratingStory,
-						ratingGameplay: game.ratingGameplay
+						ratingGameplay: game.ratingGameplay,
 					});
 				}
 			}
@@ -439,8 +408,8 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			games: normalizedGames,
 			meta: {
 				...parsed.data.meta,
-				lastUpdated: new Date().toISOString()
-			}
+				lastUpdated: new Date().toISOString(),
+			},
 		};
 
 		// Push to GitHub - this will trigger Cloudflare Pages redeploy
@@ -448,24 +417,24 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		return new Response(JSON.stringify({ ok: true, meta: nextData.meta }), {
 			status: 200,
-			headers: { 'Content-Type': 'application/json' }
+			headers: { 'Content-Type': 'application/json' },
 		});
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		console.error(
 			JSON.stringify({
 				event: 'games_write_error',
-				message: errorMessage
+				message: errorMessage,
 			})
 		);
 		return new Response(
 			JSON.stringify({
 				error: 'Failed to update games',
-				details: errorMessage
+				details: errorMessage,
 			}),
 			{
 				status: 500,
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
 			}
 		);
 	}

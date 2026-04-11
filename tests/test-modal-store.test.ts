@@ -25,14 +25,14 @@ const mockGame: Game = {
 	finishedDate: '2024-01-15',
 	ratingPresentation: 9,
 	ratingStory: 9,
-	ratingGameplay: 9
+	ratingGameplay: 9,
 };
 
 const mockGame2: Game = {
 	...mockGame,
 	id: '2',
 	title: 'Test Game 2',
-	mainTitle: 'Test Game 2'
+	mainTitle: 'Test Game 2',
 };
 
 const mockGames = [mockGame, mockGame2];
@@ -199,7 +199,7 @@ describe('ModalStore', () => {
 			const filterContext = {
 				searchTerm: 'test',
 				platforms: ['PC'],
-				activeTab: 'completed' as const
+				activeTab: 'completed' as const,
 			};
 			modalStore.openViewModal(mockGame, mockGames, filterContext);
 			const state = modalStore.getState();

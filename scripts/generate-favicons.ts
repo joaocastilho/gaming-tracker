@@ -24,7 +24,7 @@ async function generateFavicons(): Promise<void> {
 		await sharp(inputPath)
 			.resize(32, 32, {
 				fit: 'contain',
-				background: { r: 0, g: 0, b: 0, alpha: 0 }
+				background: { r: 0, g: 0, b: 0, alpha: 0 },
 			})
 			.png() // Fallback to PNG as .ico() is not natively supported by sharp
 			.toFile(join(outputDir, 'favicon.ico'));
@@ -38,7 +38,7 @@ async function generateFavicons(): Promise<void> {
 			{ name: 'favicon-32x32', size: 32 },
 			{ name: 'apple-touch-icon', size: 180 },
 			{ name: 'android-chrome-192x192', size: 192 },
-			{ name: 'android-chrome-512x512', size: 512 }
+			{ name: 'android-chrome-512x512', size: 512 },
 		];
 
 		for (const { name, size } of pngSizes) {
@@ -47,12 +47,12 @@ async function generateFavicons(): Promise<void> {
 			await sharp(inputPath)
 				.resize(size, size, {
 					fit: 'contain',
-					background: { r: 0, g: 0, b: 0, alpha: 0 } // Transparent background
+					background: { r: 0, g: 0, b: 0, alpha: 0 }, // Transparent background
 				})
 				.png({
 					quality: 95,
 					adaptiveFiltering: true,
-					compressionLevel: 9
+					compressionLevel: 9,
 				})
 				.toFile(outputPath);
 
@@ -63,7 +63,7 @@ async function generateFavicons(): Promise<void> {
 		// Generate maskable PNG icons
 		const maskableSizes = [
 			{ name: 'android-chrome-maskable-192x192', size: 192 },
-			{ name: 'android-chrome-maskable-512x512', size: 512 }
+			{ name: 'android-chrome-maskable-512x512', size: 512 },
 		];
 
 		const THEME_COLOR = { r: 15, g: 20, b: 25 }; // #0f1419
@@ -77,20 +77,20 @@ async function generateFavicons(): Promise<void> {
 			await sharp(inputPath)
 				.resize(innerSize, innerSize, {
 					fit: 'contain',
-					background: { r: 0, g: 0, b: 0, alpha: 0 }
+					background: { r: 0, g: 0, b: 0, alpha: 0 },
 				})
 				.extend({
 					top: padding,
 					bottom: size - innerSize - padding,
 					left: padding,
 					right: size - innerSize - padding,
-					background: { r: 0, g: 0, b: 0, alpha: 0 }
+					background: { r: 0, g: 0, b: 0, alpha: 0 },
 				})
 				.flatten({ background: THEME_COLOR })
 				.png({
 					quality: 95,
 					adaptiveFiltering: true,
-					compressionLevel: 9
+					compressionLevel: 9,
 				})
 				.toFile(outputPath);
 

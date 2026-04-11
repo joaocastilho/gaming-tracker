@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { filtersStore } from '$lib/stores/filters.svelte';
-	import { Users } from 'lucide-svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { Users } from 'lucide-svelte';
 
-	interface Props {
-		label: string;
-		value: string;
-		isSelected: boolean;
+interface Props {
+	label: string;
+	value: string;
+	isSelected: boolean;
+}
+
+let { label, value, isSelected }: Props = $props();
+
+function toggle() {
+	filtersStore.toggleCoOp(value);
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === 'Enter' || event.key === ' ') {
+		event.preventDefault();
+		toggle();
 	}
-
-	let { label, value, isSelected }: Props = $props();
-
-	function toggle() {
-		filtersStore.toggleCoOp(value);
-	}
-
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			toggle();
-		}
-	}
+}
 </script>
 
 <button

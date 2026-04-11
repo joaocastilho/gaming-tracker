@@ -23,7 +23,7 @@ describe('UI Integration Reproduction', () => {
 		ratingPresentation: null,
 		ratingStory: null,
 		ratingGameplay: null,
-		tier: null
+		tier: null,
 	};
 
 	const mockGameB: Game = {
@@ -31,7 +31,7 @@ describe('UI Integration Reproduction', () => {
 		id: '2',
 		title: 'Zelda',
 		mainTitle: 'Zelda',
-		score: 10
+		score: 10,
 	};
 
 	beforeEach(() => {

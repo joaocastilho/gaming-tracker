@@ -12,7 +12,7 @@ function stripHtmlComments() {
 		apply: 'build' as const,
 		transformIndexHtml(html: string) {
 			return html.replace(/<!--(?!\[\[!-?-?])(?:\s|[\S\s])*?-->/g, '');
-		}
+		},
 	};
 }
 
@@ -25,9 +25,9 @@ export default defineConfig({
 				day: 'numeric',
 				year: 'numeric',
 				hour: 'numeric',
-				minute: '2-digit'
+				minute: '2-digit',
 			}).format(new Date())
-		)
+		),
 	},
 	plugins: [
 		tailwindcss(),
@@ -45,9 +45,9 @@ export default defineConfig({
 					}
 					next();
 				});
-			}
+			},
 		},
-		devtoolsJson()
+		devtoolsJson(),
 	],
 	build: {
 		rollupOptions: {
@@ -77,11 +77,7 @@ export default defineConfig({
 							return 'vendor-ui';
 						}
 
-						if (
-							id.includes('date-fns') ||
-							id.includes('zod') ||
-							id.match(/node_modules\/(lodash|date-fns|dayjs)/)
-						) {
+						if (id.includes('date-fns') || id.includes('zod') || id.match(/node_modules\/(lodash|date-fns|dayjs)/)) {
 							return 'vendor-utils';
 						}
 						if (id.includes('svelte') || id.includes('@sveltejs')) {
@@ -89,8 +85,8 @@ export default defineConfig({
 						}
 						return 'vendor';
 					}
-				}
-			}
+				},
+			},
 		},
 		target: 'es2020',
 		cssCodeSplit: true,
@@ -99,19 +95,19 @@ export default defineConfig({
 		assetsInlineLimit: 4096,
 		chunkSizeWarningLimit: 1000,
 		modulePreload: {
-			polyfill: false
-		}
+			polyfill: false,
+		},
 	},
 	optimizeDeps: {
 		include: ['lucide-svelte', 'date-fns', 'zod', 'dexie'],
-		exclude: ['web-vitals', '@chenglou/pretext']
+		exclude: ['web-vitals', '@chenglou/pretext'],
 	},
 	ssr: {
-		noExternal: ['@chenglou/pretext']
+		noExternal: ['@chenglou/pretext'],
 	},
 	server: {
 		fs: {
-			strict: false
-		}
-	}
+			strict: false,
+		},
+	},
 });

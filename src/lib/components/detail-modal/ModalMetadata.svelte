@@ -1,31 +1,31 @@
 <script lang="ts">
-	import type { Game } from '$lib/types/game';
-	import { getPlatformClasses, getGenreClasses } from '$lib/utils/colorConstants';
-	import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
-	import { Users, Calendar, Flag, Clock } from 'lucide-svelte';
+import type { Game } from '$lib/types/game';
+import { getPlatformClasses, getGenreClasses } from '$lib/utils/colorConstants';
+import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
+import { Users, Calendar, Flag, Clock } from 'lucide-svelte';
 
-	interface Props {
-		game: Game;
+interface Props {
+	game: Game;
+}
+
+let { game }: Props = $props();
+
+function formatDate(dateString: string | null): string {
+	if (!dateString) return 'Not completed';
+	try {
+		const parts = dateString.split('/');
+		if (parts.length !== 3) return 'Invalid date';
+		const day = parseInt(parts[0], 10);
+		const month = parseInt(parts[1], 10) - 1;
+		const year = parseInt(parts[2], 10);
+		if (isNaN(day) || isNaN(month) || isNaN(year)) return 'Invalid date';
+		const date = new Date(year, month, day);
+		if (isNaN(date.getTime())) return 'Invalid date';
+		return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+	} catch {
+		return 'Invalid date';
 	}
-
-	let { game }: Props = $props();
-
-	function formatDate(dateString: string | null): string {
-		if (!dateString) return 'Not completed';
-		try {
-			const parts = dateString.split('/');
-			if (parts.length !== 3) return 'Invalid date';
-			const day = parseInt(parts[0], 10);
-			const month = parseInt(parts[1], 10) - 1;
-			const year = parseInt(parts[2], 10);
-			if (isNaN(day) || isNaN(month) || isNaN(year)) return 'Invalid date';
-			const date = new Date(year, month, day);
-			if (isNaN(date.getTime())) return 'Invalid date';
-			return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-		} catch {
-			return 'Invalid date';
-		}
-	}
+}
 </script>
 
 <div class="mb-2 flex items-center justify-between md:mb-4">

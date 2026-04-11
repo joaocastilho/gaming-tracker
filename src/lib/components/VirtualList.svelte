@@ -1,88 +1,85 @@
 <script lang="ts" generics="T">
-	import type { Snippet } from 'svelte';
+import type { Snippet } from 'svelte';
 
-	import { safeKeyExtractor } from '$lib/utils/safeKeyExtractor';
+import { safeKeyExtractor } from '$lib/utils/safeKeyExtractor';
 
-	interface Props {
-		items: T[];
-		itemHeight: number;
-		containerHeight?: number; // Optional now
-		overscan?: number;
-		renderItem: Snippet<[item: T, isPriority: boolean]>;
-		keyExtractor: (item: T, index: number) => string | number;
-		className?: string;
-		priorityCount?: number;
-		useWindowScroll?: boolean;
-	}
+interface Props {
+	items: T[];
+	itemHeight: number;
+	containerHeight?: number; // Optional now
+	overscan?: number;
+	renderItem: Snippet<[item: T, isPriority: boolean]>;
+	keyExtractor: (item: T, index: number) => string | number;
+	className?: string;
+	priorityCount?: number;
+	useWindowScroll?: boolean;
+}
 
-	let {
-		items = [],
-		itemHeight = 200,
-		containerHeight = 600,
-		overscan = 5,
-		renderItem,
-		keyExtractor,
-		className = '',
-		priorityCount = 6,
-		useWindowScroll = false
-	}: Props = $props();
+let {
+	items = [],
+	itemHeight = 200,
+	containerHeight = 600,
+	overscan = 5,
+	renderItem,
+	keyExtractor,
+	className = '',
+	priorityCount = 6,
+	useWindowScroll = false,
+}: Props = $props();
 
-	let container = $state<HTMLDivElement>();
-	let scrollTop = $state(0);
-	let windowHeight = $state(0);
+let container = $state<HTMLDivElement>();
+let scrollTop = $state(0);
+let windowHeight = $state(0);
 
-	let visibleRange = $derived.by(() => {
-		const effectiveHeight = useWindowScroll ? windowHeight : containerHeight;
-		const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
-		const end = Math.min(
-			items.length,
-			Math.ceil((scrollTop + effectiveHeight) / itemHeight) + overscan
-		);
-		return { start, end };
-	});
+let visibleRange = $derived.by(() => {
+	const effectiveHeight = useWindowScroll ? windowHeight : containerHeight;
+	const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
+	const end = Math.min(items.length, Math.ceil((scrollTop + effectiveHeight) / itemHeight) + overscan);
+	return { start, end };
+});
 
-	let visibleItems = $derived.by(() => {
-		const range = visibleRange;
-		return items.slice(range.start, range.end).map((item, index) => ({
-			item,
-			index: range.start + index
-		}));
-	});
+let visibleItems = $derived.by(() => {
+	const range = visibleRange;
+	return items.slice(range.start, range.end).map((item, index) => ({
+		item,
+		index: range.start + index,
+	}));
+});
 
-	let totalHeight = $derived(items.length * itemHeight);
+let totalHeight = $derived(items.length * itemHeight);
 
-	function handleScroll(event: Event) {
-		if (useWindowScroll) {
-			if (container) {
-				const rect = container.getBoundingClientRect();
-				const offset = -rect.top;
-				scrollTop = Math.max(0, offset);
-			}
-		} else {
-			const target = event.target as HTMLDivElement;
-			scrollTop = target.scrollTop;
+function handleScroll(event: Event) {
+	if (useWindowScroll) {
+		if (container) {
+			const rect = container.getBoundingClientRect();
+			const offset = -rect.top;
+			scrollTop = Math.max(0, offset);
 		}
+	} else {
+		const target = event.target as HTMLDivElement;
+		scrollTop = target.scrollTop;
 	}
+}
 
-	function updateWindowHeight() {
-		if (typeof window !== 'undefined') {
-			windowHeight = window.innerHeight;
-		}
+function updateWindowHeight() {
+	if (typeof window !== 'undefined') {
+		windowHeight = window.innerHeight;
 	}
+}
 
-	$effect(() => {
-		if (useWindowScroll) {
-			window.addEventListener('scroll', handleScroll, { passive: true });
-			window.addEventListener('resize', updateWindowHeight);
-			updateWindowHeight();
-			handleScroll({} as Event);
+$effect(() => {
+	if (useWindowScroll) {
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		window.addEventListener('resize', updateWindowHeight);
+		updateWindowHeight();
+		handleScroll({} as Event);
 
-			return () => {
-				window.removeEventListener('scroll', handleScroll);
-				window.removeEventListener('resize', updateWindowHeight);
-			};
-		}
-	});
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+			window.removeEventListener('resize', updateWindowHeight);
+		};
+	}
+});
 </script>
 
 <div

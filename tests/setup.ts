@@ -10,7 +10,7 @@ global.fetch = vi.fn(() =>
 		ok: true,
 		json: () => Promise.resolve({}),
 		text: () => Promise.resolve(''),
-		blob: () => Promise.resolve(new Blob())
+		blob: () => Promise.resolve(new Blob()),
 	})
 ) as unknown as typeof fetch;
 
@@ -22,7 +22,7 @@ beforeEach(() => {
 		Object.defineProperty(window, 'scrollTo', {
 			value: vi.fn(),
 			writable: true,
-			configurable: true
+			configurable: true,
 		});
 
 		// Mock window.scrollIntoView
@@ -40,8 +40,8 @@ beforeEach(() => {
 				removeListener: vi.fn(),
 				addEventListener: vi.fn(),
 				removeEventListener: vi.fn(),
-				dispatchEvent: vi.fn()
-			}))
+				dispatchEvent: vi.fn(),
+			})),
 		});
 
 		// Mock IntersectionObserver
@@ -53,7 +53,7 @@ beforeEach(() => {
 		Object.defineProperty(window, 'IntersectionObserver', {
 			writable: true,
 			configurable: true,
-			value: MockIntersectionObserver
+			value: MockIntersectionObserver,
 		});
 
 		// Mock ResizeObserver
@@ -65,7 +65,7 @@ beforeEach(() => {
 		Object.defineProperty(window, 'ResizeObserver', {
 			writable: true,
 			configurable: true,
-			value: MockResizeObserver
+			value: MockResizeObserver,
 		});
 
 		// Mock navigator
@@ -78,9 +78,9 @@ beforeEach(() => {
 				userAgent: 'test-user-agent',
 				clipboard: {
 					writeText: vi.fn(),
-					readText: vi.fn()
-				}
-			}
+					readText: vi.fn(),
+				},
+			},
 		});
 	}
 
@@ -101,7 +101,7 @@ beforeEach(() => {
 			key: vi.fn((index: number) => Object.keys(store)[index] || null),
 			get length() {
 				return Object.keys(store).length;
-			}
+			},
 		};
 	};
 
@@ -109,13 +109,13 @@ beforeEach(() => {
 		Object.defineProperty(window, 'localStorage', {
 			value: createStorageMock(),
 			writable: true,
-			configurable: true
+			configurable: true,
 		});
 
 		Object.defineProperty(window, 'sessionStorage', {
 			value: createStorageMock(),
 			writable: true,
-			configurable: true
+			configurable: true,
 		});
 	}
 });
@@ -145,7 +145,7 @@ export function createTouchEvent(
 			force: 1,
 			radiusX: 1,
 			radiusY: 1,
-			rotationAngle: 0
+			rotationAngle: 0,
 		};
 		return touch as unknown as Touch;
 	});
@@ -154,7 +154,7 @@ export function createTouchEvent(
 		touches: type === 'touchend' ? [] : touchList,
 		changedTouches: touchList,
 		bubbles: true,
-		cancelable: true
+		cancelable: true,
 	});
 }
 
@@ -176,9 +176,7 @@ export function simulateSwipe(
 	// Touch move (intermediate steps)
 	for (let i = 1; i <= steps; i++) {
 		element.dispatchEvent(
-			createTouchEvent('touchmove', [
-				{ screenX: startX + deltaX * i, screenY: startY + deltaY * i }
-			])
+			createTouchEvent('touchmove', [{ screenX: startX + deltaX * i, screenY: startY + deltaY * i }])
 		);
 	}
 
@@ -191,7 +189,7 @@ export function setViewportWidth(width: number): void {
 	Object.defineProperty(window, 'innerWidth', {
 		writable: true,
 		configurable: true,
-		value: width
+		value: width,
 	});
 	window.dispatchEvent(new Event('resize'));
 }

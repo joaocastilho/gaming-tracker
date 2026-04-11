@@ -1,38 +1,38 @@
 <script lang="ts">
-	import { Monitor, Tag, Trophy } from 'lucide-svelte';
-	import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions';
+import { Monitor, Tag, Trophy } from 'lucide-svelte';
+import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions';
 
-	interface FilterOption {
-		value: string;
-		colorClass?: string;
+interface FilterOption {
+	value: string;
+	colorClass?: string;
+}
+
+interface Props {
+	type: 'platforms' | 'genres' | 'tiers';
+	options: FilterOption[];
+	selected: string[];
+	onToggle: (value: string) => void;
+	onReset: () => void;
+	onClose: () => void;
+}
+
+let { type, options, selected, onToggle, onReset, onClose }: Props = $props();
+
+const colors = {
+	platforms: getPlatformColor,
+	genres: getGenreColor,
+	tiers: getTierColor,
+};
+
+const colorFn = $derived(colors[type]);
+
+function handleBackdropClick(e: MouseEvent) {
+	const target = e.target as HTMLElement;
+	const isBackdrop = target.classList.contains('bg-black/60');
+	if (isBackdrop) {
+		onClose();
 	}
-
-	interface Props {
-		type: 'platforms' | 'genres' | 'tiers';
-		options: FilterOption[];
-		selected: string[];
-		onToggle: (value: string) => void;
-		onReset: () => void;
-		onClose: () => void;
-	}
-
-	let { type, options, selected, onToggle, onReset, onClose }: Props = $props();
-
-	const colors = {
-		platforms: getPlatformColor,
-		genres: getGenreColor,
-		tiers: getTierColor
-	};
-
-	const colorFn = $derived(colors[type]);
-
-	function handleBackdropClick(e: MouseEvent) {
-		const target = e.target as HTMLElement;
-		const isBackdrop = target.classList.contains('bg-black/60');
-		if (isBackdrop) {
-			onClose();
-		}
-	}
+}
 </script>
 
 <div

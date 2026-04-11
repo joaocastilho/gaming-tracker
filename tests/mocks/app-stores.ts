@@ -12,7 +12,7 @@ export const page = writable({
 	route: { id: '/' },
 	status: 200,
 	error: null,
-	data: {}
+	data: {},
 });
 
 // Navigation store

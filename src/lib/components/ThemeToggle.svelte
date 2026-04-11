@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { appStore } from '$lib/stores/app.svelte';
+import { appStore } from '$lib/stores/app.svelte';
 
-	// Directly read theme from the reactive store property
-	let theme = $derived(appStore.theme);
+// Directly read theme from the reactive store property
+let theme = $derived(appStore.theme);
 
-	function toggleTheme() {
-		appStore.toggleTheme();
-	}
+function toggleTheme() {
+	appStore.toggleTheme();
+}
 </script>
 
 <button

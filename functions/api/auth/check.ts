@@ -15,13 +15,9 @@ async function verifySession(cookieHeader: string | null, secret: string): Promi
 	if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) return false;
 
 	const encoder = new TextEncoder();
-	const key = await crypto.subtle.importKey(
-		'raw',
-		encoder.encode(secret),
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign']
-	);
+	const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, [
+		'sign',
+	]);
 	const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(expiresRaw));
 	const bytes = new Uint8Array(signature);
 
@@ -50,7 +46,7 @@ export const onRequestGet = async ({ request, env }: { request: Request; env: En
 	if (!secret) {
 		return new Response(JSON.stringify({ valid: false }), {
 			status: 200,
-			headers: { 'Content-Type': 'application/json' }
+			headers: { 'Content-Type': 'application/json' },
 		});
 	}
 
@@ -59,6 +55,6 @@ export const onRequestGet = async ({ request, env }: { request: Request; env: En
 
 	return new Response(JSON.stringify({ valid }), {
 		status: 200,
-		headers: { 'Content-Type': 'application/json' }
+		headers: { 'Content-Type': 'application/json' },
 	});
 };

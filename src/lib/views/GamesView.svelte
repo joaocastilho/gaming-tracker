@@ -1,96 +1,96 @@
 <script lang="ts">
-	import type { Game } from '$lib/types/game';
-	import GameCard from '$lib/components/GameCard.svelte';
-	import { editorStore } from '$lib/stores/editor.svelte';
-	import VirtualList from '$lib/components/VirtualList.svelte';
-	import SkeletonGrid from '$lib/components/SkeletonGrid.svelte';
-	import { browser } from '$app/environment';
+import type { Game } from '$lib/types/game';
+import GameCard from '$lib/components/GameCard.svelte';
+import { editorStore } from '$lib/stores/editor.svelte';
+import VirtualList from '$lib/components/VirtualList.svelte';
+import SkeletonGrid from '$lib/components/SkeletonGrid.svelte';
+import { browser } from '$app/environment';
 
-	interface Props {
-		filteredGames: Game[];
-		displayedGames?: Game[];
-		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
-		onEditGame?: (game: Game) => void;
-		onDeleteGame?: (game: Game) => void;
-		loading?: boolean;
-	}
+interface Props {
+	filteredGames: Game[];
+	displayedGames?: Game[];
+	onOpenModal?: (game: Game, displayedGames: Game[]) => void;
+	onEditGame?: (game: Game) => void;
+	onDeleteGame?: (game: Game) => void;
+	loading?: boolean;
+}
 
-	let {
-		filteredGames = [],
-		displayedGames: displayedGamesProp,
-		onOpenModal,
-		onEditGame,
-		onDeleteGame,
-		loading = false
-	}: Props = $props();
-	let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
+let {
+	filteredGames = [],
+	displayedGames: displayedGamesProp,
+	onOpenModal,
+	onEditGame,
+	onDeleteGame,
+	loading = false,
+}: Props = $props();
+let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
-	const isEditor = $derived($editorStore.editorMode);
-	let mounted = $state(browser);
-	let containerWidth = $state(1600);
+const isEditor = $derived($editorStore.editorMode);
+let mounted = $state(browser);
+let containerWidth = $state(1600);
 
-	let columns = $derived(
-		(() => {
-			if (!containerWidth) return 1;
-			// Minimum card width of 185px -> allows 2 columns at ~400px (185*2 + 12 gap = 382)
-			// But we also want 1 column at < 400px.
-			// 400px / 2 = 200px.
-			// Let's use 185px to be safe for 414px/428px devices.
-			const minCardWidth = 185;
-			const gap = 12;
-			const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
-			return Math.min(5, Math.max(1, calculatedColumns));
-		})()
-	);
+let columns = $derived(
+	(() => {
+		if (!containerWidth) return 1;
+		// Minimum card width of 185px -> allows 2 columns at ~400px (185*2 + 12 gap = 382)
+		// But we also want 1 column at < 400px.
+		// 400px / 2 = 200px.
+		// Let's use 185px to be safe for 414px/428px devices.
+		const minCardWidth = 185;
+		const gap = 12;
+		const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
+		return Math.min(5, Math.max(1, calculatedColumns));
+	})()
+);
 
-	let rows = $derived(
-		(() => {
-			if (!filteredGames) return [];
+let rows = $derived(
+	(() => {
+		if (!filteredGames) return [];
 
-			const uniqueGames = new Map();
-			filteredGames.forEach((game) => {
-				if (game && typeof game.id === 'string' && game.id.length > 0) {
-					if (!uniqueGames.has(game.id)) {
-						uniqueGames.set(game.id, game);
-					}
+		const uniqueGames = new Map();
+		filteredGames.forEach((game) => {
+			if (game && typeof game.id === 'string' && game.id.length > 0) {
+				if (!uniqueGames.has(game.id)) {
+					uniqueGames.set(game.id, game);
 				}
-			});
-
-			const validGames = Array.from(uniqueGames.values());
-
-			const result = [];
-			for (let i = 0; i < validGames.length; i += columns) {
-				const chunk = validGames.slice(i, i + columns);
-				const firstGameId = chunk[0]?.id || 'empty';
-				result.push({
-					id: `row-${i}-${firstGameId}`,
-					games: chunk,
-					startIndex: i
-				});
 			}
-			return result;
-		})()
-	);
+		});
 
-	let itemHeight = $derived(
-		(() => {
-			const containerPadding = 16;
-			const gap = 12;
-			const totalGapWidth = (columns - 1) * gap;
-			const availableWidth = containerWidth - containerPadding - totalGapWidth;
-			const columnWidth = availableWidth / columns;
-			const coverHeight = columnWidth * 1.5;
+		const validGames = Array.from(uniqueGames.values());
 
-			const infoRatio = 1.35;
-			const infoHeight = Math.max(220, Math.min(260, columnWidth * infoRatio));
+		const result = [];
+		for (let i = 0; i < validGames.length; i += columns) {
+			const chunk = validGames.slice(i, i + columns);
+			const firstGameId = chunk[0]?.id || 'empty';
+			result.push({
+				id: `row-${i}-${firstGameId}`,
+				games: chunk,
+				startIndex: i,
+			});
+		}
+		return result;
+	})()
+);
 
-			return coverHeight + infoHeight;
-		})()
-	);
+let itemHeight = $derived(
+	(() => {
+		const containerPadding = 16;
+		const gap = 12;
+		const totalGapWidth = (columns - 1) * gap;
+		const availableWidth = containerWidth - containerPadding - totalGapWidth;
+		const columnWidth = availableWidth / columns;
+		const coverHeight = columnWidth * 1.5;
 
-	function handleOpenModal(game: Game) {
-		onOpenModal?.(game, displayedGames);
-	}
+		const infoRatio = 1.35;
+		const infoHeight = Math.max(220, Math.min(260, columnWidth * infoRatio));
+
+		return coverHeight + infoHeight;
+	})()
+);
+
+function handleOpenModal(game: Game) {
+	onOpenModal?.(game, displayedGames);
+}
 </script>
 
 <div class="game-gallery-container" bind:clientWidth={containerWidth}>

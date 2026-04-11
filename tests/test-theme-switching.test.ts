@@ -61,8 +61,8 @@ class MockDOM {
 					} else {
 						element.classList.add(className);
 					}
-				}
-			}
+				},
+			},
 		};
 		return element;
 	}
@@ -88,7 +88,7 @@ const THEME_COLORS = {
 		primary: '#2563eb',
 		secondary: '#64748b',
 		muted: '#f1f5f9',
-		accent: '#f8fafc'
+		accent: '#f8fafc',
 	},
 	dark: {
 		background: '#0f172a',
@@ -96,14 +96,14 @@ const THEME_COLORS = {
 		primary: '#3b82f6',
 		secondary: '#94a3b8',
 		muted: '#1e293b',
-		accent: '#334155'
-	}
+		accent: '#334155',
+	},
 };
 
 const CONTRAST_REQUIREMENTS = {
 	normalText: 4.5, // WCAG AA for normal text
 	largeText: 3.0, // WCAG AA for large text (18pt+ or 14pt+ bold)
-	uiComponents: 3.0 // WCAG AA for UI components
+	uiComponents: 3.0, // WCAG AA for UI components
 };
 
 describe('Theme Switching', () => {
@@ -119,7 +119,7 @@ describe('Theme Switching', () => {
 			documentElement: dom.createElement('html'),
 			body: dom.createElement('body'),
 			querySelector: (selector: string) => dom.querySelector(selector),
-			querySelectorAll: (selector: string) => dom.querySelectorAll(selector)
+			querySelectorAll: (selector: string) => dom.querySelectorAll(selector),
 		};
 	});
 
@@ -204,14 +204,12 @@ describe('Theme Switching', () => {
 			'--background': THEME_COLORS.light.background,
 			'--foreground': THEME_COLORS.light.foreground,
 			'--primary': THEME_COLORS.light.primary,
-			'--secondary': THEME_COLORS.light.secondary
+			'--secondary': THEME_COLORS.light.secondary,
 		};
 
 		// Verify light theme colors are applied
 		Object.entries(lightVars).forEach(([prop, value]) => {
-			expect(value).toBe(
-				THEME_COLORS.light[prop.replace('--', '') as keyof typeof THEME_COLORS.light]
-			);
+			expect(value).toBe(THEME_COLORS.light[prop.replace('--', '') as keyof typeof THEME_COLORS.light]);
 		});
 
 		// Test dark theme colors
@@ -222,14 +220,12 @@ describe('Theme Switching', () => {
 			'--background': THEME_COLORS.dark.background,
 			'--foreground': THEME_COLORS.dark.foreground,
 			'--primary': THEME_COLORS.dark.primary,
-			'--secondary': THEME_COLORS.dark.secondary
+			'--secondary': THEME_COLORS.dark.secondary,
 		};
 
 		// Verify dark theme colors are applied
 		Object.entries(darkVars).forEach(([prop, value]) => {
-			expect(value).toBe(
-				THEME_COLORS.dark[prop.replace('--', '') as keyof typeof THEME_COLORS.dark]
-			);
+			expect(value).toBe(THEME_COLORS.dark[prop.replace('--', '') as keyof typeof THEME_COLORS.dark]);
 		});
 	});
 
@@ -242,19 +238,13 @@ describe('Theme Switching', () => {
 			backgroundForeground: 21.0, // Black on white
 			primaryBackground: 8.6, // Blue on white
 			secondaryBackground: 4.6, // Gray on white
-			mutedBackground: 1.2 // Light gray on white
+			mutedBackground: 1.2, // Light gray on white
 		};
 
 		// Verify light theme meets WCAG AA standards
-		expect(lightContrasts.backgroundForeground).toBeGreaterThanOrEqual(
-			CONTRAST_REQUIREMENTS.normalText
-		);
-		expect(lightContrasts.primaryBackground).toBeGreaterThanOrEqual(
-			CONTRAST_REQUIREMENTS.normalText
-		);
-		expect(lightContrasts.secondaryBackground).toBeGreaterThanOrEqual(
-			CONTRAST_REQUIREMENTS.normalText
-		);
+		expect(lightContrasts.backgroundForeground).toBeGreaterThanOrEqual(CONTRAST_REQUIREMENTS.normalText);
+		expect(lightContrasts.primaryBackground).toBeGreaterThanOrEqual(CONTRAST_REQUIREMENTS.normalText);
+		expect(lightContrasts.secondaryBackground).toBeGreaterThanOrEqual(CONTRAST_REQUIREMENTS.normalText);
 
 		// Test dark theme contrast ratios
 		document.documentElement.className = 'dark';
@@ -263,19 +253,13 @@ describe('Theme Switching', () => {
 			backgroundForeground: 16.0, // White on dark blue
 			primaryBackground: 7.2, // Light blue on dark blue
 			secondaryBackground: 5.8, // Light gray on dark blue
-			mutedBackground: 2.8 // Medium gray on dark blue
+			mutedBackground: 2.8, // Medium gray on dark blue
 		};
 
 		// Verify dark theme meets WCAG AA standards
-		expect(darkContrasts.backgroundForeground).toBeGreaterThanOrEqual(
-			CONTRAST_REQUIREMENTS.normalText
-		);
-		expect(darkContrasts.primaryBackground).toBeGreaterThanOrEqual(
-			CONTRAST_REQUIREMENTS.normalText
-		);
-		expect(darkContrasts.secondaryBackground).toBeGreaterThanOrEqual(
-			CONTRAST_REQUIREMENTS.normalText
-		);
+		expect(darkContrasts.backgroundForeground).toBeGreaterThanOrEqual(CONTRAST_REQUIREMENTS.normalText);
+		expect(darkContrasts.primaryBackground).toBeGreaterThanOrEqual(CONTRAST_REQUIREMENTS.normalText);
+		expect(darkContrasts.secondaryBackground).toBeGreaterThanOrEqual(CONTRAST_REQUIREMENTS.normalText);
 	});
 
 	test('Theme Transitions', () => {
@@ -320,7 +304,7 @@ describe('Theme Switching', () => {
 		const mockMediaQuery = {
 			matches: true,
 			addEventListener: () => {},
-			removeEventListener: () => {}
+			removeEventListener: () => {},
 		};
 
 		// Simulate no stored preference - should use system preference

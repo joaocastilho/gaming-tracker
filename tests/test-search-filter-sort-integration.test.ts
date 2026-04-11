@@ -28,7 +28,7 @@ const mockGames: Partial<Game>[] = [
 		finishedDate: '15/03/2023',
 		ratingGameplay: 10,
 		ratingPresentation: 9,
-		ratingStory: 8
+		ratingStory: 8,
 	},
 	{
 		id: '2',
@@ -42,7 +42,7 @@ const mockGames: Partial<Game>[] = [
 		finishedDate: '20/01/2023',
 		ratingGameplay: 9,
 		ratingPresentation: 8,
-		ratingStory: 7
+		ratingStory: 7,
 	},
 	{
 		id: '3',
@@ -56,7 +56,7 @@ const mockGames: Partial<Game>[] = [
 		finishedDate: '10/06/2023',
 		ratingGameplay: 10,
 		ratingPresentation: 9,
-		ratingStory: 8
+		ratingStory: 8,
 	},
 	{
 		id: '4',
@@ -70,7 +70,7 @@ const mockGames: Partial<Game>[] = [
 		finishedDate: null,
 		ratingGameplay: null,
 		ratingPresentation: null,
-		ratingStory: null
+		ratingStory: null,
 	},
 	{
 		id: '5',
@@ -84,8 +84,8 @@ const mockGames: Partial<Game>[] = [
 		finishedDate: '05/02/2023',
 		ratingGameplay: 9,
 		ratingPresentation: 10,
-		ratingStory: 6
-	}
+		ratingStory: 6,
+	},
 ];
 
 // Helper to reset all store state between tests (mimics app restart)
@@ -527,9 +527,7 @@ describe('Sorting Functionality', () => {
 		const results = filteredGamesStore.games;
 		const gamesWithRating = results.filter((g) => g.ratingGameplay !== null);
 		for (let i = 0; i < gamesWithRating.length - 1; i++) {
-			expect(gamesWithRating[i].ratingGameplay).toBeGreaterThanOrEqual(
-				gamesWithRating[i + 1].ratingGameplay ?? 0
-			);
+			expect(gamesWithRating[i].ratingGameplay).toBeGreaterThanOrEqual(gamesWithRating[i + 1].ratingGameplay ?? 0);
 		}
 	});
 
@@ -563,9 +561,7 @@ describe('Sorting Functionality', () => {
 		const results = filteredGamesStore.games;
 		const gamesWithRating = results.filter((g) => g.ratingStory !== null);
 		for (let i = 0; i < gamesWithRating.length - 1; i++) {
-			expect(gamesWithRating[i].ratingStory).toBeGreaterThanOrEqual(
-				gamesWithRating[i + 1].ratingStory ?? 0
-			);
+			expect(gamesWithRating[i].ratingStory).toBeGreaterThanOrEqual(gamesWithRating[i + 1].ratingStory ?? 0);
 		}
 	});
 });

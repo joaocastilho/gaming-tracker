@@ -1,92 +1,91 @@
 <script lang="ts">
-	import { editorStore } from '$lib/stores/editor.svelte';
-	import { offlineStore } from '$lib/stores/offline.svelte';
-	import type { Game } from '$lib/types/game.js';
-	import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
-	import { X, Pencil, Trash2 } from 'lucide-svelte';
-	import { modalStore } from '$lib/stores/modal.svelte';
-	import { createGameSlug } from '$lib/utils/slugUtils';
-	import { browser } from '$app/environment';
-	import ModalHeader from './ModalHeader.svelte';
-	import ModalMetadata from './ModalMetadata.svelte';
-	import ModalRatings from './ModalRatings.svelte';
+import { editorStore } from '$lib/stores/editor.svelte';
+import { offlineStore } from '$lib/stores/offline.svelte';
+import type { Game } from '$lib/types/game.js';
+import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
+import { X, Pencil, Trash2 } from 'lucide-svelte';
+import { modalStore } from '$lib/stores/modal.svelte';
+import { createGameSlug } from '$lib/utils/slugUtils';
+import { browser } from '$app/environment';
+import ModalHeader from './ModalHeader.svelte';
+import ModalMetadata from './ModalMetadata.svelte';
+import ModalRatings from './ModalRatings.svelte';
 
-	interface Props {
-		game: Game;
-		onEditGame?: (game: Game) => void;
-		onDeleteGame?: (game: Game) => void;
-		onClose?: () => void;
-		onImageLoad?: () => void;
-		onImageClick?: () => void;
+interface Props {
+	game: Game;
+	onEditGame?: (game: Game) => void;
+	onDeleteGame?: (game: Game) => void;
+	onClose?: () => void;
+	onImageLoad?: () => void;
+	onImageClick?: () => void;
+}
+
+let { game, onEditGame, onDeleteGame, onClose, onImageLoad, onImageClick }: Props = $props();
+
+let isEditor = $derived(editorStore.editorMode);
+let isOffline = $derived(!offlineStore.isOnline);
+
+let linkCopied = $state('');
+
+async function shareGame() {
+	if (!browser || !game) return;
+	try {
+		const url = new URL(window.location.href);
+		const slug = createGameSlug(game.title);
+		url.searchParams.set('game', slug);
+		await navigator.clipboard.writeText(url.toString());
+		linkCopied = 'Copied';
+		setTimeout(() => {
+			linkCopied = '';
+		}, 2000);
+	} catch {
+		linkCopied = 'Failed';
+		setTimeout(() => {
+			linkCopied = '';
+		}, 2000);
 	}
+}
 
-	let { game, onEditGame, onDeleteGame, onClose, onImageLoad, onImageClick }: Props = $props();
+// Placeholders
+const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
+const PLACEHOLDER_DETAIL_SRC = 'covers/placeholder_cover-detail.webp';
+const PLACEHOLDER_SRCSET = 'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
+const OFFLINE_FALLBACK_DATA_URI =
+	'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
 
-	let isEditor = $derived(editorStore.editorMode);
-	let isOffline = $derived(!offlineStore.isOnline);
+// Image logic
+const detailImageSrc = $derived.by(() => {
+	if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
+	const coverImage = game.coverImage;
+	return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
+});
 
-	let linkCopied = $state('');
+const detailImageSizes = generateSizes('modal');
 
-	async function shareGame() {
-		if (!browser || !game) return;
-		try {
-			const url = new URL(window.location.href);
-			const slug = createGameSlug(game.title);
-			url.searchParams.set('game', slug);
-			await navigator.clipboard.writeText(url.toString());
-			linkCopied = 'Copied';
-			setTimeout(() => {
-				linkCopied = '';
-			}, 2000);
-		} catch {
-			linkCopied = 'Failed';
-			setTimeout(() => {
-				linkCopied = '';
-			}, 2000);
+const detailImageSrcset = $derived.by(() => {
+	if (isOffline) return '';
+	const src = detailImageSrc;
+	if (src.includes('placeholder_cover')) return PLACEHOLDER_SRCSET;
+	return generateSrcset(src.replace('-detail.webp', ''));
+});
+
+let modalImageElement = $state<HTMLImageElement>();
+
+function handleImageLoad() {
+	onImageLoad?.();
+}
+
+function handleImageError() {
+	if (modalImageElement) {
+		if (!modalImageElement.src.includes('placeholder_cover')) {
+			modalImageElement.src = PLACEHOLDER_DETAIL_SRC;
+			modalImageElement.srcset = PLACEHOLDER_SRCSET;
+		} else {
+			modalImageElement.src = OFFLINE_FALLBACK_DATA_URI;
+			modalImageElement.srcset = '';
 		}
 	}
-
-	// Placeholders
-	const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
-	const PLACEHOLDER_DETAIL_SRC = 'covers/placeholder_cover-detail.webp';
-	const PLACEHOLDER_SRCSET =
-		'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
-	const OFFLINE_FALLBACK_DATA_URI =
-		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
-
-	// Image logic
-	const detailImageSrc = $derived.by(() => {
-		if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
-		const coverImage = game.coverImage;
-		return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
-	});
-
-	const detailImageSizes = generateSizes('modal');
-
-	const detailImageSrcset = $derived.by(() => {
-		if (isOffline) return '';
-		const src = detailImageSrc;
-		if (src.includes('placeholder_cover')) return PLACEHOLDER_SRCSET;
-		return generateSrcset(src.replace('-detail.webp', ''));
-	});
-
-	let modalImageElement = $state<HTMLImageElement>();
-
-	function handleImageLoad() {
-		onImageLoad?.();
-	}
-
-	function handleImageError() {
-		if (modalImageElement) {
-			if (!modalImageElement.src.includes('placeholder_cover')) {
-				modalImageElement.src = PLACEHOLDER_DETAIL_SRC;
-				modalImageElement.srcset = PLACEHOLDER_SRCSET;
-			} else {
-				modalImageElement.src = OFFLINE_FALLBACK_DATA_URI;
-				modalImageElement.srcset = '';
-			}
-		}
-	}
+}
 </script>
 
 {#if onClose}

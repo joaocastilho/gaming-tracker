@@ -4,7 +4,7 @@ import SearchBar from '$lib/components/SearchBar.svelte';
 
 // Use hoisted state for mutable mock values
 const mocks = vi.hoisted(() => ({
-	searchTerm: ''
+	searchTerm: '',
 }));
 
 // Mock stores
@@ -18,33 +18,33 @@ vi.mock('$lib/stores/filters.svelte', () => ({
 		subscribe: vi.fn((cb: (value: unknown) => void) => {
 			cb({ searchTerm: mocks.searchTerm });
 			return () => {};
-		})
-	}
+		}),
+	},
 }));
 
 vi.mock('$lib/stores/searchClearCoordinator', () => ({
-	markSearchCleared: vi.fn()
+	markSearchCleared: vi.fn(),
 }));
 
 vi.mock('$app/state', () => ({
 	page: {
-		state: {}
-	}
+		state: {},
+	},
 }));
 
 vi.mock('$app/navigation', () => ({
-	replaceState: vi.fn()
+	replaceState: vi.fn(),
 }));
 
 vi.mock('$app/environment', () => ({
-	browser: true
+	browser: true,
 }));
 
 // Mock Lucide icons
 vi.mock('lucide-svelte', () => {
 	const MockIcon = () => ({ html: '<i>Icon</i>' });
 	return {
-		X: MockIcon
+		X: MockIcon,
 	};
 });
 

@@ -1,60 +1,60 @@
 <script lang="ts">
-	import { modalStore } from '$lib/stores/modal.svelte';
-	import { filtersStore } from '$lib/stores/filters.svelte';
-	import { RotateCcw } from 'lucide-svelte';
-	import { browser } from '$app/environment';
+import { modalStore } from '$lib/stores/modal.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { RotateCcw } from 'lucide-svelte';
+import { browser } from '$app/environment';
 
-	interface Props {
-		hideWhenFiltersOpen?: boolean;
-	}
+interface Props {
+	hideWhenFiltersOpen?: boolean;
+}
 
-	let { hideWhenFiltersOpen = false }: Props = $props();
+let { hideWhenFiltersOpen = false }: Props = $props();
 
-	let isVisible = $state(false);
+let isVisible = $state(false);
 
-	$effect(() => {
-		const handleScroll = () => {
-			isVisible = window.scrollY > 300;
-		};
+$effect(() => {
+	const handleScroll = () => {
+		isVisible = window.scrollY > 300;
+	};
 
-		window.addEventListener('scroll', handleScroll, { passive: true });
-		return () => {
-			window.removeEventListener('scroll', handleScroll);
-		};
+	window.addEventListener('scroll', handleScroll, { passive: true });
+	return () => {
+		window.removeEventListener('scroll', handleScroll);
+	};
+});
+
+function scrollToTop() {
+	const headerHeight = 110;
+	window.scrollTo({
+		top: -headerHeight,
+		behavior: 'smooth',
 	});
+}
 
-	function scrollToTop() {
-		const headerHeight = 110;
-		window.scrollTo({
-			top: -headerHeight,
-			behavior: 'smooth'
-		});
-	}
+function resetFilters() {
+	filtersStore.resetAllFilters();
+	filtersStore.setSearchTerm('');
+	filtersStore.setSort(null);
+	scrollToTop();
+}
 
-	function resetFilters() {
-		filtersStore.resetAllFilters();
-		filtersStore.setSearchTerm('');
-		filtersStore.setSort(null);
+let hasActiveFilters = $derived(
+	(isVisible || (browser && window.innerWidth < 768)) && // Show when scrolled OR always on mobile if we want (but requirement says "above scroll to top", implying scroll logic)
+		// Actually, let's stick to "visible when scroll to top is visible" to start, or maybe distinct.
+		// Re-reading: "hover button above the scroll to top".
+		// Let's use the same isVisible logic for consistency.
+		isVisible &&
+		!$modalStore.isOpen &&
+		!hideWhenFiltersOpen &&
+		(filtersStore.isAnyFilterApplied() || filtersStore.isSortModified())
+);
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === 'Enter' || event.key === ' ') {
+		event.preventDefault();
 		scrollToTop();
 	}
-
-	let hasActiveFilters = $derived(
-		(isVisible || (browser && window.innerWidth < 768)) && // Show when scrolled OR always on mobile if we want (but requirement says "above scroll to top", implying scroll logic)
-			// Actually, let's stick to "visible when scroll to top is visible" to start, or maybe distinct.
-			// Re-reading: "hover button above the scroll to top".
-			// Let's use the same isVisible logic for consistency.
-			isVisible &&
-			!$modalStore.isOpen &&
-			!hideWhenFiltersOpen &&
-			(filtersStore.isAnyFilterApplied() || filtersStore.isSortModified())
-	);
-
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			scrollToTop();
-		}
-	}
+}
 </script>
 
 {#if isVisible && !$modalStore.isOpen && !hideWhenFiltersOpen}

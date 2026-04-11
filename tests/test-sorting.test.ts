@@ -23,7 +23,7 @@ describe('Sorting Reproduction', () => {
 			ratingPresentation: null,
 			ratingStory: null,
 			ratingGameplay: null,
-			tier: null
+			tier: null,
 		},
 		{
 			id: '2',
@@ -42,8 +42,8 @@ describe('Sorting Reproduction', () => {
 			ratingPresentation: null,
 			ratingStory: null,
 			ratingGameplay: null,
-			tier: null
-		}
+			tier: null,
+		},
 	];
 
 	beforeEach(() => {

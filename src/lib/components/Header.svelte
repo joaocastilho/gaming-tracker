@@ -1,94 +1,94 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
-	import { navigateTo } from '$lib/utils/navigationUtils';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+import { dev } from '$app/environment';
+import { navigateTo } from '$lib/utils/navigationUtils';
+import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
-	import { appStore } from '$lib/stores/app.svelte';
-	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
-	import { filtersStore } from '$lib/stores/filters.svelte';
-	import { editorStore } from '$lib/stores/editor.svelte';
-	import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn } from 'lucide-svelte';
-	import LoginModal from '$lib/components/LoginModal.svelte';
-	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
+import { appStore } from '$lib/stores/app.svelte';
+import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { editorStore } from '$lib/stores/editor.svelte';
+import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn } from 'lucide-svelte';
+import LoginModal from '$lib/components/LoginModal.svelte';
+import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
-	interface Props {
-		onAddGame?: () => void;
-		onApplyChanges?: () => void;
-	}
+interface Props {
+	onAddGame?: () => void;
+	onApplyChanges?: () => void;
+}
 
-	let { onAddGame, onApplyChanges }: Props = $props();
+let { onAddGame, onApplyChanges }: Props = $props();
 
-	type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
+type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 
-	type NavItem = {
-		id: NavId;
-		label: string;
-		route: string;
-		count: number | null;
-		active: boolean;
-	};
+type NavItem = {
+	id: NavId;
+	label: string;
+	route: string;
+	count: number | null;
+	active: boolean;
+};
 
-	let isEditor = $derived(editorStore.editorMode);
-	let hasPending = $derived(editorStore.hasPendingChanges);
-	let pendingCount = $derived(editorStore.pendingChangesCount);
-	let isSaving = $derived(editorStore.savePending);
-	let loginModalOpen = $state(false);
+let isEditor = $derived(editorStore.editorMode);
+let hasPending = $derived(editorStore.hasPendingChanges);
+let pendingCount = $derived(editorStore.pendingChangesCount);
+let isSaving = $derived(editorStore.savePending);
+let loginModalOpen = $state(false);
 
-	let navItems = $derived.by(() => {
-		const counts = filteredCountsStore.counts;
-		const currentTab = appStore.activeTab;
+let navItems = $derived.by(() => {
+	const counts = filteredCountsStore.counts;
+	const currentTab = appStore.activeTab;
 
-		return [
-			{
-				id: 'all' as NavId,
-				label: 'Games',
-				route: '/',
-				count: counts.all,
-				active: currentTab === 'all'
-			},
-			{
-				id: 'completed' as NavId,
-				label: 'Completed',
-				route: '/completed',
-				count: counts.completed,
-				active: currentTab === 'completed'
-			},
-			{
-				id: 'planned' as NavId,
-				label: 'Planned',
-				route: '/planned',
-				count: counts.planned,
-				active: currentTab === 'planned'
-			},
-			{
-				id: 'tierlist' as NavId,
-				label: 'Tier List',
-				route: '/tierlist',
-				count: null,
-				active: currentTab === 'tierlist'
-			}
-		] as NavItem[];
-	});
+	return [
+		{
+			id: 'all' as NavId,
+			label: 'Games',
+			route: '/',
+			count: counts.all,
+			active: currentTab === 'all',
+		},
+		{
+			id: 'completed' as NavId,
+			label: 'Completed',
+			route: '/completed',
+			count: counts.completed,
+			active: currentTab === 'completed',
+		},
+		{
+			id: 'planned' as NavId,
+			label: 'Planned',
+			route: '/planned',
+			count: counts.planned,
+			active: currentTab === 'planned',
+		},
+		{
+			id: 'tierlist' as NavId,
+			label: 'Tier List',
+			route: '/tierlist',
+			count: null,
+			active: currentTab === 'tierlist',
+		},
+	] as NavItem[];
+});
 
-	async function handleNavClick(target: NavId) {
-		await navigateTo(target);
-	}
+async function handleNavClick(target: NavId) {
+	await navigateTo(target);
+}
 
-	function handleAddGame() {
-		onAddGame?.();
-	}
+function handleAddGame() {
+	onAddGame?.();
+}
 
-	function handleApplyChanges() {
-		onApplyChanges?.();
-	}
+function handleApplyChanges() {
+	onApplyChanges?.();
+}
 
-	function handleDiscardChanges() {
-		editorStore.discardAllChanges();
-	}
+function handleDiscardChanges() {
+	editorStore.discardAllChanges();
+}
 
-	async function handleLogout() {
-		await editorStore.logout();
-	}
+async function handleLogout() {
+	await editorStore.logout();
+}
 </script>
 
 <header class="header-root mb-2 px-6 py-3 md:mb-6 md:py-1">

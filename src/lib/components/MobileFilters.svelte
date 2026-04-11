@@ -1,121 +1,121 @@
 <script lang="ts">
-	import { filtersStore } from '$lib/stores/filters.svelte';
-	import MobileFiltersHeader from './mobile-filters/MobileFiltersHeader.svelte';
-	import FilterSection from './mobile-filters/FilterSection.svelte';
-	import SortSection from './mobile-filters/SortSection.svelte';
-	import FilterOptionsPopup from './mobile-filters/FilterOptionsPopup.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import MobileFiltersHeader from './mobile-filters/MobileFiltersHeader.svelte';
+import FilterSection from './mobile-filters/FilterSection.svelte';
+import SortSection from './mobile-filters/SortSection.svelte';
+import FilterOptionsPopup from './mobile-filters/FilterOptionsPopup.svelte';
 
-	interface Props {
-		filterOptions: {
-			platforms: string[];
-			genres: string[];
-			tiers: string[];
+interface Props {
+	filterOptions: {
+		platforms: string[];
+		genres: string[];
+		tiers: string[];
+	};
+	showTiersFilter?: boolean;
+	showCoOpFilter?: boolean;
+	title?: string;
+	isOpen?: boolean;
+	onClose?: () => void;
+}
+
+let {
+	filterOptions,
+	showTiersFilter = true,
+	showCoOpFilter = true,
+	title = 'Filters and Sorting',
+	isOpen = $bindable(false),
+	onClose,
+}: Props = $props();
+
+let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
+
+let pendingPlatforms = $state<string[]>([]);
+let pendingGenres = $state<string[]>([]);
+let pendingTiers = $state<string[]>([]);
+let pendingCoOp = $state<string[]>([]);
+
+let selectedPlatforms = $derived($filtersStore?.platforms ?? []);
+let selectedGenres = $derived($filtersStore?.genres ?? []);
+let selectedTiers = $derived($filtersStore?.tiers ?? []);
+let selectedCoOp = $derived($filtersStore?.coOp ?? []);
+
+$effect(() => {
+	if (isOpen) {
+		pendingPlatforms = [...selectedPlatforms];
+		pendingGenres = [...selectedGenres];
+		pendingTiers = [...selectedTiers];
+		pendingCoOp = [...selectedCoOp];
+	}
+});
+
+$effect(() => {
+	if (typeof document !== 'undefined' && (isOpen || activeFilterPopup)) {
+		document.body.style.overflow = 'hidden';
+		return () => {
+			document.body.style.overflow = '';
 		};
-		showTiersFilter?: boolean;
-		showCoOpFilter?: boolean;
-		title?: string;
-		isOpen?: boolean;
-		onClose?: () => void;
 	}
+});
 
-	let {
-		filterOptions,
-		showTiersFilter = true,
-		showCoOpFilter = true,
-		title = 'Filters and Sorting',
-		isOpen = $bindable(false),
-		onClose
-	}: Props = $props();
+function resetPendingFilters() {
+	pendingPlatforms = [];
+	pendingGenres = [];
+	pendingTiers = [];
+	pendingCoOp = [];
+}
 
-	let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
+function resetFilters() {
+	resetPendingFilters();
+	filtersStore.resetAllFilters();
+	filtersStore.setSearchTerm('');
+	filtersStore.setSort(null);
+}
 
-	let pendingPlatforms = $state<string[]>([]);
-	let pendingGenres = $state<string[]>([]);
-	let pendingTiers = $state<string[]>([]);
-	let pendingCoOp = $state<string[]>([]);
+function applyFilters() {
+	filtersStore.resetAllFilters();
+	pendingPlatforms.forEach((p) => filtersStore.togglePlatform(p));
+	pendingGenres.forEach((g) => filtersStore.toggleGenre(g));
+	pendingTiers.forEach((t) => filtersStore.toggleTier(t));
+	pendingCoOp.forEach((c) => filtersStore.toggleCoOp(c));
+	onClose?.();
+}
 
-	let selectedPlatforms = $derived($filtersStore?.platforms ?? []);
-	let selectedGenres = $derived($filtersStore?.genres ?? []);
-	let selectedTiers = $derived($filtersStore?.tiers ?? []);
-	let selectedCoOp = $derived($filtersStore?.coOp ?? []);
+function closeWithoutApplying() {
+	onClose?.();
+	activeFilterPopup = null;
+}
 
-	$effect(() => {
-		if (isOpen) {
-			pendingPlatforms = [...selectedPlatforms];
-			pendingGenres = [...selectedGenres];
-			pendingTiers = [...selectedTiers];
-			pendingCoOp = [...selectedCoOp];
-		}
-	});
-
-	$effect(() => {
-		if (typeof document !== 'undefined' && (isOpen || activeFilterPopup)) {
-			document.body.style.overflow = 'hidden';
-			return () => {
-				document.body.style.overflow = '';
-			};
-		}
-	});
-
-	function resetPendingFilters() {
-		pendingPlatforms = [];
-		pendingGenres = [];
-		pendingTiers = [];
-		pendingCoOp = [];
+function togglePendingPlatform(platform: string) {
+	if (pendingPlatforms.includes(platform)) {
+		pendingPlatforms = pendingPlatforms.filter((p) => p !== platform);
+	} else {
+		pendingPlatforms = [...pendingPlatforms, platform];
 	}
+}
 
-	function resetFilters() {
-		resetPendingFilters();
-		filtersStore.resetAllFilters();
-		filtersStore.setSearchTerm('');
-		filtersStore.setSort(null);
+function togglePendingGenre(genre: string) {
+	if (pendingGenres.includes(genre)) {
+		pendingGenres = pendingGenres.filter((g) => g !== genre);
+	} else {
+		pendingGenres = [...pendingGenres, genre];
 	}
+}
 
-	function applyFilters() {
-		filtersStore.resetAllFilters();
-		pendingPlatforms.forEach((p) => filtersStore.togglePlatform(p));
-		pendingGenres.forEach((g) => filtersStore.toggleGenre(g));
-		pendingTiers.forEach((t) => filtersStore.toggleTier(t));
-		pendingCoOp.forEach((c) => filtersStore.toggleCoOp(c));
-		onClose?.();
+function togglePendingTier(tier: string) {
+	if (pendingTiers.includes(tier)) {
+		pendingTiers = pendingTiers.filter((t) => t !== tier);
+	} else {
+		pendingTiers = [...pendingTiers, tier];
 	}
+}
 
-	function closeWithoutApplying() {
-		onClose?.();
-		activeFilterPopup = null;
+function togglePendingCoOp(coOp: string) {
+	if (pendingCoOp.includes(coOp)) {
+		pendingCoOp = pendingCoOp.filter((c) => c !== coOp);
+	} else {
+		pendingCoOp = [...pendingCoOp, coOp];
 	}
-
-	function togglePendingPlatform(platform: string) {
-		if (pendingPlatforms.includes(platform)) {
-			pendingPlatforms = pendingPlatforms.filter((p) => p !== platform);
-		} else {
-			pendingPlatforms = [...pendingPlatforms, platform];
-		}
-	}
-
-	function togglePendingGenre(genre: string) {
-		if (pendingGenres.includes(genre)) {
-			pendingGenres = pendingGenres.filter((g) => g !== genre);
-		} else {
-			pendingGenres = [...pendingGenres, genre];
-		}
-	}
-
-	function togglePendingTier(tier: string) {
-		if (pendingTiers.includes(tier)) {
-			pendingTiers = pendingTiers.filter((t) => t !== tier);
-		} else {
-			pendingTiers = [...pendingTiers, tier];
-		}
-	}
-
-	function togglePendingCoOp(coOp: string) {
-		if (pendingCoOp.includes(coOp)) {
-			pendingCoOp = pendingCoOp.filter((c) => c !== coOp);
-		} else {
-			pendingCoOp = [...pendingCoOp, coOp];
-		}
-	}
+}
 </script>
 
 {#if isOpen}

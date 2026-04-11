@@ -1,28 +1,28 @@
 <script lang="ts">
-	interface Props {
-		coverUrl: string;
-		coverPreview: string | null;
-		coverError: string | null;
-		onUrlChange: (url: string) => void;
-		onFileSelect: (event: Event) => void;
-		onClear: () => void;
-		fileInputRef?: HTMLInputElement;
-	}
+interface Props {
+	coverUrl: string;
+	coverPreview: string | null;
+	coverError: string | null;
+	onUrlChange: (url: string) => void;
+	onFileSelect: (event: Event) => void;
+	onClear: () => void;
+	fileInputRef?: HTMLInputElement;
+}
 
-	let {
-		coverUrl,
-		coverPreview,
-		coverError,
-		onUrlChange,
-		onFileSelect,
-		onClear,
-		fileInputRef = $bindable()
-	}: Props = $props();
+let {
+	coverUrl,
+	coverPreview,
+	coverError,
+	onUrlChange,
+	onFileSelect,
+	onClear,
+	fileInputRef = $bindable(),
+}: Props = $props();
 
-	function handleUrlInput(event: Event) {
-		const url = (event.target as HTMLInputElement).value;
-		onUrlChange(url);
-	}
+function handleUrlInput(event: Event) {
+	const url = (event.target as HTMLInputElement).value;
+	onUrlChange(url);
+}
 </script>
 
 <div class="cover-section">

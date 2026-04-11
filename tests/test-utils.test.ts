@@ -1,12 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { Game } from '$lib/types/game';
 import { debounce } from '$lib/utils/debounce';
-import {
-	extractFilterOptions,
-	getGenreColor,
-	getPlatformColor,
-	getTierColor
-} from '$lib/utils/filterOptions';
+import { extractFilterOptions, getGenreColor, getPlatformColor, getTierColor } from '$lib/utils/filterOptions';
 import { formatRating } from '$lib/validation/game';
 import { createCompletedGame } from './helpers/factories';
 
@@ -47,7 +42,7 @@ describe('Utility Tests', () => {
 		const mockGames: Game[] = [
 			createCompletedGame({ platform: 'PC', genre: 'RPG', tier: 'S - Masterpiece' }),
 			createCompletedGame({ platform: 'PS5', genre: 'Action', tier: 'A - Amazing' }),
-			createCompletedGame({ platform: 'PC', genre: 'Action', tier: 'S - Masterpiece' })
+			createCompletedGame({ platform: 'PC', genre: 'Action', tier: 'S - Masterpiece' }),
 		];
 
 		it('extracts unique options', () => {

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { offlineStore } from '$lib/stores/offline.svelte';
-	import { CloudOff, WifiOff, CloudUpload } from 'lucide-svelte';
-	import { fade } from 'svelte/transition';
+import { offlineStore } from '$lib/stores/offline.svelte';
+import { CloudOff, WifiOff, CloudUpload } from 'lucide-svelte';
+import { fade } from 'svelte/transition';
 
-	let isOnline = $derived(offlineStore.isOnline);
-	let hasPendingSync = $derived(offlineStore.hasPendingSync);
-	let isSyncing = $derived(offlineStore.isSyncing);
+let isOnline = $derived(offlineStore.isOnline);
+let hasPendingSync = $derived(offlineStore.hasPendingSync);
+let isSyncing = $derived(offlineStore.isSyncing);
 </script>
 
 {#if !isOnline || hasPendingSync || isSyncing}

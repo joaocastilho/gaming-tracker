@@ -44,6 +44,6 @@ export function focusTrap(node: HTMLElement) {
 	return {
 		destroy() {
 			node.removeEventListener('keydown', handleKeydown);
-		}
+		},
 	};
 }

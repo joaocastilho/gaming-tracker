@@ -23,10 +23,10 @@ vi.mock('$lib/stores/filters.svelte', () => {
 		subscribe: vi.fn((run) => {
 			run({ searchTerm: '' });
 			return () => {};
-		})
+		}),
 	};
 	return {
-		filtersStore: mockStore
+		filtersStore: mockStore,
 	};
 });
 
@@ -41,13 +41,13 @@ vi.mock('lucide-svelte', () => {
 		Monitor: MockIcon,
 		Tag: MockIcon,
 		Trophy: MockIcon,
-		Users: MockIcon
+		Users: MockIcon,
 	};
 });
 
 // Mock RatingsSort component since it's used inside
 vi.mock('$lib/components/RatingsSort.svelte', () => ({
-	default: () => ({ html: '<div data-testid="ratings-sort">RatingsSort</div>' })
+	default: () => ({ html: '<div data-testid="ratings-sort">RatingsSort</div>' }),
 }));
 
 describe('MobileFilters Component', () => {
@@ -55,7 +55,7 @@ describe('MobileFilters Component', () => {
 		platforms: ['PC', 'Switch', 'PS5'],
 		genres: ['RPG', 'Action'],
 		tiers: ['S', 'A'],
-		coOp: ['Yes']
+		coOp: ['Yes'],
 	};
 
 	beforeEach(() => {
@@ -66,8 +66,8 @@ describe('MobileFilters Component', () => {
 		render(MobileFilters, {
 			props: {
 				filterOptions: mockFilterOptions,
-				isOpen: false
-			}
+				isOpen: false,
+			},
 		});
 		const modal = screen.queryByRole('dialog');
 		expect(modal).not.toBeInTheDocument();
@@ -77,8 +77,8 @@ describe('MobileFilters Component', () => {
 		render(MobileFilters, {
 			props: {
 				filterOptions: mockFilterOptions,
-				isOpen: true
-			}
+				isOpen: true,
+			},
 		});
 		const modal = screen.getByRole('dialog');
 		expect(modal).toBeInTheDocument();
@@ -89,8 +89,8 @@ describe('MobileFilters Component', () => {
 		render(MobileFilters, {
 			props: {
 				filterOptions: mockFilterOptions,
-				isOpen: true
-			}
+				isOpen: true,
+			},
 		});
 
 		expect(screen.getByText('Platforms')).toBeInTheDocument();
@@ -105,8 +105,8 @@ describe('MobileFilters Component', () => {
 			props: {
 				filterOptions: mockFilterOptions,
 				isOpen: true,
-				onClose
-			}
+				onClose,
+			},
 		});
 
 		// Assuming there's a close button (X icon usually)
@@ -121,8 +121,8 @@ describe('MobileFilters Component', () => {
 		render(MobileFilters, {
 			props: {
 				filterOptions: mockFilterOptions,
-				isOpen: true
-			}
+				isOpen: true,
+			},
 		});
 
 		// Open Platforms sub-menu (assuming logic stays: click category -> open popup)
@@ -154,8 +154,8 @@ describe('MobileFilters Component', () => {
 			props: {
 				filterOptions: mockFilterOptions,
 				isOpen: true,
-				onClose
-			}
+				onClose,
+			},
 		});
 
 		// Simulating selection: Open Platforms -> Select 'PC' -> Accept

@@ -21,14 +21,14 @@ const mockGame: Game = {
 	ratingStory: 8,
 	ratingGameplay: 9,
 	score: 9,
-	tier: 'A - Amazing'
+	tier: 'A - Amazing',
 };
 
 const mockGame2: Game = {
 	...mockGame,
 	id: '2',
 	title: 'Test Game 2',
-	mainTitle: 'Test Game 2'
+	mainTitle: 'Test Game 2',
 };
 
 const mockGames = [mockGame, mockGame2];
@@ -46,10 +46,10 @@ describe('Detail Modal Interactions', () => {
 		global.window = {
 			location: {
 				href: 'http://localhost/',
-				toString: () => 'http://localhost/'
+				toString: () => 'http://localhost/',
 			},
 			innerWidth: 1024,
-			innerHeight: 768
+			innerHeight: 768,
 		} as unknown as Window & typeof globalThis;
 	});
 
@@ -103,7 +103,7 @@ describe('Detail Modal Interactions', () => {
 				statuses: [],
 				tiers: [],
 				sortOption: null,
-				activeTab: 'all' as const
+				activeTab: 'all' as const,
 			};
 
 			modalStore.openViewModal(mockGame, mockGames, filterContext);

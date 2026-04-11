@@ -74,11 +74,7 @@ async function findMatchingGame(filename: string, games: Game[]): Promise<Game |
 	return null;
 }
 
-async function processImage(
-	filename: string,
-	games: Game[],
-	outputDir: string
-): Promise<OptimizationResult> {
+async function processImage(filename: string, games: Game[], outputDir: string): Promise<OptimizationResult> {
 	const startTime = Date.now();
 
 	try {
@@ -89,7 +85,7 @@ async function processImage(
 				gameId: 'unknown',
 				gameTitle: 'Unknown',
 				status: 'skipped',
-				error: 'No matching game found'
+				error: 'No matching game found',
 			};
 		}
 
@@ -112,11 +108,11 @@ async function processImage(
 			.resize(200, 300, {
 				fit: 'cover',
 				position: 'center',
-				background: { r: 0, g: 0, b: 0, alpha: 0 }
+				background: { r: 0, g: 0, b: 0, alpha: 0 },
 			})
 			.webp({
 				quality: 70,
-				effort: 6
+				effort: 6,
 			})
 			.toFile(cover200Path);
 
@@ -125,11 +121,11 @@ async function processImage(
 			.resize(300, 450, {
 				fit: 'cover',
 				position: 'center',
-				background: { r: 0, g: 0, b: 0, alpha: 0 }
+				background: { r: 0, g: 0, b: 0, alpha: 0 },
 			})
 			.webp({
 				quality: 72,
-				effort: 6
+				effort: 6,
 			})
 			.toFile(cover300Path);
 
@@ -138,11 +134,11 @@ async function processImage(
 			.resize(400, 600, {
 				fit: 'cover',
 				position: 'center',
-				background: { r: 0, g: 0, b: 0, alpha: 0 }
+				background: { r: 0, g: 0, b: 0, alpha: 0 },
 			})
 			.webp({
 				quality: 75,
-				effort: 6
+				effort: 6,
 			})
 			.toFile(detail400Path);
 
@@ -161,7 +157,7 @@ async function processImage(
 			cover200Size: cover200Stats.size,
 			cover300Size: cover300Stats.size,
 			detail400Size: detail400Stats.size,
-			processingTime
+			processingTime,
 		};
 	} catch (error) {
 		return {
@@ -170,7 +166,7 @@ async function processImage(
 			gameTitle: 'Unknown',
 			status: 'error',
 			error: error instanceof Error ? error.message : 'Unknown error',
-			processingTime: Date.now() - startTime
+			processingTime: Date.now() - startTime,
 		};
 	}
 }
@@ -262,7 +258,7 @@ async function main(): Promise<void> {
 		totalCover200Size: successful.reduce((sum, r) => sum + (r.cover200Size || 0), 0),
 		totalCover300Size: successful.reduce((sum, r) => sum + (r.cover300Size || 0), 0),
 		totalDetail400Size: successful.reduce((sum, r) => sum + (r.detail400Size || 0), 0),
-		totalTime
+		totalTime,
 	};
 
 	console.log('\n📊 Optimization Results');
@@ -289,7 +285,7 @@ async function main(): Promise<void> {
 		if (result) {
 			return {
 				...game,
-				coverImage: `covers/${game.id}.webp`
+				coverImage: `covers/${game.id}.webp`,
 			};
 		}
 		return game;

@@ -14,7 +14,7 @@ const initialState: FilteredTabCounts = {
 	all: 0,
 	completed: 0,
 	planned: 0,
-	tierlist: null
+	tierlist: null,
 };
 
 class FilteredCountsStore {
@@ -27,7 +27,7 @@ class FilteredCountsStore {
 	updateCount(tab: keyof FilteredTabCounts, count: number) {
 		this.counts = {
 			...this.counts,
-			[tab]: count
+			[tab]: count,
 		};
 	}
 

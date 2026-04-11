@@ -6,7 +6,7 @@ const mockImageCache = {
 	preload: (_src: string) => Promise.resolve(),
 	setLoaded: (_src: string) => {},
 	setError: (_src: string) => {},
-	getImage: (_src: string) => ({ isLoaded: false, hasError: false })
+	getImage: (_src: string) => ({ isLoaded: false, hasError: false }),
 };
 
 // Mock IntersectionObserver for our tests
@@ -49,7 +49,7 @@ class MockIntersectionObserver {
 			time: 0,
 			boundingClientRect: target.getBoundingClientRect(),
 			intersectionRect: target.getBoundingClientRect(),
-			rootBounds: null
+			rootBounds: null,
 		})) as IntersectionObserverEntry[];
 
 		this.callback(entries, this as unknown as IntersectionObserver);
@@ -75,12 +75,12 @@ describe('Cover Loading Optimization', () => {
 								height: 100,
 								x: 0,
 								y: 0,
-								toJSON: () => ({})
-							})
-						}) as HTMLElement
+								toJSON: () => ({}),
+							}),
+						}) as HTMLElement,
 				},
 				writable: true,
-				configurable: true
+				configurable: true,
 			});
 		}
 	});

@@ -65,14 +65,7 @@ export function getCoOpColor(coOp: string): string {
 	return COOP_COLORS[coOp] || 'bg-gray-600 text-white';
 }
 
-const TIER_ORDER = [
-	'S - Masterpiece',
-	'A - Amazing',
-	'B - Great',
-	'C - Good',
-	'D - Decent',
-	'E - Bad'
-];
+const TIER_ORDER = ['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad'];
 
 export function extractFilterOptions(games: Game[]): {
 	platforms: string[];
@@ -86,7 +79,7 @@ export function extractFilterOptions(games: Game[]): {
 			platforms: [],
 			genres: [],
 			tiers: [],
-			coOp: []
+			coOp: [],
 		};
 	}
 
@@ -109,6 +102,6 @@ export function extractFilterOptions(games: Game[]): {
 		tiers: Array.from(tiers).toSorted((a, b) => {
 			return TIER_ORDER.indexOf(a) - TIER_ORDER.indexOf(b);
 		}),
-		coOp: Array.from(coOp).toSorted().toReversed() // 'Yes' before 'No'
+		coOp: Array.from(coOp).toSorted().toReversed(), // 'Yes' before 'No'
 	};
 }

@@ -12,16 +12,10 @@ async function timingSafeEqual(a: string, b: string): Promise<boolean> {
 	const encoder = new TextEncoder();
 	// Use a fixed key — we don't need secrecy here, just constant-time comparison
 	const keyData = encoder.encode('timing-safe-compare-key');
-	const key = await crypto.subtle.importKey(
-		'raw',
-		keyData,
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign']
-	);
+	const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 	const [macA, macB] = await Promise.all([
 		crypto.subtle.sign('HMAC', key, encoder.encode(a)),
-		crypto.subtle.sign('HMAC', key, encoder.encode(b))
+		crypto.subtle.sign('HMAC', key, encoder.encode(b)),
 	]);
 	const bytesA = new Uint8Array(macA);
 	const bytesB = new Uint8Array(macB);
@@ -35,13 +29,9 @@ async function timingSafeEqual(a: string, b: string): Promise<boolean> {
 
 async function hmacSign(payload: string, secret: string): Promise<string> {
 	const encoder = new TextEncoder();
-	const key = await crypto.subtle.importKey(
-		'raw',
-		encoder.encode(secret),
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign']
-	);
+	const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, [
+		'sign',
+	]);
 	const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
 	const bytes = new Uint8Array(signature);
 
@@ -63,12 +53,12 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 					event: 'validation_failed',
 					target: 'login',
 					reason: 'invalid_content_type',
-					contentType
+					contentType,
 				})
 			);
 			return new Response(JSON.stringify({ error: 'Expected application/json body' }), {
 				status: 400,
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 
@@ -78,12 +68,12 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 				JSON.stringify({
 					event: 'validation_failed',
 					target: 'login',
-					reason: 'invalid_credentials_payload'
+					reason: 'invalid_credentials_payload',
 				})
 			);
 			return new Response(JSON.stringify({ error: 'Invalid credentials payload' }), {
 				status: 400,
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 
@@ -96,18 +86,18 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 				JSON.stringify({
 					event: 'config_error',
 					target: 'login',
-					reason: 'missing_env'
+					reason: 'missing_env',
 				})
 			);
 			return new Response(JSON.stringify({ error: 'Login not configured' }), {
 				status: 500,
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 
 		const [usernameMatch, passwordMatch] = await Promise.all([
 			timingSafeEqual(body.username, username),
-			timingSafeEqual(body.password, password)
+			timingSafeEqual(body.password, password),
 		]);
 
 		if (!usernameMatch || !passwordMatch) {
@@ -115,12 +105,12 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 				JSON.stringify({
 					event: 'auth_failed',
 					target: 'login',
-					reason: 'invalid_credentials'
+					reason: 'invalid_credentials',
 				})
 			);
 			return new Response(JSON.stringify({ error: 'Invalid credentials' }), {
 				status: 401,
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 
@@ -138,18 +128,18 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		return new Response(JSON.stringify({ ok: true }), {
 			status: 200,
-			headers
+			headers,
 		});
 	} catch (error) {
 		console.error(
 			JSON.stringify({
 				event: 'login_error',
-				message: error instanceof Error ? error.message : String(error)
+				message: error instanceof Error ? error.message : String(error),
 			})
 		);
 		return new Response(JSON.stringify({ error: 'Unexpected error' }), {
 			status: 500,
-			headers: { 'Content-Type': 'application/json' }
+			headers: { 'Content-Type': 'application/json' },
 		});
 	}
 };
@@ -157,6 +147,6 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 export const onRequestGet = async () => {
 	return new Response(JSON.stringify({ error: 'Method not allowed' }), {
 		status: 405,
-		headers: { 'Content-Type': 'application/json' }
+		headers: { 'Content-Type': 'application/json' },
 	});
 };

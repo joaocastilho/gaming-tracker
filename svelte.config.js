@@ -11,12 +11,12 @@ const config = {
 			assets: 'build',
 			fallback: '404.html',
 			precompress: true,
-			strict: true
-		})
+			strict: true,
+		}),
 	},
 	experimental: {
-		rolldown: true
-	}
+		rolldown: true,
+	},
 };
 
 export default config;

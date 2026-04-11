@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { Monitor, Tag, Trophy, Users } from 'lucide-svelte';
+import { Monitor, Tag, Trophy, Users } from 'lucide-svelte';
 
-	interface Props {
-		type: 'platforms' | 'genres' | 'tiers' | 'coOp';
-		count?: number;
-		onClick: () => void;
-	}
+interface Props {
+	type: 'platforms' | 'genres' | 'tiers' | 'coOp';
+	count?: number;
+	onClick: () => void;
+}
 
-	let { type, count = 0, onClick }: Props = $props();
+let { type, count = 0, onClick }: Props = $props();
 </script>
 
 {#if type === 'coOp'}

@@ -18,7 +18,7 @@ describe('sortPriority Transformation', () => {
 		const gameWithNull = {
 			id: 'test',
 			title: 'Test',
-			sortPriority: null
+			sortPriority: null,
 		};
 		const normalized = normalizeGame(gameWithNull);
 		expect(normalized).not.toHaveProperty('sortPriority');
@@ -28,7 +28,7 @@ describe('sortPriority Transformation', () => {
 		const gameWithUndefined = {
 			id: 'test',
 			title: 'Test',
-			sortPriority: undefined
+			sortPriority: undefined,
 		};
 		const normalized = normalizeGame(gameWithUndefined);
 		expect(normalized).not.toHaveProperty('sortPriority');
@@ -38,7 +38,7 @@ describe('sortPriority Transformation', () => {
 		const gameWithPriority = {
 			id: 'test',
 			title: 'Test',
-			sortPriority: 5
+			sortPriority: 5,
 		};
 		const normalized = normalizeGame(gameWithPriority);
 		expect(normalized).toHaveProperty('sortPriority', 5);
@@ -48,7 +48,7 @@ describe('sortPriority Transformation', () => {
 		const gameWithZero = {
 			id: 'test',
 			title: 'Test',
-			sortPriority: 0
+			sortPriority: 0,
 		};
 		const normalized = normalizeGame(gameWithZero);
 		expect(normalized).toHaveProperty('sortPriority', 0);

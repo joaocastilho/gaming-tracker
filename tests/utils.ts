@@ -31,7 +31,7 @@ export function createMockGame(overrides: Partial<Game> = {}): Game {
 		ratingGameplay: null,
 		score: null,
 		tier: null,
-		...overrides
+		...overrides,
 	};
 }
 
@@ -44,7 +44,7 @@ export function createMockGames(count: number, overrides: Partial<Game> = {}): G
 			id: `test-game-id-${i}`,
 			...overrides,
 			title: `Test Game ${i + 1}`,
-			mainTitle: `Test Game ${i + 1}`
+			mainTitle: `Test Game ${i + 1}`,
 		})
 	);
 }

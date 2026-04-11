@@ -1,32 +1,32 @@
 <script lang="ts">
-	import type { Game } from '../../types/game.js';
-	import { Timer, CalendarDays, Presentation, NotebookPen, Gamepad2, Award } from 'lucide-svelte';
+import type { Game } from '../../types/game.js';
+import { Timer, CalendarDays, Presentation, NotebookPen, Gamepad2, Award } from 'lucide-svelte';
 
-	interface Props {
-		game: Game;
+interface Props {
+	game: Game;
+}
+
+let { game }: Props = $props();
+
+function formatDate(dateString: string): string {
+	try {
+		const parts = dateString.split('/');
+		if (parts.length !== 3) return 'Unknown';
+		const day = parseInt(parts[0], 10);
+		const month = parseInt(parts[1], 10) - 1;
+		const year = parseInt(parts[2], 10);
+		if (isNaN(day) || isNaN(month) || isNaN(year)) return 'Unknown';
+		const date = new Date(year, month, day);
+		if (isNaN(date.getTime())) return 'Unknown';
+		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+	} catch {
+		return 'Unknown';
 	}
+}
 
-	let { game }: Props = $props();
-
-	function formatDate(dateString: string): string {
-		try {
-			const parts = dateString.split('/');
-			if (parts.length !== 3) return 'Unknown';
-			const day = parseInt(parts[0], 10);
-			const month = parseInt(parts[1], 10) - 1;
-			const year = parseInt(parts[2], 10);
-			if (isNaN(day) || isNaN(month) || isNaN(year)) return 'Unknown';
-			const date = new Date(year, month, day);
-			if (isNaN(date.getTime())) return 'Unknown';
-			return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-		} catch {
-			return 'Unknown';
-		}
-	}
-
-	const hasPresentation = $derived(game.status === 'Completed' && game.ratingPresentation !== null);
-	const hasStory = $derived(game.status === 'Completed' && game.ratingStory !== null);
-	const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay !== null);
+const hasPresentation = $derived(game.status === 'Completed' && game.ratingPresentation !== null);
+const hasStory = $derived(game.status === 'Completed' && game.ratingStory !== null);
+const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay !== null);
 </script>
 
 <!-- Time and Date Section -->

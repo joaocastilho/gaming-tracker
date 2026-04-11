@@ -43,7 +43,7 @@ describe('Store Subscriber Reactivity', () => {
 			expect(callback).toHaveBeenCalledTimes(1);
 			expect(callback).toHaveBeenCalledWith(
 				expect.objectContaining({
-					sortOption: { key: 'score', direction: 'desc' }
+					sortOption: { key: 'score', direction: 'desc' },
 				})
 			);
 		});
@@ -93,7 +93,7 @@ describe('Store Subscriber Reactivity', () => {
 				expect.objectContaining({
 					searchTerm: '',
 					platforms: [],
-					sortOption: null
+					sortOption: null,
 				})
 			);
 		});
@@ -161,8 +161,8 @@ describe('Store Subscriber Reactivity', () => {
 					title: 'Test Game',
 					platform: 'PC',
 					genre: 'Action',
-					status: 'Completed'
-				}
+					status: 'Completed',
+				},
 			]);
 
 			expect(callback).toHaveBeenCalled();
@@ -194,7 +194,7 @@ describe('Store Subscriber Reactivity', () => {
 				tier: null,
 				ratingGameplay: null,
 				ratingPresentation: null,
-				ratingStory: null
+				ratingStory: null,
 			});
 
 			expect(callback).toHaveBeenCalled();
@@ -231,8 +231,8 @@ describe('Store Subscriber Reactivity', () => {
 					title: 'Test Game',
 					platform: 'PC',
 					genre: 'Action',
-					status: 'Completed'
-				}
+					status: 'Completed',
+				},
 			]);
 
 			// Give time for propagation
@@ -254,8 +254,8 @@ describe('Store Subscriber Reactivity', () => {
 					title: 'Test Game',
 					platform: 'PC',
 					genre: 'Action',
-					status: 'Completed'
-				}
+					status: 'Completed',
+				},
 			]);
 
 			filteredGames.subscribe(callback);
@@ -284,7 +284,7 @@ describe('Store Subscriber Reactivity', () => {
 					platform: 'PC',
 					genre: 'Action',
 					status: 'Completed',
-					score: 8
+					score: 8,
 				},
 				{
 					id: '2',
@@ -292,8 +292,8 @@ describe('Store Subscriber Reactivity', () => {
 					platform: 'PC',
 					genre: 'Action',
 					status: 'Completed',
-					score: 9
-				}
+					score: 9,
+				},
 			]);
 
 			filteredGames.subscribe(callback);

@@ -1,29 +1,27 @@
 <script lang="ts">
-	interface Props {
-		containerWidth: number;
-	}
+interface Props {
+	containerWidth: number;
+}
 
-	let { containerWidth }: Props = $props();
+let { containerWidth }: Props = $props();
 
-	let columns = $derived(
-		!containerWidth || containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320))
-	);
+let columns = $derived(!containerWidth || containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320)));
 
-	let itemHeight = $derived(
-		(() => {
-			const containerPadding = 16;
-			const gap = 12;
-			const totalGapWidth = (columns - 1) * gap;
-			const availableWidth = containerWidth - containerPadding - totalGapWidth;
-			const columnWidth = availableWidth / columns;
-			const coverHeight = columnWidth * 1.5;
+let itemHeight = $derived(
+	(() => {
+		const containerPadding = 16;
+		const gap = 12;
+		const totalGapWidth = (columns - 1) * gap;
+		const availableWidth = containerWidth - containerPadding - totalGapWidth;
+		const columnWidth = availableWidth / columns;
+		const coverHeight = columnWidth * 1.5;
 
-			const infoRatio = 1.35;
-			const infoHeight = Math.max(220, Math.min(260, columnWidth * infoRatio));
+		const infoRatio = 1.35;
+		const infoHeight = Math.max(220, Math.min(260, columnWidth * infoRatio));
 
-			return coverHeight + infoHeight;
-		})()
-	);
+		return coverHeight + infoHeight;
+	})()
+);
 </script>
 
 <div class="skeleton-grid">

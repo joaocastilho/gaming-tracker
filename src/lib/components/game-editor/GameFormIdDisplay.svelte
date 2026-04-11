@@ -1,11 +1,11 @@
 <script lang="ts">
-	interface Props {
-		gameId: string;
-		onCopy: () => void;
-		copied: boolean;
-	}
+interface Props {
+	gameId: string;
+	onCopy: () => void;
+	copied: boolean;
+}
 
-	let { gameId, onCopy, copied }: Props = $props();
+let { gameId, onCopy, copied }: Props = $props();
 </script>
 
 <div class="full cover-path">

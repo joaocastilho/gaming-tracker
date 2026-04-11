@@ -12,7 +12,7 @@ export const TIER_VALUES = [
 	'B - Great',
 	'C - Good',
 	'D - Decent',
-	'E - Bad'
+	'E - Bad',
 ] as const satisfies TierValue[];
 export const COOP_VALUES = ['Yes', 'No'] as const satisfies CoOpStatus[];
 
@@ -35,10 +35,7 @@ export const BaseGameSchema = z.object({
 
 	finishedDate: z
 		.string()
-		.regex(
-			/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/,
-			'finishedDate must be an ISO 8601 UTC datetime string'
-		)
+		.regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/, 'finishedDate must be an ISO 8601 UTC datetime string')
 		.nullable(),
 	ratingPresentation: z.number().min(0).max(10).nullable(),
 	ratingStory: z.number().min(0).max(10).nullable(),
@@ -46,7 +43,7 @@ export const BaseGameSchema = z.object({
 	score: z.number().min(0).max(20).nullable(),
 	tier: z.enum(TIER_VALUES).nullable(),
 	completionOrder: z.number().nullable().optional(),
-	sortPriority: z.number().nullable().optional()
+	sortPriority: z.number().nullable().optional(),
 });
 
 /**
@@ -56,7 +53,7 @@ export const BaseGameSchema = z.object({
 export function computeScore({
 	ratingPresentation,
 	ratingStory,
-	ratingGameplay
+	ratingGameplay,
 }: {
 	ratingPresentation: number;
 	ratingStory: number;
@@ -101,49 +98,49 @@ export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['finishedDate'],
-				message: 'Planned games must have finishedDate = null'
+				message: 'Planned games must have finishedDate = null',
 			});
 		}
 		if (game.ratingPresentation !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingPresentation'],
-				message: 'Planned games must have ratingPresentation = null'
+				message: 'Planned games must have ratingPresentation = null',
 			});
 		}
 		if (game.ratingStory !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingStory'],
-				message: 'Planned games must have ratingStory = null'
+				message: 'Planned games must have ratingStory = null',
 			});
 		}
 		if (game.ratingGameplay !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingGameplay'],
-				message: 'Planned games must have ratingGameplay = null'
+				message: 'Planned games must have ratingGameplay = null',
 			});
 		}
 		if (game.score !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['score'],
-				message: 'Planned games must have score = null'
+				message: 'Planned games must have score = null',
 			});
 		}
 		if (game.tier !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['tier'],
-				message: 'Planned games must have tier = null'
+				message: 'Planned games must have tier = null',
 			});
 		}
 		if (game.completionOrder !== null && game.completionOrder !== undefined) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['completionOrder'],
-				message: 'Planned games must have completionOrder = null'
+				message: 'Planned games must have completionOrder = null',
 			});
 		}
 		return;
@@ -154,7 +151,7 @@ export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['finishedDate'],
-				message: 'Completed games must have finishedDate set'
+				message: 'Completed games must have finishedDate set',
 			});
 		}
 
@@ -162,46 +159,42 @@ export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingPresentation'],
-				message: 'Completed games must have ratingPresentation set'
+				message: 'Completed games must have ratingPresentation set',
 			});
 		}
 		if (game.ratingStory === null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingStory'],
-				message: 'Completed games must have ratingStory set'
+				message: 'Completed games must have ratingStory set',
 			});
 		}
 		if (game.ratingGameplay === null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingGameplay'],
-				message: 'Completed games must have ratingGameplay set'
+				message: 'Completed games must have ratingGameplay set',
 			});
 		}
 
-		if (
-			game.ratingPresentation != null &&
-			game.ratingStory != null &&
-			game.ratingGameplay != null
-		) {
+		if (game.ratingPresentation != null && game.ratingStory != null && game.ratingGameplay != null) {
 			const expectedScore = computeScore({
 				ratingPresentation: game.ratingPresentation,
 				ratingStory: game.ratingStory,
-				ratingGameplay: game.ratingGameplay
+				ratingGameplay: game.ratingGameplay,
 			});
 
 			if (game.score == null) {
 				ctx.addIssue({
 					code: 'custom',
 					path: ['score'],
-					message: 'Completed games must have score set'
+					message: 'Completed games must have score set',
 				});
 			} else if (Math.abs(game.score - expectedScore) > 0.05) {
 				ctx.addIssue({
 					code: 'custom',
 					path: ['score'],
-					message: `Score must equal computed value (${expectedScore})`
+					message: `Score must equal computed value (${expectedScore})`,
 				});
 			}
 		}
@@ -210,7 +203,7 @@ export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['tier'],
-				message: 'Completed games must have tier set'
+				message: 'Completed games must have tier set',
 			});
 		}
 	}
@@ -229,10 +222,10 @@ export const GamesPayloadSchema = z.object({
 					/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/,
 					'lastUpdated must be an ISO 8601 UTC datetime string'
 				)
-				.optional()
+				.optional(),
 		})
 		.catchall(z.unknown())
-		.optional()
+		.optional(),
 });
 
 export type GameValidationSchema = z.infer<typeof GameSchema>;
