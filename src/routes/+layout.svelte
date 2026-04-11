@@ -364,14 +364,12 @@ $effect(() => {
 				});
 			} else {
 				// Desktop - toggle filter panel and focus search
-				filtersStore.setDesktopFiltersExpanded(!filtersStore.isDesktopFiltersExpanded);
-				if (filtersStore.isDesktopFiltersExpanded) {
-					requestAnimationFrame(() => {
-						const input = document.getElementById('search-input') as HTMLInputElement;
-						input?.focus();
-						input?.select();
-					});
-				}
+				filtersStore.toggleDesktopFiltersExpanded();
+				requestAnimationFrame(() => {
+					const input = document.getElementById('search-input') as HTMLInputElement;
+					input?.focus();
+					input?.select();
+				});
 			}
 			return;
 		}
