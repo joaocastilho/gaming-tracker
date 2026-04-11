@@ -1,4 +1,5 @@
 <script lang="ts">
+import { browser } from '$app/environment';
 import { dev } from '$app/environment';
 import { navigateTo } from '$lib/utils/navigationUtils';
 import ThemeToggle from '$lib/components/ThemeToggle.svelte';
@@ -10,6 +11,9 @@ import { editorStore } from '$lib/stores/editor.svelte';
 import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn } from 'lucide-svelte';
 import LoginModal from '$lib/components/LoginModal.svelte';
 import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
+
+const isMac = $derived(browser && navigator.platform.toLowerCase().includes('mac'));
+const shortcutKey = $derived(isMac ? 'Option + /' : 'Ctrl + /');
 
 interface Props {
 	onAddGame?: () => void;
@@ -161,14 +165,14 @@ async function handleLogout() {
 						aria-expanded={filtersStore.isDesktopFiltersExpanded}
 						aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
 						title={filtersStore.isDesktopFiltersExpanded
-							? 'Hide filters (Ctrl + /)'
-							: 'Show filters (Ctrl + /)'}
+							? `Hide filters (${shortcutKey})`
+							: `Show filters (${shortcutKey})`}
 					>
 						<SlidersHorizontal size={16} class="filter-icon" /><ChevronDown
 							size={16}
 							class="filter-chevron-icon"
 							style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
-						/><span class="filter-shortcut">Ctrl + /</span>
+						/><span class="filter-shortcut">{shortcutKey}</span>
 					</button>
 				</div>
 			{/if}

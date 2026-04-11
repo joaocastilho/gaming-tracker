@@ -346,7 +346,11 @@ $effect(() => {
 
 	const handleGlobalKeydown = (event: KeyboardEvent) => {
 		// Toggle filter panel (Ctrl + /) / search (Ctrl + / on mobile)
-		if (event.key === '/' && (event.ctrlKey || event.metaKey)) {
+		// On Mac, also allow Option + / (altKey)
+		const isMac = navigator.platform.toLowerCase().includes('mac');
+		const modifierCheck = isMac ? event.ctrlKey || event.metaKey || event.altKey : event.ctrlKey || event.metaKey;
+
+		if (event.key === '/' && modifierCheck) {
 			event.preventDefault();
 
 			if (window.innerWidth < 768) {
