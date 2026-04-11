@@ -13,7 +13,7 @@ import LoginModal from '$lib/components/LoginModal.svelte';
 import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
 const isMac = $derived(browser && navigator.platform.toLowerCase().includes('mac'));
-const shortcutKey = $derived(isMac ? 'Option + /' : 'Ctrl + /');
+const shortcutKey = $derived(isMac ? 'Cmd + /' : 'Ctrl + /');
 
 interface Props {
 	onAddGame?: () => void;
