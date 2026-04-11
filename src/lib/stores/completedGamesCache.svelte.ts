@@ -1,5 +1,6 @@
 import { untrack } from 'svelte';
 import type { Game } from '$lib/types/game';
+import { parseDate } from '$lib/utils/dateUtils';
 
 interface CompletedGamesCacheState {
 	sortedCompletedGames: Game[];
@@ -27,7 +28,10 @@ class CompletedGamesCacheStore {
 				if (!a.finishedDate && !b.finishedDate) return 0;
 				if (!a.finishedDate) return 1;
 				if (!b.finishedDate) return -1;
-				return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+				const dateA = parseDate(a.finishedDate);
+				const dateB = parseDate(b.finishedDate);
+				if (!dateA || !dateB) return 0;
+				return dateB - dateA;
 			});
 	}
 

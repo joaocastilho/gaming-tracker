@@ -6,6 +6,7 @@
 import { pushState, replaceState } from '$app/navigation';
 import { createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
 import { getTierDisplayName, getTierWeight } from '$lib/utils/tierUtils';
+import { parseDate } from '$lib/utils/dateUtils';
 import type { Game, TierValue } from '../types/game.js';
 import type { SortOption } from './filters.svelte';
 import { gamesStore } from './games.svelte';
@@ -339,8 +340,10 @@ class ModalStore {
 						if (!a.finishedDate && !b.finishedDate) return 0;
 						if (!a.finishedDate) return 1;
 						if (!b.finishedDate) return -1;
-
-						return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+						const dateA = parseDate(a.finishedDate);
+						const dateB = parseDate(b.finishedDate);
+						if (!dateA || !dateB) return 0;
+						return dateB - dateA;
 					});
 					break;
 				case 'planned':

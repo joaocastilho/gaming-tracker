@@ -35,10 +35,14 @@
 			url.searchParams.set('game', slug);
 			await navigator.clipboard.writeText(url.toString());
 			linkCopied = 'Copied';
-			setTimeout(() => { linkCopied = ''; }, 2000);
+			setTimeout(() => {
+				linkCopied = '';
+			}, 2000);
 		} catch {
 			linkCopied = 'Failed';
-			setTimeout(() => { linkCopied = ''; }, 2000);
+			setTimeout(() => {
+				linkCopied = '';
+			}, 2000);
 		}
 	}
 
@@ -85,7 +89,6 @@
 	}
 </script>
 
-
 {#if onClose}
 	<button
 		onclick={onClose}
@@ -120,8 +123,6 @@
 					/>
 				</button>
 			</div>
-
-
 
 			{#if isEditor}
 				<!-- Edit/delete buttons - bottom left -->
@@ -158,7 +159,7 @@
 		<div
 			class="modal-details-section flex-none px-5 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
 		>
-			<ModalHeader {game} onClose={onClose} onShare={shareGame} {linkCopied} />
+			<ModalHeader {game} {onClose} onShare={shareGame} {linkCopied} />
 			<ModalMetadata {game} />
 			<ModalRatings {game} />
 

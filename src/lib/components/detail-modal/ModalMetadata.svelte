@@ -13,11 +13,15 @@
 	function formatDate(dateString: string | null): string {
 		if (!dateString) return 'Not completed';
 		try {
-			return new Date(dateString).toLocaleDateString('en-US', {
-				year: 'numeric',
-				month: 'long',
-				day: 'numeric'
-			});
+			const parts = dateString.split('/');
+			if (parts.length !== 3) return 'Invalid date';
+			const day = parseInt(parts[0], 10);
+			const month = parseInt(parts[1], 10) - 1;
+			const year = parseInt(parts[2], 10);
+			if (isNaN(day) || isNaN(month) || isNaN(year)) return 'Invalid date';
+			const date = new Date(year, month, day);
+			if (isNaN(date.getTime())) return 'Invalid date';
+			return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 		} catch {
 			return 'Invalid date';
 		}

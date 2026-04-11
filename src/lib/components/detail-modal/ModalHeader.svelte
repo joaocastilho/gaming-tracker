@@ -62,7 +62,9 @@
 				e.stopPropagation();
 				onShare?.();
 			}}
-			class="flex h-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white/80 transition-colors outline-none hover:bg-black/25 {linkCopied ? 'px-3 gap-1.5' : 'w-8'}"
+			class="flex h-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white/80 transition-colors outline-none hover:bg-black/25 {linkCopied
+				? 'gap-1.5 px-3'
+				: 'w-8'}"
 			title="Copy link"
 			aria-label="Copy link to {game.title}"
 		>

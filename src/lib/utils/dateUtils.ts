@@ -60,3 +60,9 @@ export function parseDate(dateStr: string | null): number | null {
 
 	return null;
 }
+
+export function parseToDate(dateStr: string | null): Date | null {
+	const timestamp = parseDate(dateStr);
+	if (timestamp === null) return null;
+	return new Date(timestamp);
+}
