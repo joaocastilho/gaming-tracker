@@ -120,12 +120,13 @@ async function handleLogout() {
 		<div class="header-right">
 			<OfflineIndicator />
 
-			{#if isEditor && appStore.activeTab !== 'tierlist'}
+			{#if isEditor}
 				<button
 					type="button"
-					class="editor-button add-game-button"
+					class="editor-button add-game-button {appStore.activeTab === 'tierlist' ? 'invisible pointer-events-none' : ''}"
 					onclick={handleAddGame}
 					title="Add new game"
+					tabindex={appStore.activeTab === 'tierlist' ? -1 : 0}
 				>
 					<Plus size={16} />
 					<span class="button-label">Add Game</span>
@@ -156,26 +157,25 @@ async function handleLogout() {
 				</button>
 			{/if}
 
-			{#if appStore.activeTab !== 'tierlist'}
-				<div class="filter-toggle-wrapper hidden md:block">
-					<button
-						type="button"
-						class="filter-toggle-button"
-						onclick={() => filtersStore.toggleDesktopFiltersExpanded()}
-						aria-expanded={filtersStore.isDesktopFiltersExpanded}
-						aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
-						title={filtersStore.isDesktopFiltersExpanded
-							? `Hide filters (${shortcutKey})`
-							: `Show filters (${shortcutKey})`}
-					>
-						<SlidersHorizontal size={16} class="filter-icon" /><ChevronDown
-							size={16}
-							class="filter-chevron-icon"
-							style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
-						/><span class="filter-shortcut">{shortcutKey}</span>
-					</button>
-				</div>
-			{/if}
+			<div class="filter-toggle-wrapper hidden md:block {appStore.activeTab === 'tierlist' ? 'invisible pointer-events-none' : ''}">
+				<button
+					type="button"
+					class="filter-toggle-button"
+					onclick={() => filtersStore.toggleDesktopFiltersExpanded()}
+					aria-expanded={filtersStore.isDesktopFiltersExpanded}
+					aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
+					title={filtersStore.isDesktopFiltersExpanded
+						? `Hide filters (${shortcutKey})`
+						: `Show filters (${shortcutKey})`}
+					tabindex={appStore.activeTab === 'tierlist' ? -1 : 0}
+				>
+					<SlidersHorizontal size={16} class="filter-icon" /><ChevronDown
+						size={16}
+						class="filter-chevron-icon"
+						style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
+					/><span class="filter-shortcut">{shortcutKey}</span>
+				</button>
+			</div>
 
 			{#if isEditor}
 				<button
