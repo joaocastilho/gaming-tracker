@@ -12,7 +12,8 @@
  * Includes the primary cover and the higher-res detail variant.
  */
 export function generateSrcset(basePath: string | null | undefined): string {
-	const base = (basePath || 'covers/placeholder_cover.webp').replace(/\.webp$/, '');
+	const normalized = (basePath || 'covers/placeholder_cover.webp').replace(/\.webp$/, '');
+	const base = normalized.startsWith('/') ? normalized : `/${normalized}`;
 	return [`${base}.webp 300w`, `${base}-detail.webp 400w`].join(', ');
 }
 
@@ -21,7 +22,8 @@ export function generateSrcset(basePath: string | null | undefined): string {
  * Only exposes the 200w asset (and falls back to 300w if 200w is missing).
  */
 export function generateTinySrcset(basePath: string | null | undefined): string {
-	const base = (basePath || 'covers/placeholder_cover.webp').replace(/\.webp$/, '');
+	const normalized = (basePath || 'covers/placeholder_cover.webp').replace(/\.webp$/, '');
+	const base = normalized.startsWith('/') ? normalized : `/${normalized}`;
 
 	return [`${base}-200w.webp 200w`, `${base}.webp 300w`].join(', ');
 }

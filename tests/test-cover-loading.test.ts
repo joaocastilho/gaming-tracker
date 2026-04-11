@@ -87,11 +87,11 @@ describe('Cover Loading Optimization', () => {
 
 	test('Image Srcset Utilities', () => {
 		const srcset = generateSrcset('covers/test-game.webp');
-		const expectedSrcset = 'covers/test-game.webp 300w, covers/test-game-detail.webp 400w';
+		const expectedSrcset = '/covers/test-game.webp 300w, /covers/test-game-detail.webp 400w';
 		expect(srcset).toBe(expectedSrcset);
 
 		const tinySrcset = generateTinySrcset('covers/test-game.webp');
-		const expectedTinySrcset = 'covers/test-game-200w.webp 200w, covers/test-game.webp 300w';
+		const expectedTinySrcset = '/covers/test-game-200w.webp 200w, /covers/test-game.webp 300w';
 		expect(tinySrcset).toBe(expectedTinySrcset);
 
 		const gallerySizes = generateSizes('gallery');
@@ -122,7 +122,7 @@ describe('Cover Loading Optimization', () => {
 		const tinySrcset = generateTinySrcset(base);
 		const tinySizes = generateSizes('tiny');
 
-		expect(tinySrcset.startsWith('covers/test-game-200w.webp 200w')).toBe(true);
+		expect(tinySrcset.startsWith('/covers/test-game-200w.webp 200w')).toBe(true);
 		expect(tinySizes).toContain('200px');
 
 		// Test loading configurations

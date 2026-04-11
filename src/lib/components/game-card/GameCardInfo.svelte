@@ -10,15 +10,37 @@ let { game }: Props = $props();
 
 function formatDate(dateString: string): string {
 	try {
+		// Try ISO format first (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS.fffZ)
+		if (/^\d{4}-\d{2}-\d{2}/.test(dateString)) {
+			const date = new Date(dateString);
+			if (!isNaN(date.getTime())) {
+				return date.toLocaleDateString('en-US', {
+					month: 'short',
+					day: 'numeric',
+					year: 'numeric',
+				});
+			}
+		}
+
+		// Try DD/MM/YYYY format
 		const parts = dateString.split('/');
-		if (parts.length !== 3) return 'Unknown';
-		const day = parseInt(parts[0], 10);
-		const month = parseInt(parts[1], 10) - 1;
-		const year = parseInt(parts[2], 10);
-		if (isNaN(day) || isNaN(month) || isNaN(year)) return 'Unknown';
-		const date = new Date(year, month, day);
-		if (isNaN(date.getTime())) return 'Unknown';
-		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+		if (parts.length === 3) {
+			const day = parseInt(parts[0], 10);
+			const month = parseInt(parts[1], 10) - 1;
+			const year = parseInt(parts[2], 10);
+			if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+				const date = new Date(year, month, day);
+				if (!isNaN(date.getTime())) {
+					return date.toLocaleDateString('en-US', {
+						month: 'short',
+						day: 'numeric',
+						year: 'numeric',
+					});
+				}
+			}
+		}
+
+		return 'Unknown';
 	} catch {
 		return 'Unknown';
 	}

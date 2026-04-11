@@ -29,21 +29,58 @@ let {
 
 let isEditor = $derived(editorStore.editorMode);
 let isOffline = $derived(!offlineStore.isOnline);
-let imageElement = $state<HTMLImageElement>();
 
-const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
-const PLACEHOLDER_SRCSET = 'covers/placeholder_cover.webp 300w, covers/placeholder_cover-detail.webp 400w';
+const PLACEHOLDER_SRC = '/covers/placeholder_cover.webp';
+const PLACEHOLDER_SRCSET = '/covers/placeholder_cover.webp 300w, /covers/placeholder_cover-detail.webp 400w';
 const OFFLINE_FALLBACK_DATA_URI =
 	'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
+
+function imageAction(node: HTMLImageElement) {
+	function handleLoad() {
+		if (node) {
+			node.classList.add('loaded');
+			const skeleton = node.previousElementSibling as HTMLElement;
+			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
+				skeleton.style.opacity = '0';
+			}
+		}
+	}
+
+	function handleError() {
+		if (!node.src.includes('placeholder_cover')) {
+			node.src = PLACEHOLDER_SRC;
+			node.srcset = PLACEHOLDER_SRCSET;
+		} else {
+			node.src = OFFLINE_FALLBACK_DATA_URI;
+			node.srcset = '';
+		}
+		handleLoad();
+	}
+
+	if (node.complete && node.naturalHeight !== 0) {
+		handleLoad();
+	}
+
+	node.addEventListener('load', handleLoad);
+	node.addEventListener('error', handleError);
+
+	return {
+		destroy() {
+			node.removeEventListener('load', handleLoad);
+			node.removeEventListener('error', handleError);
+		},
+	};
+}
 
 const effectiveImageSrc = $derived(() => {
 	if (isOffline) {
 		return OFFLINE_FALLBACK_DATA_URI;
 	}
+	const baseImage = game.coverImage ? `/${game.coverImage}` : PLACEHOLDER_SRC;
 	if (size === 'tiny') {
-		return (game.coverImage || PLACEHOLDER_SRC).replace('.webp', '-200w.webp');
+		return baseImage.replace('.webp', '-200w.webp');
 	}
-	return game.coverImage || PLACEHOLDER_SRC;
+	return baseImage;
 });
 
 const effectiveImageSrcset = $derived(() => {
@@ -63,35 +100,6 @@ const imageSizes = $derived(() => {
 	return generateSizes(isAboveFold ? 'card' : 'gallery');
 });
 
-function handleImageLoad() {
-	if (imageElement) {
-		imageElement.classList.add('loaded');
-		const skeleton = imageElement.previousElementSibling as HTMLElement;
-		if (skeleton && skeleton.classList.contains('skeleton-loader')) {
-			skeleton.style.opacity = '0';
-		}
-	}
-}
-
-function handleImageError() {
-	if (imageElement) {
-		imageElement.classList.add('loaded');
-		const skeleton = imageElement.previousElementSibling as HTMLElement;
-		if (skeleton && skeleton.classList.contains('skeleton-loader')) {
-			skeleton.style.opacity = '0';
-		}
-
-		if (!imageElement.src.includes('placeholder_cover')) {
-			imageElement.src = PLACEHOLDER_SRC;
-			imageElement.srcset = PLACEHOLDER_SRCSET;
-		} else {
-			imageElement.src =
-				'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
-			imageElement.srcset = '';
-		}
-	}
-}
-
 function handleTierClick(event: MouseEvent | KeyboardEvent) {
 	event.stopPropagation();
 	if (typeof window !== 'undefined' && window.innerWidth < 768) {
@@ -106,7 +114,7 @@ function handleTierClick(event: MouseEvent | KeyboardEvent) {
 }
 
 function preloadDetailImage() {
-	const imgPath = game.coverImage || 'covers/placeholder_cover.webp';
+	const imgPath = game.coverImage ? `/${game.coverImage}` : PLACEHOLDER_SRC;
 	const detailImg = new Image();
 	detailImg.src = imgPath.replace('.webp', '-detail.webp');
 }
@@ -118,16 +126,6 @@ function getCompletionDay(dateStr: string | null): string {
 	const day = parseInt(parts[0], 10);
 	return isNaN(day) ? '' : String(day);
 }
-
-$effect(() => {
-	if (!imageElement) return;
-
-	queueMicrotask(() => {
-		if (imageElement && imageElement.complete && imageElement.naturalHeight !== 0) {
-			handleImageLoad();
-		}
-	});
-});
 </script>
 
 <div class="cover-container">
@@ -141,8 +139,7 @@ $effect(() => {
 			class="cover-image"
 			loading="lazy"
 			decoding="async"
-			onload={handleImageLoad}
-			onerror={handleImageError}
+			use:imageAction
 			onmouseover={preloadDetailImage}
 			onfocus={preloadDetailImage}
 		/>
