@@ -387,13 +387,13 @@ async function handleLogout() {
 	}
 
 	.filter-shortcut {
-		font-size: 0.65rem;
+		font-size: 0.55rem;
 		font-weight: 600;
-		padding: 1px 4px;
+		padding: 1px 3px;
 		background: var(--color-surface-elevated);
-		border-radius: 3px;
+		border-radius: 2px;
 		margin-left: 4px;
-		opacity: 0.7;
+		opacity: 0.6;
 	}
 
 	/* Editor button styles */
