@@ -388,7 +388,7 @@ async function handleLogout() {
 	}
 
 	.filter-shortcut {
-		font-size: 0.55rem;
+		font-size: 0.7rem;
 		font-weight: 600;
 		padding: 1px 3px;
 		background: var(--color-surface-elevated);
