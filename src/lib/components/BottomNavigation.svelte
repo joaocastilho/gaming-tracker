@@ -2,7 +2,7 @@
 	import { navigateTo } from '$lib/utils/navigationUtils';
 	import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 	import { appStore } from '$lib/stores/app.svelte';
-	import { Gamepad, CheckCircle, Calendar, List, Search } from 'lucide-svelte';
+	import { Gamepad, CheckCircle, Calendar, List, Search, Clock } from 'lucide-svelte';
 
 	interface Props {
 		onSearchToggle?: () => void;
@@ -11,7 +11,7 @@
 
 	let { onSearchToggle }: Props = $props();
 
-	type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search';
+	type NavId = 'all' | 'completed' | 'timeline' | 'planned' | 'tierlist' | 'search';
 
 	type NavItem = {
 		id: NavId;
@@ -42,6 +42,14 @@
 				count: counts.completed,
 				active: currentTab === 'completed',
 				icon: CheckCircle
+			},
+			{
+				id: 'timeline' as NavId,
+				label: 'Timeline',
+				route: '/timeline',
+				count: null,
+				active: currentTab === 'timeline',
+				icon: Clock
 			},
 			{
 				id: 'planned' as NavId,
