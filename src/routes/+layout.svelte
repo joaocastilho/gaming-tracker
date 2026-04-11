@@ -340,27 +340,17 @@ function onCloseSearchAndFilters() {
 	isFiltersOpen = false;
 }
 
-// Global shortcut for search (Ctrl + /)
+// Global shortcut for search (Ctrl + /) and filter toggle (Ctrl + /)
 $effect(() => {
 	if (!browser) return;
 
 	const handleGlobalKeydown = (event: KeyboardEvent) => {
-		const target = event.target as HTMLElement;
-		const isInputFocused = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
-
-		// Toggle filter panel (/) - only when not in an input
-		if (event.key === '/' && !event.ctrlKey && !event.metaKey && !isInputFocused) {
-			event.preventDefault();
-			filtersStore.setDesktopFiltersExpanded(!filtersStore.isDesktopFiltersExpanded);
-			return;
-		}
-
-		// Search shortcut (Ctrl + /)
+		// Toggle filter panel (Ctrl + /) / search (Ctrl + / on mobile)
 		if (event.key === '/' && (event.ctrlKey || event.metaKey)) {
 			event.preventDefault();
 
 			if (window.innerWidth < 768) {
-				// Mobile
+				// Mobile - toggle search
 				if (!isSearchOpen) {
 					onSearchToggle();
 				}
@@ -370,16 +360,17 @@ $effect(() => {
 					input?.select();
 				});
 			} else {
-				// Desktop
-				if (!filtersStore.isDesktopFiltersExpanded) {
-					filtersStore.setDesktopFiltersExpanded(true);
+				// Desktop - toggle filter panel and focus search
+				filtersStore.setDesktopFiltersExpanded(!filtersStore.isDesktopFiltersExpanded);
+				if (filtersStore.isDesktopFiltersExpanded) {
+					requestAnimationFrame(() => {
+						const input = document.getElementById('search-input') as HTMLInputElement;
+						input?.focus();
+						input?.select();
+					});
 				}
-				requestAnimationFrame(() => {
-					const input = document.getElementById('search-input') as HTMLInputElement;
-					input?.focus();
-					input?.select();
-				});
 			}
+			return;
 		}
 	};
 
