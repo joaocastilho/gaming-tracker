@@ -345,6 +345,17 @@ $effect(() => {
 	if (!browser) return;
 
 	const handleGlobalKeydown = (event: KeyboardEvent) => {
+		const target = event.target as HTMLElement;
+		const isInputFocused = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+		// Toggle filter panel (/) - only when not in an input
+		if (event.key === '/' && !event.ctrlKey && !event.metaKey && !isInputFocused) {
+			event.preventDefault();
+			filtersStore.setDesktopFiltersExpanded(!filtersStore.isDesktopFiltersExpanded);
+			return;
+		}
+
+		// Search shortcut (Ctrl + /)
 		if (event.key === '/' && (event.ctrlKey || event.metaKey)) {
 			event.preventDefault();
 
