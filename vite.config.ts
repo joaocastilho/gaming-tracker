@@ -98,10 +98,7 @@ export default defineConfig({
 	},
 	optimizeDeps: {
 		include: ['lucide-svelte', 'date-fns', 'zod', 'dexie'],
-		exclude: ['web-vitals', '@chenglou/pretext'],
-	},
-	ssr: {
-		noExternal: ['@chenglou/pretext'],
+		exclude: ['web-vitals'],
 	},
 	server: {
 		fs: {

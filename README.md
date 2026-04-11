@@ -70,7 +70,6 @@ Manually assigned tiers to games based on overall assessment:
 | **Storage**    | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.4.2`  |
 | **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.11` |
 | **Build Tool** | [Vite](https://vite.dev/)                      | `v8.0.8`  |
-| **Text Utils** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.4`  |
 
 ## 🚀 Running Locally
 
