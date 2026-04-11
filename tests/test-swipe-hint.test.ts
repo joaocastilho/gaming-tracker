@@ -23,6 +23,7 @@ const SWIPE_HINT_KEY = 'gaming-tracker-swipe-hint-seen';
  * Helper function that determines if swipe hint should be shown.
  * This mirrors the logic in DetailModal.svelte for testability.
  */
+/* biome-ignore lint/suspicious/noExportsInTest: Function is exported for testing purposes */
 export function shouldShowSwipeHint(options: {
 	isMobile: boolean;
 	gamesCount: number;
@@ -70,7 +71,7 @@ const createMockStorage = () => {
 		},
 		clear: () => {
 			store = {};
-		}
+		},
 	};
 };
 
@@ -92,7 +93,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: false,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(true);
 		});
@@ -103,7 +104,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: true,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(false);
 		});
@@ -114,7 +115,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: false,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(false);
 		});
@@ -125,7 +126,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 1,
 				hasSeenHint: false,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(false);
 		});
@@ -136,7 +137,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: false,
 				isModalOpen: false,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(false);
 		});
@@ -147,7 +148,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: false,
 				isModalOpen: true,
-				isViewMode: false
+				isViewMode: false,
 			});
 			expect(result).toBe(false);
 		});
@@ -158,7 +159,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 0,
 				hasSeenHint: false,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(false);
 		});
@@ -169,7 +170,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 2,
 				hasSeenHint: false,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(true);
 		});
@@ -194,7 +195,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: mockStorage.getItem(SWIPE_HINT_KEY) !== null,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(resultFirst).toBe(true);
 
@@ -207,7 +208,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: mockStorage.getItem(SWIPE_HINT_KEY) !== null,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(resultSecond).toBe(false);
 		});
@@ -227,7 +228,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: mockStorage.getItem(SWIPE_HINT_KEY) !== null,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(true);
 		});
@@ -240,7 +241,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: -1,
 				hasSeenHint: false,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(false);
 		});
@@ -251,7 +252,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 10000,
 				hasSeenHint: false,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(true);
 		});
@@ -268,7 +269,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: session1Storage.getItem(SWIPE_HINT_KEY) !== null,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(true);
 
@@ -281,7 +282,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: session1Storage.getItem(SWIPE_HINT_KEY) !== null,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(false);
 
@@ -294,7 +295,7 @@ describe('Swipe Hint Logic', () => {
 				gamesCount: 3,
 				hasSeenHint: session2Storage.getItem(SWIPE_HINT_KEY) !== null,
 				isModalOpen: true,
-				isViewMode: true
+				isViewMode: true,
 			});
 			expect(result).toBe(true);
 		});

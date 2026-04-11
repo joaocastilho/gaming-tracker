@@ -1,6 +1,6 @@
 import type { LayoutLoad } from './$types';
 import { browser } from '$app/environment';
-import { type GamingTrackerDB } from '$lib/db';
+import type { GamingTrackerDB } from '$lib/db';
 
 export const prerender = true;
 
@@ -20,7 +20,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 				return {
 					games: cachedGames,
 					meta: null,
-					source: 'dexie'
+					source: 'dexie',
 				};
 			}
 		} catch (e) {
@@ -31,7 +31,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 	// 2. Fall back to network (games.json)
 	try {
 		const res = await fetch('/games.json', {
-			headers: { accept: 'application/json' }
+			headers: { accept: 'application/json' },
 		});
 
 		if (res.ok) {
@@ -53,7 +53,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 			return {
 				games: games,
 				meta: null,
-				source: 'network'
+				source: 'network',
 			};
 		}
 	} catch {
@@ -63,7 +63,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 	return {
 		games: [],
 		meta: null,
-		source: 'none'
+		source: 'none',
 	};
 };
 
@@ -78,7 +78,7 @@ async function refreshGamesInBackground(
 ) {
 	try {
 		const res = await fetch('/games.json?t=' + Date.now(), {
-			headers: { accept: 'application/json' }
+			headers: { accept: 'application/json' },
 		});
 
 		if (res.ok) {

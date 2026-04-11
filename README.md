@@ -66,6 +66,7 @@ Manually assigned tiers to games based on overall assessment:
 | **UI Library** | [Svelte](https://svelte.dev/)                  | `v5.55.3` |
 | **Language**   | [TypeScript](https://www.typescriptlang.org/)  | `v5.9.3`  |
 | **Styling**    | [Tailwind CSS](https://tailwindcss.com/)       | `v4.2.2`  |
+| **Linter**     | [Biome](https://biomejs.dev/)                  | `v2.4.11` |
 | **Storage**    | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.4.2`  |
 | **Runtime**    | [Bun](https://bun.sh/)                         | `v1.3.11` |
 | **Build Tool** | [Vite](https://vite.dev/)                      | `v7.3.2`  |
@@ -110,14 +111,14 @@ gaming-tracker/
 
 ## 📜 Available Scripts
 
-| Script           | Description            |
-| ---------------- | ---------------------- |
-| `bun run dev`    | Start dev server       |
-| `bun run build`  | Build for production   |
-| `bun run check`  | TypeScript type check  |
-| `bun run lint`   | Check code with ESLint |
-| `bun run format` | Format with Prettier   |
-| `bun run test`   | Run tests              |
+| Script           | Description           |
+| ---------------- | --------------------- |
+| `bun run dev`    | Start dev server      |
+| `bun run build`  | Build for production  |
+| `bun run check`  | TypeScript type check |
+| `bun run lint`   | Check code with Biome |
+| `bun run format` | Format with Prettier  |
+| `bun run test`   | Run tests             |
 
 ## 📖 Documentation
 
