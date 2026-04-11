@@ -160,14 +160,17 @@ async function handleLogout() {
 						onclick={() => filtersStore.toggleDesktopFiltersExpanded()}
 						aria-expanded={filtersStore.isDesktopFiltersExpanded}
 						aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
-						title={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
+						title={filtersStore.isDesktopFiltersExpanded
+							? 'Hide filters (Ctrl + /)'
+							: 'Show filters (Ctrl + /)'}
 					>
-						<SlidersHorizontal size={16} class="filter-icon" />
-						<ChevronDown
+						<SlidersHorizontal size={16} class="filter-icon" /><ChevronDown
 							size={16}
 							class="filter-chevron-icon"
 							style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
-						/>
+						/>{#if !filtersStore.isDesktopFiltersExpanded}<span class="filter-shortcut"
+								>Ctrl + /</span
+							>{/if}
 					</button>
 				</div>
 			{/if}
@@ -383,6 +386,15 @@ async function handleLogout() {
 
 	.filter-toggle-button :global(.filter-chevron-icon) {
 		transition: transform var(--transition-fast);
+	}
+
+	.filter-shortcut {
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 2px 6px;
+		background: var(--color-surface-elevated);
+		border-radius: 4px;
+		margin-left: 4px;
 	}
 
 	/* Editor button styles */
