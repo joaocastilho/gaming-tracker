@@ -60,7 +60,9 @@ class FilteredGamesStore {
 		}
 
 		const filteredGames = this.filterGames(games, filters, activeTab);
-		const sortedGames = this.sortGames(filteredGames, filters?.sortOption ?? null, activeTab);
+
+		const effectiveSort = activeTab === 'tierlist' ? null : (filters?.sortOption ?? null);
+		const sortedGames = this.sortGames(filteredGames, effectiveSort, activeTab);
 
 		this.updateCache(cacheKey, sortedGames);
 

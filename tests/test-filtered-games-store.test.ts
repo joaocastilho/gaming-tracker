@@ -166,6 +166,21 @@ describe('FilteredGamesStore Integration', () => {
 			// Most recent should be first
 			expect(games[0].finishedDate).toBeDefined();
 		});
+
+		it('ignores sorting when on tierlist tab', async () => {
+			appStore.setActiveTab('tierlist');
+			// Try to set score sort (which would normally modify order)
+			filtersStore.setSort({ key: 'score', direction: 'desc' });
+			await flushPromises();
+
+			const games = filteredGamesStore.games;
+			// Since sorting is default (alphabetical), E (Elden Ring) comes before G (God of War)
+			// Wait, Elden Ring has tier: null so it's not in the tierlist!
+			// Remaining tiered games: Zelda (Z), God of War (G), Hollow Knight (H)
+			// Alphabetical order: God of War, Hollow Knight, Zelda
+			expect(games[0].title).toBe('God of War Ragnarok'); // God of War (first alphabetically)
+			expect(games[2].title).toBe('Zelda: Breath of the Wild'); // Zelda (last alphabetically)
+		});
 	});
 
 	describe('Counts Update', () => {

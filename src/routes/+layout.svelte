@@ -666,26 +666,7 @@ async function installApp() {
 						{@render children?.()}
 					</div>
 				{:else if isTierlistPage}
-					{#if hasActiveFilters && $filteredGames.length === 0}
-						<div
-							class="no-results flex flex-col items-center justify-center gap-3 py-10 text-center"
-						>
-							<h2 class="font-semibold">No games match your current filters</h2>
-							<p class="text-gray-600 dark:text-gray-400">
-								Try adjusting or clearing your filters to see more games.
-							</p>
-							<button
-								class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex h-[44px] w-[44px] items-center justify-center rounded-md transition-colors"
-								type="button"
-								onclick={resetFilters}
-								title="Reset all filters"
-							>
-								<RotateCcw size={18} />
-							</button>
-						</div>
-					{:else}
-						<TierListView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
-					{/if}
+					<TierListView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
 
 					<div style="display: none;">
 						{@render children?.()}
@@ -759,11 +740,6 @@ async function installApp() {
 		color: var(--color-text-primary);
 		font-size: 0.85rem;
 		cursor: pointer;
-	}
-
-	.no-results {
-		font-size: 1.5rem;
-		color: var(--color-text-primary);
 	}
 
 	/* Push content below the fixed search bar when search is open */

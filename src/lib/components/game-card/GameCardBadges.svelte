@@ -156,7 +156,7 @@ $effect(() => {
 		justify-content: center;
 		transition: opacity 0.2s;
 		/* Removed min dimensions to align with text badges */
-		margin-left: -8px;
+		margin-left: 0;
 	}
 
 
