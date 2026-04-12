@@ -168,4 +168,19 @@ $effect(() => {
 			pointer-events: none;
 		}
 	}
+
+	@container game-card (max-width: 200px) {
+		.metadata-row {
+			gap: 4px;
+		}
+		.badges-left {
+			gap: 4px;
+		}
+		.badge {
+			padding: 2px 6px;
+		}
+		.game-year {
+			font-size: 0.75rem;
+		}
+	}
 </style>

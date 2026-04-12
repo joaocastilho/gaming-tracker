@@ -217,5 +217,47 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
+	@container game-card (max-width: 220px) {
+		.time-item,
+		.date-item {
+			gap: 4px;
+			font-size: 0.75rem;
+		}
+
+		.time-item :global(svg),
+		.date-item :global(svg) {
+			width: 14px;
+			height: 14px;
+		}
+
+		.ratings-compact {
+			gap: 4px;
+		}
+
+		.rating-item {
+			gap: 2px;
+		}
+
+		.rating-value {
+			font-size: 0.9rem;
+		}
+
+		.rating-item :global(svg) {
+			width: 26px;
+			height: 26px;
+		}
+
+		.status-indicator {
+			font-size: 0.8rem;
+			padding: 6px;
+			gap: 6px;
+		}
+
+		.status-indicator :global(svg) {
+			width: 15px;
+			height: 15px;
+		}
+	}
+
 
 </style>

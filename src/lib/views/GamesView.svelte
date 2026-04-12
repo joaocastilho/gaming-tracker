@@ -35,7 +35,7 @@ let columns = $derived(
 		const minCardWidth = 185;
 		const gap = 12;
 		const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
-		return Math.min(5, Math.max(1, calculatedColumns));
+		return Math.min(5, Math.max(2, calculatedColumns));
 	})()
 );
 
@@ -75,7 +75,7 @@ let itemHeight = $derived(
 		const gap = 12;
 		const totalGapWidth = (columns - 1) * gap;
 		const availableWidth = containerWidth - containerPadding - totalGapWidth;
-		const columnWidth = Math.max(180, availableWidth / columns);
+		const columnWidth = availableWidth / columns;
 		const coverHeight = columnWidth * 1.5;
 		const infoHeight = 300;
 		return coverHeight + infoHeight;
