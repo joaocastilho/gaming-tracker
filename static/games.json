@@ -6042,23 +6042,6 @@
       "tier": null
     },
     {
-      "id": "ratchet-clank",
-      "title": "Ratchet & Clank (HD Collection)",
-      "platform": "PS3",
-      "year": 2012,
-      "genre": "Platformer",
-      "coOp": "No",
-      "status": "Planned",
-      "coverImage": "covers/ratchet-clank.webp",
-      "playtime": "12h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
-    },
-    {
       "id": "ratchet-clank-2-going-commando",
       "title": "Ratchet & Clank 2: Going Commando (HD Collection)",
       "platform": "PS3",
@@ -9598,6 +9581,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-04-18T09:17:06.054Z"
+    "lastUpdated": "2026-04-18T09:17:43.259Z"
   }
 }
