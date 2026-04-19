@@ -629,7 +629,7 @@ body,
 .game-card {
 	background: var(--color-surface);
 	border: 1px solid var(--color-border);
-	border-radius: 16px;
+	border-radius: 8px;
 	box-shadow: var(--shadow-md);
 	transition: all var(--transition-normal);
 	contain: layout style paint;

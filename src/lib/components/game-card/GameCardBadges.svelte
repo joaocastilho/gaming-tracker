@@ -131,7 +131,7 @@ $effect(() => {
 		font-size: clamp(0.65rem, 5.5cqi, 0.75rem);
 		font-weight: 500;
 		padding: 4px 8px;
-		border-radius: 6px;
+		border-radius: 4px;
 		white-space: nowrap;
 		cursor: pointer;
 		transition: all var(--transition-fast);

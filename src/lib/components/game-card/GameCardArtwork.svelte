@@ -209,7 +209,7 @@ function getCompletionDay(dateStr: string | null): string {
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-		border-radius: 12px 12px 0 0;
+		border-radius: 8px 8px 0 0;
 	}
 
 	.skeleton-loader {
@@ -277,7 +277,7 @@ function getCompletionDay(dateStr: string | null): string {
 		display: flex;
 		align-items: center;
 		padding: 6px 12px;
-		border-radius: 8px;
+		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.02em;
@@ -320,7 +320,7 @@ function getCompletionDay(dateStr: string | null): string {
 			var(--color-primary) 0%,
 			var(--color-primary-dark, #6366f1) 100%
 		);
-		border-radius: 10px;
+		border-radius: 4px;
 		font-weight: 800;
 		z-index: 10;
 		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.45);
@@ -358,7 +358,7 @@ function getCompletionDay(dateStr: string | null): string {
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		border-radius: 10px;
+		border-radius: 4px;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		cursor: pointer;
 		backdrop-filter: blur(12px);

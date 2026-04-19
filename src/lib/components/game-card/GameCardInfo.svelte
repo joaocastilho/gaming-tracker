@@ -184,7 +184,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		font-size: 0.95rem;
 		padding: 8px;
 		flex: 1;
-		border-radius: 8px;
+		border-radius: 4px;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
 		transition: all var(--transition-normal);

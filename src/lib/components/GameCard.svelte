@@ -99,7 +99,7 @@ function handleKeyDown(event: KeyboardEvent) {
 		width: 100%;
 		height: 100%;
 		max-width: 100%;
-		border-radius: 16px;
+		border-radius: 8px;
 		overflow: hidden;
 		background: var(--color-surface);
 		border: 0px;

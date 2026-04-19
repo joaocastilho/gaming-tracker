@@ -48,6 +48,34 @@ $effect(() => {
 	}
 });
 
+function toggleAndApplyPlatform(platform: string) {
+	togglePendingPlatform(platform);
+	applyPendingFilters();
+}
+
+function toggleAndApplyGenre(genre: string) {
+	togglePendingGenre(genre);
+	applyPendingFilters();
+}
+
+function toggleAndApplyTier(tier: string) {
+	togglePendingTier(tier);
+	applyPendingFilters();
+}
+
+function toggleAndApplyCoOp(coOp: string) {
+	togglePendingCoOp(coOp);
+	applyPendingFilters();
+}
+
+function applyPendingFilters() {
+	filtersStore.resetAllFilters();
+	pendingPlatforms.forEach((p) => filtersStore.togglePlatform(p));
+	pendingGenres.forEach((g) => filtersStore.toggleGenre(g));
+	pendingTiers.forEach((t) => filtersStore.toggleTier(t));
+	pendingCoOp.forEach((c) => filtersStore.toggleCoOp(c));
+}
+
 $effect(() => {
 	if (typeof document !== 'undefined' && (isOpen || activeFilterPopup)) {
 		document.body.style.overflow = 'hidden';
@@ -78,11 +106,6 @@ function applyFilters() {
 	pendingTiers.forEach((t) => filtersStore.toggleTier(t));
 	pendingCoOp.forEach((c) => filtersStore.toggleCoOp(c));
 	onClose?.();
-}
-
-function closeWithoutApplying() {
-	onClose?.();
-	activeFilterPopup = null;
 }
 
 function togglePendingPlatform(platform: string) {
@@ -122,13 +145,13 @@ function togglePendingCoOp(coOp: string) {
 	<div
 		class="mobile-filters-modal fixed inset-0 z-50 md:hidden"
 		onclick={(e) => {
-			if (e.target === e.currentTarget) closeWithoutApplying();
+			if (e.target === e.currentTarget) applyFilters();
 		}}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 		onkeydown={(e) => {
-			if (e.key === 'Escape') closeWithoutApplying();
+			if (e.key === 'Escape') applyFilters();
 		}}
 	>
 		<div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
@@ -138,9 +161,8 @@ function togglePendingCoOp(coOp: string) {
 		>
 			<MobileFiltersHeader
 				{title}
-				onApply={applyFilters}
 				onReset={resetFilters}
-				onClose={closeWithoutApplying}
+				onClose={applyFilters}
 			/>
 
 			<div class="mobile-filters-content">
@@ -154,7 +176,7 @@ function togglePendingCoOp(coOp: string) {
 					onPlatformClick={() => (activeFilterPopup = 'platforms')}
 					onGenreClick={() => (activeFilterPopup = 'genres')}
 					onTierClick={() => (activeFilterPopup = 'tiers')}
-					onCoOpClick={() => togglePendingCoOp('Yes')}
+					onCoOpClick={() => toggleAndApplyCoOp('Yes')}
 				/>
 
 				<SortSection />
@@ -166,12 +188,17 @@ function togglePendingCoOp(coOp: string) {
 				type="platforms"
 				options={filterOptions.platforms.map((p) => ({ value: p }))}
 				selected={pendingPlatforms}
-				onToggle={togglePendingPlatform}
+				onToggle={toggleAndApplyPlatform}
 				onReset={() => {
 					pendingPlatforms = [];
+					applyPendingFilters();
 					activeFilterPopup = null;
 				}}
 				onClose={() => (activeFilterPopup = null)}
+				onAccept={() => {
+					applyPendingFilters();
+					activeFilterPopup = null;
+				}}
 			/>
 		{/if}
 
@@ -180,12 +207,17 @@ function togglePendingCoOp(coOp: string) {
 				type="genres"
 				options={filterOptions.genres.map((g) => ({ value: g }))}
 				selected={pendingGenres}
-				onToggle={togglePendingGenre}
+				onToggle={toggleAndApplyGenre}
 				onReset={() => {
 					pendingGenres = [];
+					applyPendingFilters();
 					activeFilterPopup = null;
 				}}
 				onClose={() => (activeFilterPopup = null)}
+				onAccept={() => {
+					applyPendingFilters();
+					activeFilterPopup = null;
+				}}
 			/>
 		{/if}
 
@@ -194,12 +226,17 @@ function togglePendingCoOp(coOp: string) {
 				type="tiers"
 				options={filterOptions.tiers.map((t) => ({ value: t }))}
 				selected={pendingTiers}
-				onToggle={togglePendingTier}
+				onToggle={toggleAndApplyTier}
 				onReset={() => {
 					pendingTiers = [];
+					applyPendingFilters();
 					activeFilterPopup = null;
 				}}
 				onClose={() => (activeFilterPopup = null)}
+				onAccept={() => {
+					applyPendingFilters();
+					activeFilterPopup = null;
+				}}
 			/>
 		{/if}
 	</div>

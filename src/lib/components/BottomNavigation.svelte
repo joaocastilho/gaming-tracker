@@ -9,7 +9,7 @@ interface Props {
 	onCloseSearchAndFilters?: () => void;
 }
 
-let { onSearchToggle }: Props = $props();
+let { onSearchToggle, onCloseSearchAndFilters }: Props = $props();
 
 type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search';
 
@@ -73,7 +73,7 @@ function handleNavClick(target: NavId) {
 	if (target === 'search') {
 		onSearchToggle?.();
 	} else {
-		// Navigate to tab page
+		onCloseSearchAndFilters?.();
 		navigateTo(target);
 	}
 }

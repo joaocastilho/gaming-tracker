@@ -1,28 +1,18 @@
 <script lang="ts">
-import { RotateCcw, Check, X } from 'lucide-svelte';
+import { RotateCcw, ChevronDown } from 'lucide-svelte';
 
 interface Props {
 	title?: string;
-	onApply: () => void;
 	onReset: () => void;
 	onClose: () => void;
 }
 
-let { title = 'Filters and Sorting', onApply, onReset, onClose }: Props = $props();
+let { title = 'Filters and Sorting', onReset, onClose }: Props = $props();
 </script>
 
 <div class="mobile-filters-header">
 	<h2 class="mobile-filters-title">{title}</h2>
 	<div class="mobile-filters-actions">
-		<button
-			type="button"
-			class="mobile-header-icon apply-icon"
-			onclick={onApply}
-			aria-label="Apply filters"
-			title="Apply"
-		>
-			<Check size={20} />
-		</button>
 		<button
 			type="button"
 			class="mobile-header-icon reset-icon"
@@ -34,12 +24,12 @@ let { title = 'Filters and Sorting', onApply, onReset, onClose }: Props = $props
 		</button>
 		<button
 			type="button"
-			class="mobile-header-icon close-icon"
+			class="mobile-header-icon collapse-icon"
 			onclick={onClose}
-			aria-label="Close without applying"
-			title="Close"
+			aria-label="Collapse filters pane"
+			title="Collapse"
 		>
-			<X size={20} />
+			<ChevronDown size={20} />
 		</button>
 	</div>
 </div>
@@ -79,16 +69,6 @@ let { title = 'Filters and Sorting', onApply, onReset, onClose }: Props = $props
 		transition: all 0.2s ease;
 	}
 
-	.mobile-header-icon.apply-icon {
-		background-color: #22c55e;
-		color: white;
-	}
-
-	.mobile-header-icon.apply-icon:hover {
-		background-color: #16a34a;
-		transform: scale(1.05);
-	}
-
 	.mobile-header-icon.reset-icon {
 		background-color: rgba(255, 255, 255, 0.08);
 		color: var(--color-text-secondary);
@@ -107,13 +87,21 @@ let { title = 'Filters and Sorting', onApply, onReset, onClose }: Props = $props
 		background-color: rgba(0, 0, 0, 0.1);
 	}
 
-	.mobile-header-icon.close-icon {
-		background-color: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
+	.mobile-header-icon.collapse-icon {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: var(--color-text-secondary);
 	}
 
-	.mobile-header-icon.close-icon:hover {
-		background-color: rgba(239, 68, 68, 0.2);
-		transform: scale(1.05);
+	:global(.light) .mobile-header-icon.collapse-icon {
+		background-color: rgba(0, 0, 0, 0.06);
+	}
+
+	.mobile-header-icon.collapse-icon:hover {
+		background-color: rgba(255, 255, 255, 0.2);
+		color: var(--color-text-primary);
+	}
+
+	:global(.light) .mobile-header-icon.collapse-icon:hover {
+		background-color: rgba(0, 0, 0, 0.12);
 	}
 </style>
