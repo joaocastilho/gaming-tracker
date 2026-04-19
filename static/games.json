@@ -1544,9 +1544,10 @@
       "finishedDate": "19/01/2024",
       "ratingPresentation": 8,
       "ratingStory": 7,
-      "ratingGameplay": 6,
-      "score": 14,
-      "tier": "D - Decent"
+      "ratingGameplay": 7,
+      "score": 15,
+      "tier": "C - Good",
+      "completionOrder": null
     },
     {
       "id": "dandara-trials-of-fear-edition",
@@ -7580,15 +7581,16 @@
       "year": 2022,
       "genre": "Puzzle",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Completed",
       "coverImage": "covers/the-case-of-the-golden-idol.webp",
-      "playtime": "6h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "9h 47m",
+      "finishedDate": "19/04/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 8,
+      "ratingGameplay": 8,
+      "score": 16,
+      "tier": "B - Great",
+      "completionOrder": null
     },
     {
       "id": "the-cat-lady",
@@ -9581,6 +9583,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-04-18T09:17:43.259Z"
+    "lastUpdated": "2026-04-19T11:49:04.290Z"
   }
 }
