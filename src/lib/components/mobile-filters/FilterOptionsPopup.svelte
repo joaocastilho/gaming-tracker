@@ -14,9 +14,10 @@ interface Props {
 	onToggle: (value: string) => void;
 	onReset: () => void;
 	onClose: () => void;
+	onAccept: () => void;
 }
 
-let { type, options, selected, onToggle, onReset, onClose }: Props = $props();
+let { type, options, selected, onToggle, onReset, onClose, onAccept }: Props = $props();
 
 const colors = {
 	platforms: getPlatformColor,
@@ -93,7 +94,7 @@ function handleBackdropClick(e: MouseEvent) {
 				<button
 					type="button"
 					class="popup-icon-btn accept"
-					onclick={onClose}
+					onclick={onAccept}
 					aria-label="Accept selection"
 					title="Accept"
 				>
