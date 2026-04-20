@@ -40,7 +40,7 @@ const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort())
 
 	<div class="form-field narrow">
 		<label for="year">Year</label>
-		<input id="year" type="text" bind:value={working.year} maxlength="4" placeholder="YYYY" />
+		<input id="year" type="number" bind:value={working.year} min="1970" max="2099" placeholder="YYYY" />
 	</div>
 </div>
 
@@ -96,5 +96,15 @@ const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort())
 		outline: none;
 		border-color: #6366f1;
 		background: #1e293b;
+	}
+
+	input[type='number']::-webkit-inner-spin-button,
+	input[type='number']::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	input[type='number'] {
+		-moz-appearance: textfield;
+		appearance: textfield;
 	}
 </style>
