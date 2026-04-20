@@ -74,7 +74,7 @@ const subtitleFontSize = $derived(calculateSubtitleFontSize(game.subtitle));
 
 	@container game-card (max-width: 200px) {
 		.game-title {
-			font-size: clamp(0.95rem, 8cqi, 1.1rem);
+			font-size: clamp(1.1rem, 8cqi, 1rem);
 		}
 		.game-subtitle {
 			font-size: 0.65rem;

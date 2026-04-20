@@ -155,13 +155,9 @@ $effect(() => {
 		align-items: center;
 		justify-content: center;
 		transition: opacity 0.2s;
-		/* Removed min dimensions to align with text badges */
 		margin-left: 0;
 	}
 
-
-
-	/* Disable badge interactions on mobile to ensure card click works */
 	@media (max-width: 768px) {
 		.badge,
 		.coop-badge {

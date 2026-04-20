@@ -159,7 +159,6 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		filter: grayscale(1);
 	}
 
-	/* Text Colors handled by tailwind classes usually, but define muted here if needed */
 	:global(.text-muted) {
 		color: var(--color-text-tertiary, #888);
 	}
