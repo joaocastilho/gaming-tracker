@@ -44,6 +44,8 @@ vi.mock('lucide-svelte', () => {
 		Link: MockIcon,
 		Image: MockIcon,
 		Trash2: MockIcon,
+		Clock: MockIcon,
+		Users: MockIcon,
 	};
 });
 
