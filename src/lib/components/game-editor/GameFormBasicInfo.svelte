@@ -12,15 +12,13 @@ const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].s
 const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
 </script>
 
-<div class="form-row">
-	<div class="form-group full">
-		<label for="title">Title *</label>
-		<input id="title" type="text" bind:value={working.title} required />
-	</div>
+<div class="form-col">
+	<label for="title">Title *</label>
+	<input id="title" type="text" bind:value={working.title} required />
 </div>
 
-<div class="form-row three-col">
-	<div class="form-group">
+<div class="form-row">
+	<div class="form-field">
 		<label for="platform">Platform *</label>
 		<select id="platform" bind:value={working.platform} required>
 			<option value="">Select...</option>
@@ -30,7 +28,7 @@ const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort())
 		</select>
 	</div>
 
-	<div class="form-group">
+	<div class="form-field">
 		<label for="genre">Genre *</label>
 		<select id="genre" bind:value={working.genre} required>
 			<option value="">Select...</option>
@@ -40,37 +38,37 @@ const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort())
 		</select>
 	</div>
 
-	<div class="form-group narrow">
-		<label for="year">Year *</label>
-		<input id="year" type="number" bind:value={working.year} required min="1980" max="2100" />
+	<div class="form-field narrow">
+		<label for="year">Year</label>
+		<input id="year" type="text" bind:value={working.year} maxlength="4" placeholder="YYYY" />
 	</div>
 </div>
 
 <style>
-	.form-row {
-		display: flex;
-		gap: 1rem;
-		margin-bottom: 1rem;
-	}
-
-	.form-row.three-col {
-		display: grid;
-		grid-template-columns: 1fr 1fr 100px;
-	}
-
-	.form-group {
+	.form-col {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: 0.35rem;
+	}
+
+	.form-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 1rem;
+		align-items: flex-start;
+	}
+
+	.form-field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
 		flex: 1;
+		min-width: 120px;
 	}
 
-	.form-group.full {
-		grid-column: 1 / -1;
-	}
-
-	.form-group.narrow {
-		max-width: 100px;
+	.form-field.narrow {
+		flex: 0 0 80px;
+		max-width: 80px;
 	}
 
 	label {

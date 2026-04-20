@@ -1,4 +1,6 @@
 <script lang="ts">
+import { Image } from 'lucide-svelte';
+
 interface Props {
 	coverUrl: string;
 	coverPreview: string | null;
@@ -23,10 +25,17 @@ function handleUrlInput(event: Event) {
 	const url = (event.target as HTMLInputElement).value;
 	onUrlChange(url);
 }
+
+function triggerFileInput() {
+	fileInputRef?.click();
+}
 </script>
 
 <div class="cover-section">
-	<label for="coverUrlInput" class="section-header">Cover Image</label>
+	<label for="coverUrlInput" class="section-header">
+		<Image size={14} />
+		Cover Image
+	</label>
 
 	<div class="cover-inputs">
 		<input
@@ -37,7 +46,10 @@ function handleUrlInput(event: Event) {
 			oninput={handleUrlInput}
 		/>
 
-		<input bind:this={fileInputRef} type="file" accept="image/*" class="file-input btn-small" onchange={onFileSelect} />
+		<input bind:this={fileInputRef} type="file" accept="image/*" class="file-input-hidden" onchange={onFileSelect} />
+		<button type="button" class="browse-btn" onclick={triggerFileInput}>
+			Browse image
+		</button>
 	</div>
 
 	{#if coverError}
@@ -53,17 +65,15 @@ function handleUrlInput(event: Event) {
 </div>
 
 <style>
-	.cover-section {
-		grid-column: 1 / -1;
-		margin-bottom: 1rem;
-	}
 
 	.section-header {
 		font-size: 0.9rem;
 		font-weight: 600;
 		color: #e2e8f0;
 		margin-bottom: 0.5rem;
-		display: block;
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
 	}
 
 	.cover-inputs {
@@ -74,6 +84,7 @@ function handleUrlInput(event: Event) {
 
 	.cover-inputs input[type='text'] {
 		flex: 1;
+		min-width: 0;
 		padding: 0.5rem 0.75rem;
 		border-radius: 0.5rem;
 		border: 1px solid rgba(75, 85, 99, 0.4);
@@ -88,35 +99,24 @@ function handleUrlInput(event: Event) {
 		background: #1e293b;
 	}
 
-	.file-input {
-		padding: 0.5rem 1rem;
+	.file-input-hidden {
+		display: none;
+	}
+
+	.browse-btn {
+		padding: 0.5rem 0.85rem;
 		background: rgba(99, 102, 241, 0.2);
 		color: #818cf8;
 		border: 1px solid rgba(99, 102, 241, 0.3);
 		border-radius: 0.5rem;
-		font-size: 0.85rem;
+		font-size: 0.8rem;
 		cursor: pointer;
 		transition: all 0.2s;
 		white-space: nowrap;
 	}
 
-	.file-input:hover {
+	.browse-btn:hover {
 		background: rgba(99, 102, 241, 0.3);
-	}
-
-	.file-input.btn-small {
-		padding: 0.35rem 0.65rem;
-		font-size: 0.8rem;
-	}
-
-	.file-input.btn-small::file-selector-button {
-		margin-right: 0.35rem;
-		padding: 0.2rem 0.5rem;
-		font-size: 0.8rem;
-	}
-
-	.file-input::file-selector-button {
-		margin-right: 0.5rem;
 	}
 
 	.error-text {

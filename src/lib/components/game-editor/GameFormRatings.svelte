@@ -10,31 +10,33 @@ let { working }: Props = $props();
 </script>
 
 <div class="ratings-section">
-	<div class="full divider"></div>
-	<div class="full section-header">Ratings</div>
+	<div class="divider"></div>
+	<div class="section-header">Ratings</div>
 
-	<div class="rating-slider">
-		<div class="label-row">
-			<span>Presentation</span>
-			<span class="val">{formatRating(working.ratingPresentation)}</span>
+	<div class="sliders-stack">
+		<div class="rating-slider">
+			<div class="label-row">
+				<span>Presentation</span>
+				<span class="val">{formatRating(working.ratingPresentation)}</span>
+			</div>
+			<input type="range" min="0" max="10" step="1" bind:value={working.ratingPresentation} />
 		</div>
-		<input type="range" min="0" max="10" step="1" bind:value={working.ratingPresentation} />
-	</div>
 
-	<div class="rating-slider">
-		<div class="label-row">
-			<span>Story</span>
-			<span class="val">{formatRating(working.ratingStory)}</span>
+		<div class="rating-slider">
+			<div class="label-row">
+				<span>Story</span>
+				<span class="val">{formatRating(working.ratingStory)}</span>
+			</div>
+			<input type="range" min="0" max="10" step="1" bind:value={working.ratingStory} />
 		</div>
-		<input type="range" min="0" max="10" step="1" bind:value={working.ratingStory} />
-	</div>
 
-	<div class="rating-slider">
-		<div class="label-row">
-			<span>Gameplay</span>
-			<span class="val">{formatRating(working.ratingGameplay)}</span>
+		<div class="rating-slider">
+			<div class="label-row">
+				<span>Gameplay</span>
+				<span class="val">{formatRating(working.ratingGameplay)}</span>
+			</div>
+			<input type="range" min="0" max="10" step="1" bind:value={working.ratingGameplay} />
 		</div>
-		<input type="range" min="0" max="10" step="1" bind:value={working.ratingGameplay} />
 	</div>
 
 	<div class="score-display">
@@ -42,7 +44,7 @@ let { working }: Props = $props();
 		<strong>{working.score ?? '-'}</strong>
 	</div>
 
-	<label class="full">
+	<label class="tier-label">
 		<span>Tier</span>
 		<select bind:value={working.tier}>
 			<option value={null}>Select Tier...</option>
@@ -55,24 +57,26 @@ let { working }: Props = $props();
 
 <style>
 	.ratings-section {
-		display: contents;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
 	}
 
-	.full {
-		grid-column: 1 / -1;
+	.sliders-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
 	}
 
 	.divider {
 		height: 1px;
 		background: rgba(255, 255, 255, 0.1);
-		margin: 0.5rem 0;
 	}
 
 	.section-header {
 		font-size: 0.9rem;
 		font-weight: 600;
 		color: #e2e8f0;
-		margin-bottom: 0.5rem;
 	}
 
 	.rating-slider {
@@ -81,6 +85,11 @@ let { working }: Props = $props();
 		gap: 0.5rem;
 	}
 
+	.tier-label {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
 	.label-row {
 		display: flex;
 		justify-content: space-between;

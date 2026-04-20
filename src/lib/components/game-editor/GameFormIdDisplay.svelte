@@ -64,10 +64,6 @@ let { gameId, onCopy, copied }: Props = $props();
 		grid-column: 1 / -1;
 	}
 
-	.cover-path {
-		margin-top: 1.5rem;
-	}
-
 	.label-text {
 		display: block;
 		font-size: 0.8rem;

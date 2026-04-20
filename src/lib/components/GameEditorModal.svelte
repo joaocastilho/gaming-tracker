@@ -10,7 +10,6 @@ import GameFormIdDisplay from './game-editor/GameFormIdDisplay.svelte';
 import GameFormBasicInfo from './game-editor/GameFormBasicInfo.svelte';
 import GameFormCover from './game-editor/GameFormCover.svelte';
 import GameFormRatings from './game-editor/GameFormRatings.svelte';
-import { Clock, Users } from 'lucide-svelte';
 
 function formatDuration(decimalHours: number): string {
 	const h = Math.floor(decimalHours);
@@ -391,35 +390,28 @@ async function handleSave() {
 		{#if !working}
 			<div class="loading">Loading...</div>
 		{:else}
-			<div class="form-grid">
+			<div class="form-fields">
 				<GameFormBasicInfo {working} {allGames} />
 
-				<!-- Status -->
-				<label class="full">
-					<span>Status</span>
-					<select bind:value={working.status} name="status">
-						<option value="Planned">Planned</option>
-						<option value="Completed">Completed</option>
-					</select>
-				</label>
+				<!-- Status, Finished Date, Order + Playtime, Co-op (single row) -->
+				<div class="row-status">
+					<div class="field-col">
+						<label for="status">Status</label>
+						<select id="status" bind:value={working.status}>
+							<option value="Planned">Planned</option>
+							<option value="Completed">Completed</option>
+						</select>
+					</div>
 
-				<!-- Year, Playtime, Co-op -->
-				<div class="row-triple full">
-					<label class="year-col">
-						<span>Year</span>
-						<input
-							type="text"
-							bind:value={working.year}
-							name="year"
-							pattern="[0-9]{4}"
-							maxlength="4"
-							required
-						/>
-					</label>
+					{#if working.status === 'Completed'}
+						<div class="field-col date-col">
+							<label for="finishedDate">Finished Date</label>
+							<input id="finishedDate" type="date" bind:value={dateInput} required />
+						</div>
+					{/if}
 
-					<label class="time-col">
-						<span class="label-with-icon">
-							<Clock size={14} />
+					<div class="field-col">
+						<span class="field-label">
 							{working.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}
 						</span>
 						<div class="playtime-inputs">
@@ -439,13 +431,15 @@ async function handleSave() {
 								<span class="unit">m</span>
 							</div>
 						</div>
-					</label>
+					</div>
 
-					<label class="coop-col">
-						<span class="label-with-icon">
-							<Users size={14} />
-							Co-op
-						</span>
+					<div class="field-col narrow">
+						<label for="order">Order</label>
+						<input id="order" type="number" bind:value={completionOrderInput} placeholder="0" />
+					</div>
+
+					<div class="field-col coop-col">
+						<span class="field-label">Co-op</span>
 						<div class="checkbox-simple">
 							<input
 								type="checkbox"
@@ -456,19 +450,8 @@ async function handleSave() {
 								}}
 							/>
 						</div>
-					</label>
+					</div>
 				</div>
-
-				{#if working.status === 'Completed'}
-					<label>
-						<span>Finished Date</span>
-						<input type="date" bind:value={dateInput} required />
-					</label>
-					<label>
-						<span>Daily Order</span>
-						<input type="number" bind:value={completionOrderInput} placeholder="0" />
-					</label>
-				{/if}
 
 				<GameFormIdDisplay gameId={working.id} onCopy={copyGameId} {copied} />
 
@@ -542,27 +525,11 @@ async function handleSave() {
 		border: 1px solid rgba(239, 68, 68, 0.2);
 	}
 
-	.form-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 1rem 1.25rem;
-		font-size: 0.85rem;
-	}
-
-	label {
+	.form-fields {
 		display: flex;
 		flex-direction: column;
-		gap: 0.35rem;
-	}
-
-	.label-with-icon {
-		display: flex;
-		align-items: center;
-		gap: 0.35rem;
-	}
-
-	.full {
-		grid-column: 1 / -1;
+		gap: 1rem;
+		font-size: 0.85rem;
 	}
 
 	input[type='number']::-webkit-inner-spin-button,
@@ -575,22 +542,88 @@ async function handleSave() {
 		appearance: textfield;
 	}
 
-	.row-triple {
-		display: grid;
-		grid-template-columns: 100px 1fr auto;
-		gap: 1.25rem;
-		align-items: start;
+	/* Horizontal rows */
+	.row-status {
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 0.5rem 0.6rem;
+		align-items: flex-end;
 	}
 
-	.year-col input {
+	.field-col label {
+		font-size: 0.8rem;
+		color: #94a3b8;
+		font-weight: 500;
+	}
+
+	/* Column helper inside status row */
+	.field-col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.field-col > label {
+		font-size: 0.8rem;
+		color: #94a3b8;
+		font-weight: 500;
+	}
+
+	.field-col.date-col {
+		flex: 0 0 120px;
+	}
+
+	.field-col.narrow {
+		flex: 0 0 68px;
+	}
+
+	.field-col.narrow input {
 		text-align: center;
+	}
+
+	/* Shared input appearance */
+	input[type='date'],
+	input[type='number'] {
+		padding: 0.5rem 0.75rem;
+		border-radius: 0.5rem;
+		border: 1px solid rgba(75, 85, 99, 0.4);
+		background: #0f172a;
+		color: #e5e7eb;
+		font-size: 0.9rem;
+		width: 100%;
+		transition:
+			border-color 0.2s,
+			background-color 0.2s;
+	}
+
+	input[type='date']:focus,
+	input[type='number']:focus {
+		outline: none;
+		border-color: #6366f1;
+		background: #1e293b;
+	}
+
+	/* Override date picker icon colour in webkit */
+	input[type='date']::-webkit-calendar-picker-indicator {
+		filter: invert(0.6);
+		cursor: pointer;
+	}
+
+	/* Label span above inputs */
+	.field-label {
+		font-size: 0.8rem;
+		color: #94a3b8;
+		font-weight: 500;
+		white-space: nowrap;
+	}
+
+	.coop-col {
+		flex: 0 0 auto;
 	}
 
 	.checkbox-simple {
 		display: flex;
 		align-items: center;
-		padding: 0.5rem 0;
-		height: 38px;
 	}
 
 	.checkbox-simple input[type='checkbox'] {
@@ -621,22 +654,25 @@ async function handleSave() {
 	.playtime-inputs {
 		display: flex;
 		gap: 0.5rem;
+		align-items: center;
 	}
 
 	.input-group {
 		display: flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: 0.4rem;
 	}
 
-	.input-group input {
-		width: 60px;
+	.input-group input[type='number'] {
+		width: 44px;
 		text-align: center;
+		padding: 0.4rem 0.35rem;
 	}
 
 	.unit {
-		color: #94a3b8;
+		color: #64748b;
 		font-size: 0.8rem;
+		font-weight: 500;
 	}
 
 	select {
