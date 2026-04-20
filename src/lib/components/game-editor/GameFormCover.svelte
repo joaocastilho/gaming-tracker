@@ -37,9 +37,7 @@ function handleUrlInput(event: Event) {
 			oninput={handleUrlInput}
 		/>
 
-		<div class="file-input-wrapper">
-			<input bind:this={fileInputRef} type="file" accept="image/png" onchange={onFileSelect} />
-		</div>
+		<input bind:this={fileInputRef} type="file" accept="image/*" class="file-input" onchange={onFileSelect} />
 	</div>
 
 	{#if coverError}
@@ -90,24 +88,7 @@ function handleUrlInput(event: Event) {
 		background: #1e293b;
 	}
 
-	.file-input-wrapper {
-		position: relative;
-		display: inline-block;
-	}
-
-	.file-input-wrapper input[type='file'] {
-		position: absolute;
-		opacity: 0;
-		width: 100%;
-		height: 100%;
-		cursor: pointer;
-		z-index: 10;
-	}
-
-	.file-input-wrapper::before {
-		content: 'Upload PNG';
-		display: inline-flex;
-		align-items: center;
+	.file-input {
 		padding: 0.5rem 1rem;
 		background: rgba(99, 102, 241, 0.2);
 		color: #818cf8;
@@ -116,10 +97,15 @@ function handleUrlInput(event: Event) {
 		font-size: 0.85rem;
 		cursor: pointer;
 		transition: all 0.2s;
+		white-space: nowrap;
 	}
 
-	.file-input-wrapper:hover::before {
+	.file-input:hover {
 		background: rgba(99, 102, 241, 0.3);
+	}
+
+	.file-input::file-selector-button {
+		margin-right: 0.5rem;
 	}
 
 	.error-text {
