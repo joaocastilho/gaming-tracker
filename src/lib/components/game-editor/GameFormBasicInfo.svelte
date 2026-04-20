@@ -13,7 +13,7 @@ const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort())
 </script>
 
 <div class="form-row">
-	<div class="form-group">
+	<div class="form-group full">
 		<label for="title">Title *</label>
 		<input id="title" type="text" bind:value={working.title} required />
 	</div>
@@ -40,7 +40,7 @@ const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort())
 		</select>
 	</div>
 
-	<div class="form-group">
+	<div class="form-group narrow">
 		<label for="year">Year *</label>
 		<input id="year" type="number" bind:value={working.year} required min="1980" max="2100" />
 	</div>
@@ -55,7 +55,7 @@ const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort())
 
 	.form-row.three-col {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: 1fr 1fr 100px;
 	}
 
 	.form-group {
@@ -63,6 +63,14 @@ const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort())
 		flex-direction: column;
 		gap: 0.25rem;
 		flex: 1;
+	}
+
+	.form-group.full {
+		grid-column: 1 / -1;
+	}
+
+	.form-group.narrow {
+		max-width: 100px;
 	}
 
 	label {

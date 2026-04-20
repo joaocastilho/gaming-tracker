@@ -10,6 +10,7 @@ import GameFormIdDisplay from './game-editor/GameFormIdDisplay.svelte';
 import GameFormBasicInfo from './game-editor/GameFormBasicInfo.svelte';
 import GameFormCover from './game-editor/GameFormCover.svelte';
 import GameFormRatings from './game-editor/GameFormRatings.svelte';
+import { Clock, Users } from 'lucide-svelte';
 
 function formatDuration(decimalHours: number): string {
 	const h = Math.floor(decimalHours);
@@ -118,8 +119,8 @@ function handleFileSelect(event: Event) {
 	coverError = null;
 
 	if (file) {
-		if (!file.type.includes('png') && !file.name.toLowerCase().endsWith('.png')) {
-			coverError = 'Only PNG files are accepted';
+		if (!file.type.startsWith('image/')) {
+			coverError = 'Please select an image file';
 			coverFile = null;
 			coverPreview = null;
 			return;
@@ -407,17 +408,20 @@ async function handleSave() {
 					<label class="year-col">
 						<span>Year</span>
 						<input
-							type="number"
+							type="text"
 							bind:value={working.year}
 							name="year"
-							min="1980"
-							max="2100"
+							pattern="[0-9]{4}"
+							maxlength="4"
 							required
 						/>
 					</label>
 
 					<label class="time-col">
-						<span>{working.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}</span>
+						<span class="label-with-icon">
+							<Clock size={14} />
+							{working.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}
+						</span>
 						<div class="playtime-inputs">
 							<div class="input-group">
 								<input type="number" bind:value={hours} name="hours" min="0" placeholder="0" />
@@ -438,7 +442,10 @@ async function handleSave() {
 					</label>
 
 					<label class="coop-col">
-						<span>Co-op</span>
+						<span class="label-with-icon">
+							<Users size={14} />
+							Co-op
+						</span>
 						<div class="checkbox-simple">
 							<input
 								type="checkbox"
@@ -545,6 +552,12 @@ async function handleSave() {
 	label {
 		display: flex;
 		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.label-with-icon {
+		display: flex;
+		align-items: center;
 		gap: 0.35rem;
 	}
 

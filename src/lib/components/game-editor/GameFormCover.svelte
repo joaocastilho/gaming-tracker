@@ -37,7 +37,7 @@ function handleUrlInput(event: Event) {
 			oninput={handleUrlInput}
 		/>
 
-		<input bind:this={fileInputRef} type="file" accept="image/*" class="file-input" onchange={onFileSelect} />
+		<input bind:this={fileInputRef} type="file" accept="image/*" class="file-input btn-small" onchange={onFileSelect} />
 	</div>
 
 	{#if coverError}
@@ -102,6 +102,17 @@ function handleUrlInput(event: Event) {
 
 	.file-input:hover {
 		background: rgba(99, 102, 241, 0.3);
+	}
+
+	.file-input.btn-small {
+		padding: 0.35rem 0.65rem;
+		font-size: 0.8rem;
+	}
+
+	.file-input.btn-small::file-selector-button {
+		margin-right: 0.35rem;
+		padding: 0.2rem 0.5rem;
+		font-size: 0.8rem;
 	}
 
 	.file-input::file-selector-button {
