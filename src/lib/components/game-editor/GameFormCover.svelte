@@ -38,7 +38,7 @@ function handleUrlInput(event: Event) {
 		/>
 
 		<div class="file-input-wrapper">
-			<input bind:this={fileInputRef} type="file" accept=".png" onchange={onFileSelect} />
+			<input bind:this={fileInputRef} type="file" accept="image/png" onchange={onFileSelect} />
 		</div>
 	</div>
 
@@ -92,6 +92,7 @@ function handleUrlInput(event: Event) {
 
 	.file-input-wrapper {
 		position: relative;
+		display: inline-block;
 	}
 
 	.file-input-wrapper input[type='file'] {
@@ -100,6 +101,7 @@ function handleUrlInput(event: Event) {
 		width: 100%;
 		height: 100%;
 		cursor: pointer;
+		z-index: 10;
 	}
 
 	.file-input-wrapper::before {

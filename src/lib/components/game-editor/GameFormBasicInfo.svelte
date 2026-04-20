@@ -10,8 +10,6 @@ let { working, allGames }: Props = $props();
 
 const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
 const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
 </script>
 
 <div class="form-row">
@@ -44,11 +42,7 @@ const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
 
 	<div class="form-group">
 		<label for="year">Year *</label>
-		<select id="year" bind:value={working.year} required>
-			{#each years as year (year)}
-				<option value={year}>{year}</option>
-			{/each}
-		</select>
+		<input id="year" type="number" bind:value={working.year} required min="1980" max="2100" />
 	</div>
 </div>
 

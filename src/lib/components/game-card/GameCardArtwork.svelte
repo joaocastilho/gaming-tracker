@@ -31,7 +31,6 @@ let isEditor = $derived(editorStore.editorMode);
 let isOffline = $derived(!offlineStore.isOnline);
 
 const PLACEHOLDER_SRC = '/covers/placeholder_cover.webp';
-const PLACEHOLDER_SRCSET = '/covers/placeholder_cover.webp 300w, /covers/placeholder_cover-detail.webp 400w';
 const OFFLINE_FALLBACK_DATA_URI =
 	'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
 
@@ -49,7 +48,7 @@ function imageAction(node: HTMLImageElement) {
 	function handleError() {
 		if (!node.src.includes('placeholder_cover')) {
 			node.src = PLACEHOLDER_SRC;
-			node.srcset = PLACEHOLDER_SRCSET;
+			node.srcset = '';
 		} else {
 			node.src = OFFLINE_FALLBACK_DATA_URI;
 			node.srcset = '';
@@ -85,6 +84,9 @@ const effectiveImageSrc = $derived(() => {
 
 const effectiveImageSrcset = $derived(() => {
 	if (isOffline) {
+		return '';
+	}
+	if (!game.coverImage) {
 		return '';
 	}
 	if (size === 'tiny') {

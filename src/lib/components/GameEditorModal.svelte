@@ -197,6 +197,7 @@ $effect(() => {
 		}
 	} else {
 		const now = new Date();
+		const today = now.toISOString().split('T')[0];
 		working = {
 			id: '',
 			title: '',
@@ -216,6 +217,7 @@ $effect(() => {
 			playtime: '0h 0m',
 			finishedDate: null,
 		} as Game;
+		dateInput = today;
 		completionOrderInput = null;
 		coverUrl = '';
 		coverFile = null;
@@ -513,6 +515,7 @@ async function handleSave() {
 		border: 1px solid rgba(148, 163, 253, 0.1);
 		max-height: 90vh;
 		overflow-y: auto;
+		overflow-x: hidden;
 	}
 
 	h2 {
