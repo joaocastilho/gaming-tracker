@@ -11,7 +11,7 @@ let { working }: Props = $props();
 
 <div class="ratings-section">
 	<div class="divider"></div>
-	<div class="section-header">Ratings</div>
+	<div class="section-header">Ratings *</div>
 
 	<div class="sliders-stack">
 		<div class="rating-slider">
@@ -45,8 +45,8 @@ let { working }: Props = $props();
 	</div>
 
 	<label class="tier-label">
-		<span>Tier</span>
-		<select bind:value={working.tier}>
+		<span>Tier *</span>
+		<select bind:value={working.tier} required>
 			<option value={null}>Select Tier...</option>
 			{#each TIER_VALUES as t (t)}
 				<option value={t}>{t}</option>
@@ -145,6 +145,10 @@ let { working }: Props = $props();
 		background: #0f172a;
 		color: #e5e7eb;
 		font-size: 0.9rem;
+		box-sizing: border-box;
+		height: 38px;
+		font-family: inherit;
+		line-height: normal;
 	}
 
 	select:focus {

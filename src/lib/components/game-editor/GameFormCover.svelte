@@ -6,30 +6,49 @@ interface Props {
 	coverPreview: string | null;
 	coverError: string | null;
 	onUrlChange: (url: string) => void;
+	onFileSelect: (event: Event) => void;
 	onClear: () => void;
+	fileInputRef?: HTMLInputElement;
 }
 
-let { coverUrl, coverPreview, coverError, onUrlChange, onClear }: Props = $props();
+let {
+	coverUrl,
+	coverPreview,
+	coverError,
+	onUrlChange,
+	onFileSelect,
+	onClear,
+	fileInputRef = $bindable(),
+}: Props = $props();
 
 function handleUrlInput(event: Event) {
 	const url = (event.target as HTMLInputElement).value;
 	onUrlChange(url);
+}
+
+function triggerFileInput() {
+	fileInputRef?.click();
 }
 </script>
 
 <div class="cover-section">
 	<label for="coverUrlInput" class="section-header">
 		<Image size={14} />
-		Cover Image
+		Cover Image *
 	</label>
 
-	<input
-		id="coverUrlInput"
-		type="text"
-		placeholder="Paste image URL..."
-		value={coverUrl}
-		oninput={handleUrlInput}
-	/>
+	<div class="cover-inputs">
+		<input
+			id="coverUrlInput"
+			type="text"
+			placeholder="Paste image URL..."
+			value={coverUrl}
+			oninput={handleUrlInput}
+		/>
+
+		<input bind:this={fileInputRef} type="file" accept="image/*" class="file-input-hidden" onchange={onFileSelect} />
+		<button type="button" class="browse-btn" onclick={triggerFileInput}>Browse</button>
+	</div>
 
 	{#if coverError}
 		<div class="error-text">{coverError}</div>
@@ -38,7 +57,7 @@ function handleUrlInput(event: Event) {
 	{#if coverPreview}
 		<div class="cover-preview">
 			<img src={coverPreview} alt="Cover preview" />
-			<button type="button" class="clear-btn" onclick={onClear}> Remove </button>
+			<button type="button" class="clear-btn" onclick={onClear}>Remove</button>
 		</div>
 	{/if}
 </div>
@@ -54,21 +73,48 @@ function handleUrlInput(event: Event) {
 		gap: 0.35rem;
 	}
 
-	#coverUrlInput {
-		width: 100%;
+	.cover-inputs {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+	}
+
+	.cover-inputs input[type='text'] {
+		flex: 1;
+		min-width: 0;
 		padding: 0.5rem 0.75rem;
 		border-radius: 0.5rem;
 		border: 1px solid rgba(75, 85, 99, 0.4);
 		background: #0f172a;
 		color: #e5e7eb;
 		font-size: 0.9rem;
-		box-sizing: border-box;
 	}
 
-	#coverUrlInput:focus {
+	.cover-inputs input[type='text']:focus {
 		outline: none;
 		border-color: #6366f1;
 		background: #1e293b;
+	}
+
+	.file-input-hidden {
+		display: none;
+	}
+
+	.browse-btn {
+		padding: 0.5rem 0.85rem;
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
+		border: 1px solid rgba(99, 102, 241, 0.3);
+		border-radius: 0.5rem;
+		font-size: 0.8rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.browse-btn:hover {
+		background: rgba(99, 102, 241, 0.3);
 	}
 
 	.error-text {

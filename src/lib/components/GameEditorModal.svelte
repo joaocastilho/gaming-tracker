@@ -37,10 +37,13 @@ let minutes = $state(0);
 let completionOrderInput = $state<number | null>(null);
 let copied = $state(false);
 
-// Cover image state (URL only)
+// Cover image state
 let coverUrl = $state('');
+let coverFile = $state<File | null>(null);
 let coverPreview = $state<string | null>(null);
+let blobUrls: string[] = [];
 let coverError = $state<string | null>(null);
+let fileInputRef = $state<HTMLInputElement>();
 
 // Refs for focus management
 let modalRef = $state<HTMLDivElement>();
@@ -95,6 +98,7 @@ function handleCoverUrlChange(url: string) {
 			const parsed = new URL(url);
 			if (['http:', 'https:'].includes(parsed.protocol)) {
 				coverPreview = url;
+				coverFile = null;
 			} else {
 				coverError = 'Invalid URL';
 				coverPreview = null;
@@ -108,10 +112,42 @@ function handleCoverUrlChange(url: string) {
 	}
 }
 
+function handleFileSelect(event: Event) {
+	const target = event.target as HTMLInputElement;
+	const file = target.files?.[0];
+	coverError = null;
+
+	if (file) {
+		if (!file.type.startsWith('image/')) {
+			coverError = 'Please select an image file';
+			coverFile = null;
+			coverPreview = null;
+			return;
+		}
+
+		coverFile = file;
+		coverUrl = '';
+		if (coverPreview?.startsWith('blob:')) {
+			URL.revokeObjectURL(coverPreview);
+			blobUrls = blobUrls.filter((url) => url !== coverPreview);
+		}
+		coverPreview = URL.createObjectURL(file);
+		blobUrls.push(coverPreview);
+	}
+}
+
 function clearCover() {
 	coverUrl = '';
+	coverFile = null;
+	if (coverPreview && coverPreview.startsWith('blob:')) {
+		URL.revokeObjectURL(coverPreview);
+		blobUrls = blobUrls.filter((url) => url !== coverPreview);
+	}
 	coverPreview = null;
 	coverError = null;
+	if (fileInputRef) {
+		fileInputRef.value = '';
+	}
 }
 
 // One-time initialization flag (must be outside effects)
@@ -152,6 +188,7 @@ $effect(() => {
 		}
 
 		coverUrl = '';
+		coverFile = null;
 		coverError = null;
 		if (working && working.coverImage) {
 			coverPreview = `/${working.coverImage}`;
@@ -183,11 +220,19 @@ $effect(() => {
 		dateInput = today;
 		completionOrderInput = null;
 		coverUrl = '';
+		coverFile = null;
 		coverPreview = null;
 		coverError = null;
 	}
 
-	return () => {};
+	return () => {
+		blobUrls.forEach((url) => {
+			if (url.startsWith('blob:')) {
+				URL.revokeObjectURL(url);
+			}
+		});
+		blobUrls = [];
+	};
 });
 
 // Sync dateInput to working.finishedDate
@@ -262,6 +307,22 @@ function validateGame(game: Game): string | null {
 	if (!game.title) return 'Title is required.';
 	if (!game.platform) return 'Platform is required.';
 	if (!game.genre) return 'Genre is required.';
+	if (!game.year) return 'Year is required.';
+
+	if (hours === undefined || hours === null || isNaN(hours)) return 'Hours field is required.';
+	if (minutes === undefined || minutes === null || isNaN(minutes)) return 'Minutes field is required.';
+
+	if (!coverUrl && !coverFile && !coverPreview) {
+		return 'Cover Image is required.';
+	}
+
+	if (game.status === 'Completed') {
+		if (!dateInput) return 'Finished Date is required.';
+		if (game.ratingPresentation === null) return 'Presentation rating is required.';
+		if (game.ratingStory === null) return 'Story rating is required.';
+		if (game.ratingGameplay === null) return 'Gameplay rating is required.';
+		if (!game.tier) return 'Tier is required.';
+	}
 
 	const result = GameSchema.safeParse(game);
 	if (!result.success) {
@@ -285,9 +346,9 @@ async function handleSave() {
 
 	try {
 		if (mode === 'create') {
-			editorStore.addPendingGame(working, null);
+			editorStore.addPendingGame(working, coverFile);
 		} else {
-			editorStore.editPendingGame(working.id, working, null);
+			editorStore.editPendingGame(working.id, working, coverFile);
 		}
 
 		if (dev) {
@@ -360,18 +421,18 @@ async function handleSave() {
 
 					{#if working.status === 'Completed'}
 						<div class="field-col date-col">
-							<label for="finishedDate">Finished Date</label>
+							<label for="finishedDate">Finished Date *</label>
 							<input id="finishedDate" type="date" bind:value={dateInput} required />
 						</div>
 					{/if}
 
 					<div class="field-col">
 						<span class="field-label">
-							{working.status === 'Completed' ? 'Hours Played' : 'Time to Beat'}
+							{working.status === 'Completed' ? 'Hours Played *' : 'Time to Beat *'}
 						</span>
 						<div class="playtime-inputs">
 							<div class="input-group">
-								<input type="number" bind:value={hours} name="hours" min="0" placeholder="0" />
+								<input type="number" bind:value={hours} name="hours" min="0" placeholder="0" required />
 								<span class="unit">h</span>
 							</div>
 							<div class="input-group">
@@ -382,6 +443,7 @@ async function handleSave() {
 									min="0"
 									max="59"
 									placeholder="0"
+									required
 								/>
 								<span class="unit">m</span>
 							</div>
@@ -413,7 +475,9 @@ async function handleSave() {
 					{coverPreview}
 					{coverError}
 					onUrlChange={handleCoverUrlChange}
+					onFileSelect={handleFileSelect}
 					onClear={clearCover}
+					bind:fileInputRef
 				/>
 
 				{#if working.status === 'Completed'}
@@ -545,7 +609,8 @@ async function handleSave() {
 
 	/* Shared input appearance */
 	input[type='date'],
-	input[type='number'] {
+	input[type='number'],
+	select {
 		padding: 0.5rem 0.75rem;
 		border-radius: 0.5rem;
 		border: 1px solid rgba(75, 85, 99, 0.4);
@@ -553,13 +618,18 @@ async function handleSave() {
 		color: #e5e7eb;
 		font-size: 0.9rem;
 		width: 100%;
+		box-sizing: border-box;
+		height: 38px;
+		font-family: inherit;
+		line-height: normal;
 		transition:
 			border-color 0.2s,
 			background-color 0.2s;
 	}
 
 	input[type='date']:focus,
-	input[type='number']:focus {
+	input[type='number']:focus,
+	select:focus {
 		outline: none;
 		border-color: #6366f1;
 		background: #1e293b;
@@ -637,20 +707,7 @@ async function handleSave() {
 		font-weight: 500;
 	}
 
-	select {
-		padding: 0.5rem 0.75rem;
-		border-radius: 0.5rem;
-		border: 1px solid rgba(75, 85, 99, 0.4);
-		background: #0f172a;
-		color: #e5e7eb;
-		font-size: 0.9rem;
-	}
 
-	select:focus {
-		outline: none;
-		border-color: #6366f1;
-		background: #1e293b;
-	}
 
 	.actions {
 		margin-top: 1.5rem;
