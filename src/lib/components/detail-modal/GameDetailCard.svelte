@@ -71,14 +71,14 @@ const detailImageSrcset = $derived.by(() => {
 	if (isOffline) return '';
 	const src = detailImageSrc;
 	if (src.includes('placeholder_cover')) return PLACEHOLDER_SRCSET;
-	
+
 	const generatedSrcset = generateSrcset(src.replace('-detail.webp', ''));
-	const parts = generatedSrcset.split(',').map(p => p.trim());
-	const validParts = parts.filter(part => {
+	const parts = generatedSrcset.split(',').map((p) => p.trim());
+	const validParts = parts.filter((part) => {
 		const url = part.split(' ')[0];
 		return !imageErrorStore.hasFailed(url);
 	});
-	
+
 	if (validParts.length === 0) return PLACEHOLDER_SRCSET;
 	return validParts.join(', ');
 });

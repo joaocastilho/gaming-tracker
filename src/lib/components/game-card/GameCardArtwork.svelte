@@ -100,12 +100,12 @@ const effectiveImageSrcset = $derived(() => {
 		return '';
 	}
 	const generatedSrcset = size === 'tiny' ? generateTinySrcset(game.coverImage) : generateSrcset(game.coverImage);
-	const parts = generatedSrcset.split(',').map(p => p.trim());
-	const validParts = parts.filter(part => {
+	const parts = generatedSrcset.split(',').map((p) => p.trim());
+	const validParts = parts.filter((part) => {
 		const url = part.split(' ')[0];
 		return !imageErrorStore.hasFailed(url);
 	});
-	
+
 	if (validParts.length === 0) return '';
 	return validParts.join(', ');
 });

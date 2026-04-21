@@ -41,7 +41,7 @@ function getPreviewImageSrc(coverImage: string | undefined): string {
 	let isOffline = !offlineStore.isOnline;
 	if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
 	if (!coverImage || coverImage === PLACEHOLDER_SRC) return PLACEHOLDER_SRC;
-	
+
 	const detailPath = coverImage.replace('.webp', '-detail.webp');
 	return imageErrorStore.hasFailed(detailPath) ? PLACEHOLDER_SRC : detailPath;
 }
