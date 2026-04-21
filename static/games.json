@@ -9580,27 +9580,9 @@
       "ratingGameplay": null,
       "score": null,
       "tier": null
-    },
-    {
-      "id": "golden-idol-mysteries-the-spider-of-lanka",
-      "title": "Golden Idol Mysteries: The Spider of Lanka",
-      "platform": "PC",
-      "year": 2022,
-      "genre": "Puzzle",
-      "coOp": "No",
-      "status": "Completed",
-      "coverImage": "covers/golden-idol-mysteries-the-spider-of-lanka.webp",
-      "playtime": "4h 31m",
-      "finishedDate": "20/04/2026",
-      "ratingPresentation": 8,
-      "ratingStory": 7,
-      "ratingGameplay": 8,
-      "score": 15,
-      "tier": "B - Great",
-      "completionOrder": null
     }
   ],
   "meta": {
-    "lastUpdated": "2026-04-20T23:34:10.579Z"
+    "lastUpdated": "2026-04-21T08:11:05.667Z"
   }
 }
