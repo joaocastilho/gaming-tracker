@@ -5,6 +5,7 @@ import type { Game } from '$lib/types/game.js';
 import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
 import { X, Pencil, Trash2 } from 'lucide-svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
+import { imageErrorStore } from '$lib/stores/imageErrors.svelte.js';
 import { createGameSlug } from '$lib/utils/slugUtils';
 import { browser } from '$app/environment';
 import ModalHeader from './ModalHeader.svelte';
@@ -57,7 +58,11 @@ const OFFLINE_FALLBACK_DATA_URI =
 const detailImageSrc = $derived.by(() => {
 	if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
 	const coverImage = game.coverImage;
-	return (coverImage ? `/${coverImage}` : PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
+	const src = (coverImage ? `/${coverImage}` : PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
+	if (imageErrorStore.hasFailed(src)) {
+		return PLACEHOLDER_DETAIL_SRC;
+	}
+	return src;
 });
 
 const detailImageSizes = generateSizes('modal');
@@ -66,7 +71,16 @@ const detailImageSrcset = $derived.by(() => {
 	if (isOffline) return '';
 	const src = detailImageSrc;
 	if (src.includes('placeholder_cover')) return PLACEHOLDER_SRCSET;
-	return generateSrcset(src.replace('-detail.webp', ''));
+	
+	const generatedSrcset = generateSrcset(src.replace('-detail.webp', ''));
+	const parts = generatedSrcset.split(',').map(p => p.trim());
+	const validParts = parts.filter(part => {
+		const url = part.split(' ')[0];
+		return !imageErrorStore.hasFailed(url);
+	});
+	
+	if (validParts.length === 0) return PLACEHOLDER_SRCSET;
+	return validParts.join(', ');
 });
 
 let modalImageElement = $state<HTMLImageElement>();
@@ -77,6 +91,11 @@ function handleImageLoad() {
 
 function handleImageError() {
 	if (modalImageElement) {
+		const failedSrc = modalImageElement.currentSrc || modalImageElement.src;
+		if (failedSrc && !failedSrc.includes('placeholder_cover')) {
+			imageErrorStore.markFailed(failedSrc);
+		}
+
 		if (!modalImageElement.src.includes('placeholder_cover')) {
 			modalImageElement.src = PLACEHOLDER_DETAIL_SRC;
 			modalImageElement.srcset = PLACEHOLDER_SRCSET;

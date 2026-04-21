@@ -6,6 +6,7 @@ import { browser } from '$app/environment';
 import { modalStore } from '$lib/stores/modal.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { offlineStore } from '$lib/stores/offline.svelte';
+import { imageErrorStore } from '$lib/stores/imageErrors.svelte.js';
 import type { Game } from '$lib/types/game.js';
 import { ChevronLeft, ChevronRight, X } from 'lucide-svelte';
 
@@ -40,7 +41,9 @@ function getPreviewImageSrc(coverImage: string | undefined): string {
 	let isOffline = !offlineStore.isOnline;
 	if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
 	if (!coverImage || coverImage === PLACEHOLDER_SRC) return PLACEHOLDER_SRC;
-	return coverImage.replace('.webp', '-detail.webp');
+	
+	const detailPath = coverImage.replace('.webp', '-detail.webp');
+	return imageErrorStore.hasFailed(detailPath) ? PLACEHOLDER_SRC : detailPath;
 }
 
 // Navigation Logic
@@ -370,6 +373,13 @@ $effect(() => {
 					src={getPreviewImageSrc($modalStore.activeGame.coverImage)}
 					alt="{$modalStore.activeGame.title} cover full screen"
 					class="max-h-full max-w-full object-contain"
+					onerror={(e) => {
+						const target = e.target as HTMLImageElement;
+						if (target && !target.src.includes('placeholder_cover')) {
+							imageErrorStore.markFailed(target.src);
+							target.src = PLACEHOLDER_SRC;
+						}
+					}}
 				/>
 				<button
 					class="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md"

@@ -2,6 +2,7 @@
 import { editorStore } from '../../stores/editor.svelte';
 import { offlineStore } from '../../stores/offline.svelte';
 import { filtersStore } from '../../stores/filters.svelte';
+import { imageErrorStore } from '../../stores/imageErrors.svelte.js';
 import { getTierClass, getTierDisplayName } from '../../utils/tierUtils.js';
 import { generateSrcset, generateTinySrcset, generateSizes } from '../../utils/imageSrcset.js';
 import type { Game } from '../../types/game.js';
@@ -46,6 +47,11 @@ function imageAction(node: HTMLImageElement) {
 	}
 
 	function handleError() {
+		const failedSrc = node.currentSrc || node.src;
+		if (failedSrc && !failedSrc.includes('placeholder_cover')) {
+			imageErrorStore.markFailed(failedSrc);
+		}
+
 		if (!node.src.includes('placeholder_cover')) {
 			node.src = PLACEHOLDER_SRC;
 			node.srcset = '';
@@ -76,10 +82,14 @@ const effectiveImageSrc = $derived(() => {
 		return OFFLINE_FALLBACK_DATA_URI;
 	}
 	const baseImage = game.coverImage ? `/${game.coverImage}` : PLACEHOLDER_SRC;
+	let srcToUse = baseImage;
 	if (size === 'tiny') {
-		return baseImage.replace('.webp', '-200w.webp');
+		srcToUse = baseImage.replace('.webp', '-200w.webp');
 	}
-	return baseImage;
+	if (imageErrorStore.hasFailed(srcToUse)) {
+		return size === 'tiny' ? PLACEHOLDER_SRC.replace('.webp', '-200w.webp') : PLACEHOLDER_SRC;
+	}
+	return srcToUse;
 });
 
 const effectiveImageSrcset = $derived(() => {
@@ -89,10 +99,15 @@ const effectiveImageSrcset = $derived(() => {
 	if (!game.coverImage) {
 		return '';
 	}
-	if (size === 'tiny') {
-		return generateTinySrcset(game.coverImage);
-	}
-	return generateSrcset(game.coverImage);
+	const generatedSrcset = size === 'tiny' ? generateTinySrcset(game.coverImage) : generateSrcset(game.coverImage);
+	const parts = generatedSrcset.split(',').map(p => p.trim());
+	const validParts = parts.filter(part => {
+		const url = part.split(' ')[0];
+		return !imageErrorStore.hasFailed(url);
+	});
+	
+	if (validParts.length === 0) return '';
+	return validParts.join(', ');
 });
 
 const imageSizes = $derived(() => {
