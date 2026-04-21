@@ -354,11 +354,10 @@ function getCompletionDay(dateStr: string | null): string {
 
 	.editor-controls {
 		position: absolute;
-		bottom: 12px;
-		left: 50%;
-		transform: translateX(-50%);
+		bottom: 8px;
+		left: 8px;
 		display: flex;
-		gap: 10px;
+		gap: 4px;
 		opacity: 0;
 		transition: all var(--transition-normal);
 		z-index: 20;
@@ -375,49 +374,42 @@ function getCompletionDay(dateStr: string | null): string {
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		border-radius: 4px;
-		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 50%;
+		border: 1px solid rgba(255, 255, 255, 0.3);
 		cursor: pointer;
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
 		transition: all var(--transition-fast);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-		opacity: 0.65;
-	}
-
-	.editor-control-btn:hover {
-		opacity: 1;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 	}
 
 	.edit-btn {
-		background: rgba(99, 102, 241, 0.2);
-		color: #a5b4fc;
+		background: rgba(0, 0, 0, 0.6);
+		color: #ffffff;
 	}
 
 	.edit-btn:hover {
-		background: rgba(99, 102, 241, 0.4);
+		background: rgba(0, 0, 0, 0.8);
 		color: #ffffff;
 		transform: scale(1.1);
-		box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
 	}
 
 	.delete-btn {
-		background: rgba(239, 68, 68, 0.2);
-		color: #fca5a5;
+		background: rgba(239, 68, 68, 0.6);
+		color: #ffffff;
 	}
 
 	.delete-btn:hover {
-		background: rgba(239, 68, 68, 0.4);
+		background: rgba(239, 68, 68, 0.9);
 		color: #ffffff;
 		transform: scale(1.1);
-		box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+		box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
 	}
 
-	/* Responsive Styles using Container Queries */
 	@container game-card (max-width: 420px) {
 		.editor-controls {
 			opacity: 1;
-			bottom: 48px;
 		}
 
 		.editor-control-btn {

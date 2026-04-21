@@ -144,14 +144,14 @@ function handleImageError() {
 
 			{#if isEditor}
 				<!-- Edit/delete buttons - bottom left -->
-				<div class="absolute bottom-3 left-3 z-10 hidden items-center gap-1 md:flex">
+				<div class="absolute bottom-2 left-2 z-10 hidden items-center gap-1 md:flex">
 					<button
 						onclick={(e) => {
 							e.stopPropagation();
 							modalStore.closeModal();
 							onEditGame?.(game);
 						}}
-						class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/10 text-white/80 transition-colors hover:bg-black/25"
+						class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/30 bg-black/60 text-white shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-black/80 hover:shadow-black/50"
 						title="Edit game"
 						aria-label="Edit {game.title}"
 					>
@@ -163,7 +163,7 @@ function handleImageError() {
 							modalStore.closeModal();
 							onDeleteGame?.(game);
 						}}
-						class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/10 text-red-400/80 transition-colors hover:bg-red-500/20"
+						class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/30 bg-red-500/60 text-white shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-red-500/90 hover:shadow-red-500/50"
 						title="Delete game"
 						aria-label="Delete {game.title}"
 					>
