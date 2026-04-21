@@ -123,8 +123,10 @@ export async function POST({ request }: { request: Request }) {
 			return gameHeader;
 		});
 
-		// Sort games alphabetically by id
-		const sortedGames = (gamesForFile as { id: string }[]).sort((a, b) => a.id.localeCompare(b.id));
+		// Sort games alphabetically by title
+		const sortedGames = (gamesForFile as { title: string }[]).sort((a, b) =>
+			a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })
+		);
 
 		const outputPayload = {
 			...data,

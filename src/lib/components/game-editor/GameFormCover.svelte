@@ -6,28 +6,14 @@ interface Props {
 	coverPreview: string | null;
 	coverError: string | null;
 	onUrlChange: (url: string) => void;
-	onFileSelect: (event: Event) => void;
 	onClear: () => void;
-	fileInputRef?: HTMLInputElement;
 }
 
-let {
-	coverUrl,
-	coverPreview,
-	coverError,
-	onUrlChange,
-	onFileSelect,
-	onClear,
-	fileInputRef = $bindable(),
-}: Props = $props();
+let { coverUrl, coverPreview, coverError, onUrlChange, onClear }: Props = $props();
 
 function handleUrlInput(event: Event) {
 	const url = (event.target as HTMLInputElement).value;
 	onUrlChange(url);
-}
-
-function triggerFileInput() {
-	fileInputRef?.click();
 }
 </script>
 
@@ -37,20 +23,13 @@ function triggerFileInput() {
 		Cover Image
 	</label>
 
-	<div class="cover-inputs">
-		<input
-			id="coverUrlInput"
-			type="text"
-			placeholder="Or enter image URL..."
-			value={coverUrl}
-			oninput={handleUrlInput}
-		/>
-
-		<input bind:this={fileInputRef} type="file" accept="image/*" class="file-input-hidden" onchange={onFileSelect} />
-		<button type="button" class="browse-btn" onclick={triggerFileInput}>
-			Browse image
-		</button>
-	</div>
+	<input
+		id="coverUrlInput"
+		type="text"
+		placeholder="Paste image URL..."
+		value={coverUrl}
+		oninput={handleUrlInput}
+	/>
 
 	{#if coverError}
 		<div class="error-text">{coverError}</div>
@@ -65,7 +44,6 @@ function triggerFileInput() {
 </div>
 
 <style>
-
 	.section-header {
 		font-size: 0.9rem;
 		font-weight: 600;
@@ -76,47 +54,21 @@ function triggerFileInput() {
 		gap: 0.35rem;
 	}
 
-	.cover-inputs {
-		display: flex;
-		gap: 0.75rem;
-		align-items: flex-start;
-	}
-
-	.cover-inputs input[type='text'] {
-		flex: 1;
-		min-width: 0;
+	#coverUrlInput {
+		width: 100%;
 		padding: 0.5rem 0.75rem;
 		border-radius: 0.5rem;
 		border: 1px solid rgba(75, 85, 99, 0.4);
 		background: #0f172a;
 		color: #e5e7eb;
 		font-size: 0.9rem;
+		box-sizing: border-box;
 	}
 
-	.cover-inputs input[type='text']:focus {
+	#coverUrlInput:focus {
 		outline: none;
 		border-color: #6366f1;
 		background: #1e293b;
-	}
-
-	.file-input-hidden {
-		display: none;
-	}
-
-	.browse-btn {
-		padding: 0.5rem 0.85rem;
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
-		border: 1px solid rgba(99, 102, 241, 0.3);
-		border-radius: 0.5rem;
-		font-size: 0.8rem;
-		cursor: pointer;
-		transition: all 0.2s;
-		white-space: nowrap;
-	}
-
-	.browse-btn:hover {
-		background: rgba(99, 102, 241, 0.3);
 	}
 
 	.error-text {
@@ -126,19 +78,19 @@ function triggerFileInput() {
 	}
 
 	.cover-preview {
-		margin-top: 1rem;
+		margin-top: 0.75rem;
 		display: flex;
-		flex-direction: column;
 		align-items: center;
 		gap: 0.75rem;
 	}
 
 	.cover-preview img {
-		max-width: 200px;
-		max-height: 300px;
-		border-radius: 0.5rem;
+		width: 60px;
+		height: 90px;
+		border-radius: 0.375rem;
 		object-fit: cover;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		flex-shrink: 0;
 	}
 
 	.clear-btn {

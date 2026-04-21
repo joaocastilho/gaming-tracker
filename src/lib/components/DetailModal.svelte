@@ -39,7 +39,8 @@ const OFFLINE_FALLBACK_DATA_URI =
 function getPreviewImageSrc(coverImage: string | undefined): string {
 	let isOffline = !offlineStore.isOnline;
 	if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
-	return (coverImage || PLACEHOLDER_SRC).replace('.webp', '-detail.webp');
+	if (!coverImage || coverImage === PLACEHOLDER_SRC) return PLACEHOLDER_SRC;
+	return coverImage.replace('.webp', '-detail.webp');
 }
 
 // Navigation Logic

@@ -40,11 +40,17 @@ export async function POST({ request }: { request: Request }) {
 			delete gameHeader.mainTitle;
 			delete gameHeader.subtitle;
 
+			if (gameHeader.completionOrder === null || gameHeader.completionOrder === undefined) {
+				delete gameHeader.completionOrder;
+			}
+
 			return gameHeader;
 		});
 
-		// Sort games alphabetically by id
-		gamesForFile.sort((a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id));
+		// Sort games alphabetically by title
+		gamesForFile.sort((a: { title: string }, b: { title: string }) =>
+			a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })
+		);
 
 		const outputPayload = {
 			...payload,

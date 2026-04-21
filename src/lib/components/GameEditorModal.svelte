@@ -37,13 +37,10 @@ let minutes = $state(0);
 let completionOrderInput = $state<number | null>(null);
 let copied = $state(false);
 
-// Cover image upload state
+// Cover image state (URL only)
 let coverUrl = $state('');
-let coverFile = $state<File | null>(null);
 let coverPreview = $state<string | null>(null);
-let blobUrls: string[] = [];
 let coverError = $state<string | null>(null);
-let fileInputRef = $state<HTMLInputElement>();
 
 // Refs for focus management
 let modalRef = $state<HTMLDivElement>();
@@ -98,7 +95,6 @@ function handleCoverUrlChange(url: string) {
 			const parsed = new URL(url);
 			if (['http:', 'https:'].includes(parsed.protocol)) {
 				coverPreview = url;
-				coverFile = null;
 			} else {
 				coverError = 'Invalid URL';
 				coverPreview = null;
@@ -112,42 +108,10 @@ function handleCoverUrlChange(url: string) {
 	}
 }
 
-function handleFileSelect(event: Event) {
-	const target = event.target as HTMLInputElement;
-	const file = target.files?.[0];
-	coverError = null;
-
-	if (file) {
-		if (!file.type.startsWith('image/')) {
-			coverError = 'Please select an image file';
-			coverFile = null;
-			coverPreview = null;
-			return;
-		}
-
-		coverFile = file;
-		coverUrl = '';
-		if (coverPreview?.startsWith('blob:')) {
-			URL.revokeObjectURL(coverPreview);
-			blobUrls = blobUrls.filter((url) => url !== coverPreview);
-		}
-		coverPreview = URL.createObjectURL(file);
-		blobUrls.push(coverPreview);
-	}
-}
-
 function clearCover() {
 	coverUrl = '';
-	coverFile = null;
-	if (coverPreview && coverPreview.startsWith('blob:')) {
-		URL.revokeObjectURL(coverPreview);
-		blobUrls = blobUrls.filter((url) => url !== coverPreview);
-	}
 	coverPreview = null;
 	coverError = null;
-	if (fileInputRef) {
-		fileInputRef.value = '';
-	}
 }
 
 // One-time initialization flag (must be outside effects)
@@ -188,7 +152,6 @@ $effect(() => {
 		}
 
 		coverUrl = '';
-		coverFile = null;
 		coverError = null;
 		if (working && working.coverImage) {
 			coverPreview = `/${working.coverImage}`;
@@ -220,19 +183,11 @@ $effect(() => {
 		dateInput = today;
 		completionOrderInput = null;
 		coverUrl = '';
-		coverFile = null;
 		coverPreview = null;
 		coverError = null;
 	}
 
-	return () => {
-		blobUrls.forEach((url) => {
-			if (url.startsWith('blob:')) {
-				URL.revokeObjectURL(url);
-			}
-		});
-		blobUrls = [];
-	};
+	return () => {};
 });
 
 // Sync dateInput to working.finishedDate
@@ -330,9 +285,9 @@ async function handleSave() {
 
 	try {
 		if (mode === 'create') {
-			editorStore.addPendingGame(working, coverFile);
+			editorStore.addPendingGame(working, null);
 		} else {
-			editorStore.editPendingGame(working.id, working, coverFile);
+			editorStore.editPendingGame(working.id, working, null);
 		}
 
 		if (dev) {
@@ -453,21 +408,19 @@ async function handleSave() {
 					</div>
 				</div>
 
-				<GameFormIdDisplay gameId={working.id} onCopy={copyGameId} {copied} />
-
 				<GameFormCover
 					{coverUrl}
 					{coverPreview}
 					{coverError}
 					onUrlChange={handleCoverUrlChange}
-					onFileSelect={handleFileSelect}
 					onClear={clearCover}
-					bind:fileInputRef
 				/>
 
 				{#if working.status === 'Completed'}
 					<GameFormRatings {working} />
 				{/if}
+
+				<GameFormIdDisplay gameId={working.id} onCopy={copyGameId} {copied} />
 			</div>
 
 			<div class="actions">
@@ -500,10 +453,10 @@ async function handleSave() {
 		border-radius: 16px;
 		padding: 1.5rem 1.5rem 1.25rem;
 		max-width: 600px;
-		width: 100%;
+		width: calc(100% - 2rem);
 		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
 		border: 1px solid rgba(148, 163, 253, 0.1);
-		max-height: 90vh;
+		max-height: 92svh;
 		overflow-y: auto;
 		overflow-x: hidden;
 	}
@@ -548,6 +501,15 @@ async function handleSave() {
 		flex-wrap: nowrap;
 		gap: 0.5rem 0.6rem;
 		align-items: flex-end;
+	}
+
+	@media (max-width: 480px) {
+		.row-status {
+			flex-wrap: wrap;
+		}
+		.field-col.date-col {
+			flex: 1 1 auto;
+		}
 	}
 
 	.field-col label {
