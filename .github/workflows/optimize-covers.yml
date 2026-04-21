@@ -26,7 +26,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
@@ -48,7 +48,12 @@ jobs:
           fi
 
           # Push trigger: detect changed files
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- 'static/covers_raw/*.png' || true)
+          # Use event before/sha to capture all files in the push. Fallback to HEAD~1 HEAD if event data is missing (e.g. workflow_dispatch without inputs somehow)
+          if [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- 'static/covers_raw/*.png' || true)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- 'static/covers_raw/*.png' || true)
+          fi
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "No cover images changed"
