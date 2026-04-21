@@ -376,12 +376,17 @@ function getCompletionDay(dateStr: string | null): string {
 		width: 36px;
 		height: 36px;
 		border-radius: 4px;
-		border: 1px solid rgba(255, 255, 255, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.15);
 		cursor: pointer;
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
 		transition: all var(--transition-fast);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		opacity: 0.65;
+	}
+
+	.editor-control-btn:hover {
+		opacity: 1;
 	}
 
 	.edit-btn {
