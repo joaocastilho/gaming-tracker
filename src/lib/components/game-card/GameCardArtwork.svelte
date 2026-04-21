@@ -52,7 +52,7 @@ function imageAction(node: HTMLImageElement) {
 			imageErrorStore.markFailed(failedSrc);
 		}
 
-		if (!node.src.includes('placeholder_cover')) {
+		if (!failedSrc || !failedSrc.includes('placeholder_cover')) {
 			node.src = PLACEHOLDER_SRC;
 			node.srcset = '';
 		} else {

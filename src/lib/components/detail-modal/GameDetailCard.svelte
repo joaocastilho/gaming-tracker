@@ -96,7 +96,7 @@ function handleImageError() {
 			imageErrorStore.markFailed(failedSrc);
 		}
 
-		if (!modalImageElement.src.includes('placeholder_cover')) {
+		if (!failedSrc || !failedSrc.includes('placeholder_cover')) {
 			modalImageElement.src = PLACEHOLDER_DETAIL_SRC;
 			modalImageElement.srcset = PLACEHOLDER_SRCSET;
 		} else {

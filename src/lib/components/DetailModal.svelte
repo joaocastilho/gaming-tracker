@@ -33,16 +33,17 @@ $effect(() => {
 });
 
 // Placeholders
-const PLACEHOLDER_SRC = 'covers/placeholder_cover.webp';
+const PLACEHOLDER_SRC = '/covers/placeholder_cover.webp';
 const OFFLINE_FALLBACK_DATA_URI =
 	'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
 
 function getPreviewImageSrc(coverImage: string | undefined): string {
 	let isOffline = !offlineStore.isOnline;
 	if (isOffline) return OFFLINE_FALLBACK_DATA_URI;
-	if (!coverImage || coverImage === PLACEHOLDER_SRC) return PLACEHOLDER_SRC;
+	if (!coverImage || coverImage.includes('placeholder_cover')) return PLACEHOLDER_SRC;
 
-	const detailPath = coverImage.replace('.webp', '-detail.webp');
+	const absCoverImage = coverImage.startsWith('/') ? coverImage : `/${coverImage}`;
+	const detailPath = absCoverImage.replace('.webp', '-detail.webp');
 	return imageErrorStore.hasFailed(detailPath) ? PLACEHOLDER_SRC : detailPath;
 }
 
@@ -375,9 +376,10 @@ $effect(() => {
 					class="max-h-full max-w-full object-contain"
 					onerror={(e) => {
 						const target = e.target as HTMLImageElement;
-						if (target && !target.src.includes('placeholder_cover')) {
-							imageErrorStore.markFailed(target.src);
-							target.src = PLACEHOLDER_SRC;
+						const failedSrc = target?.currentSrc || target?.src;
+						if (failedSrc && !failedSrc.includes('placeholder_cover')) {
+							imageErrorStore.markFailed(failedSrc);
+							if (target) target.src = PLACEHOLDER_SRC;
 						}
 					}}
 				/>
