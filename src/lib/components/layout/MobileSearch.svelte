@@ -4,6 +4,7 @@ import { replaceState, goto } from '$app/navigation';
 import { browser } from '$app/environment';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { appStore } from '$lib/stores/app.svelte';
+import { lastManualClearTime, markSearchCleared } from '$lib/stores/searchClearCoordinator';
 
 interface Props {
 	isOpen: boolean;
@@ -15,22 +16,23 @@ let { isOpen, onClose }: Props = $props();
 let searchInput = $state<HTMLInputElement | null>(null);
 let mobileSearchDebounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-// Track if we just opened search to set initial value
-let searchJustOpened = false;
-
+// Keep input value in sync with store search term
 $effect(() => {
 	if (isOpen && searchInput) {
-		const searchTerm = $filtersStore?.searchTerm ?? '';
-
-		// Set initial value when search opens
-		if (!searchJustOpened) {
-			searchInput.value = searchTerm;
-			searchJustOpened = true;
+		const storeSearchTerm = $filtersStore?.searchTerm ?? '';
+		if (searchInput.value !== storeSearchTerm) {
+			// Only sync from store if we're not currently typing,
+			// OR if we just cleared the search manually
+			const isRecentlyCleared = Date.now() - lastManualClearTime < 500;
+			if (isRecentlyCleared || document.activeElement !== searchInput) {
+				searchInput.value = storeSearchTerm;
+			}
 		}
-
-		searchInput.focus();
-	} else if (!isOpen) {
-		searchJustOpened = false;
+		
+		// Always focus if open
+		if (document.activeElement !== searchInput) {
+			searchInput.focus();
+		}
 	}
 });
 
@@ -87,6 +89,9 @@ function handleMobileSearchInput(event: Event) {
 }
 
 function clearMobileSearch() {
+	// Mark manual clear to prevent URL sync race condition
+	markSearchCleared();
+
 	// Clear filter store first to trigger unfiltering
 	filtersStore.setSearchTerm('');
 

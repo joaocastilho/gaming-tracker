@@ -10,6 +10,7 @@ import { toSlug, fromSlug } from '$lib/utils/slugUtils';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { gamesStore } from './games.svelte';
 import { get } from 'svelte/store';
+import { lastManualClearTime } from './searchClearCoordinator';
 
 export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishedDate' | 'alphabetical' | 'playtime';
 
@@ -276,6 +277,12 @@ class FiltersStore {
 
 	readSearchFromURL(searchParams: URLSearchParams, pathname?: string): void {
 		if (!this._state) return;
+
+		// If we just cleared search manually, ignore URL updates for a brief window
+		// to let SvelteKit's page store catch up with the replaceState call
+		if (Date.now() - lastManualClearTime < 500) {
+			return;
+		}
 
 		// Use provided pathname or fallback to window.location
 		const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');

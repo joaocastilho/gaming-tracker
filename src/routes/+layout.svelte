@@ -227,7 +227,13 @@ $effect(() => {
 		// Auto-open mobile search if URL has search parameter
 		const searchParam = searchParams.get('s');
 		if (searchParam && window.innerWidth < 768 && !isSearchOpen) {
+			// On mobile, we use pushState for the overlay
 			pushState(page.url, { showMobileSearch: true });
+		}
+
+		// Ensure desktop filters are expanded if we have active filters
+		if (filtersStore.isAnyFilterApplied() && window.innerWidth >= 768) {
+			filtersStore.setDesktopFiltersExpanded(true);
 		}
 	}
 });

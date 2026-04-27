@@ -11,12 +11,22 @@ let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefine
 
 let searchTerm = $derived($filtersStore?.searchTerm ?? '');
 
-// Initialize input value once on mount
-let initialized = $state(false);
+// Keep input value in sync with store search term
+// This handles external changes (URL sync, reset, etc.)
 $effect(() => {
-	if (inputElement && !initialized) {
-		inputElement.value = searchTerm;
-		initialized = true;
+	if (inputElement && inputElement.value !== searchTerm) {
+		// Only sync from store if we're not currently typing,
+		// OR if we just cleared the search manually
+		const isRecentlyCleared = Date.now() - lastManualClearTime < 500;
+		if (isRecentlyCleared || document.activeElement !== inputElement) {
+			inputElement.value = searchTerm;
+		}
+	}
+});
+
+// Auto-focus on mount
+$effect(() => {
+	if (inputElement) {
 		inputElement.focus();
 	}
 });
