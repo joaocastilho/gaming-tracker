@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-title" content="Gaming Tracker" />
     <meta
       name="description"
-      content="A personal gaming tracker for my completed games, planned games, scores, and tier lists."
+      content="My personal video game collection with ratings, tier lists, and progress tracking."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,14 +26,15 @@
     <meta name="build-date" content="%build-date%" />
 
     <script>
-      if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-                                                                                const savedTheme = localStorage.getItem("gaming-tracker-theme");
-                                                                                if (savedTheme === "light" || savedTheme === "dark") {
-                                                                                  document.documentElement.classList.add(savedTheme);
-                                                                                } else {
-                                                                                  document.documentElement.classList.add("dark");
-                                                                                }
-                                                                              }
+      if (typeof window !== "undefined" && typeof localStorage !== "undefined") 
+      {
+        const savedTheme = localStorage.getItem("gaming-tracker-theme");
+        if (savedTheme === "light" || savedTheme === "dark") {
+          document.documentElement.classList.add(savedTheme);
+        } else {
+          document.documentElement.classList.add("dark");
+        }
+      }
     </script>
 
     %sveltekit.head%

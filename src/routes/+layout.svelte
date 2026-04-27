@@ -565,9 +565,20 @@ async function installApp() {
 	<meta property="og:type" content="website" />
 	<meta
 		property="og:description"
-		content="Track your gaming progress, completed games, and create tier lists."
+		content="My personal video game collection with ratings, tier lists, and progress tracking."
 	/>
 	<meta property="og:url" content={page.url.origin + page.url.pathname} />
+	<meta property="og:site_name" content="Gaming Tracker" />
+	<meta property="og:image" content={page.url.origin + '/android-chrome-512x512.png'} />
+	<meta property="og:image:width" content="512" />
+	<meta property="og:image:height" content="512" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="{pageTitle} | Gaming Tracker" />
+	<meta
+		name="twitter:description"
+		content="My personal video game collection with ratings, tier lists, and progress tracking."
+	/>
+	<meta name="twitter:image" content={page.url.origin + '/android-chrome-512x512.png'} />
 	<link rel="canonical" href={page.url.origin + page.url.pathname} />
 	<meta
 		name="apple-mobile-web-app-status-bar-style"
