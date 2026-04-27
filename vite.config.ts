@@ -87,8 +87,7 @@ export default defineConfig({
 			},
 		},
 		target: 'es2020',
-		cssCodeSplit: false,
-		minify: false, // Changed from 'oxc' to false to fix type error
+		minify: false,
 		sourcemap: false,
 		assetsInlineLimit: 4096,
 		chunkSizeWarningLimit: 1000,
