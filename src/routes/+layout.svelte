@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from '$app/state';
-import { pushState, goto, replaceState } from '$app/navigation';
+import { pushState, goto, replaceState, afterNavigate } from '$app/navigation';
 import '../app.css';
 import Header from '$lib/components/Header.svelte';
 import SearchBar from '$lib/components/SearchBar.svelte';
@@ -13,7 +13,7 @@ import { gamesStore } from '$lib/stores/games.svelte';
 import { appStore } from '$lib/stores/app.svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
 import { browser, dev } from '$app/environment';
-import { onMount, untrack } from 'svelte';
+import { untrack } from 'svelte';
 import type { Game } from '$lib/types/game.js';
 import { RotateCcw } from 'lucide-svelte';
 
@@ -437,12 +437,16 @@ function openModalWithFilterContext(game: Game, contextGames?: Game[]) {
 let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 let canReset = $derived(hasActiveFilters || filtersStore.isSortModified());
 
-onMount(() => {
-	// Auto-open mobile search if 's' parameter is present on load
-	const searchParams = new URLSearchParams(window.location.search);
-	const searchParam = searchParams.get('s');
-	if (searchParam && window.innerWidth < 768) {
-		replaceState(window.location.href, { ...page.state, showMobileSearch: true });
+afterNavigate(({ from }) => {
+	if (!from) {
+		const searchParams = new URLSearchParams(window.location.search);
+		const searchParam = searchParams.get('s');
+		if (searchParam && window.innerWidth < 768) {
+			try {
+				replaceState(window.location.href, { ...page.state, showMobileSearch: true });
+			} catch {
+			}
+		}
 	}
 });
 

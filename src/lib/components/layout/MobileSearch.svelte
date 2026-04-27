@@ -75,7 +75,7 @@ function clearMobileSearch() {
 				<input
 					bind:this={searchInput}
 					type="text"
-					placeholder="Search games... (Ctrl + /)"
+					placeholder="Search games..."
 					class="mobile-search-input"
 					bind:value={localSearchTerm}
 					oninput={handleMobileSearchInput}
