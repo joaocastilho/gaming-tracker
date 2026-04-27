@@ -1,7 +1,7 @@
 <script lang="ts">
 import { appStore } from '$lib/stores/app.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
-import { SlidersHorizontal, Settings, Moon, Sun, LogIn, LogOut, Plus, Download } from 'lucide-svelte';
+import { SlidersHorizontal, Settings, Moon, Sun, LogIn, LogOut, Plus, Download, Share } from 'lucide-svelte';
 import { focusTrap } from '$lib/utils/focusTrap';
 
 interface Props {
@@ -94,21 +94,41 @@ let isEditor = $derived(editorStore.editorMode);
 					</button>
 				{/if}
 
-				<button
-					type="button"
-					class="sheet-item"
-					onclick={() => {
-						appStore.toggleTheme();
-						onClose();
-					}}
-				>
-					{#if appStore.theme === 'dark'}
-						<Sun size={20} />
-					{:else}
-						<Moon size={20} />
-					{/if}
-					<span>{appStore.theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-				</button>
+<button
+				type="button"
+				class="sheet-item"
+				onclick={() => {
+					if (navigator.share) {
+						navigator.share({
+							title: 'Gaming Tracker',
+							url: '/',
+						});
+					} else {
+						navigator.clipboard.writeText(window.location.origin + '/');
+						alert('Link copied to clipboard!');
+					}
+					onClose();
+				}}
+			>
+				<Share size={20} />
+				<span>Share</span>
+			</button>
+
+			<button
+				type="button"
+				class="sheet-item"
+				onclick={() => {
+					appStore.toggleTheme();
+					onClose();
+				}}
+			>
+				{#if appStore.theme === 'dark'}
+					<Sun size={20} />
+				{:else}
+					<Moon size={20} />
+				{/if}
+				<span>{appStore.theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+			</button>
 
 				{#if isEditor && !isTierlistPage}
 					<button

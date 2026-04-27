@@ -173,7 +173,7 @@ async function handleLogout() {
 						size={16}
 						class="filter-chevron-icon"
 						style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
-					/><span class="filter-shortcut">{shortcutKey}</span>
+					/><span class="filter-shortcut hidden md:inline">{shortcutKey}</span>
 				</button>
 			</div>
 

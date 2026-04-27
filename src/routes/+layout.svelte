@@ -182,8 +182,10 @@ let pageTitle = $derived.by(() => {
 	if (path === '/planned') return 'Planned Games';
 	if (path === '/tierlist') return 'Tier List';
 	if (path === '/login') return 'Login';
-	return 'All Games';
+	return 'Gaming Tracker';
 });
+
+let canonicalUrl = $derived(page.url.pathname);
 
 let isPlannedPage = $derived(page.url.pathname === '/planned');
 
@@ -559,27 +561,27 @@ async function installApp() {
 </script>
 
 <svelte:head>
-	<title>{pageTitle} | Gaming Tracker</title>
+	<title>{pageTitle === 'Gaming Tracker' ? 'Gaming Tracker' : `Gaming Tracker - ${pageTitle}`}</title>
 	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0a0c10' : '#d0cbc4'} />
-	<meta property="og:title" content="{pageTitle} | Gaming Tracker" />
+	<meta property="og:title" content="Gaming Tracker" />
 	<meta property="og:type" content="website" />
 	<meta
 		property="og:description"
 		content="My personal video game collection with ratings, tier lists, and progress tracking."
 	/>
-	<meta property="og:url" content={page.url.origin + page.url.pathname} />
+	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:site_name" content="Gaming Tracker" />
 	<meta property="og:image" content={page.url.origin + '/android-chrome-512x512.png'} />
 	<meta property="og:image:width" content="512" />
 	<meta property="og:image:height" content="512" />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="{pageTitle} | Gaming Tracker" />
+	<meta name="twitter:title" content="Gaming Tracker" />
 	<meta
 		name="twitter:description"
 		content="My personal video game collection with ratings, tier lists, and progress tracking."
 	/>
 	<meta name="twitter:image" content={page.url.origin + '/android-chrome-512x512.png'} />
-	<link rel="canonical" href={page.url.origin + page.url.pathname} />
+	<link rel="canonical" href={canonicalUrl} />
 	<meta
 		name="apple-mobile-web-app-status-bar-style"
 		content={appStore.theme === 'dark' ? 'black-translucent' : 'default'}

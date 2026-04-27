@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `gaming-tracker-${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `gaming-tracker-static-${CACHE_VERSION}`;
 const IMAGE_CACHE_NAME = `gaming-tracker-images-${CACHE_VERSION}`;
