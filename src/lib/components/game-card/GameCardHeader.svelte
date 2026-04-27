@@ -50,7 +50,7 @@ const isVeryLongTitle = $derived(titleLength > 50);
 	}
 
 	.game-title {
-		font-family: 'Outfit', sans-serif;
+		font-family: 'Inter', sans-serif;
 		font-size: clamp(1.2rem, 9cqi, 1.5rem);
 		font-weight: 800;
 		letter-spacing: -0.01em;
@@ -76,7 +76,7 @@ const isVeryLongTitle = $derived(titleLength > 50);
 	}
 
 	.game-subtitle {
-		font-family: 'Outfit', sans-serif;
+		font-family: 'Inter', sans-serif;
 		font-weight: 500;
 		color: var(--color-text-secondary);
 		line-height: 1.2;
