@@ -196,7 +196,6 @@ class ModalStore {
 			pendingGameFromURL: null,
 			cardRect: null,
 		};
-
 		this.notifySubscribers();
 		this.writeToURL();
 	}

@@ -25,7 +25,6 @@ class GamesStore {
 
 	private set games(value: Game[]) {
 		this._games = value;
-		// Notify all subscribers
 		for (const fn of this.subscribers) {
 			fn(value);
 		}
@@ -144,7 +143,6 @@ class GamesStore {
 		}
 	}
 
-	// For backwards compatibility with $gamesStore subscription
 	subscribe(fn: (value: Game[]) => void): () => void {
 		// Immediately call with current value
 		fn(this._games);

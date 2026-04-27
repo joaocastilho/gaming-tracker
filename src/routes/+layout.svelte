@@ -48,7 +48,6 @@ let gamesInitialized = $state(false);
 let urlUpdateTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 let canInstall = $state(false);
 
-// BeforeInstallPromptEvent interface for PWA install
 interface BeforeInstallPromptEvent extends Event {
 	prompt: () => Promise<void>;
 	userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
@@ -60,7 +59,6 @@ function isBeforeInstallPromptEvent(event: Event | null): event is BeforeInstall
 
 let deferredPrompt = $state<BeforeInstallPromptEvent | null>(null);
 
-// Initialize games reactively (SSR support)
 $effect(() => {
 	if (gamesInitialized) return;
 	if (data.games && Array.isArray(data.games)) {
@@ -69,11 +67,9 @@ $effect(() => {
 	}
 });
 
-// Effect for one-time initialization (replaces onMount)
 $effect.pre(() => {
 	if (!browser) return;
 
-	// Load from IDB and handle promise-based games data
 	gamesStore.loadFromIDB();
 
 	if (data.games && data.games instanceof Promise) {
@@ -88,7 +84,6 @@ $effect.pre(() => {
 	}
 });
 
-// Effect for scroll-based filter collapse (desktop only)
 $effect(() => {
 	if (!browser) return;
 
@@ -127,7 +122,6 @@ $effect(() => {
 			})
 			.then((registration) => {
 				const checkForUpdates = () => {
-					// Skip update check if tab is hidden to save battery/CPU
 					if (isPaused || document.hidden) return;
 
 					if (registration.installing === null && registration.waiting === null && registration.active !== null) {
@@ -161,7 +155,6 @@ $effect(() => {
 	}
 });
 
-// Use a more efficient derived that doesn't block on empty games
 let filterOptions = $derived.by(() => {
 	const games = $gamesStore;
 	if (!games || games.length === 0) {
@@ -200,7 +193,6 @@ let pageTitle = $derived.by(() => {
 let showTiersFilter = $derived(!isTierlistPage && !isPlannedPage);
 let showCoOpFilter = $derived(!isTierlistPage);
 
-// Sync Store to URL whenever state changes
 $effect(() => {
 	if (browser) {
 		void $filtersStore;
@@ -210,7 +202,6 @@ $effect(() => {
 
 $effect(() => {
 	if (browser) {
-		// Trigger on URL change OR when games are initialized/loaded
 		const searchParams = page.url.searchParams;
 		void $gamesStore;
 
@@ -224,7 +215,6 @@ $effect(() => {
 			}
 		});
 
-		// Auto-open mobile search if URL has search parameter
 		const searchParam = searchParams.get('s');
 		if (searchParam && window.innerWidth < 768 && !isSearchOpen) {
 			// On mobile, we use pushState for the overlay
@@ -238,7 +228,6 @@ $effect(() => {
 	}
 });
 
-// Aggressively force desktop filters open if any filter is active
 $effect(() => {
 	if (browser && window.innerWidth >= 768) {
 		if (filtersStore.isAnyFilterApplied()) {
@@ -269,7 +258,6 @@ $effect(() => {
 	appStore.setActiveTab(targetTab);
 });
 
-// Handle URL reading for modal (Global)
 $effect(() => {
 	const games = $gamesStore;
 	if (games.length > 0) {
@@ -277,7 +265,6 @@ $effect(() => {
 	}
 });
 
-// Handle pending modal from URL (Global)
 $effect(() => {
 	const games = $gamesStore;
 	if (games.length > 0) {
@@ -300,7 +287,6 @@ let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>
 
 let savedScrollPosition = $state<number>(0);
 
-// Scroll lock effect when filters modal is open
 $effect(() => {
 	if (browser && (isFiltersOpen || activeFilterPopup)) {
 		document.body.style.overflow = 'hidden';
@@ -524,7 +510,6 @@ async function handleApplyChanges() {
 	}
 }
 
-// Initialize editor state once on mount
 let editorInitialized = $state(false);
 $effect.pre(() => {
 	if (!browser || editorInitialized) return;
@@ -541,7 +526,6 @@ $effect.pre(() => {
 	});
 });
 
-// PWA Install prompt handler
 $effect(() => {
 	if (!browser) return;
 

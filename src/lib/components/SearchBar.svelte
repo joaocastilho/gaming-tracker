@@ -4,15 +4,13 @@ import { page } from '$app/state';
 import { replaceState } from '$app/navigation';
 import { browser } from '$app/environment';
 import { X } from 'lucide-svelte';
-import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
+import { markSearchCleared, lastManualClearTime } from '$lib/stores/searchClearCoordinator';
 
 let inputElement = $state<HTMLInputElement | undefined>(undefined);
 let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 let searchTerm = $derived($filtersStore?.searchTerm ?? '');
 
-// Keep input value in sync with store search term
-// This handles external changes (URL sync, reset, etc.)
 $effect(() => {
 	if (inputElement && inputElement.value !== searchTerm) {
 		// Only sync from store if we're not currently typing,
@@ -24,7 +22,6 @@ $effect(() => {
 	}
 });
 
-// Auto-focus on mount
 $effect(() => {
 	if (inputElement) {
 		inputElement.focus();
@@ -46,7 +43,6 @@ function handleInput(event: Event) {
 }
 
 function clearSearch() {
-	// Cancel any pending debounced writes
 	if (debounceTimeout) {
 		clearTimeout(debounceTimeout);
 	}
@@ -62,10 +58,8 @@ function clearSearch() {
 	// Mark the clear timestamp to prevent URL sync effect from running
 	markSearchCleared();
 
-	// Then clear store to trigger filtering
 	filtersStore.setSearchTerm('');
 
-	// Finally clear input value
 	if (inputElement) {
 		inputElement.value = '';
 		requestAnimationFrame(() => {

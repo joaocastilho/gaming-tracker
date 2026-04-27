@@ -58,7 +58,6 @@ class FilteredGamesStore {
 
 		const cacheKey = this.createCacheKey(filters, activeTab);
 
-		// Return cached result if cache key matches (even if result is empty)
 		if (this.lastCacheKey === cacheKey) {
 			return this.lastCachedResult;
 		}
@@ -191,10 +190,8 @@ class FilteredGamesStore {
 		} | null,
 		activeTab: string
 	): Game[] {
-		// First apply non-tab filters
 		let filteredGames = this.filterGamesWithoutTabFilter(games, filters);
 
-		// Then apply tab filter
 		switch (activeTab) {
 			case 'completed':
 				filteredGames = filteredGames.filter((game) => game.status === 'Completed');
@@ -229,7 +226,6 @@ class FilteredGamesStore {
 
 		let sortFunction = sortFunctions.default;
 
-		// When an explicit sort key is set, use it regardless of tab
 		if (sort?.key && sortFunctions[sort.key as keyof typeof sortFunctions]) {
 			sortFunction = sortFunctions[sort.key as keyof typeof sortFunctions];
 		} else if (activeTab === 'planned') {
@@ -262,24 +258,16 @@ class FilteredGamesStore {
 					return timeDiff * direction;
 				}
 
-				// If times are equal, sort by completionOrder
-				// User requirement:
-				// - Descending (newest first): completionOrder 2 (later) shows FIRST, 1 (earlier) shows LAST
-				// - Ascending (oldest first): completionOrder 1 (earlier) shows FIRST, 2 (later) shows LAST
-				// This means completionOrder values should sort in the SAME direction as dates (Higher Date = Newer)
-
 				const aOrder = a.completionOrder ?? 0;
 				const bOrder = b.completionOrder ?? 0;
 
 				return (aOrder - bOrder) * direction;
 			}
 
-			// Handle playtime sort
 			if (sort?.key === 'playtime') {
 				const aMinutes = parsePlaytime(a.playtime);
 				const bMinutes = parsePlaytime(b.playtime);
 
-				// Null values go last always
 				if (aMinutes === null && bMinutes === null) return 0;
 				if (aMinutes === null) return 1;
 				if (bMinutes === null) return -1;
@@ -373,7 +361,6 @@ class FilteredGamesStore {
 
 export const filteredGamesStore = new FilteredGamesStore();
 
-// For backwards compatibility with components using $filteredGames
 class FilteredGamesSubscription {
 	private subscribers = new Set<(value: Game[]) => void>();
 

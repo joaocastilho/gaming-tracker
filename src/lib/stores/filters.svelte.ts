@@ -49,16 +49,12 @@ class FiltersStore {
 	private _state = $state<FilterState | null>(null);
 	private subscribers = new Set<(value: FilterState | null) => void>();
 
-	// UI State - Desktop Filters Expansion
-	// Default to TRUE as per original behavior
-	// Persisted to sessionStorage to survive page refreshes within session
 	public isDesktopFiltersExpanded = $state(true);
 
 	private static readonly FILTERS_EXPANDED_KEY = 'filtersExpanded';
 	private static readonly FILTERS_STATE_KEY = 'filtersState';
 
 	constructor() {
-		// Initialize filters if in browser
 		if (browser) {
 			this.state = { ...initialFilters };
 			// Restore desktop filters expanded state from sessionStorage
@@ -78,13 +74,11 @@ class FiltersStore {
 
 	private set state(value: FilterState | null) {
 		this._state = value;
-		// Notify all subscribers
 		for (const fn of this.subscribers) {
 			fn(value);
 		}
 	}
 
-	// For backwards compatibility with $filtersStore subscription
 	subscribe(fn: (value: FilterState | null) => void): () => void {
 		// Immediately call with current value
 		fn(this._state);
@@ -96,7 +90,6 @@ class FiltersStore {
 		};
 	}
 
-	// Derived getters for backwards compatibility
 	get selectedPlatforms(): string[] {
 		return this._state?.platforms ?? [];
 	}
@@ -137,7 +130,6 @@ class FiltersStore {
 	}
 
 	resetFilters(): void {
-		// Guard: only reset if not already in initial state
 		if (!this._state) return;
 		if (!this.isAnyFilterApplied() && this._state.sortOption === null) return;
 		this.state = { ...initialFilters };
@@ -212,7 +204,6 @@ class FiltersStore {
 
 	setSearchTerm(term: string): void {
 		if (!this._state) return;
-		// Guard: only update if value changed to prevent effect loops
 		if (this._state.searchTerm === term) {
 			return;
 		}
