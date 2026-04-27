@@ -13,13 +13,13 @@ import { gamesStore } from '$lib/stores/games.svelte';
 import { appStore } from '$lib/stores/app.svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
 import { browser, dev } from '$app/environment';
-import { untrack } from 'svelte';
+import { onMount, untrack } from 'svelte';
 import type { Game } from '$lib/types/game.js';
 import { RotateCcw } from 'lucide-svelte';
 
 import GamesView from '$lib/views/GamesView.svelte';
 import TierListView from '$lib/views/TierListView.svelte';
-import { filteredGames } from '$lib/stores/filteredGamesStore.svelte';
+import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 
 let {
@@ -166,7 +166,7 @@ let currentPage = $derived.by(() => {
 	return 'all';
 });
 
-let currentFilteredGames = $derived(filteredGames.getFilteredGames(currentPage));
+let currentFilteredGames = $derived(filteredGamesStore.games);
 
 let canonicalUrl = $derived(page.url.pathname);
 
@@ -185,13 +185,13 @@ let pageTitle = $derived.by(() => {
 	return 'Gaming Tracker';
 });
 
-let showTiersFilter = $derived(!isTierlistPage && !isPlannedPage);
-let showCoOpFilter = $derived(!isTierlistPage);
+let showTiersFilter = $derived(!isPlannedPage);
+let showCoOpFilter = true;
 
 $effect(() => {
 	if (browser) {
 		void $filtersStore;
-		untrack(() => filtersStore.writeSearchToURL({}));
+		untrack(() => filtersStore.writeSearchToURL(page.state));
 	}
 });
 
@@ -207,12 +207,6 @@ $effect(() => {
 			}
 		});
 
-		const searchParam = searchParams.get('s');
-		if (searchParam && window.innerWidth < 768 && !isSearchOpen) {
-			pushState(page.url, { showMobileSearch: true });
-		}
-
-		// Ensure desktop filters are expanded if we have active filters
 		if (filtersStore.isAnyFilterApplied() && window.innerWidth >= 768) {
 			filtersStore.setDesktopFiltersExpanded(true);
 		}
@@ -272,7 +266,6 @@ let isFiltersOpen = $state(false);
 let isSettingsMenuOpen = $state(false);
 let loginModalOpen = $state(false);
 
-// Desktop filters expanded state moved to filtersStore
 let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
 
 let savedScrollPosition = $state<number>(0);
@@ -316,7 +309,6 @@ function onSearchToggle() {
 function onFiltersToggle() {
 	isFiltersOpen = !isFiltersOpen;
 	if (isFiltersOpen) {
-		// Close search if opening filters
 		if (isSearchOpen) history.back();
 	}
 }
@@ -326,7 +318,6 @@ function onCloseSearchAndFilters() {
 	isFiltersOpen = false;
 }
 
-// Global shortcut for search (Ctrl + /) and filter toggle (Ctrl + /)
 $effect(() => {
 	if (!browser) return;
 
@@ -364,7 +355,6 @@ $effect(() => {
 	};
 });
 
-// Clear search term when search closes (e.g. via back button)
 let wasSearchOpen = false;
 $effect(() => {
 	if (isSearchOpen) {
@@ -372,7 +362,6 @@ $effect(() => {
 	} else if (wasSearchOpen) {
 		wasSearchOpen = false;
 
-		// Clear filter store first to trigger unfiltering
 		filtersStore.setSearchTerm('');
 
 		if (browser) {
@@ -389,7 +378,6 @@ $effect(() => {
 	}
 });
 
-// Auto-switch to tab with results when current tab has no matches
 let lastSearchTerm = '';
 let lastActiveTab = '';
 $effect(() => {
@@ -400,11 +388,8 @@ $effect(() => {
 	const counts = filteredCountsStore.counts;
 	const currentCount = currentFilteredGames.length;
 
-	// Only trigger on search term changes, not on initial load or tab switch
 	if (searchTerm && searchTerm !== lastSearchTerm && currentTab === lastActiveTab) {
-		// Current tab has no results, but complementary tab does
 		if (currentCount === 0) {
-			// Preserve search term in URL when navigating
 			const searchParam = searchTerm ? `?s=${encodeURIComponent(searchTerm)}` : '';
 
 			if (currentTab === 'tierlist') {
@@ -412,12 +397,14 @@ $effect(() => {
 					goto(`/completed${searchParam}`, {
 						keepFocus: true,
 						noScroll: true,
+						replaceState: true,
 						state: { showMobileSearch: true },
 					});
 				} else if (counts.planned > 0) {
 					goto(`/planned${searchParam}`, {
 						keepFocus: true,
 						noScroll: true,
+						replaceState: true,
 						state: { showMobileSearch: true },
 					});
 				}
@@ -425,16 +412,17 @@ $effect(() => {
 				goto(`/completed${searchParam}`, {
 					keepFocus: true,
 					noScroll: true,
+					replaceState: true,
 					state: { showMobileSearch: true },
 				});
 			} else if (currentTab === 'completed' && counts.planned > 0) {
 				goto(`/planned${searchParam}`, {
 					keepFocus: true,
 					noScroll: true,
+					replaceState: true,
 					state: { showMobileSearch: true },
 				});
 			}
-			// If in All tab, don't auto-switch
 		}
 	}
 
@@ -448,6 +436,15 @@ function openModalWithFilterContext(game: Game, contextGames?: Game[]) {
 
 let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 let canReset = $derived(hasActiveFilters || filtersStore.isSortModified());
+
+onMount(() => {
+	// Auto-open mobile search if 's' parameter is present on load
+	const searchParams = new URLSearchParams(window.location.search);
+	const searchParam = searchParams.get('s');
+	if (searchParam && window.innerWidth < 768) {
+		replaceState(window.location.href, { ...page.state, showMobileSearch: true });
+	}
+});
 
 let editorModalOpen = $state(false);
 let editorModalMode = $state<'create' | 'edit'>('create');
@@ -491,8 +488,6 @@ let editorInitialized = $state(false);
 $effect.pre(() => {
 	if (!browser || editorInitialized) return;
 	editorInitialized = true;
-
-	// Restore editor mode from session storage
 	editorStore.restoreFromSession();
 
 	untrack(() => {
@@ -569,9 +564,8 @@ async function installApp() {
 		<Header onAddGame={handleAddGame} onApplyChanges={handleApplyChanges} />
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
-				{#if !isTierlistPage}
-					<!-- Filters are shown on desktop via FilterDropdowns -->
-					{#if filtersStore.isDesktopFiltersExpanded}
+				<!-- Filters are shown on desktop via FilterDropdowns -->
+				{#if filtersStore.isDesktopFiltersExpanded}
 						<div class="filter-content mb-8 space-y-4">
 							<SearchBar />
 							<div class="flex flex-col items-center gap-4">
@@ -618,7 +612,6 @@ async function installApp() {
 							</div>
 						</div>
 					{/if}
-				{/if}
 			</div>
 		</section>
 
@@ -704,7 +697,7 @@ async function installApp() {
 		<!-- Discreet Last Updated Indicator -->
 		<!-- Removed build date display - now only in source code at top -->
 
-		<BottomNavigation {onSearchToggle} {onCloseSearchAndFilters} />
+		<BottomNavigation {onSearchToggle} />
 		<ScrollToTopButton hideWhenFiltersOpen={isFiltersOpen} />
 	</div>
 {/if}

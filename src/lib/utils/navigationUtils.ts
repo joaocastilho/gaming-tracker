@@ -10,6 +10,7 @@ export interface NavigationOptions {
 	preserveFilters?: boolean;
 	replaceState?: boolean;
 	noScroll?: boolean;
+	state?: App.PageState;
 }
 
 const DEFAULT_OPTIONS: NavigationOptions = {
@@ -25,7 +26,7 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 	const route = getRoutePath(target);
 	const url = new URL(route, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
 
-	if (opts.preserveFilters && target !== 'tierlist') {
+	if (opts.preserveFilters) {
 		const state = filtersStore.state;
 		if (state) {
 			if (state.searchTerm) url.searchParams.set('s', state.searchTerm);
@@ -41,7 +42,6 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 				url.searchParams.set('dir', state.sortOption.direction);
 			}
 		}
-		// Going to Tier List, skipping params injection for clean URL
 	}
 
 	appStore.setActiveTab(target, true);
@@ -50,6 +50,7 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 		replaceState: opts.replaceState ?? false,
 		noScroll: opts.noScroll ?? false,
 		keepFocus: true,
+		state: opts.state ?? {},
 	});
 
 	if (opts.scrollToTop) {
@@ -104,6 +105,6 @@ export function getRoutePath(target: NavTarget): string {
 	return target === 'all' ? '/' : `/${target}`;
 }
 
-export function requiresFilterReset(target: NavTarget): boolean {
-	return target === 'tierlist';
+export function requiresFilterReset(_target: NavTarget): boolean {
+	return false;
 }

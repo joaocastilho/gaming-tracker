@@ -2,6 +2,7 @@
 import { browser } from '$app/environment';
 import { dev } from '$app/environment';
 import { navigateTo } from '$lib/utils/navigationUtils';
+import { page } from '$app/state';
 import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 import { appStore } from '$lib/stores/app.svelte';
@@ -75,7 +76,7 @@ let navItems = $derived.by(() => {
 });
 
 async function handleNavClick(target: NavId) {
-	await navigateTo(target);
+	await navigateTo(target, { state: page.state, replaceState: true });
 }
 
 function handleAddGame() {
@@ -123,10 +124,9 @@ async function handleLogout() {
 			{#if isEditor}
 				<button
 					type="button"
-					class="editor-button add-game-button {appStore.activeTab === 'tierlist' ? 'invisible pointer-events-none' : ''}"
+					class="editor-button add-game-button"
 					onclick={handleAddGame}
 					title="Add new game"
-					tabindex={appStore.activeTab === 'tierlist' ? -1 : 0}
 				>
 					<Plus size={16} />
 					<span class="button-label">Add Game</span>
@@ -157,7 +157,7 @@ async function handleLogout() {
 				</button>
 			{/if}
 
-			<div class="filter-toggle-wrapper hidden md:block {appStore.activeTab === 'tierlist' ? 'invisible pointer-events-none' : ''}">
+			<div class="filter-toggle-wrapper hidden md:block">
 				<button
 					type="button"
 					class="filter-toggle-button"
@@ -167,7 +167,6 @@ async function handleLogout() {
 					title={filtersStore.isDesktopFiltersExpanded
 						? `Hide filters (${shortcutKey})`
 						: `Show filters (${shortcutKey})`}
-					tabindex={appStore.activeTab === 'tierlist' ? -1 : 0}
 				>
 					<SlidersHorizontal size={16} class="filter-icon" /><ChevronDown
 						size={16}

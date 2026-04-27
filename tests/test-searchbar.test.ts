@@ -13,7 +13,15 @@ vi.mock('$lib/stores/filters.svelte', () => ({
 		get searchTerm() {
 			return mocks.searchTerm;
 		},
-		setSearchTerm: vi.fn(),
+		get searchQuery() {
+			return mocks.searchTerm;
+		},
+		set searchQuery(val: string) {
+			mocks.searchTerm = val;
+		},
+		setSearchTerm: vi.fn((val: string) => {
+			mocks.searchTerm = val;
+		}),
 		writeSearchToURL: vi.fn(),
 		subscribe: vi.fn((cb: (value: unknown) => void) => {
 			cb({ searchTerm: mocks.searchTerm });

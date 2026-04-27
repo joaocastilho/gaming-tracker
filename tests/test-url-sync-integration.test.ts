@@ -18,7 +18,6 @@ const mockGames: Partial<Game>[] = [
 function resetStores() {
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
-	filteredGamesStore.clearCache();
 	gamesStore.initializeGames(mockGames);
 }
 

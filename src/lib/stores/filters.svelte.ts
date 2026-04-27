@@ -1,7 +1,6 @@
 import { replaceState } from '$app/navigation';
 import { browser } from '$app/environment';
 import { debounce } from '$lib/utils/debounce';
-import { appStore } from './app.svelte';
 import { toSlug, fromSlug } from '$lib/utils/slugUtils';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { gamesStore } from './games.svelte';
@@ -44,6 +43,8 @@ const initialFilters: FilterState = {
 class FiltersStore {
 	private _state = $state<FilterState | null>(null);
 	private subscribers = new Set<(value: FilterState | null) => void>();
+	public isInternalUpdate = $state(false);
+	private internalUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	public isDesktopFiltersExpanded = $state(true);
 
@@ -101,6 +102,10 @@ class FiltersStore {
 
 	get searchQuery(): string {
 		return this._state?.searchTerm ?? '';
+	}
+
+	set searchQuery(value: string) {
+		this.setSearchTerm(value);
 	}
 
 	isAnyFilterApplied(): boolean {
@@ -200,6 +205,13 @@ class FiltersStore {
 		if (this._state.searchTerm === term) {
 			return;
 		}
+
+		this.isInternalUpdate = true;
+		if (this.internalUpdateTimeout) clearTimeout(this.internalUpdateTimeout);
+		this.internalUpdateTimeout = setTimeout(() => {
+			this.isInternalUpdate = false;
+		}, 1000);
+
 		this.state = { ...this._state, searchTerm: term };
 	}
 
@@ -214,6 +226,13 @@ class FiltersStore {
 			currentSort.direction === sortOption.direction
 		)
 			return;
+
+		this.isInternalUpdate = true;
+		if (this.internalUpdateTimeout) clearTimeout(this.internalUpdateTimeout);
+		this.internalUpdateTimeout = setTimeout(() => {
+			this.isInternalUpdate = false;
+		}, 1000);
+
 		this.state = { ...this._state, sortOption };
 	}
 
@@ -258,16 +277,15 @@ class FiltersStore {
 		}
 	}
 
-	readSearchFromURL(searchParams: URLSearchParams, pathname?: string): void {
+	readSearchFromURL(searchParams: URLSearchParams, _pathname?: string): void {
 		if (!this._state) return;
-		if (Date.now() - lastManualClearTime < 500) {
+
+		// Skip if we just updated the URL ourselves to avoid race conditions
+		if (this.isInternalUpdate) {
 			return;
 		}
 
-		const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
-
-		const isCleanUrl = Array.from(searchParams.keys()).length === 0;
-		if ((currentPath === '/tierlist' || appStore.activeTab === 'tierlist') && isCleanUrl) {
+		if (Date.now() - lastManualClearTime < 500) {
 			return;
 		}
 
@@ -329,17 +347,15 @@ class FiltersStore {
 			const url = new URL(window.location.href);
 			const newParams = new URLSearchParams();
 
-			if (appStore.activeTab !== 'tierlist' && url.pathname !== '/tierlist') {
-				if (state.searchTerm) newParams.set('s', state.searchTerm);
-				state.platforms.forEach((p) => newParams.append('platform', toSlug(p)));
-				state.genres.forEach((g) => newParams.append('genre', toSlug(g)));
-				state.statuses.forEach((s) => newParams.append('status', toSlug(s)));
-				state.tiers.forEach((t) => newParams.append('tier', toSlug(t)));
-				state.coOp.forEach((c) => newParams.append('coop', toSlug(c)));
-				if (state.sortOption) {
-					newParams.set('sort', state.sortOption.key);
-					newParams.set('dir', state.sortOption.direction);
-				}
+			if (state.searchTerm) newParams.set('s', state.searchTerm);
+			state.platforms.forEach((p) => newParams.append('platform', toSlug(p)));
+			state.genres.forEach((g) => newParams.append('genre', toSlug(g)));
+			state.statuses.forEach((s) => newParams.append('status', toSlug(s)));
+			state.tiers.forEach((t) => newParams.append('tier', toSlug(t)));
+			state.coOp.forEach((c) => newParams.append('coop', toSlug(c)));
+			if (state.sortOption) {
+				newParams.set('sort', state.sortOption.key);
+				newParams.set('dir', state.sortOption.direction);
 			}
 
 			if (url.searchParams.toString() === newParams.toString()) return;

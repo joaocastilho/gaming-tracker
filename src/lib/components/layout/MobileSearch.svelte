@@ -1,10 +1,9 @@
 <script lang="ts">
 import { page } from '$app/state';
-import { replaceState, goto } from '$app/navigation';
+import { replaceState } from '$app/navigation';
 import { browser } from '$app/environment';
 import { filtersStore } from '$lib/stores/filters.svelte';
-import { appStore } from '$lib/stores/app.svelte';
-import { lastManualClearTime, markSearchCleared } from '$lib/stores/searchClearCoordinator';
+import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
 
 interface Props {
 	isOpen: boolean;
@@ -14,32 +13,29 @@ interface Props {
 let { isOpen, onClose }: Props = $props();
 
 let searchInput = $state<HTMLInputElement | null>(null);
-let mobileSearchDebounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
+let localSearchTerm = $state(filtersStore.searchQuery);
 
-// Keep input value in sync with store search term
 $effect(() => {
 	if (isOpen && searchInput) {
-		const storeSearchTerm = $filtersStore?.searchTerm ?? '';
-		if (searchInput.value !== storeSearchTerm) {
-			// Only sync from store if we're not currently typing,
-			// OR if we just cleared the search manually
-			const isRecentlyCleared = Date.now() - lastManualClearTime < 500;
-			if (isRecentlyCleared || document.activeElement !== searchInput) {
-				searchInput.value = storeSearchTerm;
-			}
-		}
-
-		// Always focus if open
 		if (document.activeElement !== searchInput) {
 			searchInput.focus();
 		}
 	}
 });
 
-// Scroll to top when search term changes in mobile search
+// sync from store when it changes externally
+$effect(() => {
+	const storeTerm = filtersStore.searchQuery;
+	const isInternal = filtersStore.isInternalUpdate;
+
+	if (storeTerm !== localSearchTerm && !isInternal && document.activeElement !== searchInput) {
+		localSearchTerm = storeTerm;
+	}
+});
+
 $effect(() => {
 	if (browser && isOpen && window.innerWidth < 768) {
-		const searchTerm = $filtersStore?.searchTerm ?? '';
+		const searchTerm = filtersStore.searchQuery;
 		// Scroll to top when there's a search term or when results change
 		if (searchTerm) {
 			requestAnimationFrame(() => {
@@ -49,59 +45,20 @@ $effect(() => {
 	}
 });
 
-function handleMobileSearchInput(event: Event) {
-	const target = event.target as HTMLInputElement;
-	const newValue = target.value;
-
-	if (mobileSearchDebounceTimeout) {
-		clearTimeout(mobileSearchDebounceTimeout);
-	}
-
-	mobileSearchDebounceTimeout = setTimeout(() => {
-		// Check if we're searching from tierlist and user started typing
-		const isFromTierlist = page.state.fromTierlist;
-		if (isFromTierlist && newValue && appStore.activeTab === 'tierlist') {
-			// Redirect to Games page with search term
-			const searchParam = `?s=${encodeURIComponent(newValue)}`;
-			goto(`/${searchParam}`, {
-				keepFocus: true,
-				noScroll: true,
-				state: { showMobileSearch: true },
-			});
-			return;
-		}
-
-		// Update filter store FIRST to trigger filtering
-		filtersStore.setSearchTerm(newValue);
-
-		// Then update URL with search parameter using current location
-		if (browser) {
-			const url = new URL(window.location.href);
-			if (newValue) {
-				url.searchParams.set('s', newValue);
-			} else {
-				url.searchParams.delete('s');
-			}
-			// Use replaceState to update URL without navigation
-			replaceState(url.toString(), { ...page.state });
-		}
-	}, 300);
+function handleMobileSearchInput() {
+	filtersStore.searchQuery = localSearchTerm;
 }
 
 function clearMobileSearch() {
-	// Mark manual clear to prevent URL sync race condition
 	markSearchCleared();
 
-	// Clear filter store first to trigger unfiltering
-	filtersStore.setSearchTerm('');
+	filtersStore.searchQuery = '';
+	localSearchTerm = '';
 
-	// Clear input value
 	if (searchInput) {
-		searchInput.value = '';
 		searchInput.focus();
 	}
 
-	// Clear URL parameter
 	if (browser) {
 		const url = new URL(window.location.href);
 		url.searchParams.delete('s');
@@ -120,6 +77,7 @@ function clearMobileSearch() {
 					type="text"
 					placeholder="Search games... (Ctrl + /)"
 					class="mobile-search-input"
+					bind:value={localSearchTerm}
 					oninput={handleMobileSearchInput}
 					onkeydown={(e) => {
 						if (e.key === 'Escape') {
@@ -130,7 +88,7 @@ function clearMobileSearch() {
 					autocomplete="off"
 					spellcheck="false"
 				/>
-				{#if $filtersStore?.searchTerm}
+				{#if localSearchTerm}
 					<button
 						type="button"
 						class="mobile-clear-button"

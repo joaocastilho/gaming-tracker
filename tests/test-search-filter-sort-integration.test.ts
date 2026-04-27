@@ -101,9 +101,6 @@ function resetStoreState() {
 	// Reset active tab to default
 	appStore.setActiveTab('all');
 
-	// Clear caches
-	filteredGamesStore.clearCache();
-
 	// Reinitialize games
 	gamesStore.initializeGames(mockGames);
 }

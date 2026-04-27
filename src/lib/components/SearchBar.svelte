@@ -1,24 +1,20 @@
 <script lang="ts">
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { page } from '$app/state';
-import { replaceState } from '$app/navigation';
 import { browser } from '$app/environment';
+import { replaceState } from '$app/navigation';
 import { X } from 'lucide-svelte';
-import { markSearchCleared, lastManualClearTime } from '$lib/stores/searchClearCoordinator';
+import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
 
 let inputElement = $state<HTMLInputElement | undefined>(undefined);
-let debounceTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-let searchTerm = $derived($filtersStore?.searchTerm ?? '');
+let localSearchTerm = $state(filtersStore.searchQuery);
 
 $effect(() => {
-	if (inputElement && inputElement.value !== searchTerm) {
-		// Only sync from store if we're not currently typing,
-		// OR if we just cleared the search manually
-		const isRecentlyCleared = Date.now() - lastManualClearTime < 500;
-		if (isRecentlyCleared || document.activeElement !== inputElement) {
-			inputElement.value = searchTerm;
-		}
+	const storeTerm = filtersStore.searchQuery;
+	const isInternal = filtersStore.isInternalUpdate;
+
+	if (storeTerm !== localSearchTerm && !isInternal && document.activeElement !== inputElement) {
+		localSearchTerm = storeTerm;
 	}
 });
 
@@ -28,40 +24,23 @@ $effect(() => {
 	}
 });
 
-function handleInput(event: Event) {
-	const target = event.target as HTMLInputElement;
-	const newValue = target.value;
-
-	if (debounceTimeout) {
-		clearTimeout(debounceTimeout);
-	}
-
-	debounceTimeout = setTimeout(() => {
-		filtersStore.setSearchTerm(newValue);
-		filtersStore.writeSearchToURL(page.state);
-	}, 300);
+function handleInput() {
+	filtersStore.searchQuery = localSearchTerm;
 }
 
 function clearSearch() {
-	if (debounceTimeout) {
-		clearTimeout(debounceTimeout);
-	}
-
-	// Clear URL parameter FIRST (synchronously) before touching the store
-	// This prevents the URL sync effect from restoring the value
 	if (browser) {
 		const url = new URL(window.location.href);
 		url.searchParams.delete('s');
 		replaceState(url.toString(), page.state);
 	}
 
-	// Mark the clear timestamp to prevent URL sync effect from running
 	markSearchCleared();
 
-	filtersStore.setSearchTerm('');
+	filtersStore.searchQuery = '';
+	localSearchTerm = '';
 
 	if (inputElement) {
-		inputElement.value = '';
 		requestAnimationFrame(() => {
 			inputElement?.focus();
 		});
@@ -75,31 +54,6 @@ function handleKeydown(event: KeyboardEvent) {
 		}
 	}
 }
-
-function handleGlobalKeydown(event: KeyboardEvent) {
-	if (event.key === 'Escape' && inputElement) {
-		event.preventDefault();
-		event.stopPropagation();
-
-		inputElement.focus();
-		inputElement.select();
-
-		requestAnimationFrame(() => {
-			const headerHeight = 110;
-			window.scrollTo({
-				top: -headerHeight,
-				behavior: 'smooth',
-			});
-		});
-	}
-}
-
-$effect(() => {
-	document.addEventListener('keydown', handleGlobalKeydown, { capture: true });
-	return () => {
-		document.removeEventListener('keydown', handleGlobalKeydown, { capture: true });
-	};
-});
 </script>
 
 <div class="search-bar-container">
@@ -110,6 +64,7 @@ $effect(() => {
 			bind:this={inputElement}
 			type="text"
 			placeholder="Search games..."
+			bind:value={localSearchTerm}
 			oninput={handleInput}
 			onkeydown={handleKeydown}
 			class="search-input"
@@ -117,7 +72,7 @@ $effect(() => {
 			autocomplete="off"
 			spellcheck="false"
 		/>
-		{#if searchTerm}
+		{#if localSearchTerm}
 			<button type="button" class="clear-button" onclick={clearSearch} aria-label="Clear search">
 				<X size={18} />
 			</button>

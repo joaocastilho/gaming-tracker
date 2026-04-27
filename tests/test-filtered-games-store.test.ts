@@ -201,12 +201,4 @@ describe('FilteredGamesStore Integration', () => {
 			expect(counts.all).toBeLessThanOrEqual(4);
 		});
 	});
-
-	describe('Cache', () => {
-		it('clears cache', () => {
-			filteredGamesStore.clearCache();
-			// No error means success
-			expect(true).toBe(true);
-		});
-	});
 });

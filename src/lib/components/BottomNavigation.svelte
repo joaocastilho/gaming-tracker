@@ -2,14 +2,14 @@
 import { navigateTo } from '$lib/utils/navigationUtils';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 import { appStore } from '$lib/stores/app.svelte';
+import { page } from '$app/state';
 import { Gamepad, CheckCircle, Calendar, List, Search } from 'lucide-svelte';
 
 interface Props {
 	onSearchToggle?: () => void;
-	onCloseSearchAndFilters?: () => void;
 }
 
-let { onSearchToggle, onCloseSearchAndFilters }: Props = $props();
+let { onSearchToggle }: Props = $props();
 
 type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search';
 
@@ -73,8 +73,7 @@ function handleNavClick(target: NavId) {
 	if (target === 'search') {
 		onSearchToggle?.();
 	} else {
-		onCloseSearchAndFilters?.();
-		navigateTo(target);
+		navigateTo(target, { state: page.state, replaceState: true });
 	}
 }
 

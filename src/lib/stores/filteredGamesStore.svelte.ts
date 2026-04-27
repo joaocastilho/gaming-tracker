@@ -6,18 +6,6 @@ import { filteredCountsStore } from './filteredCounts.svelte';
 import { filtersStore } from './filters.svelte';
 import { gamesStore } from './games.svelte';
 
-interface FilterCacheKey {
-	searchTerm: string;
-	platforms: string[];
-	genres: string[];
-	statuses: string[];
-	tiers: string[];
-	coOp: string[];
-	activeTab: string;
-	sortKey: string;
-	sortDirection: string;
-}
-
 function parsePlaytime(time: string | null | undefined): number | null {
 	if (!time) return null;
 	const match = time.match(/^(\d+)h\s*(\d+)m$/);
@@ -28,36 +16,74 @@ function parsePlaytime(time: string | null | undefined): number | null {
 }
 
 class FilteredGamesStore {
-	private lastCacheKey: string | null = null;
-	private lastCachedResult: Game[] = [];
-
-	get games(): Game[] {
-		return this.getFilteredGames(undefined);
-	}
-
-	getFilteredGames(overrideTab?: string): Game[] {
+	private _filteredGames = $derived.by(() => {
 		const games = gamesStore.games;
 		const filters = filtersStore.state;
-		const activeTab = overrideTab ?? appStore.activeTab;
+		const activeTab = appStore.activeTab;
 
 		if (!games || games.length === 0) {
 			return [];
 		}
 
-		const cacheKey = this.createCacheKey(filters, activeTab);
+		// Always apply base filters (search, platforms, genres, etc.)
+		let filtered = this.filterGamesWithoutTabFilter(games, filters);
 
-		if (this.lastCacheKey === cacheKey) {
-			return this.lastCachedResult;
+		// Apply tab-specific filtering
+		switch (activeTab) {
+			case 'completed':
+				filtered = filtered.filter((game) => game.status === 'Completed');
+				break;
+			case 'planned':
+				filtered = filtered.filter((game) => game.status === 'Planned');
+				break;
+			case 'tierlist':
+				filtered = filtered.filter((game) => game.tier);
+				break;
 		}
 
-		const filteredGames = this.filterGames(games, filters, activeTab);
+		// Apply sorting
+		const effectiveSort = activeTab === 'tierlist' ? null : (filters?.sortOption ?? null);
+		return this.sortGames(filtered, effectiveSort, activeTab);
+	});
+
+	get games(): Game[] {
+		return this._filteredGames;
+	}
+
+	/**
+	 * Returns filtered games for a specific tab, regardless of current appStore.activeTab
+	 * Useful for background counts or specific view overrides
+	 */
+	getFilteredGames(tab?: string): Game[] {
+		const activeTab = tab ?? appStore.activeTab;
+
+		// If it's the current tab, use the optimized derived value
+		if (activeTab === appStore.activeTab) {
+			return this._filteredGames;
+		}
+
+		// Otherwise recalculate (non-reactive or will be tracked by caller)
+		const games = gamesStore.games;
+		const filters = filtersStore.state;
+
+		if (!games || games.length === 0) return [];
+
+		let filtered = this.filterGamesWithoutTabFilter(games, filters);
+
+		switch (activeTab) {
+			case 'completed':
+				filtered = filtered.filter((game) => game.status === 'Completed');
+				break;
+			case 'planned':
+				filtered = filtered.filter((game) => game.status === 'Planned');
+				break;
+			case 'tierlist':
+				filtered = filtered.filter((game) => game.tier);
+				break;
+		}
 
 		const effectiveSort = activeTab === 'tierlist' ? null : (filters?.sortOption ?? null);
-		const sortedGames = this.sortGames(filteredGames, effectiveSort, activeTab);
-
-		this.updateCache(cacheKey, sortedGames);
-
-		return sortedGames;
+		return this.sortGames(filtered, effectiveSort, activeTab);
 	}
 
 	updateCounts() {
@@ -78,33 +104,6 @@ class FilteredGamesStore {
 			planned,
 			tierlist: null,
 		});
-	}
-
-	private createCacheKey(
-		filters: {
-			searchTerm?: string;
-			platforms?: string[];
-			genres?: string[];
-			statuses?: string[];
-			tiers?: string[];
-			coOp?: string[];
-			sortOption?: { key: string; direction: 'asc' | 'desc' } | null;
-		} | null,
-		activeTab: string
-	): string {
-		const key: FilterCacheKey = {
-			searchTerm: filters?.searchTerm || '',
-			platforms: filters?.platforms || [],
-			genres: filters?.genres || [],
-			statuses: filters?.statuses || [],
-			tiers: filters?.tiers || [],
-			coOp: filters?.coOp || [],
-			activeTab,
-			sortKey: filters?.sortOption?.key || '',
-			sortDirection: filters?.sortOption?.direction || '',
-		};
-
-		return JSON.stringify(key);
 	}
 
 	private filterGamesWithoutTabFilter(
@@ -153,36 +152,6 @@ class FilteredGamesStore {
 
 		if (filters.coOp.length > 0) {
 			filteredGames = filteredGames.filter((game) => filters.coOp.includes(game.coOp));
-		}
-
-		return filteredGames;
-	}
-
-	private filterGames(
-		games: Game[],
-		filters: {
-			searchTerm: string;
-			platforms: string[];
-			genres: string[];
-			statuses: string[];
-			tiers: string[];
-			coOp: string[];
-		} | null,
-		activeTab: string
-	): Game[] {
-		let filteredGames = this.filterGamesWithoutTabFilter(games, filters);
-
-		switch (activeTab) {
-			case 'completed':
-				filteredGames = filteredGames.filter((game) => game.status === 'Completed');
-				break;
-			case 'planned':
-				filteredGames = filteredGames.filter((game) => game.status === 'Planned');
-				break;
-			case 'tierlist':
-				return games.filter((game) => game.tier);
-			default:
-				break;
 		}
 
 		return filteredGames;
@@ -324,16 +293,6 @@ class FilteredGamesStore {
 		if (bMinutes === null) return -1;
 		return aMinutes - bMinutes;
 	}
-
-	private updateCache(key: string, result: Game[]): void {
-		this.lastCacheKey = key;
-		this.lastCachedResult = result;
-	}
-
-	clearCache(): void {
-		this.lastCacheKey = null;
-		this.lastCachedResult = [];
-	}
 }
 
 export const filteredGamesStore = new FilteredGamesStore();
@@ -342,6 +301,7 @@ class FilteredGamesSubscription {
 	private subscribers = new Set<(value: Game[]) => void>();
 
 	constructor() {
+		// Use manual subscriptions to trigger notifications
 		gamesStore.subscribe(() => {
 			filteredGamesStore.updateCounts();
 			this.notify();
@@ -350,13 +310,15 @@ class FilteredGamesSubscription {
 			filteredGamesStore.updateCounts();
 			this.notify();
 		});
-		appStore.subscribe(() => this.notify());
+		appStore.subscribe(() => {
+			this.notify();
+		});
 	}
 
 	private notify() {
-		const currentValue = filteredGamesStore.games;
+		const value = filteredGamesStore.games;
 		for (const fn of this.subscribers) {
-			fn(currentValue);
+			fn(value);
 		}
 	}
 
@@ -370,9 +332,7 @@ class FilteredGamesSubscription {
 
 	subscribe(fn: (value: Game[]) => void): () => void {
 		fn(filteredGamesStore.games);
-		// Add to subscribers
 		this.subscribers.add(fn);
-		// Return unsubscribe function
 		return () => {
 			this.subscribers.delete(fn);
 		};

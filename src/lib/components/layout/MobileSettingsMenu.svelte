@@ -18,7 +18,7 @@ interface Props {
 
 let {
 	isOpen,
-	isTierlistPage,
+	isTierlistPage: _isTierlistPage,
 	onToggle,
 	onClose,
 	onFiltersToggle,
@@ -32,18 +32,15 @@ let isEditor = $derived(editorStore.editorMode);
 </script>
 
 <div class="mobile-settings-container md:hidden">
-	<!-- Filter button - prominent, always visible (not on tierlist) -->
-	{#if !isTierlistPage}
-		<button
-			type="button"
-			class="floating-action-button filter-fab"
-			onclick={onFiltersToggle}
-			aria-label="Open filters"
-			title="Filters"
-		>
-			<SlidersHorizontal size={20} />
-		</button>
-	{/if}
+	<button
+		type="button"
+		class="floating-action-button filter-fab"
+		onclick={onFiltersToggle}
+		aria-label="Open filters"
+		title="Filters"
+	>
+		<SlidersHorizontal size={20} />
+	</button>
 
 	<!-- Main Settings FAB -->
 	<button
@@ -59,7 +56,6 @@ let isEditor = $derived(editorStore.editorMode);
 	</button>
 </div>
 
-<!-- Settings Bottom Sheet -->
 {#if isOpen}
 	<div
 		class="settings-bottom-sheet-overlay md:hidden"
@@ -130,7 +126,7 @@ let isEditor = $derived(editorStore.editorMode);
 				<span>{appStore.theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
 			</button>
 
-				{#if isEditor && !isTierlistPage}
+				{#if isEditor}
 					<button
 						type="button"
 						class="sheet-item sheet-item-green"
@@ -178,7 +174,6 @@ let isEditor = $derived(editorStore.editorMode);
 {/if}
 
 <style>
-	/* Mobile Settings Menu */
 	.mobile-settings-container {
 		position: fixed;
 		right: 16px;
@@ -243,7 +238,6 @@ let isEditor = $derived(editorStore.editorMode);
 		opacity: 0.9;
 	}
 
-	/* Light theme variations for settings FAB */
 	:global(.light) .settings-fab {
 		background: linear-gradient(135deg, #b8a99a 0%, #9c8b7a 100%);
 		box-shadow: 0 4px 12px rgba(61, 53, 48, 0.15);
@@ -268,7 +262,6 @@ let isEditor = $derived(editorStore.editorMode);
 		transform: rotate(90deg);
 	}
 
-	/* Filter FAB */
 	.filter-fab {
 		background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
 		border: none;

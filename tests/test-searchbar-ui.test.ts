@@ -50,72 +50,15 @@ describe('SearchBar UI', () => {
 		vi.clearAllMocks();
 	});
 
-	describe('Debounced Input', () => {
-		it('should not update store immediately on input', async () => {
+	describe('Input Handling', () => {
+		it('should update store immediately on input', async () => {
 			render(SearchBar);
 			const input = screen.getByRole('textbox', { name: /search games/i });
 
 			await fireEvent.input(input, { target: { value: 'Zelda' } });
 
-			// Store should not be updated immediately
-			expect(filtersStore.state?.searchTerm).toBe('');
-		});
-
-		it('should update store after 300ms debounce', async () => {
-			render(SearchBar);
-			const input = screen.getByRole('textbox', { name: /search games/i });
-
-			await fireEvent.input(input, { target: { value: 'Zelda' } });
-
-			// Advance timers by 300ms (debounce time)
-			vi.advanceTimersByTime(300);
-
-			expect(filtersStore.state?.searchTerm).toBe('Zelda');
-		});
-
-		it('should only trigger one update for rapid typing', async () => {
-			const setSearchTermSpy = vi.spyOn(filtersStore, 'setSearchTerm');
-			render(SearchBar);
-			const input = screen.getByRole('textbox', { name: /search games/i });
-
-			// Simulate rapid typing
-			await fireEvent.input(input, { target: { value: 'Z' } });
-			vi.advanceTimersByTime(100);
-			await fireEvent.input(input, { target: { value: 'Ze' } });
-			vi.advanceTimersByTime(100);
-			await fireEvent.input(input, { target: { value: 'Zel' } });
-			vi.advanceTimersByTime(100);
-			await fireEvent.input(input, { target: { value: 'Zeld' } });
-			vi.advanceTimersByTime(100);
-			await fireEvent.input(input, { target: { value: 'Zelda' } });
-
-			// Before debounce completes - no calls yet
-			expect(setSearchTermSpy).not.toHaveBeenCalled();
-
-			// Complete the debounce
-			vi.advanceTimersByTime(300);
-
-			// Should only have been called once with final value
-			expect(setSearchTermSpy).toHaveBeenCalledTimes(1);
-			expect(setSearchTermSpy).toHaveBeenCalledWith('Zelda');
-		});
-
-		it('should cancel pending debounce when new input arrives', async () => {
-			const setSearchTermSpy = vi.spyOn(filtersStore, 'setSearchTerm');
-			render(SearchBar);
-			const input = screen.getByRole('textbox', { name: /search games/i });
-
-			// First input
-			await fireEvent.input(input, { target: { value: 'Mario' } });
-			vi.advanceTimersByTime(200); // Partial debounce
-
-			// Second input before first completes
-			await fireEvent.input(input, { target: { value: 'Luigi' } });
-			vi.advanceTimersByTime(300); // Complete second debounce
-
-			// Only the second input should have been applied
-			expect(setSearchTermSpy).toHaveBeenCalledTimes(1);
-			expect(setSearchTermSpy).toHaveBeenCalledWith('Luigi');
+			// Store should be updated immediately for responsiveness
+			expect(filtersStore.searchQuery).toBe('Zelda');
 		});
 	});
 
