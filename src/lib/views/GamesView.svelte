@@ -77,7 +77,7 @@ let itemHeight = $derived(
 		const availableWidth = containerWidth - containerPadding - totalGapWidth;
 		const columnWidth = availableWidth / columns;
 		const coverHeight = columnWidth * 1.5;
-		const infoHeight = 300;
+		const infoHeight = columnWidth <= 200 ? 305 : 307;
 		return coverHeight + infoHeight;
 	})()
 );
@@ -160,6 +160,7 @@ function handleOpenModal(game: Game) {
 	.game-gallery-container {
 		width: 100%;
 		min-height: 600px;
+		padding-bottom: 60px;
 	}
 
 	:global(.game-gallery-virtual) {

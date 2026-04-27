@@ -111,8 +111,9 @@ $effect(() => {
 	.badges-left {
 		display: flex;
 		gap: 8px;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		align-items: center;
+		min-width: 0;
 	}
 
 	.year-right {
@@ -167,10 +168,33 @@ $effect(() => {
 
 	@container game-card (max-width: 200px) {
 		.metadata-row {
-			gap: 4px;
+			display: grid;
+			grid-template-columns: auto 1fr auto;
+			grid-template-areas: 
+				"platform coop year"
+				"genre genre genre";
+			gap: 6px 4px;
+			align-items: center;
 		}
 		.badges-left {
-			gap: 4px;
+			display: contents;
+		}
+		.platform-badge {
+			grid-area: platform;
+			max-width: 100%;
+		}
+		.coop-badge {
+			grid-area: coop;
+			justify-self: start;
+		}
+		.genre-badge {
+			grid-area: genre;
+			justify-self: start;
+			max-width: 100%;
+		}
+		.year-right {
+			grid-area: year;
+			justify-self: end;
 		}
 		.badge {
 			padding: 2px 6px;

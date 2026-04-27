@@ -182,9 +182,7 @@ let currentFilteredGames = $derived(filteredGames.getFilteredGames(currentPage))
 
 let canonicalUrl = $derived(page.url.pathname);
 
-let isGamesPage = $derived(
-	currentPage === 'all' || currentPage === 'completed' || currentPage === 'planned'
-);
+let isGamesPage = $derived(currentPage === 'all' || currentPage === 'completed' || currentPage === 'planned');
 
 let isPlannedPage = $derived(currentPage === 'planned');
 

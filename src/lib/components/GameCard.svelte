@@ -138,7 +138,6 @@ function handleKeyDown(event: KeyboardEvent) {
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		margin-top: auto;
 	}
 
 </style>

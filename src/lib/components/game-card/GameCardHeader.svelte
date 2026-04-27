@@ -21,11 +21,16 @@ function calculateSubtitleFontSize(title: string | null | undefined): number {
 }
 
 const subtitleFontSize = $derived(calculateSubtitleFontSize(game.subtitle));
+
+const titleText = $derived(game.mainTitle || game.title);
+const titleLength = $derived(titleText ? titleText.length : 0);
+const isLongTitle = $derived(titleLength > 35 && titleLength <= 50);
+const isVeryLongTitle = $derived(titleLength > 50);
 </script>
 
 <div class="title-section">
-	<h3 class="game-title" class:has-subtitle={!!game.subtitle}>
-		{game.mainTitle || game.title}
+	<h3 class="game-title" class:has-subtitle={!!game.subtitle} class:long-title={isLongTitle} class:very-long-title={isVeryLongTitle}>
+		{titleText}
 		{#if game.subtitle}
 			<br />
 			<span class="game-subtitle" style="font-size: {subtitleFontSize}rem;">{game.subtitle}</span>
@@ -36,7 +41,7 @@ const subtitleFontSize = $derived(calculateSubtitleFontSize(game.subtitle));
 <style>
 	.title-section {
 		margin-bottom: 0;
-		min-height: 50px;
+		height: 95px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -45,13 +50,23 @@ const subtitleFontSize = $derived(calculateSubtitleFontSize(game.subtitle));
 	}
 
 	.game-title {
-		font-size: clamp(1.05rem, 7cqi, 1.3rem);
-		font-weight: 700;
+		font-family: 'Outfit', sans-serif;
+		font-size: clamp(1.2rem, 9cqi, 1.5rem);
+		font-weight: 800;
+		letter-spacing: -0.01em;
 		margin: 0;
 		line-height: 1.2;
 		overflow: visible;
 		width: 100%;
 		color: var(--color-text-primary);
+	}
+
+	.game-title.long-title {
+		font-size: clamp(1.1rem, 8cqi, 1.35rem);
+	}
+
+	.game-title.very-long-title {
+		font-size: clamp(1.0rem, 7cqi, 1.25rem);
 	}
 
 	.game-title.has-subtitle {
@@ -61,6 +76,7 @@ const subtitleFontSize = $derived(calculateSubtitleFontSize(game.subtitle));
 	}
 
 	.game-subtitle {
+		font-family: 'Outfit', sans-serif;
 		font-weight: 500;
 		color: var(--color-text-secondary);
 		line-height: 1.2;
@@ -69,15 +85,24 @@ const subtitleFontSize = $derived(calculateSubtitleFontSize(game.subtitle));
 		text-overflow: ellipsis;
 		display: block;
 		width: 100%;
-		font-size: 0.75rem;
+		font-size: 0.85rem;
 	}
 
 	@container game-card (max-width: 200px) {
+		.title-section {
+			height: 75px;
+		}
 		.game-title {
-			font-size: clamp(1.1rem, 8cqi, 1rem);
+			font-size: clamp(1.1rem, 10cqi, 1.3rem);
+		}
+		.game-title.long-title {
+			font-size: clamp(1.0rem, 9cqi, 1.2rem);
+		}
+		.game-title.very-long-title {
+			font-size: clamp(0.9rem, 8cqi, 1.1rem);
 		}
 		.game-subtitle {
-			font-size: 0.65rem;
+			font-size: 0.75rem;
 		}
 	}
 
