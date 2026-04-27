@@ -24,10 +24,3 @@ vite.config.ts.timestamp-*
 
 # Other
 static/covers_raw
-
-# Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/playwright/.auth/

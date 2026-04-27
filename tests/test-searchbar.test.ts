@@ -24,6 +24,7 @@ vi.mock('$lib/stores/filters.svelte', () => ({
 
 vi.mock('$lib/stores/searchClearCoordinator', () => ({
 	markSearchCleared: vi.fn(),
+	lastManualClearTime: 0,
 }));
 
 vi.mock('$app/state', () => ({

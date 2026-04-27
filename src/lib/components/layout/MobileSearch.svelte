@@ -28,7 +28,7 @@ $effect(() => {
 				searchInput.value = storeSearchTerm;
 			}
 		}
-		
+
 		// Always focus if open
 		if (document.activeElement !== searchInput) {
 			searchInput.focus();
