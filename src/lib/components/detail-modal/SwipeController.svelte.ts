@@ -2,7 +2,6 @@ import { modalStore } from '$lib/stores/modal.svelte';
 import type { Game } from '$lib/types/game.js';
 
 export class SwipeController {
-	// State
 	swipeOffsetX = $state(0);
 	swipeOffsetY = $state(0);
 	isSwipeTransitioning = $state(false);
@@ -14,7 +13,6 @@ export class SwipeController {
 		return (typeof window !== 'undefined' ? window.innerWidth : 300) + 20;
 	}
 
-	// Touch tracking
 	private touchStartX = 0;
 	private touchStartY = 0;
 	private touchCurrentX = 0;
@@ -23,12 +21,10 @@ export class SwipeController {
 	private isVerticalSwipe = false;
 	private isHorizontalSwipe = false;
 
-	// Constants
 	private readonly SWIPE_THRESHOLD = 60;
 	private readonly SWIPE_CLOSE_THRESHOLD = 150;
 	private readonly VELOCITY_THRESHOLD = 0.8;
 
-	// Callbacks
 	private onNavigateNext: (skipTransition?: boolean) => void;
 	private onNavigatePrev: (skipTransition?: boolean) => void;
 	private getNextGame: () => Game | null;

@@ -1,5 +1,4 @@
 <script lang="ts">
-// Svelte 5 Runes - no legacy lifecycle imports needed
 import { fade, fly, type FlyParams } from 'svelte/transition';
 import { cubicOut, backOut } from 'svelte/easing';
 import { browser } from '$app/environment';
@@ -20,7 +19,6 @@ interface Props {
 
 let { onEditGame, onDeleteGame }: Props = $props();
 
-// Platform detection
 let isIOS = $state(false);
 let isAndroid = $state(false);
 
@@ -32,7 +30,6 @@ $effect(() => {
 	}
 });
 
-// Placeholders
 const PLACEHOLDER_SRC = '/covers/placeholder_cover.webp';
 const OFFLINE_FALLBACK_DATA_URI =
 	'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
@@ -47,7 +44,6 @@ function getPreviewImageSrc(coverImage: string | undefined): string {
 	return imageErrorStore.hasFailed(detailPath) ? PLACEHOLDER_SRC : detailPath;
 }
 
-// Navigation Logic
 let displayedGames = $derived.by(() => {
 	if ($modalStore.displayedGames.length > 0) return $modalStore.displayedGames;
 	const allGames = $gamesStore;
@@ -92,7 +88,6 @@ function navigateToNext() {
 	}
 }
 
-// Swipe Controller
 const swipe = new SwipeController(
 	navigateToNext,
 	navigateToPrevious,
@@ -101,7 +96,6 @@ const swipe = new SwipeController(
 	dismissSwipeHint
 );
 
-// Full-screen Image Logic
 let isImageExpanded = $state(false);
 
 function toggleImageExpansion() {
@@ -110,7 +104,6 @@ function toggleImageExpansion() {
 	}
 }
 
-// Interaction Handlers
 function handleKeydown(event: KeyboardEvent) {
 	if (!$modalStore.isOpen || $modalStore.mode !== 'view') return;
 
@@ -132,7 +125,6 @@ function handleKeydown(event: KeyboardEvent) {
 	}
 }
 
-// Swipe Hint Logic
 const SWIPE_HINT_KEY = 'gaming-tracker-swipe-hint-seen';
 let showSwipeIndicator = $state(false);
 let swipeIndicatorTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -164,7 +156,6 @@ function dismissSwipeHint() {
 	sessionStorage.setItem(SWIPE_HINT_KEY, 'true');
 }
 
-// Effect to manage keyboard event listeners based on modal state
 $effect(() => {
 	if (!browser) return;
 
@@ -179,7 +170,6 @@ $effect(() => {
 	}
 });
 
-// Effect to manage body overflow when modal opens/closes
 $effect(() => {
 	if (!browser) return;
 
@@ -198,7 +188,6 @@ $effect(() => {
 	};
 });
 
-// Effect to clear swipe timeouts when component is destroyed
 $effect(() => {
 	return () => {
 		if (swipeIndicatorTimeout) clearTimeout(swipeIndicatorTimeout);

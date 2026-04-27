@@ -1,7 +1,5 @@
 <script lang="ts">
 import { appStore } from '$lib/stores/app.svelte';
-
-// Directly read theme from the reactive store property
 let theme = $derived(appStore.theme);
 
 function toggleTheme() {

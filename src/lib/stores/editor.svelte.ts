@@ -42,7 +42,6 @@ class EditorStore {
 		files: new Map(),
 	});
 
-	// ... [Getters omitted for brevity, effectively keeping unchanged] ...
 	// Direct property getters
 	get editorMode(): boolean {
 		return this._state.editorMode;
@@ -143,7 +142,6 @@ class EditorStore {
 			newFiles.delete(id);
 		}
 
-		// If it's a pending add, just remove it from adds
 		const addIndex = this._pending.adds.findIndex((g) => g.id === id);
 		if (addIndex !== -1) {
 			const newAdds = [...this._pending.adds];
@@ -184,31 +182,20 @@ class EditorStore {
 		this.discardAllChanges();
 	}
 
-	/**
-	 * Build the final games array by applying all pending changes to the current games
-	 */
 	buildFinalGames(currentGames: Game[]): Game[] {
-		// Start with current games
 		let result = [...currentGames];
-
-		// Remove deleted games
 		result = result.filter((g) => !this._pending.deletes.has(g.id));
 
-		// Apply edits
 		result = result.map((g) => {
 			const edited = this._pending.edits.get(g.id);
 			return edited ? edited : g;
 		});
 
-		// Add new games
 		result = [...result, ...this._pending.adds];
 
 		return result;
 	}
 
-	/**
-	 * Apply all pending changes by sending to the API
-	 */
 	async applyAllChanges(currentGames: Game[]): Promise<boolean> {
 		if (!this.hasPendingChanges) {
 			return true;
@@ -216,10 +203,6 @@ class EditorStore {
 
 		if (browser && !navigator.onLine) {
 			const finalGames = this.buildFinalGames(currentGames);
-			// Note: We cannot easily stash 'files' in IndexedDB cleanly for raw File objects in this simple sync_queue
-			// without more work, but for now we assume offline changes are mostly metadata.
-			// If we need to support offline image uploads, that's a bigger task.
-			// We'll proceed with metadata only for offline.
 			try {
 				await db.sync_queue.put({ games: finalGames }, 'pending');
 				this.discardAllChanges();
@@ -232,7 +215,6 @@ class EditorStore {
 		}
 
 		const finalGames = this.buildFinalGames(currentGames);
-		// Pass files maps to saveGames
 		const success = await this.saveGames(() => ({ games: finalGames }));
 
 		if (success) {
@@ -242,10 +224,6 @@ class EditorStore {
 		return success;
 	}
 
-	/**
-	 * Save games directly to local static/games.json file (dev mode only).
-	 * This bypasses the production API and writes to the file system.
-	 */
 	async saveLocally(currentGames: Game[]): Promise<boolean> {
 		if (!this.hasPendingChanges) {
 			return true;
@@ -262,7 +240,6 @@ class EditorStore {
 
 		try {
 			const formData = new FormData();
-			// Match API payload structure
 			const payload = { games: finalGames };
 			formData.append('games', JSON.stringify(payload));
 
@@ -307,9 +284,6 @@ class EditorStore {
 		}
 	}
 
-	/**
-	 * Check if session is still valid by calling the auth check endpoint.
-	 */
 	async checkSession(): Promise<boolean> {
 		try {
 			const res = await fetch('/api/auth/check', {
@@ -330,7 +304,6 @@ class EditorStore {
 
 			return true;
 		} catch {
-			// Network error - assume session is still valid
 			return true;
 		}
 	}
@@ -365,13 +338,10 @@ class EditorStore {
 				editorMode: true,
 			};
 
-			// Persist to session storage
 			if (browser) {
 				try {
 					sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
-				} catch {
-					// Ignore storage errors
-				}
+				} catch {}
 			}
 
 			return true;
@@ -430,9 +400,6 @@ class EditorStore {
 		}
 	}
 
-	/**
-	 * Restore editor mode from session storage on page load
-	 */
 	restoreFromSession(): void {
 		if (browser) {
 			try {
@@ -466,7 +433,6 @@ class EditorStore {
 
 		try {
 			const formData = new FormData();
-			// Match API structure
 			formData.append('games', JSON.stringify(snapshot));
 
 			// Append all pending files
@@ -516,7 +482,6 @@ class EditorStore {
 		}
 	}
 
-	// For backwards compatibility with $editorStore subscription
 	subscribe(fn: (value: EditorState) => void): () => void {
 		fn(this._state);
 

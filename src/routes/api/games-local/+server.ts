@@ -1,9 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { spawn } from 'child_process';
 
-/** @type {import('./$types').RequestHandler} */
 export async function POST({ request }: { request: Request }) {
-	// Only allow this in development mode for safety
 	if (import.meta.env.PROD) {
 		return new Response('Not found', { status: 404 });
 	}
@@ -24,11 +22,9 @@ export async function POST({ request }: { request: Request }) {
 			}
 			payload = JSON.parse(gamesJson);
 
-			// Handle multiple cover uploads
-			// format: key = "cover_<gameId>"
 			for (const [key, value] of formData.entries()) {
 				if (key.startsWith('cover_') && typeof value !== 'string') {
-					const gameIdForCover = key.substring(6); // remove "cover_"
+					const gameIdForCover = key.substring(6);
 					const coverFile = value as File;
 
 					if (gameIdForCover && coverFile) {
@@ -76,7 +72,6 @@ export async function POST({ request }: { request: Request }) {
 							console.info(`[Dev API] Optimization complete for ${sanitizedGameId}`);
 						} catch (optErr) {
 							console.error(`[Dev API] optimization failed for ${sanitizedGameId}`, optErr);
-							// Don't fail the whole request, just log
 						}
 					}
 				}
@@ -97,8 +92,6 @@ export async function POST({ request }: { request: Request }) {
 			const gameHeader = { ...(g as Record<string, unknown>) };
 
 			if (gameHeader.finishedDate && typeof gameHeader.finishedDate === 'string') {
-				// Check if it looks like an ISO date or YYYY-MM-DD
-				// We want DD/MM/YYYY e.g. "18/06/2023"
 				try {
 					const d = new Date(gameHeader.finishedDate);
 					if (!isNaN(d.getTime())) {
@@ -107,9 +100,7 @@ export async function POST({ request }: { request: Request }) {
 						const year = d.getUTCFullYear();
 						gameHeader.finishedDate = `${day}/${month}/${year}`;
 					}
-				} catch {
-					// Keep original if parsing fails
-				}
+				} catch {}
 			}
 
 			// Remove computed fields that shouldn't be persisted

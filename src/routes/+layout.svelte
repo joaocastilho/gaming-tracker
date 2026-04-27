@@ -89,9 +89,7 @@ $effect(() => {
 
 	let lastScrollY = window.scrollY;
 	const handleScroll = () => {
-		if (window.innerWidth < 768) return; // Skip on mobile
 		const currentScrollY = window.scrollY;
-		// Collapse filters when scrolling down past 80px
 		if (
 			currentScrollY > 80 &&
 			currentScrollY > lastScrollY &&
@@ -125,15 +123,12 @@ $effect(() => {
 					if (isPaused || document.hidden) return;
 
 					if (registration.installing === null && registration.waiting === null && registration.active !== null) {
-						registration.update().catch(() => {
-							// Silently ignore update errors
-						});
+						registration.update().catch(() => {});
 					}
 				};
 
 				intervalId = setInterval(checkForUpdates, 60000);
 
-				// Handle page visibility changes to pause/resume polling
 				visibilityHandler = () => {
 					if (document.hidden) {
 						isPaused = true;
@@ -205,11 +200,8 @@ $effect(() => {
 		const searchParams = page.url.searchParams;
 		void $gamesStore;
 
-		// Restore state from URL on navigation
-		// Use untrack so manual state changes don't trigger an immediate clobbering restoration
 		untrack(() => {
 			filtersStore.readSearchFromURL(searchParams, page.url.pathname);
-			// Auto-open filters if we have active filters (desktop only)
 			if (filtersStore.isAnyFilterApplied() && window.innerWidth >= 768) {
 				filtersStore.setDesktopFiltersExpanded(true);
 			}
@@ -217,7 +209,6 @@ $effect(() => {
 
 		const searchParam = searchParams.get('s');
 		if (searchParam && window.innerWidth < 768 && !isSearchOpen) {
-			// On mobile, we use pushState for the overlay
 			pushState(page.url, { showMobileSearch: true });
 		}
 
@@ -243,7 +234,6 @@ $effect(() => {
 });
 
 $effect(() => {
-	// Sync activeTab with URL pathname changes
 	const pathname = page.url.pathname;
 	let targetTab: 'all' | 'completed' | 'planned' | 'tierlist' = 'all';
 
@@ -308,21 +298,16 @@ function onSearchToggle() {
 	if (isSearchOpen) {
 		history.back();
 	} else {
-		// Save scroll position before opening search (mobile only)
 		if (browser && window.innerWidth < 768) {
 			savedScrollPosition = window.scrollY;
 		}
 
-		// Tier list is not searchable - open search overlay first
-		// When user starts typing, we'll redirect to Games page
 		if (currentPage === 'tierlist') {
-			// Just open search, no redirect yet - redirect happens when typing
 			pushState(page.url, { showMobileSearch: true, fromTierlist: true });
 			isFiltersOpen = false;
 			return;
 		}
 
-		// Open search: push state (don't reset filters to preserve search term)
 		pushState(page.url, { showMobileSearch: true });
 		isFiltersOpen = false;
 	}
@@ -346,7 +331,6 @@ $effect(() => {
 	if (!browser) return;
 
 	const handleGlobalKeydown = (event: KeyboardEvent) => {
-		// Toggle filter panel (Cmd + / on Mac, Ctrl + / on Windows)
 		const isMac = navigator.platform.toLowerCase().includes('mac');
 		const modifierCheck = isMac ? event.metaKey || event.ctrlKey : event.ctrlKey || event.metaKey;
 
@@ -354,7 +338,6 @@ $effect(() => {
 			event.preventDefault();
 
 			if (window.innerWidth < 768) {
-				// Mobile - toggle search
 				if (!isSearchOpen) {
 					onSearchToggle();
 				}
@@ -364,7 +347,6 @@ $effect(() => {
 					input?.select();
 				});
 			} else {
-				// Desktop - toggle filter panel and focus search
 				filtersStore.toggleDesktopFiltersExpanded();
 				requestAnimationFrame(() => {
 					const input = document.getElementById('search-input') as HTMLInputElement;
@@ -393,14 +375,12 @@ $effect(() => {
 		// Clear filter store first to trigger unfiltering
 		filtersStore.setSearchTerm('');
 
-		// Then clear URL parameter
 		if (browser) {
 			const url = new URL(window.location.href);
 			url.searchParams.delete('s');
 			replaceState(url.toString(), page.state);
 		}
 
-		// Restore scroll position when search closes (mobile only)
 		if (browser && window.innerWidth < 768) {
 			requestAnimationFrame(() => {
 				window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
@@ -427,7 +407,6 @@ $effect(() => {
 			// Preserve search term in URL when navigating
 			const searchParam = searchTerm ? `?s=${encodeURIComponent(searchTerm)}` : '';
 
-			// Tier list is not searchable - switch to Completed or Planned based on what has results
 			if (currentTab === 'tierlist') {
 				if (counts.completed > 0) {
 					goto(`/completed${searchParam}`, {
@@ -442,9 +421,7 @@ $effect(() => {
 						state: { showMobileSearch: true },
 					});
 				}
-			}
-			// Planned and Completed are complementary - if one has no results, switch to the other
-			else if (currentTab === 'planned' && counts.completed > 0) {
+			} else if (currentTab === 'planned' && counts.completed > 0) {
 				goto(`/completed${searchParam}`, {
 					keepFocus: true,
 					noScroll: true,
@@ -518,7 +495,6 @@ $effect.pre(() => {
 	// Restore editor mode from session storage
 	editorStore.restoreFromSession();
 
-	// Check session validity if in editor mode (production only)
 	untrack(() => {
 		if (editorStore.editorMode && !dev) {
 			editorStore.checkSession();

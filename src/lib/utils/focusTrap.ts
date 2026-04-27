@@ -1,7 +1,3 @@
-/**
- * Action to trap focus within an element
- * @param node The element to trap focus within
- */
 export function focusTrap(node: HTMLElement) {
 	const focusableElementsSelector =
 		'a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])';
@@ -18,13 +14,11 @@ export function focusTrap(node: HTMLElement) {
 		const lastFocusableElement = focusableContent[focusableContent.length - 1] as HTMLElement;
 
 		if (e.shiftKey) {
-			// if shift key pressed for shift + tab combination
 			if (document.activeElement === firstFocusableElement) {
 				lastFocusableElement.focus();
 				e.preventDefault();
 			}
 		} else {
-			// if tab key is pressed
 			if (document.activeElement === lastFocusableElement) {
 				firstFocusableElement.focus();
 				e.preventDefault();
@@ -34,7 +28,6 @@ export function focusTrap(node: HTMLElement) {
 
 	node.addEventListener('keydown', handleKeydown);
 
-	// Focus the first element on mount
 	const focusableContent = node.querySelectorAll(focusableElementsSelector);
 	if (focusableContent.length > 0) {
 		const firstFocusableElement = focusableContent[0] as HTMLElement;

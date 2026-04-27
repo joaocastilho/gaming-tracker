@@ -1,7 +1,3 @@
-/**
- * Filtered Games Store - Svelte 5 Runes
- * Filters and sorts games based on current filters and active tab
- */
 import type { Game } from '$lib/types/game';
 import { parseDate } from '$lib/utils/dateUtils';
 import { getTierDisplayName } from '$lib/utils/tierUtils';
@@ -22,10 +18,6 @@ interface FilterCacheKey {
 	sortDirection: string;
 }
 
-/**
- * Parse a playtime string (e.g., "20h 5m") into total minutes
- * Returns null if the string is invalid or null
- */
 function parsePlaytime(time: string | null | undefined): number | null {
 	if (!time) return null;
 	const match = time.match(/^(\d+)h\s*(\d+)m$/);
@@ -39,10 +31,6 @@ class FilteredGamesStore {
 	private lastCacheKey: string | null = null;
 	private lastCachedResult: Game[] = [];
 
-	/**
-	 * Get filtered and sorted games based on current state
-	 * @param overrideTab Optional tab override (e.g., 'completed', 'planned') to avoid async store issues
-	 */
 	get games(): Game[] {
 		return this.getFilteredGames(undefined);
 	}
@@ -72,10 +60,6 @@ class FilteredGamesStore {
 		return sortedGames;
 	}
 
-	/**
-	 * Force update the counts. This should be called when games data changes
-	 * or when filters change, but outside of the getter to avoid side effects.
-	 */
 	updateCounts() {
 		const games = gamesStore.games;
 		const filters = filtersStore.state;
@@ -123,10 +107,6 @@ class FilteredGamesStore {
 		return JSON.stringify(key);
 	}
 
-	/**
-	 * Apply all filters EXCEPT the tab filter.
-	 * Used for calculating counts per tab with the active filters applied.
-	 */
 	private filterGamesWithoutTabFilter(
 		games: Game[],
 		filters: {
@@ -200,7 +180,6 @@ class FilteredGamesStore {
 				filteredGames = filteredGames.filter((game) => game.status === 'Planned');
 				break;
 			case 'tierlist':
-				// Context preservation: ignore other filters on tierlist
 				return games.filter((game) => game.tier);
 			default:
 				break;
@@ -340,8 +319,6 @@ class FilteredGamesStore {
 	private comparePlaytimes(a: string | null | undefined, b: string | null | undefined): number {
 		const aMinutes = parsePlaytime(a);
 		const bMinutes = parsePlaytime(b);
-
-		// Null values go last
 		if (aMinutes === null && bMinutes === null) return 0;
 		if (aMinutes === null) return 1;
 		if (bMinutes === null) return -1;
@@ -365,7 +342,6 @@ class FilteredGamesSubscription {
 	private subscribers = new Set<(value: Game[]) => void>();
 
 	constructor() {
-		// Subscribe to underlying stores to trigger updates
 		gamesStore.subscribe(() => {
 			filteredGamesStore.updateCounts();
 			this.notify();
@@ -374,14 +350,11 @@ class FilteredGamesSubscription {
 			filteredGamesStore.updateCounts();
 			this.notify();
 		});
-		// Also listen to appStore changes
 		appStore.subscribe(() => this.notify());
 	}
 
 	private notify() {
 		const currentValue = filteredGamesStore.games;
-		// Always notify subscribers when underlying stores change
-		// The filteredGamesStore.games getter handles caching internally
 		for (const fn of this.subscribers) {
 			fn(currentValue);
 		}
@@ -396,7 +369,6 @@ class FilteredGamesSubscription {
 	}
 
 	subscribe(fn: (value: Game[]) => void): () => void {
-		// Immediately call with current value
 		fn(filteredGamesStore.games);
 		// Add to subscribers
 		this.subscribers.add(fn);

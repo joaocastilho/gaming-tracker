@@ -1,12 +1,3 @@
-/**
- * Safely extracts a unique key for an item in a virtual list.
- * Handles duplicate keys, missing keys, and ensures uniqueness.
- *
- * @param item The item to extract a key from
- * @param index The index of the item in the list
- * @param keyExtractor A function to extract the primary key
- * @returns A unique string key
- */
 export function safeKeyExtractor<T>(
 	item: T,
 	index: number,

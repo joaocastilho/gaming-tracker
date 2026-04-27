@@ -276,13 +276,11 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
-	.mobile-text,
-	.mobile-icon {
+	.mobile-text {
 		display: none;
 	}
 
-	.desktop-text,
-	.desktop-icon {
+	.desktop-text {
 		display: inline-block;
 	}
 

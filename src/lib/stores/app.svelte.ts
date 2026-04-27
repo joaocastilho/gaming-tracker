@@ -1,9 +1,4 @@
 import { untrack } from 'svelte';
-/**
- * App Store - Svelte 5 Runes
- * Manages theme and active tab state for the application
- */
-
 export type ThemeValue = 'dark' | 'light';
 export type TabValue = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -17,7 +12,6 @@ class AppStore {
 	activeTab = $state<TabValue>('all');
 
 	constructor() {
-		// Initialize from localStorage immediately to avoid hydration mismatch
 		if (
 			typeof window !== 'undefined' &&
 			typeof localStorage !== 'undefined' &&
@@ -30,10 +24,7 @@ class AppStore {
 
 			$effect.root(() => {
 				$effect(() => {
-					// Sync state to localStorage and DOM
-					if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
-						localStorage.setItem('gaming-tracker-theme', this.theme);
-					}
+					localStorage.setItem('gaming-tracker-theme', this.theme);
 					document.documentElement.classList.remove('light', 'dark');
 					document.documentElement.classList.add(this.theme);
 				});
@@ -62,7 +53,6 @@ class AppStore {
 		}
 	}
 
-	// For backwards compatibility with $appStore subscription
 	subscribe(fn: (value: AppState) => void): () => void {
 		fn(this.appState);
 

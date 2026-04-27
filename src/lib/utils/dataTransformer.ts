@@ -10,13 +10,10 @@ interface RawGameData extends Record<string, unknown> {
 }
 
 export function transformGameData(game: Record<string, unknown>): Game {
-	// Work with the raw data that may have temporary fields
 	const data = game as RawGameData;
 
-	// Build up the Game object with proper typing
 	const gameData: Partial<Game> = { ...data };
 
-	// Ensure id is set
 	if (!gameData.id) {
 		if (data.title) {
 			gameData.id = generateDeterministicUUID(data.title);
@@ -25,7 +22,6 @@ export function transformGameData(game: Record<string, unknown>): Game {
 		}
 	}
 
-	// Convert date format if needed
 	if (data.finishedDate && !isValidISODateTime(data.finishedDate)) {
 		const dateMatch = data.finishedDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
 		if (dateMatch) {
@@ -34,7 +30,6 @@ export function transformGameData(game: Record<string, unknown>): Game {
 		}
 	}
 
-	// Handle playtime conversion from hoursPlayed
 	if (data.hoursPlayed !== undefined) {
 		if (typeof data.hoursPlayed === 'number') {
 			const hours = Math.floor(data.hoursPlayed);
@@ -47,12 +42,10 @@ export function transformGameData(game: Record<string, unknown>): Game {
 		gameData.playtime = data.timeToBeat;
 	}
 
-	// Ensure coOp has a default value
 	if (!gameData.coOp) {
 		gameData.coOp = 'No';
 	}
 
-	// Parse title into mainTitle and subtitle
 	if (data.title) {
 		const titleMatch = data.title.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
 
@@ -68,7 +61,6 @@ export function transformGameData(game: Record<string, unknown>): Game {
 		gameData.subtitle = null;
 	}
 
-	// Cast to Game type - the transformation above should have populated all required fields
 	return gameData as Game;
 }
 

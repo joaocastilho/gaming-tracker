@@ -1,8 +1,3 @@
-/**
- * Modal Store - Svelte 5 Runes
- * Manages modal state, form data, and game detail view
- */
-
 import { pushState, replaceState } from '$app/navigation';
 import { createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
 import { getTierDisplayName, getTierWeight } from '$lib/utils/tierUtils';

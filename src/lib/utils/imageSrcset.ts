@@ -1,26 +1,9 @@
-/**
- * Generate srcset string for cover images.
- *
- * Contracts:
- * - {id}.webp          -> primary cover (300w)
- * - {id}-detail.webp   -> higher-res detail (400w)
- * - {id}-200w.webp     -> lightweight thumb (200w) for tiny contexts
- */
-
-/**
- * Default srcset for standard card/gallery usage.
- * Includes the primary cover and the higher-res detail variant.
- */
 export function generateSrcset(basePath: string | null | undefined): string {
 	const normalized = (basePath || 'covers/placeholder_cover.webp').replace(/\.webp$/, '');
 	const base = normalized.startsWith('/') ? normalized : `/${normalized}`;
 	return [`${base}.webp 300w`, `${base}-detail.webp 400w`].join(', ');
 }
 
-/**
- * Variant: srcset optimized for tiny thumbnails.
- * Only exposes the 200w asset (and falls back to 300w if 200w is missing).
- */
 export function generateTinySrcset(basePath: string | null | undefined): string {
 	const normalized = (basePath || 'covers/placeholder_cover.webp').replace(/\.webp$/, '');
 	const base = normalized.startsWith('/') ? normalized : `/${normalized}`;
@@ -28,9 +11,6 @@ export function generateTinySrcset(basePath: string | null | undefined): string 
 	return [`${base}-200w.webp 200w`, `${base}.webp 300w`].join(', ');
 }
 
-/**
- * Generate sizes attribute for responsive images.
- */
 export function generateSizes(context: 'gallery' | 'modal' | 'card' | 'tiny'): string {
 	switch (context) {
 		case 'gallery':

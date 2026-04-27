@@ -6,7 +6,6 @@ import { editorStore } from '$lib/stores/editor.svelte';
 let isModalOpen = $state(true);
 let editorMode = $derived(editorStore.editorMode);
 
-// Get version from Vite define (set at build time)
 const appVersion = __APP_VERSION__;
 const buildDate = __BUILD_DATE__;
 

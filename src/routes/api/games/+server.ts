@@ -1,8 +1,5 @@
 import { json } from '@sveltejs/kit';
-// Node imports must be dynamic to avoid breaking Cloudflare build
-// They will only be loaded in dev mode
 
-/** @type {import('./$types').RequestHandler} */
 export async function POST({ request }: { request: Request }) {
 	if (import.meta.env.PROD) {
 		return new Response('Not found', { status: 404 });
@@ -32,9 +29,7 @@ export async function POST({ request }: { request: Request }) {
 						const year = d.getUTCFullYear();
 						gameHeader.finishedDate = `${day}/${month}/${year}`;
 					}
-				} catch {
-					// Keep original finishedDate if parsing fails
-				}
+				} catch {}
 			}
 
 			delete gameHeader.mainTitle;

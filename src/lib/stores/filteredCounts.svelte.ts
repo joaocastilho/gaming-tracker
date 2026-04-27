@@ -1,8 +1,3 @@
-/**
- * Filtered Counts Store - Svelte 5 Runes
- * Tracks count of games in each tab after filters are applied
- */
-
 export interface FilteredTabCounts {
 	all: number;
 	completed: number;

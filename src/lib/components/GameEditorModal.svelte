@@ -37,7 +37,6 @@ let minutes = $state(0);
 let completionOrderInput = $state<number | null>(null);
 let copied = $state(false);
 
-// Cover image state
 let coverUrl = $state('');
 let coverFile = $state<File | null>(null);
 let coverPreview = $state<string | null>(null);
@@ -45,7 +44,6 @@ let blobUrls: string[] = [];
 let coverError = $state<string | null>(null);
 let fileInputRef = $state<HTMLInputElement>();
 
-// Refs for focus management
 let modalRef = $state<HTMLDivElement>();
 let titleInputRef = $state<HTMLInputElement>();
 
@@ -150,10 +148,8 @@ function clearCover() {
 	}
 }
 
-// One-time initialization flag (must be outside effects)
 let _initialized = $state(false);
 
-// Auto-focus title input when it becomes available
 $effect(() => {
 	if (titleInputRef && _initialized) {
 		untrack(() => {
@@ -162,7 +158,6 @@ $effect(() => {
 	}
 });
 
-// One-time initialization + cleanup
 $effect(() => {
 	if (_initialized) return;
 	_initialized = true;
@@ -235,7 +230,6 @@ $effect(() => {
 	};
 });
 
-// Sync dateInput to working.finishedDate
 $effect(() => {
 	if (!working) return;
 	if (working.status === 'Completed') {
@@ -249,7 +243,6 @@ $effect(() => {
 	}
 });
 
-// Auto-generate ID and Cover Path, and MainTitle/Subtitle logic from Title
 $effect(() => {
 	if (!working) return;
 
@@ -279,14 +272,12 @@ $effect(() => {
 	}
 });
 
-// Sync hours/minutes to playtime string
 $effect(() => {
 	if (working) {
 		working.playtime = `${hours}h ${minutes}m`;
 	}
 });
 
-// Sync completionOrderInput to working.completionOrder
 $effect(() => {
 	if (working) {
 		working.completionOrder = completionOrderInput;

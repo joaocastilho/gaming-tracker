@@ -15,7 +15,6 @@ import {
 } from 'lucide-svelte';
 import { appStore } from '$lib/stores/app.svelte';
 
-// Get sortOption from filters store state
 let sortOption = $derived(($filtersStore?.sortOption ?? null) as SortOption | null);
 let currentTab = $derived(appStore.activeTab);
 
@@ -148,7 +147,6 @@ function handleSort(key: SortKey) {
 		</button>
 	{/if}
 
-	<!-- Playtime Sort (available on both completed and planned tabs) -->
 	{#if currentTab === 'completed' || currentTab === 'planned'}
 		<button
 			type="button"

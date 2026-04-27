@@ -1,10 +1,6 @@
 import * as z from 'zod';
 import type { CoOpStatus, GameStatus, TierValue } from '../types/game';
 
-/**
- * Shared constants
- */
-
 export const GAME_STATUS_VALUES = ['Planned', 'Completed'] as const satisfies GameStatus[];
 export const TIER_VALUES = [
 	'S - Masterpiece',
@@ -16,10 +12,6 @@ export const TIER_VALUES = [
 ] as const satisfies TierValue[];
 export const COOP_VALUES = ['Yes', 'No'] as const satisfies CoOpStatus[];
 
-/**
- * Base field-level schema matching src/lib/types/game.ts.
- * Does NOT encode Planned/Completed cross-field rules yet.
- */
 export const BaseGameSchema = z.object({
 	id: z.string().regex(/^[\w-]+$/),
 	title: z.string().min(1).max(200),
@@ -46,10 +38,6 @@ export const BaseGameSchema = z.object({
 	sortPriority: z.number().nullable().optional(),
 });
 
-/**
- * Compute canonical score from ratings.
- * Formula: (P + S + G) / 3 * 2
- */
 export function computeScore({
 	ratingPresentation,
 	ratingStory,
@@ -66,31 +54,10 @@ export function computeScore({
 	return Math.round(clamped);
 }
 
-/**
- * Format rating for display.
- * - Integer -> "8" (not "8.0")
- * - Null/Undefined -> "-"
- */
 export function formatRating(rating: number | null | undefined): string {
 	if (rating == null) return '-';
 	return rating.toString();
 }
-
-/**
- * Cross-field integrity rules:
- *
- * - Planned:
- *   - status === 'Planned'
- *   - finishedDate, rating* , score, tier MUST be null.
- *
- * - Completed:
- *   - status === 'Completed'
- *   - playtime MUST be non-null and match "XXh XXm" (always required anyway).
- *   - finishedDate MUST be non-null.
- *   - ratingPresentation, ratingStory, ratingGameplay MUST be non-null (0-10).
- *   - score MUST equal computeScore(rating*).
- *   - tier MUST be non-null.
- */
 
 export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 	if (game.status === 'Planned') {
@@ -209,9 +176,6 @@ export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
 	}
 });
 
-/**
- * Schema for the full payload used by /api/games.
- */
 export const GamesPayloadSchema = z.object({
 	games: z.array(GameSchema),
 	meta: z

@@ -9,12 +9,10 @@ async function generateFavicons(): Promise<void> {
 	const outputDir = join(process.cwd(), 'static');
 
 	try {
-		// Get original metadata
 		const metadata = await sharp(inputPath).metadata();
 		console.log(`📐 Original dimensions: ${metadata.width}x${metadata.height}`);
 		console.log(`🎨 Original format: ${metadata.format}`);
 
-		// Get original file size
 		const originalStats = await stat(inputPath);
 		const originalSize = originalStats.size;
 		console.log(`📊 Original size: ${formatBytes(originalSize)}`);
@@ -26,13 +24,12 @@ async function generateFavicons(): Promise<void> {
 				fit: 'contain',
 				background: { r: 0, g: 0, b: 0, alpha: 0 },
 			})
-			.png() // Fallback to PNG as .ico() is not natively supported by sharp
+			.png()
 			.toFile(join(outputDir, 'favicon.ico'));
 
 		const icoStats = await stat(join(outputDir, 'favicon.ico'));
 		console.log(`  📁 ${formatBytes(icoStats.size)}`);
 
-		// Generate PNG icons for various platforms
 		const pngSizes = [
 			{ name: 'favicon-16x16', size: 16 },
 			{ name: 'favicon-32x32', size: 32 },
@@ -47,7 +44,7 @@ async function generateFavicons(): Promise<void> {
 			await sharp(inputPath)
 				.resize(size, size, {
 					fit: 'contain',
-					background: { r: 0, g: 0, b: 0, alpha: 0 }, // Transparent background
+					background: { r: 0, g: 0, b: 0, alpha: 0 },
 				})
 				.png({
 					quality: 95,
@@ -60,7 +57,6 @@ async function generateFavicons(): Promise<void> {
 			console.log(`  📁 ${formatBytes(stats.size)}`);
 		}
 
-		// Generate maskable PNG icons
 		const maskableSizes = [
 			{ name: 'android-chrome-maskable-192x192', size: 192 },
 			{ name: 'android-chrome-maskable-512x512', size: 512 },
@@ -128,5 +124,4 @@ function formatBytes(bytes: number): string {
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-// Run the script
 generateFavicons().catch(console.error);

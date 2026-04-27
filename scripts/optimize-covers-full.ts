@@ -54,16 +54,13 @@ interface OptimizationStats {
 async function findMatchingGame(filename: string, games: Game[]): Promise<Game | null> {
 	const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
 
-	// Try exact ID match first
 	let match = games.find((g) => g.id === nameWithoutExt);
 	if (match) return match;
 
-	// Try slugified title match
 	const sluggedFilename = nameWithoutExt.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 	match = games.find((g) => g.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === sluggedFilename);
 	if (match) return match;
 
-	// Try partial title match
 	match = games.find(
 		(g) =>
 			g.title.toLowerCase().includes(nameWithoutExt.toLowerCase()) ||
@@ -92,10 +89,6 @@ async function processImage(filename: string, games: Game[], outputDir: string):
 		const inputPath = join(COVERS_RAW_DIR, filename);
 		const gameId = matchingGame.id;
 
-		// Paths:
-		// - 200w: {id}-200w.webp      (tier list view / compact)
-		// - 300w: {id}.webp           (card / grid)
-		// - 400w: {id}-detail.webp    (detail / modal)
 		const cover200Path = join(outputDir, `${gameId}-200w.webp`);
 		const cover300Path = join(outputDir, `${gameId}.webp`);
 		const detail400Path = join(outputDir, `${gameId}-detail.webp`);
@@ -103,7 +96,6 @@ async function processImage(filename: string, games: Game[], outputDir: string):
 		const originalStats = await stat(inputPath);
 		const originalSize = originalStats.size;
 
-		// 1) 200w x 300h -> tier list / small usage
 		await sharp(inputPath)
 			.resize(200, 300, {
 				fit: 'cover',
@@ -116,7 +108,6 @@ async function processImage(filename: string, games: Game[], outputDir: string):
 			})
 			.toFile(cover200Path);
 
-		// 2) 300w x 450h -> card usage
 		await sharp(inputPath)
 			.resize(300, 450, {
 				fit: 'cover',
@@ -129,7 +120,6 @@ async function processImage(filename: string, games: Game[], outputDir: string):
 			})
 			.toFile(cover300Path);
 
-		// 3) 400w x 600h -> detail usage
 		await sharp(inputPath)
 			.resize(400, 600, {
 				fit: 'cover',
@@ -190,26 +180,22 @@ async function main(): Promise<void> {
 
 	const overallStartTime = Date.now();
 
-	// Load games data
 	console.log('📂 Loading games data...');
 	const gamesData = await readFile(GAMES_JSON_PATH, 'utf-8');
 	const gamesJson = JSON.parse(gamesData);
 	const games: Game[] = gamesJson.games || gamesJson;
 	console.log(`✅ Loaded ${games.length} games`);
 
-	// Get all PNG files
 	console.log('🔍 Scanning covers_raw directory...');
 	const allFiles = await readdir(COVERS_RAW_DIR);
 	let pngFiles = allFiles.filter((f) => f.toLowerCase().endsWith('.png'));
 	console.log(`✅ Found ${pngFiles.length} PNG files`);
 
-	// Filter by command line arguments if provided
 	const specificGames = process.argv.slice(2);
 	if (specificGames.length > 0) {
 		console.log(`🎯 Filtering for ${specificGames.length} specific games:`, specificGames);
 		pngFiles = pngFiles.filter((file) => {
 			const nameWithoutExt = file.replace(/\.[^/.]+$/, '');
-			// Check if the filename matches any of the provided IDs (exact or partial)
 			return specificGames.some(
 				(id) =>
 					nameWithoutExt === id ||
@@ -220,7 +206,6 @@ async function main(): Promise<void> {
 		console.log(`✅ Filtered down to ${pngFiles.length} files to process`);
 	}
 
-	// Create output directory
 	await mkdir(COVERS_DIR, { recursive: true });
 	console.log(`✅ Output directory ready: ${COVERS_DIR}`);
 
@@ -277,8 +262,6 @@ async function main(): Promise<void> {
 		console.log(`400w details total: ${formatBytes(stats.totalDetail400Size)}`);
 	}
 
-	// Update games.json with new cover paths:
-	// coverImage always points to the 300w card image: covers/{id}.webp
 	console.log('\n🔗 Updating cover paths in games.json...');
 	const updatedGames = games.map((game) => {
 		const result = results.find((r) => r.gameId === game.id && r.status === 'success');

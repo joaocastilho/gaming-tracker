@@ -64,7 +64,6 @@ const hasRatings = $derived(
 			>
 		</div>
 
-		<!-- Moved score inside grid for landscape but hidden/absolute for normal -->
 		<div class="landscape-score hidden items-center gap-2">
 			<span class="text-xs font-bold uppercase" style="color: var(--color-text-secondary);"
 				>Score</span
@@ -132,7 +131,7 @@ const hasRatings = $derived(
 		}
 
 		.score-result {
-			display: none !important; /* Hide original score box */
+			display: none !important;
 		}
 
 		.landscape-score {

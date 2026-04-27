@@ -17,10 +17,6 @@ class CompletedGamesCacheStore {
 		return this._cache;
 	}
 
-	/**
-	 * Sort completed games by finished date (most recent first)
-	 * Games without finished dates are placed at the end
-	 */
 	private sortCompletedGamesByDate(games: Game[]): Game[] {
 		return games
 			.filter((game) => game.status === 'Completed')
@@ -35,10 +31,6 @@ class CompletedGamesCacheStore {
 			});
 	}
 
-	/**
-	 * Generate a version hash for the games data
-	 * This helps us detect when games have been added/modified/deleted
-	 */
 	private generateGamesVersion(games: Game[]): string {
 		const versionData = games
 			.filter((game) => game.status === 'Completed')
@@ -55,9 +47,6 @@ class CompletedGamesCacheStore {
 		return hash.toString();
 	}
 
-	/**
-	 * Update the cache if games data has changed
-	 */
 	updateCache(games: Game[]): void {
 		const gamesVersion = this.generateGamesVersion(games);
 		const currentCache = this._cache;
@@ -87,10 +76,6 @@ class CompletedGamesCacheStore {
 		}, 50);
 	}
 
-	/**
-	 * Get the cached sorted completed games
-	 * Returns null if cache is empty or needs updating
-	 */
 	getCachedCompletedGames(games: Game[]): Game[] | null {
 		const currentCache = this._cache;
 		if (!currentCache) return null;
@@ -104,9 +89,6 @@ class CompletedGamesCacheStore {
 		return currentCache.sortedCompletedGames;
 	}
 
-	/**
-	 * Check if the cache needs to be updated
-	 */
 	needsUpdate(games: Game[]): boolean {
 		const currentCache = this._cache;
 		if (!currentCache) return true;

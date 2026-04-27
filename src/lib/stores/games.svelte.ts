@@ -144,7 +144,6 @@ class GamesStore {
 	}
 
 	subscribe(fn: (value: Game[]) => void): () => void {
-		// Immediately call with current value
 		fn(this._games);
 		// Add to subscribers
 		this.subscribers.add(fn);

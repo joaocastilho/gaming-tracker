@@ -79,7 +79,6 @@ function formatDate(dateString: string | null): string {
 		</div>
 	</div>
 
-	<!-- Keep first row second column empty for alignment as per screenshots -->
 	<div class="spacer-div"></div>
 
 	<div class="metadata-item">
@@ -141,25 +140,25 @@ function formatDate(dateString: string | null): string {
 		}
 
 		.metadata-item {
-			display: block !important; /* Stack vertical */
+			display: block !important;
 		}
 
 		.metadata-label {
-			display: block !important; /* Show Label */
+			display: block !important;
 			margin-bottom: 0.5rem !important;
 			font-size: 0.875rem !important;
 		}
 
 		.metadata-value {
-			font-size: 1rem !important; /* Restore normal size */
+			font-size: 1rem !important;
 		}
 
 		:global(.landscape-icon) {
-			display: none !important; /* Hide Icon */
+			display: none !important;
 		}
 
 		.spacer-div {
-			display: none !important; /* Hide Spacer */
+			display: none !important;
 		}
 	}
 </style>

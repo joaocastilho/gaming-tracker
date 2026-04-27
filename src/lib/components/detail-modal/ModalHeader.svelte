@@ -15,7 +15,6 @@ let { game, onClose, onShare, linkCopied = '' }: Props = $props();
 let titleElement = $state<HTMLElement>();
 let containerWidth = $state(0);
 
-// Auto-fit title font size using DOM scrollWidth check
 $effect(() => {
 	if (!browser || !titleElement || !game || containerWidth === 0) return;
 
