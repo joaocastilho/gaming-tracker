@@ -69,11 +69,12 @@ function toggleAndApplyCoOp(coOp: string) {
 }
 
 function applyPendingFilters() {
-	filtersStore.resetAllFilters();
-	pendingPlatforms.forEach((p) => filtersStore.togglePlatform(p));
-	pendingGenres.forEach((g) => filtersStore.toggleGenre(g));
-	pendingTiers.forEach((t) => filtersStore.toggleTier(t));
-	pendingCoOp.forEach((c) => filtersStore.toggleCoOp(c));
+	filtersStore.setFilters({
+		platforms: [...pendingPlatforms],
+		genres: [...pendingGenres],
+		tiers: [...pendingTiers],
+		coOp: [...pendingCoOp],
+	});
 }
 
 $effect(() => {
@@ -100,11 +101,7 @@ function resetFilters() {
 }
 
 function applyFilters() {
-	filtersStore.resetAllFilters();
-	pendingPlatforms.forEach((p) => filtersStore.togglePlatform(p));
-	pendingGenres.forEach((g) => filtersStore.toggleGenre(g));
-	pendingTiers.forEach((t) => filtersStore.toggleTier(t));
-	pendingCoOp.forEach((c) => filtersStore.toggleCoOp(c));
+	applyPendingFilters();
 	onClose?.();
 }
 

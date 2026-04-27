@@ -133,8 +133,17 @@ class FiltersStore {
 		this.state = { ...initialFilters };
 	}
 
+	private startInternalUpdate(): void {
+		this.isInternalUpdate = true;
+		if (this.internalUpdateTimeout) clearTimeout(this.internalUpdateTimeout);
+		this.internalUpdateTimeout = setTimeout(() => {
+			this.isInternalUpdate = false;
+		}, 1000);
+	}
+
 	togglePlatform(platform: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		const platforms = this._state.platforms.includes(platform)
 			? this._state.platforms.filter((p) => p !== platform)
 			: [...this._state.platforms, platform];
@@ -143,6 +152,7 @@ class FiltersStore {
 
 	toggleGenre(genre: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		const genres = this._state.genres.includes(genre)
 			? this._state.genres.filter((g) => g !== genre)
 			: [...this._state.genres, genre];
@@ -151,6 +161,7 @@ class FiltersStore {
 
 	toggleStatus(status: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		const statuses = this._state.statuses.includes(status)
 			? this._state.statuses.filter((s) => s !== status)
 			: [...this._state.statuses, status];
@@ -159,6 +170,7 @@ class FiltersStore {
 
 	toggleTier(tier: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		const tiers = this._state.tiers.includes(tier)
 			? this._state.tiers.filter((t) => t !== tier)
 			: [...this._state.tiers, tier];
@@ -167,6 +179,7 @@ class FiltersStore {
 
 	toggleCoOp(coOpValue: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		const coOp = this._state.coOp.includes(coOpValue)
 			? this._state.coOp.filter((c) => c !== coOpValue)
 			: [...this._state.coOp, coOpValue];
@@ -175,6 +188,7 @@ class FiltersStore {
 
 	removePlatform(platform: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		this.state = {
 			...this._state,
 			platforms: this._state.platforms.filter((p) => p !== platform),
@@ -183,20 +197,30 @@ class FiltersStore {
 
 	removeGenre(genre: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		this.state = { ...this._state, genres: this._state.genres.filter((g) => g !== genre) };
 	}
 
 	removeTier(tier: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		this.state = { ...this._state, tiers: this._state.tiers.filter((t) => t !== tier) };
 	}
 
 	removeCoOp(coOpValue: string): void {
 		if (!this._state) return;
+		this.startInternalUpdate();
 		this.state = { ...this._state, coOp: this._state.coOp.filter((c) => c !== coOpValue) };
 	}
 
+	setFilters(filters: Partial<FilterState>): void {
+		if (!this._state) return;
+		this.startInternalUpdate();
+		this.state = { ...this._state, ...filters };
+	}
+
 	resetAllFilters(): void {
+		this.startInternalUpdate();
 		this.resetFilters();
 	}
 
@@ -206,11 +230,7 @@ class FiltersStore {
 			return;
 		}
 
-		this.isInternalUpdate = true;
-		if (this.internalUpdateTimeout) clearTimeout(this.internalUpdateTimeout);
-		this.internalUpdateTimeout = setTimeout(() => {
-			this.isInternalUpdate = false;
-		}, 1000);
+		this.startInternalUpdate();
 
 		this.state = { ...this._state, searchTerm: term };
 	}
@@ -227,11 +247,7 @@ class FiltersStore {
 		)
 			return;
 
-		this.isInternalUpdate = true;
-		if (this.internalUpdateTimeout) clearTimeout(this.internalUpdateTimeout);
-		this.internalUpdateTimeout = setTimeout(() => {
-			this.isInternalUpdate = false;
-		}, 1000);
+		this.startInternalUpdate();
 
 		this.state = { ...this._state, sortOption };
 	}
@@ -285,41 +301,69 @@ class FiltersStore {
 			return;
 		}
 
-		if (Date.now() - lastManualClearTime < 500) {
+		if (lastManualClearTime > 0 && Date.now() - lastManualClearTime < 500) {
 			return;
 		}
 
 		const games = get(gamesStore);
 		const options = extractFilterOptions(games);
 
-		if (searchParams.has('platform') && options.platforms.length === 0) return;
-		if (searchParams.has('genre') && options.genres.length === 0) return;
-		if (searchParams.has('tier') && options.tiers.length === 0) return;
-
 		const newState: FilterState = {
 			searchTerm: searchParams.get('s') ?? '',
-			platforms: searchParams
-				.getAll('platform')
-				.map((slug) => fromSlug(slug, options.platforms))
-				.filter((v): v is string => !!v),
-			genres: searchParams
-				.getAll('genre')
-				.map((slug) => fromSlug(slug, options.genres))
-				.filter((v): v is string => !!v),
-			statuses: searchParams
-				.getAll('status')
-				.map((slug) => fromSlug(slug, ['Completed', 'Planned', 'Dropped', 'Playing']))
-				.filter((v): v is string => !!v),
-			tiers: searchParams
-				.getAll('tier')
-				.map((slug) => fromSlug(slug, options.tiers))
-				.filter((v): v is string => !!v),
-			coOp: searchParams
-				.getAll('coop')
-				.map((slug) => fromSlug(slug, ['Yes', 'No']))
-				.filter((v): v is string => !!v),
+			platforms: [],
+			genres: [],
+			statuses: [],
+			tiers: [],
+			coOp: [],
 			sortOption: null,
 		};
+
+		// For platforms, genres, and tiers:
+		// If they are in the URL but options are empty, preserve current state to avoid clearing
+		// filters while games are loading. If they are NOT in the URL, they should be empty.
+
+		if (searchParams.has('platform')) {
+			if (options.platforms.length > 0) {
+				newState.platforms = searchParams
+					.getAll('platform')
+					.map((slug) => fromSlug(slug, options.platforms))
+					.filter((v): v is string => !!v);
+			} else {
+				newState.platforms = this._state?.platforms ?? [];
+			}
+		}
+
+		if (searchParams.has('genre')) {
+			if (options.genres.length > 0) {
+				newState.genres = searchParams
+					.getAll('genre')
+					.map((slug) => fromSlug(slug, options.genres))
+					.filter((v): v is string => !!v);
+			} else {
+				newState.genres = this._state?.genres ?? [];
+			}
+		}
+
+		newState.statuses = searchParams
+			.getAll('status')
+			.map((slug) => fromSlug(slug, ['Completed', 'Planned', 'Dropped', 'Playing']))
+			.filter((v): v is string => !!v);
+
+		if (searchParams.has('tier')) {
+			if (options.tiers.length > 0) {
+				newState.tiers = searchParams
+					.getAll('tier')
+					.map((slug) => fromSlug(slug, options.tiers))
+					.filter((v): v is string => !!v);
+			} else {
+				newState.tiers = this._state?.tiers ?? [];
+			}
+		}
+
+		newState.coOp = searchParams
+			.getAll('coop')
+			.map((slug) => fromSlug(slug, ['Yes', 'No']))
+			.filter((v): v is string => !!v);
 
 		const sortKey = searchParams.get('sort') as SortKey | null;
 		const sortDir = searchParams.get('dir') as SortDirection | null;

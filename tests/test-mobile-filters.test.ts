@@ -9,6 +9,7 @@ vi.mock('$lib/stores/filters.svelte', () => {
 		toggleGenre: vi.fn(),
 		toggleTier: vi.fn(),
 		toggleCoOp: vi.fn(),
+		setFilters: vi.fn(),
 		resetAllFilters: vi.fn(),
 		setSearchTerm: vi.fn(),
 		setSort: vi.fn(),
@@ -19,7 +20,15 @@ vi.mock('$lib/stores/filters.svelte', () => {
 		tiers: [],
 		coOp: [],
 		subscribe: vi.fn((run) => {
-			run({ searchTerm: '' });
+			run({
+				searchTerm: '',
+				platforms: [],
+				genres: [],
+				statuses: [],
+				tiers: [],
+				coOp: [],
+				sortOption: null,
+			});
 			return () => {};
 		}),
 	};
@@ -114,7 +123,11 @@ describe('MobileFilters Component', () => {
 		const switchOption = screen.getByText('Switch');
 		await fireEvent.click(switchOption);
 
-		expect(filtersStore.togglePlatform).toHaveBeenCalledWith('Switch');
+		expect(filtersStore.setFilters).toHaveBeenCalledWith(
+			expect.objectContaining({
+				platforms: ['Switch'],
+			})
+		);
 	});
 
 	it('should apply filter immediately when co-op toggle is clicked', async () => {
@@ -125,11 +138,15 @@ describe('MobileFilters Component', () => {
 			},
 		});
 
-		expect(filtersStore.toggleCoOp).not.toHaveBeenCalled();
+		expect(filtersStore.setFilters).not.toHaveBeenCalled();
 
 		const coopBtn = screen.getByText('Co-op').closest('button');
 		await fireEvent.click(coopBtn as HTMLElement);
 
-		expect(filtersStore.toggleCoOp).toHaveBeenCalledWith('Yes');
+		expect(filtersStore.setFilters).toHaveBeenCalledWith(
+			expect.objectContaining({
+				coOp: ['Yes'],
+			})
+		);
 	});
 });

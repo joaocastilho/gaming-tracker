@@ -202,19 +202,30 @@ $effect(() => {
 
 		untrack(() => {
 			filtersStore.readSearchFromURL(searchParams, page.url.pathname);
-			if (filtersStore.isAnyFilterApplied() && window.innerWidth >= 768) {
+			if (filtersStore.isAnyFilterApplied() && innerWidth >= 768) {
 				filtersStore.setDesktopFiltersExpanded(true);
 			}
 		});
 
-		if (filtersStore.isAnyFilterApplied() && window.innerWidth >= 768) {
+		if (filtersStore.isAnyFilterApplied() && innerWidth >= 768) {
 			filtersStore.setDesktopFiltersExpanded(true);
 		}
 	}
 });
 
+let innerWidth = $state(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
 $effect(() => {
-	if (browser && window.innerWidth >= 768) {
+	if (!browser) return;
+	const handleResize = () => {
+		innerWidth = window.innerWidth;
+	};
+	window.addEventListener('resize', handleResize);
+	return () => window.removeEventListener('resize', handleResize);
+});
+
+$effect(() => {
+	if (browser && innerWidth >= 768) {
 		if (filtersStore.isAnyFilterApplied()) {
 			filtersStore.setDesktopFiltersExpanded(true);
 		}
@@ -291,7 +302,7 @@ function onSearchToggle() {
 	if (isSearchOpen) {
 		history.back();
 	} else {
-		if (browser && window.innerWidth < 768) {
+		if (browser && innerWidth < 768) {
 			savedScrollPosition = window.scrollY;
 		}
 
@@ -328,7 +339,7 @@ $effect(() => {
 		if (event.key === '/' && modifierCheck) {
 			event.preventDefault();
 
-			if (window.innerWidth < 768) {
+			if (innerWidth < 768) {
 				if (!isSearchOpen) {
 					onSearchToggle();
 				}
@@ -370,7 +381,7 @@ $effect(() => {
 			replaceState(url.toString(), page.state);
 		}
 
-		if (browser && window.innerWidth < 768) {
+		if (browser && innerWidth < 768) {
 			requestAnimationFrame(() => {
 				window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
 			});
@@ -441,11 +452,10 @@ afterNavigate(({ from }) => {
 	if (!from) {
 		const searchParams = new URLSearchParams(window.location.search);
 		const searchParam = searchParams.get('s');
-		if (searchParam && window.innerWidth < 768) {
+		if (searchParam && innerWidth < 768) {
 			try {
 				replaceState(window.location.href, { ...page.state, showMobileSearch: true });
-			} catch {
-			}
+			} catch {}
 		}
 	}
 });

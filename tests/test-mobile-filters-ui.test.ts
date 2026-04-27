@@ -8,6 +8,7 @@ vi.mock('$lib/stores/filters.svelte', () => {
 		toggleGenre: vi.fn(),
 		toggleTier: vi.fn(),
 		toggleCoOp: vi.fn(),
+		setFilters: vi.fn(),
 		resetAllFilters: vi.fn(),
 		setSearchTerm: vi.fn(),
 		setSort: vi.fn(),
@@ -18,7 +19,15 @@ vi.mock('$lib/stores/filters.svelte', () => {
 		tiers: [],
 		coOp: [],
 		subscribe: vi.fn((run) => {
-			run({ searchTerm: '' });
+			run({
+				searchTerm: '',
+				platforms: [],
+				genres: [],
+				statuses: [],
+				tiers: [],
+				coOp: [],
+				sortOption: null,
+			});
 			return () => {};
 		}),
 	};
