@@ -170,12 +170,26 @@ let filterOptions = $derived.by(() => {
 	return extractFilterOptions(games);
 });
 
+let currentPage = $derived.by(() => {
+	const path = page.url.pathname;
+	if (path === '/completed') return 'completed';
+	if (path === '/planned') return 'planned';
+	if (path === '/tierlist') return 'tierlist';
+	return 'all';
+});
+
+let currentFilteredGames = $derived(filteredGames.getFilteredGames(currentPage));
+
+let canonicalUrl = $derived(page.url.pathname);
+
 let isGamesPage = $derived(
-	(page.url.pathname === '/' || page.url.pathname === '/completed' || page.url.pathname === '/planned') &&
-		appStore.activeTab !== 'tierlist'
+	currentPage === 'all' || currentPage === 'completed' || currentPage === 'planned'
 );
 
-let isTierlistPage = $derived(page.url.pathname === '/tierlist' || appStore.activeTab === 'tierlist');
+let isPlannedPage = $derived(currentPage === 'planned');
+
+let isTierlistPage = $derived(currentPage === 'tierlist');
+
 let pageTitle = $derived.by(() => {
 	const path = page.url.pathname;
 	if (path === '/completed') return 'Completed Games';
@@ -184,10 +198,6 @@ let pageTitle = $derived.by(() => {
 	if (path === '/login') return 'Login';
 	return 'Gaming Tracker';
 });
-
-let canonicalUrl = $derived(page.url.pathname);
-
-let isPlannedPage = $derived(page.url.pathname === '/planned');
 
 let showTiersFilter = $derived(!isTierlistPage && !isPlannedPage);
 let showCoOpFilter = $derived(!isTierlistPage);
@@ -315,8 +325,7 @@ function onSearchToggle() {
 
 		// Tier list is not searchable - open search overlay first
 		// When user starts typing, we'll redirect to Games page
-		const currentTab = appStore.activeTab;
-		if (currentTab === 'tierlist') {
+		if (currentPage === 'tierlist') {
 			// Just open search, no redirect yet - redirect happens when typing
 			pushState(page.url, { showMobileSearch: true, fromTierlist: true });
 			isFiltersOpen = false;
@@ -417,9 +426,9 @@ $effect(() => {
 	if (!browser || !isSearchOpen) return;
 
 	const searchTerm = $filtersStore?.searchTerm ?? '';
-	const currentTab = appStore.activeTab;
+	const currentTab = currentPage;
 	const counts = filteredCountsStore.counts;
-	const currentCount = $filteredGames.length;
+	const currentCount = currentFilteredGames.length;
 
 	// Only trigger on search term changes, not on initial load or tab switch
 	if (searchTerm && searchTerm !== lastSearchTerm && currentTab === lastActiveTab) {
@@ -467,7 +476,7 @@ $effect(() => {
 });
 
 function openModalWithFilterContext(game: Game, contextGames?: Game[]) {
-	modalStore.openViewModal(game, contextGames ?? $filteredGames);
+	modalStore.openViewModal(game, contextGames ?? currentFilteredGames);
 }
 
 let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
@@ -663,11 +672,11 @@ async function installApp() {
 		>
 			<div class="mx-auto" style="max-width: 1800px;">
 				{#if isGamesPage}
-					{#if hasActiveFilters && $filteredGames.length === 0}
+					{#if hasActiveFilters && currentFilteredGames.length === 0}
 						<NoResults onReset={resetFilters} />
 					{:else}
 						<GamesView
-							filteredGames={$filteredGames}
+							filteredGames={currentFilteredGames}
 							onOpenModal={openModalWithFilterContext}
 							onEditGame={handleEditGame}
 							onDeleteGame={handleDeleteGame}
@@ -679,7 +688,7 @@ async function installApp() {
 						{@render children?.()}
 					</div>
 				{:else if isTierlistPage}
-					<TierListView filteredGames={$filteredGames} onOpenModal={openModalWithFilterContext} />
+					<TierListView filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
 
 					<div style="display: none;">
 						{@render children?.()}

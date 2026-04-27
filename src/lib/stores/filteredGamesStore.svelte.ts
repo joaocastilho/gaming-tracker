@@ -41,12 +41,16 @@ class FilteredGamesStore {
 
 	/**
 	 * Get filtered and sorted games based on current state
-	 * This is now a getter that reads reactive state directly
+	 * @param overrideTab Optional tab override (e.g., 'completed', 'planned') to avoid async store issues
 	 */
 	get games(): Game[] {
+		return this.getFilteredGames(undefined);
+	}
+
+	getFilteredGames(overrideTab?: string): Game[] {
 		const games = gamesStore.games;
 		const filters = filtersStore.state;
-		const activeTab = appStore.activeTab;
+		const activeTab = overrideTab ?? appStore.activeTab;
 
 		if (!games || games.length === 0) {
 			return [];
@@ -398,6 +402,10 @@ class FilteredGamesSubscription {
 
 	get value() {
 		return filteredGamesStore.games;
+	}
+
+	getFilteredGames(tab?: string): Game[] {
+		return filteredGamesStore.getFilteredGames(tab);
 	}
 
 	subscribe(fn: (value: Game[]) => void): () => void {
