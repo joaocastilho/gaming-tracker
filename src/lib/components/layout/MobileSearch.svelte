@@ -186,8 +186,12 @@ function clearMobileSearch() {
 	}
 
 	.mobile-clear-button:hover {
-		background: var(--color-hover);
+		background: rgba(99, 102, 241, 0.04);
 		color: var(--color-text-primary);
+	}
+
+	:global(.light) .mobile-clear-button:hover {
+		background: rgba(234, 88, 12, 0.04);
 	}
 
 	.mobile-close-button {
@@ -196,7 +200,7 @@ function clearMobileSearch() {
 		justify-content: center;
 		padding: 6px 12px;
 		border: none;
-		background: var(--color-hover);
+		background: rgba(99, 102, 241, 0.06);
 		color: var(--color-accent);
 		cursor: pointer;
 		border-radius: 6px;
@@ -209,15 +213,15 @@ function clearMobileSearch() {
 	}
 
 	:global(.light) .mobile-close-button {
-		background: rgba(59, 130, 246, 0.15);
+		background: rgba(59, 130, 246, 0.08);
 		color: #3b82f6;
 	}
 
 	.mobile-close-button:hover {
-		background-color: rgba(59, 130, 246, 0.2);
+		background-color: rgba(99, 102, 241, 0.1);
 	}
 
 	:global(.light) .mobile-close-button:hover {
-		background-color: rgba(59, 130, 246, 0.25);
+		background-color: rgba(59, 130, 246, 0.12);
 	}
 </style>

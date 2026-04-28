@@ -211,17 +211,23 @@ function handleBackdropClick(e: MouseEvent) {
 	}
 
 	.popup-icon-btn.reset:hover {
-		background-color: rgba(255, 255, 255, 0.1);
+		background-color: rgba(255, 255, 255, 0.04);
 		color: var(--color-text-primary);
+	}
+
+	:global(.light) .popup-icon-btn.reset:hover {
+		background-color: rgba(0, 0, 0, 0.04);
 	}
 
 	.popup-icon-btn.accept {
 		background-color: #3b82f6;
 		color: white;
+		opacity: 0.9;
 	}
 
 	.popup-icon-btn.accept:hover {
 		background-color: #2563eb;
+		opacity: 1;
 	}
 
 	.filter-popup-options {
@@ -250,8 +256,8 @@ function handleBackdropClick(e: MouseEvent) {
 	}
 
 	.themed-filter-pill:hover {
-		background-color: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.3);
+		background-color: rgba(59, 130, 246, 0.05);
+		border-color: rgba(59, 130, 246, 0.15);
 	}
 
 	.themed-filter-pill.selected {

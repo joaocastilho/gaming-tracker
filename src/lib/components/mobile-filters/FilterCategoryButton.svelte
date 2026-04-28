@@ -80,8 +80,13 @@ let { type, count = 0, onClick }: Props = $props();
 	}
 
 	.mobile-filter-category-compact:hover {
-		background-color: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.3);
+		background-color: rgba(59, 130, 246, 0.04);
+		border-color: rgba(59, 130, 246, 0.15);
+	}
+
+	:global(.light) .mobile-filter-category-compact:hover {
+		background-color: rgba(234, 88, 12, 0.04);
+		border-color: rgba(234, 88, 12, 0.15);
 	}
 
 	.mobile-filter-category-compact.has-selection {

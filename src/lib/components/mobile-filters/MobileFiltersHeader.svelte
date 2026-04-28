@@ -70,38 +70,38 @@ let { title = 'Filters and Sorting', onReset, onClose }: Props = $props();
 	}
 
 	.mobile-header-icon.reset-icon {
-		background-color: rgba(255, 255, 255, 0.08);
+		background-color: rgba(255, 255, 255, 0.04);
 		color: var(--color-text-secondary);
 	}
 
 	:global(.light) .mobile-header-icon.reset-icon {
-		background-color: rgba(0, 0, 0, 0.05);
+		background-color: rgba(0, 0, 0, 0.03);
 	}
 
 	.mobile-header-icon.reset-icon:hover {
-		background-color: rgba(255, 255, 255, 0.15);
+		background-color: rgba(255, 255, 255, 0.08);
 		color: var(--color-text-primary);
 	}
 
 	:global(.light) .mobile-header-icon.reset-icon:hover {
-		background-color: rgba(0, 0, 0, 0.1);
+		background-color: rgba(0, 0, 0, 0.06);
 	}
 
 	.mobile-header-icon.collapse-icon {
-		background-color: rgba(255, 255, 255, 0.1);
+		background-color: rgba(255, 255, 255, 0.06);
 		color: var(--color-text-secondary);
 	}
 
 	:global(.light) .mobile-header-icon.collapse-icon {
-		background-color: rgba(0, 0, 0, 0.06);
+		background-color: rgba(0, 0, 0, 0.04);
 	}
 
 	.mobile-header-icon.collapse-icon:hover {
-		background-color: rgba(255, 255, 255, 0.2);
+		background-color: rgba(255, 255, 255, 0.1);
 		color: var(--color-text-primary);
 	}
 
 	:global(.light) .mobile-header-icon.collapse-icon:hover {
-		background-color: rgba(0, 0, 0, 0.12);
+		background-color: rgba(0, 0, 0, 0.08);
 	}
 </style>

@@ -135,7 +135,11 @@ function handleKeyDown(event: KeyboardEvent, target: NavId) {
 
 	.nav-button:hover {
 		color: var(--color-text-primary);
-		background-color: var(--color-hover);
+		background-color: rgba(99, 102, 241, 0.03);
+	}
+
+	:global(.light) .nav-button:hover {
+		background-color: rgba(234, 88, 12, 0.03);
 	}
 
 	.nav-button.active {

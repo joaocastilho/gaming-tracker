@@ -221,37 +221,43 @@ let isEditor = $derived(editorStore.editorMode);
 
 	/* Settings FAB */
 	.settings-fab {
-		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-		border: none;
+		background: rgba(75, 85, 99, 0.4);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border: 1px solid rgba(255, 255, 255, 0.1);
 		color: white;
-		opacity: 0.7;
+		opacity: 0.8;
 	}
 
 	.settings-fab:hover {
-		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-		opacity: 0.9;
+		background: rgba(75, 85, 99, 0.6);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+		opacity: 1;
 	}
 
 	.settings-fab.active {
-		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-		opacity: 0.9;
+		background: rgba(75, 85, 99, 0.7);
+		opacity: 1;
 	}
 
 	:global(.light) .settings-fab {
-		background: linear-gradient(135deg, #b8a99a 0%, #9c8b7a 100%);
-		box-shadow: 0 4px 12px rgba(61, 53, 48, 0.15);
+		background: rgba(184, 169, 154, 0.4);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		box-shadow: 0 4px 12px rgba(61, 53, 48, 0.1);
+		border: 1px solid rgba(0, 0, 0, 0.05);
+		color: #1c1917;
 		opacity: 0.8;
 	}
 
 	:global(.light) .settings-fab:hover {
-		background: linear-gradient(135deg, #9c8b7a 0%, #8a7a6a 100%);
-		box-shadow: 0 6px 16px rgba(61, 53, 48, 0.25);
-		opacity: 0.95;
+		background: rgba(184, 169, 154, 0.6);
+		box-shadow: 0 6px 16px rgba(61, 53, 48, 0.2);
+		opacity: 1;
 	}
 
 	:global(.light) .settings-fab.active {
-		background: linear-gradient(135deg, #9c8b7a 0%, #8a7a6a 100%);
+		background: rgba(184, 169, 154, 0.7);
 	}
 
 	.settings-fab :global(.settings-icon) {
@@ -263,14 +269,18 @@ let isEditor = $derived(editorStore.editorMode);
 	}
 
 	.filter-fab {
-		background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
-		border: none;
-		color: var(--color-accent-foreground);
+		background: rgba(99, 102, 241, 0.4);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		color: white;
+		opacity: 0.8;
 	}
 
 	.filter-fab:hover {
-		background: linear-gradient(135deg, var(--color-accent-hover) 0%, var(--color-accent) 100%);
-		box-shadow: var(--shadow-glow);
+		background: rgba(99, 102, 241, 0.6);
+		box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+		opacity: 1;
 	}
 
 	/* Settings Bottom Sheet */
@@ -328,7 +338,11 @@ let isEditor = $derived(editorStore.editorMode);
 	}
 
 	.sheet-item:hover {
-		background-color: var(--color-hover);
+		background-color: rgba(99, 102, 241, 0.03);
+	}
+
+	:global(.light) .sheet-item:hover {
+		background-color: rgba(234, 88, 12, 0.03);
 	}
 
 	.sheet-item:active {
@@ -340,7 +354,7 @@ let isEditor = $derived(editorStore.editorMode);
 	}
 
 	.sheet-item-green:hover {
-		background-color: rgba(34, 197, 94, 0.15);
+		background-color: rgba(34, 197, 94, 0.04);
 	}
 
 	.sheet-item-red {
@@ -348,7 +362,7 @@ let isEditor = $derived(editorStore.editorMode);
 	}
 
 	.sheet-item-red:hover {
-		background-color: rgba(239, 68, 68, 0.15);
+		background-color: rgba(239, 68, 68, 0.04);
 	}
 
 	.sheet-item-blue {
@@ -356,7 +370,11 @@ let isEditor = $derived(editorStore.editorMode);
 	}
 
 	.sheet-item-blue:hover {
-		background-color: var(--color-hover);
+		background-color: rgba(99, 102, 241, 0.03);
+	}
+
+	:global(.light) .sheet-item-blue:hover {
+		background-color: rgba(234, 88, 12, 0.03);
 	}
 
 	@keyframes fadeIn {

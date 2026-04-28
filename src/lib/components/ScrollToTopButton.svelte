@@ -93,38 +93,36 @@ function handleKeydown(event: KeyboardEvent) {
 		width: 52px;
 		height: 52px;
 		border-radius: 50%;
-		border: none;
-		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+		border: 1px solid var(--color-border);
+		background-color: rgba(75, 85, 99, 0.4);
 		color: white;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 		transition: all 0.3s ease;
 		z-index: 50;
 		outline: none;
-		opacity: 0.9;
-		border: none;
+		opacity: 0.8;
 	}
 
 	.reset-filters-fab:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+		background-color: rgba(75, 85, 99, 0.6);
 		color: white;
 	}
 
 	:global(.light) .reset-filters-fab {
-		background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
-		color: white;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		background-color: rgba(156, 163, 175, 0.4);
+		color: #1c1917;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 
 	:global(.light) .reset-filters-fab:hover {
-		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-		color: white;
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+		background-color: rgba(156, 163, 175, 0.6);
+		color: #1c1917;
 	}
 
 	/* Existing Scroll Button Styles */
@@ -135,8 +133,8 @@ function handleKeydown(event: KeyboardEvent) {
 		width: 52px;
 		height: 52px;
 		border-radius: 50%;
-		border: none;
-		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+		border: 1px solid var(--color-border);
+		background-color: rgba(75, 85, 99, 0.4);
 		color: white;
 		cursor: pointer;
 		display: flex;
@@ -144,26 +142,20 @@ function handleKeydown(event: KeyboardEvent) {
 		justify-content: center;
 		font-size: 1.3rem;
 		font-weight: bold;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 		transition: all 0.3s ease;
 		z-index: 50;
 		outline: none;
-		opacity: 0.7;
 	}
 
 	.scroll-to-top-button:hover {
-		background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+		background-color: rgba(75, 85, 99, 0.6);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 		transform: translateY(-2px);
-		opacity: 0.9;
 	}
 
 	.scroll-to-top-button:focus {
 		outline: none;
-	}
-
-	.scroll-to-top-button:active {
-		opacity: 1;
 	}
 
 	.scroll-icon {
@@ -171,20 +163,14 @@ function handleKeydown(event: KeyboardEvent) {
 	}
 
 	:global(.light) .scroll-to-top-button {
-		background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
-		color: white;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-		opacity: 0.7;
+		background-color: rgba(156, 163, 175, 0.4);
+		color: #1c1917;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 
 	:global(.light) .scroll-to-top-button:hover {
-		background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-		opacity: 0.9;
-	}
-
-	:global(.light) .scroll-to-top-button:focus {
-		outline: none;
+		background-color: rgba(156, 163, 175, 0.6);
+		color: #1c1917;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

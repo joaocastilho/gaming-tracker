@@ -615,7 +615,7 @@ async function installApp() {
 									<span class="pipe-separator">|</span>
 									<RatingsSort />
 									<button
-										class="reset-button bg-surface hover:bg-accent hover:text-accent-foreground flex h-[44px] w-[44px] items-center justify-center rounded-md transition-colors"
+										class="reset-button flex h-[44px] w-[44px] items-center justify-center rounded-md transition-all"
 										class:invisible={!canReset}
 										title="Reset all filters"
 										onclick={resetFilters}
@@ -730,9 +730,27 @@ async function installApp() {
 	}
 
 	.reset-button {
-		color: var(--color-text-primary);
+		color: var(--color-text-secondary);
+		background-color: rgba(99, 102, 241, 0.04);
+		border: 1px solid var(--color-border);
 		font-size: 0.85rem;
 		cursor: pointer;
+	}
+
+	.reset-button:hover {
+		background-color: rgba(99, 102, 241, 0.08);
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+		transform: translateY(-1px);
+	}
+
+	:global(.light) .reset-button {
+		background-color: rgba(234, 88, 12, 0.04);
+		color: var(--color-text-secondary);
+	}
+
+	:global(.light) .reset-button:hover {
+		background-color: rgba(234, 88, 12, 0.08);
 	}
 
 	/* Push content below the fixed search bar when search is open */

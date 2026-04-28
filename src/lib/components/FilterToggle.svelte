@@ -47,6 +47,17 @@ function handleKeydown(event: KeyboardEvent) {
 		border: none;
 		position: relative;
 		color: var(--color-text-primary);
+		transition: all 0.2s ease;
+		padding: 0 12px;
+		border-radius: 6px;
+	}
+
+	.filter-toggle:hover:not(.selected) {
+		background-color: rgba(99, 102, 241, 0.04);
+	}
+
+	:global(.light) .filter-toggle:hover:not(.selected) {
+		background-color: rgba(234, 88, 12, 0.04);
 	}
 
 	.filter-toggle.selected {

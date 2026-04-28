@@ -375,10 +375,14 @@ async function handleLogout() {
 	}
 
 	.filter-toggle-button:hover {
-		background-color: var(--color-hover);
+		background-color: rgba(99, 102, 241, 0.04);
 		border-color: var(--color-accent);
 		color: var(--color-accent);
 		transform: translateY(-1px);
+	}
+
+	:global(.light) .filter-toggle-button:hover {
+		background-color: rgba(234, 88, 12, 0.04);
 	}
 
 	.filter-toggle-button:hover :global(.filter-icon),

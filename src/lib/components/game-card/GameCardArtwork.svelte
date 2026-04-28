@@ -409,12 +409,21 @@ function getCompletionDay(dateStr: string | null): string {
 
 	@container game-card (max-width: 420px) {
 		.editor-controls {
-			opacity: 1;
+			opacity: 0.85;
 		}
 
 		.editor-control-btn {
 			width: 32px;
 			height: 32px;
+			border: 1px solid rgba(255, 255, 255, 0.15);
+		}
+
+		.edit-btn {
+			background: rgba(0, 0, 0, 0.35);
+		}
+
+		.delete-btn {
+			background: rgba(239, 68, 68, 0.35);
 		}
 
 		.tier-badge {
@@ -422,6 +431,10 @@ function getCompletionDay(dateStr: string | null): string {
 			min-width: 26px;
 			top: 8px;
 			right: 8px;
+			background-color: rgba(0, 0, 0, 0.2);
+			backdrop-filter: blur(4px);
+			-webkit-backdrop-filter: blur(4px);
+			border: 1px solid rgba(255, 255, 255, 0.1);
 		}
 
 		.tier-text {
