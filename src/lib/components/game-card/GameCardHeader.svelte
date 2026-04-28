@@ -88,7 +88,7 @@ const isVeryLongTitle = $derived(titleLength > 50);
 		font-size: 0.85rem;
 	}
 
-	@container game-card (max-width: 200px) {
+	@container game-card (max-width: 300px) {
 		.title-section {
 			height: 75px;
 		}

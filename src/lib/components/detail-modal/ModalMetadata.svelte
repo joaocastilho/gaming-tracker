@@ -57,24 +57,6 @@ let { game }: Props = $props();
 			class="metadata-label mb-1.5 text-base font-bold tracking-wider uppercase opacity-70"
 			style="color: var(--color-text-tertiary);"
 		>
-			Year Released
-		</div>
-		<div
-			class="metadata-value flex items-center gap-2 text-base font-semibold md:text-lg"
-			style="color: var(--color-text-primary);"
-		>
-			<Calendar size={16} class="landscape-icon hidden" />
-			{game.year}
-		</div>
-	</div>
-
-	<div class="spacer-div"></div>
-
-	<div class="metadata-item">
-		<div
-			class="metadata-label mb-1.5 text-base font-bold tracking-wider uppercase opacity-70"
-			style="color: var(--color-text-tertiary);"
-		>
 			Finished Date
 		</div>
 		<div
@@ -83,6 +65,22 @@ let { game }: Props = $props();
 		>
 			<Flag size={16} class="landscape-icon hidden" />
 			{game.finishedDate ? formatDate(game.finishedDate) : '-'}
+		</div>
+	</div>
+
+	<div class="metadata-item flex flex-col items-end">
+		<div
+			class="metadata-label mb-1.5 text-base font-bold tracking-wider uppercase opacity-70"
+			style="color: var(--color-text-tertiary);"
+		>
+			Year
+		</div>
+		<div
+			class="metadata-value flex items-center gap-2 text-base font-semibold md:text-lg"
+			style="color: var(--color-text-primary);"
+		>
+			<Calendar size={16} class="landscape-icon hidden" />
+			{game.year}
 		</div>
 	</div>
 

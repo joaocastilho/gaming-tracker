@@ -82,6 +82,9 @@ $effect(() => {
 		>
 			{game.genre}
 		</button>
+	</div>
+	<div class="year-right">
+		<span class="game-year">{game.year}</span>
 		{#if game.coOp === 'Yes'}
 			<button
 				class="coop-badge"
@@ -91,12 +94,9 @@ $effect(() => {
 				title="Co-op Available"
 				disabled={isMobile}
 			>
-				<Users size={18} class="text-blue-500" />
+				<Users size={16} class="text-blue-500" />
 			</button>
 		{/if}
-	</div>
-	<div class="year-right">
-		<span class="game-year">{game.year}</span>
 	</div>
 </div>
 
@@ -104,7 +104,7 @@ $effect(() => {
 	.metadata-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		gap: 8px;
 	}
 
@@ -114,18 +114,21 @@ $effect(() => {
 		flex-wrap: nowrap;
 		align-items: center;
 		min-width: 0;
+		padding-top: 2px;
 	}
 
 	.year-right {
 		display: flex;
-		align-items: center;
-		gap: 8px;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 2px;
 	}
 
 	.game-year {
 		font-size: 0.875rem;
 		font-weight: 600;
 		color: var(--color-text-secondary);
+		line-height: 1.1;
 	}
 
 	.badge {
@@ -166,15 +169,15 @@ $effect(() => {
 		}
 	}
 
-	@container game-card (max-width: 200px) {
+	@container game-card (max-width: 300px) {
 		.metadata-row {
 			display: grid;
-			grid-template-columns: auto 1fr auto;
+			grid-template-columns: 1fr auto;
 			grid-template-areas: 
-				"platform coop year"
-				"genre genre genre";
-			gap: 6px 4px;
-			align-items: center;
+				"platform year"
+				"genre coop";
+			gap: 8px 4px;
+			align-items: flex-start;
 		}
 		.badges-left {
 			display: contents;
@@ -182,10 +185,11 @@ $effect(() => {
 		.platform-badge {
 			grid-area: platform;
 			max-width: 100%;
+			justify-self: start;
 		}
 		.coop-badge {
 			grid-area: coop;
-			justify-self: start;
+			justify-self: end;
 		}
 		.genre-badge {
 			grid-area: genre;
@@ -193,14 +197,15 @@ $effect(() => {
 			max-width: 100%;
 		}
 		.year-right {
+			display: contents;
+		}
+		.game-year {
 			grid-area: year;
-			justify-self: end;
+			font-size: 0.75rem;
+			padding-top: 6px;
 		}
 		.badge {
 			padding: 2px 6px;
-		}
-		.game-year {
-			font-size: 0.75rem;
 		}
 	}
 </style>

@@ -73,10 +73,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		<Award class="text-amber-400" />
 		<div class="score-text-wrapper">
 			<span class="desktop-text">
-				<span class="score-label">SCORE</span> <span class="score-value">{game.score}</span>
+				<span class="score-value">{game.score}</span>
 			</span>
 			<span class="mobile-text">
-				<span class="score-label">SCORE</span><br/>
 				<span class="score-value">{game.score}</span>
 			</span>
 		</div>
@@ -133,6 +132,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		padding: 0;
 		flex: 1;
 		gap: 8px;
+		margin-top: 4px;
 	}
 
 	.rating-item {
@@ -140,7 +140,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 4px;
+		gap: 12px;
 		flex: 1;
 		min-width: 0;
 	}
@@ -169,10 +169,10 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
+		gap: 12px;
 		font-weight: 800;
 		font-size: 0.95rem;
-		padding: 8px;
+		padding: 4px 8px;
 		flex: 1;
 		border-radius: 4px;
 		letter-spacing: 0.05em;
@@ -240,7 +240,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		display: contents;
 	}
 
-	@container game-card (max-width: 200px) {
+	@container game-card (max-width: 300px) {
 		.desktop-text {
 			display: none !important;
 		}
@@ -263,57 +263,52 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 
 		.ratings-and-score-wrapper {
 			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-			align-items: center;
+			flex-direction: column;
 			gap: 8px;
+			width: 100%;
+			margin-top: 8px;
 		}
 
 		.ratings-compact {
-			flex-direction: column;
-			gap: 6px;
-			align-items: flex-start;
-			flex: 0 0 auto;
+			flex-direction: row;
+			justify-content: space-evenly;
+			width: 100%;
+			gap: 4px;
+			margin-bottom: 8px;
 		}
 
 		.rating-item {
 			flex-direction: row;
 			gap: 8px;
+			justify-content: center;
 		}
 
 		.rating-value {
-			font-size: 1rem;
+			font-size: 0.9rem;
 		}
 
 		.rating-item :global(svg) {
-			width: 20px;
-			height: 20px;
+			width: 16px;
+			height: 16px;
 		}
 
 		.status-indicator {
-			flex-direction: column;
-			padding: 8px 6px;
-			gap: 4px;
-			text-align: center;
-			flex: 0 0 auto;
-			min-width: 60px;
+			padding: 4px 6px;
+			gap: 8px;
+			font-size: 0.8rem;
 		}
 
 		.status-indicator :global(svg) {
-			width: 24px;
-			height: 24px;
-		}
-
-		.status-indicator .mobile-text {
-			line-height: 1.1;
+			width: 16px;
+			height: 16px;
 		}
 
 		.score-label {
-			font-size: 0.6rem;
+			font-size: 0.55rem;
 		}
 
 		.score-value {
-			font-size: 1.0rem;
+			font-size: 0.9rem;
 		}
 	}
 </style>

@@ -14,62 +14,60 @@ const hasRatings = $derived(
 </script>
 
 <div class="ratings-wrapper mt-6 md:mt-10">
-	<div class="landscape-hidden-title mb-4 md:mb-6">
+	<div class="landscape-hidden-title mb-4 flex items-center gap-3 md:mb-6">
 		<h3
 			class="text-base font-bold tracking-[0.2em] uppercase md:text-lg"
 			style="color: var(--color-text-tertiary);"
 		>
 			Ratings
 		</h3>
+		<div class="h-[1px] flex-1 opacity-50" style="background-color: var(--color-border);"></div>
 	</div>
 
 	<div class="ratings-container grid grid-cols-3 gap-2 md:gap-4">
 		<div
-			class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
+			class="rating-card flex flex-col items-center gap-4 rounded-xl p-3 transition-transform duration-200"
 			class:opacity-40={!hasRatings}
 		>
-			<Presentation size={32} class="rating-icon flex-shrink-0 text-rose-500" />
-			<span class="rating-value text-2xl font-bold" style="color: var(--color-text-primary);"
-				>{game.ratingPresentation ?? '-'}</span
-			>
 			<span
 				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
 				style="color: var(--color-text-tertiary);">Presentation</span
 			>
+			<Presentation size={32} class="rating-icon flex-shrink-0 text-rose-500" />
+			<span class="rating-value text-2xl font-bold" style="color: var(--color-text-primary);"
+				>{game.ratingPresentation ?? '-'}</span
+			>
 		</div>
 
 		<div
-			class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
+			class="rating-card flex flex-col items-center gap-4 rounded-xl p-3 transition-transform duration-200"
 			class:opacity-40={!hasRatings}
 		>
-			<NotebookPen size={32} class="rating-icon flex-shrink-0 text-sky-500" />
-			<span class="rating-value text-2xl font-bold" style="color: var(--color-text-primary);"
-				>{game.ratingStory ?? '-'}</span
-			>
 			<span
 				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
 				style="color: var(--color-text-tertiary);">Story</span
 			>
+			<NotebookPen size={32} class="rating-icon flex-shrink-0 text-sky-500" />
+			<span class="rating-value text-2xl font-bold" style="color: var(--color-text-primary);"
+				>{game.ratingStory ?? '-'}</span
+			>
 		</div>
 
 		<div
-			class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
+			class="rating-card flex flex-col items-center gap-4 rounded-xl p-3 transition-transform duration-200"
 			class:opacity-40={!hasRatings}
 		>
-			<Gamepad2 size={32} class="rating-icon flex-shrink-0 text-emerald-500" />
-			<span class="rating-value text-2xl font-bold" style="color: var(--color-text-primary);"
-				>{game.ratingGameplay ?? '-'}</span
-			>
 			<span
 				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
 				style="color: var(--color-text-tertiary);">Gameplay</span
 			>
+			<Gamepad2 size={32} class="rating-icon flex-shrink-0 text-emerald-500" />
+			<span class="rating-value text-2xl font-bold" style="color: var(--color-text-primary);"
+				>{game.ratingGameplay ?? '-'}</span
+			>
 		</div>
 
 		<div class="landscape-score hidden items-center gap-2">
-			<span class="text-base font-bold tracking-wider uppercase opacity-70" style="color: var(--color-text-tertiary);"
-				>Score</span
-			>
 			<span class="text-2xl font-extrabold" style="color: var(--color-rating-total);">
 				{game.score ?? '-'}
 			</span>
@@ -116,7 +114,7 @@ const hasRatings = $derived(
 			flex-direction: row !important;
 			padding: 0.25rem 0.5rem !important;
 			background: transparent !important;
-			gap: 0.5rem !important;
+			gap: 1rem !important;
 		}
 
 		:global(.rating-icon) {
@@ -141,7 +139,7 @@ const hasRatings = $derived(
 			margin-left: auto !important;
 			padding-left: 1.5rem !important;
 			border-left: 1px solid var(--color-border);
-			gap: 0.75rem !important;
+			gap: 1.25rem !important;
 		}
 
 		.landscape-score span:first-child {
