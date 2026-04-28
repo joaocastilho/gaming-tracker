@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { Game } from '../../types/game.js';
+import { formatShortDate, formatMobileDate } from '$lib/utils/dateUtils';
 import { Timer, CalendarDays, Presentation, NotebookPen, Gamepad2, Award } from 'lucide-svelte';
 
 interface Props {
@@ -7,71 +8,6 @@ interface Props {
 }
 
 let { game }: Props = $props();
-
-function formatDate(dateString: string): string {
-	try {
-		// Try ISO format first (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS.fffZ)
-		if (/^\d{4}-\d{2}-\d{2}/.test(dateString)) {
-			const date = new Date(dateString);
-			if (!isNaN(date.getTime())) {
-				return date.toLocaleDateString('en-US', {
-					month: 'short',
-					day: 'numeric',
-					year: 'numeric',
-				});
-			}
-		}
-
-		// Try DD/MM/YYYY format
-		const parts = dateString.split('/');
-		if (parts.length === 3) {
-			const day = parseInt(parts[0], 10);
-			const month = parseInt(parts[1], 10) - 1;
-			const year = parseInt(parts[2], 10);
-			if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-				const date = new Date(year, month, day);
-				if (!isNaN(date.getTime())) {
-					return date.toLocaleDateString('en-US', {
-						month: 'short',
-						day: 'numeric',
-						year: 'numeric',
-					});
-				}
-			}
-		}
-
-		return 'Unknown';
-	} catch {
-		return 'Unknown';
-	}
-}
-
-function formatMobileDate(dateString: string): string {
-	try {
-		let date: Date | null = null;
-		if (/^\d{4}-\d{2}-\d{2}/.test(dateString)) {
-			date = new Date(dateString);
-		} else {
-			const parts = dateString.split('/');
-			if (parts.length === 3) {
-				const day = parseInt(parts[0], 10);
-				const month = parseInt(parts[1], 10) - 1;
-				const year = parseInt(parts[2], 10);
-				date = new Date(year, month, day);
-			}
-		}
-
-		if (date && !isNaN(date.getTime())) {
-			const day = date.getDate().toString().padStart(2, '0');
-			const month = (date.getMonth() + 1).toString().padStart(2, '0');
-			const year = date.getFullYear().toString().slice(-2);
-			return `${day}/${month}/${year}`;
-		}
-		return 'Unknown';
-	} catch {
-		return 'Unknown';
-	}
-}
 
 function formatSmartTime(timeStr: string | null): string {
 	if (!timeStr) return 'N/A';
@@ -95,7 +31,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	</div>
 	<div class="date-item" title={game.status === 'Completed' ? 'Completed On' : 'Expected Completion'}>
 		<CalendarDays />
-		<span class="desktop-text">{game.status === 'Completed' && game.finishedDate ? formatDate(game.finishedDate) : 'Soon'}</span>
+		<span class="desktop-text">{game.status === 'Completed' && game.finishedDate ? formatShortDate(game.finishedDate) : 'Soon'}</span>
 		<span class="mobile-text">{game.status === 'Completed' && game.finishedDate ? formatMobileDate(game.finishedDate) : 'Soon'}</span>
 	</div>
 </div>

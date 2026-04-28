@@ -43,3 +43,32 @@ export function parseToDate(dateStr: string | null): Date | null {
 	if (timestamp === null) return null;
 	return new Date(timestamp);
 }
+
+export function formatDate(dateStr: string | null): string {
+	const date = parseToDate(dateStr);
+	if (!date) return 'Unknown';
+	return date.toLocaleDateString('en-US', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric',
+	});
+}
+
+export function formatShortDate(dateStr: string | null): string {
+	const date = parseToDate(dateStr);
+	if (!date) return 'Unknown';
+	return date.toLocaleDateString('en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+	});
+}
+
+export function formatMobileDate(dateStr: string | null): string {
+	const date = parseToDate(dateStr);
+	if (!date) return 'Unknown';
+	const month = (date.getMonth() + 1).toString().padStart(2, '0');
+	const day = date.getDate().toString().padStart(2, '0');
+	const year = date.getFullYear().toString().slice(-2);
+	return `${day}/${month}/${year}`;
+}
