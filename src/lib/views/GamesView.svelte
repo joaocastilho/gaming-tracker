@@ -163,6 +163,12 @@ function handleOpenModal(game: Game) {
 		padding-bottom: 60px;
 	}
 
+	@media (max-width: 768px) {
+		.game-gallery-container {
+			padding-bottom: 60px;
+		}
+	}
+
 	:global(.game-gallery-virtual) {
 		width: 100%;
 	}

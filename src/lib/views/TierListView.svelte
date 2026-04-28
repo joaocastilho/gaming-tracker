@@ -55,11 +55,13 @@ function buildTierList(games: Game[]): Record<string, Game[]> {
 		flex-direction: column;
 		gap: 0.5rem;
 		padding-top: 0;
+		padding-bottom: 60px;
 	}
 
 	@media (max-width: 768px) {
 		.tier-list-container {
 			padding-top: 0.25rem;
+			padding-bottom: 60px;
 		}
 	}
 
