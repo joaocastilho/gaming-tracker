@@ -12,7 +12,9 @@ interface Props {
 let { game }: Props = $props();
 </script>
 
-<div class="mb-2 flex items-center justify-between md:mb-4">
+
+
+<div class="mb-6 flex items-center justify-between md:mb-8">
 	<div class="flex flex-wrap gap-2">
 		<span
 			class="badge rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
@@ -49,13 +51,16 @@ let { game }: Props = $props();
 	{/if}
 </div>
 
-<div class="metadata-grid mb-2 grid grid-cols-2 gap-3 md:mb-8">
+<div class="metadata-grid mb-4 grid grid-cols-2 gap-4 md:mb-10 md:gap-6">
 	<div class="metadata-item">
-		<div class="metadata-label mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
+		<div
+			class="metadata-label mb-1.5 text-base font-bold tracking-wider uppercase opacity-70"
+			style="color: var(--color-text-tertiary);"
+		>
 			Year Released
 		</div>
 		<div
-			class="metadata-value flex items-center gap-2 text-base font-semibold md:text-base"
+			class="metadata-value flex items-center gap-2 text-base font-semibold md:text-lg"
 			style="color: var(--color-text-primary);"
 		>
 			<Calendar size={16} class="landscape-icon hidden" />
@@ -66,11 +71,14 @@ let { game }: Props = $props();
 	<div class="spacer-div"></div>
 
 	<div class="metadata-item">
-		<div class="metadata-label mb-1 text-sm md:text-sm" style="color: var(--color-text-tertiary);">
+		<div
+			class="metadata-label mb-1.5 text-base font-bold tracking-wider uppercase opacity-70"
+			style="color: var(--color-text-tertiary);"
+		>
 			Finished Date
 		</div>
 		<div
-			class="metadata-value flex items-center gap-2 text-base font-semibold md:text-base"
+			class="metadata-value flex items-center gap-2 text-base font-semibold md:text-lg"
 			style="color: var(--color-text-primary);"
 		>
 			<Flag size={16} class="landscape-icon hidden" />
@@ -81,13 +89,13 @@ let { game }: Props = $props();
 	{#if game.status === 'Completed'}
 		<div class="metadata-item">
 			<div
-				class="metadata-label mb-1 text-sm md:text-sm"
+				class="metadata-label mb-1.5 text-base font-bold tracking-wider uppercase opacity-70"
 				style="color: var(--color-text-tertiary);"
 			>
 				Hours Played
 			</div>
 			<div
-				class="metadata-value flex items-center gap-2 text-base font-semibold md:text-base"
+				class="metadata-value flex items-center gap-2 text-base font-semibold md:text-lg"
 				style="color: var(--color-text-primary);"
 			>
 				<Clock size={16} class="landscape-icon hidden" />
@@ -97,13 +105,13 @@ let { game }: Props = $props();
 	{:else}
 		<div class="metadata-item">
 			<div
-				class="metadata-label mb-1 text-sm md:text-sm"
+				class="metadata-label mb-1.5 text-base font-bold tracking-wider uppercase opacity-70"
 				style="color: var(--color-text-tertiary);"
 			>
 				Time to Beat
 			</div>
 			<div
-				class="metadata-value flex items-center gap-2 text-base font-semibold md:text-base"
+				class="metadata-value flex items-center gap-2 text-base font-semibold md:text-lg"
 				style="color: var(--color-text-primary);"
 			>
 				<Clock size={16} class="landscape-icon hidden" />
@@ -130,7 +138,11 @@ let { game }: Props = $props();
 		.metadata-label {
 			display: block !important;
 			margin-bottom: 0.5rem !important;
-			font-size: 0.875rem !important;
+			font-size: 0.75rem !important;
+			font-weight: 700 !important;
+			letter-spacing: 0.05em !important;
+			text-transform: uppercase !important;
+			opacity: 0.7 !important;
 		}
 
 		.metadata-value {

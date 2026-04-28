@@ -13,15 +13,17 @@ const hasRatings = $derived(
 );
 </script>
 
-<div class="ratings-wrapper mt-1 md:mt-4">
-	<h3
-		class="landscape-hidden-title mb-2 text-base font-semibold md:mb-6 md:text-xl"
-		style="color: var(--color-text-primary);"
-	>
-		Ratings
-	</h3>
+<div class="ratings-wrapper mt-6 md:mt-10">
+	<div class="landscape-hidden-title mb-4 md:mb-6">
+		<h3
+			class="text-base font-bold tracking-[0.2em] uppercase md:text-lg"
+			style="color: var(--color-text-tertiary);"
+		>
+			Ratings
+		</h3>
+	</div>
 
-	<div class="ratings-container mt-2 grid grid-cols-3 gap-2 md:gap-4">
+	<div class="ratings-container grid grid-cols-3 gap-2 md:gap-4">
 		<div
 			class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
 			class:opacity-40={!hasRatings}
@@ -31,8 +33,8 @@ const hasRatings = $derived(
 				>{game.ratingPresentation ?? '-'}</span
 			>
 			<span
-				class="rating-label text-xs font-semibold tracking-wider uppercase"
-				style="color: var(--color-text-secondary);">Presentation</span
+				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
+				style="color: var(--color-text-tertiary);">Presentation</span
 			>
 		</div>
 
@@ -45,8 +47,8 @@ const hasRatings = $derived(
 				>{game.ratingStory ?? '-'}</span
 			>
 			<span
-				class="rating-label text-xs font-semibold tracking-wider uppercase"
-				style="color: var(--color-text-secondary);">Story</span
+				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
+				style="color: var(--color-text-tertiary);">Story</span
 			>
 		</div>
 
@@ -59,13 +61,13 @@ const hasRatings = $derived(
 				>{game.ratingGameplay ?? '-'}</span
 			>
 			<span
-				class="rating-label text-xs font-semibold tracking-wider uppercase"
-				style="color: var(--color-text-secondary);">Gameplay</span
+				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
+				style="color: var(--color-text-tertiary);">Gameplay</span
 			>
 		</div>
 
 		<div class="landscape-score hidden items-center gap-2">
-			<span class="text-xs font-bold uppercase" style="color: var(--color-text-secondary);"
+			<span class="text-base font-bold tracking-wider uppercase opacity-70" style="color: var(--color-text-tertiary);"
 				>Score</span
 			>
 			<span class="text-2xl font-extrabold" style="color: var(--color-rating-total);">
@@ -81,8 +83,8 @@ const hasRatings = $derived(
 	>
 		<div class="flex flex-col items-center justify-center gap-1">
 			<span
-				class="text-xs font-bold tracking-widest uppercase md:text-sm"
-				style="color: var(--color-text-secondary);">Score</span
+				class="text-base font-bold tracking-widest uppercase opacity-70 md:text-lg"
+				style="color: var(--color-text-tertiary);">Score</span
 			>
 			<span class="text-3xl font-extrabold md:text-4xl" style="color: var(--color-rating-total);">
 				{game.score ?? '-'}
@@ -143,7 +145,11 @@ const hasRatings = $derived(
 		}
 
 		.landscape-score span:first-child {
-			font-size: 0.9rem !important;
+			font-size: 0.75rem !important;
+			font-weight: 700 !important;
+			letter-spacing: 0.05em !important;
+			text-transform: uppercase !important;
+			opacity: 0.7 !important;
 		}
 
 		.landscape-score span:last-child {
