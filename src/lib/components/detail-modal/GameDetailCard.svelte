@@ -181,6 +181,15 @@ function handleImageError() {
 </div>
 
 <style>
+	.modal-details-section {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.modal-details-section::-webkit-scrollbar {
+		display: none;
+	}
+
 	@media (orientation: landscape) and (max-height: 1000px) {
 		.modal-layout {
 			display: grid !important;

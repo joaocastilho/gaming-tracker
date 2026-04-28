@@ -244,5 +244,11 @@ function togglePendingCoOp(coOp: string) {
 		padding: 16px;
 		max-height: calc(85vh - 80px);
 		overflow-y: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.mobile-filters-content::-webkit-scrollbar {
+		display: none;
 	}
 </style>

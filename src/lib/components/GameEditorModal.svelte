@@ -514,6 +514,27 @@ async function handleSave() {
 		max-height: 92svh;
 		overflow-y: auto;
 		overflow-x: hidden;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.modal::-webkit-scrollbar {
+		display: none;
+	}
+
+	@media (min-width: 768px) {
+		.modal {
+			scrollbar-width: auto;
+			-ms-overflow-style: auto;
+		}
+		.modal::-webkit-scrollbar {
+			display: block;
+			width: 6px;
+		}
+		.modal::-webkit-scrollbar-thumb {
+			background-color: rgba(255, 255, 255, 0.1);
+			border-radius: 3px;
+		}
 	}
 
 	h2 {

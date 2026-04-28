@@ -655,31 +655,45 @@ body,
 /* ============================================
    SCROLLBAR STYLES
    ============================================ */
-::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
+@media (min-width: 768px) {
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: var(--color-background);
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: var(--color-border-subtle);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: var(--color-text-muted);
+	}
+
+	/* Light mode scrollbar */
+	.light ::-webkit-scrollbar-thumb {
+		background: var(--color-text-muted);
+	}
+
+	.light ::-webkit-scrollbar-thumb:hover {
+		background: var(--color-text-secondary);
+	}
 }
 
-::-webkit-scrollbar-track {
-	background: var(--color-background);
-}
-
-::-webkit-scrollbar-thumb {
-	background: var(--color-border-subtle);
-	border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-	background: var(--color-text-muted);
-}
-
-/* Light mode scrollbar */
-.light ::-webkit-scrollbar-thumb {
-	background: var(--color-text-muted);
-}
-
-.light ::-webkit-scrollbar-thumb:hover {
-	background: var(--color-text-secondary);
+@media (max-width: 767px) {
+	::-webkit-scrollbar {
+		display: none;
+		width: 0 !important;
+		height: 0 !important;
+	}
+	* {
+		scrollbar-width: none !important;
+		-ms-overflow-style: none !important;
+	}
 }
 
 /* ============================================

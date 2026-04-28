@@ -1,5 +1,6 @@
 <script lang="ts">
 import { RotateCcw, ChevronDown } from 'lucide-svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
 
 interface Props {
 	title?: string;
@@ -8,6 +9,10 @@ interface Props {
 }
 
 let { title = 'Filters and Sorting', onReset, onClose }: Props = $props();
+
+let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
+let isSortModified = $derived(filtersStore.isSortModified());
+let canReset = $derived(hasActiveFilters || isSortModified);
 </script>
 
 <div class="mobile-filters-header">
@@ -16,6 +21,7 @@ let { title = 'Filters and Sorting', onReset, onClose }: Props = $props();
 		<button
 			type="button"
 			class="mobile-header-icon reset-icon"
+			class:is-active={canReset}
 			onclick={onReset}
 			aria-label="Reset all filters"
 			title="Reset"
@@ -76,6 +82,18 @@ let { title = 'Filters and Sorting', onReset, onClose }: Props = $props();
 
 	:global(.light) .mobile-header-icon.reset-icon {
 		background-color: rgba(0, 0, 0, 0.03);
+	}
+
+	.mobile-header-icon.reset-icon.is-active {
+		background-color: rgba(99, 102, 241, 0.15);
+		color: var(--color-accent);
+		border: 1px solid var(--color-accent);
+	}
+
+	:global(.light) .mobile-header-icon.reset-icon.is-active {
+		background-color: rgba(234, 88, 12, 0.15);
+		color: var(--color-accent);
+		border-color: var(--color-accent);
 	}
 
 	.mobile-header-icon.reset-icon:hover {

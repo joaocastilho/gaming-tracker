@@ -237,6 +237,12 @@ function handleBackdropClick(e: MouseEvent) {
 		flex-wrap: wrap;
 		gap: 8px;
 		justify-content: center;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.filter-popup-options::-webkit-scrollbar {
+		display: none;
 	}
 
 	.themed-filter-pill {

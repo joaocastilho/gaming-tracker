@@ -730,27 +730,28 @@ async function installApp() {
 	}
 
 	.reset-button {
-		color: var(--color-text-secondary);
-		background-color: rgba(99, 102, 241, 0.04);
-		border: 1px solid var(--color-border);
+		color: var(--color-accent);
+		background-color: rgba(99, 102, 241, 0.08);
+		border: 1px solid var(--color-accent);
 		font-size: 0.85rem;
 		cursor: pointer;
-	}
-
-	.reset-button:hover {
-		background-color: rgba(99, 102, 241, 0.08);
-		border-color: var(--color-accent);
-		color: var(--color-accent);
 		transform: translateY(-1px);
 	}
 
+	.reset-button:hover {
+		background-color: rgba(99, 102, 241, 0.12);
+		transform: translateY(-2px);
+		box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+	}
+
 	:global(.light) .reset-button {
-		background-color: rgba(234, 88, 12, 0.04);
-		color: var(--color-text-secondary);
+		background-color: rgba(234, 88, 12, 0.08);
+		color: var(--color-accent);
+		border-color: var(--color-accent);
 	}
 
 	:global(.light) .reset-button:hover {
-		background-color: rgba(234, 88, 12, 0.08);
+		background-color: rgba(234, 88, 12, 0.12);
 	}
 
 	/* Push content below the fixed search bar when search is open */

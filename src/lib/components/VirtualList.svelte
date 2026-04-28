@@ -187,27 +187,29 @@ $effect(() => {
 		scroll-behavior: smooth;
 	}
 
-	@supports (scrollbar-width: thin) {
-		:global(.virtual-list-container) {
-			scrollbar-width: thin;
-			scrollbar-color: var(--color-accent) transparent;
+	@media (min-width: 768px) {
+		@supports (scrollbar-width: thin) {
+			:global(.virtual-list-container) {
+				scrollbar-width: thin;
+				scrollbar-color: var(--color-accent) transparent;
+			}
 		}
-	}
 
-	:global(.virtual-list-container)::-webkit-scrollbar {
-		width: 6px;
-	}
+		:global(.virtual-list-container)::-webkit-scrollbar {
+			width: 6px;
+		}
 
-	:global(.virtual-list-container)::-webkit-scrollbar-track {
-		background: transparent;
-	}
+		:global(.virtual-list-container)::-webkit-scrollbar-track {
+			background: transparent;
+		}
 
-	:global(.virtual-list-container)::-webkit-scrollbar-thumb {
-		background-color: var(--color-accent);
-		border-radius: 3px;
-	}
+		:global(.virtual-list-container)::-webkit-scrollbar-thumb {
+			background-color: var(--color-accent);
+			border-radius: 3px;
+		}
 
-	:global(.virtual-list-container)::-webkit-scrollbar-thumb:hover {
-		background-color: var(--color-accent-foreground);
+		:global(.virtual-list-container)::-webkit-scrollbar-thumb:hover {
+			background-color: var(--color-accent-foreground);
+		}
 	}
 </style>
