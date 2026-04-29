@@ -132,6 +132,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		padding: 0;
 		flex: 1;
 		gap: clamp(4px, 1.5cqw, 8px);
+		margin-bottom: clamp(4px, 1.5cqw, 12px);
 	}
 
 	.rating-item {
@@ -235,7 +236,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.ratings-and-score-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: clamp(8px, 2.5cqw, 16px);
+		gap: clamp(12px, 3.5cqw, 24px);
 		width: 100%;
 		margin-top: clamp(8px, 2.5cqw, 16px);
 		flex-grow: 1;
@@ -248,10 +249,6 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 
 		.mobile-text {
 			display: inline-block !important;
-		}
-
-		.ratings-compact {
-			margin-bottom: 8px;
 		}
 	}
 </style>
