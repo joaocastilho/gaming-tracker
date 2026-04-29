@@ -296,10 +296,6 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 			height: 16px;
 		}
 
-		.score-label {
-			font-size: 0.55rem;
-		}
-
 		.score-value {
 			font-size: 0.9rem;
 		}

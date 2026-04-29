@@ -314,7 +314,7 @@ $effect(() => {
 						transform: translateX(calc({pos *
 						swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px); 
 						opacity: {isCurrent
-						? 1 - Math.abs(swipe.swipeOffsetX) * 0.0005 - Math.max(0, swipe.swipeOffsetY) * 0.0005
+						? 1 - (Math.abs(swipe.swipeOffsetX) * 0.0005 + Math.max(0, swipe.swipeOffsetY) * 0.0005)
 						: 1};
 						border-radius: {isCurrent ? 12 + Math.max(0, swipe.swipeOffsetY) * 0.1 : 12}px;
 						will-change: transform;
