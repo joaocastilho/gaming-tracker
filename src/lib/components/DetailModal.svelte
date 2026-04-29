@@ -198,7 +198,7 @@ $effect(() => {
 
 {#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}
 	<div
-		class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-3 backdrop-blur-[4px] md:p-4"
+		class="fixed inset-0 z-[60] flex items-center justify-center bg-black p-3 md:bg-black/80 md:p-4 md:backdrop-blur-[4px]"
 		transition:fade={{ duration: isIOS ? 250 : 200 }}
 		onclick={(e: MouseEvent) => {
 			if (e.target === e.currentTarget) modalStore.closeModal();
