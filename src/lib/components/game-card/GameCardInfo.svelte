@@ -44,8 +44,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		title={hasPresentation ? `Presentation: ${game.ratingPresentation}/10` : 'Presentation'}
 	>
 		<Presentation size={32} class={hasPresentation ? 'text-rose-500' : 'text-muted'} />
-		<span class="rating-value" style="visibility: {hasPresentation ? 'visible' : 'hidden'};">
-			{hasPresentation ? game.ratingPresentation : '0'}
+		<span class="rating-value">
+			{hasPresentation ? game.ratingPresentation : '-'}
 		</span>
 	</div>
 
@@ -54,15 +54,15 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		title={hasStory ? `Story: ${game.ratingStory}/10` : 'Story'}
 	>
 		<NotebookPen size={32} class={hasStory ? 'text-sky-500' : 'text-muted'} />
-		<span class="rating-value" style="visibility: {hasStory ? 'visible' : 'hidden'};">
-			{hasStory ? game.ratingStory : '0'}
+		<span class="rating-value">
+			{hasStory ? game.ratingStory : '-'}
 		</span>
 	</div>
 
 	<div class="rating-item {hasGameplay ? '' : 'placeholder'}" title={hasGameplay ? `Gameplay: ${game.ratingGameplay}/10` : 'Gameplay'}>
 		<Gamepad2 size={32} class={hasGameplay ? 'text-emerald-500' : 'text-muted'} />
-		<span class="rating-value" style="visibility: {hasGameplay ? 'visible' : 'hidden'};">
-			{hasGameplay ? game.ratingGameplay : '0'}
+		<span class="rating-value">
+			{hasGameplay ? game.ratingGameplay : '-'}
 		</span>
 	</div>
 </div>
@@ -100,7 +100,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.date-item {
 		display: flex;
 		align-items: flex-end;
-		gap: clamp(4px, 1.5cqw, 6px);
+		gap: clamp(8px, 2.5cqw, 12px);
 		font-size: clamp(0.8rem, 0.55rem + 2.2cqw, 1.15rem);
 		color: var(--color-text-secondary);
 		flex-shrink: 1;
@@ -139,7 +139,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: clamp(6px, 2.5cqw, 12px);
+		gap: clamp(8px, 3cqw, 16px);
 		flex: 1;
 		min-width: 0;
 	}
@@ -185,8 +185,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	}
 
 	.status-indicator :global(svg) {
-		width: clamp(16px, 10px + 3cqw, 26px);
-		height: clamp(16px, 10px + 3cqw, 26px);
+		width: clamp(20px, 14px + 3.5cqw, 32px);
+		height: clamp(20px, 14px + 3.5cqw, 32px);
 	}
 
 	.score-badge {
