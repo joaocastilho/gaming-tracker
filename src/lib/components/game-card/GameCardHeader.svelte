@@ -11,13 +11,13 @@ const titleText = $derived(game.mainTitle || game.title);
 const totalLength = $derived((titleText?.length || 0) + (game.subtitle?.length || 0));
 
 function calculateSubtitleFontSize(subtitle: string | null | undefined, totalLen: number): number {
-	let baseSize = 0.85;
-	const minSize = 0.55;
-	
+	let baseSize = 0.95;
+	const minSize = 0.6;
+
 	if (totalLen > 60) {
-		baseSize = 0.65;
-	} else if (totalLen > 45) {
 		baseSize = 0.75;
+	} else if (totalLen > 45) {
+		baseSize = 0.85;
 	}
 
 	const maxLength = 25;
@@ -50,7 +50,7 @@ const isExtraLongTitle = $derived(totalLength > 60);
 <style>
 	.title-section {
 		margin-bottom: 0;
-		height: 40px;
+		height: 44px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -60,39 +60,40 @@ const isExtraLongTitle = $derived(totalLength > 60);
 
 	.game-title {
 		font-family: 'Inter', sans-serif;
-		font-size: clamp(1.0rem, 7cqi, 1.25rem);
+		font-size: clamp(1.15rem, 8cqi, 1.4rem);
 		font-weight: 800;
 		letter-spacing: -0.01em;
 		margin: 0;
-		line-height: 1.2;
+		line-height: 1.05;
 		overflow: visible;
 		width: 100%;
 		color: var(--color-text-primary);
 	}
 
 	.game-title.long-title {
-		font-size: clamp(0.85rem, 6cqi, 1.05rem);
+		font-size: clamp(1.0rem, 7cqi, 1.2rem);
 	}
 
 	.game-title.very-long-title {
-		font-size: clamp(0.75rem, 5cqi, 0.95rem);
+		font-size: clamp(0.9rem, 6cqi, 1.05rem);
 	}
 
 	.game-title.extra-long-title {
-		font-size: clamp(0.65rem, 4cqi, 0.85rem);
+		font-size: clamp(0.75rem, 5cqi, 0.9rem);
 	}
 
 	.game-title.has-subtitle {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		gap: 6px;
 	}
 
 	.game-subtitle {
 		font-family: 'Inter', sans-serif;
 		font-weight: 500;
 		color: var(--color-text-secondary);
-		line-height: 1.2;
+		line-height: 1.05;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -102,19 +103,19 @@ const isExtraLongTitle = $derived(totalLength > 60);
 
 	@container game-card (max-width: 300px) {
 		.title-section {
-			height: 44px;
+			height: 48px;
 		}
 		.game-title {
-			font-size: clamp(0.95rem, 8cqi, 1.15rem);
+			font-size: clamp(1.05rem, 9cqi, 1.25rem);
 		}
 		.game-title.long-title {
-			font-size: clamp(0.8rem, 7cqi, 1.0rem);
+			font-size: clamp(0.9rem, 8cqi, 1.1rem);
 		}
 		.game-title.very-long-title {
-			font-size: clamp(0.7rem, 6cqi, 0.9rem);
+			font-size: clamp(0.8rem, 7cqi, 1.0rem);
 		}
 		.game-title.extra-long-title {
-			font-size: clamp(0.6rem, 5cqi, 0.8rem);
+			font-size: clamp(0.65rem, 6cqi, 0.85rem);
 		}
 	}
 </style>
