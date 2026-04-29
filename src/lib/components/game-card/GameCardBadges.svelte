@@ -125,7 +125,7 @@ $effect(() => {
 	}
 
 	.game-year {
-		font-size: 0.875rem;
+		font-size: clamp(0.75rem, 0.5rem + 2cqw, 1.1rem);
 		font-weight: 600;
 		color: var(--color-text-secondary);
 		line-height: 1.1;
@@ -201,7 +201,6 @@ $effect(() => {
 		}
 		.game-year {
 			grid-area: year;
-			font-size: 0.75rem;
 			padding-top: 6px;
 		}
 		.badge {
