@@ -201,6 +201,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		background: rgba(59, 130, 246, 0.15);
 		border-color: rgba(59, 130, 246, 0.25);
 		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+		min-height: clamp(35px, 29px + 3.5cqw, 47px);
 	}
 
 	:global(.light) .score-badge {
