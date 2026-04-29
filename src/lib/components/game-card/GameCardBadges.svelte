@@ -104,7 +104,7 @@ $effect(() => {
 	.metadata-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
+		align-items: center;
 		gap: 8px;
 	}
 
@@ -125,7 +125,7 @@ $effect(() => {
 	}
 
 	.game-year {
-		font-size: clamp(0.75rem, 0.5rem + 2cqw, 1.1rem);
+		font-size: clamp(0.8rem, 0.55rem + 2.2cqw, 1.15rem);
 		font-weight: 600;
 		color: var(--color-text-secondary);
 		line-height: 1.1;

@@ -91,21 +91,21 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.time-date-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-end;
 		padding: 2px 0px 3px 0px;
-		flex: 1;
 		min-width: 0;
 	}
 
 	.time-item,
 	.date-item {
 		display: flex;
-		align-items: center;
+		align-items: flex-end;
 		gap: clamp(4px, 1.5cqw, 6px);
-		font-size: clamp(0.75rem, 0.5rem + 2cqw, 1.1rem);
+		font-size: clamp(0.8rem, 0.55rem + 2.2cqw, 1.15rem);
 		color: var(--color-text-secondary);
 		flex-shrink: 1;
 		min-width: 0;
+		line-height: 1;
 	}
 
 	.time-item :global(svg) {
@@ -130,9 +130,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		justify-content: space-evenly;
 		align-items: stretch;
 		padding: 0;
-		flex: 1;
 		gap: clamp(4px, 1.5cqw, 8px);
-		margin-bottom: clamp(4px, 1.5cqw, 12px);
+		margin-bottom: 8px;
 	}
 
 	.rating-item {
@@ -173,8 +172,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		gap: clamp(8px, 1px + 2.8cqw, 12px);
 		font-weight: 800;
 		font-size: clamp(0.9rem, 0.6rem + 2cqw, 1.1rem);
-		padding: clamp(4px, 1.5cqw, 6px) clamp(6px, 2cqw, 8px);
-		flex: 1;
+		padding: 6px clamp(6px, 2cqw, 8px);
+		flex-shrink: 0;
 		border-radius: 4px;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
@@ -182,7 +181,6 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
 		border: 1px solid rgba(255, 255, 255, 0.1);
-		margin-top: auto;
 		line-height: 1;
 	}
 
@@ -236,10 +234,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.ratings-and-score-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: clamp(12px, 3.5cqw, 24px);
+		gap: 16px;
 		width: 100%;
-		margin-top: clamp(8px, 2.5cqw, 16px);
-		flex-grow: 1;
+		margin-top: 12px;
 	}
 
 	@container game-card (max-width: 300px) {

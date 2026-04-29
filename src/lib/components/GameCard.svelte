@@ -127,7 +127,7 @@ function handleKeyDown(event: KeyboardEvent) {
 	}
 
 	.game-info {
-		padding: 12px 14px 8px 14px;
+		padding: 12px 14px 12px 14px;
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
@@ -138,12 +138,12 @@ function handleKeyDown(event: KeyboardEvent) {
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		flex-grow: 1;
+		margin-top: auto;
 	}
 
 	@container game-card (max-width: 300px) {
 		.game-info {
-			padding: 8px 10px 2px 10px;
+			padding: 8px 10px 8px 10px;
 			gap: 8px;
 		}
 
