@@ -137,10 +137,10 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 
 	.rating-item {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: 12px;
+		gap: 8px;
 		flex: 1;
 		min-width: 0;
 	}
