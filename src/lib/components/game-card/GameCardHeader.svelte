@@ -41,7 +41,7 @@ const isVeryLongTitle = $derived(titleLength > 50);
 <style>
 	.title-section {
 		margin-bottom: 0;
-		height: 80px;
+		height: 60px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
