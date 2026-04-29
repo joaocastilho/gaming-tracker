@@ -181,6 +181,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
 		border: 1px solid rgba(255, 255, 255, 0.1);
+		margin-top: auto;
 	}
 
 	.status-indicator :global(svg) {
@@ -260,6 +261,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 			gap: 8px;
 			width: 100%;
 			margin-top: 8px;
+			flex-grow: 1;
 		}
 
 		.ratings-compact {

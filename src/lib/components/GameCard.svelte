@@ -138,6 +138,7 @@ function handleKeyDown(event: KeyboardEvent) {
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
+		flex-grow: 1;
 	}
 
 	@container game-card (max-width: 300px) {
