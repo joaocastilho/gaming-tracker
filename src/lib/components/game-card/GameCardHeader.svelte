@@ -41,7 +41,7 @@ const isVeryLongTitle = $derived(titleLength > 50);
 <style>
 	.title-section {
 		margin-bottom: 0;
-		height: 95px;
+		height: 80px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -51,7 +51,7 @@ const isVeryLongTitle = $derived(titleLength > 50);
 
 	.game-title {
 		font-family: 'Inter', sans-serif;
-		font-size: clamp(1.2rem, 9cqi, 1.5rem);
+		font-size: clamp(1.1rem, 8cqi, 1.4rem);
 		font-weight: 800;
 		letter-spacing: -0.01em;
 		margin: 0;
@@ -62,11 +62,11 @@ const isVeryLongTitle = $derived(titleLength > 50);
 	}
 
 	.game-title.long-title {
-		font-size: clamp(1.1rem, 8cqi, 1.35rem);
+		font-size: clamp(1.0rem, 7cqi, 1.25rem);
 	}
 
 	.game-title.very-long-title {
-		font-size: clamp(1.0rem, 7cqi, 1.25rem);
+		font-size: clamp(0.9rem, 6cqi, 1.15rem);
 	}
 
 	.game-title.has-subtitle {
@@ -90,19 +90,19 @@ const isVeryLongTitle = $derived(titleLength > 50);
 
 	@container game-card (max-width: 300px) {
 		.title-section {
-			height: 75px;
+			height: 65px;
 		}
 		.game-title {
-			font-size: clamp(1.1rem, 10cqi, 1.3rem);
-		}
-		.game-title.long-title {
 			font-size: clamp(1.0rem, 9cqi, 1.2rem);
 		}
-		.game-title.very-long-title {
+		.game-title.long-title {
 			font-size: clamp(0.9rem, 8cqi, 1.1rem);
 		}
+		.game-title.very-long-title {
+			font-size: clamp(0.8rem, 7cqi, 1.0rem);
+		}
 		.game-subtitle {
-			font-size: 0.75rem;
+			font-size: 0.7rem;
 		}
 	}
 
