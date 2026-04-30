@@ -209,10 +209,9 @@ async function handleLogout() {
 	.header-root {
 		padding: 0.75rem 16px;
 		background: var(--color-background);
-		position: sticky;
+		position: relative;
 		top: 0;
 		z-index: 40;
-        transform: translateZ(0);
 	}
 
 	.header-inner {
