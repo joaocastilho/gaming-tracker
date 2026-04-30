@@ -131,7 +131,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		align-items: stretch;
 		padding: 0;
 		gap: clamp(4px, 1.5cqw, 8px);
-		margin-bottom: 8px;
+		margin-bottom: 0;
 	}
 
 	.rating-item {
@@ -235,9 +235,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.ratings-and-score-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
+		gap: clamp(6px, 2cqw + 2px, 16px);
 		width: 100%;
-		margin-top: 12px;
+		margin-top: clamp(6px, 2cqw, 12px);
 	}
 
 	@container game-card (max-width: 300px) {
@@ -247,6 +247,25 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 
 		.mobile-text {
 			display: inline-block !important;
+		}
+
+		.status-indicator {
+			padding: 5px clamp(4px, 1.5cqw, 8px);
+			gap: clamp(4px, 1.5cqw, 8px);
+		}
+
+		.status-indicator :global(svg) {
+			width: clamp(16px, 10px + 3cqw, 24px);
+			height: clamp(16px, 10px + 3cqw, 24px);
+		}
+
+		.rating-item :global(svg) {
+			width: clamp(14px, 5cqw, 24px);
+			height: clamp(14px, 5cqw, 24px);
+		}
+
+		.planned-badge {
+			min-height: unset;
 		}
 	}
 </style>
