@@ -235,9 +235,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.ratings-and-score-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: clamp(6px, 2cqw + 2px, 16px);
+		gap: clamp(14px, 4cqw + 4px, 28px);
 		width: 100%;
-		margin-top: clamp(6px, 2cqw, 12px);
+		margin-top: clamp(10px, 3cqw, 18px);
 	}
 
 	@container game-card (max-width: 300px) {
