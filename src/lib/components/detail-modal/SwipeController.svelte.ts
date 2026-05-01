@@ -20,6 +20,7 @@ export class SwipeController {
 	private touchStartTime = 0;
 	private isVerticalSwipe = false;
 	private isHorizontalSwipe = false;
+	private isTicking = false;
 
 	private readonly SWIPE_THRESHOLD = 60;
 	private readonly SWIPE_CLOSE_THRESHOLD = 150;
@@ -70,42 +71,48 @@ export class SwipeController {
 		this.touchCurrentX = touch.screenX;
 		this.touchCurrentY = touch.screenY;
 
-		const diffX = this.touchCurrentX - this.touchStartX;
-		const diffY = this.touchCurrentY - this.touchStartY;
+		if (this.isTicking) return;
+		this.isTicking = true;
 
-		if (!this.isVerticalSwipe && !this.isHorizontalSwipe && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
-			if (Math.abs(diffY) > Math.abs(diffX) * 1.5) {
-				this.isVerticalSwipe = true;
-				this.onSwipeStart?.();
-			} else if (Math.abs(diffX) > Math.abs(diffY)) {
-				this.isHorizontalSwipe = true;
-				this.onSwipeStart?.();
+		requestAnimationFrame(() => {
+			const diffX = this.touchCurrentX - this.touchStartX;
+			const diffY = this.touchCurrentY - this.touchStartY;
+
+			if (!this.isVerticalSwipe && !this.isHorizontalSwipe && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+				if (Math.abs(diffY) > Math.abs(diffX) * 1.5) {
+					this.isVerticalSwipe = true;
+					this.onSwipeStart?.();
+				} else if (Math.abs(diffX) > Math.abs(diffY)) {
+					this.isHorizontalSwipe = true;
+					this.onSwipeStart?.();
+				}
 			}
-		}
 
-		if (this.isVerticalSwipe && diffY > 0) {
-			const resistance = 0.6;
-			this.swipeOffsetY = diffY * resistance;
-			this.isClosingGesture = true;
-		} else if (this.isHorizontalSwipe) {
-			const maxOffset = 150;
-			const resistance = 0.5;
+			if (this.isVerticalSwipe && diffY > 0) {
+				const resistance = 0.6;
+				this.swipeOffsetY = diffY * resistance;
+				this.isClosingGesture = true;
+			} else if (this.isHorizontalSwipe) {
+				const maxOffset = 150;
+				const resistance = 0.5;
 
-			const nextGame = this.getNextGame();
-			const prevGame = this.getPrevGame();
+				const nextGame = this.getNextGame();
+				const prevGame = this.getPrevGame();
 
-			if (diffX > 0 && prevGame) {
-				this.swipeDirection = 'right';
-				this.swipeOffsetX = Math.min(diffX * resistance, maxOffset);
-				this.parallaxOffset = -100 + (this.swipeOffsetX / maxOffset) * 80;
-			} else if (diffX < 0 && nextGame) {
-				this.swipeDirection = 'left';
-				this.swipeOffsetX = Math.max(diffX * resistance, -maxOffset);
-				this.parallaxOffset = 100 + (this.swipeOffsetX / maxOffset) * 80;
-			} else {
-				this.swipeOffsetX = diffX * 0.2;
+				if (diffX > 0 && prevGame) {
+					this.swipeDirection = 'right';
+					this.swipeOffsetX = Math.min(diffX * resistance, maxOffset);
+					this.parallaxOffset = -100 + (this.swipeOffsetX / maxOffset) * 80;
+				} else if (diffX < 0 && nextGame) {
+					this.swipeDirection = 'left';
+					this.swipeOffsetX = Math.max(diffX * resistance, -maxOffset);
+					this.parallaxOffset = 100 + (this.swipeOffsetX / maxOffset) * 80;
+				} else {
+					this.swipeOffsetX = diffX * 0.2;
+				}
 			}
-		}
+			this.isTicking = false;
+		});
 	}
 
 	handleTouchEnd() {

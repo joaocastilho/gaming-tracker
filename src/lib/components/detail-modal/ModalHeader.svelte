@@ -37,8 +37,13 @@ $effect(() => {
 		// Clamp between min and max
 		const finalSize = Math.max(minSize, Math.min(maxSize, targetSize));
 
-		titleElement.style.whiteSpace = 'nowrap';
-		titleElement.style.fontSize = `${finalSize}rem`;
+		// Use requestAnimationFrame to batch the style update
+		requestAnimationFrame(() => {
+			if (titleElement) {
+				titleElement.style.whiteSpace = 'nowrap';
+				titleElement.style.fontSize = `${finalSize}rem`;
+			}
+		});
 	}
 });
 </script>

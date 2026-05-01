@@ -33,6 +33,7 @@ let container = $state<HTMLDivElement>();
 let scrollTop = $state(0);
 let windowHeight = $state(0);
 let containerTop = $state(0);
+let scrollTicking = false;
 
 const hasVariableHeights = $derived(typeof getItemHeight === 'function');
 
@@ -109,13 +110,19 @@ let visibleItems = $derived.by(() => {
 });
 
 function handleScroll() {
-	if (useWindowScroll) {
-		// Use window.scrollY and cached containerTop to avoid getBoundingClientRect()
-		const offset = window.scrollY - containerTop;
-		scrollTop = Math.max(0, offset);
-	} else if (container) {
-		scrollTop = container.scrollTop;
-	}
+	if (scrollTicking) return;
+
+	scrollTicking = true;
+	requestAnimationFrame(() => {
+		if (useWindowScroll) {
+			// Use window.scrollY and cached containerTop to avoid getBoundingClientRect()
+			const offset = window.scrollY - containerTop;
+			scrollTop = Math.max(0, offset);
+		} else if (container) {
+			scrollTop = container.scrollTop;
+		}
+		scrollTicking = false;
+	});
 }
 
 function updateDimensions() {

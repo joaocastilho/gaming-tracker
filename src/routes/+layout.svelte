@@ -74,17 +74,25 @@ $effect(() => {
 	if (!browser) return;
 
 	let lastScrollY = window.scrollY;
+	let ticking = false;
+
 	const handleScroll = () => {
-		const currentScrollY = window.scrollY;
-		if (
-			currentScrollY > 80 &&
-			currentScrollY > lastScrollY &&
-			filtersStore.isDesktopFiltersExpanded &&
-			!filtersStore.isAnyFilterApplied()
-		) {
-			filtersStore.setDesktopFiltersExpanded(false);
-		}
-		lastScrollY = currentScrollY;
+		if (ticking) return;
+		ticking = true;
+
+		requestAnimationFrame(() => {
+			const currentScrollY = window.scrollY;
+			if (
+				currentScrollY > 80 &&
+				currentScrollY > lastScrollY &&
+				filtersStore.isDesktopFiltersExpanded &&
+				!filtersStore.isAnyFilterApplied()
+			) {
+				filtersStore.setDesktopFiltersExpanded(false);
+			}
+			lastScrollY = currentScrollY;
+			ticking = false;
+		});
 	};
 
 	window.addEventListener('scroll', handleScroll, { passive: true });
@@ -200,11 +208,18 @@ $effect(() => {
 });
 
 let innerWidth = $state(typeof window !== 'undefined' ? window.innerWidth : 1024);
+let resizeTicking = false;
 
 $effect(() => {
 	if (!browser) return;
 	const handleResize = () => {
-		innerWidth = window.innerWidth;
+		if (resizeTicking) return;
+		resizeTicking = true;
+
+		requestAnimationFrame(() => {
+			innerWidth = window.innerWidth;
+			resizeTicking = false;
+		});
 	};
 	window.addEventListener('resize', handleResize);
 	return () => window.removeEventListener('resize', handleResize);

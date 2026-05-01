@@ -8,10 +8,16 @@ interface Props {
 let { hideWhenFiltersOpen = false }: Props = $props();
 
 let isVisible = $state(false);
+let ticking = false;
 
 $effect(() => {
 	const handleScroll = () => {
-		isVisible = window.scrollY > 300;
+		if (ticking) return;
+		ticking = true;
+		requestAnimationFrame(() => {
+			isVisible = window.scrollY > 300;
+			ticking = false;
+		});
 	};
 
 	window.addEventListener('scroll', handleScroll, { passive: true });
