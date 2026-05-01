@@ -50,12 +50,13 @@ const isExtraLongTitle = $derived(totalLength > 60);
 <style>
 	.title-section {
 		margin-bottom: 0;
-		height: 44px;
+		min-height: 40px;
+		max-height: 56px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
-		overflow: visible;
+		overflow: hidden;
 	}
 
 	.game-title {
@@ -64,10 +65,24 @@ const isExtraLongTitle = $derived(totalLength > 60);
 		font-weight: 800;
 		letter-spacing: -0.01em;
 		margin: 0;
-		line-height: 1.05;
-		overflow: visible;
+		line-height: 1.1;
+		overflow: hidden;
 		width: 100%;
 		color: var(--color-text-primary);
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+
+	.game-title.has-subtitle {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+		-webkit-line-clamp: unset;
+		line-clamp: unset;
+		-webkit-box-orient: unset;
 	}
 
 	.game-title.long-title {
@@ -82,18 +97,11 @@ const isExtraLongTitle = $derived(totalLength > 60);
 		font-size: clamp(0.75rem, 5cqi, 0.9rem);
 	}
 
-	.game-title.has-subtitle {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 6px;
-	}
-
 	.game-subtitle {
 		font-family: 'Inter', sans-serif;
 		font-weight: 500;
 		color: var(--color-text-secondary);
-		line-height: 1.05;
+		line-height: 1.1;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -103,7 +111,8 @@ const isExtraLongTitle = $derived(totalLength > 60);
 
 	@container game-card (max-width: 300px) {
 		.title-section {
-			height: 48px;
+			min-height: 44px;
+			max-height: 60px;
 		}
 		.game-title {
 			font-size: clamp(1.05rem, 9cqi, 1.25rem);
