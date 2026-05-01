@@ -304,7 +304,7 @@ $effect(() => {
 	if (isFiltersOpen && !MobileFiltersComponent) {
 		import('$lib/components/MobileFilters.svelte').then((m) => (MobileFiltersComponent = m.default));
 	}
-	if (isSettingsMenuOpen && !MobileSettingsMenuComponent) {
+	if (browser && !MobileSettingsMenuComponent) {
 		import('$lib/components/layout/MobileSettingsMenu.svelte').then((m) => (MobileSettingsMenuComponent = m.default));
 	}
 });
