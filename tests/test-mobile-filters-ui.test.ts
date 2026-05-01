@@ -91,8 +91,8 @@ describe('MobileFilters UI', () => {
 			render(MobileFilters, {
 				props: { filterOptions: mockFilterOptions, isOpen: true, onClose },
 			});
-			const dialog = screen.getByRole('dialog');
-			await fireEvent.click(dialog);
+			const backdrop = screen.getByLabelText('Apply filters and close');
+			await fireEvent.click(backdrop);
 			expect(onClose).toHaveBeenCalled();
 		});
 

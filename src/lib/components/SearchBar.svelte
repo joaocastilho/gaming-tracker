@@ -147,11 +147,15 @@ function handleKeydown(event: KeyboardEvent) {
 		transition: all var(--transition-fast);
 		margin-left: 12px;
 		flex-shrink: 0;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.clear-button:hover {
-		background: var(--color-hover);
-		color: var(--color-text-primary);
+	@media (hover: hover) {
+		.clear-button:hover {
+			background: var(--color-hover);
+			color: var(--color-text-primary);
+		}
 	}
 
 	.clear-button:focus-visible {
@@ -170,7 +174,7 @@ function handleKeydown(event: KeyboardEvent) {
 		}
 
 		.search-input {
-			font-size: 0.95rem;
+			font-size: 1rem; /* Prevent zoom on mobile */
 		}
 
 		.search-icon {
@@ -188,7 +192,7 @@ function handleKeydown(event: KeyboardEvent) {
 		}
 
 		.search-input {
-			font-size: 0.9rem;
+			font-size: 1rem; /* Prevent zoom on mobile */
 		}
 	}
 

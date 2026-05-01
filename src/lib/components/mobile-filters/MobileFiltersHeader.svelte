@@ -73,6 +73,8 @@ let canReset = $derived(hasActiveFilters || isSortModified);
 		border-radius: 10px;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.mobile-header-icon.reset-icon {
@@ -96,13 +98,15 @@ let canReset = $derived(hasActiveFilters || isSortModified);
 		border-color: var(--color-accent);
 	}
 
-	.mobile-header-icon.reset-icon:hover {
-		background-color: rgba(255, 255, 255, 0.08);
-		color: var(--color-text-primary);
-	}
+	@media (hover: hover) {
+		.mobile-header-icon.reset-icon:hover {
+			background-color: rgba(255, 255, 255, 0.08);
+			color: var(--color-text-primary);
+		}
 
-	:global(.light) .mobile-header-icon.reset-icon:hover {
-		background-color: rgba(0, 0, 0, 0.06);
+		:global(.light) .mobile-header-icon.reset-icon:hover {
+			background-color: rgba(0, 0, 0, 0.06);
+		}
 	}
 
 	.mobile-header-icon.collapse-icon {
@@ -114,12 +118,14 @@ let canReset = $derived(hasActiveFilters || isSortModified);
 		background-color: rgba(0, 0, 0, 0.04);
 	}
 
-	.mobile-header-icon.collapse-icon:hover {
-		background-color: rgba(255, 255, 255, 0.1);
-		color: var(--color-text-primary);
-	}
+	@media (hover: hover) {
+		.mobile-header-icon.collapse-icon:hover {
+			background-color: rgba(255, 255, 255, 0.1);
+			color: var(--color-text-primary);
+		}
 
-	:global(.light) .mobile-header-icon.collapse-icon:hover {
-		background-color: rgba(0, 0, 0, 0.08);
+		:global(.light) .mobile-header-icon.collapse-icon:hover {
+			background-color: rgba(0, 0, 0, 0.08);
+		}
 	}
 </style>

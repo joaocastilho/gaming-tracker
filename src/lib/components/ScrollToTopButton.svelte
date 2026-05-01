@@ -105,13 +105,17 @@ function handleKeydown(event: KeyboardEvent) {
 		z-index: 50;
 		outline: none;
 		opacity: 0.8;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.reset-filters-fab:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-		background-color: rgba(75, 85, 99, 0.6);
-		color: white;
+	@media (hover: hover) {
+		.reset-filters-fab:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+			background-color: rgba(75, 85, 99, 0.6);
+			color: white;
+		}
 	}
 
 	:global(.light) .reset-filters-fab {
@@ -120,9 +124,11 @@ function handleKeydown(event: KeyboardEvent) {
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 
-	:global(.light) .reset-filters-fab:hover {
-		background-color: rgba(156, 163, 175, 0.6);
-		color: #1c1917;
+	@media (hover: hover) {
+		:global(.light) .reset-filters-fab:hover {
+			background-color: rgba(156, 163, 175, 0.6);
+			color: #1c1917;
+		}
 	}
 
 	/* Existing Scroll Button Styles */
@@ -146,12 +152,16 @@ function handleKeydown(event: KeyboardEvent) {
 		transition: all 0.3s ease;
 		z-index: 50;
 		outline: none;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.scroll-to-top-button:hover {
-		background-color: rgba(75, 85, 99, 0.6);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-		transform: translateY(-2px);
+	@media (hover: hover) {
+		.scroll-to-top-button:hover {
+			background-color: rgba(75, 85, 99, 0.6);
+			box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+			transform: translateY(-2px);
+		}
 	}
 
 	.scroll-to-top-button:focus {
@@ -168,9 +178,11 @@ function handleKeydown(event: KeyboardEvent) {
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 
-	:global(.light) .scroll-to-top-button:hover {
-		background-color: rgba(156, 163, 175, 0.6);
-		color: #1c1917;
+	@media (hover: hover) {
+		:global(.light) .scroll-to-top-button:hover {
+			background-color: rgba(156, 163, 175, 0.6);
+			color: #1c1917;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {

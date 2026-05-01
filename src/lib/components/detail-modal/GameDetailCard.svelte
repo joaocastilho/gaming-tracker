@@ -108,7 +108,7 @@ function handleImageError() {
 {#if onClose}
 	<button
 		onclick={onClose}
-		class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/40 md:hidden"
+		class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/40 md:hidden touch-manipulation [-webkit-tap-highlight-color:transparent]"
 		aria-label="Close modal"
 	>
 		<X size={20} />
@@ -116,7 +116,7 @@ function handleImageError() {
 {/if}
 
 <div
-	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto md:grid md:grid-cols-[250px_1fr] md:overflow-hidden lg:grid-cols-[350px_1fr] xl:grid-cols-[400px_1fr]"
+	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain md:grid md:grid-cols-[250px_1fr] md:overflow-hidden lg:grid-cols-[350px_1fr] xl:grid-cols-[400px_1fr]"
 >
 	<div class="flex min-h-full flex-col md:contents">
 		<div

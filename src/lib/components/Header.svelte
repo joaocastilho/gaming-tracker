@@ -270,9 +270,13 @@ async function handleLogout() {
 		font-size: 1.25rem;
 		font-weight: 600;
 		color: var(--color-text-secondary);
-		transition: all var(--transition-fast);
+		transition:
+			color var(--transition-fast),
+			background var(--transition-fast);
 		border-radius: 8px;
 		white-space: nowrap;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.tabs-list button .label {
@@ -303,23 +307,28 @@ async function handleLogout() {
 		background: transparent;
 		transform-origin: center;
 		transform: scaleX(0);
-		transition: all var(--transition-fast);
+		transition:
+			transform var(--transition-fast),
+			opacity var(--transition-fast),
+			background var(--transition-fast);
 	}
 
-	.tabs-list button:hover {
-		color: var(--color-text-primary);
-		background: var(--color-hover);
-	}
+	@media (hover: hover) {
+		.tabs-list button:hover {
+			color: var(--color-text-primary);
+			background: var(--color-hover);
+		}
 
-	.tabs-list button:hover + .count-badge {
-		border-color: var(--color-accent);
-		color: var(--color-accent);
-	}
+		.tabs-list button:hover + .count-badge {
+			border-color: var(--color-accent);
+			color: var(--color-accent);
+		}
 
-	.tabs-list button:hover::after {
-		background: var(--color-accent);
-		transform: scaleX(1);
-		opacity: 0.5;
+		.tabs-list button:hover::after {
+			background: var(--color-accent);
+			transform: scaleX(1);
+			opacity: 0.5;
+		}
 	}
 
 	.tabs-list button.active {
@@ -373,24 +382,32 @@ async function handleLogout() {
 		background-color: var(--color-surface);
 		color: var(--color-text-secondary);
 		cursor: pointer;
-		transition: all var(--transition-fast);
+		transition:
+			background-color var(--transition-fast),
+			border-color var(--transition-fast),
+			color var(--transition-fast),
+			transform var(--transition-fast);
 		font-weight: 500;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.filter-toggle-button:hover {
-		background-color: rgba(99, 102, 241, 0.04);
-		border-color: var(--color-accent);
-		color: var(--color-accent);
-		transform: translateY(-1px);
-	}
+	@media (hover: hover) {
+		.filter-toggle-button:hover {
+			background-color: rgba(99, 102, 241, 0.04);
+			border-color: var(--color-accent);
+			color: var(--color-accent);
+			transform: translateY(-1px);
+		}
 
-	:global(.light) .filter-toggle-button:hover {
-		background-color: rgba(234, 88, 12, 0.04);
-	}
+		:global(.light) .filter-toggle-button:hover {
+			background-color: rgba(234, 88, 12, 0.04);
+		}
 
-	.filter-toggle-button:hover :global(.filter-icon),
-	.filter-toggle-button:hover :global(.filter-chevron-icon) {
-		color: var(--color-accent);
+		.filter-toggle-button:hover :global(.filter-icon),
+		.filter-toggle-button:hover :global(.filter-chevron-icon) {
+			color: var(--color-accent);
+		}
 	}
 
 	.filter-toggle-button :global(.filter-chevron-icon) {
@@ -419,15 +436,24 @@ async function handleLogout() {
 		background-color: var(--color-surface);
 		color: var(--color-text-secondary);
 		cursor: pointer;
-		transition: all var(--transition-fast);
+		transition:
+			background-color var(--transition-fast),
+			border-color var(--transition-fast),
+			color var(--transition-fast),
+			transform var(--transition-fast),
+			box-shadow var(--transition-fast);
 		font-size: 0.85rem;
 		font-weight: 500;
 		white-space: nowrap;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.editor-button:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-sm);
+	@media (hover: hover) {
+		.editor-button:hover:not(:disabled) {
+			transform: translateY(-1px);
+			box-shadow: var(--shadow-sm);
+		}
 	}
 
 	.editor-button:disabled {
@@ -441,10 +467,12 @@ async function handleLogout() {
 		color: #22c55e;
 	}
 
-	.add-game-button:hover {
-		background: rgba(34, 197, 94, 0.2);
-		border-color: rgba(34, 197, 94, 0.5);
-		color: #4ade80;
+	@media (hover: hover) {
+		.add-game-button:hover {
+			background: rgba(34, 197, 94, 0.2);
+			border-color: rgba(34, 197, 94, 0.5);
+			color: #4ade80;
+		}
 	}
 
 	.apply-button {
@@ -453,10 +481,12 @@ async function handleLogout() {
 		color: var(--color-accent);
 	}
 
-	.apply-button:hover:not(:disabled) {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.5);
-		color: var(--color-accent-hover);
+	@media (hover: hover) {
+		.apply-button:hover:not(:disabled) {
+			background: rgba(99, 102, 241, 0.2);
+			border-color: rgba(99, 102, 241, 0.5);
+			color: var(--color-accent-hover);
+		}
 	}
 
 	.discard-button {
@@ -466,10 +496,12 @@ async function handleLogout() {
 		padding: 8px;
 	}
 
-	.discard-button:hover:not(:disabled) {
-		background: rgba(239, 68, 68, 0.2);
-		border-color: rgba(239, 68, 68, 0.5);
-		color: #f87171;
+	@media (hover: hover) {
+		.discard-button:hover:not(:disabled) {
+			background: rgba(239, 68, 68, 0.2);
+			border-color: rgba(239, 68, 68, 0.5);
+			color: #f87171;
+		}
 	}
 
 	.pending-badge {
@@ -494,11 +526,13 @@ async function handleLogout() {
 		color: var(--color-text-secondary);
 	}
 
-	.logout-button:hover:not(:disabled),
-	.login-button:hover:not(:disabled) {
-		background: var(--color-hover);
-		border-color: var(--color-accent);
-		color: var(--color-accent);
+	@media (hover: hover) {
+		.logout-button:hover:not(:disabled),
+		.login-button:hover:not(:disabled) {
+			background: var(--color-hover);
+			border-color: var(--color-accent);
+			color: var(--color-accent);
+		}
 	}
 
 	@media (max-width: 834px) {

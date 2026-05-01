@@ -211,11 +211,15 @@ const buildDate = new Intl.DateTimeFormat(undefined, {
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		transition: all 0.2s ease;
 		outline: none;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.floating-action-button:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+	@media (hover: hover) {
+		.floating-action-button:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+		}
 	}
 
 	.floating-action-button:active {
@@ -237,10 +241,12 @@ const buildDate = new Intl.DateTimeFormat(undefined, {
 		opacity: 0.8;
 	}
 
-	.settings-fab:hover {
-		background: rgba(75, 85, 99, 0.6);
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-		opacity: 1;
+	@media (hover: hover) {
+		.settings-fab:hover {
+			background: rgba(75, 85, 99, 0.6);
+			box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+			opacity: 1;
+		}
 	}
 
 	.settings-fab.active {
@@ -258,10 +264,12 @@ const buildDate = new Intl.DateTimeFormat(undefined, {
 		opacity: 0.8;
 	}
 
-	:global(.light) .settings-fab:hover {
-		background: rgba(184, 169, 154, 0.6);
-		box-shadow: 0 6px 16px rgba(61, 53, 48, 0.2);
-		opacity: 1;
+	@media (hover: hover) {
+		:global(.light) .settings-fab:hover {
+			background: rgba(184, 169, 154, 0.6);
+			box-shadow: 0 6px 16px rgba(61, 53, 48, 0.2);
+			opacity: 1;
+		}
 	}
 
 	:global(.light) .settings-fab.active {
@@ -285,10 +293,12 @@ const buildDate = new Intl.DateTimeFormat(undefined, {
 		opacity: 0.8;
 	}
 
-	.filter-fab:hover {
-		background: rgba(99, 102, 241, 0.6);
-		box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
-		opacity: 1;
+	@media (hover: hover) {
+		.filter-fab:hover {
+			background: rgba(99, 102, 241, 0.6);
+			box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+			opacity: 1;
+		}
 	}
 
 	/* Settings Bottom Sheet */
@@ -343,14 +353,18 @@ const buildDate = new Intl.DateTimeFormat(undefined, {
 		cursor: pointer;
 		transition: all 0.12s ease-out;
 		text-align: left;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.sheet-item:hover {
-		background-color: rgba(99, 102, 241, 0.03);
-	}
+	@media (hover: hover) {
+		.sheet-item:hover {
+			background-color: rgba(99, 102, 241, 0.03);
+		}
 
-	:global(.light) .sheet-item:hover {
-		background-color: rgba(234, 88, 12, 0.03);
+		:global(.light) .sheet-item:hover {
+			background-color: rgba(234, 88, 12, 0.03);
+		}
 	}
 
 	.sheet-item:active {
@@ -361,28 +375,34 @@ const buildDate = new Intl.DateTimeFormat(undefined, {
 		color: #22c55e;
 	}
 
-	.sheet-item-green:hover {
-		background-color: rgba(34, 197, 94, 0.04);
+	@media (hover: hover) {
+		.sheet-item-green:hover {
+			background-color: rgba(34, 197, 94, 0.04);
+		}
 	}
 
 	.sheet-item-red {
 		color: #ef4444;
 	}
 
-	.sheet-item-red:hover {
-		background-color: rgba(239, 68, 68, 0.04);
+	@media (hover: hover) {
+		.sheet-item-red:hover {
+			background-color: rgba(239, 68, 68, 0.04);
+		}
 	}
 
 	.sheet-item-blue {
 		color: var(--color-accent);
 	}
 
-	.sheet-item-blue:hover {
-		background-color: rgba(99, 102, 241, 0.03);
-	}
+	@media (hover: hover) {
+		.sheet-item-blue:hover {
+			background-color: rgba(99, 102, 241, 0.03);
+		}
 
-	:global(.light) .sheet-item-blue:hover {
-		background-color: rgba(234, 88, 12, 0.03);
+		:global(.light) .sheet-item-blue:hover {
+			background-color: rgba(234, 88, 12, 0.03);
+		}
 	}
 
 	@keyframes fadeIn {

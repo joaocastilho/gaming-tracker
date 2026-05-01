@@ -175,7 +175,7 @@ function enableDevMode() {
 		border: 1px solid rgba(75, 85, 99, 0.9);
 		background: #020817;
 		color: #e5e7eb;
-		font-size: 0.85rem;
+		font-size: 1rem; /* Prevent zoom on mobile */
 	}
 
 	input:focus-visible {
@@ -214,8 +214,10 @@ function enableDevMode() {
 		color: #e5e7eb;
 	}
 
-	button.primary:hover {
-		background: #4338ca;
+	@media (hover: hover) {
+		button.primary:hover {
+			background: #4338ca;
+		}
 	}
 
 	button.secondary {
@@ -223,9 +225,11 @@ function enableDevMode() {
 		color: #9ca3af;
 	}
 
-	button.secondary:hover {
-		color: #e5e7eb;
-		background: rgba(148, 163, 253, 0.06);
+	@media (hover: hover) {
+		button.secondary:hover {
+			color: #e5e7eb;
+			background: rgba(148, 163, 253, 0.06);
+		}
 	}
 
 	button:disabled {
@@ -243,11 +247,15 @@ function enableDevMode() {
 		border-radius: 8px;
 		cursor: pointer;
 		font-size: 0.85rem;
-		transition: all 0.2s;
+		transition:
+			background 0.2s,
+			border-color 0.2s;
 	}
 
-	.dev-mode-btn:hover {
-		background: rgba(245, 158, 11, 0.2);
-		border-style: solid;
+	@media (hover: hover) {
+		.dev-mode-btn:hover {
+			background: rgba(245, 158, 11, 0.2);
+			border-style: solid;
+		}
 	}
 </style>

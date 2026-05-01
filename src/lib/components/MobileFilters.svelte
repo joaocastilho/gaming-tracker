@@ -141,9 +141,6 @@ function togglePendingCoOp(coOp: string) {
 {#if isOpen}
 	<div
 		class="mobile-filters-modal fixed inset-0 z-50 md:hidden"
-		onclick={(e) => {
-			if (e.target === e.currentTarget) applyFilters();
-		}}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
@@ -151,10 +148,22 @@ function togglePendingCoOp(coOp: string) {
 			if (e.key === 'Escape') applyFilters();
 		}}
 	>
-		<div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+		<div
+			class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+			onclick={applyFilters}
+			onkeydown={(e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					applyFilters();
+				}
+			}}
+			role="button"
+			tabindex="0"
+			aria-label="Apply filters and close"
+		></div>
 		<div
 			class="mobile-filters-container absolute right-0 bottom-0 left-0 max-h-[85vh] overflow-hidden rounded-t-2xl shadow-2xl"
-			style="background-color: var(--color-background);"
+			style="background-color: var(--color-background); color: var(--color-text-primary);"
 		>
 			<MobileFiltersHeader
 				{title}
@@ -192,9 +201,10 @@ function togglePendingCoOp(coOp: string) {
 					activeFilterPopup = null;
 				}}
 				onClose={() => (activeFilterPopup = null)}
-				onAccept={() => {
+				onAccept={(closeAll) => {
 					applyPendingFilters();
 					activeFilterPopup = null;
+					if (closeAll) applyFilters();
 				}}
 			/>
 		{/if}
@@ -211,9 +221,10 @@ function togglePendingCoOp(coOp: string) {
 					activeFilterPopup = null;
 				}}
 				onClose={() => (activeFilterPopup = null)}
-				onAccept={() => {
+				onAccept={(closeAll) => {
 					applyPendingFilters();
 					activeFilterPopup = null;
+					if (closeAll) applyFilters();
 				}}
 			/>
 		{/if}
@@ -230,9 +241,10 @@ function togglePendingCoOp(coOp: string) {
 					activeFilterPopup = null;
 				}}
 				onClose={() => (activeFilterPopup = null)}
-				onAccept={() => {
+				onAccept={(closeAll) => {
 					applyPendingFilters();
 					activeFilterPopup = null;
+					if (closeAll) applyFilters();
 				}}
 			/>
 		{/if}

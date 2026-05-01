@@ -74,6 +74,8 @@ let {
 		justify-content: flex-start;
 		padding-bottom: 4px;
 		overflow-x: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
 	}
 
 	.mobile-filter-categories-compact::-webkit-scrollbar {

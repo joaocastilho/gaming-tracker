@@ -77,16 +77,20 @@ let { type, count = 0, onClick }: Props = $props();
 		transition: all 0.2s ease;
 		white-space: nowrap;
 		flex-shrink: 0;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.mobile-filter-category-compact:hover {
-		background-color: rgba(59, 130, 246, 0.04);
-		border-color: rgba(59, 130, 246, 0.15);
-	}
+	@media (hover: hover) {
+		.mobile-filter-category-compact:hover {
+			background-color: rgba(59, 130, 246, 0.04);
+			border-color: rgba(59, 130, 246, 0.15);
+		}
 
-	:global(.light) .mobile-filter-category-compact:hover {
-		background-color: rgba(234, 88, 12, 0.04);
-		border-color: rgba(234, 88, 12, 0.15);
+		:global(.light) .mobile-filter-category-compact:hover {
+			background-color: rgba(234, 88, 12, 0.04);
+			border-color: rgba(234, 88, 12, 0.15);
+		}
 	}
 
 	.mobile-filter-category-compact.has-selection {

@@ -309,13 +309,17 @@ function getCompletionDay(dateStr: string | null): string {
 		text-overflow: ellipsis;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		cursor: pointer;
-		transition: all var(--transition-fast);
+		transition:
+			transform var(--transition-fast),
+			box-shadow var(--transition-fast);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 
-	.tier-badge:hover {
-		transform: translateY(-2px) scale(1.05);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+	@media (hover: hover) {
+		.tier-badge:hover {
+			transform: translateY(-2px) scale(1.05);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+		}
 	}
 
 	.tier-text {
@@ -359,7 +363,7 @@ function getCompletionDay(dateStr: string | null): string {
 		display: flex;
 		gap: 4px;
 		opacity: 0;
-		transition: all var(--transition-normal);
+		transition: opacity var(--transition-normal);
 		z-index: 20;
 	}
 
@@ -379,7 +383,10 @@ function getCompletionDay(dateStr: string | null): string {
 		cursor: pointer;
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		transition: all var(--transition-fast);
+		transition:
+			transform var(--transition-fast),
+			box-shadow var(--transition-fast),
+			background var(--transition-fast);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 	}
 
@@ -388,11 +395,13 @@ function getCompletionDay(dateStr: string | null): string {
 		color: #ffffff;
 	}
 
-	.edit-btn:hover {
-		background: rgba(0, 0, 0, 0.8);
-		color: #ffffff;
-		transform: scale(1.1);
-		box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+	@media (hover: hover) {
+		.edit-btn:hover {
+			background: rgba(0, 0, 0, 0.8);
+			color: #ffffff;
+			transform: scale(1.1);
+			box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+		}
 	}
 
 	.delete-btn {
@@ -400,11 +409,13 @@ function getCompletionDay(dateStr: string | null): string {
 		color: #ffffff;
 	}
 
-	.delete-btn:hover {
-		background: rgba(239, 68, 68, 0.9);
-		color: #ffffff;
-		transform: scale(1.1);
-		box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
+	@media (hover: hover) {
+		.delete-btn:hover {
+			background: rgba(239, 68, 68, 0.9);
+			color: #ffffff;
+			transform: scale(1.1);
+			box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
+		}
 	}
 
 	@container game-card (max-width: 420px) {

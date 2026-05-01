@@ -14,7 +14,7 @@ interface Props {
 	onToggle: (value: string) => void;
 	onReset: () => void;
 	onClose: () => void;
-	onAccept: () => void;
+	onAccept: (closeAll?: boolean) => void;
 }
 
 let { type, options, selected, onToggle, onReset, onClose, onAccept }: Props = $props();
@@ -31,7 +31,7 @@ function handleBackdropClick(e: MouseEvent) {
 	const target = e.target as HTMLElement;
 	const isBackdrop = target.classList.contains('bg-black/60');
 	if (isBackdrop) {
-		onClose();
+		onAccept(true);
 	}
 }
 </script>
@@ -41,7 +41,7 @@ function handleBackdropClick(e: MouseEvent) {
 	role="dialog"
 	tabindex="-1"
 	onkeydown={(e) => {
-		if (e.key === 'Escape') onClose();
+		if (e.key === 'Escape') onAccept(true);
 	}}
 	onclick={handleBackdropClick}
 >
@@ -55,7 +55,7 @@ function handleBackdropClick(e: MouseEvent) {
 		}}
 		role="button"
 		tabindex="0"
-		aria-label="Close popup"
+		aria-label="Apply and close popup"
 	></div>
 	<div class="filter-popup-content">
 		<div class="filter-popup-header">
@@ -94,7 +94,7 @@ function handleBackdropClick(e: MouseEvent) {
 				<button
 					type="button"
 					class="popup-icon-btn accept"
-					onclick={onAccept}
+					onclick={() => onAccept()}
 					aria-label="Accept selection"
 					title="Accept"
 				>
@@ -157,6 +157,7 @@ function handleBackdropClick(e: MouseEvent) {
 		flex-direction: column;
 		overflow: hidden;
 		animation: popupIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		color: var(--color-text-primary);
 	}
 
 	@keyframes popupIn {
@@ -186,6 +187,7 @@ function handleBackdropClick(e: MouseEvent) {
 		font-size: 1rem;
 		font-weight: 600;
 		margin: 0;
+		color: var(--color-text-primary);
 	}
 
 	.filter-popup-header-actions {
@@ -203,6 +205,8 @@ function handleBackdropClick(e: MouseEvent) {
 		border: none;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.popup-icon-btn.reset {
@@ -210,13 +214,15 @@ function handleBackdropClick(e: MouseEvent) {
 		color: var(--color-text-secondary);
 	}
 
-	.popup-icon-btn.reset:hover {
-		background-color: rgba(255, 255, 255, 0.04);
-		color: var(--color-text-primary);
-	}
+	@media (hover: hover) {
+		.popup-icon-btn.reset:hover {
+			background-color: rgba(255, 255, 255, 0.04);
+			color: var(--color-text-primary);
+		}
 
-	:global(.light) .popup-icon-btn.reset:hover {
-		background-color: rgba(0, 0, 0, 0.04);
+		:global(.light) .popup-icon-btn.reset:hover {
+			background-color: rgba(0, 0, 0, 0.04);
+		}
 	}
 
 	.popup-icon-btn.accept {
@@ -225,9 +231,11 @@ function handleBackdropClick(e: MouseEvent) {
 		opacity: 0.9;
 	}
 
-	.popup-icon-btn.accept:hover {
-		background-color: #2563eb;
-		opacity: 1;
+	@media (hover: hover) {
+		.popup-icon-btn.accept:hover {
+			background-color: #2563eb;
+			opacity: 1;
+		}
 	}
 
 	.filter-popup-options {
@@ -259,11 +267,15 @@ function handleBackdropClick(e: MouseEvent) {
 		cursor: pointer;
 		transition: all 0.2s ease;
 		min-height: 36px;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	.themed-filter-pill:hover {
-		background-color: rgba(59, 130, 246, 0.05);
-		border-color: rgba(59, 130, 246, 0.15);
+	@media (hover: hover) {
+		.themed-filter-pill:hover {
+			background-color: rgba(59, 130, 246, 0.05);
+			border-color: rgba(59, 130, 246, 0.15);
+		}
 	}
 
 	.themed-filter-pill.selected {
