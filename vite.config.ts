@@ -15,6 +15,15 @@ function stripHtmlComments() {
 	};
 }
 
+function injectBuildDate() {
+    return {
+        name: 'inject-build-date',
+        transformIndexHtml(html: string) {
+            return html.replace('%build-date%', String(Date.now()));
+        },
+    };
+}
+
 export default defineConfig({
 	define: {
 		__APP_VERSION__: JSON.stringify(pkg.version),
@@ -23,6 +32,7 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
+  injectBuildDate(),
 		stripHtmlComments(),
 		{
 			name: 'fix-mjs-content-type',
