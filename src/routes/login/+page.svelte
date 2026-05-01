@@ -6,7 +6,6 @@ import { editorStore } from '$lib/stores/editor.svelte';
 let isModalOpen = $state(true);
 let editorMode = $derived(editorStore.editorMode);
 
-const appVersion = __APP_VERSION__;
 const buildDate = new Intl.DateTimeFormat(undefined, {
     month: 'short',
     day: 'numeric',
@@ -28,7 +27,7 @@ $effect(() => {
 	<div class="login-container">
 		<h1>Owner Access</h1>
 		<p>Please sign in to access editor mode.</p>
-		<span class="version">v{appVersion} ({buildDate})</span>
+		<span class="version">Last updated {buildDate}</span>
 	</div>
 </div>
 
