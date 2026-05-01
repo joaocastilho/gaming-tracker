@@ -36,10 +36,6 @@ import MobileFilters from '$lib/components/MobileFilters.svelte';
 import MobileSearch from '$lib/components/layout/MobileSearch.svelte';
 import MobileSettingsMenu from '$lib/components/layout/MobileSettingsMenu.svelte';
 
-import DetailModal from '$lib/components/DetailModal.svelte';
-import GameEditorModal from '$lib/components/GameEditorModal.svelte';
-import DeleteConfirmModal from '$lib/components/DeleteConfirmModal.svelte';
-import LoginModal from '$lib/components/LoginModal.svelte';
 import NoResults from '$lib/components/NoResults.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
 
@@ -278,6 +274,40 @@ let isSettingsMenuOpen = $state(false);
 let loginModalOpen = $state(false);
 
 let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
+
+let DetailModalComponent = $state<any>(null);
+let GameEditorModalComponent = $state<any>(null);
+let DeleteConfirmModalComponent = $state<any>(null);
+let LoginModalComponent = $state<any>(null);
+let MobileSearchComponent = $state<any>(null);
+let MobileFiltersComponent = $state<any>(null);
+let MobileSettingsMenuComponent = $state<any>(null);
+
+$effect(() => {
+	if (!browser) return;
+	
+	if ($modalStore.isOpen && !DetailModalComponent) {
+		import('$lib/components/DetailModal.svelte').then(m => DetailModalComponent = m.default);
+	}
+	if (editorModalOpen && !GameEditorModalComponent) {
+		import('$lib/components/GameEditorModal.svelte').then(m => GameEditorModalComponent = m.default);
+	}
+	if (deleteModalOpen && !DeleteConfirmModalComponent) {
+		import('$lib/components/DeleteConfirmModal.svelte').then(m => DeleteConfirmModalComponent = m.default);
+	}
+	if (loginModalOpen && !LoginModalComponent) {
+		import('$lib/components/LoginModal.svelte').then(m => LoginModalComponent = m.default);
+	}
+	if (isSearchOpen && !MobileSearchComponent) {
+		import('$lib/components/layout/MobileSearch.svelte').then(m => MobileSearchComponent = m.default);
+	}
+	if (isFiltersOpen && !MobileFiltersComponent) {
+		import('$lib/components/MobileFilters.svelte').then(m => MobileFiltersComponent = m.default);
+	}
+	if (isSettingsMenuOpen && !MobileSettingsMenuComponent) {
+		import('$lib/components/layout/MobileSettingsMenu.svelte').then(m => MobileSettingsMenuComponent = m.default);
+	}
+});
 
 let savedScrollPosition = $state<number>(0);
 
@@ -670,10 +700,12 @@ async function installApp() {
 			</div>
 		</main>
 
-		<DetailModal onEditGame={handleEditGame} onDeleteGame={handleDeleteGame} />
+		{#if DetailModalComponent}
+			<DetailModalComponent onEditGame={handleEditGame} onDeleteGame={handleDeleteGame} />
+		{/if}
 
-		{#if editorModalOpen}
-			<GameEditorModal
+		{#if editorModalOpen && GameEditorModalComponent}
+			<GameEditorModalComponent
 				mode={editorModalMode}
 				initialGame={editorModalGame}
 				allGames={$gamesStore}
@@ -681,32 +713,42 @@ async function installApp() {
 			/>
 		{/if}
 
-		<DeleteConfirmModal bind:open={deleteModalOpen} game={deleteModalGame} />
+		{#if DeleteConfirmModalComponent}
+			<DeleteConfirmModalComponent bind:open={deleteModalOpen} game={deleteModalGame} />
+		{/if}
 
-		<LoginModal bind:open={loginModalOpen} />
+		{#if LoginModalComponent}
+			<LoginModalComponent bind:open={loginModalOpen} />
+		{/if}
 
-		<MobileSearch isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
+		{#if MobileSearchComponent}
+			<MobileSearchComponent isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
+		{/if}
 
 		<!-- Mobile Filters Modal -->
-		<MobileFilters
-			bind:isOpen={isFiltersOpen}
-			{filterOptions}
-			{showTiersFilter}
-			{showCoOpFilter}
-			onClose={() => (isFiltersOpen = false)}
-		/>
+		{#if MobileFiltersComponent}
+			<MobileFiltersComponent
+				bind:isOpen={isFiltersOpen}
+				{filterOptions}
+				{showTiersFilter}
+				{showCoOpFilter}
+				onClose={() => (isFiltersOpen = false)}
+			/>
+		{/if}
 
-		<MobileSettingsMenu
-			isOpen={isSettingsMenuOpen}
-			{isTierlistPage}
-			onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
-			onClose={() => (isSettingsMenuOpen = false)}
-			{onFiltersToggle}
-			onAddGame={handleAddGame}
-			onOpenLogin={() => (loginModalOpen = true)}
-			{canInstall}
-			onInstall={installApp}
-		/>
+		{#if MobileSettingsMenuComponent}
+			<MobileSettingsMenuComponent
+				isOpen={isSettingsMenuOpen}
+				{isTierlistPage}
+				onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
+				onClose={() => (isSettingsMenuOpen = false)}
+				{onFiltersToggle}
+				onAddGame={handleAddGame}
+				onOpenLogin={() => (loginModalOpen = true)}
+				{canInstall}
+				onInstall={installApp}
+			/>
+		{/if}
 
 		<!-- Discreet Last Updated Indicator -->
 		<!-- Removed build date display - now only in source code at top -->

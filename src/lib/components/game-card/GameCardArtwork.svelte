@@ -154,7 +154,7 @@ function getCompletionDay(dateStr: string | null): string {
 			sizes={imageSizes()}
 			alt={game.title}
 			class="cover-image"
-			loading="lazy"
+			loading={isAboveFold ? 'eager' : 'lazy'}
 			decoding="async"
 			use:imageAction
 			onmouseover={preloadDetailImage}

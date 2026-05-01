@@ -108,6 +108,7 @@ function handleOpenModal(game: Game) {
 								{game}
 								{displayedGames}
 								isPriority={isPriority && i < 4}
+								isAboveFold={isPriority && i < 4}
 								onOpenModal={handleOpenModal}
 								{onEditGame}
 								{onDeleteGame}
@@ -132,6 +133,7 @@ function handleOpenModal(game: Game) {
 								{game}
 								{displayedGames}
 								isPriority={i < 4}
+								isAboveFold={i < 4}
 								onOpenModal={handleOpenModal}
 								{onEditGame}
 								{onDeleteGame}
