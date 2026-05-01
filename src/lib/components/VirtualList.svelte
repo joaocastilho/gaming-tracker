@@ -32,8 +32,17 @@ let {
 let container = $state<HTMLDivElement>();
 let scrollTop = $state(0);
 let windowHeight = $state(0);
+let containerTop = $state(0);
 
 const hasVariableHeights = $derived(typeof getItemHeight === 'function');
+
+// Update container position for window scroll mode
+function updateContainerPosition() {
+	if (useWindowScroll && container) {
+		const rect = container.getBoundingClientRect();
+		containerTop = rect.top + window.scrollY;
+	}
+}
 
 const offsets = $derived.by(() => {
 	if (!hasVariableHeights) return null;
@@ -99,35 +108,43 @@ let visibleItems = $derived.by(() => {
 	}));
 });
 
-function handleScroll(event: Event) {
+function handleScroll() {
 	if (useWindowScroll) {
-		if (container) {
-			const rect = container.getBoundingClientRect();
-			const offset = -rect.top;
-			scrollTop = Math.max(0, offset);
-		}
-	} else {
-		const target = event.target as HTMLDivElement;
-		scrollTop = target.scrollTop;
+		// Use window.scrollY and cached containerTop to avoid getBoundingClientRect()
+		const offset = window.scrollY - containerTop;
+		scrollTop = Math.max(0, offset);
+	} else if (container) {
+		scrollTop = container.scrollTop;
 	}
 }
 
-function updateWindowHeight() {
+function updateDimensions() {
 	if (typeof window !== 'undefined') {
 		windowHeight = window.innerHeight;
+		updateContainerPosition();
 	}
 }
 
 $effect(() => {
 	if (useWindowScroll) {
+		// Initial measurement
+		updateDimensions();
+
 		window.addEventListener('scroll', handleScroll, { passive: true });
-		window.addEventListener('resize', updateWindowHeight);
-		updateWindowHeight();
-		handleScroll({} as Event);
+		window.addEventListener('resize', updateDimensions);
+
+		// Use ResizeObserver to track container position changes without polling
+		const resizeObserver = new ResizeObserver(() => {
+			// Use requestAnimationFrame to batch the read
+			requestAnimationFrame(updateContainerPosition);
+		});
+
+		if (container) resizeObserver.observe(container.parentElement || container);
 
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
-			window.removeEventListener('resize', updateWindowHeight);
+			window.removeEventListener('resize', updateDimensions);
+			resizeObserver.disconnect();
 		};
 	}
 });

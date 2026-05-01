@@ -3,6 +3,9 @@ import type { Game } from '$lib/types/game';
 import { browser } from '$app/environment';
 import { Link, X } from 'lucide-svelte';
 
+import { measureTextWidth } from '$lib/utils/textMeasure';
+import { FONT_CONFIG } from '$lib/constants/fonts';
+
 interface Props {
 	game: Game;
 	onClose?: () => void;
@@ -20,17 +23,22 @@ $effect(() => {
 
 	const maxSize = 2.25;
 	const minSize = 0.8;
-	const step = 0.05;
 
-	// Reset to max size first
-	titleElement.style.whiteSpace = 'nowrap';
-	titleElement.style.fontSize = `${maxSize}rem`;
+	// Use pretext to measure width at 1rem to calculate required size
+	// We use the same font family as in CSS
+	const fontBase = FONT_CONFIG.cardTitle.replace('1rem', '1rem');
+	const textWidthAt1Rem = measureTextWidth(game.mainTitle, fontBase);
 
-	// Shrink until text fits container (scrollWidth forces reflow for accurate measurement)
-	let size = maxSize;
-	while (size > minSize && titleElement.scrollWidth > containerWidth + 1) {
-		size -= step;
-		titleElement.style.fontSize = `${size}rem`;
+	if (textWidthAt1Rem > 0) {
+		// Calculate target size: containerWidth / textWidthAt1Rem
+		// Subtract a small buffer (4px) for safety
+		let targetSize = (containerWidth - 4) / textWidthAt1Rem;
+
+		// Clamp between min and max
+		const finalSize = Math.max(minSize, Math.min(maxSize, targetSize));
+
+		titleElement.style.whiteSpace = 'nowrap';
+		titleElement.style.fontSize = `${finalSize}rem`;
 	}
 });
 </script>

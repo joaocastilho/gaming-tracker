@@ -37,6 +37,15 @@ function getOrCreateMeasurement(text: string, font: string): TextMeasurementCach
 	return cache;
 }
 
+export function measureTextWidth(text: string, font: string): number {
+	const { preparedWithSegments } = getOrCreateMeasurement(text, font);
+	const { lines } = layoutWithLines(preparedWithSegments, 100000, 1);
+	if (lines && lines.length > 0) {
+		return (lines[0] as LineInfo).width;
+	}
+	return 0;
+}
+
 export function measureTextHeight(text: string, font: string, maxWidth: number, lineHeight: number): number {
 	const { prepared } = getOrCreateMeasurement(text, font);
 	const { height } = layout(prepared, maxWidth, lineHeight);
@@ -72,7 +81,7 @@ export function measureSubtitleHeight(subtitle: string, maxWidth: number): numbe
 }
 
 export function measureBadgeWidth(text: string): number {
-	return measureTextHeight(text, FONT_CONFIG.badge, 1000, LINE_HEIGHT.normal);
+	return measureTextWidth(text, FONT_CONFIG.badge);
 }
 
 export interface CardHeights {
