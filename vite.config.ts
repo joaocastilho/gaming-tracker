@@ -1,9 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
-import { readFileSync } from 'fs';
-
-const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 function stripHtmlComments() {
 	return {
@@ -26,7 +23,6 @@ function injectBuildDate() {
 
 export default defineConfig({
 	define: {
-		__APP_VERSION__: JSON.stringify(pkg.version),
 		__BUILD_DATE__: Date.now(),
 	},
 	plugins: [
