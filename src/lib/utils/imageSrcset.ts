@@ -1,7 +1,7 @@
 export function generateSrcset(basePath: string | null | undefined): string {
 	const normalized = (basePath || 'covers/placeholder_cover.webp').replace(/\.webp$/, '');
 	const base = normalized.startsWith('/') ? normalized : `/${normalized}`;
-	return [`${base}.webp 300w`, `${base}-detail.webp 400w`].join(', ');
+	return [`${base}-200w.webp 200w`, `${base}.webp 300w`, `${base}-detail.webp 400w`].join(', ');
 }
 
 export function generateTinySrcset(basePath: string | null | undefined): string {
@@ -18,7 +18,7 @@ export function generateSizes(context: 'gallery' | 'modal' | 'card' | 'tiny'): s
 		case 'modal':
 			return '(max-width: 768px) 300px, 400px';
 		case 'card':
-			return '300px';
+			return '(max-width: 480px) 50vw, (max-width: 768px) 33vw, 300px';
 		case 'tiny':
 			return '(max-width: 640px) 40vw, (max-width: 1024px) 20vw, 200px';
 		default:

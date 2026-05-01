@@ -85,7 +85,7 @@ export default defineConfig({
 			},
 		},
 		target: 'es2020',
-		minify: false,
+		minify: true,
 		sourcemap: false,
 		assetsInlineLimit: 4096,
 		chunkSizeWarningLimit: 1000,
