@@ -1,4 +1,5 @@
 import { modalStore } from '$lib/stores/modal.svelte';
+import { windowSize } from '$lib/stores/window.svelte';
 import type { Game } from '$lib/types/game.js';
 
 export class SwipeController {
@@ -9,8 +10,12 @@ export class SwipeController {
 	isClosingGesture = $state(false);
 	parallaxOffset = $state(0);
 
+	// Cache dimensions to avoid layout thrashing during animations
+	private cachedWidth = 300;
+	private cachedHeight = 600;
+
 	get offsetMagnitude() {
-		return (typeof window !== 'undefined' ? window.innerWidth : 300) + 20;
+		return this.cachedWidth + 20;
 	}
 
 	private touchStartX = 0;
@@ -44,12 +49,20 @@ export class SwipeController {
 		this.getNextGame = getNextGame;
 		this.getPrevGame = getPrevGame;
 		this.onSwipeStart = onSwipeStart;
+
+		// Initial cache
+		this.cachedWidth = windowSize.width;
+		this.cachedHeight = windowSize.height;
 	}
 
 	handleTouchStart(e: TouchEvent) {
 		if (this.isSwipeTransitioning) return;
 
 		this.onSwipeStart?.();
+
+		// Refresh cache at start of gesture
+		this.cachedWidth = windowSize.width;
+		this.cachedHeight = windowSize.height;
 
 		const touch = e.touches[0];
 		this.touchStartX = touch.screenX;
@@ -153,7 +166,7 @@ export class SwipeController {
 	private animateClose() {
 		this.isSwipeTransitioning = true;
 		const startOffset = this.swipeOffsetY;
-		const targetOffset = window.innerHeight;
+		const targetOffset = this.cachedHeight;
 		const startTime = performance.now();
 		const duration = 200;
 

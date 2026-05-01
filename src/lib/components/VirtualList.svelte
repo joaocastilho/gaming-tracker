@@ -3,6 +3,8 @@ import type { Snippet } from 'svelte';
 
 import { safeKeyExtractor } from '$lib/utils/safeKeyExtractor';
 
+import { windowSize } from '$lib/stores/window.svelte';
+
 interface Props {
 	items: T[];
 	itemHeight?: number;
@@ -31,7 +33,6 @@ let {
 
 let container = $state<HTMLDivElement>();
 let scrollTop = $state(0);
-let windowHeight = $state(0);
 let containerTop = $state(0);
 let scrollTicking = false;
 
@@ -88,7 +89,7 @@ function binarySearchEnd(target: number): number {
 }
 
 let visibleRange = $derived.by(() => {
-	const effectiveHeight = useWindowScroll ? windowHeight : containerHeight;
+	const effectiveHeight = useWindowScroll ? windowSize.height : containerHeight;
 
 	if (hasVariableHeights && offsets) {
 		const start = Math.max(0, binarySearchStart(scrollTop) - overscan);
@@ -127,7 +128,6 @@ function handleScroll() {
 
 function updateDimensions() {
 	if (typeof window !== 'undefined') {
-		windowHeight = window.innerHeight;
 		updateContainerPosition();
 	}
 }

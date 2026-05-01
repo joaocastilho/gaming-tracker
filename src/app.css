@@ -736,6 +736,11 @@ body,
 	color: var(--color-accent-foreground);
 }
 
+.no-scroll {
+	overflow: hidden !important;
+	overscroll-behavior: none;
+}
+
 /* ============================================
    FOCUS STYLES
    ============================================ */

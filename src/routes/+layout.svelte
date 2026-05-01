@@ -29,6 +29,8 @@ let {
 
 import { editorStore } from '$lib/stores/editor.svelte';
 
+import { windowSize } from '$lib/stores/window.svelte';
+
 let initialized = $state(true);
 let gamesInitialized = $state(false);
 let urlUpdateTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -196,37 +198,19 @@ $effect(() => {
 
 		untrack(() => {
 			filtersStore.readSearchFromURL(searchParams, page.url.pathname);
-			if (filtersStore.isAnyFilterApplied() && innerWidth >= 768) {
+			if (filtersStore.isAnyFilterApplied() && windowSize.width >= 768) {
 				filtersStore.setDesktopFiltersExpanded(true);
 			}
 		});
 
-		if (filtersStore.isAnyFilterApplied() && innerWidth >= 768) {
+		if (filtersStore.isAnyFilterApplied() && windowSize.width >= 768) {
 			filtersStore.setDesktopFiltersExpanded(true);
 		}
 	}
 });
 
-let innerWidth = $state(typeof window !== 'undefined' ? window.innerWidth : 1024);
-let resizeTicking = false;
-
 $effect(() => {
-	if (!browser) return;
-	const handleResize = () => {
-		if (resizeTicking) return;
-		resizeTicking = true;
-
-		requestAnimationFrame(() => {
-			innerWidth = window.innerWidth;
-			resizeTicking = false;
-		});
-	};
-	window.addEventListener('resize', handleResize);
-	return () => window.removeEventListener('resize', handleResize);
-});
-
-$effect(() => {
-	if (browser && innerWidth >= 768) {
+	if (browser && windowSize.width >= 768) {
 		if (filtersStore.isAnyFilterApplied()) {
 			filtersStore.setDesktopFiltersExpanded(true);
 		}
@@ -348,9 +332,9 @@ let savedScrollPosition = $state<number>(0);
 
 $effect(() => {
 	if (browser && (isFiltersOpen || activeFilterPopup)) {
-		document.body.style.overflow = 'hidden';
+		document.body.classList.add('no-scroll');
 		return () => {
-			document.body.style.overflow = '';
+			document.body.classList.remove('no-scroll');
 		};
 	}
 });

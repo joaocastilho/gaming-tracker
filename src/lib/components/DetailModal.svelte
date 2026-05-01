@@ -174,17 +174,17 @@ $effect(() => {
 	if (!browser) return;
 
 	if ($modalStore.isOpen || isImageExpanded) {
-		document.body.style.overflow = 'hidden';
-		document.documentElement.style.overflow = 'hidden';
+		document.body.classList.add('no-scroll');
+		document.documentElement.classList.add('no-scroll');
 	} else {
-		document.body.style.overflow = '';
-		document.documentElement.style.overflow = '';
+		document.body.classList.remove('no-scroll');
+		document.documentElement.classList.remove('no-scroll');
 	}
 
 	// Cleanup to ensure styles are reset when component destroys
 	return () => {
-		document.body.style.overflow = '';
-		document.documentElement.style.overflow = '';
+		document.body.classList.remove('no-scroll');
+		document.documentElement.classList.remove('no-scroll');
 	};
 });
 

@@ -1,6 +1,8 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
+import fs from 'node:fs';
+import path from 'node:path';
 
 function stripHtmlComments() {
 	return {
@@ -8,6 +10,32 @@ function stripHtmlComments() {
 		apply: 'build' as const,
 		transformIndexHtml(html: string) {
 			return html.replace(/<!--(?!\[\[!-?-?])(?:\s|[\S\s])*?-->/g, '');
+		},
+	};
+}
+
+function optimizeCss() {
+	return {
+		name: 'optimize-css',
+		apply: 'build' as const,
+		transformIndexHtml(html: string) {
+			// Read critical CSS
+			const criticalCss = fs.readFileSync(path.resolve('src/lib/styles/critical.css'), 'utf-8');
+			
+			// 1. Convert stylesheet links to async preload
+			// This matches the pattern SvelteKit uses for CSS links
+			let newHtml = html.replace(
+				/<link rel="stylesheet" href="([^"]+\.css)">/g,
+				'<link rel="preload" href="$1" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">'
+			);
+
+			// 2. Inject critical CSS and noscript fallback
+			newHtml = newHtml.replace(
+				'</head>',
+				`    <style>${criticalCss}</style>\n    </head>`
+			);
+
+			return newHtml;
 		},
 	};
 }
@@ -38,6 +66,7 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
+		optimizeCss(),
 		injectBuildDate(),
 		stripHtmlComments(),
 		{
