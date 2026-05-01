@@ -3,8 +3,6 @@ import { page } from '$app/state';
 import { pushState, goto, replaceState, afterNavigate } from '$app/navigation';
 import '../app.css';
 import Header from '$lib/components/Header.svelte';
-import SearchBar from '$lib/components/SearchBar.svelte';
-import RatingsSort from '$lib/components/RatingsSort.svelte';
 import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
 import BottomNavigation from '$lib/components/BottomNavigation.svelte';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
@@ -18,7 +16,6 @@ import type { Game } from '$lib/types/game.js';
 import { RotateCcw } from 'lucide-svelte';
 
 import GamesView from '$lib/views/GamesView.svelte';
-import TierListView from '$lib/views/TierListView.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 
@@ -30,10 +27,6 @@ let {
 	data: { games: Promise<Game[]> | Game[] };
 } = $props();
 
-import FilterDropdown from '$lib/components/FilterDropdown.svelte';
-import FilterToggle from '$lib/components/FilterToggle.svelte';
-
-import NoResults from '$lib/components/NoResults.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
 
 let initialized = $state(true);
@@ -283,6 +276,15 @@ let MobileSearchComponent = $state<AnyComponent | null>(null);
 let MobileFiltersComponent = $state<AnyComponent | null>(null);
 let MobileSettingsMenuComponent = $state<AnyComponent | null>(null);
 
+let TierListViewComponent = $state<AnyComponent | null>(null);
+let NoResultsComponent = $state<AnyComponent | null>(null);
+let SearchBarComponent = $state<AnyComponent | null>(null);
+let FilterDropdownComponent = $state<AnyComponent | null>(null);
+let FilterToggleComponent = $state<AnyComponent | null>(null);
+let RatingsSortComponent = $state<AnyComponent | null>(null);
+
+let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
+
 $effect(() => {
 	if (!browser) return;
 
@@ -306,6 +308,24 @@ $effect(() => {
 	}
 	if (browser && !MobileSettingsMenuComponent) {
 		import('$lib/components/layout/MobileSettingsMenu.svelte').then((m) => (MobileSettingsMenuComponent = m.default));
+	}
+
+	if (isTierlistPage && !TierListViewComponent) {
+		import('$lib/views/TierListView.svelte').then((m) => (TierListViewComponent = m.default));
+	}
+
+	if (hasActiveFilters && currentFilteredGames.length === 0 && !NoResultsComponent) {
+		import('$lib/components/NoResults.svelte').then((m) => (NoResultsComponent = m.default));
+	}
+
+	if (filtersStore.isDesktopFiltersExpanded && innerWidth >= 768) {
+		if (!SearchBarComponent) import('$lib/components/SearchBar.svelte').then((m) => (SearchBarComponent = m.default));
+		if (!FilterDropdownComponent)
+			import('$lib/components/FilterDropdown.svelte').then((m) => (FilterDropdownComponent = m.default));
+		if (!FilterToggleComponent)
+			import('$lib/components/FilterToggle.svelte').then((m) => (FilterToggleComponent = m.default));
+		if (!RatingsSortComponent)
+			import('$lib/components/RatingsSort.svelte').then((m) => (RatingsSortComponent = m.default));
 	}
 });
 
@@ -475,7 +495,6 @@ function openModalWithFilterContext(game: Game, contextGames?: Game[]) {
 	modalStore.openViewModal(game, contextGames ?? currentFilteredGames);
 }
 
-let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 let canReset = $derived(hasActiveFilters || filtersStore.isSortModified());
 
 afterNavigate(({ from }) => {
@@ -611,39 +630,45 @@ async function installApp() {
 				<!-- Filters are shown on desktop via FilterDropdowns -->
 				{#if filtersStore.isDesktopFiltersExpanded}
 						<div class="filter-content mb-8 space-y-4">
-							<SearchBar />
+							{#if SearchBarComponent}
+								<SearchBarComponent />
+							{/if}
 							<div class="flex flex-col items-center gap-4">
 								<div class="flex flex-wrap items-center justify-center gap-3">
-									<FilterDropdown
-										type="platforms"
-										label="Platforms"
-										options={filterOptions.platforms}
-										selectedOptions={selectedPlatforms}
-									/>
-									<FilterDropdown
-										type="genres"
-										label="Genres"
-										options={filterOptions.genres}
-										selectedOptions={selectedGenres}
-									/>
-									{#if showTiersFilter}
-										<FilterDropdown
-											type="tiers"
-											label="Tiers"
-											options={filterOptions.tiers}
-											selectedOptions={selectedTiers}
+									{#if FilterDropdownComponent}
+										<FilterDropdownComponent
+											type="platforms"
+											label="Platforms"
+											options={filterOptions.platforms}
+											selectedOptions={selectedPlatforms}
 										/>
+										<FilterDropdownComponent
+											type="genres"
+											label="Genres"
+											options={filterOptions.genres}
+											selectedOptions={selectedGenres}
+										/>
+										{#if showTiersFilter}
+											<FilterDropdownComponent
+												type="tiers"
+												label="Tiers"
+												options={filterOptions.tiers}
+												selectedOptions={selectedTiers}
+											/>
+										{/if}
 									{/if}
 
-									{#if showCoOpFilter}
-										<FilterToggle
+									{#if showCoOpFilter && FilterToggleComponent}
+										<FilterToggleComponent
 											label="Co-op"
 											value="Yes"
 											isSelected={selectedCoOp.includes('Yes')}
 										/>
 									{/if}
 									<span class="pipe-separator">|</span>
-									<RatingsSort />
+									{#if RatingsSortComponent}
+										<RatingsSortComponent />
+									{/if}
 									<button
 										class="reset-button flex h-[44px] w-[44px] items-center justify-center rounded-md transition-all"
 										class:invisible={!canReset}
@@ -674,7 +699,9 @@ async function installApp() {
 			<div class="mx-auto" style="max-width: 1800px;">
 				{#if isGamesPage}
 					{#if hasActiveFilters && currentFilteredGames.length === 0}
-						<NoResults onReset={resetFilters} />
+						{#if NoResultsComponent}
+							<NoResultsComponent onReset={resetFilters} />
+						{/if}
 					{:else}
 						<GamesView
 							filteredGames={currentFilteredGames}
@@ -689,7 +716,13 @@ async function installApp() {
 						{@render children?.()}
 					</div>
 				{:else if isTierlistPage}
-					<TierListView filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
+					{#if TierListViewComponent}
+						<TierListViewComponent filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
+					{:else}
+						<div class="flex items-center justify-center p-12">
+							<div class="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent"></div>
+						</div>
+					{/if}
 
 					<div style="display: none;">
 						{@render children?.()}

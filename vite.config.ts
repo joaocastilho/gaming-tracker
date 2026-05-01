@@ -69,11 +69,7 @@ export default defineConfig({
 					}
 
 					if (id.includes('node_modules')) {
-						if (id.includes('lucide-svelte')) {
-							return 'vendor-ui';
-						}
-
-						if (id.includes('date-fns') || id.includes('zod') || id.match(/node_modules\/(lodash|date-fns|dayjs)/)) {
+						if (id.includes('zod') || id.match(/node_modules\/(lodash|dayjs)/)) {
 							return 'vendor-utils';
 						}
 						if (id.includes('svelte') || id.includes('@sveltejs')) {
@@ -94,7 +90,7 @@ export default defineConfig({
 		},
 	},
 	optimizeDeps: {
-		include: ['lucide-svelte', 'date-fns', 'zod', 'dexie'],
+		include: ['lucide-svelte', 'zod', 'dexie'],
 		exclude: ['web-vitals'],
 	},
 	server: {
