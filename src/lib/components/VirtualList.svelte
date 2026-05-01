@@ -166,8 +166,7 @@ $effect(() => {
 
 <style>
 	.virtual-list-container {
-		contain: layout paint;
-		touch-action: pan-y;
+		width: 100%;
 	}
 
 	.virtual-spacer {

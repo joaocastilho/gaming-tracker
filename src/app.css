@@ -724,8 +724,7 @@ body,
 	body {
 		scrollbar-width: none;
 		-ms-overflow-style: none;
-		/* Prevent pull-to-refresh causing scroll jank on Firefox mobile */
-		overscroll-behavior-y: none;
+		/* Restore pull-to-refresh while maintaining scrollbar hiding */
 	}
 }
 
@@ -784,9 +783,8 @@ body,
 		transform: none;
 	}
 
-	/* Improve touch scrolling performance */
+	/* Remove touch-action: pan-y to restore pull-to-refresh */
 	body {
-		touch-action: pan-y;
 	}
 
 	.tier-badge {
