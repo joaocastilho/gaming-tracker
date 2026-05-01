@@ -21,7 +21,7 @@ function optimizeCss() {
 		transformIndexHtml(html: string) {
 			// Read critical CSS
 			const criticalCss = fs.readFileSync(path.resolve('src/lib/styles/critical.css'), 'utf-8');
-			
+
 			// 1. Convert stylesheet links to async preload
 			// This matches the pattern SvelteKit uses for CSS links
 			let newHtml = html.replace(
@@ -30,10 +30,7 @@ function optimizeCss() {
 			);
 
 			// 2. Inject critical CSS and noscript fallback
-			newHtml = newHtml.replace(
-				'</head>',
-				`    <style>${criticalCss}</style>\n    </head>`
-			);
+			newHtml = newHtml.replace('</head>', `    <style>${criticalCss}</style>\n    </head>`);
 
 			return newHtml;
 		},
