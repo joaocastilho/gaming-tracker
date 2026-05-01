@@ -14,17 +14,17 @@ class AppStore {
 	constructor() {
 		if (
 			typeof window !== 'undefined' &&
-			typeof localStorage !== 'undefined' &&
-			typeof localStorage.getItem === 'function'
+			typeof window.localStorage !== 'undefined' &&
+			typeof window.localStorage.getItem === 'function'
 		) {
-			const savedTheme = localStorage.getItem('gaming-tracker-theme') as ThemeValue | null;
+			const savedTheme = window.localStorage.getItem('gaming-tracker-theme') as ThemeValue | null;
 			if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
 				this.theme = savedTheme;
 			}
 
 			$effect.root(() => {
 				$effect(() => {
-					localStorage.setItem('gaming-tracker-theme', this.theme);
+					window.localStorage.setItem('gaming-tracker-theme', this.theme);
 					document.documentElement.classList.remove('light', 'dark');
 					document.documentElement.classList.add(this.theme);
 				});
