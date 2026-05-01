@@ -29,6 +29,14 @@ let {
 }: Props = $props();
 
 let isEditor = $derived(editorStore.editorMode);
+
+const buildDate = new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+}).format(new Date(__BUILD_DATE__));
 </script>
 
 <div class="mobile-settings-container md:hidden">
@@ -166,7 +174,7 @@ let isEditor = $derived(editorStore.editorMode);
 					</button>
 				{/if}
 				<div class="mt-2 text-center text-xs text-neutral-500">
-					Last Update: {__BUILD_DATE__}
+					Last Update: {buildDate}
 				</div>
 			</div>
 		</div>
