@@ -16,7 +16,17 @@ function injectBuildDate() {
 	return {
 		name: 'inject-build-date',
 		transformIndexHtml(html: string) {
-			return html.replace('%build-date%', String(Date.now()));
+			const buildDate = new Date().toLocaleString(undefined, {
+				month: 'short',
+				day: 'numeric',
+				year: 'numeric',
+				hour: 'numeric',
+				minute: '2-digit',
+				second: '2-digit',
+				hour12: false,
+				timeZoneName: 'short',
+			});
+			return html.replace('%build-date%', buildDate);
 		},
 	};
 }
