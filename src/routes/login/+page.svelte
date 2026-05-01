@@ -7,7 +7,13 @@ let isModalOpen = $state(true);
 let editorMode = $derived(editorStore.editorMode);
 
 const appVersion = __APP_VERSION__;
-const buildDate = __BUILD_DATE__;
+const buildDate = new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+}).format(new Date(__BUILD_DATE__));
 
 $effect(() => {
 	if (editorMode) {
