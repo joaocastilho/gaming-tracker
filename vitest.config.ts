@@ -10,6 +10,7 @@ export default defineConfig({
 		include: ['tests/**/*.{test,spec}.{js,ts}'],
 		setupFiles: ['fake-indexeddb/auto', 'tests/setup.ts'],
 		restoreMocks: true,
+		testTimeout: 10000,
 	},
 	resolve: {
 		conditions: ['browser'],

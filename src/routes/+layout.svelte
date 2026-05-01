@@ -32,9 +32,6 @@ let {
 
 import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 import FilterToggle from '$lib/components/FilterToggle.svelte';
-import MobileFilters from '$lib/components/MobileFilters.svelte';
-import MobileSearch from '$lib/components/layout/MobileSearch.svelte';
-import MobileSettingsMenu from '$lib/components/layout/MobileSettingsMenu.svelte';
 
 import NoResults from '$lib/components/NoResults.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
@@ -275,37 +272,40 @@ let loginModalOpen = $state(false);
 
 let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
 
-let DetailModalComponent = $state<any>(null);
-let GameEditorModalComponent = $state<any>(null);
-let DeleteConfirmModalComponent = $state<any>(null);
-let LoginModalComponent = $state<any>(null);
-let MobileSearchComponent = $state<any>(null);
-let MobileFiltersComponent = $state<any>(null);
-let MobileSettingsMenuComponent = $state<any>(null);
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic component types require 'any' to be compatible with multiple component signatures
+type AnyComponent = import('svelte').Component<any, any, any>;
+
+let DetailModalComponent = $state<AnyComponent | null>(null);
+let GameEditorModalComponent = $state<AnyComponent | null>(null);
+let DeleteConfirmModalComponent = $state<AnyComponent | null>(null);
+let LoginModalComponent = $state<AnyComponent | null>(null);
+let MobileSearchComponent = $state<AnyComponent | null>(null);
+let MobileFiltersComponent = $state<AnyComponent | null>(null);
+let MobileSettingsMenuComponent = $state<AnyComponent | null>(null);
 
 $effect(() => {
 	if (!browser) return;
-	
+
 	if ($modalStore.isOpen && !DetailModalComponent) {
-		import('$lib/components/DetailModal.svelte').then(m => DetailModalComponent = m.default);
+		import('$lib/components/DetailModal.svelte').then((m) => (DetailModalComponent = m.default));
 	}
 	if (editorModalOpen && !GameEditorModalComponent) {
-		import('$lib/components/GameEditorModal.svelte').then(m => GameEditorModalComponent = m.default);
+		import('$lib/components/GameEditorModal.svelte').then((m) => (GameEditorModalComponent = m.default));
 	}
 	if (deleteModalOpen && !DeleteConfirmModalComponent) {
-		import('$lib/components/DeleteConfirmModal.svelte').then(m => DeleteConfirmModalComponent = m.default);
+		import('$lib/components/DeleteConfirmModal.svelte').then((m) => (DeleteConfirmModalComponent = m.default));
 	}
 	if (loginModalOpen && !LoginModalComponent) {
-		import('$lib/components/LoginModal.svelte').then(m => LoginModalComponent = m.default);
+		import('$lib/components/LoginModal.svelte').then((m) => (LoginModalComponent = m.default));
 	}
 	if (isSearchOpen && !MobileSearchComponent) {
-		import('$lib/components/layout/MobileSearch.svelte').then(m => MobileSearchComponent = m.default);
+		import('$lib/components/layout/MobileSearch.svelte').then((m) => (MobileSearchComponent = m.default));
 	}
 	if (isFiltersOpen && !MobileFiltersComponent) {
-		import('$lib/components/MobileFilters.svelte').then(m => MobileFiltersComponent = m.default);
+		import('$lib/components/MobileFilters.svelte').then((m) => (MobileFiltersComponent = m.default));
 	}
 	if (isSettingsMenuOpen && !MobileSettingsMenuComponent) {
-		import('$lib/components/layout/MobileSettingsMenu.svelte').then(m => MobileSettingsMenuComponent = m.default);
+		import('$lib/components/layout/MobileSettingsMenu.svelte').then((m) => (MobileSettingsMenuComponent = m.default));
 	}
 });
 

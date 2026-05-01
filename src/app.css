@@ -783,10 +783,6 @@ body,
 		transform: none;
 	}
 
-	/* Remove touch-action: pan-y to restore pull-to-refresh */
-	body {
-	}
-
 	.tier-badge {
 		font-size: 0.75rem;
 		padding: 4px 8px;
