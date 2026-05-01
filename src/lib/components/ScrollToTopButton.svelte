@@ -1,8 +1,5 @@
 <script lang="ts">
 import { modalStore } from '$lib/stores/modal.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { RotateCcw } from 'lucide-svelte';
-import { browser } from '$app/environment';
 
 interface Props {
 	hideWhenFiltersOpen?: boolean;
@@ -31,23 +28,7 @@ function scrollToTop() {
 	});
 }
 
-function resetFilters() {
-	filtersStore.resetAllFilters();
-	filtersStore.setSearchTerm('');
-	filtersStore.setSort(null);
-	scrollToTop();
-}
 
-let hasActiveFilters = $derived(
-	(isVisible || (browser && window.innerWidth < 768)) && // Show when scrolled OR always on mobile if we want (but requirement says "above scroll to top", implying scroll logic)
-		// Actually, let's stick to "visible when scroll to top is visible" to start, or maybe distinct.
-		// Re-reading: "hover button above the scroll to top".
-		// Let's use the same isVisible logic for consistency.
-		isVisible &&
-		!$modalStore.isOpen &&
-		!hideWhenFiltersOpen &&
-		(filtersStore.isAnyFilterApplied() || filtersStore.isSortModified())
-);
 
 function handleKeydown(event: KeyboardEvent) {
 	if (event.key === 'Enter' || event.key === ' ') {
@@ -71,65 +52,10 @@ function handleKeydown(event: KeyboardEvent) {
 	</button>
 {/if}
 
-{#if hasActiveFilters}
-	<button
-		type="button"
-		class="reset-filters-fab"
-		aria-label="Reset all filters"
-		onclick={resetFilters}
-		tabindex="0"
-	>
-		<RotateCcw size={24} />
-		<span class="sr-only">Reset all filters</span>
-	</button>
-{/if}
+
 
 <style>
-	/* Reset FAB Styles */
-	.reset-filters-fab {
-		position: fixed;
-		bottom: calc(130px + env(safe-area-inset-bottom, 0px)); /* 65px + 52px + 13px gap */
-		right: 24px;
-		width: 52px;
-		height: 52px;
-		border-radius: 50%;
-		border: 1px solid var(--color-border);
-		background-color: rgba(75, 85, 99, 0.4);
-		color: white;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-		transition: all 0.3s ease;
-		z-index: 50;
-		outline: none;
-		opacity: 0.8;
-		touch-action: manipulation;
-		-webkit-tap-highlight-color: transparent;
-	}
 
-	@media (hover: hover) {
-		.reset-filters-fab:hover {
-			transform: translateY(-2px);
-			box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-			background-color: rgba(75, 85, 99, 0.6);
-			color: white;
-		}
-	}
-
-	:global(.light) .reset-filters-fab {
-		background-color: rgba(156, 163, 175, 0.4);
-		color: #1c1917;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
-
-	@media (hover: hover) {
-		:global(.light) .reset-filters-fab:hover {
-			background-color: rgba(156, 163, 175, 0.6);
-			color: #1c1917;
-		}
-	}
 
 	/* Existing Scroll Button Styles */
 	.scroll-to-top-button {
@@ -199,13 +125,6 @@ function handleKeydown(event: KeyboardEvent) {
 			height: 48px;
 			font-size: 1.2rem;
 		}
-
-		.reset-filters-fab {
-			bottom: calc(196px + env(safe-area-inset-bottom, 0px)); /* 136px + 48px + 12px */
-			right: 16px; /* Match scroll btn right */
-			width: 48px;
-			height: 48px;
-		}
 	}
 
 	@media (max-width: 480px) {
@@ -215,13 +134,6 @@ function handleKeydown(event: KeyboardEvent) {
 			width: 44px;
 			height: 44px;
 			font-size: 1.1rem;
-		}
-
-		.reset-filters-fab {
-			bottom: calc(196px + env(safe-area-inset-bottom, 0px)); /* 141px + 44px + 11px */
-			right: 16px;
-			width: 44px;
-			height: 44px;
 		}
 	}
 

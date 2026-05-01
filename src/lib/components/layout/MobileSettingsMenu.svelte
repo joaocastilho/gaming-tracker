@@ -1,7 +1,8 @@
 <script lang="ts">
 import { appStore } from '$lib/stores/app.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
-import { SlidersHorizontal, Settings, Moon, Sun, LogIn, LogOut, Plus, Download, Share } from 'lucide-svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { SlidersHorizontal, Settings, Moon, Sun, LogIn, LogOut, Plus, Download, Share, RotateCcw } from 'lucide-svelte';
 import { focusTrap } from '$lib/utils/focusTrap';
 
 interface Props {
@@ -37,9 +38,29 @@ const buildDate = new Intl.DateTimeFormat(undefined, {
 	hour: 'numeric',
 	minute: '2-digit',
 }).format(new Date(__BUILD_DATE__));
+
+let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied() || filtersStore.isSortModified());
+
+function handleResetFilters() {
+	filtersStore.resetAllFilters();
+	filtersStore.setSearchTerm('');
+	filtersStore.setSort(null);
+}
 </script>
 
 <div class="mobile-settings-container md:hidden">
+	{#if hasActiveFilters}
+		<button
+			type="button"
+			class="floating-action-button reset-fab"
+			onclick={handleResetFilters}
+			aria-label="Reset filters"
+			title="Reset Filters"
+		>
+			<RotateCcw size={20} />
+		</button>
+	{/if}
+
 	<button
 		type="button"
 		class="floating-action-button filter-fab"
@@ -297,6 +318,23 @@ const buildDate = new Intl.DateTimeFormat(undefined, {
 		.filter-fab:hover {
 			background: rgba(99, 102, 241, 0.6);
 			box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+			opacity: 1;
+		}
+	}
+
+	.reset-fab {
+		background: rgba(239, 68, 68, 0.4);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		color: white;
+		opacity: 0.8;
+	}
+
+	@media (hover: hover) {
+		.reset-fab:hover {
+			background: rgba(239, 68, 68, 0.6);
+			box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
 			opacity: 1;
 		}
 	}
