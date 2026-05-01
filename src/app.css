@@ -20,6 +20,10 @@ html {
 	font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
 }
 
+body {
+    min-height: 100dvh;
+}
+
 /* ============================================
    DARK MODE - Midnight Glass Theme
    ============================================ */
