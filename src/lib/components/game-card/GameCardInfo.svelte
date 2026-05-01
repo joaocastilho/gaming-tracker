@@ -177,9 +177,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		border-radius: 4px;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
-		transition: all var(--transition-normal);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
+		transition:
+			background-color var(--transition-normal),
+			border-color var(--transition-normal);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		line-height: 1;
 	}

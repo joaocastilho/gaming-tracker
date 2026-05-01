@@ -13,12 +13,12 @@ function stripHtmlComments() {
 }
 
 function injectBuildDate() {
-    return {
-        name: 'inject-build-date',
-        transformIndexHtml(html: string) {
-            return html.replace('%build-date%', String(Date.now()));
-        },
-    };
+	return {
+		name: 'inject-build-date',
+		transformIndexHtml(html: string) {
+			return html.replace('%build-date%', String(Date.now()));
+		},
+	};
 }
 
 export default defineConfig({
@@ -28,7 +28,7 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
-  injectBuildDate(),
+		injectBuildDate(),
 		stripHtmlComments(),
 		{
 			name: 'fix-mjs-content-type',

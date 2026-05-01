@@ -31,11 +31,11 @@ let {
 let isEditor = $derived(editorStore.editorMode);
 
 const buildDate = new Intl.DateTimeFormat(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
+	month: 'short',
+	day: 'numeric',
+	year: 'numeric',
+	hour: 'numeric',
+	minute: '2-digit',
 }).format(new Date(__BUILD_DATE__));
 </script>
 

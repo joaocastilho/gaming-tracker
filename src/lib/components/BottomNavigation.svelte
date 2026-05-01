@@ -124,6 +124,10 @@ function handleKeyDown(event: KeyboardEvent, target: NavId) {
 		background-color: var(--color-background);
 		border-color: var(--color-border);
 		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+		/* Force GPU compositing to keep nav pinned during scroll on Firefox mobile */
+		transform: translateZ(0);
+		will-change: transform;
+		-webkit-transform: translateZ(0);
 	}
 
 	.nav-button {
@@ -133,13 +137,15 @@ function handleKeyDown(event: KeyboardEvent, target: NavId) {
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.nav-button:hover {
-		color: var(--color-text-primary);
-		background-color: rgba(99, 102, 241, 0.03);
-	}
+	@media (hover: hover) {
+		.nav-button:hover {
+			color: var(--color-text-primary);
+			background-color: rgba(99, 102, 241, 0.03);
+		}
 
-	:global(.light) .nav-button:hover {
-		background-color: rgba(234, 88, 12, 0.03);
+		:global(.light) .nav-button:hover {
+			background-color: rgba(234, 88, 12, 0.03);
+		}
 	}
 
 	.nav-button.active {

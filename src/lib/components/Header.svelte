@@ -212,6 +212,9 @@ async function handleLogout() {
 		position: sticky;
 		top: 0;
 		z-index: 40;
+		/* Force own compositing layer to prevent scroll repaint on Firefox mobile */
+		transform: translateZ(0);
+		-webkit-transform: translateZ(0);
 	}
 
 	.header-inner {

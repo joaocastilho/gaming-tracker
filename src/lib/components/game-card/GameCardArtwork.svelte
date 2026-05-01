@@ -416,14 +416,17 @@ function getCompletionDay(dateStr: string | null): string {
 			width: 32px;
 			height: 32px;
 			border: 1px solid rgba(255, 255, 255, 0.15);
+			/* Remove backdrop-filter on small cards for performance */
+			backdrop-filter: none;
+			-webkit-backdrop-filter: none;
 		}
 
 		.edit-btn {
-			background: rgba(0, 0, 0, 0.35);
+			background: rgba(0, 0, 0, 0.65);
 		}
 
 		.delete-btn {
-			background: rgba(239, 68, 68, 0.35);
+			background: rgba(180, 30, 30, 0.75);
 		}
 
 		.tier-badge {
@@ -431,9 +434,9 @@ function getCompletionDay(dateStr: string | null): string {
 			min-width: 26px;
 			top: 8px;
 			right: 8px;
-			background-color: rgba(0, 0, 0, 0.2);
-			backdrop-filter: blur(4px);
-			-webkit-backdrop-filter: blur(4px);
+			background-color: rgba(0, 0, 0, 0.55);
+			backdrop-filter: none;
+			-webkit-backdrop-filter: none;
 			border: 1px solid rgba(255, 255, 255, 0.1);
 		}
 

@@ -167,7 +167,7 @@ $effect(() => {
 <style>
 	.virtual-list-container {
 		contain: layout paint;
-		will-change: scroll-position;
+		touch-action: pan-y;
 	}
 
 	.virtual-spacer {
@@ -183,9 +183,6 @@ $effect(() => {
 		overflow: hidden;
 	}
 
-	:global(.virtual-list-container) {
-		scroll-behavior: smooth;
-	}
 
 	@media (min-width: 768px) {
 		@supports (scrollbar-width: thin) {
