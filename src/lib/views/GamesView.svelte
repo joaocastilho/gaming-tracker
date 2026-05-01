@@ -124,29 +124,33 @@ function handleOpenModal(game: Game) {
 			{/snippet}
 		</VirtualList>
 	{:else if filteredGames.length > 0}
-		<div class="game-gallery-virtual">
-			{#each rows.slice(0, 4) as row (row.id)}
-				<div class="game-row pb-5" style="height: {itemHeight}px;">
-					{#each row.games as game, i (game.id ?? `fallback-ssr-${row.id}-${game.title || 'unknown'}`)}
-						<div class="game-card-wrapper">
-							<GameCard
-								{game}
-								{displayedGames}
-								isPriority={i < 4}
-								isAboveFold={i < 4}
-								onOpenModal={handleOpenModal}
-								{onEditGame}
-								{onDeleteGame}
-							/>
+		<div class="virtual-list-container game-gallery-virtual" style="height: {itemHeight * Math.min(1, rows.length)}px; position: relative;">
+			<div class="virtual-items" style="position: absolute; top: 0px; left: 0; right: 0;">
+				{#each rows.slice(0, 1) as row (row.id)}
+					<div class="virtual-item">
+						<div class="game-row pb-5" style="height: {itemHeight}px;">
+							{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
+								<div class="game-card-wrapper">
+									<GameCard
+										{game}
+										{displayedGames}
+										isPriority={i < 4}
+										isAboveFold={i < 4}
+										onOpenModal={handleOpenModal}
+										{onEditGame}
+										{onDeleteGame}
+									/>
+								</div>
+							{/each}
+							{#if row.games.length < columns}
+								{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
+									<div class="game-card-wrapper empty"></div>
+								{/each}
+							{/if}
 						</div>
-					{/each}
-					{#if row.games.length < columns}
-						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
-							<div class="game-card-wrapper empty"></div>
-						{/each}
-					{/if}
-				</div>
-			{/each}
+					</div>
+				{/each}
+			</div>
 		</div>
 	{:else if loading || !mounted}
 		<SkeletonGrid {containerWidth} />
