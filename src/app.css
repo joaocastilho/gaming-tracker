@@ -703,6 +703,8 @@ body,
 	body {
 		scrollbar-width: none;
 		-ms-overflow-style: none;
+		/* Prevent pull-to-refresh causing scroll jank on Firefox mobile */
+		overscroll-behavior-y: none;
 	}
 }
 

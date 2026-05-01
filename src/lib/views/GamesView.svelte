@@ -93,7 +93,7 @@ function handleOpenModal(game: Game) {
 			items={rows}
 			{itemHeight}
 			useWindowScroll={true}
-			overscan={5}
+			overscan={2}
 			keyExtractor={(row, i) => row?.id ?? `row-${i}`}
 			className="game-gallery-virtual"
 		>
@@ -161,12 +161,7 @@ function handleOpenModal(game: Game) {
 		width: 100%;
 		min-height: 600px;
 		padding-bottom: 60px;
-	}
-
-	@media (max-width: 768px) {
-		.game-gallery-container {
-			padding-bottom: 60px;
-		}
+		overscroll-behavior-y: contain;
 	}
 
 	:global(.game-gallery-virtual) {

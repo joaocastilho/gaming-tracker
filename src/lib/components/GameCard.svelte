@@ -104,13 +104,17 @@ function handleKeyDown(event: KeyboardEvent) {
 		background: var(--color-surface);
 		border: 0px;
 		box-shadow: var(--shadow-md);
-		transition: all var(--transition-normal);
+		transition:
+			background-color var(--transition-normal),
+			box-shadow var(--transition-normal);
 		cursor: pointer;
 		padding: 0;
 		text-align: left;
 		contain: layout style;
 		container-type: inline-size;
 		container-name: game-card;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.game-card.tierlist-size {
@@ -119,11 +123,13 @@ function handleKeyDown(event: KeyboardEvent) {
 		--cover-height: auto;
 	}
 
-	.game-card:hover,
-	.game-card:focus-visible {
-		transform: translateY(-4px);
-		box-shadow: var(--shadow-xl);
-		outline: none;
+	@media (hover: hover) {
+		.game-card:hover,
+		.game-card:focus-visible {
+			transform: translateY(-4px);
+			box-shadow: var(--shadow-xl);
+			outline: none;
+		}
 	}
 
 	.game-info {

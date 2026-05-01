@@ -235,30 +235,32 @@ function getCompletionDay(dateStr: string | null): string {
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: linear-gradient(
-			90deg,
-			var(--color-surface) 0%,
-			var(--color-surface-elevated) 25%,
-			var(--color-border-subtle) 50%,
-			var(--color-surface-elevated) 75%,
-			var(--color-surface) 100%
-		);
-		background-size: 200% 100%;
-		animation: skeleton-shimmer 2s ease-in-out infinite;
+		background: var(--color-surface-elevated);
+		overflow: hidden;
 		z-index: 1;
 		opacity: 0.7;
 		transition: opacity var(--transition-normal);
 	}
 
-	:global(.light) .skeleton-loader {
+	.skeleton-loader::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
 		background: linear-gradient(
 			90deg,
-			var(--color-surface) 0%,
-			var(--color-surface-elevated) 25%,
-			var(--color-border) 50%,
-			var(--color-surface-elevated) 75%,
-			var(--color-surface) 100%
+			transparent 0%,
+			var(--color-border-subtle) 50%,
+			transparent 100%
 		);
+		animation: skeleton-shimmer 2s ease-in-out infinite;
+		will-change: transform;
+	}
+
+	:global(.light) .skeleton-loader {
+		background: var(--color-surface-elevated-solid);
 	}
 
 	.cover-image {
@@ -269,21 +271,19 @@ function getCompletionDay(dateStr: string | null): string {
 		position: relative;
 		z-index: 2;
 		opacity: 0;
-		transition: opacity 0.5s ease-in-out;
-		filter: blur(2px);
+		transition: opacity 0.4s ease-in-out;
 	}
 
 	.cover-image.loaded {
 		opacity: 1;
-		filter: blur(0px);
 	}
 
 	@keyframes skeleton-shimmer {
 		0% {
-			background-position: -200% 0;
+			transform: translateX(-100%);
 		}
 		100% {
-			background-position: 200% 0;
+			transform: translateX(100%);
 		}
 	}
 
