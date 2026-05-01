@@ -79,7 +79,16 @@ export default defineConfig({
 					}
 
 					if (id.includes('node_modules')) {
-						if (id.includes('zod') || id.match(/node_modules\/(lodash|dayjs)/)) {
+						if (id.includes('dexie')) {
+							return 'vendor-db';
+						}
+						if (id.includes('@chenglou/pretext')) {
+							return 'vendor-text';
+						}
+						if (id.includes('lucide-svelte')) {
+							return 'vendor-icons';
+						}
+						if (id.includes('zod')) {
 							return 'vendor-utils';
 						}
 						if (id.includes('svelte') || id.includes('@sveltejs')) {

@@ -10,7 +10,6 @@ import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
 import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn } from 'lucide-svelte';
-import LoginModal from '$lib/components/LoginModal.svelte';
 import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
 const isMac = $derived(browser && navigator.platform.toLowerCase().includes('mac'));
@@ -19,9 +18,10 @@ const shortcutKey = $derived(isMac ? 'Cmd + /' : 'Ctrl + /');
 interface Props {
 	onAddGame?: () => void;
 	onApplyChanges?: () => void;
+	onOpenLogin?: () => void;
 }
 
-let { onAddGame, onApplyChanges }: Props = $props();
+let { onAddGame, onApplyChanges, onOpenLogin }: Props = $props();
 
 type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -37,7 +37,6 @@ let isEditor = $derived(editorStore.editorMode);
 let hasPending = $derived(editorStore.hasPendingChanges);
 let pendingCount = $derived(editorStore.pendingChangesCount);
 let isSaving = $derived(editorStore.savePending);
-let loginModalOpen = $state(false);
 
 let navItems = $derived.by(() => {
 	const counts = filteredCountsStore.counts;
@@ -189,7 +188,7 @@ async function handleLogout() {
 				<button
 					type="button"
 					class="editor-button login-button"
-					onclick={() => (loginModalOpen = true)}
+					onclick={() => onOpenLogin?.()}
 					title="Login"
 				>
 					<LogIn size={16} />
@@ -202,8 +201,6 @@ async function handleLogout() {
 		</div>
 	</div>
 </header>
-
-<LoginModal bind:open={loginModalOpen} />
 
 <style>
 	.header-root {

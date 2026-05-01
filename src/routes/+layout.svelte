@@ -639,7 +639,11 @@ async function installApp() {
 
 {#if initialized}
 	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
-		<Header onAddGame={handleAddGame} onApplyChanges={handleApplyChanges} />
+		<Header
+			onAddGame={handleAddGame}
+			onApplyChanges={handleApplyChanges}
+			onOpenLogin={() => (loginModalOpen = true)}
+		/>
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
 				<!-- Filters are shown on desktop via FilterDropdowns -->
