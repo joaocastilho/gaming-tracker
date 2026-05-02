@@ -2,7 +2,6 @@
 
 **Project**: Gaming Tracker (SvelteKit + TypeScript + Bun)  
 **Purpose**: Instructions for AI agents working on this codebase  
-**Current Grade**: 9.7/10 (All type assertions removed, production ready)
 
 **Key Documents**:
 
@@ -35,7 +34,7 @@
 2. **Run the test** - Verify it fails with a clear error message
 3. **Implement the fix** - Make the minimal change to make the test pass
 4. **Run the test** - Verify it now passes
-5. **Run full suite** - `bun test` - ensure no regressions
+5. **Run full suite** - `bun run test` - ensure no regressions
 6. **Proceed to quality checks** - Lint, typecheck, format
 
 **This is non-negotiable.** Every refactor must be covered by tests before implementation.
@@ -135,7 +134,7 @@ bun run format
 
 ```bash
 # Step 1: Run affected tests
-bun test
+bun run test
 
 # Step 2: If tests pass
 bun run format
@@ -195,7 +194,7 @@ Remove from your changes:
 ### Step 6: Tests
 
 ```bash
-bun test
+bun run test
 ```
 
 - [ ] All tests pass
