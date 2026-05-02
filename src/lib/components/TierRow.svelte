@@ -90,7 +90,7 @@ function intersectionObserver(node: HTMLElement) {
 
 	.tier-header {
 		font-size: 1.5rem;
-		font-weight: 700;
+		font-weight: 600;
 		padding: 0.75rem 1rem;
 		border-radius: 0.5rem;
 		margin-bottom: 1rem;

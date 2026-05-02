@@ -812,7 +812,7 @@ body,
 
 .tier-header {
 	padding: 16px 24px;
-	font-weight: 700;
+	font-weight: 600;
 	font-size: 1.1rem;
 	color: white;
 	display: flex;
@@ -866,7 +866,7 @@ body,
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
-	font-weight: 700;
+	font-weight: 600;
 	font-size: 1rem;
 	color: var(--color-rating-total);
 }

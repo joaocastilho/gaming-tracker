@@ -37,7 +37,7 @@ let {
 		</div>
 
 		<div class="text-content space-y-3 text-center">
-			<h2 class="message-title text-2xl font-bold tracking-tight">
+			<h2 class="message-title text-2xl font-semibold tracking-tight">
 				{message}
 			</h2>
 			<p class="description-text leading-relaxed font-medium">

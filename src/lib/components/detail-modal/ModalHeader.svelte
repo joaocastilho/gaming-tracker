@@ -55,7 +55,7 @@ $effect(() => {
 		class="flex min-w-0 flex-1 flex-col items-center justify-start overflow-hidden text-center md:items-start md:text-left"
 		style="color: var(--color-text-primary);"
 	>
-		<span bind:this={titleElement} class="modal-title-text w-full font-bold">
+		<span bind:this={titleElement} class="modal-title-text w-full font-semibold">
 			{game.mainTitle}
 		</span>
 		{#if game.subtitle}

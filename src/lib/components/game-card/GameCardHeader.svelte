@@ -62,7 +62,7 @@ const isExtraLongTitle = $derived(totalLength > 60);
 	.game-title {
 		font-family: 'Inter', sans-serif;
 		font-size: clamp(1.15rem, 8cqi, 1.4rem);
-		font-weight: 800;
+		font-weight: 700;
 		letter-spacing: -0.01em;
 		margin: 0;
 		line-height: 1.1;
