@@ -27,7 +27,7 @@ let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
 const isEditor = $derived($editorStore.editorMode);
 let mounted = $state(browser);
-let containerWidth = $state(1600);
+let containerWidth = $state(0);
 
 let columns = $derived(
 	(() => {

@@ -58,7 +58,9 @@ $effect(() => {
 $effect.pre(() => {
 	if (!browser) return;
 
-	gamesStore.loadFromIDB();
+	setTimeout(() => {
+		gamesStore.loadFromIDB();
+	}, 0);
 
 	if (data.games && data.games instanceof Promise) {
 		data.games
@@ -164,7 +166,7 @@ let currentPage = $derived.by(() => {
 
 let currentFilteredGames = $derived(filteredGamesStore.games);
 
-let canonicalUrl = $derived(page.url.pathname);
+let canonicalUrl = $derived(page.url.origin + page.url.pathname);
 
 let isGamesPage = $derived(currentPage === 'all' || currentPage === 'completed' || currentPage === 'planned');
 
@@ -628,7 +630,7 @@ async function installApp() {
 			onApplyChanges={handleApplyChanges}
 			onOpenLogin={() => (loginModalOpen = true)}
 		/>
-		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block">
+		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block" style="min-height: 44px;">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
 				<!-- Filters are shown on desktop via FilterDropdowns -->
 				{#if filtersStore.isDesktopFiltersExpanded}

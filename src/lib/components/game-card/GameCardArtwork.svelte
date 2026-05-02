@@ -157,6 +157,8 @@ function getCompletionDay(dateStr: string | null): string {
 			loading={isAboveFold ? 'eager' : 'lazy'}
 			fetchpriority={isAboveFold ? 'high' : 'auto'}
 			decoding="async"
+			width="300"
+			height="450"
 			use:imageAction
 			onmouseover={preloadDetailImage}
 			onfocus={preloadDetailImage}

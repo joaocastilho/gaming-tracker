@@ -140,10 +140,18 @@ $effect(() => {
 		window.addEventListener('scroll', handleScroll, { passive: true });
 		window.addEventListener('resize', updateDimensions);
 
+		let scheduled = false;
+
 		// Use ResizeObserver to track container position changes without polling
 		const resizeObserver = new ResizeObserver(() => {
+			if (scheduled) return;
+			scheduled = true;
+
 			// Use requestAnimationFrame to batch the read
-			requestAnimationFrame(updateContainerPosition);
+			requestAnimationFrame(() => {
+				updateContainerPosition();
+				scheduled = false;
+			});
 		});
 
 		if (container) resizeObserver.observe(container.parentElement || container);

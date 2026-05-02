@@ -5,10 +5,19 @@ interface Props {
 
 let { containerWidth }: Props = $props();
 
-let columns = $derived(!containerWidth || containerWidth < 768 ? 2 : Math.max(1, Math.floor(containerWidth / 320)));
+let columns = $derived(
+	(() => {
+		if (!containerWidth) return 1;
+		const minCardWidth = 185;
+		const gap = 12;
+		const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
+		return Math.min(5, Math.max(2, calculatedColumns));
+	})()
+);
 
 let itemHeight = $derived(
 	(() => {
+		if (!containerWidth || columns === 0) return 450;
 		const containerPadding = 16;
 		const gap = 12;
 		const totalGapWidth = (columns - 1) * gap;
@@ -16,7 +25,7 @@ let itemHeight = $derived(
 		const columnWidth = availableWidth / columns;
 		const coverHeight = columnWidth * 1.5;
 
-		const infoHeight = 300;
+		const infoHeight = columnWidth <= 200 ? 240 : 275;
 
 		return coverHeight + infoHeight;
 	})()

@@ -223,6 +223,7 @@ async function handleLogout() {
 		width: 100%;
 		margin: 0 auto;
 		align-items: center;
+		min-height: 44px;
 	}
 
 	.header-left {
