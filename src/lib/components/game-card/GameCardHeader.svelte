@@ -11,13 +11,13 @@ const titleText = $derived(game.mainTitle || game.title);
 const totalLength = $derived((titleText?.length || 0) + (game.subtitle?.length || 0));
 
 function calculateSubtitleFontSize(subtitle: string | null | undefined, totalLen: number): number {
-	let baseSize = 0.95;
-	const minSize = 0.6;
+	let baseSize = 0.85;
+	const minSize = 0.55;
 
 	if (totalLen > 60) {
-		baseSize = 0.75;
+		baseSize = 0.7;
 	} else if (totalLen > 45) {
-		baseSize = 0.85;
+		baseSize = 0.8;
 	}
 
 	const maxLength = 25;

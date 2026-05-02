@@ -55,12 +55,12 @@ $effect(() => {
 		class="flex min-w-0 flex-1 flex-col items-center justify-start overflow-hidden text-center md:items-start md:text-left"
 		style="color: var(--color-text-primary);"
 	>
-		<span bind:this={titleElement} class="modal-title-text w-full font-semibold">
+		<span bind:this={titleElement} class="modal-title-text w-full text-[1.5rem] font-semibold md:text-[1.75rem]">
 			{game.mainTitle}
 		</span>
 		{#if game.subtitle}
 			<span
-				class="w-full truncate text-base font-semibold md:text-lg"
+				class="w-full truncate text-sm font-semibold md:text-base"
 				style="line-height: 1.2; color: var(--color-text-secondary);"
 			>
 				{game.subtitle}
