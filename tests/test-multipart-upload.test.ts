@@ -95,7 +95,8 @@ describe('Editor Store Multipart Upload', () => {
 		// Verify payload
 		const gamesJson = body.get('games');
 		expect(gamesJson).toBeDefined();
-		const parsed = JSON.parse(gamesJson as string);
+		const gamesText = gamesJson instanceof Blob ? await gamesJson.text() : (gamesJson as string);
+		const parsed = JSON.parse(gamesText);
 		expect(parsed.games).toHaveLength(1);
 		expect(parsed.games[0].title).toBe('Test Game');
 
