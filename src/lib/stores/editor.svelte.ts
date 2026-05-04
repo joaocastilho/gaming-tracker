@@ -21,6 +21,7 @@ type PendingChanges = {
 	edits: Map<string, Game>;
 	deletes: Set<string>;
 	files: Map<string, File>;
+	urls: Map<string, string>;
 };
 
 const initialState: EditorState = {
@@ -40,6 +41,7 @@ class EditorStore {
 		edits: new Map(),
 		deletes: new Set(),
 		files: new Map(),
+		urls: new Map(),
 	});
 
 	// Direct property getters
@@ -107,20 +109,26 @@ class EditorStore {
 	}
 
 	// Pending changes methods
-	addPendingGame(game: Game, file?: File | null): void {
+	addPendingGame(game: Game, file?: File | null, url?: string | null): void {
 		const newFiles = new Map(this._pending.files);
 		if (file) {
 			newFiles.set(game.id, file);
+		}
+
+		const newUrls = new Map(this._pending.urls);
+		if (url && !file) {
+			newUrls.set(game.id, url);
 		}
 
 		this._pending = {
 			...this._pending,
 			adds: [...this._pending.adds, game],
 			files: newFiles,
+			urls: newUrls,
 		};
 	}
 
-	editPendingGame(id: string, game: Game, file?: File | null): void {
+	editPendingGame(id: string, game: Game, file?: File | null, url?: string | null): void {
 		const newEdits = new Map(this._pending.edits);
 		newEdits.set(id, game);
 
@@ -129,10 +137,16 @@ class EditorStore {
 			newFiles.set(id, file);
 		}
 
+		const newUrls = new Map(this._pending.urls);
+		if (url && !file) {
+			newUrls.set(id, url);
+		}
+
 		this._pending = {
 			...this._pending,
 			edits: newEdits,
 			files: newFiles,
+			urls: newUrls,
 		};
 	}
 
@@ -140,6 +154,11 @@ class EditorStore {
 		const newFiles = new Map(this._pending.files);
 		if (newFiles.has(id)) {
 			newFiles.delete(id);
+		}
+
+		const newUrls = new Map(this._pending.urls);
+		if (newUrls.has(id)) {
+			newUrls.delete(id);
 		}
 
 		const addIndex = this._pending.adds.findIndex((g) => g.id === id);
@@ -150,6 +169,7 @@ class EditorStore {
 				...this._pending,
 				adds: newAdds,
 				files: newFiles,
+				urls: newUrls,
 			};
 			return;
 		}
@@ -166,6 +186,7 @@ class EditorStore {
 			edits: newEdits,
 			deletes: newDeletes,
 			files: newFiles,
+			urls: newUrls,
 		};
 	}
 
@@ -175,6 +196,7 @@ class EditorStore {
 			edits: new Map(),
 			deletes: new Set(),
 			files: new Map(),
+			urls: new Map(),
 		};
 	}
 
@@ -247,6 +269,11 @@ class EditorStore {
 			// Append all pending files
 			for (const [id, file] of this._pending.files.entries()) {
 				formData.append(`cover_${id}`, file);
+			}
+
+			// Append all pending urls
+			for (const [id, url] of this._pending.urls.entries()) {
+				formData.append(`cover_url_${id}`, url);
 			}
 
 			const res = await fetch('/api/games-local', {
@@ -440,6 +467,11 @@ class EditorStore {
 			// Append all pending files
 			for (const [id, file] of this._pending.files.entries()) {
 				formData.append(`cover_${id}`, file);
+			}
+
+			// Append all pending urls
+			for (const [id, url] of this._pending.urls.entries()) {
+				formData.append(`cover_url_${id}`, url);
 			}
 
 			const res = await fetch('/api/games', {

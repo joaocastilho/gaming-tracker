@@ -298,7 +298,35 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 			// Handle multiple cover uploads
 			for (const [key, value] of formData.entries()) {
-				if (key.startsWith('cover_') && typeof value !== 'string') {
+				if (key.startsWith('cover_url_') && typeof value === 'string') {
+					const gameIdForCover = key.substring(10); // remove "cover_url_"
+					if (gameIdForCover && value) {
+						try {
+							const fetchRes = await fetch(value, {
+								headers: {
+									'User-Agent': 'Mozilla/5.0 (gaming-tracker-cloudflare)',
+								},
+							});
+							if (!fetchRes.ok) throw new Error(`Fetch failed: ${fetchRes.status}`);
+							const arrayBuffer = await fetchRes.arrayBuffer();
+							const imageData = new Uint8Array(arrayBuffer);
+							const sanitizedGameId = gameIdForCover.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+
+							// Commit PNG to covers_raw
+							await commitFileToGitHub(
+								`static/covers_raw/${sanitizedGameId}.png`,
+								imageData,
+								`chore(covers): add cover image for ${sanitizedGameId}`,
+								env
+							);
+
+							// Trigger the optimize-covers workflow via GitHub API
+							await triggerOptimizeWorkflow(sanitizedGameId, env);
+						} catch (e) {
+							console.error(`Failed to download cover from URL for ${gameIdForCover}:`, e);
+						}
+					}
+				} else if (key.startsWith('cover_') && !key.startsWith('cover_url_') && typeof value !== 'string') {
 					const gameIdForCover = key.substring(6); // remove "cover_"
 					const coverFile = value as File;
 					if (gameIdForCover && coverFile) {
