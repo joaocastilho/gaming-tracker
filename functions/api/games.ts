@@ -276,6 +276,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		const contentType = request.headers.get('content-type') || '';
 		let body: GamesPayload | null = null;
+		const gamesToOptimize: string[] = [];
 
 		if (contentType.includes('multipart/form-data')) {
 			const formData = await request.formData();
@@ -320,8 +321,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 								env
 							);
 
-							// Trigger the optimize-covers workflow via GitHub API
-							await triggerOptimizeWorkflow(sanitizedGameId, env);
+							gamesToOptimize.push(sanitizedGameId);
 						} catch (e) {
 							console.error(`Failed to download cover from URL for ${gameIdForCover}:`, e);
 						}
@@ -341,8 +341,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 							env
 						);
 
-						// Trigger the optimize-covers workflow via GitHub API
-						await triggerOptimizeWorkflow(sanitizedGameId, env);
+						gamesToOptimize.push(sanitizedGameId);
 					}
 				}
 			}
@@ -456,6 +455,13 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		// Push to GitHub - this will trigger Cloudflare Pages redeploy
 		await syncGamesToGitHub(nextData, env);
+
+		// Trigger optimization workflows after games.json is committed
+		if (typeof gamesToOptimize !== 'undefined') {
+			for (const gameId of gamesToOptimize) {
+				await triggerOptimizeWorkflow(gameId, env);
+			}
+		}
 
 		return new Response(JSON.stringify({ ok: true, meta: nextData.meta }), {
 			status: 200,
