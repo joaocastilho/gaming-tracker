@@ -281,7 +281,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			const formData = await request.formData();
 			let gamesJson = '';
 			const gamesField = formData.get('games');
-			
+
 			if (gamesField instanceof File) {
 				gamesJson = await gamesField.text();
 			} else if (typeof gamesField === 'string') {
