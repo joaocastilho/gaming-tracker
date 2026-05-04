@@ -351,7 +351,7 @@ function resetFilters() {
 
 function onSearchToggle() {
 	if (isSearchOpen) {
-		history.back();
+		replaceState(page.url, { ...page.state, showMobileSearch: false });
 	} else {
 		if (browser && innerWidth < 768) {
 			savedScrollPosition = window.scrollY;
@@ -371,12 +371,12 @@ function onSearchToggle() {
 function onFiltersToggle() {
 	isFiltersOpen = !isFiltersOpen;
 	if (isFiltersOpen) {
-		if (isSearchOpen) history.back();
+		if (isSearchOpen) replaceState(page.url, { ...page.state, showMobileSearch: false });
 	}
 }
 
 function onCloseSearchAndFilters() {
-	if (isSearchOpen) history.back();
+	if (isSearchOpen) replaceState(page.url, { ...page.state, showMobileSearch: false });
 	isFiltersOpen = false;
 }
 
