@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Image } from 'lucide-svelte';
+import { Image, X } from 'lucide-svelte';
 
 interface Props {
 	coverUrl: string;
@@ -55,9 +55,13 @@ function triggerFileInput() {
 	{/if}
 
 	{#if coverPreview}
-		<div class="cover-preview">
-			<img src={coverPreview} alt="Cover preview" />
-			<button type="button" class="clear-btn" onclick={onClear}>Remove</button>
+		<div class="cover-preview-container">
+			<div class="cover-preview">
+				<img src={coverPreview} alt="Cover preview" />
+				<button type="button" class="clear-btn" onclick={onClear} aria-label="Remove cover image">
+					<X size={16} />
+				</button>
+			</div>
 		</div>
 	{/if}
 </div>
@@ -123,34 +127,48 @@ function triggerFileInput() {
 		margin-top: 0.5rem;
 	}
 
-	.cover-preview {
-		margin-top: 0.75rem;
+	.cover-preview-container {
+		margin-top: 1rem;
 		display: flex;
-		align-items: center;
-		gap: 0.75rem;
+		justify-content: center;
+		width: 100%;
+	}
+
+	.cover-preview {
+		position: relative;
+		display: inline-block;
 	}
 
 	.cover-preview img {
-		width: 60px;
-		height: 90px;
-		border-radius: 0.375rem;
+		width: 140px;
+		height: 210px;
+		border-radius: 0.5rem;
 		object-fit: cover;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-		flex-shrink: 0;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		display: block;
 	}
 
 	.clear-btn {
-		padding: 0.375rem 0.75rem;
-		background: rgba(239, 68, 68, 0.2);
-		color: #fca5a5;
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 0.375rem;
-		font-size: 0.8rem;
+		position: absolute;
+		top: -8px;
+		right: -8px;
+		width: 24px;
+		height: 24px;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #ef4444;
+		color: white;
+		border: 2px solid #020817;
+		border-radius: 50%;
 		cursor: pointer;
 		transition: all 0.2s;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 
 	.clear-btn:hover {
-		background: rgba(239, 68, 68, 0.3);
+		background: #dc2626;
+		transform: scale(1.1);
 	}
 </style>
