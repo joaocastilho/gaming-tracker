@@ -90,6 +90,7 @@ function copyGameId() {
 }
 
 function handleCoverUrlChange(url: string) {
+	coverUrl = url;
 	coverError = null;
 	if (url) {
 		try {
@@ -336,10 +337,24 @@ async function handleSave() {
 	saving = true;
 
 	try {
+		let finalCoverFile = coverFile;
+		if (!finalCoverFile && coverUrl) {
+			try {
+				const res = await fetch(coverUrl);
+				if (!res.ok) throw new Error('Failed to fetch image');
+				const blob = await res.blob();
+				finalCoverFile = new File([blob], 'cover.png', { type: blob.type });
+			} catch (e) {
+				error = 'Failed to download the provided image URL.';
+				saving = false;
+				return;
+			}
+		}
+
 		if (mode === 'create') {
-			editorStore.addPendingGame(working, coverFile);
+			editorStore.addPendingGame(working, finalCoverFile);
 		} else {
-			editorStore.editPendingGame(working.id, working, coverFile);
+			editorStore.editPendingGame(working.id, working, finalCoverFile);
 		}
 
 		if (dev) {

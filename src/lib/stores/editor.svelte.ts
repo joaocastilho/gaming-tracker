@@ -241,7 +241,8 @@ class EditorStore {
 		try {
 			const formData = new FormData();
 			const payload = { games: finalGames };
-			formData.append('games', JSON.stringify(payload));
+			const blob = new Blob([JSON.stringify(payload)], { type: 'application/json; charset=utf-8' });
+			formData.append('games', blob, 'games.json');
 
 			// Append all pending files
 			for (const [id, file] of this._pending.files.entries()) {
@@ -433,7 +434,8 @@ class EditorStore {
 
 		try {
 			const formData = new FormData();
-			formData.append('games', JSON.stringify(snapshot));
+			const blob = new Blob([JSON.stringify(snapshot)], { type: 'application/json; charset=utf-8' });
+			formData.append('games', blob, 'games.json');
 
 			// Append all pending files
 			for (const [id, file] of this._pending.files.entries()) {

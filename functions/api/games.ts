@@ -279,7 +279,14 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 
 		if (contentType.includes('multipart/form-data')) {
 			const formData = await request.formData();
-			const gamesJson = formData.get('games') as string;
+			let gamesJson = '';
+			const gamesField = formData.get('games');
+			
+			if (gamesField instanceof File) {
+				gamesJson = await gamesField.text();
+			} else if (typeof gamesField === 'string') {
+				gamesJson = gamesField;
+			}
 
 			if (!gamesJson) {
 				return new Response(JSON.stringify({ error: 'Invalid payload: games JSON required' }), {
@@ -402,6 +409,13 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			}
 
 			return game;
+		});
+
+		// Sort games alphabetically by title
+		normalizedGames.sort((a, b) => {
+			const titleA = a.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+			const titleB = b.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+			return titleA.localeCompare(titleB);
 		});
 
 		const nextData: GamesPayload = {

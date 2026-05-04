@@ -4,7 +4,7 @@
  * This file is used when running tests with Bun's native test runner.
  * It mocks SvelteKit $app modules that Bun cannot resolve natively.
  *
- * Usage: bun test --preload ./tests/bun-setup.ts
+ * Usage: bun run test --preload ./tests/bun-setup.ts
  *
  * Note: For best results with Svelte 5 and SvelteKit, use Vitest instead:
  *   bun run test       (uses Vitest)
