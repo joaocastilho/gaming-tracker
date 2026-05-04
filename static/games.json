@@ -2621,6 +2621,23 @@
       "tier": null
     },
     {
+      "id": "final-fantasy-vi-pixel-remaster",
+      "title": "Final Fantasy VI (Pixel Remaster)",
+      "platform": "PC",
+      "year": 2022,
+      "genre": "Japanese RPG",
+      "coOp": "No",
+      "status": "Planned",
+      "coverImage": "covers/final-fantasy-vi-pixel-remaster.webp",
+      "playtime": "33h 0m",
+      "finishedDate": null,
+      "ratingPresentation": null,
+      "ratingStory": null,
+      "ratingGameplay": null,
+      "score": null,
+      "tier": null
+    },
+    {
       "id": "final-fantasy-xx2",
       "title": "FINAL FANTASY X/X-2 (HD Remaster)",
       "platform": "PC",
@@ -9601,6 +9618,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-05-04T12:52:59.203Z"
+    "lastUpdated": "2026-05-04T12:54:48.741Z"
   }
 }
