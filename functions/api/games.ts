@@ -225,6 +225,7 @@ async function triggerOptimizeWorkflow(gameId: string, env: Env): Promise<void> 
 			Accept: 'application/vnd.github+json',
 			'Content-Type': 'application/json',
 			'User-Agent': 'gaming-tracker-cloudflare',
+			'X-GitHub-Api-Version': '2022-11-28',
 		},
 		body: JSON.stringify({
 			ref: branch,
@@ -238,6 +239,8 @@ async function triggerOptimizeWorkflow(gameId: string, env: Env): Promise<void> 
 		const errorBody = await res.text().catch(() => 'no body');
 		console.error(`Failed to trigger workflow: ${res.status} - ${errorBody}`);
 		// Don't throw - we don't want to fail the upload if workflow trigger fails
+	} else {
+		console.log(`Successfully triggered optimize workflow for ${gameId}`);
 	}
 }
 
