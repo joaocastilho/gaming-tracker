@@ -300,6 +300,16 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			}
 			body = JSON.parse(gamesJson);
 
+			// Helper to force GitHub to create a new commit by appending a timestamp to the file
+			const appendTimestampToBuffer = (buffer: Uint8Array): Uint8Array => {
+				const tsStr = `\n<!-- timestamp: ${Date.now()} -->`;
+				const tsBytes = new TextEncoder().encode(tsStr);
+				const newBuffer = new Uint8Array(buffer.length + tsBytes.length);
+				newBuffer.set(buffer);
+				newBuffer.set(tsBytes, buffer.length);
+				return newBuffer;
+			};
+
 			// Handle multiple cover uploads
 			for (const [key, value] of formData.entries()) {
 				if (key.startsWith('cover_url_') && typeof value === 'string') {
@@ -313,7 +323,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 							});
 							if (!fetchRes.ok) throw new Error(`Fetch failed: ${fetchRes.status}`);
 							const arrayBuffer = await fetchRes.arrayBuffer();
-							const imageData = new Uint8Array(arrayBuffer);
+							const imageData = appendTimestampToBuffer(new Uint8Array(arrayBuffer));
 							const sanitizedGameId = gameIdForCover.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
 
 							// Commit PNG to covers_raw
@@ -334,7 +344,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 					const coverFile = value as File;
 					if (gameIdForCover && coverFile) {
 						const sanitizedGameId = gameIdForCover.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
-						const imageData = new Uint8Array(await coverFile.arrayBuffer());
+						const imageData = appendTimestampToBuffer(new Uint8Array(await coverFile.arrayBuffer()));
 
 						// Commit PNG to covers_raw
 						await commitFileToGitHub(
@@ -400,7 +410,13 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			);
 		}
 
-		const normalizedGames = parsed.data.games.map((g) => {
+		const uniqueGamesMap = new Map<string, GamesPayload['games'][0]>();
+		parsed.data.games.forEach((g) => {
+			uniqueGamesMap.set(g.id, g);
+		});
+		const uniqueGames = Array.from(uniqueGamesMap.values());
+
+		const normalizedGames = uniqueGames.map((g) => {
 			// Clone to avoid mutating original
 			const game = { ...g };
 

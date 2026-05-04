@@ -120,9 +120,20 @@ class EditorStore {
 			newUrls.set(game.id, url);
 		}
 
+		const existingAddIndex = this._pending.adds.findIndex((g) => g.id === game.id);
+		const newAdds = [...this._pending.adds];
+
+		if (existingAddIndex !== -1) {
+			// Replace the existing pending add
+			newAdds[existingAddIndex] = game;
+		} else {
+			// Push new add
+			newAdds.push(game);
+		}
+
 		this._pending = {
 			...this._pending,
-			adds: [...this._pending.adds, game],
+			adds: newAdds,
 			files: newFiles,
 			urls: newUrls,
 		};
