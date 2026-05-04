@@ -95,7 +95,7 @@ async function handleLogout() {
 }
 </script>
 
-<header class="header-root mb-2 px-6 py-3 md:mb-6 md:py-1">
+<header class="header-root mb-0 px-4 py-1 md:mb-6 md:px-6">
 	<div class="header-inner container mx-auto">
 		<div class="header-left invisible md:visible"></div>
 		<nav class="tabs-nav">
@@ -223,7 +223,7 @@ async function handleLogout() {
 		width: 100%;
 		margin: 0 auto;
 		align-items: center;
-		min-height: 44px;
+		min-height: 20px;
 	}
 
 	.header-left {
@@ -553,8 +553,8 @@ async function handleLogout() {
 		}
 
 		.header-root {
-			padding: 0.75rem 1.8rem;
-			padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+			padding: 0.25rem 1rem;
+			padding-top: calc(0.25rem + env(safe-area-inset-top, 0px));
 		}
 
 		.header-right {
