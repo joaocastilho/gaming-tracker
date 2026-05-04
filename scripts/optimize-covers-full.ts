@@ -138,6 +138,10 @@ async function processImage(filename: string, games: Game[], outputDir: string):
 
 		const processingTime = Date.now() - startTime;
 
+		console.log(`   [+] Generated ${gameId}-200w.webp (${formatBytes(cover200Stats.size)})`);
+		console.log(`   [+] Generated ${gameId}.webp (${formatBytes(cover300Stats.size)})`);
+		console.log(`   [+] Generated ${gameId}-detail.webp (${formatBytes(detail400Stats.size)})`);
+
 		return {
 			originalFilename: filename,
 			gameId: matchingGame.id,
@@ -150,6 +154,7 @@ async function processImage(filename: string, games: Game[], outputDir: string):
 			processingTime,
 		};
 	} catch (error) {
+		console.error(`   [!] Error generating files:`, error);
 		return {
 			originalFilename: filename,
 			gameId: 'unknown',
@@ -216,6 +221,7 @@ async function main(): Promise<void> {
 	let processed = 0;
 
 	for (const filename of pngFiles) {
+		console.log(`\nProcessing: ${filename}`);
 		const result = await processImage(filename, games, COVERS_DIR);
 		results.push(result);
 		processed++;
@@ -227,6 +233,8 @@ async function main(): Promise<void> {
 
 		if (result.status === 'error') {
 			console.log(`⚠️  Error processing ${filename}: ${result.error}`);
+		} else if (result.status === 'skipped') {
+			console.log(`⏭️  Skipped ${filename}: ${result.error}`);
 		}
 	}
 
@@ -260,23 +268,36 @@ async function main(): Promise<void> {
 		console.log(`200w covers total: ${formatBytes(stats.totalCover200Size)}`);
 		console.log(`300w covers total: ${formatBytes(stats.totalCover300Size)}`);
 		console.log(`400w details total: ${formatBytes(stats.totalDetail400Size)}`);
-	}
 
-	console.log('\n🔗 Updating cover paths in games.json...');
-	const updatedGames = games.map((game) => {
-		const result = results.find((r) => r.gameId === game.id && r.status === 'success');
-		if (result) {
-			return {
-				...game,
-				coverImage: `covers/${game.id}.webp`,
+		console.log('\n🔗 Updating cover paths in games.json...');
+		let hasChanges = false;
+		const updatedGames = games.map((game) => {
+			const result = results.find((r) => r.gameId === game.id && r.status === 'success');
+			if (result && game.coverImage !== `covers/${game.id}.webp`) {
+				hasChanges = true;
+				return {
+					...game,
+					coverImage: `covers/${game.id}.webp`,
+				};
+			}
+			return game;
+		});
+
+		if (hasChanges) {
+			const updatedGamesPath = join(process.cwd(), 'static', 'games.json');
+			// Preserve meta object if it exists
+			const finalData = {
+				games: updatedGames,
+				meta: gamesJson.meta || undefined,
 			};
+			await writeFile(updatedGamesPath, JSON.stringify(finalData, null, 2));
+			console.log('✅ Updated games.json with 300w coverImage paths');
+		} else {
+			console.log('✅ No updates needed for games.json paths');
 		}
-		return game;
-	});
-
-	const updatedGamesPath = join(process.cwd(), 'static', 'games.json');
-	await writeFile(updatedGamesPath, JSON.stringify({ games: updatedGames }, null, 2));
-	console.log('✅ Updated games.json with 300w coverImage paths');
+	} else {
+		console.log('\n🔗 No successful optimizations, skipping games.json update.');
+	}
 
 	console.log('\n🎉 Optimization complete!');
 }

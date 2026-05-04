@@ -280,6 +280,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 		const contentType = request.headers.get('content-type') || '';
 		let body: GamesPayload | null = null;
 		const gamesToOptimize: string[] = [];
+		const pendingCovers: { filename: string; imageData: Uint8Array; gameId: string }[] = [];
 
 		if (contentType.includes('multipart/form-data')) {
 			const formData = await request.formData();
@@ -326,13 +327,11 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 							const imageData = appendTimestampToBuffer(new Uint8Array(arrayBuffer));
 							const sanitizedGameId = gameIdForCover.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
 
-							// Commit PNG to covers_raw
-							await commitFileToGitHub(
-								`static/covers_raw/${sanitizedGameId}.png`,
+							pendingCovers.push({
+								filename: `static/covers_raw/${sanitizedGameId}.png`,
 								imageData,
-								`chore(covers): add cover image for ${sanitizedGameId}`,
-								env
-							);
+								gameId: sanitizedGameId,
+							});
 
 							gamesToOptimize.push(sanitizedGameId);
 						} catch (e) {
@@ -346,13 +345,11 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 						const sanitizedGameId = gameIdForCover.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
 						const imageData = appendTimestampToBuffer(new Uint8Array(await coverFile.arrayBuffer()));
 
-						// Commit PNG to covers_raw
-						await commitFileToGitHub(
-							`static/covers_raw/${sanitizedGameId}.png`,
+						pendingCovers.push({
+							filename: `static/covers_raw/${sanitizedGameId}.png`,
 							imageData,
-							`chore(covers): add cover image for ${sanitizedGameId}`,
-							env
-						);
+							gameId: sanitizedGameId,
+						});
 
 						gamesToOptimize.push(sanitizedGameId);
 					}
@@ -475,7 +472,19 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 		// Push to GitHub - this will trigger Cloudflare Pages redeploy
 		await syncGamesToGitHub(nextData, env);
 
-		// Trigger optimization workflows after games.json is committed
+		// Push pending covers - this will trigger the 'on: push' workflow
+		if (typeof pendingCovers !== 'undefined') {
+			for (const cover of pendingCovers) {
+				await commitFileToGitHub(
+					cover.filename,
+					cover.imageData,
+					`chore(covers): add cover image for ${cover.gameId}`,
+					env
+				);
+			}
+		}
+
+		// Trigger optimization workflows explicitly after games.json is committed
 		if (typeof gamesToOptimize !== 'undefined') {
 			for (const gameId of gamesToOptimize) {
 				await triggerOptimizeWorkflow(gameId, env);
