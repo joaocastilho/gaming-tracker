@@ -1,28 +1,60 @@
 <script lang="ts">
 </script>
 
-<div class="skeleton-grid">
-	{#each Array(15) as _, i (i)}
-		<div class="skeleton-card">
-			<div class="skeleton-cover"></div>
-			<div class="skeleton-info">
-				<div class="skeleton-title"></div>
-				<div class="skeleton-meta"></div>
-				<div class="skeleton-score"></div>
+<div class="skeleton-wrapper">
+	<div class="skeleton-grid">
+		{#each Array(20) as _, i (i)}
+			<div class="skeleton-card">
+				<div class="skeleton-cover"></div>
+				<div class="skeleton-info">
+					<div class="skeleton-title"></div>
+					<div class="skeleton-meta"></div>
+					<div class="skeleton-score"></div>
+				</div>
 			</div>
-		</div>
-	{/each}
+		{/each}
+	</div>
 </div>
 
 <style>
+	.skeleton-wrapper {
+		container-type: inline-size;
+		width: 100%;
+	}
+
 	.skeleton-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+		grid-template-columns: repeat(5, 1fr);
 		gap: clamp(0.75rem, 0.75rem + 2vw, 1.5rem);
 		width: 100%;
-		padding-left: 0.5rem;
-		padding-right: 0.5rem;
-		padding-bottom: 20px;
+		padding: 0 0.5rem 20px 0.5rem;
+	}
+
+	@container (max-width: 972.9px) {
+		.skeleton-grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+		.skeleton-card:nth-child(n + 17) {
+			display: none;
+		}
+	}
+
+	@container (max-width: 775.9px) {
+		.skeleton-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		.skeleton-card:nth-child(n + 13) {
+			display: none;
+		}
+	}
+
+	@container (max-width: 578.9px) {
+		.skeleton-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.skeleton-card:nth-child(n + 9) {
+			display: none;
+		}
 	}
 
 	.skeleton-card {
