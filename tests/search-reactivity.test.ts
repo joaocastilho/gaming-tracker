@@ -73,29 +73,22 @@ describe('Search Reactivity Integration', () => {
 	});
 
 	test('filteredGames subscription updates when search term changes', () => {
-		let currentGames: Game[] = [];
-		const unsubscribe = filteredGames.subscribe((games) => {
-			currentGames = games;
-		});
-
 		// Initial state
-		expect(currentGames).toHaveLength(3);
+		expect(filteredGames.games).toHaveLength(3);
 
 		// Search for Zelda
 		filtersStore.setSearchTerm('zelda');
-		expect(currentGames).toHaveLength(1);
-		expect(currentGames[0].title).toContain('Zelda');
+		expect(filteredGames.games).toHaveLength(1);
+		expect(filteredGames.games[0].title).toContain('Zelda');
 
 		// Search for Mario
 		filtersStore.setSearchTerm('mario');
-		expect(currentGames).toHaveLength(1);
-		expect(currentGames[0].title).toContain('Mario');
+		expect(filteredGames.games).toHaveLength(1);
+		expect(filteredGames.games[0].title).toContain('Mario');
 
 		// Clear search
 		filtersStore.setSearchTerm('');
-		expect(currentGames).toHaveLength(3);
-
-		unsubscribe();
+		expect(filteredGames.games).toHaveLength(3);
 	});
 
 	test('search term filtering works on tierlist tab', () => {

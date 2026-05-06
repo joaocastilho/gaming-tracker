@@ -15,7 +15,7 @@ import {
 } from 'lucide-svelte';
 import { appStore } from '$lib/stores/app.svelte';
 
-let sortOption = $derived(($filtersStore?.sortOption ?? null) as SortOption | null);
+let sortOption = $derived((filtersStore.state?.sortOption ?? null) as SortOption | null);
 let currentTab = $derived(appStore.activeTab);
 
 let activeKey = $derived(

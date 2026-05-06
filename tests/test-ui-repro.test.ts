@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { filteredGames } from '$lib/stores/filteredGamesStore.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
@@ -41,26 +41,10 @@ describe('UI Integration Reproduction', () => {
 	});
 
 	describe('Modal Integration', () => {
-		it('should notify subscribers when opening modal', () => {
-			const subscriber = vi.fn();
-			const unsubscribe = modalStore.subscribe(subscriber);
-
-			expect(subscriber).toHaveBeenCalledTimes(1);
-			expect(subscriber.mock.calls[0][0].isOpen).toBe(false);
-
-			modalStore.openViewModal(mockGame, [mockGame, mockGameB]);
-
-			expect(subscriber).toHaveBeenCalledTimes(2);
-			expect(subscriber.mock.calls[1][0].isOpen).toBe(true);
-			expect(subscriber.mock.calls[1][0].activeGame?.id).toBe(mockGame.id);
-
-			unsubscribe();
-		});
-
 		it('should have correct state in getter', () => {
 			modalStore.openViewModal(mockGame, []);
-			expect(modalStore.isOpen).toBe(true);
-			expect(modalStore.activeGame?.id).toBe(mockGame.id);
+			expect(modalStore.getState().isOpen).toBe(true);
+			expect(modalStore.getState().activeGame?.id).toBe(mockGame.id);
 		});
 	});
 
@@ -68,7 +52,7 @@ describe('UI Integration Reproduction', () => {
 		it('should update filteredGames when sort changes', async () => {
 			// Initial state: Alphabetical
 			// T (Test Game) comes before Z (Zelda)
-			let currentGames = filteredGames.value;
+			let currentGames = filteredGames.games;
 			expect(currentGames[0].title).toBe('Test Game');
 
 			// Set sort to Score (Zelda has 10, Test Game has null -> nulls last? or nulls treated as 0?)
@@ -76,29 +60,9 @@ describe('UI Integration Reproduction', () => {
 			// If Descending: Zelda first.
 			filtersStore.setSort({ key: 'score', direction: 'desc' });
 
-			// Need to verify if the subscription notified!
-			// filteredGames is a subscription wrapper.
-			// Accessing .value should be fresh if it uses the getter from the store.
-
 			// Re-read value
-			currentGames = filteredGames.value;
+			currentGames = filteredGames.games;
 			expect(currentGames[0].title).toBe('Zelda');
-		});
-
-		it('should notify subscribers on sort change', () => {
-			const subscriber = vi.fn();
-			const unsubscribe = filteredGames.subscribe(subscriber);
-
-			// Initial call
-			expect(subscriber).toHaveBeenCalledTimes(1);
-
-			filtersStore.setSort({ key: 'score', direction: 'desc' });
-
-			expect(subscriber).toHaveBeenCalledTimes(2);
-			const secondCall = subscriber.mock.calls[1][0];
-			expect(secondCall[0].title).toBe('Zelda'); // Should be reordered
-
-			unsubscribe();
 		});
 	});
 });

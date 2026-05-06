@@ -2,7 +2,6 @@ import type { Game } from '$lib/types/game';
 import { parseDate } from '$lib/utils/dateUtils';
 import { getTierDisplayName } from '$lib/utils/tierUtils';
 import { appStore } from './app.svelte';
-import { filteredCountsStore } from './filteredCounts.svelte';
 import { filtersStore } from './filters.svelte';
 import { gamesStore } from './games.svelte';
 
@@ -84,26 +83,6 @@ class FilteredGamesStore {
 
 		const effectiveSort = activeTab === 'tierlist' ? null : (filters?.sortOption ?? null);
 		return this.sortGames(filtered, effectiveSort, activeTab);
-	}
-
-	updateCounts() {
-		const games = gamesStore.games;
-		const filters = filtersStore.state;
-
-		if (!games) return;
-
-		const gamesWithFiltersApplied = this.filterGamesWithoutTabFilter(games, filters);
-
-		const total = gamesWithFiltersApplied.length;
-		const completed = gamesWithFiltersApplied.filter((g) => g.status === 'Completed').length;
-		const planned = gamesWithFiltersApplied.filter((g) => g.status === 'Planned').length;
-
-		filteredCountsStore.setCounts({
-			all: total,
-			completed,
-			planned,
-			tierlist: null,
-		});
 	}
 
 	private filterGamesWithoutTabFilter(
@@ -297,46 +276,4 @@ class FilteredGamesStore {
 
 export const filteredGamesStore = new FilteredGamesStore();
 
-class FilteredGamesSubscription {
-	private subscribers = new Set<(value: Game[]) => void>();
-
-	constructor() {
-		// Use manual subscriptions to trigger notifications
-		gamesStore.subscribe(() => {
-			filteredGamesStore.updateCounts();
-			this.notify();
-		});
-		filtersStore.subscribe(() => {
-			filteredGamesStore.updateCounts();
-			this.notify();
-		});
-		appStore.subscribe(() => {
-			this.notify();
-		});
-	}
-
-	private notify() {
-		const value = filteredGamesStore.games;
-		for (const fn of this.subscribers) {
-			fn(value);
-		}
-	}
-
-	get value() {
-		return filteredGamesStore.games;
-	}
-
-	getFilteredGames(tab?: string): Game[] {
-		return filteredGamesStore.getFilteredGames(tab);
-	}
-
-	subscribe(fn: (value: Game[]) => void): () => void {
-		fn(filteredGamesStore.games);
-		this.subscribers.add(fn);
-		return () => {
-			this.subscribers.delete(fn);
-		};
-	}
-}
-
-export const filteredGames = new FilteredGamesSubscription();
+export const filteredGames = filteredGamesStore;

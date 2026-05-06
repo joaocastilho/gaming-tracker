@@ -42,7 +42,6 @@ const initialFilters: FilterState = {
 
 class FiltersStore {
 	private _state = $state<FilterState | null>(null);
-	private subscribers = new Set<(value: FilterState | null) => void>();
 	public isInternalUpdate = $state(false);
 	private internalUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -69,19 +68,6 @@ class FiltersStore {
 
 	private set state(value: FilterState | null) {
 		this._state = value;
-		for (const fn of this.subscribers) {
-			fn(value);
-		}
-	}
-
-	subscribe(fn: (value: FilterState | null) => void): () => void {
-		fn(this._state);
-		// Add to subscribers
-		this.subscribers.add(fn);
-		// Return unsubscribe function
-		return () => {
-			this.subscribers.delete(fn);
-		};
 	}
 
 	get selectedPlatforms(): string[] {

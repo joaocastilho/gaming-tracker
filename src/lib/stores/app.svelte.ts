@@ -1,4 +1,3 @@
-import { untrack } from 'svelte';
 export type ThemeValue = 'dark' | 'light';
 export type TabValue = 'all' | 'completed' | 'planned' | 'tierlist';
 
@@ -51,26 +50,6 @@ class AppStore {
 		if (force || this.activeTab !== tab) {
 			this.activeTab = tab;
 		}
-	}
-
-	subscribe(fn: (value: AppState) => void): () => void {
-		fn(this.appState);
-
-		const root = $effect.root(() => {
-			let first = true;
-			$effect(() => {
-				const state = this.appState;
-				if (first) {
-					first = false;
-					return;
-				}
-				untrack(() => fn(state));
-			});
-		});
-
-		return () => {
-			root();
-		};
 	}
 }
 

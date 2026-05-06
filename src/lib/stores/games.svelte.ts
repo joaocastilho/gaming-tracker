@@ -25,9 +25,6 @@ class GamesStore {
 
 	private set games(value: Game[]) {
 		this._games = value;
-		for (const fn of this.subscribers) {
-			fn(value);
-		}
 	}
 
 	get allPlatforms(): string[] {

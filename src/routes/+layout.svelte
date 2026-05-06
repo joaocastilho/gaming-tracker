@@ -74,36 +74,27 @@ $effect.pre(() => {
 	}
 });
 
-$effect(() => {
-	if (!browser) return;
+let lastScrollY = 0;
+let scrollTicking = false;
 
-	let lastScrollY = window.scrollY;
-	let ticking = false;
+const handleScroll = () => {
+	if (scrollTicking) return;
+	scrollTicking = true;
 
-	const handleScroll = () => {
-		if (ticking) return;
-		ticking = true;
-
-		requestAnimationFrame(() => {
-			const currentScrollY = window.scrollY;
-			if (
-				currentScrollY > 80 &&
-				currentScrollY > lastScrollY &&
-				filtersStore.isDesktopFiltersExpanded &&
-				!filtersStore.isAnyFilterApplied()
-			) {
-				filtersStore.setDesktopFiltersExpanded(false);
-			}
-			lastScrollY = currentScrollY;
-			ticking = false;
-		});
-	};
-
-	window.addEventListener('scroll', handleScroll, { passive: true });
-	return () => {
-		window.removeEventListener('scroll', handleScroll);
-	};
-});
+	requestAnimationFrame(() => {
+		const currentScrollY = window.scrollY;
+		if (
+			currentScrollY > 80 &&
+			currentScrollY > lastScrollY &&
+			filtersStore.isDesktopFiltersExpanded &&
+			!filtersStore.isAnyFilterApplied()
+		) {
+			filtersStore.setDesktopFiltersExpanded(false);
+		}
+		lastScrollY = currentScrollY;
+		scrollTicking = false;
+	});
+};
 
 $effect(() => {
 	if (browser && 'serviceWorker' in navigator) {
@@ -149,7 +140,7 @@ $effect(() => {
 });
 
 let filterOptions = $derived.by(() => {
-	const games = $gamesStore;
+	const games = gamesStore.games;
 	if (!games || games.length === 0) {
 		return { platforms: [], genres: [], tiers: [], coOp: [] };
 	}
@@ -188,7 +179,7 @@ let showCoOpFilter = true;
 
 $effect(() => {
 	if (browser) {
-		void $filtersStore;
+		void filtersStore.state;
 		untrack(() => filtersStore.writeSearchToURL(page.state));
 	}
 });
@@ -196,7 +187,7 @@ $effect(() => {
 $effect(() => {
 	if (browser) {
 		const searchParams = page.url.searchParams;
-		void $gamesStore;
+		void gamesStore.games;
 
 		untrack(() => {
 			filtersStore.readSearchFromURL(searchParams, page.url.pathname);
@@ -241,23 +232,23 @@ $effect(() => {
 });
 
 $effect(() => {
-	const games = $gamesStore;
+	const games = gamesStore.games;
 	if (games.length > 0) {
 		modalStore.readFromURL(page.url.searchParams, games);
 	}
 });
 
 $effect(() => {
-	const games = $gamesStore;
+	const games = gamesStore.games;
 	if (games.length > 0) {
 		modalStore.openPendingGameFromURL(games);
 	}
 });
 
-let selectedPlatforms = $derived($filtersStore?.platforms ?? []);
-let selectedGenres = $derived($filtersStore?.genres ?? []);
-let selectedTiers = $derived($filtersStore?.tiers ?? []);
-let selectedCoOp = $derived($filtersStore?.coOp ?? []);
+let selectedPlatforms = $derived(filtersStore.state?.platforms ?? []);
+let selectedGenres = $derived(filtersStore.state?.genres ?? []);
+let selectedTiers = $derived(filtersStore.state?.tiers ?? []);
+let selectedCoOp = $derived(filtersStore.state?.coOp ?? []);
 
 let isSearchOpen = $derived(!!page.state.showMobileSearch);
 let isFiltersOpen = $state(false);
@@ -289,7 +280,7 @@ let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 $effect(() => {
 	if (!browser) return;
 
-	if ($modalStore.isOpen && !DetailModalComponent) {
+	if (modalStore.getState().isOpen && !DetailModalComponent) {
 		import('$lib/components/DetailModal.svelte').then((m) => (DetailModalComponent = m.default));
 	}
 	if (editorModalOpen && !GameEditorModalComponent) {
@@ -445,7 +436,7 @@ let lastActiveTab = '';
 $effect(() => {
 	if (!browser || !isSearchOpen) return;
 
-	const searchTerm = $filtersStore?.searchTerm ?? '';
+	const searchTerm = filtersStore.state?.searchTerm ?? '';
 	const currentTab = currentPage;
 	const counts = filteredCountsStore.counts;
 	const currentCount = currentFilteredGames.length;
@@ -539,7 +530,7 @@ function handleEditorClose() {
 }
 
 async function handleApplyChanges() {
-	const games = $gamesStore;
+	const games = gamesStore.games;
 	const finalGames = editorStore.buildFinalGames(games);
 
 	const success = await editorStore.applyAllChanges(games);
@@ -622,6 +613,8 @@ async function installApp() {
 		<link rel="modulepreload" href="/@vite/client" />
 	{/if}
 </svelte:head>
+
+<svelte:window onscroll={handleScroll} />
 
 {#if initialized}
 	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
@@ -746,7 +739,7 @@ async function installApp() {
 			<GameEditorModalComponent
 				mode={editorModalMode}
 				initialGame={editorModalGame}
-				allGames={$gamesStore}
+				allGames={gamesStore.games}
 				onClose={handleEditorClose}
 			/>
 		{/if}

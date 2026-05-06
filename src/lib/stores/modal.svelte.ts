@@ -102,14 +102,6 @@ class ModalStore {
 		return this._state.cardRect;
 	}
 
-	subscribe(fn: (value: ModalState) => void): () => void {
-		fn(this._state);
-		this.subscribers.add(fn);
-		return () => {
-			this.subscribers.delete(fn);
-		};
-	}
-
 	getState(): ModalState {
 		return this._state;
 	}

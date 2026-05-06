@@ -42,7 +42,7 @@ function handleKeydown(event: KeyboardEvent) {
 }
 </script>
 
-{#if isVisible && !$modalStore.isOpen && !hideWhenFiltersOpen}
+{#if isVisible && !modalStore.getState().isOpen && !hideWhenFiltersOpen}
 	<button
 		type="button"
 		class="scroll-to-top-button"

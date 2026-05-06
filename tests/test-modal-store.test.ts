@@ -263,20 +263,4 @@ describe('ModalStore', () => {
 			expect(modalStore.getState().isOpen).toBe(false);
 		});
 	});
-
-	describe('Subscribe', () => {
-		it('exposes subscribe method for Svelte store compatibility', () => {
-			expect(typeof modalStore.subscribe).toBe('function');
-
-			let callCount = 0;
-			const unsubscribe = modalStore.subscribe(() => {
-				callCount++;
-			});
-
-			modalStore.openViewModal(mockGame, mockGames);
-			expect(callCount).toBeGreaterThan(0);
-
-			unsubscribe();
-		});
-	});
 });

@@ -25,62 +25,56 @@ let {
 }: Props = $props();
 let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
-const isEditor = $derived($editorStore.editorMode);
+const isEditor = $derived(editorStore.editorMode);
 let mounted = $state(browser);
 let containerWidth = $state(0);
 
-let columns = $derived(
-	(() => {
-		if (!containerWidth) return 1;
-		const minCardWidth = 185;
-		const gap = 12;
-		const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
-		return Math.min(5, Math.max(2, calculatedColumns));
-	})()
-);
+let columns = $derived.by(() => {
+	if (!containerWidth) return 1;
+	const minCardWidth = 185;
+	const gap = 12;
+	const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
+	return Math.min(5, Math.max(2, calculatedColumns));
+});
 
-let rows = $derived(
-	(() => {
-		if (!filteredGames) return [];
+let rows = $derived.by(() => {
+	if (!filteredGames) return [];
 
-		const uniqueGames = new Map();
-		filteredGames.forEach((game) => {
-			if (game && typeof game.id === 'string' && game.id.length > 0) {
-				if (!uniqueGames.has(game.id)) {
-					uniqueGames.set(game.id, game);
-				}
+	const uniqueGames = new Map();
+	filteredGames.forEach((game) => {
+		if (game && typeof game.id === 'string' && game.id.length > 0) {
+			if (!uniqueGames.has(game.id)) {
+				uniqueGames.set(game.id, game);
 			}
-		});
-
-		const validGames = Array.from(uniqueGames.values());
-
-		const result = [];
-		for (let i = 0; i < validGames.length; i += columns) {
-			const chunk = validGames.slice(i, i + columns);
-			const firstGameId = chunk[0]?.id || 'empty';
-			result.push({
-				id: `row-${i}-${firstGameId}`,
-				games: chunk,
-				startIndex: i,
-			});
 		}
-		return result;
-	})()
-);
+	});
 
-let itemHeight = $derived(
-	(() => {
-		if (!containerWidth || columns === 0) return 450;
-		const containerPadding = 16;
-		const gap = 12;
-		const totalGapWidth = (columns - 1) * gap;
-		const availableWidth = containerWidth - containerPadding - totalGapWidth;
-		const columnWidth = availableWidth / columns;
-		const coverHeight = columnWidth * 1.5;
-		const infoHeight = columnWidth <= 200 ? 240 : 275;
-		return coverHeight + infoHeight;
-	})()
-);
+	const validGames = Array.from(uniqueGames.values());
+
+	const result = [];
+	for (let i = 0; i < validGames.length; i += columns) {
+		const chunk = validGames.slice(i, i + columns);
+		const firstGameId = chunk[0]?.id || 'empty';
+		result.push({
+			id: `row-${i}-${firstGameId}`,
+			games: chunk,
+			startIndex: i,
+		});
+	}
+	return result;
+});
+
+let itemHeight = $derived.by(() => {
+	if (!containerWidth || columns === 0) return 450;
+	const containerPadding = 16;
+	const gap = 12;
+	const totalGapWidth = (columns - 1) * gap;
+	const availableWidth = containerWidth - containerPadding - totalGapWidth;
+	const columnWidth = availableWidth / columns;
+	const coverHeight = columnWidth * 1.5;
+	const infoHeight = columnWidth <= 200 ? 240 : 275;
+	return coverHeight + infoHeight;
+});
 
 function handleOpenModal(game: Game) {
 	onOpenModal?.(game, displayedGames);

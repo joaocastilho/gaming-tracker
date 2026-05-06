@@ -146,21 +146,13 @@ describe('Hours Played Sorting (Completed Games)', () => {
 		appStore.setActiveTab('completed');
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
-		const subscriber = vi.fn();
-		const unsubscribe = filteredGames.subscribe(subscriber);
-		subscriber.mockClear();
-
 		// Change to playtime sort
 		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
-		// Subscriber should be called with sorted data
-		expect(subscriber).toHaveBeenCalled();
-		const lastCall = subscriber.mock.calls[subscriber.mock.calls.length - 1];
-		const sortedGames = lastCall[0];
+		// Check the filtered games directly
+		const sortedGames = filteredGames.games;
 		expect(sortedGames[0].title).toBe('Long Game'); // 100h 0m - longest first
-
-		unsubscribe();
 	});
 });
 
@@ -243,22 +235,14 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		appStore.setActiveTab('planned');
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
-		const subscriber = vi.fn();
-		const unsubscribe = filteredGames.subscribe(subscriber);
-		subscriber.mockClear();
-
 		// Change to playtime sort descending
 		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
-		expect(subscriber).toHaveBeenCalled();
-		const lastCall = subscriber.mock.calls[subscriber.mock.calls.length - 1];
-		const sortedGames = lastCall[0];
+		const sortedGames = filteredGames.games;
 		// playtime desc order: Long RPG (80h), Medium Adventure (20h), Short Indie (6h 30m), Quick Puzzle (3h)
 		expect(sortedGames[0].title).toBe('Long RPG');
 		expect(sortedGames[3].title).toBe('Quick Puzzle');
-
-		unsubscribe();
 	});
 });
 

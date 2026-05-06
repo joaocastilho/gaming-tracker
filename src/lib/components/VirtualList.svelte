@@ -4,6 +4,7 @@ import type { Snippet } from 'svelte';
 import { safeKeyExtractor } from '$lib/utils/safeKeyExtractor';
 
 import { windowSize } from '$lib/stores/window.svelte';
+import { binarySearchStart, binarySearchEnd } from '$lib/utils/virtualScroll.js';
 
 interface Props {
 	items: T[];
@@ -58,42 +59,15 @@ const offsets = $derived.by(() => {
 
 const totalHeight = $derived(hasVariableHeights && offsets ? offsets[offsets.length - 1] : items.length * itemHeight);
 
-function binarySearchStart(target: number): number {
-	if (!offsets || offsets.length === 0) return 0;
-	let low = 0;
-	let high = offsets.length - 1;
-	while (low < high) {
-		const mid = Math.floor((low + high) / 2);
-		if (offsets[mid] < target) {
-			low = mid + 1;
-		} else {
-			high = mid;
-		}
-	}
-	return Math.max(0, low - 1);
-}
-
-function binarySearchEnd(target: number): number {
-	if (!offsets || offsets.length === 0) return items.length;
-	let low = 0;
-	let high = offsets.length - 1;
-	while (low < high) {
-		const mid = Math.ceil((low + high) / 2);
-		if (offsets[mid] <= target) {
-			low = mid;
-		} else {
-			high = mid - 1;
-		}
-	}
-	return Math.min(items.length, low + 1);
-}
-
 let visibleRange = $derived.by(() => {
 	const effectiveHeight = useWindowScroll ? windowSize.height : containerHeight;
 
 	if (hasVariableHeights && offsets) {
-		const start = Math.max(0, binarySearchStart(scrollTop) - overscan);
-		const end = Math.min(items.length, binarySearchEnd(scrollTop + effectiveHeight) + overscan);
+		const start = Math.max(0, binarySearchStart(offsets, scrollTop, overscan) - overscan);
+		const end = Math.min(
+			items.length,
+			binarySearchEnd(offsets, scrollTop + effectiveHeight, items.length, overscan) + overscan
+		);
 		return { start, end };
 	}
 

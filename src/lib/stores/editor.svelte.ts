@@ -1,4 +1,3 @@
-import { untrack } from 'svelte';
 import { browser, dev } from '$app/environment';
 import type { Game } from '$lib/types/game';
 import { db } from '$lib/db';
@@ -525,26 +524,6 @@ class EditorStore {
 			};
 			return false;
 		}
-	}
-
-	subscribe(fn: (value: EditorState) => void): () => void {
-		fn(this._state);
-
-		const root = $effect.root(() => {
-			let first = true;
-			$effect(() => {
-				const state = this._state;
-				if (first) {
-					first = false;
-					return;
-				}
-				untrack(() => fn(state));
-			});
-		});
-
-		return () => {
-			root();
-		};
 	}
 }
 

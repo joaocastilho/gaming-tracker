@@ -45,15 +45,15 @@ function getPreviewImageSrc(coverImage: string | undefined): string {
 }
 
 let displayedGames = $derived.by(() => {
-	if ($modalStore.displayedGames.length > 0) return $modalStore.displayedGames;
-	const allGames = $gamesStore;
+	if (modalStore.getState().displayedGames.length > 0) return modalStore.getState().displayedGames;
+	const allGames = gamesStore.games;
 	if (allGames.length === 0) return [];
 	return modalStore.getReactiveNavigationGames(allGames);
 });
 
 let currentGameIndex = $derived.by(() => {
-	if (!$modalStore.activeGame) return -1;
-	return displayedGames.findIndex((game) => game.id === $modalStore.activeGame?.id);
+	if (!modalStore.getState().activeGame) return -1;
+	return displayedGames.findIndex((game) => game.id === modalStore.getState().activeGame?.id);
 });
 
 let nextGamePreview = $derived(
@@ -61,12 +61,12 @@ let nextGamePreview = $derived(
 );
 let prevGamePreview = $derived(currentGameIndex > 0 ? displayedGames[currentGameIndex - 1] : null);
 
-let visibleGames = $derived.by(() => {
+let visibleGames = $derived.by((): { game: Game; pos: number }[] => {
 	const result = [];
 	if (prevGamePreview) result.push({ game: prevGamePreview, pos: -1 });
-	if ($modalStore.activeGame) result.push({ game: $modalStore.activeGame, pos: 0 });
+	if (modalStore.getState().activeGame) result.push({ game: modalStore.getState().activeGame, pos: 0 });
 	if (nextGamePreview) result.push({ game: nextGamePreview, pos: 1 });
-	return result;
+	return result as { game: Game; pos: number }[];
 });
 
 function conditionalFly(node: HTMLElement, { condition, ...config }: FlyParams & { condition?: boolean }) {
@@ -105,7 +105,7 @@ function toggleImageExpansion() {
 }
 
 function handleKeydown(event: KeyboardEvent) {
-	if (!$modalStore.isOpen || $modalStore.mode !== 'view') return;
+	if (!modalStore.getState().isOpen || modalStore.getState().mode !== 'view') return;
 
 	if (event.key === 'Escape') {
 		event.preventDefault();
@@ -133,7 +133,7 @@ let hasTriggeredHint = false;
 
 $effect(() => {
 	const games = displayedGames;
-	if (!browser || !$modalStore.isOpen || $modalStore.mode !== 'view') return;
+	if (!browser || !modalStore.getState().isOpen || modalStore.getState().mode !== 'view') return;
 
 	if (sessionStorage.getItem(SWIPE_HINT_KEY)) return;
 	if (window.innerWidth >= 768 || games.length <= 1) return;
@@ -160,7 +160,7 @@ $effect(() => {
 	if (!browser) return;
 
 	// Only add listener when modal is open in view mode
-	if ($modalStore.isOpen && $modalStore.mode === 'view') {
+	if (modalStore.getState().isOpen && modalStore.getState().mode === 'view') {
 		document.addEventListener('keydown', handleKeydown, true);
 
 		// Cleanup function removes listener when modal closes or component destroys
@@ -173,7 +173,7 @@ $effect(() => {
 $effect(() => {
 	if (!browser) return;
 
-	if ($modalStore.isOpen || isImageExpanded) {
+	if (modalStore.getState().isOpen || isImageExpanded) {
 		document.body.classList.add('no-scroll');
 		document.documentElement.classList.add('no-scroll');
 	} else {
@@ -196,7 +196,7 @@ $effect(() => {
 });
 </script>
 
-{#if $modalStore.isOpen && $modalStore.activeGame && $modalStore.mode === 'view'}
+{#if modalStore.getState().isOpen && modalStore.getState().activeGame && modalStore.getState().mode === 'view'}
 	<div
 		class="fixed inset-0 z-[60] flex items-center justify-center bg-black p-3 md:bg-black/80 md:p-4 md:backdrop-blur-[4px]"
 		transition:fade={{ duration: isIOS ? 250 : 200 }}
@@ -360,8 +360,8 @@ $effect(() => {
 				aria-label="Close full screen view"
 			>
 				<img
-					src={getPreviewImageSrc($modalStore.activeGame.coverImage)}
-					alt="{$modalStore.activeGame.title} cover full screen"
+					src={getPreviewImageSrc(modalStore.getState().activeGame?.coverImage || '')}
+					alt="{modalStore.getState().activeGame?.title || 'Game'} cover full screen"
 					class="max-h-full max-w-full object-contain"
 					onerror={(e) => {
 						const target = e.target as HTMLImageElement;

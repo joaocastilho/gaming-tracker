@@ -258,22 +258,6 @@ describe('EditorStore', () => {
 		});
 	});
 
-	describe('Subscribe', () => {
-		it('exposes subscribe for Svelte store compatibility', () => {
-			expect(typeof editorStore.subscribe).toBe('function');
-
-			let callCount = 0;
-			const unsubscribe = editorStore.subscribe(() => {
-				callCount++;
-			});
-
-			// The subscribe is called once immediately
-			expect(callCount).toBeGreaterThan(0);
-
-			unsubscribe();
-		});
-	});
-
 	describe('Pending Changes Queue', () => {
 		const mockGame = {
 			id: 'test-game-1',

@@ -1,4 +1,3 @@
-import { untrack } from 'svelte';
 import type { Game } from '$lib/types/game';
 import { parseDate } from '$lib/utils/dateUtils';
 
@@ -103,27 +102,6 @@ class CompletedGamesCacheStore {
 
 	getCacheInfo(): CompletedGamesCacheState | null {
 		return this._cache;
-	}
-
-	// For backwards compatibility with $completedGamesCache subscription
-	subscribe(fn: (value: CompletedGamesCacheState | null) => void): () => void {
-		fn(this._cache);
-
-		const root = $effect.root(() => {
-			let first = true;
-			$effect(() => {
-				const state = this._cache;
-				if (first) {
-					first = false;
-					return;
-				}
-				untrack(() => fn(state));
-			});
-		});
-
-		return () => {
-			root();
-		};
 	}
 }
 

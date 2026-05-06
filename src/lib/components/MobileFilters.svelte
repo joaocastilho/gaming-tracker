@@ -34,10 +34,10 @@ let pendingGenres = $state<string[]>([]);
 let pendingTiers = $state<string[]>([]);
 let pendingCoOp = $state<string[]>([]);
 
-let selectedPlatforms = $derived($filtersStore?.platforms ?? []);
-let selectedGenres = $derived($filtersStore?.genres ?? []);
-let selectedTiers = $derived($filtersStore?.tiers ?? []);
-let selectedCoOp = $derived($filtersStore?.coOp ?? []);
+let selectedPlatforms = $derived(filtersStore.state?.platforms ?? []);
+let selectedGenres = $derived(filtersStore.state?.genres ?? []);
+let selectedTiers = $derived(filtersStore.state?.tiers ?? []);
+let selectedCoOp = $derived(filtersStore.state?.coOp ?? []);
 
 $effect(() => {
 	if (isOpen) {
