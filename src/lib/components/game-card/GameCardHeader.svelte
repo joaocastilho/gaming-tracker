@@ -111,8 +111,7 @@ const isExtraLongTitle = $derived(totalLength > 60);
 
 	@container game-card (max-width: 300px) {
 		.title-section {
-			min-height: 44px;
-			max-height: 60px;
+			height: 60px;
 		}
 		.game-title {
 			font-size: clamp(1.05rem, 9cqi, 1.25rem);
@@ -128,3 +127,4 @@ const isExtraLongTitle = $derived(totalLength > 60);
 		}
 	}
 </style>
+
