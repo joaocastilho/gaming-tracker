@@ -11,9 +11,9 @@ let { game }: Props = $props();
 
 function formatSmartTime(timeStr: string | null): string {
 	if (!timeStr) return 'N/A';
-	let formatted = timeStr.replace(' ', '');
-	if (formatted.endsWith('00m')) {
-		formatted = formatted.replace('00m', '');
+	let formatted = timeStr;
+	if (formatted.endsWith(' 0m')) {
+		formatted = formatted.replace(' 0m', '');
 	}
 	return formatted;
 }
