@@ -149,7 +149,7 @@ function handleKeyDown(event: KeyboardEvent) {
 
 	@container game-card (max-width: 300px) {
 		.game-info {
-			padding: 8px 10px 8px 10px;
+			padding: 12px 10px 8px 10px;
 			gap: 8px;
 		}
 
