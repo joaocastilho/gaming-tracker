@@ -15,35 +15,25 @@ interface Props {
 
 let { game, onClose, onShare, linkCopied = '' }: Props = $props();
 
-let titleElement = $state<HTMLElement>();
 let containerWidth = $state(0);
+let titleFontSize = $state(''); // Start empty to avoid flash
 
 $effect(() => {
-	if (!browser || !titleElement || !game || containerWidth === 0) return;
+	if (!browser || !game || containerWidth === 0) return;
 
-	const maxSize = 2.25;
+	const maxSize = window.innerWidth >= 768 ? 1.75 : 1.5;
 	const minSize = 0.8;
 
-	// Use pretext to measure width at 1rem to calculate required size
-	// We use the same font family as in CSS
-	const fontBase = FONT_CONFIG.cardTitle.replace('1rem', '1rem');
+	const fontBase = FONT_CONFIG.modalTitle.replace('1.125rem', '1rem');
 	const textWidthAt1Rem = measureTextWidth(game.mainTitle, fontBase);
 
 	if (textWidthAt1Rem > 0) {
-		// Calculate target size: containerWidth / textWidthAt1Rem
-		// Subtract a small buffer (4px) for safety
-		let targetSize = (containerWidth - 4) / textWidthAt1Rem;
+		let targetSize = (containerWidth - 10) / textWidthAt1Rem;
 
-		// Clamp between min and max
 		const finalSize = Math.max(minSize, Math.min(maxSize, targetSize));
-
-		// Use requestAnimationFrame to batch the style update
-		requestAnimationFrame(() => {
-			if (titleElement) {
-				titleElement.style.whiteSpace = 'nowrap';
-				titleElement.style.fontSize = `${finalSize}rem`;
-			}
-		});
+		titleFontSize = `${finalSize}rem`;
+	} else {
+		titleFontSize = `${maxSize}rem`;
 	}
 });
 </script>
@@ -55,7 +45,10 @@ $effect(() => {
 		class="flex min-w-0 flex-1 flex-col items-center justify-start overflow-hidden text-center md:items-start md:text-left"
 		style="color: var(--color-text-primary);"
 	>
-		<span bind:this={titleElement} class="modal-title-text w-full text-[1.5rem] font-semibold md:text-[1.75rem]">
+		<span
+			class="modal-title-text w-full font-semibold"
+			style="font-size: {titleFontSize || (browser && window.innerWidth >= 768 ? '1.75rem' : '1.5rem')}; white-space: nowrap;"
+		>
 			{game.mainTitle}
 		</span>
 		{#if game.subtitle}
@@ -109,8 +102,6 @@ $effect(() => {
 		}
 
 		#modal-title :global(.modal-title-text) {
-			font-size: 2.25rem !important;
-			white-space: normal !important;
 			line-height: 1.1 !important;
 		}
 	}
