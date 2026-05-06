@@ -153,7 +153,7 @@ function handleOpenModal(game: Game) {
 			</div>
 		</div>
 	{:else if loading || !mounted}
-		<SkeletonGrid {containerWidth} />
+		<SkeletonGrid />
 	{:else if isEditor}
 		<div class="empty-editor-hint">
 			<p>No games found for this view.</p>

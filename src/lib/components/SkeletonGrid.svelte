@@ -1,9 +1,4 @@
 <script lang="ts">
-interface Props {
-	containerWidth?: number;
-}
-
-let { containerWidth }: Props = $props();
 </script>
 
 <div class="skeleton-grid">
