@@ -102,7 +102,7 @@ export function computeCardHeights(game: Game, cardWidth: number): CardHeights {
 		headerHeight += subtitleHeight + 4;
 	}
 
-	const infoHeight = 220;
+	const infoHeight = 240;
 
 	return {
 		headerHeight: Math.ceil(headerHeight),

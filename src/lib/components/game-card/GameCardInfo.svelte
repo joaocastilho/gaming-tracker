@@ -105,7 +105,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		color: var(--color-text-secondary);
 		flex-shrink: 1;
 		min-width: 0;
-		line-height: 1;
+		line-height: normal;
 	}
 
 	.time-item :global(svg) {
@@ -157,7 +157,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		font-size: clamp(1.1rem, 0.7rem + 3cqw, 1.4rem);
 		font-weight: 800;
 		color: var(--color-text-primary);
-		line-height: 1;
+		line-height: normal;
 	}
 
 	.rating-item :global(svg) {
@@ -181,7 +181,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 			background-color var(--transition-normal),
 			border-color var(--transition-normal);
 		border: 1px solid rgba(255, 255, 255, 0.1);
-		line-height: 1;
+		line-height: normal;
 	}
 
 	.status-indicator :global(svg) {
@@ -229,7 +229,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.score-value {
 		font-size: clamp(1.15rem, 0.85rem + 2.8cqw, 1.6rem);
 		font-weight: 900;
-		line-height: 1;
+		line-height: normal;
 	}
 
 	.ratings-and-score-wrapper {
