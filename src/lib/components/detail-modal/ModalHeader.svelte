@@ -19,9 +19,16 @@ let containerWidth = $state(0);
 let titleFontSize = $state(''); // Start empty to avoid flash
 
 $effect(() => {
-	if (!browser || !game || containerWidth === 0) return;
+	if (!browser || !game) return;
 
-	const maxSize = window.innerWidth >= 768 ? 1.75 : 1.5;
+	if (window.innerWidth < 768) {
+		titleFontSize = '1.5rem';
+		return;
+	}
+
+	if (containerWidth === 0) return;
+
+	const maxSize = 1.75;
 	const minSize = 0.8;
 
 	const fontBase = FONT_CONFIG.modalTitle.replace('1.125rem', '1rem');
@@ -42,12 +49,12 @@ $effect(() => {
 	<h1
 		id="modal-title"
 		bind:clientWidth={containerWidth}
-		class="flex min-w-0 flex-1 flex-col items-center justify-start overflow-hidden text-center md:items-start md:text-left"
+		class="flex min-w-0 flex-1 flex-col items-center justify-start text-center md:overflow-hidden md:items-start md:text-left"
 		style="color: var(--color-text-primary);"
 	>
 		<span
-			class="modal-title-text w-full font-semibold"
-			style="font-size: {titleFontSize || (browser && window.innerWidth >= 768 ? '1.75rem' : '1.5rem')}; white-space: nowrap;"
+			class="modal-title-text w-full font-semibold md:whitespace-nowrap"
+			style="font-size: {titleFontSize || (browser && window.innerWidth >= 768 ? '1.75rem' : '1.5rem')};"
 		>
 			{game.mainTitle}
 		</span>
