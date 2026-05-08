@@ -3,7 +3,6 @@ import type { Game } from '$lib/types/game';
 import { browser } from '$app/environment';
 import { Link, X } from 'lucide-svelte';
 
-import { measureTextWidth } from '$lib/utils/textMeasure';
 import { FONT_CONFIG } from '$lib/constants/fonts';
 
 interface Props {
@@ -16,7 +15,15 @@ interface Props {
 let { game, onClose, onShare, linkCopied = '' }: Props = $props();
 
 let containerWidth = $state(0);
-let titleFontSize = $state(''); // Start empty to avoid flash
+let titleFontSize = $state('');
+
+function measureTextWidthNative(text: string, font: string): number {
+	const canvas = document.createElement('canvas');
+	const ctx = canvas.getContext('2d');
+	if (!ctx) return 0;
+	ctx.font = font;
+	return ctx.measureText(text).width;
+}
 
 $effect(() => {
 	if (!browser || !game) return;
@@ -29,18 +36,17 @@ $effect(() => {
 	if (containerWidth === 0) return;
 
 	const maxSize = 1.75;
-	const minSize = 0.8;
+	const minSize = 0.7;
 
 	const fontBase = FONT_CONFIG.modalTitle.replace('1.125rem', '1rem');
-	const textWidthAt1Rem = measureTextWidth(game.mainTitle, fontBase);
+	const textWidthAt1Rem = measureTextWidthNative(game.mainTitle, fontBase);
 
 	if (textWidthAt1Rem > 0) {
-		let targetSize = (containerWidth - 10) / textWidthAt1Rem;
-
+		let targetSize = (containerWidth - 32) / textWidthAt1Rem;
 		const finalSize = Math.max(minSize, Math.min(maxSize, targetSize));
 		titleFontSize = `${finalSize}rem`;
 	} else {
-		titleFontSize = `${maxSize}rem`;
+		titleFontSize = `${minSize}rem`;
 	}
 });
 </script>
