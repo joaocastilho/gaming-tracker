@@ -3,6 +3,7 @@ import { goto } from '$app/navigation';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { appStore } from '$lib/stores/app.svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
+import { windowSize } from '$lib/stores/window.svelte';
 import { parsePlaytimeToMinutes, formatMinutes } from '$lib/utils/playtimeUtils';
 import GameCard from '$lib/components/GameCard.svelte';
 import Chart from '$lib/components/Chart.svelte';
@@ -98,16 +99,21 @@ let playtimeThisYearMinutes = $derived(gamesThisYear.reduce((sum, g) => sum + pa
 let yearDays = $derived(Math.round((playtimeThisYearMinutes / 1440) * 10) / 10);
 let yearWeeks = $derived(Math.round((playtimeThisYearMinutes / 10080) * 10) / 10);
 
-let recentCompletions = $derived(
-	[...completedGames]
-		.toSorted((a, b) => {
-			if (!a.finishedDate && !b.finishedDate) return 0;
-			if (!a.finishedDate) return 1;
-			if (!b.finishedDate) return -1;
-			return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
-		})
-		.slice(0, 5)
-);
+let recentCompletions = $derived.by(() => {
+	const w = windowSize.width;
+	let cols = 2;
+	if (w >= 1200) cols = 5;
+	else if (w >= 900) cols = 4;
+	else if (w >= 640) cols = 3;
+	const count = cols * 2;
+	const sorted = [...completedGames].toSorted((a, b) => {
+		if (!a.finishedDate && !b.finishedDate) return 0;
+		if (!a.finishedDate) return 1;
+		if (!b.finishedDate) return -1;
+		return new Date(b.finishedDate).getTime() - new Date(a.finishedDate).getTime();
+	});
+	return sorted.slice(0, count);
+});
 
 let tierData = $derived.by(() => {
 	const counts: number[] = TIER_ORDER.map((tier) => completedGames.filter((g) => g.tier === tier).length);
@@ -121,6 +127,7 @@ let tierData = $derived.by(() => {
 				borderColor: TIER_BAR_COLORS,
 				borderWidth: 2,
 				borderRadius: 4,
+				clip: false as const,
 			},
 		],
 	};
@@ -142,6 +149,7 @@ let genreData = $derived.by(() => {
 				borderColor: GENRE_COLORS.slice(0, sorted.length),
 				borderWidth: 2,
 				borderRadius: 4,
+				clip: false as const,
 			},
 		],
 	};
@@ -198,6 +206,7 @@ let textColor = $derived(appStore.theme === 'dark' ? '#a0a0a0' : '#666666');
 
 let tierOptions = $derived({
 	indexAxis: 'y' as const,
+	clip: false,
 	plugins: {
 		legend: { display: false },
 		datalabels: {
@@ -263,7 +272,7 @@ let monthlyOptions = $derived({
 			},
 		},
 	},
-	layout: { padding: { top: 20 } },
+	layout: { padding: { top: 20, right: 10 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
@@ -332,7 +341,7 @@ let yearOptions = $derived({
 			},
 		},
 	},
-	layout: { padding: { top: 20 } },
+	layout: { padding: { top: 20, right: 10 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
@@ -496,14 +505,14 @@ function viewAllCompleted() {
 					<Chart type="bar" data={scoreData} options={scoreOptions} height={200} />
 				</div>
 			</div>
-			<div class="chart-card span-3">
+			<div class="chart-card span-3 hide-mobile">
 				<h3 class="chart-title">Monthly Completions</h3>
 				<p class="chart-sub">Games finished per month</p>
 				<div class="chart-body">
 					<Chart type="bar" data={monthlyData} options={monthlyOptions} height={200} />
 				</div>
 			</div>
-			<div class="chart-card span-3">
+			<div class="chart-card span-3 hide-mobile">
 				<h3 class="chart-title">Year Over Year</h3>
 				<p class="chart-sub">Completions per year</p>
 				<div class="chart-body">
@@ -623,6 +632,12 @@ function viewAllCompleted() {
 <style>
 	.homepage {
 		padding-bottom: 16px;
+	}
+
+	@media (max-width: 767px) {
+		.homepage {
+			padding-bottom: 96px;
+		}
 	}
 
 	.home-content {
@@ -763,6 +778,39 @@ function viewAllCompleted() {
 	@media (min-width: 768px) {
 		.stats-grid {
 			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	@media (max-width: 639px) {
+		.stat-card {
+			padding: 14px 10px 12px;
+			gap: 6px;
+		}
+		.stat-icon {
+			width: 30px;
+			height: 30px;
+		}
+		.stat-icon :global(svg) {
+			width: 16px !important;
+			height: 16px !important;
+		}
+		.stat-value {
+			font-size: 1.25rem;
+		}
+		.stat-label {
+			font-size: 0.65rem;
+		}
+		.stat-unit {
+			font-size: 0.8rem;
+			min-width: 32px;
+			padding: 1px 6px;
+		}
+		.stat-unit-label {
+			font-size: 0.55rem;
+		}
+		.stat-sub-badge {
+			font-size: 0.7rem;
+			padding: 1px 8px;
 		}
 	}
 
@@ -938,6 +986,24 @@ function viewAllCompleted() {
 		min-height: 0;
 	}
 
+	@media (max-width: 767px) {
+		.hide-mobile {
+			display: none;
+		}
+		.charts-grid {
+			gap: 12px;
+		}
+		.chart-card {
+			padding: 14px;
+		}
+		.chart-card .chart-body :global(.chart-wrapper) {
+			height: 180px !important;
+		}
+		.chart-card .chart-body :global(canvas) {
+			max-height: 180px;
+		}
+	}
+
 	.recent-section {
 		display: flex;
 		flex-direction: column;
@@ -958,6 +1024,12 @@ function viewAllCompleted() {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 16px;
+	}
+
+	@media (min-width: 640px) {
+		.ratings-categories {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (min-width: 768px) {
@@ -1043,6 +1115,20 @@ function viewAllCompleted() {
 		object-fit: cover;
 		flex-shrink: 0;
 		background: var(--color-surface-elevated);
+	}
+
+	@media (max-width: 639px) {
+		.rating-cover {
+			width: 24px;
+			height: 34px;
+		}
+		.rating-list {
+			padding: 4px;
+		}
+		.rating-entry {
+			padding: 4px 6px;
+			gap: 6px;
+		}
 	}
 
 	.rating-game {
@@ -1157,6 +1243,20 @@ function viewAllCompleted() {
 		}
 		.np-title {
 			font-size: 1.75rem;
+		}
+	}
+
+	@media (max-width: 639px) {
+		.np-cover {
+			width: 100px;
+			min-height: 140px;
+		}
+		.np-info {
+			padding: 14px;
+			gap: 6px;
+		}
+		.np-title {
+			font-size: 1.1rem;
 		}
 	}
 </style>

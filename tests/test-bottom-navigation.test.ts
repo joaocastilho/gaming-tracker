@@ -17,6 +17,11 @@ vi.mock('$lib/utils/navigationUtils', () => ({
 	navigateTo: (tab: string) => mockNavigateTo(tab),
 }));
 
+const mockGoto = vi.fn();
+vi.mock('$app/navigation', () => ({
+	goto: (url: string) => mockGoto(url),
+}));
+
 // Mock Lucide icons
 vi.mock('lucide-svelte', () => {
 	const MockIcon = () => null;
@@ -26,6 +31,7 @@ vi.mock('lucide-svelte', () => {
 		Calendar: MockIcon,
 		List: MockIcon,
 		Search: MockIcon,
+		Home: MockIcon,
 	};
 });
 
@@ -47,6 +53,13 @@ describe('BottomNavigation', () => {
 	});
 
 	describe('Tab Switching', () => {
+		it('should navigate to Home (/) when Home tab is clicked', async () => {
+			render(BottomNavigation);
+			const homeTab = screen.getByRole('button', { name: /Home/i });
+			await fireEvent.click(homeTab);
+			expect(mockGoto).toHaveBeenCalledWith('/');
+		});
+
 		it('should navigate to Library (/library) when Library tab is clicked', async () => {
 			render(BottomNavigation);
 			const libraryTab = screen.getByRole('button', { name: /Library/i });
@@ -94,6 +107,13 @@ describe('BottomNavigation', () => {
 	});
 
 	describe('Keyboard Navigation', () => {
+		it('should navigate home on Enter key press', async () => {
+			render(BottomNavigation);
+			const homeTab = screen.getByRole('button', { name: /Home/i });
+			await fireEvent.keyDown(homeTab, { key: 'Enter' });
+			expect(mockGoto).toHaveBeenCalledWith('/');
+		});
+
 		it('should navigate on Enter key press', async () => {
 			render(BottomNavigation);
 			const libraryTab = screen.getByRole('button', { name: /Library/i });
@@ -215,22 +235,23 @@ describe('BottomNavigation', () => {
 			expect(list).toBeInTheDocument();
 		});
 
-		it('should render 5 navigation items', () => {
+		it('should render 6 navigation items', () => {
 			render(BottomNavigation);
 			const listItems = screen.getAllByRole('listitem');
-			expect(listItems).toHaveLength(5);
+			expect(listItems).toHaveLength(6);
 		});
 
 		it('should have buttons for all navigation items', () => {
 			render(BottomNavigation);
 			const buttons = screen.getAllByRole('button');
-			expect(buttons).toHaveLength(5);
+			expect(buttons).toHaveLength(6);
 		});
 	});
 
 	describe('Rendering', () => {
 		it('should render all tab labels', () => {
 			render(BottomNavigation);
+			expect(screen.getByText('Home')).toBeInTheDocument();
 			expect(screen.getByText('Library')).toBeInTheDocument();
 			expect(screen.getByText('Completed')).toBeInTheDocument();
 			expect(screen.getByText('Planned')).toBeInTheDocument();
