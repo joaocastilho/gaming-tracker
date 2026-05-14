@@ -65,7 +65,7 @@ Manually assigned tiers to games based on overall assessment:
 | -------------------- | ---------------------------------------------- | --------- |
 | **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.58.0` |
 | **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.55.5` |
-| **Language**         | [TypeScript](https://www.typescriptlang.org/)  | `v5.9.3`  |
+| **Language**         | [TypeScript](https://www.typescriptlang.org/)  | `v6.0.3`  |
 | **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.2.4`  |
 | **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.4.13` |
 | **Storage**          | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.4.2`  |
