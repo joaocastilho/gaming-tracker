@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import type { CoOpStatus, GameStatus, TierValue } from '../types/game';
 
-export const GAME_STATUS_VALUES = ['Planned', 'Completed'] as const satisfies GameStatus[];
+export const GAME_STATUS_VALUES = ['Planned', 'Completed', 'Playing'] as const satisfies GameStatus[];
 export const TIER_VALUES = [
 	'S - Masterpiece',
 	'A - Amazing',
@@ -60,54 +60,54 @@ export function formatRating(rating: number | null | undefined): string {
 }
 
 export const GameSchema = BaseGameSchema.superRefine((game, ctx) => {
-	if (game.status === 'Planned') {
+	if (game.status === 'Planned' || game.status === 'Playing') {
 		if (game.finishedDate !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['finishedDate'],
-				message: 'Planned games must have finishedDate = null',
+				message: `${game.status} games must have finishedDate = null`,
 			});
 		}
 		if (game.ratingPresentation !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingPresentation'],
-				message: 'Planned games must have ratingPresentation = null',
+				message: `${game.status} games must have ratingPresentation = null`,
 			});
 		}
 		if (game.ratingStory !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingStory'],
-				message: 'Planned games must have ratingStory = null',
+				message: `${game.status} games must have ratingStory = null`,
 			});
 		}
 		if (game.ratingGameplay !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['ratingGameplay'],
-				message: 'Planned games must have ratingGameplay = null',
+				message: `${game.status} games must have ratingGameplay = null`,
 			});
 		}
 		if (game.score !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['score'],
-				message: 'Planned games must have score = null',
+				message: `${game.status} games must have score = null`,
 			});
 		}
 		if (game.tier !== null) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['tier'],
-				message: 'Planned games must have tier = null',
+				message: `${game.status} games must have tier = null`,
 			});
 		}
 		if (game.completionOrder !== null && game.completionOrder !== undefined) {
 			ctx.addIssue({
 				code: 'custom',
 				path: ['completionOrder'],
-				message: 'Planned games must have completionOrder = null',
+				message: `${game.status} games must have completionOrder = null`,
 			});
 		}
 		return;

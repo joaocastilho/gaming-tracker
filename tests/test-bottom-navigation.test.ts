@@ -43,15 +43,15 @@ describe('BottomNavigation', () => {
 
 	afterEach(() => {
 		// Restore original state
-		appStore.setActiveTab(originalActiveTab as 'all' | 'completed' | 'planned' | 'tierlist');
+		appStore.setActiveTab(originalActiveTab as 'all' | 'library' | 'completed' | 'planned' | 'tierlist');
 	});
 
 	describe('Tab Switching', () => {
-		it('should navigate to Games (/) when Games tab is clicked', async () => {
+		it('should navigate to Library (/library) when Library tab is clicked', async () => {
 			render(BottomNavigation);
-			const gamesTab = screen.getByRole('button', { name: /Games/i });
-			await fireEvent.click(gamesTab);
-			expect(mockNavigateTo).toHaveBeenCalledWith('all');
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			await fireEvent.click(libraryTab);
+			expect(mockNavigateTo).toHaveBeenCalledWith('library');
 		});
 
 		it('should navigate to Completed (/completed) when Completed tab is clicked', async () => {
@@ -96,9 +96,9 @@ describe('BottomNavigation', () => {
 	describe('Keyboard Navigation', () => {
 		it('should navigate on Enter key press', async () => {
 			render(BottomNavigation);
-			const gamesTab = screen.getByRole('button', { name: /Games/i });
-			await fireEvent.keyDown(gamesTab, { key: 'Enter' });
-			expect(mockNavigateTo).toHaveBeenCalledWith('all');
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			await fireEvent.keyDown(libraryTab, { key: 'Enter' });
+			expect(mockNavigateTo).toHaveBeenCalledWith('library');
 		});
 
 		it('should navigate on Space key press', async () => {
@@ -118,18 +118,18 @@ describe('BottomNavigation', () => {
 
 		it('should not trigger action on other keys', async () => {
 			render(BottomNavigation);
-			const gamesTab = screen.getByRole('button', { name: /Games/i });
-			await fireEvent.keyDown(gamesTab, { key: 'Tab' });
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			await fireEvent.keyDown(libraryTab, { key: 'Tab' });
 			expect(mockNavigateTo).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('Active State', () => {
-		it('should mark Games tab as active when activeTab is "all"', () => {
-			appStore.setActiveTab('all');
+		it('should mark Library tab as active when activeTab is "library"', () => {
+			appStore.setActiveTab('library');
 			render(BottomNavigation);
-			const gamesTab = screen.getByRole('button', { name: /Games/i });
-			expect(gamesTab).toHaveAttribute('aria-current', 'page');
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			expect(libraryTab).toHaveAttribute('aria-current', 'page');
 		});
 
 		it('should mark Completed tab as active when activeTab is "completed"', () => {
@@ -168,12 +168,12 @@ describe('BottomNavigation', () => {
 	});
 
 	describe('Count Badges', () => {
-		it('should display all count badge for Games tab', () => {
+		it('should display all count badge for Library tab', () => {
 			// The counts come from the store, mock returns depend on state
 			render(BottomNavigation);
-			const gamesTab = screen.getByRole('button', { name: /Games/i });
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
 			// Check that the aria-label includes count information
-			expect(gamesTab).toBeInTheDocument();
+			expect(libraryTab).toBeInTheDocument();
 		});
 
 		it('should display completed count badge for Completed tab', () => {
@@ -231,7 +231,7 @@ describe('BottomNavigation', () => {
 	describe('Rendering', () => {
 		it('should render all tab labels', () => {
 			render(BottomNavigation);
-			expect(screen.getByText('Games')).toBeInTheDocument();
+			expect(screen.getByText('Library')).toBeInTheDocument();
 			expect(screen.getByText('Completed')).toBeInTheDocument();
 			expect(screen.getByText('Planned')).toBeInTheDocument();
 			expect(screen.getByText('Tier List')).toBeInTheDocument();

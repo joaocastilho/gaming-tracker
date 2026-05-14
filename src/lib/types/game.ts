@@ -1,4 +1,4 @@
-export type GameStatus = 'Planned' | 'Completed';
+export type GameStatus = 'Planned' | 'Completed' | 'Playing';
 
 export type TierValue = 'S - Masterpiece' | 'A - Amazing' | 'B - Great' | 'C - Good' | 'D - Decent' | 'E - Bad';
 

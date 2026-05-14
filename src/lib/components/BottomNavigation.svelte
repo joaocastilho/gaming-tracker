@@ -11,7 +11,7 @@ interface Props {
 
 let { onSearchToggle }: Props = $props();
 
-type NavId = 'all' | 'completed' | 'planned' | 'tierlist' | 'search';
+type NavId = 'library' | 'completed' | 'planned' | 'tierlist' | 'search';
 
 type NavItem = {
 	id: NavId;
@@ -28,11 +28,11 @@ let navItems = $derived.by(() => {
 
 	return [
 		{
-			id: 'all' as NavId,
-			label: 'Games',
-			route: '/',
+			id: 'library' as NavId,
+			label: 'Library',
+			route: '/library',
 			count: counts.all,
-			active: currentTab === 'all',
+			active: currentTab === 'library' || currentTab === 'all',
 			icon: Gamepad,
 		},
 		{

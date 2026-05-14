@@ -149,6 +149,8 @@ let filterOptions = $derived.by(() => {
 
 let currentPage = $derived.by(() => {
 	const path = page.url.pathname;
+	if (path === '/') return 'home';
+	if (path === '/library') return 'all';
 	if (path === '/completed') return 'completed';
 	if (path === '/planned') return 'planned';
 	if (path === '/tierlist') return 'tierlist';
@@ -159,6 +161,8 @@ let currentFilteredGames = $derived(filteredGamesStore.games);
 
 let canonicalUrl = $derived(page.url.origin + page.url.pathname);
 
+let isHomePage = $derived(currentPage === 'home');
+
 let isGamesPage = $derived(currentPage === 'all' || currentPage === 'completed' || currentPage === 'planned');
 
 let isPlannedPage = $derived(currentPage === 'planned');
@@ -167,6 +171,8 @@ let isTierlistPage = $derived(currentPage === 'tierlist');
 
 let pageTitle = $derived.by(() => {
 	const path = page.url.pathname;
+	if (path === '/') return 'Home';
+	if (path === '/library') return 'All Games';
 	if (path === '/completed') return 'Completed Games';
 	if (path === '/planned') return 'Planned Games';
 	if (path === '/tierlist') return 'Tier List';
@@ -218,9 +224,13 @@ $effect(() => {
 
 $effect(() => {
 	const pathname = page.url.pathname;
-	let targetTab: 'all' | 'completed' | 'planned' | 'tierlist' = 'all';
+	let targetTab: 'all' | 'completed' | 'planned' | 'tierlist' | 'home' | 'library' = 'all';
 
-	if (pathname === '/completed') {
+	if (pathname === '/') {
+		targetTab = 'home';
+	} else if (pathname === '/library') {
+		targetTab = 'library';
+	} else if (pathname === '/completed') {
 		targetTab = 'completed';
 	} else if (pathname === '/planned') {
 		targetTab = 'planned';
@@ -623,6 +633,7 @@ async function installApp() {
 			onApplyChanges={handleApplyChanges}
 			onOpenLogin={() => (loginModalOpen = true)}
 		/>
+		{#if !isHomePage}
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block" style="min-height: 44px;">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
 				<!-- Filters are shown on desktop via FilterDropdowns -->
@@ -681,6 +692,7 @@ async function installApp() {
 					{/if}
 			</div>
 		</section>
+		{/if}
 
 		<a
 			href="#main-content"
@@ -695,7 +707,9 @@ async function installApp() {
 			class:search-open-mobile={isSearchOpen}
 		>
 			<div class="mx-auto" style="max-width: 1800px;">
-				{#if isGamesPage}
+				{#if isHomePage}
+					{@render children?.()}
+				{:else if isGamesPage}
 					{#if hasActiveFilters && currentFilteredGames.length === 0}
 						{#if NoResultsComponent}
 							<NoResultsComponent onReset={resetFilters} />

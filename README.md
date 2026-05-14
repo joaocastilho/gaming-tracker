@@ -69,9 +69,10 @@ Manually assigned tiers to games based on overall assessment:
 | **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.2.4`  |
 | **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.4.13` |
 | **Storage**          | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.4.2`  |
-| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.13` |
 | **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.0.10` |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.5`  |
+| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.13` |
+| **Charts**           | [Chart.js](https://www.chartjs.org/)            | `v4.5.1`  |
 
 ## 🚀 Running Locally
 

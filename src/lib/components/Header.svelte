@@ -1,6 +1,7 @@
 <script lang="ts">
 import { browser } from '$app/environment';
 import { dev } from '$app/environment';
+import { goto } from '$app/navigation';
 import { navigateTo } from '$lib/utils/navigationUtils';
 import { page } from '$app/state';
 import ThemeToggle from '$lib/components/ThemeToggle.svelte';
@@ -9,7 +10,7 @@ import { appStore } from '$lib/stores/app.svelte';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
-import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn } from 'lucide-svelte';
+import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn, Home } from 'lucide-svelte';
 import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
 const isMac = $derived(browser && navigator.platform.toLowerCase().includes('mac'));
@@ -23,7 +24,7 @@ interface Props {
 
 let { onAddGame, onApplyChanges, onOpenLogin }: Props = $props();
 
-type NavId = 'all' | 'completed' | 'planned' | 'tierlist';
+type NavId = 'library' | 'completed' | 'planned' | 'tierlist';
 
 type NavItem = {
 	id: NavId;
@@ -44,11 +45,11 @@ let navItems = $derived.by(() => {
 
 	return [
 		{
-			id: 'all' as NavId,
-			label: 'Games',
-			route: '/',
+			id: 'library' as NavId,
+			label: 'Library',
+			route: '/library',
 			count: counts.all,
-			active: currentTab === 'all',
+			active: currentTab === 'library' || currentTab === 'all',
 		},
 		{
 			id: 'completed' as NavId,
@@ -97,7 +98,11 @@ async function handleLogout() {
 
 <header class="header-root mb-0 px-4 py-1 md:mb-6 md:px-6">
 	<div class="header-inner container mx-auto">
-		<div class="header-left invisible md:visible"></div>
+		<div class="header-left">
+			<button type="button" class="home-button" onclick={() => goto('/')} aria-label="Home">
+				<Home size={20} />
+			</button>
+		</div>
 		<nav class="tabs-nav">
 			<ul class="tabs-list">
 				{#each navItems as item (item.id)}
@@ -229,7 +234,31 @@ async function handleLogout() {
 	.header-left {
 		grid-row: 1;
 		grid-column: 1;
-		display: none;
+		display: flex;
+		align-items: center;
+	}
+
+	.home-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		border: 1px solid var(--color-border);
+		border-radius: 10px;
+		background: var(--color-surface);
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		transition: all var(--transition-fast);
+	}
+
+	@media (hover: hover) {
+		.home-button:hover {
+			background: var(--color-hover);
+			border-color: var(--color-accent);
+			color: var(--color-accent);
+			transform: translateY(-1px);
+		}
 	}
 
 	.tabs-nav {

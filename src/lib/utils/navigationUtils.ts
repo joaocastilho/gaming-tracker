@@ -3,7 +3,7 @@ import { appStore } from '$lib/stores/app.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { toSlug } from './slugUtils';
 
-export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist';
+export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist' | 'library';
 
 export interface NavigationOptions {
 	scrollToTop?: boolean;
@@ -102,7 +102,9 @@ export function scrollToTopInstant() {
 }
 
 export function getRoutePath(target: NavTarget): string {
-	return target === 'all' ? '/' : `/${target}`;
+	if (target === 'all') return '/library';
+	if (target === 'library') return '/library';
+	return `/${target}`;
 }
 
 export function requiresFilterReset(_target: NavTarget): boolean {
