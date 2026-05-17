@@ -164,7 +164,7 @@ $effect(() => {
 	_initialized = true;
 
 	if (mode === 'edit' && initialGame) {
-		working = JSON.parse(JSON.stringify(initialGame));
+		working = structuredClone(initialGame);
 		if (working && typeof working.playtime === 'number') {
 			working.playtime = formatDuration(working.playtime);
 		}

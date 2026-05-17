@@ -1,10 +1,15 @@
 import { pushState, replaceState } from '$app/navigation';
 import { createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
-import { getTierDisplayName, getTierWeight } from '$lib/utils/tierUtils';
-import { parseDate } from '$lib/utils/dateUtils';
 import type { Game, TierValue } from '../types/game.js';
 import type { SortOption } from './filters.svelte';
 import { gamesStore } from './games.svelte';
+import { filterGamesByContext } from './modalNavigation.svelte.js';
+import {
+	validateFormData as validateFormDataFn,
+	getTierFromScore as getTierFromScoreFn,
+	buildNewGame,
+	buildUpdatedGame,
+} from './modalForm.svelte.js';
 
 export interface CardRect {
 	x: number;
@@ -208,7 +213,7 @@ class ModalStore {
 	updateFilterContext(context: Partial<ModalState['filterContext']>): void {
 		const newFilterContext = { ...this._state.filterContext, ...context };
 
-		const updatedDisplayedGames = this.getReactiveNavigationGamesFromContext(gamesStore.games, newFilterContext);
+		const updatedDisplayedGames = filterGamesByContext(gamesStore.games, newFilterContext);
 
 		let updatedActiveGame = this._state.activeGame;
 		if (updatedActiveGame && !updatedDisplayedGames.find((g) => g.id === updatedActiveGame?.id)) {
@@ -224,110 +229,12 @@ class ModalStore {
 	}
 
 	getReactiveNavigationGamesFromContext(allGames: Game[], filterContext: ModalState['filterContext']): Game[] {
-		if (!filterContext) return allGames;
-
-		let filteredGames = [...allGames];
-
-		if (filterContext.searchTerm.trim()) {
-			const query = filterContext.searchTerm.toLowerCase().trim();
-			filteredGames = filteredGames.filter((game) => game.title.toLowerCase().includes(query));
-		}
-
-		if (filterContext.platforms.length > 0) {
-			filteredGames = filteredGames.filter((game) => filterContext.platforms.includes(game.platform));
-		}
-
-		if (filterContext.genres.length > 0) {
-			filteredGames = filteredGames.filter((game) => filterContext.genres.includes(game.genre));
-		}
-		if (filterContext.statuses.length > 0) {
-			filteredGames = filteredGames.filter((game) => filterContext.statuses.includes(game.status));
-		}
-
-		if (filterContext.tiers.length > 0) {
-			filteredGames = filteredGames.filter((game) => {
-				if (!game.tier) return false;
-				const gameTierFullName = getTierDisplayName(game.tier);
-				return filterContext.tiers.includes(gameTierFullName);
-			});
-		}
-
-		switch (filterContext.activeTab) {
-			case 'completed':
-				filteredGames = filteredGames.filter((game) => game.status === 'Completed');
-				break;
-			case 'planned':
-				filteredGames = filteredGames.filter((game) => game.status === 'Planned');
-				break;
-			case 'tierlist':
-				filteredGames = filteredGames.filter((game) => game.tier);
-				break;
-			default:
-				break;
-		}
-
-		if (filterContext.sortOption) {
-			const { key, direction } = filterContext.sortOption;
-			const dir = direction === 'asc' ? 1 : -1;
-
-			filteredGames = filteredGames.toSorted((a, b) => {
-				const aVal =
-					key === 'presentation'
-						? (a.ratingPresentation ?? 0)
-						: key === 'story'
-							? (a.ratingStory ?? 0)
-							: key === 'gameplay'
-								? (a.ratingGameplay ?? 0)
-								: (a.score ?? 0);
-
-				const bVal =
-					key === 'presentation'
-						? (b.ratingPresentation ?? 0)
-						: key === 'story'
-							? (b.ratingStory ?? 0)
-							: key === 'gameplay'
-								? (b.ratingGameplay ?? 0)
-								: (b.score ?? 0);
-
-				if (aVal === bVal) return 0;
-				return aVal > bVal ? dir : -dir;
-			});
-		} else {
-			switch (filterContext.activeTab) {
-				case 'completed':
-					filteredGames = filteredGames.toSorted((a, b) => {
-						if (!a.finishedDate && !b.finishedDate) return 0;
-						if (!a.finishedDate) return 1;
-						if (!b.finishedDate) return -1;
-						const dateA = parseDate(a.finishedDate);
-						const dateB = parseDate(b.finishedDate);
-						if (!dateA || !dateB) return 0;
-						return dateB - dateA;
-					});
-					break;
-				case 'planned':
-					filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
-					break;
-				case 'tierlist':
-					filteredGames = filteredGames.toSorted((a, b) => {
-						const weightA = getTierWeight(a.tier || '');
-						const weightB = getTierWeight(b.tier || '');
-						if (weightA !== weightB) return weightB - weightA; // Higher tier first
-						return a.title.localeCompare(b.title);
-					});
-					break;
-				default:
-					filteredGames = filteredGames.toSorted((a, b) => a.title.localeCompare(b.title));
-					break;
-			}
-		}
-
-		return filteredGames;
+		return filterGamesByContext(allGames, filterContext);
 	}
 
 	getReactiveNavigationGames(allGames: Game[]): Game[] {
 		if (!this._state.filterContext) return allGames;
-		return this.getReactiveNavigationGamesFromContext(allGames, this._state.filterContext);
+		return filterGamesByContext(allGames, this._state.filterContext);
 	}
 
 	updateFormData(field: string, value: unknown): void {
@@ -366,72 +273,11 @@ class ModalStore {
 	}
 
 	validateForm(): boolean {
-		const state = this._state;
-		const errors: Record<string, string> = {};
-
-		if (!state.formData.title?.trim()) {
-			errors.title = 'Title is required';
-		}
-		if (!state.formData.platform?.trim()) {
-			errors.platform = 'Platform is required';
-		}
-		if (!state.formData.genre?.trim()) {
-			errors.genre = 'Genre is required';
-		}
-		if (!state.formData.playtime?.trim()) {
-			errors.playtime = 'Playtime is required';
-		}
-
-		if (state.formData.year !== undefined) {
-			if (state.formData.year < 1970 || state.formData.year > 2099) {
-				errors.year = 'Year must be between 1970 and 2099';
-			}
-		} else {
-			errors.year = 'Year is required';
-		}
-
-		if (state.formData.status === 'Completed') {
-			if (!state.formData.finishedDate) {
-				errors.finishedDate = 'Finished date is required for completed games';
-			}
-			if (state.formData.ratingPresentation === null || state.formData.ratingPresentation === undefined) {
-				errors.ratingPresentation = 'Presentation rating is required for completed games';
-			}
-			if (state.formData.ratingStory === null || state.formData.ratingStory === undefined) {
-				errors.ratingStory = 'Story rating is required for completed games';
-			}
-			if (state.formData.ratingGameplay === null || state.formData.ratingGameplay === undefined) {
-				errors.ratingGameplay = 'Gameplay rating is required for completed games';
-			}
-
-			if (
-				state.formData.ratingPresentation !== null &&
-				state.formData.ratingPresentation !== undefined &&
-				(state.formData.ratingPresentation < 0 || state.formData.ratingPresentation > 10)
-			) {
-				errors.ratingPresentation = 'Presentation rating must be between 0 and 10';
-			}
-			if (
-				state.formData.ratingStory !== null &&
-				state.formData.ratingStory !== undefined &&
-				(state.formData.ratingStory < 0 || state.formData.ratingStory > 10)
-			) {
-				errors.ratingStory = 'Story rating must be between 0 and 10';
-			}
-			if (
-				state.formData.ratingGameplay !== null &&
-				state.formData.ratingGameplay !== undefined &&
-				(state.formData.ratingGameplay < 0 || state.formData.ratingGameplay > 10)
-			) {
-				errors.ratingGameplay = 'Gameplay rating must be between 0 and 10';
-			}
-		}
-
+		const errors = validateFormDataFn(this._state.formData);
 		this._state = {
 			...this._state,
 			validationErrors: errors,
 		};
-
 		return Object.keys(errors).length === 0;
 	}
 
@@ -454,44 +300,10 @@ class ModalStore {
 
 		try {
 			if (state.mode === 'add') {
-				const ratingPresentation = state.formData.ratingPresentation ?? null;
-				const ratingStory = state.formData.ratingStory ?? null;
-				const ratingGameplay = state.formData.ratingGameplay ?? null;
-				const score =
-					ratingPresentation !== null && ratingStory !== null && ratingGameplay !== null
-						? Math.round(((ratingPresentation + ratingStory + ratingGameplay) / 3) * 2)
-						: null;
-
-				const newGame: Game = {
-					...(state.formData as Game),
-					id: crypto.randomUUID(),
-					coverImage: `covers/${state.formData.title?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'game'}.webp`,
-					score,
-					tier: state.formData.status === 'Completed' && score !== null ? this.getTierFromScore(score) : null,
-				};
-
+				const newGame = buildNewGame(state.formData);
 				gamesStore.addGame(newGame);
 			} else if (state.mode === 'edit' && state.activeGame) {
-				const ratingPresentation = state.formData.ratingPresentation ?? null;
-				const ratingStory = state.formData.ratingStory ?? null;
-				const ratingGameplay = state.formData.ratingGameplay ?? null;
-				const score =
-					ratingPresentation !== null && ratingStory !== null && ratingGameplay !== null
-						? Math.round(((ratingPresentation + ratingStory + ratingGameplay) / 3) * 2)
-						: state.activeGame.score;
-
-				const updatedGame: Game = {
-					...state.activeGame,
-					...state.formData,
-					score,
-					tier:
-						state.formData.status === 'Completed' && score !== null
-							? this.getTierFromScore(score)
-							: state.formData.status === 'Planned'
-								? null
-								: state.activeGame.tier,
-				};
-
+				const updatedGame = buildUpdatedGame(state.activeGame, state.formData);
 				gamesStore.updateGame(state.activeGame.id, updatedGame);
 			}
 
@@ -510,12 +322,7 @@ class ModalStore {
 	}
 
 	getTierFromScore(score: number): TierValue {
-		if (score >= 18) return 'S - Masterpiece';
-		if (score >= 15) return 'A - Amazing';
-		if (score >= 12) return 'B - Great';
-		if (score >= 9) return 'C - Good';
-		if (score >= 6) return 'D - Decent';
-		return 'E - Bad';
+		return getTierFromScoreFn(score);
 	}
 
 	readFromURL(searchParams: URLSearchParams, games: Game[]): void {

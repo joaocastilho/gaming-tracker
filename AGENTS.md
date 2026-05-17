@@ -5,10 +5,12 @@
 
 **Key Documents**:
 
-- `docs/project-audit.md` - Comprehensive codebase audit
-- `docs/implementation-roadmap.md` - Path to 10/10 implementation
-- `docs/manual-audit-guide.md` - Step-by-step manual audit instructions
-- `docs/TECHNICAL.md` - Architecture documentation
+- `docs/project-audit.md` — Comprehensive codebase audit
+- `docs/implementation-roadmap.md` — Path to 10/10 implementation
+- `docs/manual-audit-guide.md` — Step-by-step manual audit instructions
+- `docs/project.md` — Project overview
+- `docs/TECHNICAL.md` — Architecture documentation
+- `AGENTS.md` — (this file) Instructions for AI agents
 
 ---
 
@@ -30,12 +32,12 @@
 
 **MANDATORY for all refactors and bug fixes:**
 
-1. **Write the test FIRST** - Create a failing test that demonstrates the bug/missing feature
-2. **Run the test** - Verify it fails with a clear error message
-3. **Implement the fix** - Make the minimal change to make the test pass
-4. **Run the test** - Verify it now passes
-5. **Run full suite** - `bun run test` - ensure no regressions
-6. **Proceed to quality checks** - Lint, typecheck, format
+1. **Write the test FIRST** — Create a failing test that demonstrates the bug/missing feature
+2. **Run the test** — Verify it fails with a clear error message
+3. **Implement the fix** — Make the minimal change to make the test pass
+4. **Run the test** — Verify it now passes
+5. **Run full suite** — `bun run test` — ensure no regressions
+6. **Proceed to quality checks** — Lint, typecheck, format
 
 **This is non-negotiable.** Every refactor must be covered by tests before implementation.
 
@@ -43,7 +45,7 @@
 
 **ASK when:**
 
-- Requirements are unclear ("improve the UI" - how?)
+- Requirements are unclear ("improve the UI" — how?)
 - Multiple valid approaches exist
 - Breaking changes to existing behavior
 - > 3 files need modification
@@ -68,7 +70,7 @@
 ### 3. Clean Up After Yourself
 
 - Delete temp files (temp.md, debug.json, notes.txt)
-- Remove console.log() before committing
+- Remove `console.log()` before committing
 - Don't leave TODO comments unless user requested
 
 ### 4. Static Data is Read-Only
@@ -82,6 +84,16 @@ Always check `docs/project.md` for:
 - Tech stack details
 - Architecture constraints
 - Data schemas
+
+### 6. Avoid Circular Dependencies
+
+When creating new imports between files, verify the dependency direction:
+
+- `utils/` may import from `types/` and `constants/`
+- `stores/` may import from `utils/`, `types/`, and other `stores/` (in that direction)
+- `components/` may import from `stores/`, `utils/`, `types/`
+- **Never** let `utils/` import from `stores/` or `components/`
+- **Never** let `types/` import from `utils/`, `stores/`, or `components/`
 
 ---
 
@@ -175,6 +187,7 @@ bun run check
 
 - [ ] Zero TypeScript errors
 - [ ] No `@ts-ignore` without comment explaining why
+- [ ] No `@ts-expect-error` without a clear explanation
 
 ### Step 4: Debug Cleanup
 
@@ -241,54 +254,135 @@ Ready to commit.
 
 ### Svelte 5 Runes (Required)
 
-✓ **Correct:**
+Use Svelte 5 runes syntax in `.svelte` components and `.svelte.ts` store files:
+
+✓ **Component example:**
 
 ```svelte
-<script>
+<script lang="ts">
+	let { name }: { name: string } = $props();
 	let count = $state(0);
 	let doubled = $derived(count * 2);
+
 	$effect(() => {
-		console.log(count);
+		console.log({ name, count });
 	});
 </script>
+```
+
+✓ **Store class example (.svelte.ts):**
+
+```typescript
+class CounterStore {
+	count = $state(0);
+
+	increment(): void {
+		this.count++;
+	}
+}
+
+export const counter = new CounterStore();
 ```
 
 ✗ **Wrong (Old Svelte):**
 
 ```svelte
 <script>
-	let count = 0; // Not reactive in Svelte 5
+	export let name;       // Use $props()
+	let count = 0;         // Not reactive in Svelte 5
 	$: doubled = count * 2; // Use $derived instead
-	onMount(() => {}); // Use $effect instead
+	onMount(() => {});     // Use $effect instead
+	import { onDestroy } from 'svelte'; // Use $effect cleanup instead
 </script>
 ```
 
+**Key Svelte 5 rules:**
+
+- Reactive state → `$state()`
+- Derived values → `$derived()` or `$derived.by(() => ...)`
+- Side effects → `$effect()`, `$effect.pre()`
+- Component props → `$props()` (destructure in `let`)
+- Store files must use `.svelte.ts` extension to use runes
+- Event handlers use `onclick` (lowercase, not `on:click`)
+
 ### TypeScript (STRICT MODE)
 
-- **STRICT MODE ENABLED** - `strict: true` in tsconfig.json
-- **NO `any` TYPES** - Zero tolerance. Use `unknown` with type guards instead
-- **NO `@ts-ignore`** - Use `@ts-expect-error` with detailed explanation if absolutely necessary
-- **NO TYPE ASSERTIONS** - Avoid `as Type`. Fix types at the source
+- **STRICT MODE ENABLED** — `strict: true` in tsconfig.json
+- **NO `any` TYPES** — Zero tolerance. Use `unknown` with type guards instead
+- **NO `@ts-ignore`** — Use `@ts-expect-error` with detailed explanation
+- **NO TYPE ASSERTIONS** — Avoid `as Type`. Fix types at the source
 - Use type guards for runtime checks
 - Explicit return types on all public methods
-- No implicit any in catch blocks - properly type errors
+- No implicit any in catch blocks — properly type errors
+
+### `structuredClone()` Over `JSON.parse(JSON.stringify())`
+
+Use `structuredClone(value)` for deep cloning plain data objects instead of `JSON.parse(JSON.stringify(value))`. It is faster, preserves more data types (Date, Map, Set, RegExp), and avoids the type cast pattern (`as T`).
 
 ### Import Order
 
 ```typescript
-// 1. External libraries
-import { writable } from 'svelte/store';
+// 1. SvelteKit / app modules
+import { page } from '$app/state';
+import { goto } from '$app/navigation';
 
-// 2. Internal absolute imports
-import { db } from '$lib/db';
-import GameCard from '$lib/components/GameCard.svelte';
+// 2. External libraries
+import { RotateCcw } from 'lucide-svelte';
 
-// 3. Relative imports
+// 3. Internal absolute imports — stores
+import { gamesStore } from '$lib/stores/games.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+
+// 4. Internal absolute imports — utils, types, components
+import { createGameSlug } from '$lib/utils/slugUtils';
+import type { Game } from '$lib/types/game';
+import GamesView from '$lib/views/GamesView.svelte';
+
+// 5. Relative imports
 import { formatDate } from './utils';
 
-// 4. Styles
+// 6. Styles
 import './styles.css';
 ```
+
+---
+
+## Codebase Architecture
+
+### Store Layer (`src/lib/stores/`)
+
+| Store | Purpose |
+|-------|---------|
+| `games.svelte.ts` | Game data + IndexedDB persistence |
+| `filters.svelte.ts` | Filter/sort state management |
+| `modal.svelte.ts` | Modal core state, open/close, URL sync |
+| `modalNavigation.svelte.ts` | Game filtering/sorting for modal navigation |
+| `modalForm.svelte.ts` | Form validation, game building, tier calculation |
+| `editor.svelte.ts` | Editor session management |
+| `editorModalState.svelte.ts` | Editor/delete modal UI state |
+| `filteredGamesStore.svelte.ts` | Derived filtered game list |
+| `filteredCounts.svelte.ts` | Derived filter counts |
+| `app.svelte.ts` | App-level state (active tab, theme) |
+| `window.svelte.ts` | Window/dimensions tracking |
+| `completedGamesCache.svelte.ts` | Completed games sorted cache |
+| `imageErrors.svelte.ts` | Failed image URL tracker (capped at 200) |
+| `offline.svelte.ts` | Online/offline state |
+| `searchClearCoordinator.ts` | Search clear coordination |
+
+### Utilities Layer (`src/lib/utils/`)
+
+| Utility | Purpose |
+|---------|---------|
+| `serviceWorker.ts` | SW registration with periodic update checks |
+| `keyboardShortcuts.ts` | Ctrl+/ handler factory for desktop/mobile |
+| `slugUtils.ts` | Game title slug creation and validation |
+| `tierUtils.ts` | Tier display name and weight utilities |
+| `dateUtils.ts` | Date parsing utilities |
+| `filterOptions.ts` | Extract filter options from games |
+| `debounce.ts` | Debounce function |
+| `focusTrap.ts` | Focus trapping for modals |
+| `navigationUtils.ts` | Keyboard navigation helpers |
+| `dataTransformer.ts` | Game data normalization |
 
 ---
 
@@ -303,7 +397,7 @@ Format: `<type>[optional scope]: <description>`
 | `docs`     | Documentation      | `docs: update API examples`              |
 | `style`    | Code formatting    | `style: format with prettier`            |
 | `refactor` | Code restructuring | `refactor(utils): simplify date helpers` |
-| `perf`     | Performance        | `perf(list): optimize rendering`         |
+| `perf`     | Performance        | `perf(store): use structuredClone`       |
 | `test`     | Tests              | `test(auth): add login tests`            |
 | `chore`    | Maintenance        | `chore: update eslint config`            |
 | `ci`       | CI/CD              | `ci: add deploy workflow`                |
@@ -356,8 +450,10 @@ Format: `<type>[optional scope]: <description>`
 
 **While coding:**
 
-- [ ] Use Svelte 5 Runes
-- [ ] Follow TypeScript strict mode
+- [ ] Use Svelte 5 Runes (`.svelte.ts` for store files)
+- [ ] Use `structuredClone()` over `JSON.parse(JSON.stringify())`
+- [ ] Follow TypeScript strict mode (no `any`)
+- [ ] Avoid circular imports
 - [ ] Work in small verified steps
 
 **Before committing:**
@@ -368,4 +464,4 @@ Format: `<type>[optional scope]: <description>`
 
 ---
 
-**Last Updated**: 12 February 2026
+**Last Updated**: 17 May 2026

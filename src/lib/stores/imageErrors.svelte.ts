@@ -1,3 +1,5 @@
+const MAX_FAILED_URLS = 200;
+
 export const imageErrorStore = new (class {
 	failedUrls = $state<string[]>([]);
 
@@ -5,11 +7,18 @@ export const imageErrorStore = new (class {
 		if (!url) return;
 		try {
 			const parsed = new URL(url, window.location.origin);
-			if (!this.failedUrls.includes(parsed.pathname)) {
-				this.failedUrls.push(parsed.pathname);
+			const path = parsed.pathname;
+			if (!this.failedUrls.includes(path)) {
+				if (this.failedUrls.length >= MAX_FAILED_URLS) {
+					this.failedUrls.shift();
+				}
+				this.failedUrls.push(path);
 			}
 		} catch {
 			if (!this.failedUrls.includes(url)) {
+				if (this.failedUrls.length >= MAX_FAILED_URLS) {
+					this.failedUrls.shift();
+				}
 				this.failedUrls.push(url);
 			}
 		}

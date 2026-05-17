@@ -14,6 +14,9 @@ import { browser, dev } from '$app/environment';
 import { untrack } from 'svelte';
 import type { Game } from '$lib/types/game.js';
 import { RotateCcw } from 'lucide-svelte';
+import { registerServiceWorker } from '$lib/utils/serviceWorker';
+import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
+import { editorModalState } from '$lib/stores/editorModalState.svelte';
 
 import GamesView from '$lib/views/GamesView.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
@@ -97,46 +100,8 @@ const handleScroll = () => {
 };
 
 $effect(() => {
-	if (browser && 'serviceWorker' in navigator) {
-		const swPath = '/service-worker.js';
-		let intervalId: ReturnType<typeof setInterval> | null = null;
-		let isPaused = false;
-		let visibilityHandler: (() => void) | null = null;
-
-		navigator.serviceWorker
-			.register(swPath, {
-				updateViaCache: 'none',
-			})
-			.then((registration) => {
-				const checkForUpdates = () => {
-					if (isPaused || document.hidden) return;
-
-					if (registration.installing === null && registration.waiting === null && registration.active !== null) {
-						registration.update().catch(() => {});
-					}
-				};
-
-				intervalId = setInterval(checkForUpdates, 60000);
-
-				visibilityHandler = () => {
-					if (document.hidden) {
-						isPaused = true;
-					} else {
-						isPaused = false;
-					}
-				};
-
-				document.addEventListener('visibilitychange', visibilityHandler);
-			})
-			.catch(() => {});
-
-		return () => {
-			if (intervalId) clearInterval(intervalId);
-			if (visibilityHandler) {
-				document.removeEventListener('visibilitychange', visibilityHandler);
-			}
-		};
-	}
+	if (!browser) return;
+	return registerServiceWorker();
 });
 
 let filterOptions = $derived.by(() => {
@@ -302,10 +267,10 @@ $effect(() => {
 	if (modalStore.getState().isOpen && !DetailModalComponent) {
 		import('$lib/components/DetailModal.svelte').then((m) => (DetailModalComponent = m.default));
 	}
-	if (editorModalOpen && !GameEditorModalComponent) {
+	if (editorModalState.editorModalOpen && !GameEditorModalComponent) {
 		import('$lib/components/GameEditorModal.svelte').then((m) => (GameEditorModalComponent = m.default));
 	}
-	if (deleteModalOpen && !DeleteConfirmModalComponent) {
+	if (editorModalState.deleteModalOpen && !DeleteConfirmModalComponent) {
 		import('$lib/components/DeleteConfirmModal.svelte').then((m) => (DeleteConfirmModalComponent = m.default));
 	}
 	if (loginModalOpen && !LoginModalComponent) {
@@ -402,42 +367,28 @@ function pushSearchState(open: boolean) {
 $effect(() => {
 	if (!browser) return;
 
-	const handleGlobalKeydown = (event: KeyboardEvent) => {
-		const isMac = navigator.platform.toLowerCase().includes('mac');
-		const modifierCheck = isMac ? event.metaKey || event.ctrlKey : event.ctrlKey || event.metaKey;
-
-		if (event.key === '/' && modifierCheck) {
-			event.preventDefault();
-
-			if (innerWidth < 768) {
-				if (!isSearchOpen) {
-					onSearchToggle();
-				}
-				requestAnimationFrame(() => {
-					const input = document.querySelector('.mobile-search-input') as HTMLInputElement;
-					input?.focus();
-					input?.select();
-				});
-			} else {
-				if (currentPage === 'home') {
-					filtersStore.setDesktopFiltersExpanded(true);
-					goto('/library', { state: { showMobileSearch: true } });
-					return;
-				}
-				filtersStore.toggleDesktopFiltersExpanded();
-				requestAnimationFrame(() => {
-					const input = document.getElementById('search-input') as HTMLInputElement;
-					input?.focus();
-					input?.select();
-				});
+	const handler = createGlobalKeydownHandler(() => ({
+		isSearchOpen,
+		currentPage,
+		onSearchToggle,
+		onDesktopSearch: () => {
+			if (currentPage === 'home') {
+				filtersStore.setDesktopFiltersExpanded(true);
+				goto('/library', { state: { showMobileSearch: true } });
+				return;
 			}
-			return;
-		}
-	};
+			filtersStore.toggleDesktopFiltersExpanded();
+			requestAnimationFrame(() => {
+				const input = document.getElementById('search-input') as HTMLInputElement;
+				input?.focus();
+				input?.select();
+			});
+		},
+	}));
 
-	window.addEventListener('keydown', handleGlobalKeydown);
+	window.addEventListener('keydown', handler);
 	return () => {
-		window.removeEventListener('keydown', handleGlobalKeydown);
+		window.removeEventListener('keydown', handler);
 	};
 });
 
@@ -551,44 +502,6 @@ afterNavigate(({ from }) => {
 	}
 });
 
-let editorModalOpen = $state(false);
-let editorModalMode = $state<'create' | 'edit'>('create');
-let editorModalGame = $state<Game | null>(null);
-let deleteModalOpen = $state(false);
-let deleteModalGame = $state<Game | null>(null);
-
-function handleAddGame() {
-	editorModalMode = 'create';
-	editorModalGame = null;
-	editorModalOpen = true;
-}
-
-function handleEditGame(game: Game) {
-	editorModalMode = 'edit';
-	editorModalGame = game;
-	editorModalOpen = true;
-}
-
-function handleDeleteGame(game: Game) {
-	deleteModalGame = game;
-	deleteModalOpen = true;
-}
-
-function handleEditorClose() {
-	editorModalOpen = false;
-	editorModalGame = null;
-}
-
-async function handleApplyChanges() {
-	const games = gamesStore.games;
-	const finalGames = editorStore.buildFinalGames(games);
-
-	const success = await editorStore.applyAllChanges(games);
-	if (success) {
-		gamesStore.setAllGames(finalGames);
-	}
-}
-
 let editorInitialized = $state(false);
 $effect.pre(() => {
 	if (!browser || editorInitialized) return;
@@ -669,8 +582,8 @@ async function installApp() {
 {#if initialized}
 	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
 		<Header
-			onAddGame={handleAddGame}
-			onApplyChanges={handleApplyChanges}
+			onAddGame={() => editorModalState.handleAddGame()}
+			onApplyChanges={() => editorModalState.handleApplyChanges()}
 			onOpenLogin={() => (loginModalOpen = true)}
 		/>
 		{#if !isHomePage}
@@ -758,8 +671,8 @@ async function installApp() {
 						<GamesView
 							filteredGames={currentFilteredGames}
 							onOpenModal={openModalWithFilterContext}
-							onEditGame={handleEditGame}
-							onDeleteGame={handleDeleteGame}
+							onEditGame={(g) => editorModalState.handleEditGame(g)}
+							onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
 							loading={!gamesInitialized}
 						/>
 					{/if}
@@ -786,20 +699,23 @@ async function installApp() {
 		</main>
 
 		{#if DetailModalComponent}
-			<DetailModalComponent onEditGame={handleEditGame} onDeleteGame={handleDeleteGame} />
+			<DetailModalComponent
+				onEditGame={(g: Game) => editorModalState.handleEditGame(g)}
+				onDeleteGame={(g: Game) => editorModalState.handleDeleteGame(g)}
+			/>
 		{/if}
 
-		{#if editorModalOpen && GameEditorModalComponent}
+		{#if editorModalState.editorModalOpen && GameEditorModalComponent}
 			<GameEditorModalComponent
-				mode={editorModalMode}
-				initialGame={editorModalGame}
+				mode={editorModalState.editorModalMode}
+				initialGame={editorModalState.editorModalGame}
 				allGames={gamesStore.games}
-				onClose={handleEditorClose}
+				onClose={() => editorModalState.handleEditorClose()}
 			/>
 		{/if}
 
 		{#if DeleteConfirmModalComponent}
-			<DeleteConfirmModalComponent bind:open={deleteModalOpen} game={deleteModalGame} />
+			<DeleteConfirmModalComponent bind:open={editorModalState.deleteModalOpen} game={editorModalState.deleteModalGame} />
 		{/if}
 
 		{#if LoginModalComponent}
@@ -828,7 +744,7 @@ async function installApp() {
 				onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
 				onClose={() => (isSettingsMenuOpen = false)}
 				{onFiltersToggle}
-				onAddGame={handleAddGame}
+				onAddGame={() => editorModalState.handleAddGame()}
 				onOpenLogin={() => (loginModalOpen = true)}
 				{canInstall}
 				onInstall={installApp}

@@ -65,7 +65,7 @@ class GamesStore {
 			this.updateCardHeights();
 
 			if (browser && typeof indexedDB !== 'undefined') {
-				const plainGames = JSON.parse(JSON.stringify(normalized)) as Game[];
+				const plainGames = structuredClone(normalized);
 				db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
 			}
 
@@ -119,7 +119,7 @@ class GamesStore {
 		this.updateCardHeights();
 
 		if (browser && typeof indexedDB !== 'undefined') {
-			const plainGames = JSON.parse(JSON.stringify(games)) as Game[];
+			const plainGames = structuredClone(games);
 			db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
 		}
 	}
