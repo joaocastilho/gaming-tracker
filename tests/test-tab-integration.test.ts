@@ -7,7 +7,7 @@
  * - Tierlist tab shows tiered games in order
  */
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { appStore } from '$lib/stores/app.svelte';
@@ -26,12 +26,12 @@ const mockGames: Game[] = [
 		coOp: 'No',
 		status: 'Completed',
 		coverImage: 'covers/zelda.webp',
-		playtime: '60h',
-		finishedDate: '2023-01-15',
+		playtime: '60h 0m',
+		finishedDate: '2023-01-15T00:00:00.000Z',
 		ratingPresentation: 10,
 		ratingStory: 9,
 		ratingGameplay: 10,
-		score: 97,
+		score: 19,
 		tier: 'S - Masterpiece',
 	},
 	{
@@ -45,12 +45,12 @@ const mockGames: Game[] = [
 		coOp: 'Yes',
 		status: 'Completed',
 		coverImage: 'covers/darksouls.webp',
-		playtime: '80h',
-		finishedDate: '2023-03-20',
+		playtime: '80h 0m',
+		finishedDate: '2023-03-20T00:00:00.000Z',
 		ratingPresentation: 9,
 		ratingStory: 8,
 		ratingGameplay: 10,
-		score: 90,
+		score: 18,
 		tier: 'A - Amazing',
 	},
 	{
@@ -64,12 +64,12 @@ const mockGames: Game[] = [
 		coOp: 'No',
 		status: 'Completed',
 		coverImage: 'covers/hollowknight.webp',
-		playtime: '40h',
-		finishedDate: '2023-06-10',
+		playtime: '40h 0m',
+		finishedDate: '2023-06-10T00:00:00.000Z',
 		ratingPresentation: 9,
 		ratingStory: 8,
 		ratingGameplay: 9,
-		score: 87,
+		score: 17,
 		tier: 'A - Amazing',
 	},
 	{
@@ -121,12 +121,12 @@ const mockGames: Game[] = [
 		coOp: 'Yes',
 		status: 'Completed',
 		coverImage: 'covers/stardew.webp',
-		playtime: '100h',
-		finishedDate: '2022-12-01',
+		playtime: '100h 0m',
+		finishedDate: '2022-12-01T00:00:00.000Z',
 		ratingPresentation: 8,
 		ratingStory: 7,
 		ratingGameplay: 9,
-		score: 80,
+		score: 16,
 		tier: 'B - Great',
 	},
 ];
@@ -136,7 +136,7 @@ describe('Tab Integration', () => {
 		vi.clearAllMocks();
 		// Initialize stores with test data
 		gamesStore.initializeGames(mockGames);
-		filtersStore.initializeForTesting();
+		filtersStore.set(createInitialFilters());
 		filtersStore.resetAllFilters();
 	});
 

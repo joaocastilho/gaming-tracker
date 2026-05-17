@@ -11,7 +11,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { Game } from '$lib/types/game';
 import { appStore } from '$lib/stores/app.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
 
 // Mock game data for testing
@@ -22,7 +22,7 @@ const mockGames: Partial<Game>[] = [
 		platform: 'Nintendo Switch',
 		genre: 'Action-Adventure',
 		status: 'Completed',
-		score: 95,
+		score: 18,
 		tier: 'S - Masterpiece',
 		coOp: 'No',
 		finishedDate: '15/03/2023',
@@ -36,7 +36,7 @@ const mockGames: Partial<Game>[] = [
 		platform: 'PC',
 		genre: 'Action RPG',
 		status: 'Completed',
-		score: 88,
+		score: 16,
 		tier: 'A - Amazing',
 		coOp: 'Yes',
 		finishedDate: '20/01/2023',
@@ -50,7 +50,7 @@ const mockGames: Partial<Game>[] = [
 		platform: 'PC',
 		genre: 'Metroidvania',
 		status: 'Completed',
-		score: 92,
+		score: 18,
 		tier: 'S - Masterpiece',
 		coOp: 'No',
 		finishedDate: '10/06/2023',
@@ -78,7 +78,7 @@ const mockGames: Partial<Game>[] = [
 		platform: 'Nintendo Switch',
 		genre: 'Platformer',
 		status: 'Completed',
-		score: 90,
+		score: 17,
 		tier: 'A - Amazing',
 		coOp: 'No',
 		finishedDate: '05/02/2023',
@@ -91,7 +91,7 @@ const mockGames: Partial<Game>[] = [
 // Helper to reset all store state between tests (mimics app restart)
 function resetStoreState() {
 	// Must initialize for testing first (bypasses browser check)
-	filtersStore.initializeForTesting();
+	filtersStore.set(createInitialFilters());
 
 	// Clear filters
 	filtersStore.resetAllFilters();

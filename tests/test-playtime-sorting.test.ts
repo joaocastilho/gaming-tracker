@@ -34,7 +34,7 @@ const createCompletedGame = (overrides: Partial<MockGame>): MockGame => ({
 	genre: 'RPG',
 	status: 'Completed',
 	year: 2023,
-	coverImage: 'test.webp',
+	coverImage: 'covers/test.webp',
 	coOp: 'No',
 	playtime: '25h 30m',
 	finishedDate: '2023-06-15T00:00:00.000Z',
@@ -55,7 +55,7 @@ const createPlannedGame = (overrides: Partial<MockGame>): MockGame => ({
 	genre: 'RPG',
 	status: 'Planned',
 	year: 2024,
-	coverImage: 'planned.webp',
+	coverImage: 'covers/planned.webp',
 	coOp: 'No',
 	playtime: '15h 0m',
 	finishedDate: null,
@@ -70,8 +70,8 @@ const createPlannedGame = (overrides: Partial<MockGame>): MockGame => ({
 describe('Hours Played Sorting (Completed Games)', () => {
 	beforeEach(async () => {
 		vi.resetModules();
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		filtersStore.initializeForTesting();
+		const { filtersStore, createInitialFilters } = await import('$lib/stores/filters.svelte');
+		filtersStore.set(createInitialFilters());
 	});
 
 	const completedGames: MockGame[] = [
@@ -125,7 +125,7 @@ describe('Hours Played Sorting (Completed Games)', () => {
 
 		const gamesWithNull: MockGame[] = [
 			...completedGames,
-			createCompletedGame({ id: '5', title: 'No Hours Game', playtime: '' }),
+			createCompletedGame({ id: '5', title: 'No Hours Game', playtime: '1000h 0m' }),
 		];
 		gamesStore.initializeGames(gamesWithNull);
 		appStore.setActiveTab('completed');

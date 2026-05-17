@@ -4,7 +4,7 @@ import { debounce } from '$lib/utils/debounce';
 import { toSlug, fromSlug } from '$lib/utils/slugUtils';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { gamesStore } from './games.svelte';
-import { lastManualClearTime } from './searchClearCoordinator';
+import { searchClearCoordinator } from './searchClearCoordinator';
 
 export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishedDate' | 'alphabetical' | 'playtime';
 
@@ -32,6 +32,18 @@ function isSortDirection(value: string | null): value is SortDirection {
 export interface SortOption {
 	key: SortKey;
 	direction: SortDirection;
+}
+
+export function createInitialFilters(): FilterState {
+	return {
+		searchTerm: '',
+		platforms: [],
+		genres: [],
+		statuses: [],
+		tiers: [],
+		coOp: [],
+		sortOption: null,
+	};
 }
 
 export interface FilterState {
@@ -305,7 +317,10 @@ class FiltersStore {
 			return;
 		}
 
-		if (lastManualClearTime > 0 && Date.now() - lastManualClearTime < 500) {
+		if (
+			searchClearCoordinator.lastManualClearTime > 0 &&
+			Date.now() - searchClearCoordinator.lastManualClearTime < 500
+		) {
 			return;
 		}
 
@@ -380,12 +395,6 @@ class FiltersStore {
 		if (JSON.stringify(this._state) === JSON.stringify(newState)) return;
 
 		this.state = newState;
-	}
-
-	initializeForTesting(): void {
-		if (!this._state) {
-			this.state = { ...initialFilters };
-		}
 	}
 
 	writeSearchToURL = debounce(async (pageState: App.PageState) => {

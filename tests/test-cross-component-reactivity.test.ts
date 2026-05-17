@@ -7,7 +7,7 @@
  * - Modal navigation within filtered context
  */
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { appStore } from '$lib/stores/app.svelte';
@@ -27,12 +27,12 @@ const mockGames: Game[] = [
 		coOp: 'No',
 		status: 'Completed',
 		coverImage: 'covers/zelda.webp',
-		playtime: '60h',
+		playtime: '60h 0m',
 		finishedDate: '2023-01-15',
 		ratingPresentation: 10,
 		ratingStory: 9,
 		ratingGameplay: 10,
-		score: 97,
+		score: 19,
 		tier: 'S - Masterpiece',
 	},
 	{
@@ -46,12 +46,12 @@ const mockGames: Game[] = [
 		coOp: 'Yes',
 		status: 'Completed',
 		coverImage: 'covers/darksouls.webp',
-		playtime: '80h',
+		playtime: '80h 0m',
 		finishedDate: '2023-03-20',
 		ratingPresentation: 9,
 		ratingStory: 8,
 		ratingGameplay: 10,
-		score: 90,
+		score: 18,
 		tier: 'A - Amazing',
 	},
 	{
@@ -65,12 +65,12 @@ const mockGames: Game[] = [
 		coOp: 'No',
 		status: 'Completed',
 		coverImage: 'covers/hollowknight.webp',
-		playtime: '40h',
+		playtime: '40h 0m',
 		finishedDate: '2023-06-10',
 		ratingPresentation: 9,
 		ratingStory: 8,
 		ratingGameplay: 9,
-		score: 87,
+		score: 17,
 		tier: 'A - Amazing',
 	},
 	{
@@ -118,7 +118,7 @@ describe('Cross-Component Reactivity', () => {
 		vi.clearAllMocks();
 		// Initialize stores with test data
 		gamesStore.initializeGames(mockGames);
-		filtersStore.initializeForTesting();
+		filtersStore.set(createInitialFilters());
 		filtersStore.resetAllFilters();
 		appStore.setActiveTab('all');
 		modalStore.closeModal();
@@ -481,12 +481,12 @@ describe('Cross-Component Reactivity', () => {
 				coOp: 'No',
 				status: 'Completed',
 				coverImage: 'covers/anothergame.webp',
-				playtime: '10h',
-				finishedDate: '2024-01-01',
+				playtime: '10h 0m',
+				finishedDate: '2024-01-01T00:00:00.000Z',
 				ratingPresentation: 8,
 				ratingStory: 7,
 				ratingGameplay: 8,
-				score: 77,
+				score: 15,
 				tier: 'B - Great',
 			};
 
@@ -519,12 +519,12 @@ describe('Cross-Component Reactivity', () => {
 				coOp: 'No',
 				status: 'Completed',
 				coverImage: 'covers/modaltest.webp',
-				playtime: '15h',
-				finishedDate: '2024-02-01',
+				playtime: '15h 0m',
+				finishedDate: '2024-02-01T00:00:00.000Z',
 				ratingPresentation: 7,
 				ratingStory: 8,
 				ratingGameplay: 7,
-				score: 73,
+				score: 15,
 				tier: 'C - Good',
 			};
 
