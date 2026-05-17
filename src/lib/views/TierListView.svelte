@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Game } from '$lib/types/game';
+import type { Game, TierValue } from '$lib/types/game';
 import TierRow from '$lib/components/TierRow.svelte';
 
 interface Props {
@@ -23,9 +23,9 @@ function buildTierList(games: Game[]): Record<string, Game[]> {
 	};
 
 	games
-		.filter((game) => game.tier)
+		.filter((game): game is Game & { tier: TierValue } => game.tier !== null)
 		.forEach((game) => {
-			const tier = game.tier as string;
+			const tier = game.tier;
 			if (gamesByTier[tier]) {
 				gamesByTier[tier].push(game);
 			}

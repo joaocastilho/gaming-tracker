@@ -20,9 +20,8 @@ function getCacheKey(text: string, font: string): string {
 function getOrCreateMeasurement(text: string, font: string): TextMeasurementCache {
 	const key = getCacheKey(text, font);
 
-	if (measurementCache.has(key)) {
-		return measurementCache.get(key)!;
-	}
+	const cached = measurementCache.get(key);
+	if (cached) return cached;
 
 	const prepared = prepare(text, font);
 	const preparedWithSegments = prepareWithSegments(text, font);
@@ -41,7 +40,7 @@ export function measureTextWidth(text: string, font: string): number {
 	const { preparedWithSegments } = getOrCreateMeasurement(text, font);
 	const { lines } = layoutWithLines(preparedWithSegments, 100000, 1);
 	if (lines && lines.length > 0) {
-		return (lines[0] as LineInfo).width;
+		return lines[0].width;
 	}
 	return 0;
 }
@@ -68,7 +67,7 @@ export interface LineInfo {
 export function getTextLines(text: string, font: string, maxWidth: number, lineHeight: number): LineInfo[] {
 	const { preparedWithSegments } = getOrCreateMeasurement(text, font);
 	const { lines } = layoutWithLines(preparedWithSegments, maxWidth, lineHeight);
-	return lines as LineInfo[];
+	return lines;
 }
 
 export function measureTitleHeight(title: string, maxWidth: number, font?: string): number {

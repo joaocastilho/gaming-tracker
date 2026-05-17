@@ -17,9 +17,9 @@ let isOpen = $state(false);
 let dropdownElement = $state<HTMLDivElement | undefined>(undefined);
 
 function handleClickOutside(event: MouseEvent) {
-	const target = event.target as Node;
+	if (!(event.target instanceof Node)) return;
 
-	if (dropdownElement && !dropdownElement.contains(target)) {
+	if (dropdownElement && !dropdownElement.contains(event.target)) {
 		isOpen = false;
 	}
 }

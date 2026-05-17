@@ -23,67 +23,37 @@ type NavItem = {
 	icon: typeof Gamepad;
 };
 
+function createNavItem<T extends NavId>(
+	id: T,
+	label: string,
+	count: number | null,
+	active: boolean,
+	icon: typeof Gamepad,
+	route?: string
+): NavItem {
+	return { id, label, route, count, active, icon };
+}
+
 let navItems = $derived.by(() => {
 	const counts = filteredCountsStore.counts;
 	const currentTab = appStore.activeTab;
 
 	return [
-		{
-			id: 'home' as NavId,
-			label: 'Home',
-			route: '/',
-			count: null,
-			active: currentTab === 'home',
-			icon: Home,
-		},
-		{
-			id: 'library' as NavId,
-			label: 'Library',
-			route: '/library',
-			count: counts.all,
-			active: currentTab === 'library' || currentTab === 'all',
-			icon: Gamepad,
-		},
-		{
-			id: 'completed' as NavId,
-			label: 'Completed',
-			route: '/completed',
-			count: counts.completed,
-			active: currentTab === 'completed',
-			icon: CheckCircle,
-		},
-		{
-			id: 'planned' as NavId,
-			label: 'Planned',
-			route: '/planned',
-			count: counts.planned,
-			active: currentTab === 'planned',
-			icon: Calendar,
-		},
-		{
-			id: 'tierlist' as NavId,
-			label: 'Tier List',
-			route: '/tierlist',
-			count: null,
-			active: currentTab === 'tierlist',
-			icon: List,
-		},
-		{
-			id: 'stats' as NavId,
-			label: 'Stats',
-			route: '/stats',
-			count: null,
-			active: currentTab === 'stats',
-			icon: BarChart3,
-		},
-		{
-			id: 'search' as NavId,
-			label: 'Search',
-			count: null,
-			active: false,
-			icon: Search,
-		},
-	] as NavItem[];
+		createNavItem('home', 'Home', null, currentTab === 'home', Home, '/'),
+		createNavItem(
+			'library',
+			'Library',
+			counts.all,
+			currentTab === 'library' || currentTab === 'all',
+			Gamepad,
+			'/library'
+		),
+		createNavItem('completed', 'Completed', counts.completed, currentTab === 'completed', CheckCircle, '/completed'),
+		createNavItem('planned', 'Planned', counts.planned, currentTab === 'planned', Calendar, '/planned'),
+		createNavItem('tierlist', 'Tier List', null, currentTab === 'tierlist', List, '/tierlist'),
+		createNavItem('stats', 'Stats', null, currentTab === 'stats', BarChart3, '/stats'),
+		createNavItem('search', 'Search', null, false, Search),
+	];
 });
 
 function handleNavClick(target: NavId) {

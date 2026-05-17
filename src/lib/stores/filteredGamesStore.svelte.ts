@@ -131,121 +131,120 @@ class FilteredGamesStore {
 	}
 
 	private sortGames(games: Game[], sort: { key: string; direction: 'asc' | 'desc' } | null, activeTab: string): Game[] {
-		const sortFunctions = {
-			presentation: (a: Game, b: Game) => this.compareNullableNumbers(a.ratingPresentation, b.ratingPresentation),
-			story: (a: Game, b: Game) => this.compareNullableNumbers(a.ratingStory, b.ratingStory),
-			gameplay: (a: Game, b: Game) => this.compareNullableNumbers(a.ratingGameplay, b.ratingGameplay),
-			score: (a: Game, b: Game) => this.compareNullableNumbers(a.score, b.score),
-			finishedDate: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
-			alphabetical: (a: Game, b: Game) => a.title.localeCompare(b.title),
-			playtime: (a: Game, b: Game) => this.comparePlaytimes(a.playtime, b.playtime),
+		const dir = sort?.direction === 'desc' ? -1 : 1;
+		const finalDir = activeTab === 'completed' && !sort ? -1 : dir;
 
-			default: (a: Game, b: Game) => a.title.localeCompare(b.title),
-			completed: (a: Game, b: Game) => this.compareDates(a.finishedDate, b.finishedDate),
-			planned: (a: Game, b: Game) => a.title.localeCompare(b.title),
-		};
+		return [...games].toSorted((a, b) => this.sortGamePair(a, b, sort, activeTab, finalDir));
+	}
 
-		let sortFunction = sortFunctions.default;
+	private sortGamePair(
+		a: Game,
+		b: Game,
+		sort: { key: string; direction: 'asc' | 'desc' } | null,
+		activeTab: string,
+		direction: number
+	): number {
+		const isFinishedDateSort = sort?.key === 'finishedDate' || (activeTab === 'completed' && !sort?.key);
 
-		if (sort?.key && sortFunctions[sort.key as keyof typeof sortFunctions]) {
-			sortFunction = sortFunctions[sort.key as keyof typeof sortFunctions];
-		} else if (activeTab === 'planned') {
-			sortFunction = sortFunctions.planned;
-		} else if (activeTab === 'completed') {
-			sortFunction = sortFunctions.completed;
+		if (isFinishedDateSort) {
+			return this.sortByFinishedDate(a, b, direction);
 		}
 
-		const sortedGames = [...games];
-
-		let direction = sort?.direction === 'desc' ? -1 : 1;
-
-		if (activeTab === 'completed' && !sort) {
-			direction = -1;
+		if (sort?.key === 'playtime') {
+			return this.sortByPlaytime(a, b, direction);
 		}
 
-		return sortedGames.toSorted((a, b) => {
-			const isFinishedDateSort = sort?.key === 'finishedDate' || (activeTab === 'completed' && !sort?.key);
+		if (sort?.key && ['presentation', 'story', 'gameplay', 'score'].includes(sort.key) && activeTab !== 'planned') {
+			return this.sortByRatingField(a, b, sort.key, direction);
+		}
 
-			if (isFinishedDateSort) {
-				const aTime = parseDate(a.finishedDate);
-				const bTime = parseDate(b.finishedDate);
+		const baseResult = this.getBaseSortFunction(sort, activeTab)(a, b);
+		return baseResult * direction;
+	}
 
-				if (aTime === null && bTime === null) return 0;
-				if (aTime === null) return 1;
-				if (bTime === null) return -1;
+	private sortByFinishedDate(a: Game, b: Game, direction: number): number {
+		const aTime = parseDate(a.finishedDate);
+		const bTime = parseDate(b.finishedDate);
 
-				const timeDiff = aTime - bTime;
-				if (timeDiff !== 0) {
-					return timeDiff * direction;
-				}
+		if (aTime === null && bTime === null) return 0;
+		if (aTime === null) return 1;
+		if (bTime === null) return -1;
 
-				const aOrder = a.completionOrder ?? 0;
-				const bOrder = b.completionOrder ?? 0;
+		const timeDiff = aTime - bTime;
+		if (timeDiff !== 0) return timeDiff * direction;
 
-				return (aOrder - bOrder) * direction;
-			}
+		const aOrder = a.completionOrder ?? 0;
+		const bOrder = b.completionOrder ?? 0;
+		return (aOrder - bOrder) * direction;
+	}
 
-			if (sort?.key === 'playtime') {
-				const aMinutes = parsePlaytime(a.playtime);
-				const bMinutes = parsePlaytime(b.playtime);
+	private sortByPlaytime(a: Game, b: Game, direction: number): number {
+		return this.comparePlaytimes(a.playtime, b.playtime) * direction;
+	}
 
-				if (aMinutes === null && bMinutes === null) return 0;
-				if (aMinutes === null) return 1;
-				if (bMinutes === null) return -1;
+	private sortByRatingField(a: Game, b: Game, sortKey: string, direction: number): number {
+		let gameKey: keyof Game;
+		switch (sortKey) {
+			case 'presentation':
+				gameKey = 'ratingPresentation';
+				break;
+			case 'story':
+				gameKey = 'ratingStory';
+				break;
+			case 'gameplay':
+				gameKey = 'ratingGameplay';
+				break;
+			case 'score':
+				gameKey = 'score';
+				break;
+			default:
+				gameKey = 'score';
+		}
 
-				return (aMinutes - bMinutes) * direction;
-			}
+		const aVal = a[gameKey];
+		const bVal = b[gameKey];
 
-			if (activeTab !== 'planned' && ['presentation', 'story', 'gameplay', 'score'].includes(sort?.key || '')) {
-				let key: keyof Game;
-				switch (sort?.key) {
-					case 'presentation':
-						key = 'ratingPresentation';
-						break;
-					case 'story':
-						key = 'ratingStory';
-						break;
-					case 'gameplay':
-						key = 'ratingGameplay';
-						break;
-					case 'score':
-						key = 'score';
-						break;
-					default:
-						key = 'score';
-				}
+		if (aVal == null && bVal == null) return 0;
+		if (aVal == null) return 1;
+		if (bVal == null) return -1;
 
-				const aVal = a[key] as number | null | undefined;
-				const bVal = b[key] as number | null | undefined;
+		if (aVal === bVal) return 0;
+		return (aVal - bVal) * direction;
+	}
 
-				const aHasData = aVal !== null && aVal !== undefined;
-				const bHasData = bVal !== null && bVal !== undefined;
-
-				if (aHasData && !bHasData) return -1;
-				if (!aHasData && bHasData) return 1;
-				if (!aHasData && !bHasData) return 0;
-
-				const valA = aVal as number;
-				const valB = bVal as number;
-
-				if (valA === valB) return 0;
-				return (valA - valB) * direction;
-			}
-
-			const result = sortFunction(a, b);
-			return result * direction;
-		});
+	private getBaseSortFunction(
+		sort: { key: string; direction: 'asc' | 'desc' } | null,
+		activeTab: string
+	): (a: Game, b: Game) => number {
+		if (sort?.key === 'alphabetical' || activeTab === 'planned') {
+			return (a, b) => a.title.localeCompare(b.title);
+		}
+		if (sort?.key === 'presentation' || sort?.key === 'story' || sort?.key === 'gameplay' || sort?.key === 'score') {
+			const gameKey = (
+				{
+					presentation: 'ratingPresentation',
+					story: 'ratingStory',
+					gameplay: 'ratingGameplay',
+					score: 'score',
+				} as const
+			)[sort.key];
+			return (a, b) => this.compareNullableNumbers(a[gameKey], b[gameKey]);
+		}
+		if (activeTab === 'completed') {
+			return (a, b) => this.compareDates(a.finishedDate, b.finishedDate);
+		}
+		return (a, b) => a.title.localeCompare(b.title);
 	}
 
 	private compareNullableNumbers(a: number | null | undefined, b: number | null | undefined): number {
-		const hasDataA = a !== null && a !== undefined;
-		const hasDataB = b !== null && b !== undefined;
-
-		if (hasDataA && !hasDataB) return 1;
-		if (!hasDataA && hasDataB) return -1;
-		if (!hasDataA && !hasDataB) return 0;
-
-		return (a as number) - (b as number);
+		if (a != null && b != null) {
+			if (a < b) return -1;
+			if (a > b) return 1;
+			return 0;
+		}
+		if (a != null) return 1;
+		if (b != null) return -1;
+		return 0;
 	}
 
 	private compareDates(a: string | null | undefined, b: string | null | undefined): number {

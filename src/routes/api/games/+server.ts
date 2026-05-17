@@ -29,7 +29,9 @@ export async function POST({ request }: { request: Request }) {
 						const year = d.getUTCFullYear();
 						gameHeader.finishedDate = `${day}/${month}/${year}`;
 					}
-				} catch {}
+				} catch (e) {
+					console.debug('Failed to parse finished date from:', gameHeader.finishedDate, e);
+				}
 			}
 
 			delete gameHeader.mainTitle;

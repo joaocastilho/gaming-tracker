@@ -1,6 +1,6 @@
 import type { Game, CoOpStatus } from '$lib/types/game';
 
-interface RawGameData extends Record<string, unknown> {
+export interface RawGameData extends Record<string, unknown> {
 	title?: string;
 	id?: string;
 	finishedDate?: string;
@@ -9,8 +9,8 @@ interface RawGameData extends Record<string, unknown> {
 	coOp?: CoOpStatus;
 }
 
-export function transformGameData(game: Record<string, unknown>): Game {
-	const data = game as RawGameData;
+export function transformGameData(game: RawGameData): Game {
+	const data = game;
 
 	const gameData: Partial<Game> = { ...data };
 

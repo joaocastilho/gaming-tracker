@@ -71,7 +71,7 @@ describe('Data Transformer', () => {
 		const transformed10 = transformGameData(gameNoCoop);
 		expect(transformed10.coOp).toBe('No');
 
-		const gameWithCoop = { title: 'Coop Game', coOp: 'Yes' };
+		const gameWithCoop = { title: 'Coop Game', coOp: 'Yes' } as const;
 		const transformed11 = transformGameData(gameWithCoop);
 		expect(transformed11.coOp).toBe('Yes');
 	});

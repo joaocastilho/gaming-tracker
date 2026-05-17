@@ -16,8 +16,8 @@ class AppStore {
 			typeof window.localStorage !== 'undefined' &&
 			typeof window.localStorage.getItem === 'function'
 		) {
-			const savedTheme = window.localStorage.getItem('gaming-tracker-theme') as ThemeValue | null;
-			if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
+			const savedTheme = window.localStorage.getItem('gaming-tracker-theme');
+			if (savedTheme === 'dark' || savedTheme === 'light') {
 				this.theme = savedTheme;
 			}
 

@@ -54,52 +54,35 @@ let hasPending = $derived(editorStore.hasPendingChanges);
 let pendingCount = $derived(editorStore.pendingChangesCount);
 let isSaving = $derived(editorStore.savePending);
 
+function createNavItem<T extends NavId>(
+	id: T,
+	label: string,
+	route: string,
+	count: number | null,
+	active: boolean,
+	icon: typeof Gamepad
+): NavItem {
+	return { id, label, route, count, active, icon };
+}
+
 let navItems = $derived.by(() => {
 	const counts = filteredCountsStore.counts;
 	const currentTab = appStore.activeTab;
 
 	return [
-		{
-			id: 'library' as NavId,
-			label: 'Library',
-			route: '/library',
-			count: counts.all,
-			active: currentTab === 'library' || currentTab === 'all',
-			icon: Gamepad,
-		},
-		{
-			id: 'completed' as NavId,
-			label: 'Completed',
-			route: '/completed',
-			count: counts.completed,
-			active: currentTab === 'completed',
-			icon: CheckCircle,
-		},
-		{
-			id: 'planned' as NavId,
-			label: 'Planned',
-			route: '/planned',
-			count: counts.planned,
-			active: currentTab === 'planned',
-			icon: Calendar,
-		},
-		{
-			id: 'tierlist' as NavId,
-			label: 'Tier List',
-			route: '/tierlist',
-			count: null,
-			active: currentTab === 'tierlist',
-			icon: List,
-		},
-		{
-			id: 'stats' as NavId,
-			label: 'Stats',
-			route: '/stats',
-			count: null,
-			active: currentTab === 'stats',
-			icon: BarChart3,
-		},
-	] as NavItem[];
+		createNavItem(
+			'library',
+			'Library',
+			'/library',
+			counts.all,
+			currentTab === 'library' || currentTab === 'all',
+			Gamepad
+		),
+		createNavItem('completed', 'Completed', '/completed', counts.completed, currentTab === 'completed', CheckCircle),
+		createNavItem('planned', 'Planned', '/planned', counts.planned, currentTab === 'planned', Calendar),
+		createNavItem('tierlist', 'Tier List', '/tierlist', null, currentTab === 'tierlist', List),
+		createNavItem('stats', 'Stats', '/stats', null, currentTab === 'stats', BarChart3),
+	];
 });
 
 async function handleNavClick(target: NavId) {

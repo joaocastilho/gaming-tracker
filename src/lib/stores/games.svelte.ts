@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import type { Game } from '$lib/types/game';
-import { transformGameData } from '$lib/utils/dataTransformer';
+import { transformGameData, type RawGameData } from '$lib/utils/dataTransformer';
 import { createGameSlug } from '$lib/utils/slugUtils';
 import { db } from '$lib/db';
 import { completedGamesCache } from './completedGamesCache.svelte';
@@ -57,7 +57,7 @@ class GamesStore {
 			}
 
 			const normalized = rawGames.map((gameRaw): Game => {
-				const transformed = transformGameData(gameRaw as Record<string, unknown>);
+				const transformed = transformGameData(gameRaw as RawGameData);
 				return transformed;
 			});
 
@@ -98,7 +98,7 @@ class GamesStore {
 	}
 
 	updateCardHeights(): void {
-		const widthValues = Object.values(CARD_WIDTHS).map((w) => w as number);
+		const widthValues = Object.values(CARD_WIDTHS);
 		this._cardHeights = computeAllCardHeights(this._games, widthValues);
 	}
 

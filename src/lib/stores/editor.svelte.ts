@@ -379,7 +379,9 @@ class EditorStore {
 			if (browser) {
 				try {
 					sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
-				} catch {}
+				} catch {
+					// sessionStorage may throw in private browsing mode
+				}
 			}
 
 			return true;

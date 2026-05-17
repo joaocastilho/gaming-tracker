@@ -212,7 +212,7 @@ $effect(() => {
 			tier: null,
 			playtime: '0h 0m',
 			finishedDate: null,
-		} as Game;
+		} satisfies Game;
 		dateInput = today;
 		completionOrderInput = null;
 		coverUrl = '';

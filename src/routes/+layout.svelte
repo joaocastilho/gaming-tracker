@@ -497,7 +497,9 @@ afterNavigate(({ from }) => {
 		if (searchParam && innerWidth < 768) {
 			try {
 				replaceState(window.location.href, { ...page.state, showMobileSearch: true });
-			} catch {}
+			} catch {
+				// Ignore replaceState errors during initial navigation
+			}
 		}
 	}
 });

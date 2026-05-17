@@ -10,6 +10,25 @@ export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishe
 
 export type SortDirection = 'asc' | 'desc';
 
+const VALID_SORT_KEYS = new Set<string>([
+	'presentation',
+	'story',
+	'gameplay',
+	'score',
+	'finishedDate',
+	'alphabetical',
+	'playtime',
+]);
+const VALID_SORT_DIRECTIONS = new Set<string>(['asc', 'desc']);
+
+function isSortKey(value: string | null): value is SortKey {
+	return value !== null && VALID_SORT_KEYS.has(value);
+}
+
+function isSortDirection(value: string | null): value is SortDirection {
+	return value !== null && VALID_SORT_DIRECTIONS.has(value);
+}
+
 export interface SortOption {
 	key: SortKey;
 	direction: SortDirection;
@@ -350,8 +369,10 @@ class FiltersStore {
 			.map((slug) => fromSlug(slug, ['Yes', 'No']))
 			.filter((v): v is string => !!v);
 
-		const sortKey = searchParams.get('sort') as SortKey | null;
-		const sortDir = searchParams.get('dir') as SortDirection | null;
+		const rawSortKey = searchParams.get('sort');
+		const rawSortDir = searchParams.get('dir');
+		const sortKey = isSortKey(rawSortKey) ? rawSortKey : null;
+		const sortDir = isSortDirection(rawSortDir) ? rawSortDir : null;
 		if (sortKey && sortDir) {
 			newState.sortOption = { key: sortKey, direction: sortDir };
 		}
@@ -391,7 +412,9 @@ class FiltersStore {
 
 			url.search = newParams.toString();
 			await replaceState(url.toString(), pageState);
-		} catch {}
+		} catch {
+			// Ignore URL replaceState errors during rapid filter updates
+		}
 	}, 300);
 }
 
