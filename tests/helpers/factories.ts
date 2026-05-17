@@ -1,4 +1,4 @@
-import type { Game, GameStatus, TierValue, CoOpStatus } from '$lib/types/game';
+import type { Game } from '$lib/types/game';
 
 /**
  * Creates a fully-typed Game object with sensible defaults.
@@ -14,8 +14,8 @@ export function createTestGame(overrides: Partial<Game> = {}): Game {
 		platform: 'PC',
 		year: 2024,
 		genre: 'Action',
-		coOp: 'No' as CoOpStatus,
-		status: 'Planned' as GameStatus,
+		coOp: 'No' as const,
+		status: 'Planned' as const,
 		coverImage: 'covers/test.webp',
 		playtime: '10h 0m',
 		finishedDate: null,
@@ -33,13 +33,13 @@ export function createTestGame(overrides: Partial<Game> = {}): Game {
  */
 export function createCompletedGame(overrides: Partial<Game> = {}): Game {
 	return createTestGame({
-		status: 'Completed' as GameStatus,
+		status: 'Completed' as const,
 		finishedDate: '2024-01-15',
 		ratingPresentation: 8,
 		ratingStory: 7,
 		ratingGameplay: 9,
 		score: 8,
-		tier: 'A - Amazing' as TierValue,
+		tier: 'A - Amazing' as const,
 		...overrides,
 	});
 }

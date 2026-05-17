@@ -2,27 +2,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { replaceState } from '$app/navigation';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
+import { createTestGame } from './helpers/factories';
 
-// Mock data
-const mockGame = {
+const mockGame = createTestGame({
 	id: '1',
 	title: 'The Legend of Zelda: Breath of the Wild',
-	mainTitle: 'The Legend of Zelda: Breath of the Wild',
-	subtitle: null,
 	platform: 'Nintendo Switch',
 	genre: 'Adventure',
 	year: 2017,
-	coOp: 'No',
 	status: 'Completed',
-	coverImage: 'covers/zelda.webp',
 	playtime: '100h 0m',
 	finishedDate: '2023-01-01T00:00:00.000Z',
 	ratingPresentation: 10,
 	ratingStory: 9,
 	ratingGameplay: 10,
 	score: 10,
-	tier: 'S',
-} as unknown as import('$lib/types/game').Game;
+	tier: 'S - Masterpiece',
+});
 
 const mockGames = [mockGame];
 

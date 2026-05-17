@@ -9,7 +9,7 @@ vi.mock('$app/navigation', () => ({
 	goto: vi.fn(() => Promise.resolve()),
 }));
 
-const mockGoto = goto as unknown as ReturnType<typeof vi.fn>;
+const mockGoto = vi.mocked(goto);
 
 describe('Navigation Utils', () => {
 	beforeEach(() => {
@@ -26,8 +26,8 @@ describe('Navigation Utils', () => {
 		await navigateTo('completed');
 
 		// Check if goto was called with the correct URL (no params)
-		const lastCall = mockGoto.mock.calls[0] as unknown as [string];
-		const url = new URL(lastCall[0]);
+		const lastCall = mockGoto.mock.calls[0];
+		const url = new URL(lastCall[0] as string);
 
 		expect(url.pathname).toBe('/completed');
 		expect(url.searchParams.has('coOp')).toBe(false);
@@ -42,8 +42,8 @@ describe('Navigation Utils', () => {
 		await navigateTo('planned');
 
 		// Check if goto was called with the correct URL (no params)
-		const lastCall = mockGoto.mock.calls[0] as unknown as [string];
-		const url = new URL(lastCall[0]);
+		const lastCall = mockGoto.mock.calls[0];
+		const url = new URL(lastCall[0] as string);
 
 		expect(url.pathname).toBe('/planned');
 		expect(url.searchParams.has('coOp')).toBe(false);

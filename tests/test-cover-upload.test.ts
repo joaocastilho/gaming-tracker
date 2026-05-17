@@ -93,11 +93,15 @@ describe('Cover Upload API', () => {
 	});
 
 	function mockFetch(response: Partial<Response>): typeof fetch {
-		return vi.fn(() => Promise.resolve(response as Response)) as unknown as typeof fetch;
+		return vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+			Promise.resolve(response as Response)
+		) as unknown as typeof fetch;
 	}
 
 	function mockFetchError(): typeof fetch {
-		return vi.fn(() => Promise.reject(new Error('Network error'))) as unknown as typeof fetch;
+		return vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+			Promise.reject(new Error('Network error'))
+		) as unknown as typeof fetch;
 	}
 
 	describe('Local Cover Upload (Dev Mode)', () => {

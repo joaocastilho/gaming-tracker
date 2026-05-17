@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { editorStore } from '$lib/stores/editor.svelte';
 
 /**
@@ -6,14 +6,12 @@ import { editorStore } from '$lib/stores/editor.svelte';
  * Tests login, logout, save, and snapshot functionality
  */
 
-// Helper to create typed mock fetch
-// Now uses the global spy
 function mockFetch(response: Partial<Response>) {
-	(globalThis.fetch as unknown as Mock).mockResolvedValue(response as Response);
+	vi.mocked(globalThis.fetch).mockResolvedValue(response as Response);
 }
 
 function mockFetchError() {
-	(globalThis.fetch as unknown as Mock).mockRejectedValue(new Error('Network error'));
+	vi.mocked(globalThis.fetch).mockRejectedValue(new Error('Network error'));
 }
 
 describe('EditorStore', () => {

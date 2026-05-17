@@ -35,7 +35,7 @@ describe('GamesView #each key stability', () => {
 		// When game.id is missing, we need a fallback key
 		// The fallback should include row.id and index for uniqueness
 		const gameWithoutId = createMockGame();
-		// @ts-expect-error Testing edge case
+		// @ts-expect-error Testing edge case: deleting required `id` to verify fallback key behavior; cannot use Partial<Game> here because createMockGame returns full Game type
 		delete gameWithoutId.id;
 
 		// This should not throw - the component should handle missing ids

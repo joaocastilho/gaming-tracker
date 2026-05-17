@@ -67,7 +67,7 @@ describe('Search Reactivity Integration', () => {
 
 	beforeEach(() => {
 		// Initialize stores
-		gamesStore.setAllGames(mockGames as Game[]);
+		gamesStore.initializeGames(mockGames);
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
 	});

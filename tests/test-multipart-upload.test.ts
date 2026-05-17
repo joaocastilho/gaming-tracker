@@ -41,10 +41,10 @@ describe('Editor Store Multipart Upload', () => {
 
 	test('saveLocally sends FormData with games and covers', async () => {
 		// Mock fetch
-		const fetchMock = vi.fn().mockResolvedValue({
+		const fetchMock = vi.fn<typeof fetch>().mockResolvedValue({
 			ok: true,
 			json: async () => ({ ok: true }),
-		});
+		} as Response);
 		global.fetch = fetchMock as unknown as typeof fetch;
 
 		// Create a dummy game
@@ -83,13 +83,13 @@ describe('Editor Store Multipart Upload', () => {
 		await editorStore.saveLocally([]);
 
 		expect(fetchMock).toHaveBeenCalledTimes(1);
-		const url = fetchMock.mock.calls[0][0];
-		const options = fetchMock.mock.calls[0][1];
+		const url = fetchMock.mock.calls[0]![0];
+		const options = fetchMock.mock.calls[0]![1];
 
 		expect(url).toBe('/api/games-local');
-		expect(options.method).toBe('POST');
+		expect(options!.method).toBe('POST');
 
-		const body = options.body as MockFormData;
+		const body = options!.body as unknown as MockFormData;
 		expect(body).toBeInstanceOf(MockFormData);
 
 		// Verify payload
