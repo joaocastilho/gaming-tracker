@@ -70,7 +70,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 <!-- Total Score Section -->
 {#if game.status === 'Completed' && game.score !== null}
 	<div class="status-indicator score-badge">
-		<Award class="text-amber-400" />
+		<Award />
 		<div class="score-text-wrapper">
 			<span class="desktop-text">
 				<span class="score-value">{game.score}</span>
@@ -205,8 +205,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	}
 
 	:global(.light) .score-badge {
-		background: rgba(245, 158, 11, 0.1);
-		border-color: rgba(245, 158, 11, 0.2);
+		color: #d97706;
+		background: rgba(245, 158, 11, 0.15);
+		border-color: rgba(245, 158, 11, 0.3);
 	}
 
 	:global(.light) .planned-badge {
