@@ -174,12 +174,13 @@ describe('FilteredGamesStore Integration', () => {
 			await flushPromises();
 
 			const games = filteredGamesStore.games;
-			// Since sorting is default (alphabetical), E (Elden Ring) comes before G (God of War)
-			// Wait, Elden Ring has tier: null so it's not in the tierlist!
-			// Remaining tiered games: Zelda (Z), God of War (G), Hollow Knight (H)
-			// Alphabetical order: God of War, Hollow Knight, Zelda
-			expect(games[0].title).toBe('God of War Ragnarok'); // God of War (first alphabetically)
-			expect(games[2].title).toBe('Zelda: Breath of the Wild'); // Zelda (last alphabetically)
+			// Elden Ring has tier: null so it's not in the tierlist.
+			// Tierlist sorts by tier weight descending first, then alphabetical:
+			//   S tier (Zelda, weight 6), then A tier: God of War, Hollow Knight (weight 5)
+			// Score sort is ignored on tierlist tab.
+			expect(games[0].title).toBe('Zelda: Breath of the Wild'); // S tier (weight 6)
+			expect(games[1].title).toBe('God of War Ragnarok'); // A tier, alphabetical
+			expect(games[2].title).toBe('Hollow Knight'); // A tier, alphabetical
 		});
 	});
 

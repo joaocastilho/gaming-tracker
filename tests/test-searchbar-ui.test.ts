@@ -26,10 +26,8 @@ vi.mock('$app/environment', () => ({
 }));
 
 vi.mock('$lib/stores/searchClearCoordinator', () => ({
-	searchClearCoordinator: {
-		markSearchCleared: vi.fn(),
-		lastManualClearTime: 0,
-	},
+	markSearchCleared: vi.fn(),
+	lastManualClearTime: 0,
 }));
 
 // Mock Lucide icons
