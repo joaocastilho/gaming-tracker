@@ -2639,20 +2639,21 @@
     },
     {
       "id": "final-fantasy-xx2",
-      "title": "FINAL FANTASY X/X-2 (HD Remaster)",
+      "title": "FINAL FANTASY X (HD Remaster)",
       "platform": "PC",
       "year": 2013,
       "genre": "Japanese RPG",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/final-fantasy-xx2.webp",
-      "playtime": "28h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "49h 20m",
+      "finishedDate": "17/05/2026",
+      "ratingPresentation": 9,
+      "ratingStory": 8,
+      "ratingGameplay": 8,
+      "score": 17,
+      "tier": "A - Amazing",
+      "completionOrder": null
     },
     {
       "id": "firewatch",
@@ -9618,6 +9619,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-05-04T13:11:19.675Z"
+    "lastUpdated": "2026-05-17T10:23:51.252Z"
   }
 }
