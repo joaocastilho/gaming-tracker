@@ -4,7 +4,7 @@ import { debounce } from '$lib/utils/debounce';
 import { toSlug, fromSlug } from '$lib/utils/slugUtils';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { gamesStore } from './games.svelte';
-import { searchClearCoordinator } from './searchClearCoordinator';
+import { lastManualClearTime } from './searchClearCoordinator';
 
 export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishedDate' | 'alphabetical' | 'playtime';
 
@@ -317,10 +317,7 @@ class FiltersStore {
 			return;
 		}
 
-		if (
-			searchClearCoordinator.lastManualClearTime > 0 &&
-			Date.now() - searchClearCoordinator.lastManualClearTime < 500
-		) {
+		if (lastManualClearTime > 0 && Date.now() - lastManualClearTime < 500) {
 			return;
 		}
 

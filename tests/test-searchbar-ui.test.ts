@@ -119,14 +119,14 @@ describe('SearchBar UI', () => {
 		});
 
 		it('should call markSearchCleared when clear is clicked', async () => {
-			const { searchClearCoordinator } = await import('$lib/stores/searchClearCoordinator');
+			const { markSearchCleared } = await import('$lib/stores/searchClearCoordinator');
 			filtersStore.setSearchTerm('test');
 			render(SearchBar);
 
 			const clearButton = await screen.findByRole('button', { name: /clear search/i });
 			await fireEvent.click(clearButton);
 
-			expect(searchClearCoordinator.markSearchCleared).toHaveBeenCalled();
+			expect(markSearchCleared).toHaveBeenCalled();
 		});
 
 		it('should clear URL search param when clear is clicked', async () => {
