@@ -44,7 +44,7 @@ function buildOptions(): ChartOptions {
 				boxPadding: 6,
 			},
 		},
-		scales: options?.scales || {
+		scales: {
 			x: {
 				grid: { display: false },
 				ticks: { color: textColor, font: { size: 11 } },
@@ -56,7 +56,7 @@ function buildOptions(): ChartOptions {
 			},
 		},
 		...options,
-	} as ChartOptions;
+	};
 }
 
 $effect(() => {
@@ -76,18 +76,6 @@ $effect(() => {
 		chartInstance?.destroy();
 		chartInstance = null;
 	};
-});
-
-$effect(() => {
-	void textColor;
-	if (chartInstance) {
-		chartInstance.destroy();
-		chartInstance = new Chart(canvasElement, {
-			type,
-			data,
-			options: buildOptions(),
-		});
-	}
 });
 </script>
 
