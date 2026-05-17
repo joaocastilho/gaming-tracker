@@ -286,7 +286,7 @@ $effect(() => {
 });
 
 function validateGame(game: Game): string | null {
-	if (game.status === 'Planned') {
+	if (game.status === 'Planned' || game.status === 'Playing') {
 		game.finishedDate = null;
 		game.ratingPresentation = null;
 		game.ratingStory = null;
@@ -407,6 +407,7 @@ async function handleSave() {
 						<label for="status">Status</label>
 						<select id="status" bind:value={working.status}>
 							<option value="Planned">Planned</option>
+							<option value="Playing">Playing</option>
 							<option value="Completed">Completed</option>
 						</select>
 					</div>

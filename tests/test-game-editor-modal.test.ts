@@ -136,6 +136,60 @@ describe('GameEditorModal Component', () => {
 		});
 	});
 
+	describe('Game Status Handling', () => {
+		it('has Playing option in status dropdown', () => {
+			render(GameEditorModal, {
+				props: {
+					mode: 'create',
+					initialGame: undefined,
+					allGames: mockAllGames,
+					onClose: mockOnClose,
+				},
+			});
+
+			const statusSelect = screen.getByLabelText(/status/i) as HTMLSelectElement;
+			const playingOption = [...statusSelect.options].find((o) => o.value === 'Playing');
+			expect(playingOption).toBeTruthy();
+		});
+
+		it('hides rating fields when Playing status is selected', async () => {
+			render(GameEditorModal, {
+				props: {
+					mode: 'create',
+					initialGame: undefined,
+					allGames: mockAllGames,
+					onClose: mockOnClose,
+				},
+			});
+
+			const statusSelect = screen.getByLabelText(/status/i) as HTMLSelectElement;
+
+			// First set to Completed to show rating fields
+			await fireEvent.change(statusSelect, { target: { value: 'Completed' } });
+			expect(screen.queryByText(/presentation/i)).toBeTruthy();
+
+			// Then switch to Playing - ratings should hide
+			await fireEvent.change(statusSelect, { target: { value: 'Playing' } });
+			expect(screen.queryByText(/presentation/i)).toBeNull();
+		});
+
+		it('keeps playtime label as Time to Beat for Playing status', () => {
+			render(GameEditorModal, {
+				props: {
+					mode: 'create',
+					initialGame: undefined,
+					allGames: mockAllGames,
+					onClose: mockOnClose,
+				},
+			});
+
+			const statusSelect = screen.getByLabelText(/status/i) as HTMLSelectElement;
+
+			fireEvent.change(statusSelect, { target: { value: 'Playing' } });
+			expect(screen.getByText(/time to beat/i)).toBeTruthy();
+		});
+	});
+
 	describe('Close Behavior', () => {
 		it('calls onClose when Escape key is pressed', async () => {
 			render(GameEditorModal, {
