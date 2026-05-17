@@ -63,15 +63,13 @@ Manually assigned tiers to games based on overall assessment:
 
 | Category             | Technology                                     | Version   |
 | -------------------- | ---------------------------------------------- | --------- |
-| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.58.0` |
-| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.55.5` |
-| **Language**         | [TypeScript](https://www.typescriptlang.org/)  | `v6.0.3`  |
-| **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.2.4`  |
-| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.4.13` |
-| **Storage**          | IndexedDB (via [Dexie.js](https://dexie.org/)) | `v4.4.2`  |
-| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.0.10` |
+| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.60.1` |
+| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.55.7` |
+| **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.0`  |
+| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.4.15` |
+| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.0.13` |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.5`  |
-| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.13` |
+| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.14` |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)            | `v4.5.1`  |
 
 ## 🚀 Running Locally
