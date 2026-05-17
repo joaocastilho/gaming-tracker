@@ -32,6 +32,7 @@ vi.mock('lucide-svelte', () => {
 		List: MockIcon,
 		Search: MockIcon,
 		Home: MockIcon,
+		BarChart3: MockIcon,
 	};
 });
 
@@ -235,16 +236,16 @@ describe('BottomNavigation', () => {
 			expect(list).toBeInTheDocument();
 		});
 
-		it('should render 6 navigation items', () => {
+		it('should render 7 navigation items', () => {
 			render(BottomNavigation);
 			const listItems = screen.getAllByRole('listitem');
-			expect(listItems).toHaveLength(6);
+			expect(listItems).toHaveLength(7);
 		});
 
 		it('should have buttons for all navigation items', () => {
 			render(BottomNavigation);
 			const buttons = screen.getAllByRole('button');
-			expect(buttons).toHaveLength(6);
+			expect(buttons).toHaveLength(7);
 		});
 	});
 
@@ -255,6 +256,7 @@ describe('BottomNavigation', () => {
 			expect(screen.getByText('Library')).toBeInTheDocument();
 			expect(screen.getByText('Completed')).toBeInTheDocument();
 			expect(screen.getByText('Planned')).toBeInTheDocument();
+			expect(screen.getByText('Stats')).toBeInTheDocument();
 			expect(screen.getByText('Tier List')).toBeInTheDocument();
 			expect(screen.getByText('Search')).toBeInTheDocument();
 		});

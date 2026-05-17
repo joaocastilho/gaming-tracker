@@ -8,7 +8,7 @@ import BottomNavigation from '$lib/components/BottomNavigation.svelte';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
-import { appStore } from '$lib/stores/app.svelte';
+import { appStore, type TabValue } from '$lib/stores/app.svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
 import { browser, dev } from '$app/environment';
 import { untrack } from 'svelte';
@@ -150,6 +150,7 @@ let filterOptions = $derived.by(() => {
 let currentPage = $derived.by(() => {
 	const path = page.url.pathname;
 	if (path === '/') return 'home';
+	if (path === '/stats') return 'stats';
 	if (path === '/library') return 'all';
 	if (path === '/completed') return 'completed';
 	if (path === '/planned') return 'planned';
@@ -172,6 +173,7 @@ let isTierlistPage = $derived(currentPage === 'tierlist');
 let pageTitle = $derived.by(() => {
 	const path = page.url.pathname;
 	if (path === '/') return 'Home';
+	if (path === '/stats') return 'Stats';
 	if (path === '/library') return 'All Games';
 	if (path === '/completed') return 'Completed Games';
 	if (path === '/planned') return 'Planned Games';
@@ -224,7 +226,7 @@ $effect(() => {
 
 $effect(() => {
 	const pathname = page.url.pathname;
-	let targetTab: 'all' | 'completed' | 'planned' | 'tierlist' | 'home' | 'library' = 'all';
+	let targetTab: TabValue = 'all';
 
 	if (pathname === '/') {
 		targetTab = 'home';
@@ -236,6 +238,8 @@ $effect(() => {
 		targetTab = 'planned';
 	} else if (pathname === '/tierlist') {
 		targetTab = 'tierlist';
+	} else if (pathname === '/stats') {
+		targetTab = 'stats';
 	}
 
 	appStore.setActiveTab(targetTab);

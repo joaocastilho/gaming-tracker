@@ -4,7 +4,7 @@ import { goto } from '$app/navigation';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 import { appStore } from '$lib/stores/app.svelte';
 import { page } from '$app/state';
-import { Gamepad, CheckCircle, Calendar, List, Search, Home } from 'lucide-svelte';
+import { Gamepad, CheckCircle, Calendar, List, Search, Home, BarChart3 } from 'lucide-svelte';
 
 interface Props {
 	onSearchToggle?: () => void;
@@ -12,7 +12,7 @@ interface Props {
 
 let { onSearchToggle }: Props = $props();
 
-type NavId = 'home' | 'library' | 'completed' | 'planned' | 'tierlist' | 'search';
+type NavId = 'home' | 'library' | 'completed' | 'planned' | 'stats' | 'tierlist' | 'search';
 
 type NavItem = {
 	id: NavId;
@@ -67,6 +67,14 @@ let navItems = $derived.by(() => {
 			count: null,
 			active: currentTab === 'tierlist',
 			icon: List,
+		},
+		{
+			id: 'stats' as NavId,
+			label: 'Stats',
+			route: '/stats',
+			count: null,
+			active: currentTab === 'stats',
+			icon: BarChart3,
 		},
 		{
 			id: 'search' as NavId,

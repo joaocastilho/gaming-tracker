@@ -10,7 +10,21 @@ import { appStore } from '$lib/stores/app.svelte';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
-import { ChevronDown, SlidersHorizontal, Plus, Save, X, LogOut, LogIn, Home } from 'lucide-svelte';
+import {
+	ChevronDown,
+	SlidersHorizontal,
+	Plus,
+	Save,
+	X,
+	LogOut,
+	LogIn,
+	Home,
+	Gamepad,
+	CheckCircle,
+	Calendar,
+	List,
+	BarChart3,
+} from 'lucide-svelte';
 import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
 const isMac = $derived(browser && navigator.platform.toLowerCase().includes('mac'));
@@ -24,7 +38,7 @@ interface Props {
 
 let { onAddGame, onApplyChanges, onOpenLogin }: Props = $props();
 
-type NavId = 'library' | 'completed' | 'planned' | 'tierlist';
+type NavId = 'library' | 'completed' | 'planned' | 'tierlist' | 'stats';
 
 type NavItem = {
 	id: NavId;
@@ -32,6 +46,7 @@ type NavItem = {
 	route: string;
 	count: number | null;
 	active: boolean;
+	icon: typeof Gamepad;
 };
 
 let isEditor = $derived(editorStore.editorMode);
@@ -50,6 +65,7 @@ let navItems = $derived.by(() => {
 			route: '/library',
 			count: counts.all,
 			active: currentTab === 'library' || currentTab === 'all',
+			icon: Gamepad,
 		},
 		{
 			id: 'completed' as NavId,
@@ -57,6 +73,7 @@ let navItems = $derived.by(() => {
 			route: '/completed',
 			count: counts.completed,
 			active: currentTab === 'completed',
+			icon: CheckCircle,
 		},
 		{
 			id: 'planned' as NavId,
@@ -64,6 +81,7 @@ let navItems = $derived.by(() => {
 			route: '/planned',
 			count: counts.planned,
 			active: currentTab === 'planned',
+			icon: Calendar,
 		},
 		{
 			id: 'tierlist' as NavId,
@@ -71,6 +89,15 @@ let navItems = $derived.by(() => {
 			route: '/tierlist',
 			count: null,
 			active: currentTab === 'tierlist',
+			icon: List,
+		},
+		{
+			id: 'stats' as NavId,
+			label: 'Stats',
+			route: '/stats',
+			count: null,
+			active: currentTab === 'stats',
+			icon: BarChart3,
 		},
 	] as NavItem[];
 });
@@ -106,12 +133,14 @@ async function handleLogout() {
 		<nav class="tabs-nav">
 			<ul class="tabs-list">
 				{#each navItems as item (item.id)}
+					{@const Icon = item.icon}
 					<li>
 						<button
 							type="button"
 							class:active={item.active}
 							onclick={() => handleNavClick(item.id)}
 						>
+							<Icon size={20} />
 							<span class="label">{item.label}</span>
 						</button>
 						{#if item.count !== null}

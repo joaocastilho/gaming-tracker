@@ -1,5 +1,5 @@
 export type ThemeValue = 'dark' | 'light';
-export type TabValue = 'all' | 'completed' | 'planned' | 'tierlist' | 'home' | 'library';
+export type TabValue = 'all' | 'completed' | 'planned' | 'tierlist' | 'stats' | 'home' | 'library';
 
 export interface AppState {
 	theme: ThemeValue;
