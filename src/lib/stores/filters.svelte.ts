@@ -4,7 +4,6 @@ import { debounce } from '$lib/utils/debounce';
 import { toSlug, fromSlug } from '$lib/utils/slugUtils';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { gamesStore } from './games.svelte';
-import { get } from 'svelte/store';
 import { lastManualClearTime } from './searchClearCoordinator';
 
 export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishedDate' | 'alphabetical' | 'playtime';
@@ -291,7 +290,7 @@ class FiltersStore {
 			return;
 		}
 
-		const games = get(gamesStore);
+		const games = gamesStore.games;
 		const options = extractFilterOptions(games);
 
 		const newState: FilterState = {

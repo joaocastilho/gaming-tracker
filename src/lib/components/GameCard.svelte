@@ -11,7 +11,6 @@ interface Props {
 	size?: 'small' | 'large' | 'tiny' | 'tierlist';
 	showTierBadge?: boolean;
 	isAboveFold?: boolean;
-	isPriority?: boolean;
 	displayedGames?: Game[];
 	onOpenModal?: (game: Game, displayedGames: Game[]) => void;
 	onEditGame?: (game: Game) => void;
@@ -23,7 +22,6 @@ let {
 	size = 'small',
 	showTierBadge = true,
 	isAboveFold = false,
-	isPriority = false,
 	displayedGames = [],
 	onOpenModal,
 	onEditGame,
@@ -75,7 +73,6 @@ function handleKeyDown(event: KeyboardEvent) {
 		{size}
 		{showTierBadge}
 		{isAboveFold}
-		{isPriority}
 		{onEditGame}
 		{onDeleteGame}
 	/>

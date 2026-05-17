@@ -13,20 +13,11 @@ interface Props {
 	size?: 'small' | 'large' | 'tiny' | 'tierlist';
 	showTierBadge?: boolean;
 	isAboveFold?: boolean;
-	isPriority?: boolean;
 	onEditGame?: (game: Game) => void;
 	onDeleteGame?: (game: Game) => void;
 }
 
-let {
-	game,
-	size = 'small',
-	showTierBadge = true,
-	isAboveFold = false,
-	isPriority: _isPriority = false,
-	onEditGame,
-	onDeleteGame,
-}: Props = $props();
+let { game, size = 'small', showTierBadge = true, isAboveFold = false, onEditGame, onDeleteGame }: Props = $props();
 
 let isEditor = $derived(editorStore.editorMode);
 let isOffline = $derived(!offlineStore.isOnline);

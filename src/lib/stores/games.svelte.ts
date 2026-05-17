@@ -9,7 +9,6 @@ import { CARD_WIDTHS } from '$lib/constants/fonts';
 
 class GamesStore {
 	private _games = $state<Game[]>([]);
-	private subscribers = new Set<(value: Game[]) => void>();
 	loading = $state<boolean>(true);
 	error = $state<string | null>(null);
 
@@ -138,16 +137,6 @@ class GamesStore {
 		} catch (err) {
 			console.error('Failed to load games from Dexie:', err);
 		}
-	}
-
-	subscribe(fn: (value: Game[]) => void): () => void {
-		fn(this._games);
-		// Add to subscribers
-		this.subscribers.add(fn);
-		// Return unsubscribe function
-		return () => {
-			this.subscribers.delete(fn);
-		};
 	}
 }
 

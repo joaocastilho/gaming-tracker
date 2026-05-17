@@ -85,9 +85,10 @@ describe('Sorting and Filtering Logic', () => {
 		expect(results.length).toBe(1);
 		expect(results[0].title).toBe('The Legend of Zelda: Breath of the Wild');
 
-		filtersStore.setSearchTerm('PC');
+		filtersStore.setSearchTerm('Ring');
 		results = filteredGamesStore.games;
-		expect(results.length).toBe(2);
+		expect(results.length).toBe(1);
+		expect(results[0].title).toBe('Elden Ring');
 	});
 
 	it('filters by platform', () => {

@@ -141,8 +141,8 @@ describe('Search Functionality', () => {
 
 		gamesStore.initializeGames(mockGames);
 
-		// Search for "RPG"
-		filtersStore.setSearchTerm('RPG');
+		// Use genre filter instead of search (search is title-only)
+		filtersStore.setFilters({ genres: ['Action RPG'] });
 
 		const results = filteredGamesStore.games;
 		expect(results).toHaveLength(2); // Dark Souls III and Elden Ring
@@ -157,8 +157,8 @@ describe('Search Functionality', () => {
 
 		gamesStore.initializeGames(mockGames);
 
-		// Search for "Switch"
-		filtersStore.setSearchTerm('Switch');
+		// Use platform filter instead of search (search is title-only)
+		filtersStore.setFilters({ platforms: ['Nintendo Switch'] });
 
 		const results = filteredGamesStore.games;
 		expect(results).toHaveLength(2); // Zelda and Mario

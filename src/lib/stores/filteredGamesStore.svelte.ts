@@ -102,13 +102,7 @@ class FilteredGamesStore {
 
 		if (filters.searchTerm?.trim()) {
 			const query = filters.searchTerm.toLowerCase().trim();
-			filteredGames = filteredGames.filter((game) => {
-				return (
-					game.title.toLowerCase().includes(query) ||
-					game.genre.toLowerCase().includes(query) ||
-					game.platform.toLowerCase().includes(query)
-				);
-			});
+			filteredGames = filteredGames.filter((game) => game.title.toLowerCase().includes(query));
 		}
 
 		if (filters.platforms.length > 0) {

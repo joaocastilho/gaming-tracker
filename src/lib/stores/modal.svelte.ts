@@ -57,7 +57,6 @@ const initialState: ModalState = {
 
 class ModalStore {
 	private _state = $state<ModalState>({ ...initialState });
-	private subscribers = new Set<(value: ModalState) => void>();
 	private isProgrammaticUpdate = false;
 
 	// Removed debouncedWriteToURL to prevent race conditions with readFromURL
@@ -131,7 +130,7 @@ class ModalStore {
 			cardRect: cardRect ?? null,
 			filterContext: filterContext ? { ...this._state.filterContext, ...filterContext } : this._state.filterContext,
 		};
-		this.notifySubscribers();
+
 		this.writeToURL();
 	}
 
@@ -148,7 +147,6 @@ class ModalStore {
 			pendingGameFromURL: null,
 			filterContext: filterContext ? { ...this._state.filterContext, ...filterContext } : this._state.filterContext,
 		};
-		this.notifySubscribers();
 	}
 
 	openAddModal(filterContext?: Partial<ModalState['filterContext']>): void {
@@ -167,7 +165,6 @@ class ModalStore {
 			pendingGameFromURL: null,
 			filterContext: filterContext ? { ...this._state.filterContext, ...filterContext } : this._state.filterContext,
 		};
-		this.notifySubscribers();
 	}
 
 	closeModal(): void {
@@ -183,7 +180,7 @@ class ModalStore {
 			pendingGameFromURL: null,
 			cardRect: null,
 		};
-		this.notifySubscribers();
+
 		this.writeToURL();
 	}
 
@@ -192,7 +189,6 @@ class ModalStore {
 			...this._state,
 			isOpen: !this._state.isOpen,
 		};
-		this.notifySubscribers();
 	}
 
 	setActiveGame(game: Game | null): void {
@@ -200,7 +196,6 @@ class ModalStore {
 			...this._state,
 			activeGame: game,
 		};
-		this.notifySubscribers();
 	}
 
 	setMode(mode: 'view' | 'edit' | 'add'): void {
@@ -208,7 +203,6 @@ class ModalStore {
 			...this._state,
 			mode,
 		};
-		this.notifySubscribers();
 	}
 
 	updateFilterContext(context: Partial<ModalState['filterContext']>): void {
@@ -227,7 +221,6 @@ class ModalStore {
 			displayedGames: updatedDisplayedGames,
 			activeGame: updatedActiveGame,
 		};
-		this.notifySubscribers();
 	}
 
 	getReactiveNavigationGamesFromContext(allGames: Game[], filterContext: ModalState['filterContext']): Game[] {
@@ -237,12 +230,7 @@ class ModalStore {
 
 		if (filterContext.searchTerm.trim()) {
 			const query = filterContext.searchTerm.toLowerCase().trim();
-			filteredGames = filteredGames.filter((game) => {
-				const titleMatch = game.title.toLowerCase().includes(query);
-				const genreMatch = game.genre.toLowerCase().includes(query);
-				const platformMatch = game.platform.toLowerCase().includes(query);
-				return titleMatch || genreMatch || platformMatch;
-			});
+			filteredGames = filteredGames.filter((game) => game.title.toLowerCase().includes(query));
 		}
 
 		if (filterContext.platforms.length > 0) {
@@ -618,13 +606,6 @@ class ModalStore {
 				...this._state,
 				isOpen: false,
 			};
-			this.notifySubscribers();
-		}
-	}
-
-	private notifySubscribers(): void {
-		for (const fn of this.subscribers) {
-			fn(this._state);
 		}
 	}
 }

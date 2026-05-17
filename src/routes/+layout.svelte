@@ -271,23 +271,28 @@ let loginModalOpen = $state(false);
 
 let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
 
-// biome-ignore lint/suspicious/noExplicitAny: Dynamic component types require 'any' to be compatible with multiple component signatures
-type AnyComponent = import('svelte').Component<any, any, any>;
+import type { Component } from 'svelte';
 
-let DetailModalComponent = $state<AnyComponent | null>(null);
-let GameEditorModalComponent = $state<AnyComponent | null>(null);
-let DeleteConfirmModalComponent = $state<AnyComponent | null>(null);
-let LoginModalComponent = $state<AnyComponent | null>(null);
-let MobileSearchComponent = $state<AnyComponent | null>(null);
-let MobileFiltersComponent = $state<AnyComponent | null>(null);
-let MobileSettingsMenuComponent = $state<AnyComponent | null>(null);
+// Dynamic lazy-loaded components have unknown props at compile time.
+// The Svelte 5 Component type's own default uses Record<string, any>
+// for Props — using it here as a type param is the intended approach.
+// biome-ignore lint/suspicious/noExplicitAny: required for dynamic component references
+type LazySvelteComponent = Component<any, any, any>;
 
-let TierListViewComponent = $state<AnyComponent | null>(null);
-let NoResultsComponent = $state<AnyComponent | null>(null);
-let SearchBarComponent = $state<AnyComponent | null>(null);
-let FilterDropdownComponent = $state<AnyComponent | null>(null);
-let FilterToggleComponent = $state<AnyComponent | null>(null);
-let RatingsSortComponent = $state<AnyComponent | null>(null);
+let DetailModalComponent = $state<LazySvelteComponent | null>(null);
+let GameEditorModalComponent = $state<LazySvelteComponent | null>(null);
+let DeleteConfirmModalComponent = $state<LazySvelteComponent | null>(null);
+let LoginModalComponent = $state<LazySvelteComponent | null>(null);
+let MobileSearchComponent = $state<LazySvelteComponent | null>(null);
+let MobileFiltersComponent = $state<LazySvelteComponent | null>(null);
+let MobileSettingsMenuComponent = $state<LazySvelteComponent | null>(null);
+
+let TierListViewComponent = $state<LazySvelteComponent | null>(null);
+let NoResultsComponent = $state<LazySvelteComponent | null>(null);
+let SearchBarComponent = $state<LazySvelteComponent | null>(null);
+let FilterDropdownComponent = $state<LazySvelteComponent | null>(null);
+let FilterToggleComponent = $state<LazySvelteComponent | null>(null);
+let RatingsSortComponent = $state<LazySvelteComponent | null>(null);
 
 let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 

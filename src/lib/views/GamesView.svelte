@@ -101,7 +101,6 @@ function handleOpenModal(game: Game) {
 							<GameCard
 								{game}
 								{displayedGames}
-								isPriority={isPriority && i < 4}
 								isAboveFold={isPriority && i < 4}
 								onOpenModal={handleOpenModal}
 								{onEditGame}
@@ -125,15 +124,14 @@ function handleOpenModal(game: Game) {
 						<div class="game-row pb-5" style="height: {itemHeight}px;">
 							{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
 								<div class="game-card-wrapper">
-									<GameCard
-										{game}
-										{displayedGames}
-										isPriority={i < 4}
-										isAboveFold={i < 4}
-										onOpenModal={handleOpenModal}
-										{onEditGame}
-										{onDeleteGame}
-									/>
+								<GameCard
+									{game}
+									{displayedGames}
+									isAboveFold={i < 4}
+									onOpenModal={handleOpenModal}
+									{onEditGame}
+									{onDeleteGame}
+								/>
 								</div>
 							{/each}
 							{#if row.games.length < columns}

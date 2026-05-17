@@ -33,10 +33,7 @@ class FilteredCountsStore {
 		return games.filter((game) => {
 			if (filters.searchTerm) {
 				const search = filters.searchTerm.toLowerCase();
-				const matchesTitle = game.title.toLowerCase().includes(search);
-				const matchesMainTitle = game.mainTitle?.toLowerCase().includes(search);
-				const matchesSubtitle = game.subtitle?.toLowerCase().includes(search);
-				if (!matchesTitle && !matchesMainTitle && !matchesSubtitle) return false;
+				if (!game.title.toLowerCase().includes(search)) return false;
 			}
 
 			if (filters.platforms.length > 0 && !filters.platforms.includes(game.platform)) return false;
