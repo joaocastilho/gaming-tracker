@@ -301,10 +301,13 @@ async function handleLogout() {
 	.tabs-list {
 		display: inline-flex;
 		align-items: center;
-		gap: 1.5rem;
+		gap: 0.3rem;
 		list-style: none;
-		padding: 0;
+		padding: 0.35rem;
 		margin: 0;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: 14px;
 	}
 
 	.tabs-list li {
@@ -319,17 +322,17 @@ async function handleLogout() {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.5rem 0.25rem;
+		padding: 0.6rem 1rem;
 		border: none;
 		background: transparent;
 		cursor: pointer;
-		font-size: 1.25rem;
+		font-size: 1rem;
 		font-weight: 600;
 		color: var(--color-text-secondary);
 		transition:
 			color var(--transition-fast),
 			background var(--transition-fast);
-		border-radius: 8px;
+		border-radius: 9px;
 		white-space: nowrap;
 		touch-action: manipulation;
 		-webkit-tap-highlight-color: transparent;
@@ -339,34 +342,21 @@ async function handleLogout() {
 		letter-spacing: -0.01em;
 	}
 
+	.tabs-list button :global(svg) {
+		flex-shrink: 0;
+	}
+
 	.tabs-list .count-badge {
-		min-width: 1.5rem;
+		min-width: 1.4rem;
 		padding: 0.15rem 0.5rem;
 		border-radius: 999px;
-		font-size: 0.9rem;
-		font-weight: 600;
+		font-size: 0.8rem;
+		font-weight: 700;
 		text-align: center;
 		background: var(--color-surface-elevated);
 		color: var(--color-text-secondary);
 		border: 1px solid var(--color-border);
 		transition: all var(--transition-fast);
-	}
-
-	.tabs-list button::after {
-		content: '';
-		position: absolute;
-		left: 0.25rem;
-		right: 0.25rem;
-		bottom: 0;
-		height: 2px;
-		border-radius: 999px;
-		background: transparent;
-		transform-origin: center;
-		transform: scaleX(0);
-		transition:
-			transform var(--transition-fast),
-			opacity var(--transition-fast),
-			background var(--transition-fast);
 	}
 
 	@media (hover: hover) {
@@ -379,28 +369,21 @@ async function handleLogout() {
 			border-color: var(--color-accent);
 			color: var(--color-accent);
 		}
-
-		.tabs-list button:hover::after {
-			background: var(--color-accent);
-			transform: scaleX(1);
-			opacity: 0.5;
-		}
 	}
 
 	.tabs-list button.active {
 		color: var(--color-text-primary);
-	}
-
-	.tabs-list button.active::after {
-		background: var(--color-accent);
-		transform: scaleX(1);
-		opacity: 1;
+		background: var(--color-hover);
 	}
 
 	.tabs-list button.active + .count-badge {
 		background: color-mix(in srgb, var(--color-accent), black 15%);
 		color: #ffffff;
 		border-color: transparent;
+	}
+
+	.tabs-list button.active :global(svg) {
+		color: var(--color-accent);
 	}
 
 	.header-right {
