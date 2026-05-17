@@ -1,5 +1,5 @@
 import type { LayoutLoad } from './$types';
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import type { GamingTrackerDB } from '$lib/db';
 
 export const prerender = true;
@@ -20,7 +20,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 				};
 			}
 		} catch (e) {
-			console.warn('Failed to load from Dexie:', e);
+			if (dev) console.warn('Failed to load from Dexie:', e);
 		}
 	}
 
@@ -80,6 +80,6 @@ async function refreshGamesInBackground(
 			}
 		}
 	} catch (e) {
-		console.warn('Background refresh failed:', e);
+		if (dev) console.warn('Background refresh failed:', e);
 	}
 }

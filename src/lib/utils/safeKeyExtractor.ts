@@ -11,8 +11,7 @@ export function safeKeyExtractor<T>(
 		}
 
 		return String(key);
-	} catch (error) {
-		console.warn(`Error extracting key at index ${index}:`, error);
+	} catch {
 		return `error-key-${index}`;
 	}
 }

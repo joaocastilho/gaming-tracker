@@ -63,11 +63,8 @@ let visibleRange = $derived.by(() => {
 	const effectiveHeight = useWindowScroll ? windowSize.height : containerHeight;
 
 	if (hasVariableHeights && offsets) {
-		const start = Math.max(0, binarySearchStart(offsets, scrollTop, overscan) - overscan);
-		const end = Math.min(
-			items.length,
-			binarySearchEnd(offsets, scrollTop + effectiveHeight, items.length, overscan) + overscan
-		);
+		const start = Math.max(0, binarySearchStart(offsets, scrollTop) - overscan);
+		const end = Math.min(items.length, binarySearchEnd(offsets, scrollTop + effectiveHeight, items.length) + overscan);
 		return { start, end };
 	}
 

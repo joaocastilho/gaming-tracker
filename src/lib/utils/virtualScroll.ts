@@ -1,4 +1,4 @@
-export function binarySearchStart(offsets: number[] | null, target: number, _overscan: number): number {
+export function binarySearchStart(offsets: number[] | null, target: number): number {
 	if (!offsets || offsets.length === 0) return 0;
 	let low = 0;
 	let high = offsets.length - 1;
@@ -13,12 +13,7 @@ export function binarySearchStart(offsets: number[] | null, target: number, _ove
 	return Math.max(0, low - 1);
 }
 
-export function binarySearchEnd(
-	offsets: number[] | null,
-	target: number,
-	itemCount: number,
-	_overscan: number
-): number {
+export function binarySearchEnd(offsets: number[] | null, target: number, itemCount: number): number {
 	if (!offsets || offsets.length === 0) return itemCount;
 	let low = 0;
 	let high = offsets.length - 1;

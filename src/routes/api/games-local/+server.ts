@@ -101,7 +101,7 @@ export async function POST({ request }: { request: Request }) {
 						gameHeader.finishedDate = `${day}/${month}/${year}`;
 					}
 				} catch (e) {
-					console.debug('Failed to parse finished date from:', gameHeader.finishedDate, e);
+					// ignore parse errors for finishedDate
 				}
 			}
 
