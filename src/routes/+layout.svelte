@@ -168,10 +168,6 @@ $effect(() => {
 				filtersStore.setDesktopFiltersExpanded(true);
 			}
 		});
-
-		if (filtersStore.isAnyFilterApplied() && windowSize.width >= 768) {
-			filtersStore.setDesktopFiltersExpanded(true);
-		}
 	}
 });
 
@@ -492,8 +488,7 @@ let canReset = $derived(hasActiveFilters || filtersStore.isSortModified());
 
 afterNavigate(({ from }) => {
 	if (!from) {
-		const searchParams = new URLSearchParams(window.location.search);
-		const searchParam = searchParams.get('s');
+		const searchParam = page.url.searchParams.get('s');
 		if (searchParam && innerWidth < 768) {
 			try {
 				replaceState(window.location.href, { ...page.state, showMobileSearch: true });
