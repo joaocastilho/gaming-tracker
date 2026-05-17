@@ -194,7 +194,14 @@ async function handleLogout() {
 				<button
 					type="button"
 					class="filter-toggle-button"
-					onclick={() => filtersStore.toggleDesktopFiltersExpanded()}
+					onclick={() => {
+						if (page.url.pathname === '/') {
+							filtersStore.setDesktopFiltersExpanded(true);
+							goto('/library');
+						} else {
+							filtersStore.toggleDesktopFiltersExpanded();
+						}
+					}}
 					aria-expanded={filtersStore.isDesktopFiltersExpanded}
 					aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
 					title={filtersStore.isDesktopFiltersExpanded

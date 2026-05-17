@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from '$app/state';
-import { pushState, goto, replaceState, afterNavigate } from '$app/navigation';
+import { goto, replaceState, afterNavigate } from '$app/navigation';
 import '../app.css';
 import Header from '$lib/components/Header.svelte';
 import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
@@ -264,7 +264,7 @@ let selectedGenres = $derived(filtersStore.state?.genres ?? []);
 let selectedTiers = $derived(filtersStore.state?.tiers ?? []);
 let selectedCoOp = $derived(filtersStore.state?.coOp ?? []);
 
-let isSearchOpen = $derived(!!page.state.showMobileSearch);
+let isSearchOpen = $state(false);
 let isFiltersOpen = $state(false);
 let isSettingsMenuOpen = $state(false);
 let loginModalOpen = $state(false);
@@ -356,19 +356,15 @@ function resetFilters() {
 
 function onSearchToggle() {
 	if (isSearchOpen) {
-		replaceState(page.url, { ...page.state, showMobileSearch: false });
+		isSearchOpen = false;
+		pushSearchState(false);
 	} else {
 		if (browser && innerWidth < 768) {
 			savedScrollPosition = window.scrollY;
 		}
 
-		if (currentPage === 'tierlist') {
-			pushState(page.url, { showMobileSearch: true, fromTierlist: true });
-			isFiltersOpen = false;
-			return;
-		}
-
-		pushState(page.url, { showMobileSearch: true });
+		isSearchOpen = true;
+		pushSearchState(true);
 		isFiltersOpen = false;
 	}
 }
@@ -376,13 +372,26 @@ function onSearchToggle() {
 function onFiltersToggle() {
 	isFiltersOpen = !isFiltersOpen;
 	if (isFiltersOpen) {
-		if (isSearchOpen) replaceState(page.url, { ...page.state, showMobileSearch: false });
+		if (isSearchOpen) {
+			isSearchOpen = false;
+			pushSearchState(false);
+		}
 	}
 }
 
 function onCloseSearchAndFilters() {
-	if (isSearchOpen) replaceState(page.url, { ...page.state, showMobileSearch: false });
+	if (isSearchOpen) {
+		isSearchOpen = false;
+		pushSearchState(false);
+	}
 	isFiltersOpen = false;
+}
+
+let internalSearchChange = false;
+
+function pushSearchState(open: boolean) {
+	internalSearchChange = true;
+	replaceState(page.url, { ...page.state, showMobileSearch: open });
 }
 
 $effect(() => {
@@ -405,6 +414,11 @@ $effect(() => {
 					input?.select();
 				});
 			} else {
+				if (currentPage === 'home') {
+					filtersStore.setDesktopFiltersExpanded(true);
+					goto('/library', { state: { showMobileSearch: true } });
+					return;
+				}
 				filtersStore.toggleDesktopFiltersExpanded();
 				requestAnimationFrame(() => {
 					const input = document.getElementById('search-input') as HTMLInputElement;
@@ -420,6 +434,16 @@ $effect(() => {
 	return () => {
 		window.removeEventListener('keydown', handleGlobalKeydown);
 	};
+});
+
+$effect(() => {
+	if (internalSearchChange) {
+		internalSearchChange = false;
+		return;
+	}
+	if (page.state.showMobileSearch !== undefined && page.state.showMobileSearch !== isSearchOpen) {
+		isSearchOpen = !!page.state.showMobileSearch;
+	}
 });
 
 let wasSearchOpen = false;
@@ -448,34 +472,41 @@ $effect(() => {
 let lastSearchTerm = '';
 let lastActiveTab = '';
 $effect(() => {
-	if (!browser || !isSearchOpen) return;
+	if (!browser) return;
 
 	const searchTerm = filtersStore.state?.searchTerm ?? '';
 	const currentTab = currentPage;
 	const counts = filteredCountsStore.counts;
 	const currentCount = currentFilteredGames.length;
 
-	if (searchTerm && searchTerm !== lastSearchTerm && currentTab === lastActiveTab) {
-		if (currentCount === 0) {
-			const searchParam = searchTerm ? `?s=${encodeURIComponent(searchTerm)}` : '';
+	if (searchTerm && searchTerm !== lastSearchTerm) {
+		const searchParam = searchTerm ? `?s=${encodeURIComponent(searchTerm)}` : '';
 
-			if (currentTab === 'tierlist') {
-				if (counts.completed > 0) {
-					goto(`/completed${searchParam}`, {
-						keepFocus: true,
-						noScroll: true,
-						replaceState: true,
-						state: { showMobileSearch: true },
-					});
-				} else if (counts.planned > 0) {
-					goto(`/planned${searchParam}`, {
-						keepFocus: true,
-						noScroll: true,
-						replaceState: true,
-						state: { showMobileSearch: true },
-					});
-				}
-			} else if (currentTab === 'planned' && counts.completed > 0) {
+		if (currentTab === 'home' || currentTab === 'stats') {
+			goto(`/library${searchParam}`, {
+				keepFocus: true,
+				noScroll: true,
+				replaceState: true,
+				state: { showMobileSearch: true },
+			});
+		} else if (currentTab === 'tierlist') {
+			if (counts.completed > 0) {
+				goto(`/completed${searchParam}`, {
+					keepFocus: true,
+					noScroll: true,
+					replaceState: true,
+					state: { showMobileSearch: true },
+				});
+			} else if (counts.planned > 0) {
+				goto(`/planned${searchParam}`, {
+					keepFocus: true,
+					noScroll: true,
+					replaceState: true,
+					state: { showMobileSearch: true },
+				});
+			}
+		} else if (currentTab === lastActiveTab && currentCount === 0) {
+			if (currentTab === 'planned' && counts.completed > 0) {
 				goto(`/completed${searchParam}`, {
 					keepFocus: true,
 					noScroll: true,

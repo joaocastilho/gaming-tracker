@@ -2,7 +2,7 @@
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { page } from '$app/state';
 import { browser } from '$app/environment';
-import { replaceState } from '$app/navigation';
+import { replaceState, goto } from '$app/navigation';
 import { X } from 'lucide-svelte';
 import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
 
@@ -48,6 +48,13 @@ function clearSearch() {
 }
 
 function handleKeydown(event: KeyboardEvent) {
+	if (event.key === 'Enter' && localSearchTerm.trim()) {
+		const path = page.url.pathname;
+		if (path === '/stats') {
+			goto(`/library?s=${encodeURIComponent(localSearchTerm.trim())}`);
+			return;
+		}
+	}
 	if (event.key === 'Escape') {
 		if (inputElement) {
 			inputElement.select();

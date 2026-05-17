@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from '$app/state';
-import { replaceState } from '$app/navigation';
+import { replaceState, goto } from '$app/navigation';
 import { browser } from '$app/environment';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
@@ -80,6 +80,13 @@ function clearMobileSearch() {
 					bind:value={localSearchTerm}
 					oninput={handleMobileSearchInput}
 					onkeydown={(e) => {
+						if (e.key === 'Enter' && localSearchTerm.trim()) {
+							const path = page.url.pathname;
+							if (path === '/' || path === '/stats') {
+								goto(`/library?s=${encodeURIComponent(localSearchTerm.trim())}`);
+								return;
+							}
+						}
 						if (e.key === 'Escape') {
 							onClose();
 						}
