@@ -35,7 +35,7 @@ global.FormData = MockFormData as unknown as typeof FormData;
 
 describe('Editor Store Multipart Upload', () => {
 	beforeEach(() => {
-		editorStore.clearPending();
+		editorStore.discardAllChanges();
 		vi.resetAllMocks();
 	});
 

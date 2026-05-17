@@ -60,11 +60,11 @@ describe('EditorStore', () => {
 	});
 
 	describe('Derived Properties', () => {
-		it('isEditor reflects editorMode', () => {
-			expect(editorStore.isEditor).toBe(false);
+		it('editorMode reflects editor mode state', () => {
+			expect(editorStore.editorMode).toBe(false);
 
 			editorStore.setEditorModeFromSessionCheck(true);
-			expect(editorStore.isEditor).toBe(true);
+			expect(editorStore.editorMode).toBe(true);
 		});
 
 		it('hasLoginError reflects login error state', () => {
@@ -133,7 +133,29 @@ describe('EditorStore', () => {
 				json: () => Promise.resolve({ games: [] }),
 			});
 
-			const result = await editorStore.saveGames(() => ({ games: [{ id: '1' }] }));
+			const result = await editorStore.saveGames(() => ({
+				games: [
+					{
+						id: '1',
+						title: 'Test',
+						mainTitle: 'Test',
+						subtitle: null,
+						platform: 'PC',
+						year: 2024,
+						genre: 'Action',
+						coOp: 'No' as const,
+						status: 'Planned' as const,
+						coverImage: 'covers/test.webp',
+						playtime: '0h 0m',
+						finishedDate: null,
+						ratingPresentation: null,
+						ratingStory: null,
+						ratingGameplay: null,
+						score: null,
+						tier: null,
+					},
+				],
+			}));
 
 			expect(result).toBe(true);
 			expect(editorStore.saveSuccess).toBe(true);
@@ -167,7 +189,29 @@ describe('EditorStore', () => {
 				json: () => Promise.resolve({ games: [] }),
 			});
 
-			const testPayload = { games: [{ id: 'captured' }] };
+			const testPayload = {
+				games: [
+					{
+						id: 'captured',
+						title: 'Test',
+						mainTitle: 'Test',
+						subtitle: null,
+						platform: 'PC',
+						year: 2024,
+						genre: 'Action',
+						coOp: 'No' as const,
+						status: 'Planned' as const,
+						coverImage: 'covers/test.webp',
+						playtime: '0h 0m',
+						finishedDate: null,
+						ratingPresentation: null,
+						ratingStory: null,
+						ratingGameplay: null,
+						score: null,
+						tier: null,
+					},
+				],
+			};
 			await editorStore.saveGames(() => testPayload);
 
 			const restored = editorStore.restoreSnapshot();

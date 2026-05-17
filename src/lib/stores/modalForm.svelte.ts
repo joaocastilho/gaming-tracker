@@ -1,4 +1,4 @@
-import type { Game, TierValue } from '../types/game.js';
+import type { Game, TierValue } from '$lib/types/game';
 
 export function getTierFromScore(score: number): TierValue {
 	if (score >= 18) return 'S - Masterpiece';
@@ -82,12 +82,28 @@ export function buildNewGame(formData: Partial<Game>): Game {
 			? Math.round(((ratingPresentation + ratingStory + ratingGameplay) / 3) * 2)
 			: null;
 
+	const coverImage = `covers/${formData.title?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'game'}.webp`;
+
 	return {
-		...(formData as Game),
 		id: crypto.randomUUID(),
-		coverImage: `covers/${formData.title?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'game'}.webp`,
+		title: formData.title ?? '',
+		mainTitle: formData.mainTitle ?? formData.title ?? '',
+		subtitle: formData.subtitle ?? null,
+		platform: formData.platform ?? '',
+		year: formData.year ?? new Date().getFullYear(),
+		genre: formData.genre ?? '',
+		coOp: formData.coOp ?? 'No',
+		status: formData.status ?? 'Planned',
+		coverImage,
+		playtime: formData.playtime ?? '',
+		finishedDate: formData.finishedDate ?? null,
+		ratingPresentation,
+		ratingStory,
+		ratingGameplay,
 		score,
 		tier: formData.status === 'Completed' && score !== null ? getTierFromScore(score) : null,
+		completionOrder: null,
+		sortPriority: null,
 	};
 }
 

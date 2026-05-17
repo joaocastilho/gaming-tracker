@@ -43,6 +43,10 @@ class EditorStore {
 		urls: new Map(),
 	});
 
+	private patchState(partial: Partial<EditorState>): void {
+		this._state = { ...this._state, ...partial };
+	}
+
 	// Direct property getters
 	get editorMode(): boolean {
 		return this._state.editorMode;
@@ -69,10 +73,6 @@ class EditorStore {
 	}
 
 	// Derived properties
-	get isEditor(): boolean {
-		return this._state.editorMode;
-	}
-
 	get hasSaveError(): boolean {
 		return Boolean(this._state.saveError);
 	}
@@ -210,10 +210,6 @@ class EditorStore {
 		};
 	}
 
-	clearPending(): void {
-		this.discardAllChanges();
-	}
-
 	buildFinalGames(currentGames: Game[]): Game[] {
 		let result = [...currentGames];
 		result = result.filter((g) => !this._pending.deletes.has(g.id));
@@ -256,35 +252,34 @@ class EditorStore {
 		return success;
 	}
 
+	private buildSaveFormData(payload: { games: Game[] }): FormData {
+		const formData = new FormData();
+		const blob = new Blob([JSON.stringify(payload)], { type: 'application/json; charset=utf-8' });
+		formData.append('games', blob, 'games.json');
+
+		for (const [id, file] of this._pending.files.entries()) {
+			formData.append(`cover_${id}`, file);
+		}
+
+		for (const [id, url] of this._pending.urls.entries()) {
+			formData.append(`cover_url_${id}`, url);
+		}
+
+		return formData;
+	}
+
 	async saveLocally(currentGames: Game[]): Promise<boolean> {
 		if (!this.hasPendingChanges) {
 			return true;
 		}
 
 		const finalGames = this.buildFinalGames(currentGames);
+		const payload = { games: finalGames };
 
-		this._state = {
-			...this._state,
-			savePending: true,
-			saveSuccess: false,
-			saveError: null,
-		};
+		this.patchState({ savePending: true, saveSuccess: false, saveError: null });
 
 		try {
-			const formData = new FormData();
-			const payload = { games: finalGames };
-			const blob = new Blob([JSON.stringify(payload)], { type: 'application/json; charset=utf-8' });
-			formData.append('games', blob, 'games.json');
-
-			// Append all pending files
-			for (const [id, file] of this._pending.files.entries()) {
-				formData.append(`cover_${id}`, file);
-			}
-
-			// Append all pending urls
-			for (const [id, url] of this._pending.urls.entries()) {
-				formData.append(`cover_url_${id}`, url);
-			}
+			const formData = this.buildSaveFormData(payload);
 
 			const res = await fetch('/api/games-local', {
 				method: 'POST',
@@ -293,31 +288,23 @@ class EditorStore {
 
 			if (!res.ok) {
 				const errorData = await res.json().catch(() => ({}));
-				this._state = {
-					...this._state,
+				this.patchState({
 					savePending: false,
 					saveSuccess: false,
 					saveError: (errorData as { error?: string }).error || 'Failed to save locally.',
-				};
+				});
 				return false;
 			}
 
-			this._state = {
-				...this._state,
-				savePending: false,
-				saveSuccess: true,
-				saveError: null,
-			};
-
+			this.patchState({ savePending: false, saveSuccess: true, saveError: null });
 			this.discardAllChanges();
 			return true;
 		} catch (error) {
-			this._state = {
-				...this._state,
+			this.patchState({
 				savePending: false,
 				saveSuccess: false,
 				saveError: `Local save failed: ${error instanceof Error ? error.message : String(error)}`,
-			};
+			});
 			return false;
 		}
 	}
@@ -330,13 +317,13 @@ class EditorStore {
 			});
 
 			if (!res.ok) {
-				this._state = { ...this._state, editorMode: false };
+				this.patchState({ editorMode: false });
 				return false;
 			}
 
 			const data = await res.json();
 			if (!data.valid) {
-				this._state = { ...this._state, editorMode: false };
+				this.patchState({ editorMode: false });
 				return false;
 			}
 
@@ -347,7 +334,7 @@ class EditorStore {
 	}
 
 	async login(username: string, password: string): Promise<boolean> {
-		this._state = { ...this._state, loginPending: true, loginError: null };
+		this.patchState({ loginPending: true, loginError: null });
 
 		try {
 			const res = await fetch('/api/login', {
@@ -360,21 +347,19 @@ class EditorStore {
 			});
 
 			if (!res.ok) {
-				this._state = {
-					...this._state,
+				this.patchState({
 					loginPending: false,
 					editorMode: false,
 					loginError: 'Login failed. Please try again.',
-				};
+				});
 				return false;
 			}
 
-			this._state = {
-				...this._state,
+			this.patchState({
 				loginPending: false,
 				loginError: null,
 				editorMode: true,
-			};
+			});
 
 			if (browser) {
 				try {
@@ -386,12 +371,11 @@ class EditorStore {
 
 			return true;
 		} catch {
-			this._state = {
-				...this._state,
+			this.patchState({
 				loginPending: false,
 				editorMode: false,
 				loginError: 'Login failed. Please try again.',
-			};
+			});
 			return false;
 		}
 	}
@@ -424,7 +408,7 @@ class EditorStore {
 	}
 
 	setEditorModeFromSessionCheck(enabled: boolean): void {
-		this._state = { ...this._state, editorMode: enabled };
+		this.patchState({ editorMode: enabled });
 
 		// Sync with session storage
 		if (browser) {
@@ -445,7 +429,7 @@ class EditorStore {
 			try {
 				const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
 				if (stored === 'true') {
-					this._state = { ...this._state, editorMode: true };
+					this.patchState({ editorMode: true });
 				}
 			} catch {
 				// Ignore storage errors
@@ -454,37 +438,24 @@ class EditorStore {
 	}
 
 	captureSnapshot(snapshot: unknown): void {
-		this._state = { ...this._state, lastSnapshot: snapshot };
+		this.patchState({ lastSnapshot: snapshot });
 	}
 
 	restoreSnapshot(): unknown {
 		return this._state.lastSnapshot;
 	}
 
-	async saveGames(buildPayload: () => { games: unknown }): Promise<boolean> {
+	async saveGames(buildPayload: () => { games: Game[] }): Promise<boolean> {
 		const snapshot = buildPayload();
-		this._state = {
-			...this._state,
+		this.patchState({
 			savePending: true,
 			saveSuccess: false,
 			saveError: null,
 			lastSnapshot: snapshot,
-		};
+		});
 
 		try {
-			const formData = new FormData();
-			const blob = new Blob([JSON.stringify(snapshot)], { type: 'application/json; charset=utf-8' });
-			formData.append('games', blob, 'games.json');
-
-			// Append all pending files
-			for (const [id, file] of this._pending.files.entries()) {
-				formData.append(`cover_${id}`, file);
-			}
-
-			// Append all pending urls
-			for (const [id, url] of this._pending.urls.entries()) {
-				formData.append(`cover_url_${id}`, url);
-			}
+			const formData = this.buildSaveFormData(snapshot);
 
 			const res = await fetch('/api/games', {
 				method: 'POST',
@@ -494,36 +465,22 @@ class EditorStore {
 
 			if (!res.ok) {
 				await res.text().catch(() => '');
-				this._state = {
-					...this._state,
+				this.patchState({
 					savePending: false,
 					saveSuccess: false,
 					saveError: 'Save failed. Please try again.',
-				};
+				});
 				return false;
 			}
 
-			const data = await res.json().catch(() => null);
-
-			this._state = {
-				...this._state,
-				savePending: false,
-				saveSuccess: true,
-				saveError: null,
-			};
-
-			if (data && typeof data === 'object' && 'games' in data) {
-				return true;
-			}
-
+			this.patchState({ savePending: false, saveSuccess: true, saveError: null });
 			return true;
 		} catch {
-			this._state = {
-				...this._state,
+			this.patchState({
 				savePending: false,
 				saveSuccess: false,
 				saveError: 'Save failed. Please try again.',
-			};
+			});
 			return false;
 		}
 	}
