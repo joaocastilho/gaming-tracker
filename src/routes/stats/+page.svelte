@@ -380,7 +380,7 @@ let top10Score = $derived(
 					<div class="stat-value">{avgScore}</div>
 					<div class="stat-label">Average Score</div>
 					<div class="stat-pills">
-						<span class="stat-pill">/20</span>
+						<span class="stat-pill">of 20</span>
 					</div>
 				</div>
 			</div>
