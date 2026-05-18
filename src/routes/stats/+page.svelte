@@ -121,34 +121,6 @@ let genreData = $derived.by(() => {
 	};
 });
 
-let monthlyData = $derived.by(() => {
-	const monthMap = new Map<string, number>();
-	for (const g of completedGames) {
-		if (!g.finishedDate) continue;
-		const d = new Date(g.finishedDate);
-		const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-		monthMap.set(key, (monthMap.get(key) ?? 0) + 1);
-	}
-	const sorted = [...monthMap.entries()].toSorted((a, b) => a[0].localeCompare(b[0]));
-	return {
-		labels: sorted.map(([key]) => {
-			const [y, m] = key.split('-');
-			return `${MONTHS[parseInt(m, 10) - 1]} ${y}`;
-		}),
-		datasets: [
-			{
-				label: 'Games',
-				data: sorted.map(([, c]) => c),
-				backgroundColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.55)' : 'rgba(99,102,241,0.45)',
-				borderColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.75)',
-				borderWidth: 1,
-				borderRadius: 4,
-				clip: false as const,
-			},
-		],
-	};
-});
-
 let scoreData = $derived.by(() => ({
 	labels: SCORE_RANGES.map((r) => r.label),
 	datasets: [
@@ -195,6 +167,19 @@ let yearData = $derived.by(() => {
 
 let textColor = $derived(appStore.theme === 'dark' ? '#a0a0a0' : '#666666');
 
+let yearlyMonthData = $derived.by(() => {
+	const yearMonth = new Map<number, number[]>();
+	for (const g of completedGames) {
+		if (!g.finishedDate) continue;
+		const d = new Date(g.finishedDate);
+		const y = d.getFullYear();
+		const m = d.getMonth();
+		if (!yearMonth.has(y)) yearMonth.set(y, new Array(12).fill(0));
+		yearMonth.get(y)![m]++;
+	}
+	return [...yearMonth.entries()].map(([year, months]) => ({ year, data: months })).toSorted((a, b) => a.year - b.year);
+});
+
 let tierOptions = $derived({
 	indexAxis: 'y' as const,
 	clip: false,
@@ -202,7 +187,7 @@ let tierOptions = $derived({
 		legend: { display: false },
 		datalabels: {
 			color: textColor,
-			font: { weight: 'bold' as const, size: 13 },
+			font: { weight: 'bold' as const, size: 14 },
 			anchor: 'end' as const,
 			align: 'end' as const,
 			offset: 4,
@@ -217,7 +202,7 @@ let tierOptions = $derived({
 	layout: { padding: { right: 40 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: { grid: { display: false }, ticks: { color: textColor, font: { size: 13, weight: 'bold' as const } } },
+		y: { grid: { display: false }, ticks: { color: textColor, font: { size: 14, weight: 'bold' as const } } },
 	},
 });
 
@@ -227,7 +212,7 @@ let genreOptions = $derived({
 		legend: { display: false },
 		datalabels: {
 			color: textColor,
-			font: { weight: 'bold' as const, size: 13 },
+			font: { weight: 'bold' as const, size: 14 },
 			anchor: 'end' as const,
 			align: 'end' as const,
 			offset: 4,
@@ -242,31 +227,7 @@ let genreOptions = $derived({
 	layout: { padding: { right: 40 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: { grid: { display: false }, ticks: { color: textColor, font: { size: 11 } } },
-	},
-});
-
-let monthlyOptions = $derived({
-	plugins: {
-		legend: { display: false },
-		datalabels: {
-			color: textColor,
-			font: { weight: 'bold' as const, size: 12 },
-			anchor: 'end' as const,
-			align: 'end' as const,
-			offset: 2,
-			formatter: (value: number) => value || '',
-		},
-		tooltip: {
-			callbacks: {
-				label: (item: TooltipItem<'bar'>) => `${item.raw} game${Number(item.raw) !== 1 ? 's' : ''}`,
-			},
-		},
-	},
-	layout: { padding: { top: 20, right: 20 } },
-	scales: {
-		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } },
-		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
+		y: { grid: { display: false }, ticks: { color: textColor, font: { size: 13 } } },
 	},
 });
 
@@ -275,7 +236,7 @@ let scoreOptions = $derived({
 		legend: { display: false },
 		datalabels: {
 			color: '#ffffff',
-			font: { weight: 'bold' as const, size: 12 },
+			font: { weight: 'bold' as const, size: 13 },
 			anchor: 'center' as const,
 			align: 'center' as const,
 			formatter: (value: number) => value || '',
@@ -287,7 +248,7 @@ let scoreOptions = $derived({
 		},
 	},
 	scales: {
-		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } },
+		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 12 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
 	},
 });
@@ -297,7 +258,7 @@ let yearOptions = $derived({
 		legend: { display: false },
 		datalabels: {
 			color: textColor,
-			font: { weight: 'bold' as const, size: 12 },
+			font: { weight: 'bold' as const, size: 13 },
 			anchor: 'end' as const,
 			align: 'end' as const,
 			offset: 2,
@@ -311,7 +272,7 @@ let yearOptions = $derived({
 	},
 	layout: { padding: { top: 20, right: 30 } },
 	scales: {
-		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } },
+		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 12 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
 	},
 });
@@ -421,14 +382,27 @@ let top10Score = $derived(
 					<Chart type="bar" data={scoreData} options={scoreOptions} height={200} />
 				</div>
 			</div>
-			<div class="chart-card span-3 hide-mobile">
-				<h3 class="chart-title">Monthly Completions</h3>
-				<p class="chart-sub">Games finished per month</p>
-				<div class="chart-body">
-					<Chart type="bar" data={monthlyData} options={monthlyOptions} height={200} />
+			<div class="chart-card span-4 hide-mobile">
+				<h3 class="chart-title">Monthly Breakdown by Year</h3>
+				<p class="chart-sub">Completions per month</p>
+				<div class="monthly-table">
+					<div class="mt-row mt-header">
+						<span class="mt-year"></span>
+						{#each MONTHS as m}<span class="mt-cell mt-header-cell">{m}</span>{/each}
+						<span class="mt-cell mt-header-cell mt-total">Total</span>
+					</div>
+					{#each yearlyMonthData as ym}
+						<div class="mt-row">
+							<span class="mt-year">{ym.year}</span>
+							{#each ym.data as val}
+								<span class="mt-cell" class:mt-positive={val > 0}>{val}</span>
+							{/each}
+							<span class="mt-cell mt-total">{ym.data.reduce((a, b) => a + b, 0)}</span>
+						</div>
+					{/each}
 				</div>
 			</div>
-			<div class="chart-card span-3 hide-mobile">
+			<div class="chart-card span-2 hide-mobile">
 				<h3 class="chart-title">Year Over Year</h3>
 				<p class="chart-sub">Completions per year</p>
 				<div class="chart-body">
@@ -653,13 +627,13 @@ let top10Score = $derived(
 		grid-column: span 2;
 	}
 
-	.chart-card.span-3 {
-		grid-column: span 3;
+	.chart-card.span-4 {
+		grid-column: span 4;
 	}
 
 	@media (max-width: 1399px) {
 		.chart-card.span-2,
-		.chart-card.span-3 {
+		.chart-card.span-4 {
 			grid-column: span 1;
 		}
 	}
@@ -681,6 +655,73 @@ let top10Score = $derived(
 		flex: 1;
 		margin-top: 12px;
 		min-height: 0;
+	}
+
+	.monthly-table {
+		margin-top: 12px;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		font-size: 0.78rem;
+		overflow-x: auto;
+	}
+
+	.mt-row {
+		display: grid;
+		grid-template-columns: 50px repeat(12, 1fr) 50px;
+		gap: 2px;
+		align-items: center;
+	}
+
+	.mt-header {
+		position: sticky;
+		top: 0;
+	}
+
+	.mt-year {
+		font-weight: 700;
+		color: var(--color-text-primary);
+		text-align: right;
+		padding-right: 6px;
+		font-size: 0.8rem;
+	}
+
+	.mt-cell {
+		text-align: center;
+		padding: 4px 2px;
+		border-radius: 4px;
+		font-weight: 600;
+		color: var(--color-text-secondary);
+		background: var(--color-surface-elevated);
+		font-size: 0.82rem;
+	}
+
+	.mt-header-cell {
+		font-weight: 700;
+		color: var(--color-text-primary);
+		background: var(--color-surface);
+		font-size: 0.72rem;
+		text-transform: uppercase;
+	}
+
+	.mt-positive {
+		color: var(--color-accent);
+		font-weight: 700;
+	}
+
+	.mt-total {
+		font-weight: 700;
+		color: var(--color-text-primary);
+	}
+
+	@media (max-width: 1399px) {
+		.mt-row {
+			grid-template-columns: 40px repeat(12, 1fr) 40px;
+		}
+		.mt-cell {
+			font-size: 0.75rem;
+			padding: 3px 1px;
+		}
 	}
 
 	@media (max-width: 767px) {
