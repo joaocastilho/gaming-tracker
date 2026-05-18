@@ -354,9 +354,9 @@ let top10Score = $derived(
 					<div class="stat-value">{totalPlaytimeFormatted}</div>
 					<div class="stat-label">Total Played</div>
 					<div class="stat-pills">
-						<span class="stat-pill">{totalDays}d</span>
-						<span class="stat-pill">{totalWeeks}w</span>
-						<span class="stat-pill">{totalYears}y</span>
+						<span class="stat-pill">{totalDays} days</span>
+						<span class="stat-pill">{totalWeeks} weeks</span>
+						<span class="stat-pill">{totalYears} years</span>
 					</div>
 				</div>
 			</div>
@@ -392,8 +392,8 @@ let top10Score = $derived(
 					<div class="stat-value">{playtimeThisYear}</div>
 					<div class="stat-label">Played in {currentYear}</div>
 					<div class="stat-pills">
-						<span class="stat-pill">{yearDays}d</span>
-						<span class="stat-pill">{yearWeeks}w</span>
+						<span class="stat-pill">{yearDays} days</span>
+						<span class="stat-pill">{yearWeeks} weeks</span>
 					</div>
 				</div>
 			</div>
@@ -581,41 +581,42 @@ let top10Score = $derived(
 	}
 
 	.stat-value {
-		font-size: 1.2rem;
+		font-size: 1.6rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		line-height: 1.2;
 	}
 
 	.stat-label {
-		font-size: 0.7rem;
-		font-weight: 600;
-		color: var(--color-text-secondary);
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: var(--color-text-primary);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
+		opacity: 0.75;
 	}
 
 	.stat-pills {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px;
-		margin-top: 4px;
+		gap: 6px;
+		margin-top: 6px;
 	}
 
 	.stat-pill {
-		font-size: 0.7rem;
+		font-size: 0.78rem;
 		font-weight: 700;
-		color: var(--color-accent);
-		background: var(--color-accent-bg, rgba(99, 102, 241, 0.1));
-		padding: 1px 7px;
-		border-radius: 5px;
-		line-height: 1.4;
-		border: 1px solid color-mix(in srgb, var(--color-accent) 15%, transparent);
+		color: var(--color-text-primary);
+		background: var(--color-accent-bg, rgba(99, 102, 241, 0.15));
+		padding: 2px 10px;
+		border-radius: 6px;
+		line-height: 1.5;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
 	}
 
 	:global(.light) .stat-pill {
-		background: rgba(194, 65, 12, 0.08);
-		border-color: rgba(194, 65, 12, 0.15);
+		background: rgba(194, 65, 12, 0.12);
+		border-color: rgba(194, 65, 12, 0.25);
 	}
 
 	.charts-grid {
