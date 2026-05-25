@@ -2917,15 +2917,16 @@
       "year": 2020,
       "genre": "Action",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/ghostrunner.webp",
-      "playtime": "7h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "11h 36m",
+      "finishedDate": "25/05/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 6,
+      "ratingGameplay": 8,
+      "score": 15,
+      "tier": "B - Great",
+      "completionOrder": null
     },
     {
       "id": "ghostrunner-2",
@@ -4569,7 +4570,7 @@
       "year": 2009,
       "genre": "Story Puzzle",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/machinarium.webp",
       "playtime": "5h 0m",
       "finishedDate": null,
@@ -9619,6 +9620,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-05-17T10:23:51.252Z"
+    "lastUpdated": "2026-05-25T21:34:41.066Z"
   }
 }
