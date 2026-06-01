@@ -63,11 +63,11 @@ Manually assigned tiers to games based on overall assessment:
 
 | Category             | Technology                                     | Version   |
 | -------------------- | ---------------------------------------------- | --------- |
-| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.60.1` |
-| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.55.7` |
+| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.61.1` |
+| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.56.0` |
 | **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.0`  |
-| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.4.15` |
-| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.0.13` |
+| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.4.16` |
+| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.0.16` |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.5`  |
 | **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.14` |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)            | `v4.5.1`  |

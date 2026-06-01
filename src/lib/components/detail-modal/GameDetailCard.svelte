@@ -116,60 +116,60 @@ function handleImageError() {
 {/if}
 
 <div
-	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain md:grid md:grid-cols-[250px_1fr] md:overflow-hidden lg:grid-cols-[350px_1fr] xl:grid-cols-[400px_1fr]"
+	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain md:flex-row md:overflow-hidden"
 >
-	<div class="flex min-h-full flex-col md:contents">
-		<div
-			class="modal-image-container relative min-h-[20vh] flex-1 shrink-0 overflow-hidden rounded-t-xl md:h-full md:flex-none md:rounded-l-xl md:rounded-tr-none"
-		>
-			<div class="modal-image-wrapper h-full bg-gray-900">
-				<button class="contents" onclick={onImageClick} aria-label="View full screen">
-					<img
-						bind:this={modalImageElement}
-						src={detailImageSrc}
-						srcset={detailImageSrcset}
-						sizes={detailImageSizes}
-						alt="{game.title} cover"
-						class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
-						loading="eager"
-						onload={handleImageLoad}
-						onerror={handleImageError}
-					/>
-				</button>
-			</div>
-
-			{#if isEditor}
-				<div class="absolute bottom-2 left-2 z-10 hidden items-center gap-1 md:flex">
-					<button
-						onclick={(e) => {
-							e.stopPropagation();
-							modalStore.closeModal();
-							onEditGame?.(game);
-						}}
-						class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/30 bg-black/60 text-white shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-black/80 hover:shadow-black/50"
-						title="Edit game"
-						aria-label="Edit {game.title}"
-					>
-						<Pencil size={18} />
-					</button>
-					<button
-						onclick={(e) => {
-							e.stopPropagation();
-							modalStore.closeModal();
-							onDeleteGame?.(game);
-						}}
-						class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/30 bg-red-500/60 text-white shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-red-500/90 hover:shadow-red-500/50"
-						title="Delete game"
-						aria-label="Delete {game.title}"
-					>
-						<Trash2 size={18} />
-					</button>
-				</div>
-			{/if}
+	<div
+		class="modal-image-container relative min-h-[20vh] shrink-0 overflow-hidden rounded-t-xl md:h-auto md:w-[250px] md:min-h-0 md:rounded-l-xl md:rounded-tr-none lg:w-[350px] xl:w-[400px]"
+	>
+		<div class="h-full min-h-[20vh] bg-gray-900 md:min-h-0">
+			<button class="contents" onclick={onImageClick} aria-label="View full screen">
+				<img
+					bind:this={modalImageElement}
+					src={detailImageSrc}
+					srcset={detailImageSrcset}
+					sizes={detailImageSizes}
+					alt="{game.title} cover"
+					class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
+					loading="eager"
+					onload={handleImageLoad}
+					onerror={handleImageError}
+				/>
+			</button>
 		</div>
 
+		{#if isEditor}
+			<div class="absolute bottom-2 left-2 z-10 hidden items-center gap-1 md:flex">
+				<button
+					onclick={(e) => {
+						e.stopPropagation();
+						modalStore.closeModal();
+						onEditGame?.(game);
+					}}
+					class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/30 bg-black/60 text-white shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-black/80 hover:shadow-black/50"
+					title="Edit game"
+					aria-label="Edit {game.title}"
+				>
+					<Pencil size={18} />
+				</button>
+				<button
+					onclick={(e) => {
+						e.stopPropagation();
+						modalStore.closeModal();
+						onDeleteGame?.(game);
+					}}
+					class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/30 bg-red-500/60 text-white shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-red-500/90 hover:shadow-red-500/50"
+					title="Delete game"
+					aria-label="Delete {game.title}"
+				>
+					<Trash2 size={18} />
+				</button>
+			</div>
+		{/if}
+	</div>
+
+	<div class="flex flex-1 flex-col min-h-0">
 		<div
-			class="modal-details-section flex-none px-5 md:flex-1 md:overflow-y-auto md:pb-6 lg:pr-8 lg:pb-5 lg:pl-8"
+			class="modal-details-section flex-1 overflow-y-auto px-5 md:pb-6 lg:pr-8 lg:pb-6 lg:pl-8"
 		>
 			<ModalHeader {game} {onClose} onShare={shareGame} {linkCopied} />
 			<ModalMetadata {game} />
@@ -190,16 +190,16 @@ function handleImageError() {
 		display: none;
 	}
 
-	@media (orientation: landscape) and (max-height: 1000px) {
+	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
 		.modal-layout {
-			display: grid !important;
-			grid-template-columns: 250px 1fr !important;
+			flex-direction: row !important;
 			overflow: hidden !important;
 		}
 
 		.modal-image-container {
+			width: 250px !important;
 			height: 100% !important;
-			flex: 0 0 auto !important; /* Fixed syntax error 'flex: mb-auto' ? no, assuming flex: none or similar. 'mb-auto' is invalid. */
+			flex: 0 0 auto !important;
 			border-radius: 0 !important;
 		}
 

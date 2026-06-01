@@ -108,7 +108,7 @@ $effect(() => {
 		min-height: 80px;
 	}
 
-	@media (orientation: landscape) and (max-height: 1000px) {
+	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
 		#modal-title {
 			min-height: auto !important;
 			margin-bottom: 1rem !important;

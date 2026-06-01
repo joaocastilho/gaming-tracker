@@ -136,6 +136,7 @@ function getAriaAttributes() {
 			<div class="filter-options-section">
 				<div class="filter-options-grid">
 					{#each options as option (option)}
+						{@const displayName = type === 'tiers' ? getTierDisplayName(option) : option}
 						<button
 							type="button"
 							class="badge filter-option-item {getOptionColor(option)} {selectedOptions.includes(
@@ -145,7 +146,7 @@ function getAriaAttributes() {
 								: ''}"
 							onclick={() => toggleOption(option)}
 						>
-							{type === 'tiers' ? getTierDisplayName(option) : option}
+							{displayName}
 						</button>
 					{/each}
 				</div>

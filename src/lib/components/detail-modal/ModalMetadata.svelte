@@ -120,7 +120,7 @@ let { game }: Props = $props();
 </div>
 
 <style>
-	@media (orientation: landscape) and (max-height: 1000px) {
+	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
 		.metadata-grid {
 			display: grid !important;
 			grid-template-columns: repeat(3, 1fr) !important; /* 3 Columns: Year | Date | Time */
