@@ -119,7 +119,7 @@ function handleImageError() {
 	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain md:flex-row md:overflow-hidden"
 >
 	<div
-		class="modal-image-container relative h-[30vh] min-h-[30vh] shrink-0 overflow-hidden md:h-auto md:w-[250px] md:min-h-0 md:rounded-t-xl md:rounded-l-xl md:rounded-tr-none lg:w-[350px] xl:w-[400px]"
+		class="modal-image-container relative shrink-0 overflow-hidden md:h-auto md:w-[250px] md:min-h-0 md:rounded-t-xl md:rounded-l-xl md:rounded-tr-none lg:w-[350px] xl:w-[400px]"
 	>
 		<div class="h-full bg-gray-900 md:min-h-0">
 			<button class="contents" onclick={onImageClick} aria-label="View full screen">
@@ -169,7 +169,7 @@ function handleImageError() {
 
 	<div class="flex flex-1 flex-col min-h-0">
 		<div
-			class="modal-details-section flex-1 overflow-y-auto px-5 md:pb-6 lg:pr-8 lg:pb-6 lg:pl-8"
+			class="modal-details-section flex-1 overflow-y-auto px-5 pb-6 md:pb-6 lg:pr-8 lg:pb-6 lg:pl-8"
 		>
 			<ModalHeader {game} {onClose} onShare={shareGame} {linkCopied} />
 			<ModalMetadata {game} />
@@ -186,6 +186,19 @@ function handleImageError() {
 
 	.modal-details-section::-webkit-scrollbar {
 		display: none;
+	}
+
+	@media (max-width: 767px) and (orientation: portrait) {
+		.modal-image-container {
+			flex: 1 1 18vh;
+			max-height: 28vh;
+			min-height: 14vh;
+		}
+
+		.modal-details-section {
+			display: flex;
+			flex-direction: column;
+		}
 	}
 
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {

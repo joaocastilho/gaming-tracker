@@ -92,6 +92,12 @@ const hasRatings = $derived(
 </div>
 
 <style>
+	@media (max-width: 767px) and (orientation: portrait) {
+		.ratings-wrapper {
+			margin-top: auto;
+		}
+	}
+
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
 		.ratings-wrapper {
 			margin-top: auto !important;
