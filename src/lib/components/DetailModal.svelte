@@ -198,7 +198,7 @@ $effect(() => {
 
 {#if modalStore.getState().isOpen && modalStore.getState().activeGame && modalStore.getState().mode === 'view'}
 	<div
-		class="fixed inset-0 z-[60] flex items-center justify-center bg-black p-3 md:bg-black/80 md:p-4 md:backdrop-blur-[4px]"
+		class="fixed inset-0 z-[60] flex items-center justify-center bg-black md:bg-black/80 md:p-4 md:backdrop-blur-[4px]"
 		transition:fade={{ duration: isIOS ? 250 : 200 }}
 		onclick={(e: MouseEvent) => {
 			if (e.target === e.currentTarget) modalStore.closeModal();
@@ -293,7 +293,7 @@ $effect(() => {
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
-				class="absolute inset-0 flex items-center justify-center p-3 md:p-4 {isCurrent
+				class="absolute inset-0 flex items-center justify-center md:p-4 {isCurrent
 					? 'z-[60]'
 					: 'pointer-events-none z-[59]'}"
 				style="visibility: {isVisible ? 'visible' : 'hidden'};"

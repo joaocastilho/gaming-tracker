@@ -119,9 +119,9 @@ function handleImageError() {
 	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain md:flex-row md:overflow-hidden"
 >
 	<div
-		class="modal-image-container relative min-h-[20vh] shrink-0 overflow-hidden rounded-t-xl md:h-auto md:w-[250px] md:min-h-0 md:rounded-l-xl md:rounded-tr-none lg:w-[350px] xl:w-[400px]"
+		class="modal-image-container relative h-[30vh] min-h-[30vh] shrink-0 overflow-hidden md:h-auto md:w-[250px] md:min-h-0 md:rounded-t-xl md:rounded-l-xl md:rounded-tr-none lg:w-[350px] xl:w-[400px]"
 	>
-		<div class="h-full min-h-[20vh] bg-gray-900 md:min-h-0">
+		<div class="h-full bg-gray-900 md:min-h-0">
 			<button class="contents" onclick={onImageClick} aria-label="View full screen">
 				<img
 					bind:this={modalImageElement}
@@ -174,8 +174,6 @@ function handleImageError() {
 			<ModalHeader {game} {onClose} onShare={shareGame} {linkCopied} />
 			<ModalMetadata {game} />
 			<ModalRatings {game} />
-
-			<div class="mt-4 md:hidden"></div>
 		</div>
 	</div>
 </div>
