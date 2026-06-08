@@ -24,7 +24,7 @@
       "year": 2022,
       "genre": "Action Adventure",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/13-sentinels-aegis-rim.webp",
       "playtime": "30h 30m",
       "finishedDate": null,
@@ -4570,15 +4570,16 @@
       "year": 2009,
       "genre": "Story Puzzle",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/machinarium.webp",
-      "playtime": "5h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "8h 5m",
+      "finishedDate": "08/06/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 6,
+      "ratingGameplay": 7,
+      "score": 14,
+      "tier": "C - Good",
+      "completionOrder": null
     },
     {
       "id": "madison",
@@ -9620,6 +9621,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-05-25T21:34:41.066Z"
+    "lastUpdated": "2026-06-08T08:18:00.688Z"
   }
 }
