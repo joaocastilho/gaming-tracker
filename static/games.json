@@ -7,7 +7,7 @@
       "year": 2026,
       "genre": "Action",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/007-first-light.webp",
       "playtime": "16h 0m",
       "finishedDate": null,
@@ -9638,6 +9638,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-07-02T21:13:51.803Z"
+    "lastUpdated": "2026-07-02T21:14:11.951Z"
   }
 }
