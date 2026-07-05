@@ -125,7 +125,7 @@ let currentPage = $derived.by(() => {
 
 let currentFilteredGames = $derived(filteredGamesStore.games);
 
-let canonicalUrl = $derived(page.url.origin + page.url.pathname);
+let canonicalUrl = $derived(page.url.origin + page.url.pathname + page.url.search);
 
 let isHomePage = $derived(currentPage === 'home');
 
