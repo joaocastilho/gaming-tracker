@@ -7,15 +7,16 @@
       "year": 2026,
       "genre": "Action",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/007-first-light.webp",
-      "playtime": "16h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "17h 20m",
+      "finishedDate": "05/07/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 8,
+      "ratingGameplay": 7,
+      "score": 15,
+      "tier": "B - Great",
+      "completionOrder": null
     },
     {
       "id": "1000xresist",
@@ -9638,6 +9639,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-07-02T21:38:16.747Z"
+    "lastUpdated": "2026-07-05T20:18:50.768Z"
   }
 }
