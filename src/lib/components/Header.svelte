@@ -24,7 +24,7 @@ import {
 	Calendar,
 	List,
 	BarChart3,
-} from 'lucide-svelte';
+} from '@lucide/svelte';
 import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 
 const isMac = $derived(browser && navigator.platform.toLowerCase().includes('mac'));

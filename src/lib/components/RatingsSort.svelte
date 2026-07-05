@@ -12,7 +12,7 @@ import {
 	AArrowDown,
 	Clock,
 	Timer,
-} from 'lucide-svelte';
+} from '@lucide/svelte';
 import { appStore } from '$lib/stores/app.svelte';
 
 let sortOption = $derived(filtersStore.state?.sortOption ?? null);

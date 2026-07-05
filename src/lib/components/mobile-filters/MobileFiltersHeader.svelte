@@ -1,5 +1,5 @@
 <script lang="ts">
-import { RotateCcw, ChevronDown } from 'lucide-svelte';
+import { RotateCcw, ChevronDown } from '@lucide/svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 
 interface Props {

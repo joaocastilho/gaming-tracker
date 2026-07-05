@@ -4,7 +4,7 @@ import { goto } from '$app/navigation';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 import { appStore } from '$lib/stores/app.svelte';
 import { page } from '$app/state';
-import { Gamepad, CheckCircle, Calendar, List, Search, Home, BarChart3 } from 'lucide-svelte';
+import { Gamepad, CheckCircle, Calendar, List, Search, Home, BarChart3 } from '@lucide/svelte';
 
 interface Props {
 	onSearchToggle?: () => void;

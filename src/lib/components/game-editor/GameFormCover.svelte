@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Image, X } from 'lucide-svelte';
+import { Image, X } from '@lucide/svelte';
 
 interface Props {
 	coverUrl: string;

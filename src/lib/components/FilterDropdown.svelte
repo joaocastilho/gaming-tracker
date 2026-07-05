@@ -2,7 +2,7 @@
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { getPlatformColor, getGenreColor, getTierColor, getCoOpColor } from '$lib/utils/filterOptions.js';
 import { getTierDisplayName } from '$lib/utils/tierUtils';
-import { Monitor, Tag, Trophy, ChevronDown, Users, RotateCcw } from 'lucide-svelte';
+import { Monitor, Tag, Trophy, ChevronDown, Users, RotateCcw } from '@lucide/svelte';
 
 interface Props {
 	type: 'platforms' | 'genres' | 'tiers' | 'coOp';

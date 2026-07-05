@@ -3,7 +3,7 @@ import { filtersStore } from '$lib/stores/filters.svelte';
 import { page } from '$app/state';
 import { browser } from '$app/environment';
 import { replaceState, goto } from '$app/navigation';
-import { X } from 'lucide-svelte';
+import { X } from '@lucide/svelte';
 import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
 
 let inputElement = $state<HTMLInputElement | undefined>(undefined);

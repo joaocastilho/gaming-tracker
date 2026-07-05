@@ -5,7 +5,7 @@ import { modalStore } from '$lib/stores/modal.svelte';
 import { parsePlaytimeToMinutes, formatMinutes } from '$lib/utils/playtimeUtils';
 import Chart from '$lib/components/Chart.svelte';
 import type { TooltipItem } from 'chart.js';
-import { Clock, Trophy, Star, Calendar, Presentation, NotebookPen, Gamepad2 } from 'lucide-svelte';
+import { Clock, Trophy, Star, Calendar, Presentation, NotebookPen, Gamepad2 } from '@lucide/svelte';
 
 const TIER_ORDER = ['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad'] as const;
 const TIER_LABELS = ['S', 'A', 'B', 'C', 'D', 'E'];

@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { Game } from '$lib/types/game';
 import { browser } from '$app/environment';
-import { Link, X } from 'lucide-svelte';
+import { Link, X } from '@lucide/svelte';
 
 import { FONT_CONFIG } from '$lib/constants/fonts';
 

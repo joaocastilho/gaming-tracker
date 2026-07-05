@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Monitor, Tag, Trophy, Users } from 'lucide-svelte';
+import { Monitor, Tag, Trophy, Users } from '@lucide/svelte';
 
 interface Props {
 	type: 'platforms' | 'genres' | 'tiers' | 'coOp';

@@ -2,7 +2,7 @@
 import { filtersStore } from '../../stores/filters.svelte';
 import { getPlatformClasses, getGenreClasses } from '../../utils/colorConstants.js';
 import type { Game } from '../../types/game.js';
-import { Users } from 'lucide-svelte';
+import { Users } from '@lucide/svelte';
 
 interface Props {
 	game: Game;

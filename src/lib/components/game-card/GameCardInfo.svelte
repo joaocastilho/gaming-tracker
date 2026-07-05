@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { Game } from '../../types/game.js';
 import { formatShortDate, formatMobileDate } from '$lib/utils/dateUtils';
-import { Timer, CalendarDays, Presentation, NotebookPen, Gamepad2, Award } from 'lucide-svelte';
+import { Timer, CalendarDays, Presentation, NotebookPen, Gamepad2, Award } from '@lucide/svelte';
 
 interface Props {
 	game: Game;

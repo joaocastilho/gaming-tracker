@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SlidersHorizontal } from 'lucide-svelte';
+import { SlidersHorizontal } from '@lucide/svelte';
 import FilterCategoryButton from './FilterCategoryButton.svelte';
 
 interface Props {

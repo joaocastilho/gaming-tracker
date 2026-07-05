@@ -2,7 +2,18 @@
 import { appStore } from '$lib/stores/app.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
-import { SlidersHorizontal, Settings, Moon, Sun, LogIn, LogOut, Plus, Download, Share, RotateCcw } from 'lucide-svelte';
+import {
+	SlidersHorizontal,
+	Settings,
+	Moon,
+	Sun,
+	LogIn,
+	LogOut,
+	Plus,
+	Download,
+	Share,
+	RotateCcw,
+} from '@lucide/svelte';
 import { focusTrap } from '$lib/utils/focusTrap';
 
 interface Props {

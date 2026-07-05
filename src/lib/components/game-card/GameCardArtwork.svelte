@@ -6,7 +6,7 @@ import { imageErrorStore } from '../../stores/imageErrors.svelte.js';
 import { getTierClass, getTierDisplayName } from '../../utils/tierUtils.js';
 import { generateSrcset, generateTinySrcset, generateSizes } from '../../utils/imageSrcset.js';
 import type { Game } from '../../types/game.js';
-import { Pencil, Trash2 } from 'lucide-svelte';
+import { Pencil, Trash2 } from '@lucide/svelte';
 
 interface Props {
 	game: Game;

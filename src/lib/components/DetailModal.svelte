@@ -7,7 +7,7 @@ import { gamesStore } from '$lib/stores/games.svelte';
 import { offlineStore } from '$lib/stores/offline.svelte';
 import { imageErrorStore } from '$lib/stores/imageErrors.svelte.js';
 import type { Game } from '$lib/types/game.js';
-import { ChevronLeft, ChevronRight, X } from 'lucide-svelte';
+import { ChevronLeft, ChevronRight, X } from '@lucide/svelte';
 
 import { SwipeController } from './detail-modal/SwipeController.svelte';
 import GameDetailCard from './detail-modal/GameDetailCard.svelte';

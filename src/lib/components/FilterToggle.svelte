@@ -1,6 +1,6 @@
 <script lang="ts">
 import { filtersStore } from '$lib/stores/filters.svelte';
-import { Users } from 'lucide-svelte';
+import { Users } from '@lucide/svelte';
 
 interface Props {
 	label: string;

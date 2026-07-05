@@ -3,7 +3,7 @@ import { editorStore } from '$lib/stores/editor.svelte';
 import { offlineStore } from '$lib/stores/offline.svelte';
 import type { Game } from '$lib/types/game.js';
 import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
-import { X, Pencil, Trash2 } from 'lucide-svelte';
+import { X, Pencil, Trash2 } from '@lucide/svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
 import { imageErrorStore } from '$lib/stores/imageErrors.svelte.js';
 import { createGameSlug } from '$lib/utils/slugUtils';

@@ -5,7 +5,7 @@ import { modalStore } from '$lib/stores/modal.svelte';
 import { windowSize } from '$lib/stores/window.svelte';
 import GameCard from '$lib/components/GameCard.svelte';
 import type { Game } from '$lib/types/game';
-import { Sparkles, ChevronRight, Hourglass, Gamepad2 } from 'lucide-svelte';
+import { Sparkles, ChevronRight, Hourglass, Gamepad2 } from '@lucide/svelte';
 
 let games = $derived(gamesStore.games);
 

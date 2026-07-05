@@ -3,7 +3,7 @@ import type { Game } from '$lib/types/game';
 import { getPlatformClasses, getGenreClasses } from '$lib/utils/colorConstants';
 import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
 import { formatDate } from '$lib/utils/dateUtils';
-import { Users, Calendar, Flag, Clock } from 'lucide-svelte';
+import { Users, Calendar, Flag, Clock } from '@lucide/svelte';
 
 interface Props {
 	game: Game;

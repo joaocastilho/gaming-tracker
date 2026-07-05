@@ -13,7 +13,7 @@ import { modalStore } from '$lib/stores/modal.svelte';
 import { browser, dev } from '$app/environment';
 import { untrack } from 'svelte';
 import type { Game } from '$lib/types/game.js';
-import { RotateCcw } from 'lucide-svelte';
+import { RotateCcw } from '@lucide/svelte';
 import { registerServiceWorker } from '$lib/utils/serviceWorker';
 import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
 import { editorModalState } from '$lib/stores/editorModalState.svelte';
@@ -125,7 +125,7 @@ let currentPage = $derived.by(() => {
 
 let currentFilteredGames = $derived(filteredGamesStore.games);
 
-let canonicalUrl = $derived(page.url.origin + page.url.pathname + page.url.search);
+let canonicalUrl = $derived(page.url.origin + page.url.pathname);
 
 let isHomePage = $derived(currentPage === 'home');
 
