@@ -42,18 +42,6 @@ vi.mock('$lib/stores/offline.svelte', () => ({
 		},
 	},
 }));
-	return {
-		Award: MockIcon,
-		Presentation: MockIcon,
-		NotebookPen: MockIcon,
-		Gamepad2: MockIcon,
-		Timer: MockIcon,
-		CalendarDays: MockIcon,
-		Users: MockIcon,
-		Pencil: MockIcon,
-		Trash2: MockIcon,
-	};
-});
 
 // Mock Canvas for text measurement
 const mockContext = {

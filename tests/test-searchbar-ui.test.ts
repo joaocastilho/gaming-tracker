@@ -28,7 +28,8 @@ vi.mock('$app/environment', () => ({
 vi.mock('$lib/stores/searchClearCoordinator', () => ({
 	markSearchCleared: vi.fn(),
 	lastManualClearTime: 0,
-}));describe('SearchBar UI', () => {
+}));
+describe('SearchBar UI', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
 		filtersStore.set(createInitialFilters());

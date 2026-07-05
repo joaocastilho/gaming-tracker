@@ -37,22 +37,6 @@ vi.mock('$lib/stores/filters.svelte', () => {
 	};
 });
 
-vi.mock('lucide-svelte', () => {
-	const MockIcon = () => ({});
-	return {
-		RotateCcw: MockIcon,
-		Check: MockIcon,
-		X: MockIcon,
-		ArrowUpDown: MockIcon,
-		SlidersHorizontal: MockIcon,
-		Monitor: MockIcon,
-		Tag: MockIcon,
-		Trophy: MockIcon,
-		Users: MockIcon,
-		ChevronDown: MockIcon,
-	};
-});
-
 vi.mock('$lib/components/RatingsSort.svelte', () => ({
 	default: () => ({ html: '<div data-testid="ratings-sort">RatingsSort</div>' }),
 }));

@@ -20,7 +20,8 @@ vi.mock('$lib/utils/navigationUtils', () => ({
 const mockGoto = vi.fn();
 vi.mock('$app/navigation', () => ({
 	goto: (url: string) => mockGoto(url),
-}));describe('BottomNavigation', () => {
+}));
+describe('BottomNavigation', () => {
 	let originalActiveTab: string;
 
 	beforeEach(() => {

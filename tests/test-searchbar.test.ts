@@ -48,10 +48,6 @@ vi.mock('$app/navigation', () => ({
 vi.mock('$app/environment', () => ({
 	browser: true,
 }));
-	return {
-		X: MockIcon,
-	};
-});
 
 describe('SearchBar Component', () => {
 	beforeEach(() => {

@@ -34,16 +34,6 @@ vi.mock('$app/environment', () => ({
 	dev: true,
 	browser: true,
 }));
-	return {
-		X: MockIcon,
-		Upload: MockIcon,
-		Link: MockIcon,
-		Image: MockIcon,
-		Trash2: MockIcon,
-		Clock: MockIcon,
-		Users: MockIcon,
-	};
-});
 
 describe('GameEditorModal Component', () => {
 	const mockGame: Game = {
