@@ -72,7 +72,12 @@ export const onRequest = async (context: { request: Request; env: Env; next: () 
 		].join('\n    ');
 
 		const html = await response.text();
-		const modifiedHtml = html.replace('</head>', `    ${ogTags}\n  </head>`);
+
+		const stripped = html.replace(
+			/<meta[\s\S]*?(?:property="og:(?:title|type|description|url|site_name|image(?::width|:height)?)"|name="twitter:(?:card|title|description|image)")[\s\S]*?\/?>/g,
+			''
+		);
+		const modifiedHtml = stripped.replace('</head>', `    ${ogTags}\n  </head>`);
 
 		return new Response(modifiedHtml, {
 			headers: {
