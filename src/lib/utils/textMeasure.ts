@@ -37,24 +37,37 @@ function getOrCreateMeasurement(text: string, font: string): TextMeasurementCach
 }
 
 export function measureTextWidth(text: string, font: string): number {
-	const { preparedWithSegments } = getOrCreateMeasurement(text, font);
-	const { lines } = layoutWithLines(preparedWithSegments, 100000, 1);
-	if (lines && lines.length > 0) {
-		return lines[0].width;
+	try {
+		const { preparedWithSegments } = getOrCreateMeasurement(text, font);
+		const { lines } = layoutWithLines(preparedWithSegments, 100000, 1);
+		if (lines && lines.length > 0) {
+			return lines[0].width;
+		}
+	} catch {
+		// Canvas unavailable (jsdom, SSR) — return 0
 	}
 	return 0;
 }
 
 export function measureTextHeight(text: string, font: string, maxWidth: number, lineHeight: number): number {
-	const { prepared } = getOrCreateMeasurement(text, font);
-	const { height } = layout(prepared, maxWidth, lineHeight);
-	return height;
+	try {
+		const { prepared } = getOrCreateMeasurement(text, font);
+		const { height } = layout(prepared, maxWidth, lineHeight);
+		return height;
+	} catch {
+		// Canvas unavailable (jsdom, SSR) — return lineHeight as fallback
+		return lineHeight;
+	}
 }
 
 export function measureTextLines(text: string, font: string, maxWidth: number, lineHeight: number): number {
-	const { prepared } = getOrCreateMeasurement(text, font);
-	const { lineCount } = layout(prepared, maxWidth, lineHeight);
-	return lineCount;
+	try {
+		const { prepared } = getOrCreateMeasurement(text, font);
+		const { lineCount } = layout(prepared, maxWidth, lineHeight);
+		return lineCount;
+	} catch {
+		return 1;
+	}
 }
 
 export interface LineInfo {
@@ -65,9 +78,13 @@ export interface LineInfo {
 }
 
 export function getTextLines(text: string, font: string, maxWidth: number, lineHeight: number): LineInfo[] {
-	const { preparedWithSegments } = getOrCreateMeasurement(text, font);
-	const { lines } = layoutWithLines(preparedWithSegments, maxWidth, lineHeight);
-	return lines;
+	try {
+		const { preparedWithSegments } = getOrCreateMeasurement(text, font);
+		const { lines } = layoutWithLines(preparedWithSegments, maxWidth, lineHeight);
+		return lines;
+	} catch {
+		return [];
+	}
 }
 
 export function measureTitleHeight(title: string, maxWidth: number, font?: string): number {

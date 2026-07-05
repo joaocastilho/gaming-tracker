@@ -49,6 +49,40 @@ if (typeof window !== 'undefined') {
 	});
 }
 
+// Mock HTMLCanvasElement.getContext to prevent jsdom "not implemented" warning
+if (typeof HTMLCanvasElement !== 'undefined') {
+	HTMLCanvasElement.prototype.getContext = vi.fn(function (
+		this: HTMLCanvasElement,
+		_contextType: string,
+		_contextAttributes?: Record<string, unknown>
+	) {
+		// Return a minimal stub that satisfies @chenglou/pretext
+		return {
+			font: '',
+			fillStyle: '',
+			strokeStyle: '',
+			lineWidth: 1,
+			textAlign: 'start' as CanvasTextAlign,
+			textBaseline: 'alphabetic' as CanvasTextBaseline,
+			canvas: this,
+			fillText: vi.fn(),
+			strokeText: vi.fn(),
+			measureText: vi.fn(() => ({
+				width: 0,
+				actualBoundingBoxAscent: 0,
+				actualBoundingBoxDescent: 0,
+				actualBoundingBoxLeft: 0,
+				actualBoundingBoxRight: 0,
+				fontBoundingBoxAscent: 0,
+				fontBoundingBoxDescent: 0,
+			})),
+			getContextAttributes: vi.fn(() => null),
+			save: vi.fn(),
+			restore: vi.fn(),
+		} as unknown as CanvasRenderingContext2D;
+	}) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+}
+
 // Setup that runs before each test
 beforeEach(() => {
 	// Ensure window mocks are set up fresh for each test

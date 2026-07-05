@@ -63,14 +63,15 @@ Manually assigned tiers to games based on overall assessment:
 
 | Category             | Technology                                     | Version   |
 | -------------------- | ---------------------------------------------- | --------- |
-| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.61.1` |
-| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.56.0` |
-| **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.0`  |
-| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.4.16` |
-| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.0.16` |
+| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.69.1` |
+| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.56.4` |
+| **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.2`  |
+| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.5.2`  |
+| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.1.3`  |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.5`  |
 | **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.14` |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)            | `v4.5.1`  |
+| **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.4`  |
 
 ## 🚀 Running Locally
 
