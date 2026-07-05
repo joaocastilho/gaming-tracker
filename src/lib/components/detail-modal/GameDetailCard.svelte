@@ -30,15 +30,22 @@ let linkCopied = $state('');
 
 async function shareGame() {
 	if (!browser || !game) return;
+	const url = new URL(window.location.href);
+	const slug = createGameSlug(game.title);
+	url.searchParams.set('game', slug);
+	const shareUrl = url.toString();
+	const shareData = { title: game.title, url: shareUrl };
+
 	try {
-		const url = new URL(window.location.href);
-		const slug = createGameSlug(game.title);
-		url.searchParams.set('game', slug);
-		await navigator.clipboard.writeText(url.toString());
-		linkCopied = 'Copied';
-		setTimeout(() => {
-			linkCopied = '';
-		}, 2000);
+		if (navigator.share) {
+			await navigator.share(shareData);
+		} else {
+			await navigator.clipboard.writeText(shareUrl);
+			linkCopied = 'Copied';
+			setTimeout(() => {
+				linkCopied = '';
+			}, 2000);
+		}
 	} catch {
 		linkCopied = 'Failed';
 		setTimeout(() => {
