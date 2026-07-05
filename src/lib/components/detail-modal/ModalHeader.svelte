@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { Game } from '$lib/types/game';
 import { browser } from '$app/environment';
-import { Share, X } from '@lucide/svelte';
+import { Share2, X } from '@lucide/svelte';
 
 import { FONT_CONFIG } from '$lib/constants/fonts';
 
@@ -86,7 +86,7 @@ $effect(() => {
 			title="Share"
 			aria-label="Share {game.title}"
 		>
-			<Share size={18} />
+			<Share2 size={18} />
 			{#if linkCopied}
 				<span class="text-xs font-medium">{linkCopied}</span>
 			{/if}
