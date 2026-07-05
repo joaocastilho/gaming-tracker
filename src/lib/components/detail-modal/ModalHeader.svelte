@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { Game } from '$lib/types/game';
 import { browser } from '$app/environment';
-import { Link, X } from '@lucide/svelte';
+import { Share, X } from '@lucide/svelte';
 
 import { FONT_CONFIG } from '$lib/constants/fonts';
 
@@ -83,10 +83,10 @@ $effect(() => {
 			class="flex h-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/10 text-white/80 transition-colors outline-none hover:bg-black/25 {linkCopied
 				? 'gap-1.5 px-3'
 				: 'w-8'}"
-			title="Copy link"
-			aria-label="Copy link to {game.title}"
+			title="Share"
+			aria-label="Share {game.title}"
 		>
-			<Link size={18} />
+			<Share size={18} />
 			{#if linkCopied}
 				<span class="text-xs font-medium">{linkCopied}</span>
 			{/if}
