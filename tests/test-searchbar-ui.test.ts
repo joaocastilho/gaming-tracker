@@ -28,17 +28,7 @@ vi.mock('$app/environment', () => ({
 vi.mock('$lib/stores/searchClearCoordinator', () => ({
 	markSearchCleared: vi.fn(),
 	lastManualClearTime: 0,
-}));
-
-// Mock Lucide icons
-vi.mock('lucide-svelte', () => {
-	const MockIcon = () => null;
-	return {
-		X: MockIcon,
-	};
-});
-
-describe('SearchBar UI', () => {
+}));describe('SearchBar UI', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
 		filtersStore.set(createInitialFilters());

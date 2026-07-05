@@ -20,23 +20,7 @@ vi.mock('$lib/utils/navigationUtils', () => ({
 const mockGoto = vi.fn();
 vi.mock('$app/navigation', () => ({
 	goto: (url: string) => mockGoto(url),
-}));
-
-// Mock Lucide icons
-vi.mock('lucide-svelte', () => {
-	const MockIcon = () => null;
-	return {
-		Gamepad: MockIcon,
-		CheckCircle: MockIcon,
-		Calendar: MockIcon,
-		List: MockIcon,
-		Search: MockIcon,
-		Home: MockIcon,
-		BarChart3: MockIcon,
-	};
-});
-
-describe('BottomNavigation', () => {
+}));describe('BottomNavigation', () => {
 	let originalActiveTab: string;
 
 	beforeEach(() => {

@@ -42,10 +42,6 @@ vi.mock('$lib/stores/offline.svelte', () => ({
 		},
 	},
 }));
-
-// Mock Lucide icons
-vi.mock('lucide-svelte', () => {
-	const MockIcon = () => ({ html: '<i>Icon</i>' });
 	return {
 		Award: MockIcon,
 		Presentation: MockIcon,

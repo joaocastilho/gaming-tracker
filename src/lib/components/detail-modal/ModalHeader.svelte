@@ -74,7 +74,7 @@ $effect(() => {
 		{/if}
 	</h1>
 
-	<div class="hidden shrink-0 items-center gap-1.5 md:flex">
+	<div class="flex shrink-0 items-center gap-1.5">
 		<button
 			onclick={(e) => {
 				e.stopPropagation();

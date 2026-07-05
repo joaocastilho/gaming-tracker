@@ -34,10 +34,6 @@ vi.mock('$app/environment', () => ({
 	dev: true,
 	browser: true,
 }));
-
-// Mock Lucide icons
-vi.mock('lucide-svelte', () => {
-	const MockIcon = () => ({ html: '<i>Icon</i>' });
 	return {
 		X: MockIcon,
 		Upload: MockIcon,
