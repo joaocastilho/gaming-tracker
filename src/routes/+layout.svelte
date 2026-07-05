@@ -10,7 +10,7 @@ import { filtersStore } from '$lib/stores/filters.svelte';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { appStore, type TabValue } from '$lib/stores/app.svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
-import { browser, building, dev } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { untrack } from 'svelte';
 import type { Game } from '$lib/types/game.js';
 import { RotateCcw } from 'lucide-svelte';
@@ -125,11 +125,7 @@ let currentPage = $derived.by(() => {
 
 let currentFilteredGames = $derived(filteredGamesStore.games);
 
-let canonicalUrl = $derived(
-	building
-		? `https://gaming-tracker.pages.dev${page.url.pathname}${page.url.search}`
-		: page.url.origin + page.url.pathname + page.url.search
-);
+let canonicalUrl = $derived(page.url.origin + page.url.pathname);
 
 let isHomePage = $derived(currentPage === 'home');
 
