@@ -302,7 +302,7 @@ $effect(() => {
 				}}
 			>
 				<div
-					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[88vh] md:w-[1000px] md:max-w-full md:rounded-xl md:shadow-2xl {isIOS
+					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[600px] md:w-[1000px] md:max-w-full md:rounded-xl md:shadow-2xl {isIOS
 						? 'ios-modal'
 						: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
 						? 'swiping-close'

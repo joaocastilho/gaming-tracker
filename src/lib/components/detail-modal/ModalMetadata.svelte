@@ -14,7 +14,7 @@ let { game }: Props = $props();
 
 
 
-<div class="mb-6 flex items-center justify-between md:mb-8">
+<div class="mb-6 flex items-center justify-between md:mb-4">
 	<div class="flex flex-wrap gap-2">
 		<span
 			class="badge rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
@@ -51,7 +51,7 @@ let { game }: Props = $props();
 	{/if}
 </div>
 
-<div class="metadata-grid mb-4 grid grid-cols-2 gap-4 md:mb-10 md:gap-6">
+<div class="metadata-grid mb-4 grid grid-cols-2 gap-4 md:mb-6 md:gap-4">
 	<div class="metadata-item">
 		<div
 			class="metadata-label mb-1.5 text-base font-bold tracking-wider uppercase opacity-70"

@@ -13,8 +13,8 @@ const hasRatings = $derived(
 );
 </script>
 
-<div class="ratings-wrapper mt-6 md:mt-10">
-	<div class="landscape-hidden-title mb-4 flex items-center gap-3 md:mb-6">
+<div class="ratings-wrapper mt-6 md:mt-0 md:flex md:flex-1 md:flex-col">
+	<div class="landscape-hidden-title mb-4 flex items-center gap-3 md:mb-4">
 		<h3
 			class="text-base font-bold tracking-[0.2em] uppercase md:text-lg"
 			style="color: var(--color-text-tertiary);"
@@ -75,7 +75,7 @@ const hasRatings = $derived(
 	</div>
 
 	<div
-		class="score-result mt-2 rounded-lg border p-2 md:mt-8"
+		class="score-result mt-2 rounded-lg border p-2 md:mt-auto"
 		style="background-color: var(--color-surface-elevated); border-color: var(--color-border);"
 		class:opacity-40={game.score === null}
 	>

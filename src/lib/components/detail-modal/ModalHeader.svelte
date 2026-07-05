@@ -51,7 +51,7 @@ $effect(() => {
 });
 </script>
 
-<div class="mb-2 flex items-start gap-2 pt-4 md:pt-6">
+<div class="mb-2 flex items-start gap-2 pt-4 md:pt-4">
 	<h1
 		id="modal-title"
 		bind:clientWidth={containerWidth}
@@ -106,6 +106,12 @@ $effect(() => {
 <style>
 	#modal-title {
 		min-height: 80px;
+	}
+
+	@media (min-width: 768px) {
+		#modal-title {
+			min-height: 72px;
+		}
 	}
 
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
