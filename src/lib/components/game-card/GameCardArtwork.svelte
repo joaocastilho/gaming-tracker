@@ -4,6 +4,7 @@ import { offlineStore } from '../../stores/offline.svelte';
 import { filtersStore } from '../../stores/filters.svelte';
 import { imageErrorStore } from '../../stores/imageErrors.svelte.js';
 import { getTierClass, getTierDisplayName } from '../../utils/tierUtils.js';
+import { generateSrcset, generateTinySrcset, generateSizes } from '../../utils/imageSrcset.js';
 import type { Game } from '../../types/game.js';
 import { Pencil, Trash2 } from '@lucide/svelte';
 
@@ -16,7 +17,7 @@ interface Props {
 	onDeleteGame?: (game: Game) => void;
 }
 
-let { game, showTierBadge = true, isAboveFold = false, onEditGame, onDeleteGame }: Props = $props();
+let { game, size = 'small', showTierBadge = true, isAboveFold = false, onEditGame, onDeleteGame }: Props = $props();
 
 let isEditor = $derived(editorStore.editorMode);
 let isOffline = $derived(!offlineStore.isOnline);
@@ -72,10 +73,39 @@ const effectiveImageSrc = $derived(() => {
 		return OFFLINE_FALLBACK_DATA_URI;
 	}
 	const baseImage = game.coverImage ? `/${game.coverImage}` : PLACEHOLDER_SRC;
-	if (imageErrorStore.hasFailed(baseImage)) {
-		return PLACEHOLDER_SRC;
+	let srcToUse = baseImage;
+	if (size === 'tiny') {
+		srcToUse = baseImage.replace('.webp', '-200w.webp');
 	}
-	return baseImage;
+	if (imageErrorStore.hasFailed(srcToUse)) {
+		return size === 'tiny' ? PLACEHOLDER_SRC.replace('.webp', '-200w.webp') : PLACEHOLDER_SRC;
+	}
+	return srcToUse;
+});
+
+const effectiveImageSrcset = $derived(() => {
+	if (isOffline) {
+		return '';
+	}
+	if (!game.coverImage) {
+		return '';
+	}
+	const generatedSrcset = size === 'tiny' ? generateTinySrcset(game.coverImage) : generateSrcset(game.coverImage);
+	const parts = generatedSrcset.split(',').map((p) => p.trim());
+	const validParts = parts.filter((part) => {
+		const url = part.split(' ')[0];
+		return !imageErrorStore.hasFailed(url);
+	});
+
+	if (validParts.length === 0) return '';
+	return validParts.join(', ');
+});
+
+const imageSizes = $derived(() => {
+	if (size === 'tiny') {
+		return generateSizes('tiny');
+	}
+	return generateSizes(isAboveFold ? 'card' : 'gallery');
 });
 
 function handleTierClick(event: MouseEvent | KeyboardEvent) {
@@ -111,6 +141,8 @@ function getCompletionDay(dateStr: string | null): string {
 		<div class="skeleton-loader"></div>
 		<img
 			src={effectiveImageSrc()}
+			srcset={effectiveImageSrcset()}
+			sizes={imageSizes()}
 			alt={game.title}
 			class="cover-image"
 			loading={isAboveFold ? 'eager' : 'lazy'}
@@ -179,6 +211,7 @@ function getCompletionDay(dateStr: string | null): string {
 	.cover-container {
 		position: relative;
 		width: 100%;
+		max-width: 300px;
 		aspect-ratio: 2 / 3;
 		margin: 0 auto;
 	}
