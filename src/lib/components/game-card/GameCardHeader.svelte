@@ -8,33 +8,35 @@ interface Props {
 let { game }: Props = $props();
 
 const titleText = $derived(game.mainTitle || game.title);
-const totalLength = $derived((titleText?.length || 0) + (game.subtitle?.length || 0));
+const titleLength = $derived(titleText?.length || 0);
 
-function calculateSubtitleFontSize(subtitle: string | null | undefined, totalLen: number): number {
-	let baseSize = 0.85;
-	const minSize = 0.55;
+function calculateSubtitleFontSize(subtitle: string | null | undefined): number {
+	let baseSize = 0.95;
+	const minSize = 0.65;
 
-	if (totalLen > 60) {
-		baseSize = 0.7;
-	} else if (totalLen > 45) {
+	const len = subtitle?.length || 0;
+
+	if (len > 60) {
 		baseSize = 0.8;
+	} else if (len > 45) {
+		baseSize = 0.9;
 	}
 
 	const maxLength = 25;
 
-	if (!subtitle || subtitle.length <= maxLength) {
+	if (!subtitle || len <= maxLength) {
 		return baseSize;
 	}
 
-	const reduction = Math.min((subtitle.length - maxLength) * 0.015, baseSize - minSize);
+	const reduction = Math.min((len - maxLength) * 0.015, baseSize - minSize);
 	return Math.max(baseSize - reduction, minSize);
 }
 
-const subtitleFontSize = $derived(calculateSubtitleFontSize(game.subtitle, totalLength));
+const subtitleFontSize = $derived(calculateSubtitleFontSize(game.subtitle));
 
-const isLongTitle = $derived(totalLength > 30 && totalLength <= 45);
-const isVeryLongTitle = $derived(totalLength > 45 && totalLength <= 60);
-const isExtraLongTitle = $derived(totalLength > 60);
+const isLongTitle = $derived(titleLength > 30 && titleLength <= 45);
+const isVeryLongTitle = $derived(titleLength > 45 && titleLength <= 60);
+const isExtraLongTitle = $derived(titleLength > 60);
 </script>
 
 <div class="title-section">
@@ -51,7 +53,7 @@ const isExtraLongTitle = $derived(totalLength > 60);
 	.title-section {
 		margin-bottom: 0;
 		min-height: 40px;
-		max-height: 56px;
+		max-height: auto;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -63,15 +65,12 @@ const isExtraLongTitle = $derived(totalLength > 60);
 		font-family: 'Inter', sans-serif;
 		font-size: clamp(1.15rem, 8cqi, 1.4rem);
 		font-weight: 700;
-		letter-spacing: -0.01em;
 		margin: 0;
-		line-height: 1.1;
+		line-height: 1.3;
 		overflow: hidden;
 		width: 100%;
 		color: var(--color-text-primary);
 		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
 		-webkit-box-orient: vertical;
 	}
 
@@ -79,7 +78,7 @@ const isExtraLongTitle = $derived(totalLength > 60);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 4px;
+		gap: 10px;
 		-webkit-line-clamp: unset;
 		line-clamp: unset;
 		-webkit-box-orient: unset;
@@ -101,7 +100,6 @@ const isExtraLongTitle = $derived(totalLength > 60);
 		font-family: 'Inter', sans-serif;
 		font-weight: 500;
 		color: var(--color-text-secondary);
-		line-height: 1.1;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -111,7 +109,7 @@ const isExtraLongTitle = $derived(totalLength > 60);
 
 	@container game-card (max-width: 300px) {
 		.title-section {
-			height: 60px;
+			height: 68px;
 		}
 		.game-title {
 			font-size: clamp(1.05rem, 9cqi, 1.25rem);

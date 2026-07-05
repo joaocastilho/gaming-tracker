@@ -72,7 +72,7 @@ let itemHeight = $derived.by(() => {
 	const availableWidth = containerWidth - containerPadding - totalGapWidth;
 	const columnWidth = availableWidth / columns;
 	const coverHeight = columnWidth * 1.5;
-	const infoHeight = columnWidth <= 200 ? 265 : 295;
+	const infoHeight = columnWidth <= 200 ? 253 : 281;
 	return coverHeight + infoHeight;
 });
 
@@ -179,6 +179,7 @@ function handleOpenModal(game: Game) {
 		display: flex;
 		justify-content: center;
 		min-width: 0;
+		height: 100%;
 	}
 
 	.game-card-wrapper.empty {
