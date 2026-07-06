@@ -31,6 +31,9 @@ let containerWidth = $state(0);
 
 let columns = $derived.by(() => {
 	if (!containerWidth) return 1;
+	const isMobile = containerWidth < 480;
+	if (isMobile) return 2;
+
 	const targetWidth = 300;
 	const gap = 12;
 	const calculatedColumns = Math.floor((containerWidth + gap) / (targetWidth + gap));
@@ -70,9 +73,9 @@ let itemHeight = $derived.by(() => {
 	const gap = 12;
 	const totalGapWidth = (columns - 1) * gap;
 	const availableWidth = containerWidth - containerPadding - totalGapWidth;
-	const columnWidth = Math.min(300, availableWidth / columns);
+	const columnWidth = availableWidth / columns;
 	const coverHeight = columnWidth * 1.5;
-	const infoHeight = columnWidth <= 200 ? 253 : 281;
+	const infoHeight = columnWidth * 0.48 + 125;
 	return coverHeight + infoHeight;
 });
 
@@ -168,14 +171,15 @@ function handleOpenModal(game: Game) {
 	.game-row {
 		display: flex;
 		justify-content: center;
-		gap: clamp(0.75rem, 0.75rem + 2vw, 1.5rem);
+		gap: 0.75rem;
 		width: 100%;
 		padding-left: 0.5rem;
 		padding-right: 0.5rem;
 	}
 
 	.game-card-wrapper {
-		flex: 0 1 300px;
+		flex: 1 1 0;
+		max-width: 300px;
 		display: flex;
 		justify-content: center;
 		min-width: 0;

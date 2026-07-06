@@ -108,26 +108,22 @@ function intersectionObserver(node: HTMLElement) {
 
 	.tier-games-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, 300px);
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 		justify-content: center;
 		gap: 1rem;
 		width: 100%;
 	}
 
 	.tier-card-wrapper {
-		width: 300px;
+		width: 100%;
 		min-width: 0;
 		overflow: hidden;
 	}
 
 	@media (max-width: 768px) {
 		.tier-games-grid {
-			grid-template-columns: repeat(auto-fill, minmax(200px, 300px));
-			gap: 0.5rem;
-		}
-
-		.tier-card-wrapper {
-			width: 100%;
+			grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+			gap: 0.75rem;
 		}
 	}
 

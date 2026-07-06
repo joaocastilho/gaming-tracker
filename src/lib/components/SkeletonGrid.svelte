@@ -54,7 +54,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		height: 220px;
+		height: 240px;
 	}
 
 	.skeleton-title {

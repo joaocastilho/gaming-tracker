@@ -52,13 +52,13 @@ const isExtraLongTitle = $derived(titleLength > 60);
 <style>
 	.title-section {
 		margin-bottom: 0;
-		min-height: 40px;
-		max-height: auto;
+		min-height: unset;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
 		overflow: hidden;
+		padding: clamp(2px, 1cqi, 4px) 0;
 	}
 
 	.game-title {
@@ -108,7 +108,9 @@ const isExtraLongTitle = $derived(titleLength > 60);
 
 	@container game-card (max-width: 300px) {
 		.title-section {
-			height: 68px;
+			min-height: unset;
+			height: auto;
+			padding: clamp(1px, 0.5cqi, 2px) 0;
 		}
 		.game-title {
 			font-size: clamp(1.05rem, 9cqi, 1.25rem);
