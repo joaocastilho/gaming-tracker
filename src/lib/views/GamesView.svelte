@@ -31,7 +31,7 @@ let containerWidth = $state(0);
 
 let columns = $derived.by(() => {
 	if (!containerWidth) return 1;
-	const isMobile = containerWidth < 480;
+	const isMobile = containerWidth < 768;
 	if (isMobile) return 2;
 
 	const targetWidth = 300;

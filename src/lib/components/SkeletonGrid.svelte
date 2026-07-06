@@ -32,13 +32,24 @@
 	}
 
 	.skeleton-card {
-		flex: 0 1 300px;
+		flex: 1 1 300px;
+		max-width: 300px;
 		border-radius: 8px;
 		background: var(--color-surface);
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 		box-shadow: var(--shadow-md);
+	}
+
+	@container (max-width: 767px) {
+		.skeleton-grid {
+			gap: 0.75rem;
+		}
+		.skeleton-card {
+			flex: 1 1 calc(50% - 0.75rem);
+			max-width: none;
+		}
 	}
 
 	.skeleton-cover {
