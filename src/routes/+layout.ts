@@ -1,10 +1,16 @@
 import type { LayoutLoad } from './$types';
 import { browser, dev } from '$app/environment';
 import type { GamingTrackerDB } from '$lib/db';
+import { toSlug } from '$lib/utils/slugUtils';
+import type { Game } from '$lib/types/game';
 
 export const prerender = true;
 
-export const load: LayoutLoad = async ({ fetch }) => {
+export const load: LayoutLoad = async ({ fetch, url }) => {
+	const gameSlug = url.searchParams.get('game');
+	let games: Game[] = [];
+	let sharedGame: Game | null = null;
+
 	if (browser) {
 		try {
 			const { db } = await import('$lib/db');
@@ -12,52 +18,48 @@ export const load: LayoutLoad = async ({ fetch }) => {
 
 			if (cachedGames.length > 0) {
 				refreshGamesInBackground(fetch, db);
-
-				return {
-					games: cachedGames,
-					meta: null,
-					source: 'dexie',
-				};
+				games = cachedGames;
 			}
 		} catch (e) {
 			if (dev) console.warn('Failed to load from Dexie:', e);
 		}
 	}
 
-	try {
-		const res = await fetch('/games.json', {
-			headers: { accept: 'application/json' },
-		});
+	if (games.length === 0) {
+		try {
+			const res = await fetch('/games.json', {
+				headers: { accept: 'application/json' },
+			});
 
-		if (res.ok) {
-			const data = await res.json();
-			const games = data.games || [];
+			if (res.ok) {
+				const data = await res.json();
+				games = data.games || [];
 
-			if (browser && games.length > 0) {
-				import('$lib/db').then(async ({ db }) => {
-					await db
-						.transaction('rw', db.games, async () => {
-							await db.games.clear();
-							await db.games.bulkPut(games);
-						})
-						.catch((err) => console.error('Failed to seed Dexie:', err));
-				});
+				if (browser && games.length > 0) {
+					import('$lib/db').then(async ({ db }) => {
+						await db
+							.transaction('rw', db.games, async () => {
+								await db.games.clear();
+								await db.games.bulkPut(games);
+							})
+							.catch((err) => console.error('Failed to seed Dexie:', err));
+					});
+				}
 			}
-
-			return {
-				games: games,
-				meta: null,
-				source: 'network',
-			};
+		} catch {
+			// Silently ignore fetch errors
 		}
-	} catch {
-		// Silently ignore fetch errors
+	}
+
+	if (gameSlug && games.length > 0) {
+		sharedGame = games.find((g) => toSlug(g.title) === gameSlug) || null;
 	}
 
 	return {
-		games: [],
+		games,
+		sharedGame,
 		meta: null,
-		source: 'none',
+		source: games.length > 0 ? 'dexie' : 'network', // Adding back for compatibility
 	};
 };
 

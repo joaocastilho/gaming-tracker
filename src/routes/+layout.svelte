@@ -41,7 +41,7 @@ let {
 	data,
 }: {
 	children: import('svelte').Snippet;
-	data: { games: Promise<Game[]> | Game[] };
+	data: { games: Game[]; sharedGame: Game | null };
 } = $props();
 
 import { editorStore } from '$lib/stores/editor.svelte';
@@ -490,26 +490,26 @@ async function installApp() {
 </script>
 
 <svelte:head>
-	<title>{pageTitle === 'Gaming Tracker' ? 'Gaming Tracker' : `Gaming Tracker - ${pageTitle}`}</title>
+	<title>{data.sharedGame ? `Gaming Tracker - ${data.sharedGame.title}` : (pageTitle === 'Gaming Tracker' ? 'Gaming Tracker' : `Gaming Tracker - ${pageTitle}`)}</title>
 	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0a0c10' : '#d0cbc4'} />
-	<meta property="og:title" content="Gaming Tracker" />
+	<meta property="og:title" content={data.sharedGame ? `Gaming Tracker - ${data.sharedGame.title}` : "Gaming Tracker"} />
 	<meta property="og:type" content="website" />
 	<meta
 		property="og:description"
-		content="My personal video game collection with ratings, tier lists, and progress tracking."
+		content={data.sharedGame ? `Check out ${data.sharedGame.title} on my gaming tracker. ${data.sharedGame.genre} on ${data.sharedGame.platform}.` : "My personal video game collection with ratings, tier lists, and progress tracking."}
 	/>
 	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:site_name" content="Gaming Tracker" />
-	<meta property="og:image" content={page.url.origin + '/android-chrome-512x512.png'} />
-	<meta property="og:image:width" content="512" />
-	<meta property="og:image:height" content="512" />
+	<meta property="og:image" content={data.sharedGame ? `${page.url.origin}/${data.sharedGame.coverImage}` : `${page.url.origin}/android-chrome-512x512.png`} />
+	<meta property="og:image:width" content={data.sharedGame ? "300" : "512"} />
+	<meta property="og:image:height" content={data.sharedGame ? "450" : "512"} />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Gaming Tracker" />
+	<meta name="twitter:title" content={data.sharedGame ? `Gaming Tracker - ${data.sharedGame.title}` : "Gaming Tracker"} />
 	<meta
 		name="twitter:description"
-		content="My personal video game collection with ratings, tier lists, and progress tracking."
+		content={data.sharedGame ? `Check out ${data.sharedGame.title} on my gaming tracker. ${data.sharedGame.genre} on ${data.sharedGame.platform}.` : "My personal video game collection with ratings, tier lists, and progress tracking."}
 	/>
-	<meta name="twitter:image" content={page.url.origin + '/android-chrome-512x512.png'} />
+	<meta name="twitter:image" content={data.sharedGame ? `${page.url.origin}/${data.sharedGame.coverImage}` : `${page.url.origin}/android-chrome-512x512.png`} />
 	<link rel="canonical" href={canonicalUrl} />
 	<meta
 		name="apple-mobile-web-app-status-bar-style"
