@@ -22,6 +22,20 @@ import GamesView from '$lib/views/GamesView.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
 
+import DetailModal from '$lib/components/DetailModal.svelte';
+import GameEditorModal from '$lib/components/GameEditorModal.svelte';
+import DeleteConfirmModal from '$lib/components/DeleteConfirmModal.svelte';
+import LoginModal from '$lib/components/LoginModal.svelte';
+import MobileSearch from '$lib/components/layout/MobileSearch.svelte';
+import MobileFilters from '$lib/components/MobileFilters.svelte';
+import MobileSettingsMenu from '$lib/components/layout/MobileSettingsMenu.svelte';
+import TierListView from '$lib/views/TierListView.svelte';
+import NoResults from '$lib/components/NoResults.svelte';
+import SearchBar from '$lib/components/SearchBar.svelte';
+import FilterDropdown from '$lib/components/FilterDropdown.svelte';
+import FilterToggle from '$lib/components/FilterToggle.svelte';
+import RatingsSort from '$lib/components/RatingsSort.svelte';
+
 let {
 	children,
 	data,
@@ -31,7 +45,6 @@ let {
 } = $props();
 
 import { editorStore } from '$lib/stores/editor.svelte';
-
 import { windowSize } from '$lib/stores/window.svelte';
 
 let initialized = $state(true);
@@ -232,74 +245,7 @@ let loginModalOpen = $state(false);
 
 let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>(null);
 
-import type { Component } from 'svelte';
-
-// Dynamic lazy-loaded components have unknown props at compile time.
-// The Svelte 5 Component type's own default uses Record<string, any>
-// for Props — using it here as a type param is the intended approach.
-// biome-ignore lint/suspicious/noExplicitAny: required for dynamic component references
-type LazySvelteComponent = Component<any, any, any>;
-
-let DetailModalComponent = $state<LazySvelteComponent | null>(null);
-let GameEditorModalComponent = $state<LazySvelteComponent | null>(null);
-let DeleteConfirmModalComponent = $state<LazySvelteComponent | null>(null);
-let LoginModalComponent = $state<LazySvelteComponent | null>(null);
-let MobileSearchComponent = $state<LazySvelteComponent | null>(null);
-let MobileFiltersComponent = $state<LazySvelteComponent | null>(null);
-let MobileSettingsMenuComponent = $state<LazySvelteComponent | null>(null);
-
-let TierListViewComponent = $state<LazySvelteComponent | null>(null);
-let NoResultsComponent = $state<LazySvelteComponent | null>(null);
-let SearchBarComponent = $state<LazySvelteComponent | null>(null);
-let FilterDropdownComponent = $state<LazySvelteComponent | null>(null);
-let FilterToggleComponent = $state<LazySvelteComponent | null>(null);
-let RatingsSortComponent = $state<LazySvelteComponent | null>(null);
-
 let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
-
-$effect(() => {
-	if (!browser) return;
-
-	if (modalStore.getState().isOpen && !DetailModalComponent) {
-		import('$lib/components/DetailModal.svelte').then((m) => (DetailModalComponent = m.default));
-	}
-	if (editorModalState.editorModalOpen && !GameEditorModalComponent) {
-		import('$lib/components/GameEditorModal.svelte').then((m) => (GameEditorModalComponent = m.default));
-	}
-	if (editorModalState.deleteModalOpen && !DeleteConfirmModalComponent) {
-		import('$lib/components/DeleteConfirmModal.svelte').then((m) => (DeleteConfirmModalComponent = m.default));
-	}
-	if (loginModalOpen && !LoginModalComponent) {
-		import('$lib/components/LoginModal.svelte').then((m) => (LoginModalComponent = m.default));
-	}
-	if (isSearchOpen && !MobileSearchComponent) {
-		import('$lib/components/layout/MobileSearch.svelte').then((m) => (MobileSearchComponent = m.default));
-	}
-	if (isFiltersOpen && !MobileFiltersComponent) {
-		import('$lib/components/MobileFilters.svelte').then((m) => (MobileFiltersComponent = m.default));
-	}
-	if (browser && !MobileSettingsMenuComponent) {
-		import('$lib/components/layout/MobileSettingsMenu.svelte').then((m) => (MobileSettingsMenuComponent = m.default));
-	}
-
-	if (isTierlistPage && !TierListViewComponent) {
-		import('$lib/views/TierListView.svelte').then((m) => (TierListViewComponent = m.default));
-	}
-
-	if (hasActiveFilters && currentFilteredGames.length === 0 && !NoResultsComponent) {
-		import('$lib/components/NoResults.svelte').then((m) => (NoResultsComponent = m.default));
-	}
-
-	if (filtersStore.isDesktopFiltersExpanded && innerWidth >= 768) {
-		if (!SearchBarComponent) import('$lib/components/SearchBar.svelte').then((m) => (SearchBarComponent = m.default));
-		if (!FilterDropdownComponent)
-			import('$lib/components/FilterDropdown.svelte').then((m) => (FilterDropdownComponent = m.default));
-		if (!FilterToggleComponent)
-			import('$lib/components/FilterToggle.svelte').then((m) => (FilterToggleComponent = m.default));
-		if (!RatingsSortComponent)
-			import('$lib/components/RatingsSort.svelte').then((m) => (RatingsSortComponent = m.default));
-	}
-});
 
 let savedScrollPosition = $state<number>(0);
 
@@ -589,45 +535,39 @@ async function installApp() {
 				<!-- Filters are shown on desktop via FilterDropdowns -->
 				{#if filtersStore.isDesktopFiltersExpanded}
 						<div class="filter-content mb-8 space-y-4">
-							{#if SearchBarComponent}
-								<SearchBarComponent />
-							{/if}
+								<SearchBar />
 							<div class="flex flex-col items-center gap-4">
 								<div class="flex flex-wrap items-center justify-center gap-3">
-									{#if FilterDropdownComponent}
-										<FilterDropdownComponent
+										<FilterDropdown
 											type="platforms"
 											label="Platforms"
 											options={filterOptions.platforms}
 											selectedOptions={selectedPlatforms}
 										/>
-										<FilterDropdownComponent
+										<FilterDropdown
 											type="genres"
 											label="Genres"
 											options={filterOptions.genres}
 											selectedOptions={selectedGenres}
 										/>
 										{#if showTiersFilter}
-											<FilterDropdownComponent
+											<FilterDropdown
 												type="tiers"
 												label="Tiers"
 												options={filterOptions.tiers}
 												selectedOptions={selectedTiers}
 											/>
 										{/if}
-									{/if}
 
-									{#if showCoOpFilter && FilterToggleComponent}
-										<FilterToggleComponent
+									{#if showCoOpFilter}
+										<FilterToggle
 											label="Co-op"
 											value="Yes"
 											isSelected={selectedCoOp.includes('Yes')}
 										/>
 									{/if}
 									<span class="pipe-separator">|</span>
-									{#if RatingsSortComponent}
-										<RatingsSortComponent />
-									{/if}
+										<RatingsSort />
 									<button
 										class="reset-button flex h-[44px] w-[44px] items-center justify-center rounded-md transition-all"
 										class:invisible={!canReset}
@@ -661,9 +601,7 @@ async function installApp() {
 					{@render children?.()}
 				{:else if isGamesPage}
 					{#if hasActiveFilters && currentFilteredGames.length === 0}
-						{#if NoResultsComponent}
-							<NoResultsComponent onReset={resetFilters} />
-						{/if}
+							<NoResults onReset={resetFilters} />
 					{:else}
 						<GamesView
 							filteredGames={currentFilteredGames}
@@ -678,13 +616,7 @@ async function installApp() {
 						{@render children?.()}
 					</div>
 				{:else if isTierlistPage}
-					{#if TierListViewComponent}
-						<TierListViewComponent filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
-					{:else}
-						<div class="flex items-center justify-center p-12">
-							<div class="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent"></div>
-						</div>
-					{/if}
+						<TierListView filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
 
 					<div style="display: none;">
 						{@render children?.()}
@@ -695,15 +627,13 @@ async function installApp() {
 			</div>
 		</main>
 
-		{#if DetailModalComponent}
-			<DetailModalComponent
-				onEditGame={(g: Game) => editorModalState.handleEditGame(g)}
-				onDeleteGame={(g: Game) => editorModalState.handleDeleteGame(g)}
-			/>
-		{/if}
+		<DetailModal
+			onEditGame={(g: Game) => editorModalState.handleEditGame(g)}
+			onDeleteGame={(g: Game) => editorModalState.handleDeleteGame(g)}
+		/>
 
-		{#if editorModalState.editorModalOpen && GameEditorModalComponent}
-			<GameEditorModalComponent
+		{#if editorModalState.editorModalOpen}
+			<GameEditorModal
 				mode={editorModalState.editorModalMode}
 				initialGame={editorModalState.editorModalGame}
 				allGames={gamesStore.games}
@@ -711,31 +641,22 @@ async function installApp() {
 			/>
 		{/if}
 
-		{#if DeleteConfirmModalComponent}
-			<DeleteConfirmModalComponent bind:open={editorModalState.deleteModalOpen} game={editorModalState.deleteModalGame} />
-		{/if}
+			<DeleteConfirmModal bind:open={editorModalState.deleteModalOpen} game={editorModalState.deleteModalGame} />
 
-		{#if LoginModalComponent}
-			<LoginModalComponent bind:open={loginModalOpen} />
-		{/if}
+			<LoginModal bind:open={loginModalOpen} />
 
-		{#if MobileSearchComponent}
-			<MobileSearchComponent isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
-		{/if}
+			<MobileSearch isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
 
 		<!-- Mobile Filters Modal -->
-		{#if MobileFiltersComponent}
-			<MobileFiltersComponent
+			<MobileFilters
 				bind:isOpen={isFiltersOpen}
 				{filterOptions}
 				{showTiersFilter}
 				{showCoOpFilter}
 				onClose={() => (isFiltersOpen = false)}
 			/>
-		{/if}
 
-		{#if MobileSettingsMenuComponent}
-			<MobileSettingsMenuComponent
+			<MobileSettingsMenu
 				isOpen={isSettingsMenuOpen}
 				{isTierlistPage}
 				onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
@@ -746,7 +667,6 @@ async function installApp() {
 				{canInstall}
 				onInstall={installApp}
 			/>
-		{/if}
 
 		<!-- Discreet Last Updated Indicator -->
 		<!-- Removed build date display - now only in source code at top -->

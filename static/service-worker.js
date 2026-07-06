@@ -7,6 +7,12 @@ const OFFLINE_QUEUE_NAME = 'gaming-tracker-offline-queue';
 
 const STATIC_ASSETS = [
 	'/',
+	'/library',
+	'/completed',
+	'/planned',
+	'/tierlist',
+	'/stats',
+	'/login',
 	'/games.json',
 	'/site.webmanifest',
 	'/favicon.ico',
