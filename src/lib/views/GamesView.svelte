@@ -31,10 +31,10 @@ let containerWidth = $state(0);
 
 let columns = $derived.by(() => {
 	if (!containerWidth) return 1;
-	const minCardWidth = 185;
+	const targetWidth = 300;
 	const gap = 12;
-	const calculatedColumns = Math.floor((containerWidth + gap) / (minCardWidth + gap));
-	return Math.min(5, Math.max(2, calculatedColumns));
+	const calculatedColumns = Math.floor((containerWidth + gap) / (targetWidth + gap));
+	return Math.min(5, Math.max(1, calculatedColumns));
 });
 
 let rows = $derived.by(() => {
@@ -70,7 +70,7 @@ let itemHeight = $derived.by(() => {
 	const gap = 12;
 	const totalGapWidth = (columns - 1) * gap;
 	const availableWidth = containerWidth - containerPadding - totalGapWidth;
-	const columnWidth = availableWidth / columns;
+	const columnWidth = Math.min(300, availableWidth / columns);
 	const coverHeight = columnWidth * 1.5;
 	const infoHeight = columnWidth <= 200 ? 253 : 281;
 	return coverHeight + infoHeight;
@@ -167,7 +167,7 @@ function handleOpenModal(game: Game) {
 
 	.game-row {
 		display: flex;
-		justify-content: flex-start;
+		justify-content: center;
 		gap: clamp(0.75rem, 0.75rem + 2vw, 1.5rem);
 		width: 100%;
 		padding-left: 0.5rem;
@@ -175,7 +175,7 @@ function handleOpenModal(game: Game) {
 	}
 
 	.game-card-wrapper {
-		flex: 1;
+		flex: 0 1 300px;
 		display: flex;
 		justify-content: center;
 		min-width: 0;

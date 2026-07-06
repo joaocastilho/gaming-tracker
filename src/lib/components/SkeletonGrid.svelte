@@ -23,41 +23,16 @@
 	}
 
 	.skeleton-grid {
-		display: grid;
-		grid-template-columns: repeat(5, 1fr);
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
 		gap: clamp(0.75rem, 0.75rem + 2vw, 1.5rem);
 		width: 100%;
 		padding: 0 0.5rem 20px 0.5rem;
 	}
 
-	@container (max-width: 972.9px) {
-		.skeleton-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
-		.skeleton-card:nth-child(n + 17) {
-			display: none;
-		}
-	}
-
-	@container (max-width: 775.9px) {
-		.skeleton-grid {
-			grid-template-columns: repeat(3, 1fr);
-		}
-		.skeleton-card:nth-child(n + 13) {
-			display: none;
-		}
-	}
-
-	@container (max-width: 578.9px) {
-		.skeleton-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-		.skeleton-card:nth-child(n + 9) {
-			display: none;
-		}
-	}
-
 	.skeleton-card {
+		flex: 0 1 300px;
 		border-radius: 8px;
 		background: var(--color-surface);
 		overflow: hidden;

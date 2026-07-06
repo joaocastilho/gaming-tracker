@@ -329,26 +329,15 @@ function viewAllCompleted() {
 
 	.recent-grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(auto-fill, 300px);
+		justify-content: center;
 		gap: 12px;
 		width: 100%;
 	}
 
-	@media (min-width: 640px) {
+	@media (max-width: 639px) {
 		.recent-grid {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-
-	@media (min-width: 900px) {
-		.recent-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
-	}
-
-	@media (min-width: 1200px) {
-		.recent-grid {
-			grid-template-columns: repeat(5, 1fr);
+			grid-template-columns: repeat(auto-fill, minmax(160px, 300px));
 		}
 	}
 
