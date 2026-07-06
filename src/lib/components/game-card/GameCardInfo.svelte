@@ -100,20 +100,20 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.date-item {
 		display: flex;
 		align-items: center;
-		gap: clamp(6px, 2cqw, 8px);
-		font-size: clamp(0.85rem, 0.65rem + 1cqw, 1rem);
+		gap: 8px;
+		font-size: clamp(0.9rem, 0.7rem + 1cqw, 1.05rem);
 		color: var(--color-text-secondary);
 		flex-shrink: 1;
 		min-width: 0;
-		line-height: 1;
+		line-height: 1.2;
 	}
 
 	.time-item :global(svg),
 	.date-item :global(svg) {
-		width: 1.1em;
-		height: 1.1em;
-		position: relative;
-		top: 2px;
+		width: 1.15em;
+		height: 1.15em;
+		flex-shrink: 0;
+		margin-top: 1px;
 	}
 
 	.time-item span,
@@ -126,9 +126,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.ratings-compact {
 		display: flex;
 		justify-content: space-evenly;
-		align-items: stretch;
+		align-items: center;
 		padding: 0;
-		gap: clamp(4px, 1.5cqw, 8px);
+		gap: clamp(8px, 2cqw, 16px);
 		margin-bottom: 0;
 	}
 
@@ -137,7 +137,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: 10px;
+		gap: 12px;
 		flex: 1;
 		min-width: 0;
 	}
@@ -152,15 +152,16 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	}
 
 	.rating-value {
-		font-size: clamp(0.95rem, 0.65rem + 2cqw, 1.2rem);
+		font-size: clamp(1rem, 0.7rem + 2.5cqw, 1.3rem);
 		font-weight: 800;
 		color: var(--color-text-primary);
-		line-height: normal;
+		line-height: 1;
 	}
 
 	.rating-item :global(svg) {
-		width: clamp(26px, 11cqw, 40px);
-		height: clamp(26px, 11cqw, 40px);
+		width: clamp(30px, 12cqw, 44px);
+		height: clamp(30px, 12cqw, 44px);
+		flex-shrink: 0;
 	}
 
 	.status-indicator {
