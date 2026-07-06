@@ -78,7 +78,6 @@ const isExtraLongTitle = $derived(titleLength > 60);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 10px;
 		-webkit-line-clamp: unset;
 		line-clamp: unset;
 		-webkit-box-orient: unset;
