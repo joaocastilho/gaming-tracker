@@ -125,7 +125,7 @@ $effect(() => {
 	}
 
 	.game-year {
-		font-size: clamp(0.8rem, 0.55rem + 2.2cqw, 1.15rem);
+		font-size: clamp(0.85rem, 0.65rem + 1cqw, 1rem);
 		font-weight: 600;
 		color: var(--color-text-secondary);
 		line-height: 1.1;
