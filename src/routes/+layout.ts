@@ -1,5 +1,5 @@
 import type { LayoutLoad } from './$types';
-import { browser, dev } from '$app/environment';
+import { browser, dev, building } from '$app/environment';
 import type { GamingTrackerDB } from '$lib/db';
 import { toSlug } from '$lib/utils/slugUtils';
 import type { Game } from '$lib/types/game';
@@ -7,7 +7,7 @@ import type { Game } from '$lib/types/game';
 export const prerender = true;
 
 export const load: LayoutLoad = async ({ fetch, url }) => {
-	const gameSlug = url.searchParams.get('game');
+	const gameSlug = building ? null : url.searchParams.get('game');
 	let games: Game[] = [];
 	let sharedGame: Game | null = null;
 
