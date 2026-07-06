@@ -91,9 +91,10 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.time-date-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-end;
+		align-items: center;
 		padding: 2px 0px 3px 0px;
 		min-width: 0;
+		margin-top: 6px;
 	}
 
 	.time-item,
