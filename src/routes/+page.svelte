@@ -16,10 +16,11 @@ let currentSession = $derived(playingGame.length > 0 ? playingGame[0] : null);
 
 let recentCompletions = $derived.by(() => {
 	const w = windowSize.width;
-	let cols = 2;
+	let cols = 1;
 	if (w >= 1200) cols = 5;
 	else if (w >= 900) cols = 4;
-	else if (w >= 640) cols = 3;
+	else if (w >= 768) cols = 3;
+	else if (w < 768) cols = 2;
 	const count = cols * 2;
 	const sorted = [...completedGames].toSorted((a, b) => {
 		if (!a.finishedDate && !b.finishedDate) return 0;
@@ -329,15 +330,15 @@ function viewAllCompleted() {
 
 	.recent-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, 300px);
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		justify-content: center;
 		gap: 12px;
 		width: 100%;
 	}
 
-	@media (max-width: 639px) {
+	@media (max-width: 767px) {
 		.recent-grid {
-			grid-template-columns: repeat(auto-fill, minmax(160px, 300px));
+			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
