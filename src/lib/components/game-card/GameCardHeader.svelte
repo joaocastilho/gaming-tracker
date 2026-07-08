@@ -76,8 +76,13 @@ const isExtraLongTitle = $derived(titleLength > 60);
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
-		/* Prevent ellipsis if subtitle is present - we want to show 2 lines of main title */
+		/* Use clip to ensure no 3 dots are shown when there is a subtitle */
 		text-overflow: clip;
+	}
+
+	.game-title:not(.has-subtitle) {
+		/* Show ellipsis only when there is NO subtitle */
+		text-overflow: ellipsis;
 	}
 
 	.game-title.has-subtitle {
@@ -85,30 +90,25 @@ const isExtraLongTitle = $derived(titleLength > 60);
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
-		/* Aggressively reduce font size if we have a subtitle to fit both lines */
-		font-size: clamp(1.0rem, 7cqi, 1.2rem);
-		/* Hide the 3 dots when subtitle is causing overflow */
+		/* More aggressive scaling for subtitles to avoid truncation of main title */
+		font-size: clamp(0.9rem, 6.5cqi, 1.15rem);
 		text-overflow: clip;
 	}
 
 	.game-title.long-title {
-		font-size: clamp(0.9rem, 6.2cqi, 1.1rem);
-		text-overflow: ellipsis;
+		font-size: clamp(0.85rem, 6cqi, 1.05rem);
 	}
 
 	.game-title.very-long-title {
-		font-size: clamp(0.8rem, 5.5cqi, 0.95rem);
-		text-overflow: ellipsis;
+		font-size: clamp(0.75rem, 5cqi, 0.9rem);
 	}
 
 	.game-title.extra-long-title {
-		font-size: clamp(0.65rem, 4.5cqi, 0.8rem);
-		text-overflow: ellipsis;
+		font-size: clamp(0.6rem, 4.2cqi, 0.75rem);
 	}
 
 	.game-title.has-subtitle.long-title {
-		font-size: clamp(0.8rem, 5.5cqi, 1.0rem);
-		text-overflow: clip;
+		font-size: clamp(0.75rem, 5cqi, 0.95rem);
 	}
 
 	.game-subtitle {
