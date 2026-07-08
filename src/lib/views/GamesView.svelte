@@ -65,16 +65,10 @@ function handleOpenModal(game: Game) {
 
 	.game-gallery-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		justify-content: center;
 		gap: 12px;
 		width: 100%;
-	}
-
-	@media (max-width: 767px) {
-		.game-gallery-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
 	}
 
 	.game-card-grid-item {
