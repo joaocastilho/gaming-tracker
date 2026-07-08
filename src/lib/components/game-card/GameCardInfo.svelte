@@ -100,22 +100,22 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.time-item,
 	.date-item {
 		display: flex;
-		align-items: center;
+		align-items: flex-end;
 		gap: clamp(4px, 1.5cqi, 8px);
-		font-size: clamp(0.75rem, 5.5cqi, 1.05rem);
+		font-size: clamp(0.7rem, 5cqi, 0.95rem);
 		color: var(--color-text-secondary);
 		flex-shrink: 1;
 		min-width: 0;
-		line-height: 1.2;
+		line-height: 1.1;
 		font-weight: 500;
 	}
 
 	.time-item :global(svg),
 	.date-item :global(svg) {
-		width: clamp(0.9rem, 6cqi, 1.15rem);
-		height: clamp(0.9rem, 6cqi, 1.15rem);
+		width: clamp(0.85rem, 5.5cqi, 1.1rem);
+		height: clamp(0.85rem, 5.5cqi, 1.1rem);
 		flex-shrink: 0;
-		margin-top: 1px;
+		margin-bottom: 1px;
 	}
 
 	.ratings-compact {

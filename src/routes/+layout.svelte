@@ -17,6 +17,7 @@ import { RotateCcw } from '@lucide/svelte';
 import { registerServiceWorker } from '$lib/utils/serviceWorker';
 import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
 import { editorModalState } from '$lib/stores/editorModalState.svelte';
+import { getTierDisplayName } from '$lib/utils/tierUtils';
 
 import GamesView from '$lib/views/GamesView.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
@@ -487,6 +488,27 @@ async function installApp() {
 		canInstall = false;
 	}
 }
+
+let shareDescription = $derived.by(() => {
+	const g = data.sharedGame;
+	if (!g)
+		return 'My personal video game collection with ratings, tier lists, and progress tracking.';
+
+	let desc = `${g.platform} · ${g.genre}`;
+	if (g.tier) {
+		desc += ` · ${getTierDisplayName(g.tier)}`;
+	}
+
+	if (g.status === 'Completed') {
+		const p = g.ratingPresentation ?? '-';
+		const s = g.ratingStory ?? '-';
+		const gp = g.ratingGameplay ?? '-';
+		const total = g.score ?? '-';
+		desc += ` · Pres: ${p} · Story: ${s} · Gamep: ${gp} · Score: ${total}/20`;
+	}
+
+	return desc;
+});
 </script>
 
 <svelte:head>
@@ -496,7 +518,7 @@ async function installApp() {
 	<meta property="og:type" content="website" />
 	<meta
 		property="og:description"
-		content={data.sharedGame ? `Check out ${data.sharedGame.title} on my gaming tracker. ${data.sharedGame.genre} on ${data.sharedGame.platform}.` : "My personal video game collection with ratings, tier lists, and progress tracking."}
+		content={shareDescription}
 	/>
 	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:site_name" content="Gaming Tracker" />
@@ -507,7 +529,7 @@ async function installApp() {
 	<meta name="twitter:title" content={data.sharedGame ? `Gaming Tracker - ${data.sharedGame.title}` : "Gaming Tracker"} />
 	<meta
 		name="twitter:description"
-		content={data.sharedGame ? `Check out ${data.sharedGame.title} on my gaming tracker. ${data.sharedGame.genre} on ${data.sharedGame.platform}.` : "My personal video game collection with ratings, tier lists, and progress tracking."}
+		content={shareDescription}
 	/>
 	<meta name="twitter:image" content={data.sharedGame ? `${page.url.origin}/${data.sharedGame.coverImage}` : `${page.url.origin}/android-chrome-512x512.png`} />
 	<link rel="canonical" href={canonicalUrl} />
