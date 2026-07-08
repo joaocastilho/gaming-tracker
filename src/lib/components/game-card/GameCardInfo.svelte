@@ -101,19 +101,19 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.date-item {
 		display: flex;
 		align-items: center;
-		gap: clamp(6px, 2cqi, 10px);
-		font-size: clamp(0.95rem, 7cqi, 1.25rem);
+		gap: clamp(4px, 1.5cqi, 8px);
+		font-size: clamp(0.75rem, 5.5cqi, 1.05rem);
 		color: var(--color-text-secondary);
 		flex-shrink: 1;
 		min-width: 0;
 		line-height: 1.2;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.time-item :global(svg),
 	.date-item :global(svg) {
-		width: clamp(1.15rem, 7.5cqi, 1.4rem);
-		height: clamp(1.15rem, 7.5cqi, 1.4rem);
+		width: clamp(0.9rem, 6cqi, 1.15rem);
+		height: clamp(0.9rem, 6cqi, 1.15rem);
 		flex-shrink: 0;
 		margin-top: 1px;
 	}
