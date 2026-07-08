@@ -232,6 +232,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		gap: clamp(8px, 4cqi, 28px);
 		width: 100%;
 		margin-top: clamp(6px, 3cqi, 18px);
+		padding-bottom: 4px;
 	}
 
 	@container game-card (max-width: 300px) {

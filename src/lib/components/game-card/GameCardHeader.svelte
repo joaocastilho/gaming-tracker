@@ -59,7 +59,8 @@ const isExtraLongTitle = $derived(titleLength > 60);
 		overflow: hidden;
 		padding: clamp(2px, 1cqi, 4px) 0;
 		/* Reserve space for exactly 2 lines of title to prevent layout shifts */
-		height: calc(2.6 * clamp(1.15rem, 8cqi, 1.4rem));
+		/* Increased multiplier slightly to ensure no descenders are cut */
+		height: calc(2.8 * clamp(1.15rem, 8cqi, 1.4rem));
 	}
 
 	.game-title {
@@ -67,7 +68,7 @@ const isExtraLongTitle = $derived(titleLength > 60);
 		font-size: clamp(1.15rem, 8cqi, 1.4rem);
 		font-weight: 700;
 		margin: 0;
-		line-height: 1.3;
+		line-height: 1.2;
 		overflow: hidden;
 		width: 100%;
 		color: var(--color-text-primary);
@@ -82,18 +83,24 @@ const isExtraLongTitle = $derived(titleLength > 60);
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
-	}
-
-	.game-title.long-title {
+		/* Aggressively reduce font size if we have a subtitle to fit both lines */
 		font-size: clamp(1.0rem, 7cqi, 1.2rem);
 	}
 
+	.game-title.long-title {
+		font-size: clamp(0.95rem, 6.5cqi, 1.15rem);
+	}
+
 	.game-title.very-long-title {
-		font-size: clamp(0.9rem, 6cqi, 1.05rem);
+		font-size: clamp(0.85rem, 6cqi, 1.0rem);
 	}
 
 	.game-title.extra-long-title {
-		font-size: clamp(0.75rem, 5cqi, 0.9rem);
+		font-size: clamp(0.7rem, 5cqi, 0.85rem);
+	}
+
+	.game-title.has-subtitle.long-title {
+		font-size: clamp(0.85rem, 6cqi, 1.05rem);
 	}
 
 	.game-subtitle {

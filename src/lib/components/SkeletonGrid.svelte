@@ -66,11 +66,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		height: 240px;
+		height: 260px;
 	}
 
 	.skeleton-title {
-		height: calc(2.6 * clamp(1.15rem, 8cqi, 1.4rem));
+		height: calc(2.8 * clamp(1.15rem, 8cqi, 1.4rem));
 		width: 100%;
 		background: var(--color-surface-elevated);
 		border-radius: 4px;

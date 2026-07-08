@@ -75,7 +75,7 @@ let itemHeight = $derived.by(() => {
 	const availableWidth = containerWidth - containerPadding - totalGapWidth;
 	const columnWidth = availableWidth / columns;
 	const coverHeight = columnWidth * 1.5;
-	const infoHeight = columnWidth * 0.48 + 125;
+	const infoHeight = columnWidth * 0.48 + 145;
 	return coverHeight + infoHeight;
 });
 
