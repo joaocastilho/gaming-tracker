@@ -3,7 +3,6 @@ import type { Game } from '$lib/types/game';
 import GameCard from '$lib/components/GameCard.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
 import SkeletonGrid from '$lib/components/SkeletonGrid.svelte';
-import { browser } from '$app/environment';
 
 interface Props {
 	filteredGames: Game[];
@@ -25,9 +24,9 @@ let {
 let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
 const isEditor = $derived(editorStore.editorMode);
-let mounted = $state(browser);
-let columns = $state(1);
+let mounted = $state(true);
 let container = $state<HTMLDivElement>();
+let columns = $state(1);
 
 $effect(() => {
 	if (!container) return;
@@ -36,7 +35,8 @@ $effect(() => {
 		if (width < 768) {
 			columns = 2;
 		} else {
-			const calc = Math.floor((width + 12) / (300 + 12));
+			const targetWidth = 230;
+			const calc = Math.floor((width + 12) / (targetWidth + 12));
 			columns = Math.min(5, Math.max(1, calc));
 		}
 	});
@@ -51,7 +51,7 @@ function handleOpenModal(game: Game) {
 
 <div bind:this={container} class="game-gallery-container">
 	{#if mounted && filteredGames.length > 0}
-		<div class="game-gallery-grid" style="grid-template-columns: repeat({columns}, 1fr);">
+		<div class="game-gallery-grid" style="grid-template-columns: repeat({columns}, minmax(0, 1fr));">
 			{#each filteredGames as game (game.id)}
 				<div class="game-card-grid-item">
 					<GameCard
@@ -91,11 +91,14 @@ function handleOpenModal(game: Game) {
 
 	.game-card-grid-item {
 		display: flex;
-		justify-content: center;
 		min-width: 0;
-		max-width: 300px;
-		width: 100%;
-		justify-self: center;
+		max-width: 280px;
+	}
+
+	@media (max-width: 767px) {
+		.game-gallery-grid {
+			gap: 0.5rem;
+		}
 	}
 
 	.game-gallery-container :global(.game-card) {

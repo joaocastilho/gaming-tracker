@@ -112,8 +112,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 
 	.time-item :global(svg),
 	.date-item :global(svg) {
-		width: clamp(0.75rem, 5cqi, 0.95rem);
-		height: clamp(0.75rem, 5cqi, 0.95rem);
+		width: clamp(0.65rem, 4cqi, 0.85rem);
+		height: clamp(0.65rem, 4cqi, 0.85rem);
 		flex-shrink: 0;
 		margin-bottom: 1px;
 	}
@@ -154,8 +154,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	}
 
 	.rating-item :global(svg) {
-		width: clamp(20px, 11cqi, 44px);
-		height: clamp(20px, 11cqi, 44px);
+		width: clamp(14px, 6cqi, 22px);
+		height: clamp(14px, 6cqi, 22px);
 		flex-shrink: 0;
 	}
 
@@ -180,8 +180,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	}
 
 	.status-indicator :global(svg) {
-		width: clamp(16px, 8cqi, 32px);
-		height: clamp(16px, 8cqi, 32px);
+		width: clamp(14px, 6cqi, 24px);
+		height: clamp(14px, 6cqi, 24px);
 	}
 
 	.score-badge {
@@ -230,9 +230,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.ratings-and-score-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: clamp(8px, 4cqi, 28px);
+		gap: clamp(4px, 2cqi, 16px);
 		width: 100%;
-		margin-top: clamp(6px, 3cqi, 18px);
+		margin-top: clamp(4px, 2cqi, 12px);
 		padding-bottom: 4px;
 	}
 
