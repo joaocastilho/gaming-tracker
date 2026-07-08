@@ -25,33 +25,15 @@ let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
 const isEditor = $derived(editorStore.editorMode);
 let mounted = $state(true);
-let container = $state<HTMLDivElement>();
-let columns = $state(1);
-
-$effect(() => {
-	if (!container) return;
-	const observer = new ResizeObserver((entries) => {
-		const width = entries[0]?.contentRect.width ?? 0;
-		if (width < 768) {
-			columns = 2;
-		} else {
-			const targetWidth = 230;
-			const calc = Math.floor((width + 12) / (targetWidth + 12));
-			columns = Math.min(5, Math.max(1, calc));
-		}
-	});
-	observer.observe(container);
-	return () => observer.disconnect();
-});
 
 function handleOpenModal(game: Game) {
 	onOpenModal?.(game, displayedGames);
 }
 </script>
 
-<div bind:this={container} class="game-gallery-container">
+<div class="game-gallery-container">
 	{#if mounted && filteredGames.length > 0}
-		<div class="game-gallery-grid" style="grid-template-columns: repeat({columns}, minmax(0, 1fr));">
+		<div class="game-gallery-grid">
 			{#each filteredGames as game (game.id)}
 				<div class="game-card-grid-item">
 					<GameCard
@@ -83,22 +65,21 @@ function handleOpenModal(game: Game) {
 
 	.game-gallery-grid {
 		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 		justify-content: center;
-		gap: 0.75rem;
+		gap: 12px;
 		width: 100%;
-		padding: 0 0.5rem;
+	}
+
+	@media (max-width: 767px) {
+		.game-gallery-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.game-card-grid-item {
 		display: flex;
 		min-width: 0;
-		max-width: 280px;
-	}
-
-	@media (max-width: 767px) {
-		.game-gallery-grid {
-			gap: 0.5rem;
-		}
 	}
 
 	.game-gallery-container :global(.game-card) {

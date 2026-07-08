@@ -94,7 +94,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		align-items: center;
 		padding: 0;
 		min-width: 0;
-		margin-top: clamp(2px, 1cqi, 6px);
+		margin-top: clamp(1px, 0.5cqi, 4px);
 	}
 
 	.time-item,
@@ -132,7 +132,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: clamp(6px, 2cqi, 12px);
+		gap: clamp(4px, 1.5cqi, 8px);
 		flex: 1;
 		min-width: 0;
 	}
