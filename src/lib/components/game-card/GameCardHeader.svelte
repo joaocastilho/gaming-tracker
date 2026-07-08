@@ -7,26 +7,41 @@ interface Props {
 
 let { game }: Props = $props();
 
-const titleText = $derived(game.mainTitle || game.title);
-const titleLength = $derived(titleText?.length || 0);
+const titleParts = $derived(game.title.split(':'));
+const derivedMainTitle = $derived(game.mainTitle || titleParts[0].trim());
+const derivedSubtitle = $derived(
+	game.subtitle || (titleParts.length > 1 ? titleParts.slice(1).join(':').trim() : null)
+);
 
-const isLongTitle = $derived(titleLength > 20 && titleLength <= 35);
-const isVeryLongTitle = $derived(titleLength > 35 && titleLength <= 50);
-const isExtraLongTitle = $derived(titleLength > 50);
+const titleLength = $derived(derivedMainTitle.length);
+const subtitleLength = $derived(derivedSubtitle?.length || 0);
+
+// Thresholds for resizing based on character count
+// Titles wrap to 2 lines early on mobile 2-column layout (~13-15 chars)
+const titleNeedsResize = $derived(titleLength > 15);
+const titleNeedsAggressiveResize = $derived(titleLength > 30);
+
+const subtitleNeedsResize = $derived(subtitleLength > 25);
 </script>
 
 <div class="title-section">
 	<h3
 		class="game-title"
-		class:has-subtitle={!!game.subtitle}
-		class:long-title={isLongTitle}
-		class:very-long-title={isVeryLongTitle}
-		class:extra-long-title={isExtraLongTitle}
+		class:has-subtitle={!!derivedSubtitle}
+		style="
+            --title-font-size: {titleNeedsAggressiveResize
+			? 'clamp(0.75rem, 5cqi, 0.95rem)'
+			: titleNeedsResize
+				? 'clamp(0.9rem, 6.5cqi, 1.15rem)'
+				: 'clamp(1.15rem, 8cqi, 1.4rem)'};
+            --subtitle-scale: {titleNeedsAggressiveResize || titleNeedsResize ? '0.9' : '1'};
+            --subtitle-base-size: {subtitleNeedsResize ? '0.7em' : '0.8em'};
+        "
 	>
-		<span class="main-title-text">{titleText}</span>
-		{#if game.subtitle}
+		<span class="main-title-text">{derivedMainTitle}</span>
+		{#if derivedSubtitle}
 			<br />
-			<span class="game-subtitle">{game.subtitle}</span>
+			<span class="game-subtitle">{derivedSubtitle}</span>
 		{/if}
 	</h3>
 </div>
@@ -46,7 +61,7 @@ const isExtraLongTitle = $derived(titleLength > 50);
 
 	.game-title {
 		font-family: 'Inter', sans-serif;
-		font-size: clamp(1.15rem, 8cqi, 1.4rem);
+		font-size: var(--title-font-size);
 		font-weight: 700;
 		margin: 0;
 		line-height: 1.2;
@@ -57,7 +72,7 @@ const isExtraLongTitle = $derived(titleLength > 50);
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
 		overflow: hidden;
-		/* Use ellipsis for main title ONLY when NO subtitle is present */
+		/* Default ellipsis for main title only if no subtitle */
 		text-overflow: ellipsis;
 	}
 
@@ -67,28 +82,14 @@ const isExtraLongTitle = $derived(titleLength > 50);
 		-webkit-line-clamp: unset;
 		line-clamp: unset;
 		text-overflow: clip;
-		/* More aggressive scaling for subtitles to avoid truncation of main title */
-		font-size: clamp(0.85rem, 6cqi, 1.1rem);
-	}
-
-	.game-title.long-title {
-		font-size: clamp(0.85rem, 6cqi, 1.1rem);
-	}
-
-	.game-title.very-long-title {
-		font-size: clamp(0.7rem, 5cqi, 0.9rem);
-	}
-
-	.game-title.extra-long-title {
-		font-size: clamp(0.6rem, 4cqi, 0.75rem);
 	}
 
 	.game-subtitle {
 		font-family: 'Inter', sans-serif;
 		font-weight: 500;
 		color: var(--color-text-secondary);
-		/* Scale subtitle proportionally with title using em */
-		font-size: 0.75em;
+		/* Scale subtitle proportionally with title and its own length */
+		font-size: calc(var(--subtitle-base-size) * var(--subtitle-scale));
 		display: block;
 		width: 100%;
 		white-space: nowrap;
@@ -102,20 +103,9 @@ const isExtraLongTitle = $derived(titleLength > 50);
 			padding: clamp(1px, 0.5cqi, 2px) 0;
 		}
 		.game-title {
-			font-size: clamp(1.05rem, 9cqi, 1.25rem);
-		}
-		.game-title.has-subtitle {
-			font-size: clamp(0.8rem, 6.5cqi, 1.0rem);
-		}
-		.game-title.long-title {
-			font-size: clamp(0.8rem, 7cqi, 1.0rem);
-		}
-		.game-title.very-long-title {
-			font-size: clamp(0.65rem, 6cqi, 0.85rem);
-		}
-		.game-title.extra-long-title {
-			font-size: clamp(0.55rem, 5cqi, 0.7rem);
+			/* Further scale down in small containers if needed */
+			--container-scale: 0.95;
+			font-size: calc(var(--title-font-size) * var(--container-scale));
 		}
 	}
 </style>
-
