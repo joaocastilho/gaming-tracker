@@ -40,6 +40,7 @@
 		display: flex;
 		flex-direction: column;
 		box-shadow: var(--shadow-md);
+		container-type: inline-size;
 	}
 
 	@container (max-width: 767px) {
@@ -69,8 +70,8 @@
 	}
 
 	.skeleton-title {
-		height: 20px;
-		width: 80%;
+		height: calc(2.6 * clamp(1.15rem, 8cqi, 1.4rem));
+		width: 100%;
 		background: var(--color-surface-elevated);
 		border-radius: 4px;
 		animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;

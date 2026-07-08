@@ -120,16 +120,15 @@ function intersectionObserver(node: HTMLElement) {
 		overflow: hidden;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 767px) {
 		.tier-games-grid {
-			grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+			grid-template-columns: repeat(2, 1fr);
 			gap: 0.75rem;
 		}
 	}
 
 	@media (max-width: 480px) {
 		.tier-games-grid {
-			grid-template-columns: repeat(2, 1fr);
 			gap: 0.5rem;
 		}
 	}

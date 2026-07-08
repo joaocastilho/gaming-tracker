@@ -52,13 +52,14 @@ const isExtraLongTitle = $derived(titleLength > 60);
 <style>
 	.title-section {
 		margin-bottom: 0;
-		min-height: unset;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
 		overflow: hidden;
 		padding: clamp(2px, 1cqi, 4px) 0;
+		/* Reserve space for exactly 2 lines of title to prevent layout shifts */
+		height: calc(2.6 * clamp(1.15rem, 8cqi, 1.4rem));
 	}
 
 	.game-title {
@@ -72,15 +73,15 @@ const isExtraLongTitle = $derived(titleLength > 60);
 		color: var(--color-text-primary);
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 	}
 
 	.game-title.has-subtitle {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		-webkit-line-clamp: unset;
-		line-clamp: unset;
-		-webkit-box-orient: unset;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 	}
 
 	.game-title.long-title {
@@ -108,8 +109,6 @@ const isExtraLongTitle = $derived(titleLength > 60);
 
 	@container game-card (max-width: 300px) {
 		.title-section {
-			min-height: unset;
-			height: auto;
 			padding: clamp(1px, 0.5cqi, 2px) 0;
 		}
 		.game-title {
