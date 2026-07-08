@@ -130,28 +130,28 @@ function handleKeyDown(event: KeyboardEvent) {
 	}
 
 	.game-info {
-		padding: clamp(8px, 4cqi, 16px);
+		padding: clamp(6px, 3cqi, 12px);
 		display: flex;
 		flex-direction: column;
-		gap: clamp(4px, 2cqi, 8px);
+		gap: clamp(2px, 1cqi, 4px);
 		flex-grow: 1;
 	}
 
 	.card-content-bottom {
 		display: flex;
 		flex-direction: column;
-		gap: clamp(6px, 3cqi, 12px);
+		gap: clamp(4px, 2cqi, 8px);
 		margin-top: auto;
 	}
 
 	@container game-card (max-width: 300px) {
 		.game-info {
-			padding: clamp(6px, 3cqi, 10px);
-			gap: clamp(4px, 2cqi, 6px);
+			padding: clamp(4px, 2cqi, 8px);
+			gap: clamp(1px, 0.5cqi, 2px);
 		}
 
 		.card-content-bottom {
-			gap: clamp(4px, 2cqi, 8px);
+			gap: clamp(3px, 1.5cqi, 6px);
 		}
 	}
 </style>
