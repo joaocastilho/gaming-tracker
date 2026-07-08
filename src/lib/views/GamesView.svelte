@@ -2,7 +2,6 @@
 import type { Game } from '$lib/types/game';
 import GameCard from '$lib/components/GameCard.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
-import VirtualList from '$lib/components/VirtualList.svelte';
 import SkeletonGrid from '$lib/components/SkeletonGrid.svelte';
 import { browser } from '$app/environment';
 
@@ -27,56 +26,22 @@ let displayedGames = $derived(displayedGamesProp ?? filteredGames ?? []);
 
 const isEditor = $derived(editorStore.editorMode);
 let mounted = $state(browser);
-let containerWidth = $state(0);
+let columns = $state(1);
+let container = $state<HTMLDivElement>();
 
-let columns = $derived.by(() => {
-	if (!containerWidth) return 1;
-	const isMobile = containerWidth < 768;
-	if (isMobile) return 2;
-
-	const targetWidth = 300;
-	const gap = 12;
-	const calculatedColumns = Math.floor((containerWidth + gap) / (targetWidth + gap));
-	return Math.min(5, Math.max(1, calculatedColumns));
-});
-
-let rows = $derived.by(() => {
-	if (!filteredGames) return [];
-
-	const uniqueGames = new Map();
-	filteredGames.forEach((game) => {
-		if (game && typeof game.id === 'string' && game.id.length > 0) {
-			if (!uniqueGames.has(game.id)) {
-				uniqueGames.set(game.id, game);
-			}
+$effect(() => {
+	if (!container) return;
+	const observer = new ResizeObserver((entries) => {
+		const width = entries[0]?.contentRect.width ?? 0;
+		if (width < 768) {
+			columns = 2;
+		} else {
+			const calc = Math.floor((width + 12) / (300 + 12));
+			columns = Math.min(5, Math.max(1, calc));
 		}
 	});
-
-	const validGames = Array.from(uniqueGames.values());
-
-	const result = [];
-	for (let i = 0; i < validGames.length; i += columns) {
-		const chunk = validGames.slice(i, i + columns);
-		const firstGameId = chunk[0]?.id || 'empty';
-		result.push({
-			id: `row-${i}-${firstGameId}`,
-			games: chunk,
-			startIndex: i,
-		});
-	}
-	return result;
-});
-
-let itemHeight = $derived.by(() => {
-	if (!containerWidth || columns === 0) return 450;
-	const containerPadding = 16;
-	const gap = 12;
-	const totalGapWidth = (columns - 1) * gap;
-	const availableWidth = containerWidth - containerPadding - totalGapWidth;
-	const columnWidth = availableWidth / columns;
-	const coverHeight = columnWidth * 1.5;
-	const infoHeight = Math.min(columnWidth * 0.48 + 145, 260);
-	return coverHeight + infoHeight;
+	observer.observe(container);
+	return () => observer.disconnect();
 });
 
 function handleOpenModal(game: Game) {
@@ -84,68 +49,20 @@ function handleOpenModal(game: Game) {
 }
 </script>
 
-<div class="game-gallery-container" bind:clientWidth={containerWidth}>
+<div bind:this={container} class="game-gallery-container">
 	{#if mounted && filteredGames.length > 0}
-		<VirtualList
-			items={rows}
-			{itemHeight}
-			useWindowScroll={true}
-			overscan={2}
-			keyExtractor={(row, i) => row?.id ?? `row-${i}`}
-			className="game-gallery-virtual"
-		>
-			{#snippet renderItem(
-				row: { id: string; games: Game[]; startIndex: number },
-				isPriority: boolean
-			)}
-				<div class="game-row pb-5">
-					{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
-						<div class="game-card-wrapper">
-							<GameCard
-								{game}
-								{displayedGames}
-								isAboveFold={isPriority && i < 4}
-								onOpenModal={handleOpenModal}
-								{onEditGame}
-								{onDeleteGame}
-							/>
-						</div>
-					{/each}
-					{#if row.games.length < columns}
-						{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
-							<div class="game-card-wrapper empty"></div>
-						{/each}
-					{/if}
+		<div class="game-gallery-grid" style="grid-template-columns: repeat({columns}, 1fr);">
+			{#each filteredGames as game (game.id)}
+				<div class="game-card-grid-item">
+					<GameCard
+						{game}
+						{displayedGames}
+						onOpenModal={handleOpenModal}
+						{onEditGame}
+						{onDeleteGame}
+					/>
 				</div>
-			{/snippet}
-		</VirtualList>
-	{:else if filteredGames.length > 0}
-		<div class="virtual-list-container game-gallery-virtual" style="height: {itemHeight * Math.min(1, rows.length)}px; position: relative;">
-			<div class="virtual-items" style="position: absolute; top: 0px; left: 0; right: 0;">
-				{#each rows.slice(0, 1) as row (row.id)}
-					<div class="virtual-item">
-						<div class="game-row pb-5">
-							{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
-								<div class="game-card-wrapper">
-								<GameCard
-									{game}
-									{displayedGames}
-									isAboveFold={i < 4}
-									onOpenModal={handleOpenModal}
-									{onEditGame}
-									{onDeleteGame}
-								/>
-								</div>
-							{/each}
-							{#if row.games.length < columns}
-								{#each Array.from({ length: columns - row.games.length }) as _, i (i)}
-									<div class="game-card-wrapper empty"></div>
-								{/each}
-							{/if}
-						</div>
-					</div>
-				{/each}
-			</div>
+			{/each}
 		</div>
 	{:else if loading || !mounted}
 		<SkeletonGrid />
@@ -164,35 +81,25 @@ function handleOpenModal(game: Game) {
 		padding-bottom: 60px;
 	}
 
-	:global(.game-gallery-virtual) {
-		width: 100%;
-	}
-
-	.game-row {
-		display: flex;
+	.game-gallery-grid {
+		display: grid;
 		justify-content: center;
 		gap: 0.75rem;
 		width: 100%;
-		padding-left: 0.5rem;
-		padding-right: 0.5rem;
+		padding: 0 0.5rem;
 	}
 
-	.game-card-wrapper {
-		flex: 1 1 0;
-		max-width: 300px;
+	.game-card-grid-item {
 		display: flex;
 		justify-content: center;
 		min-width: 0;
-	}
-
-	.game-card-wrapper.empty {
-		visibility: hidden;
+		max-width: 300px;
+		width: 100%;
+		justify-self: center;
 	}
 
 	.game-gallery-container :global(.game-card) {
 		margin-bottom: 0;
-		margin-left: auto;
-		margin-right: auto;
 	}
 
 	.empty-editor-hint {
