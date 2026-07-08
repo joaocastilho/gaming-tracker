@@ -75,7 +75,7 @@ let itemHeight = $derived.by(() => {
 	const availableWidth = containerWidth - containerPadding - totalGapWidth;
 	const columnWidth = availableWidth / columns;
 	const coverHeight = columnWidth * 1.5;
-	const infoHeight = columnWidth * 0.48 + 145;
+	const infoHeight = Math.min(columnWidth * 0.48 + 145, 260);
 	return coverHeight + infoHeight;
 });
 
@@ -98,7 +98,7 @@ function handleOpenModal(game: Game) {
 				row: { id: string; games: Game[]; startIndex: number },
 				isPriority: boolean
 			)}
-				<div class="game-row pb-5" style="height: {itemHeight}px;">
+				<div class="game-row pb-5">
 					{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
 						<div class="game-card-wrapper">
 							<GameCard
@@ -124,7 +124,7 @@ function handleOpenModal(game: Game) {
 			<div class="virtual-items" style="position: absolute; top: 0px; left: 0; right: 0;">
 				{#each rows.slice(0, 1) as row (row.id)}
 					<div class="virtual-item">
-						<div class="game-row pb-5" style="height: {itemHeight}px;">
+						<div class="game-row pb-5">
 							{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
 								<div class="game-card-wrapper">
 								<GameCard
@@ -183,7 +183,6 @@ function handleOpenModal(game: Game) {
 		display: flex;
 		justify-content: center;
 		min-width: 0;
-		height: 100%;
 	}
 
 	.game-card-wrapper.empty {

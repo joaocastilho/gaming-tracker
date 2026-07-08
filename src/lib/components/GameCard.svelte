@@ -134,7 +134,6 @@ function handleKeyDown(event: KeyboardEvent) {
 		display: flex;
 		flex-direction: column;
 		gap: clamp(2px, 1cqi, 4px);
-		flex-grow: 1;
 	}
 
 	.card-content-bottom {
@@ -142,6 +141,8 @@ function handleKeyDown(event: KeyboardEvent) {
 		flex-direction: column;
 		gap: clamp(4px, 2cqi, 8px);
 		margin-top: auto;
+		padding-left: clamp(8px, 4cqi, 16px);
+		padding-right: clamp(8px, 4cqi, 16px);
 	}
 
 	@container game-card (max-width: 300px) {
