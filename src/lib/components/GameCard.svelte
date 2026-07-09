@@ -129,7 +129,7 @@ function handleKeyDown(event: KeyboardEvent) {
 	}
 
 	.game-info {
-		padding: clamp(6px, 3cqi, 12px);
+		padding: clamp(4px, 2cqi, 8px);
 		display: flex;
 		flex-direction: column;
 		gap: clamp(2px, 1cqi, 4px);
@@ -138,10 +138,10 @@ function handleKeyDown(event: KeyboardEvent) {
 	.card-content-bottom {
 		display: flex;
 		flex-direction: column;
-		gap: clamp(4px, 2cqi, 8px);
+		gap: clamp(8px, 3cqi, 12px);
 		margin-top: auto;
-		padding-left: clamp(8px, 4cqi, 16px);
-		padding-right: clamp(8px, 4cqi, 16px);
+		padding-left: clamp(4px, 2cqi, 8px);
+		padding-right: clamp(4px, 2cqi, 8px);
 	}
 
 	@container game-card (max-width: 300px) {
@@ -151,7 +151,7 @@ function handleKeyDown(event: KeyboardEvent) {
 		}
 
 		.card-content-bottom {
-			gap: clamp(3px, 1.5cqi, 6px);
+			gap: clamp(6px, 2cqi, 10px);
 		}
 	}
 </style>

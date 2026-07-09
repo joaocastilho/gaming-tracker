@@ -230,9 +230,9 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	.ratings-and-score-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: clamp(4px, 2cqi, 16px);
+		gap: clamp(12px, 4cqi, 24px);
 		width: 100%;
-		margin-top: clamp(4px, 2cqi, 12px);
+		margin-top: clamp(6px, 2cqi, 12px);
 		padding-bottom: 4px;
 	}
 
@@ -243,8 +243,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		}
 
 		.ratings-and-score-wrapper {
-			margin-top: 10px;
-			gap: 12px;
+			margin-top: 12px;
+			gap: 16px;
 		}
 
 		.desktop-text {

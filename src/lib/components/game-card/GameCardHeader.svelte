@@ -7,9 +7,7 @@ interface Props {
 
 let { game }: Props = $props();
 
-const derivedSubtitle = $derived(
-	game.subtitle ?? game.title.match(/\((.+?)\)/)?.[1] ?? null
-);
+const derivedSubtitle = $derived(game.subtitle ?? game.title.match(/\((.+?)\)/)?.[1] ?? null);
 const derivedMainTitle = $derived(
 	game.mainTitle ?? (derivedSubtitle ? game.title.replace(/\(.+?\)/, '').trim() : game.title)
 );
@@ -41,7 +39,7 @@ const subtitleNeedsResize = $derived(subtitleLength > 25);
 
 <style>
 	.title-section {
-		margin-bottom: 0;
+		margin-bottom: clamp(4px, 2cqi, 8px);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
