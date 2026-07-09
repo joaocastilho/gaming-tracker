@@ -7,7 +7,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
+		"prepare": "bun run scripts/setup-svelte-check-ts.ts && (svelte-kit sync || echo '')",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "biome format --write .",
@@ -36,6 +36,7 @@
 		"chart.js": "^4.5.1",
 		"chartjs-plugin-datalabels": "^2.2.0",
 		"dexie": "^4.4.4",
+		"typescript6": "npm:typescript@^6.0.3",
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
@@ -61,7 +62,7 @@
 		"svelte": "^5.56.4",
 		"svelte-check": "^4.7.2",
 		"tailwindcss": "^4.3.2",
-		"typescript": "^6.0.3",
+		"typescript": "^7.0.2",
 		"vite": "^8.1.4",
 		"vitest": "^4.1.10"
 	}
