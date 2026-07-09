@@ -80,7 +80,7 @@ let itemHeight = $derived.by(() => {
 			className="game-gallery-virtual"
 		>
 			{#snippet renderItem(row: { id: string; games: Game[]; startIndex: number }, isPriority: boolean)}
-				<div class="game-row">
+				<div class="game-row pb-5">
 					{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
 						<GameCard
 							{game}
