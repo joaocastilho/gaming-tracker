@@ -263,7 +263,7 @@
       "year": 2021,
       "genre": "Survival Horror",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/alan-wake.webp",
       "playtime": "10h 30m",
       "finishedDate": null,
@@ -9639,6 +9639,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-07-05T20:18:50.768Z"
+    "lastUpdated": "2026-07-09T19:28:45.682Z"
   }
 }
