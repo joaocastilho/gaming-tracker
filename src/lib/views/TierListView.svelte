@@ -1,50 +1,50 @@
 <script lang="ts">
-	import type { Game, TierValue } from '$lib/types/game';
-	import TierRow from '$lib/components/TierRow.svelte';
-	import VirtualList from '$lib/components/VirtualList.svelte';
+import type { Game, TierValue } from '$lib/types/game';
+import TierRow from '$lib/components/TierRow.svelte';
+import VirtualList from '$lib/components/VirtualList.svelte';
 
-	interface Props {
-		filteredGames: Game[];
-		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
-	}
+interface Props {
+	filteredGames: Game[];
+	onOpenModal?: (game: Game, displayedGames: Game[]) => void;
+}
 
-	let { filteredGames = [], onOpenModal }: Props = $props();
+let { filteredGames = [], onOpenModal }: Props = $props();
 
-	let tierList = $derived(buildTierList(filteredGames ?? []));
-	let allGames = $derived(Object.values(tierList).flat());
+let tierList = $derived(buildTierList(filteredGames ?? []));
+let allGames = $derived(Object.values(tierList).flat());
 
-	function buildTierList(games: Game[]): Record<string, Game[]> {
-		const gamesByTier: Record<string, Game[]> = {
-			'S - Masterpiece': [],
-			'A - Amazing': [],
-			'B - Great': [],
-			'C - Good': [],
-			'D - Decent': [],
-			'E - Bad': [],
-		};
+function buildTierList(games: Game[]): Record<string, Game[]> {
+	const gamesByTier: Record<string, Game[]> = {
+		'S - Masterpiece': [],
+		'A - Amazing': [],
+		'B - Great': [],
+		'C - Good': [],
+		'D - Decent': [],
+		'E - Bad': [],
+	};
 
-		games
-			.filter((game): game is Game & { tier: TierValue } => game.tier !== null)
-			.forEach((game) => {
-				const tier = game.tier;
-				if (gamesByTier[tier]) {
-					gamesByTier[tier].push(game);
-				}
-			});
+	games
+		.filter((game): game is Game & { tier: TierValue } => game.tier !== null)
+		.forEach((game) => {
+			const tier = game.tier;
+			if (gamesByTier[tier]) {
+				gamesByTier[tier].push(game);
+			}
+		});
 
-		return gamesByTier;
-	}
+	return gamesByTier;
+}
 
-	let rows = $derived.by(() => {
-		const entries = Object.entries(tierList).filter(([, games]) => games.length > 0);
-		return entries.map(([tierName, games]) => ({
-			tierName,
-			games,
-			allGames,
-		}));
-	});
+let rows = $derived.by(() => {
+	const entries = Object.entries(tierList).filter(([, games]) => games.length > 0);
+	return entries.map(([tierName, games]) => ({
+		tierName,
+		games,
+		allGames,
+	}));
+});
 
-	const itemHeight = 400;
+const itemHeight = 400;
 </script>
 
 {#if rows.length === 0}
