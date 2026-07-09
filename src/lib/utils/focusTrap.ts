@@ -9,9 +9,13 @@ export function focusTrap(node: HTMLElement) {
 			return;
 		}
 
-		const focusableContent = node.querySelectorAll(focusableElementsSelector);
-		const firstFocusableElement = focusableContent[0] as HTMLElement;
-		const lastFocusableElement = focusableContent[focusableContent.length - 1] as HTMLElement;
+		const focusableContent = Array.from(node.querySelectorAll(focusableElementsSelector)).filter(
+			(el): el is HTMLElement => el instanceof HTMLElement
+		);
+		if (focusableContent.length === 0) return;
+
+		const firstFocusableElement = focusableContent[0];
+		const lastFocusableElement = focusableContent[focusableContent.length - 1];
 
 		if (e.shiftKey) {
 			if (document.activeElement === firstFocusableElement) {
@@ -28,10 +32,11 @@ export function focusTrap(node: HTMLElement) {
 
 	node.addEventListener('keydown', handleKeydown);
 
-	const focusableContent = node.querySelectorAll(focusableElementsSelector);
+	const focusableContent = Array.from(node.querySelectorAll(focusableElementsSelector)).filter(
+		(el): el is HTMLElement => el instanceof HTMLElement
+	);
 	if (focusableContent.length > 0) {
-		const firstFocusableElement = focusableContent[0] as HTMLElement;
-		firstFocusableElement.focus();
+		focusableContent[0].focus();
 	}
 
 	return {

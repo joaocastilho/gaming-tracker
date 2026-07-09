@@ -1,28 +1,24 @@
 <script lang="ts">
 import { page } from '$app/state';
 import { goto, replaceState, afterNavigate } from '$app/navigation';
-import '../app.css';
+import { browser, dev } from '$app/environment';
+import { untrack } from 'svelte';
+
+import { RotateCcw } from '@lucide/svelte';
+
+import { appStore, type TabValue } from '$lib/stores/app.svelte';
+import { editorStore } from '$lib/stores/editor.svelte';
+import { editorModalState } from '$lib/stores/editorModalState.svelte';
+import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
+import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { modalStore } from '$lib/stores/modal.svelte';
+import { windowSize } from '$lib/stores/window.svelte';
+
 import Header from '$lib/components/Header.svelte';
 import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
 import BottomNavigation from '$lib/components/BottomNavigation.svelte';
-import { extractFilterOptions } from '$lib/utils/filterOptions';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { appStore, type TabValue } from '$lib/stores/app.svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { browser, dev } from '$app/environment';
-import { untrack } from 'svelte';
-import type { Game } from '$lib/types/game.js';
-import { RotateCcw } from '@lucide/svelte';
-import { registerServiceWorker } from '$lib/utils/serviceWorker';
-import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
-import { editorModalState } from '$lib/stores/editorModalState.svelte';
-import { getTierDisplayName } from '$lib/utils/tierUtils';
-
-import GamesView from '$lib/views/GamesView.svelte';
-import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
-import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
-
 import DetailModal from '$lib/components/DetailModal.svelte';
 import GameEditorModal from '$lib/components/GameEditorModal.svelte';
 import DeleteConfirmModal from '$lib/components/DeleteConfirmModal.svelte';
@@ -30,12 +26,23 @@ import LoginModal from '$lib/components/LoginModal.svelte';
 import MobileSearch from '$lib/components/layout/MobileSearch.svelte';
 import MobileFilters from '$lib/components/MobileFilters.svelte';
 import MobileSettingsMenu from '$lib/components/layout/MobileSettingsMenu.svelte';
-import TierListView from '$lib/views/TierListView.svelte';
 import NoResults from '$lib/components/NoResults.svelte';
 import SearchBar from '$lib/components/SearchBar.svelte';
 import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 import FilterToggle from '$lib/components/FilterToggle.svelte';
 import RatingsSort from '$lib/components/RatingsSort.svelte';
+
+import GamesView from '$lib/views/GamesView.svelte';
+import TierListView from '$lib/views/TierListView.svelte';
+
+import { extractFilterOptions } from '$lib/utils/filterOptions';
+import { registerServiceWorker } from '$lib/utils/serviceWorker';
+import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
+import { getTierDisplayName } from '$lib/utils/tierUtils';
+
+import type { Game } from '$lib/types/game';
+
+import '../app.css';
 
 let {
 	children,
@@ -44,9 +51,6 @@ let {
 	children: import('svelte').Snippet;
 	data: { games: Game[]; sharedGame: Game | null };
 } = $props();
-
-import { editorStore } from '$lib/stores/editor.svelte';
-import { windowSize } from '$lib/stores/window.svelte';
 
 let initialized = $state(true);
 let gamesInitialized = $state(false);

@@ -28,10 +28,12 @@ const colors = {
 const colorFn = $derived(colors[type]);
 
 function handleBackdropClick(e: MouseEvent) {
-	const target = e.target as HTMLElement;
-	const isBackdrop = target.classList.contains('bg-black/60');
-	if (isBackdrop) {
-		onAccept(true);
+	const target = e.target;
+	if (target instanceof HTMLElement) {
+		const isBackdrop = target.classList.contains('bg-black/60');
+		if (isBackdrop) {
+			onAccept(true);
+		}
 	}
 }
 </script>

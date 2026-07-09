@@ -17,7 +17,6 @@ interface Props {
 let { filteredGames = [], onOpenModal, onEditGame, onDeleteGame, loading = false }: Props = $props();
 
 const isEditor = $derived(editorStore.editorMode);
-let mounted = $state(true);
 let container = $state<HTMLDivElement>();
 let columns = $state(1);
 
@@ -85,37 +84,37 @@ let itemHeight = $derived.by(() => {
 	return Math.floor(coverHeight + infoHeight + paddingBottom);
 });
 </script>
-
-<div bind:this={container} class="game-gallery-container">
-	{#if mounted && filteredGames.length > 0}
-		<VirtualList
-			items={rows}
-			{itemHeight}
-			useWindowScroll={true}
-			overscan={4}
-			keyExtractor={(row) => row?.id ?? 'row'}
-			className="game-gallery-virtual"
-		>
-			{#snippet renderItem(row: { id: string; games: Game[]; startIndex: number }, isPriority: boolean)}
-				<div class="game-row pb-5" style="height: {itemHeight}px;">
-					{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
-						<GameCard
-							{game}
-							size="small"
-							showTierBadge={true}
-							isAboveFold={isPriority && i < 4}
-							{onOpenModal}
-							{onEditGame}
-							{onDeleteGame}
-							displayedGames={filteredGames}
-						/>
-					{/each}
-				</div>
+	
+	<div bind:this={container} class="game-gallery-container">
+		{#if filteredGames.length > 0}
+			<VirtualList
+				items={rows}
+				{itemHeight}
+				useWindowScroll={true}
+				overscan={4}
+				keyExtractor={(row) => row?.id ?? 'row'}
+				className="game-gallery-virtual"
+			>
+				{#snippet renderItem(row: { id: string; games: Game[]; startIndex: number }, isPriority: boolean)}
+					<div class="game-row pb-5" style="height: {itemHeight}px;">
+						{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
+							<GameCard
+								{game}
+								size="small"
+								showTierBadge={true}
+								isAboveFold={isPriority && i < 4}
+								{onOpenModal}
+								{onEditGame}
+								{onDeleteGame}
+								displayedGames={filteredGames}
+							/>
+						{/each}
+					</div>
 			{/snippet}
 		</VirtualList>
-	{:else if loading || !mounted}
-		<SkeletonGrid />
-	{:else if isEditor}
+		{:else if loading}
+			<SkeletonGrid />
+		{:else if isEditor}
 		<div class="empty-editor-hint">
 			<p>No games found for this view.</p>
 			<p class="sub">Use the editor tools to add entries.</p>

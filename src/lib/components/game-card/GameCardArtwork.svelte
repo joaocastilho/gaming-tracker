@@ -1,11 +1,13 @@
 <script lang="ts">
-import { editorStore } from '../../stores/editor.svelte';
-import { offlineStore } from '../../stores/offline.svelte';
-import { filtersStore } from '../../stores/filters.svelte';
-import { imageErrorStore } from '../../stores/imageErrors.svelte.js';
-import { getTierClass, getTierDisplayName } from '../../utils/tierUtils.js';
-import type { Game } from '../../types/game.js';
 import { Pencil, Trash2 } from '@lucide/svelte';
+
+import { editorStore } from '$lib/stores/editor.svelte';
+import { offlineStore } from '$lib/stores/offline.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { imageErrorStore } from '$lib/stores/imageErrors.svelte';
+
+import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
+import type { Game } from '$lib/types/game';
 
 interface Props {
 	game: Game;
@@ -36,8 +38,8 @@ function imageAction(node: HTMLImageElement) {
 			}
 
 			node.classList.add('loaded');
-			const skeleton = node.previousElementSibling as HTMLElement;
-			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
+			const skeleton = node.previousElementSibling;
+			if (skeleton instanceof HTMLElement && skeleton.classList.contains('skeleton-loader')) {
 				if (isInstant) {
 					skeleton.style.transition = 'none';
 				}
