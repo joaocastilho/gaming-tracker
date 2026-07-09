@@ -24,9 +24,9 @@ const hasRatings = $derived(
 		<div class="h-[1px] flex-1 opacity-50" style="background-color: var(--color-border);"></div>
 	</div>
 
-	<div class="ratings-container grid grid-cols-3 gap-2 md:gap-4">
+	<div class="ratings-container grid grid-cols-3 gap-2 md:gap-3">
 		<div
-			class="rating-card flex flex-col items-center gap-4 rounded-xl p-3 transition-transform duration-200"
+			class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
 			class:opacity-40={!hasRatings}
 		>
 			<span
@@ -40,7 +40,7 @@ const hasRatings = $derived(
 		</div>
 
 		<div
-			class="rating-card flex flex-col items-center gap-4 rounded-xl p-3 transition-transform duration-200"
+			class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
 			class:opacity-40={!hasRatings}
 		>
 			<span
@@ -54,7 +54,7 @@ const hasRatings = $derived(
 		</div>
 
 		<div
-			class="rating-card flex flex-col items-center gap-4 rounded-xl p-3 transition-transform duration-200"
+			class="rating-card flex flex-col items-center gap-2 rounded-xl p-3 transition-transform duration-200"
 			class:opacity-40={!hasRatings}
 		>
 			<span
@@ -120,7 +120,7 @@ const hasRatings = $derived(
 			flex-direction: row !important;
 			padding: 0.25rem 0.5rem !important;
 			background: transparent !important;
-			gap: 1rem !important;
+			gap: 0.75rem !important;
 		}
 
 		:global(.rating-icon) {

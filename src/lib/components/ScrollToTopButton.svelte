@@ -79,7 +79,7 @@ function handleKeydown(event: KeyboardEvent) {
 		font-size: 1.3rem;
 		font-weight: bold;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-		transition: all 0.3s ease;
+		transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 		z-index: 50;
 		outline: none;
 		touch-action: manipulation;

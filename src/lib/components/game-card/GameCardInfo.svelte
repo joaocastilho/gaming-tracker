@@ -157,6 +157,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		width: clamp(14px, 6cqi, 22px);
 		height: clamp(14px, 6cqi, 22px);
 		flex-shrink: 0;
+		margin-right: 1px;
 	}
 
 	.status-indicator {
@@ -265,9 +266,14 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 			height: clamp(16px, 10px + 3cqw, 24px);
 		}
 
+		.rating-item {
+			gap: clamp(3px, 1.5cqw, 6px);
+		}
+
 		.rating-item :global(svg) {
 			width: clamp(18px, 6cqw, 28px);
 			height: clamp(18px, 6cqw, 28px);
+			margin-right: 2px;
 		}
 
 		.planned-badge {

@@ -130,6 +130,18 @@ let itemHeight = $derived.by(() => {
 		max-width: 300px;
 	}
 
+	@media (max-width: 767px) {
+		.game-row {
+			padding-left: 6px;
+			padding-right: 6px;
+		}
+
+		.game-gallery-container :global(.game-card) {
+			flex: 1 1 calc(50% - 6px);
+			max-width: calc(50% - 6px);
+		}
+	}
+
 	.empty-editor-hint {
 		grid-column: 1 / -1;
 		text-align: center;
