@@ -10,7 +10,6 @@
         "chart.js": "^4.5.1",
         "chartjs-plugin-datalabels": "^2.2.0",
         "dexie": "^4.4.4",
-        "typescript6": "npm:typescript@^6.0.3",
         "zod": "^4.4.3",
       },
       "devDependencies": {
@@ -37,6 +36,7 @@
         "svelte-check": "^4.7.2",
         "tailwindcss": "^4.3.2",
         "typescript": "^7.0.2",
+        "typescript6": "npm:typescript@^6.0.3",
         "vite": "^8.1.4",
         "vitest": "^4.1.10",
       },
