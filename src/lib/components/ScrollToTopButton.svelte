@@ -27,11 +27,26 @@ $effect(() => {
 });
 
 function scrollToTop() {
-	const headerHeight = 110;
-	window.scrollTo({
-		top: -headerHeight,
-		behavior: 'smooth',
-	});
+	const startY = window.scrollY;
+	const duration = 600; // ms
+	const startTime = performance.now();
+
+	function easeOutCubic(t: number) {
+		return 1 - Math.pow(1 - t, 3);
+	}
+
+	function animateScroll(currentTime: number) {
+		const elapsed = currentTime - startTime;
+		const progress = Math.min(elapsed / duration, 1);
+
+		window.scrollTo(0, startY * (1 - easeOutCubic(progress)));
+
+		if (progress < 1) {
+			requestAnimationFrame(animateScroll);
+		}
+	}
+
+	requestAnimationFrame(animateScroll);
 }
 
 function handleKeydown(event: KeyboardEvent) {

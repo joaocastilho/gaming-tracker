@@ -1,7 +1,6 @@
 <script lang="ts">
 import type { Game, TierValue } from '$lib/types/game';
 import TierRow from '$lib/components/TierRow.svelte';
-import VirtualList from '$lib/components/VirtualList.svelte';
 
 interface Props {
 	filteredGames: Game[];
@@ -43,8 +42,6 @@ let rows = $derived.by(() => {
 		allGames,
 	}));
 });
-
-const itemHeight = 400;
 </script>
 
 {#if rows.length === 0}
@@ -53,18 +50,9 @@ const itemHeight = 400;
 	</div>
 {:else}
 	<div class="tier-list-container max-w-none">
-		<VirtualList
-			items={rows}
-			{itemHeight}
-			useWindowScroll={true}
-			overscan={1}
-			keyExtractor={(row) => row.tierName}
-			className="tier-list-virtual"
-		>
-			{#snippet renderItem(row: { tierName: string; games: Game[]; allGames: Game[] }, _isPriority: boolean)}
-				<TierRow tierName={row.tierName} games={row.games} allGames={row.allGames} {onOpenModal} />
-			{/snippet}
-		</VirtualList>
+		{#each rows as row (row.tierName)}
+			<TierRow tierName={row.tierName} games={row.games} allGames={row.allGames} {onOpenModal} />
+		{/each}
 	</div>
 {/if}
 
@@ -75,10 +63,6 @@ const itemHeight = 400;
 		gap: 0.5rem;
 		padding-top: 0;
 		padding-bottom: 60px;
-	}
-
-	:global(.tier-list-virtual) {
-		width: 100%;
 	}
 
 	@media (max-width: 768px) {

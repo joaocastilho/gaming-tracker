@@ -21,10 +21,15 @@ let mounted = $state(true);
 let container = $state<HTMLDivElement>();
 let columns = $state(1);
 
+let containerWidth = $state(0);
+
 $effect(() => {
 	if (!container) return;
 	const observer = new ResizeObserver((entries) => {
 		const width = entries[0]?.contentRect.width ?? 0;
+		if (Math.abs(containerWidth - width) > 10) {
+			containerWidth = width;
+		}
 		if (width < 768) {
 			columns = 2;
 		} else {
@@ -63,9 +68,21 @@ let rows = $derived.by(() => {
 });
 
 let itemHeight = $derived.by(() => {
-	const coverHeight = 300 * 1.5;
-	const infoHeight = 360;
-	return coverHeight + infoHeight;
+	if (!containerWidth) return 600; // safe default before mount
+
+	let cardWidth;
+	if (containerWidth < 768) {
+		// 2 columns with 12px gap
+		cardWidth = (containerWidth - 12) / 2;
+	} else {
+		cardWidth = 300; // fixed max-width on desktop
+	}
+
+	const coverHeight = cardWidth * 1.5;
+	const infoHeight = containerWidth < 768 ? 220 : 250;
+	const paddingBottom = 20; // pb-5 is 20px
+
+	return Math.floor(coverHeight + infoHeight + paddingBottom);
 });
 </script>
 
@@ -75,12 +92,12 @@ let itemHeight = $derived.by(() => {
 			items={rows}
 			{itemHeight}
 			useWindowScroll={true}
-			overscan={2}
+			overscan={4}
 			keyExtractor={(row) => row?.id ?? 'row'}
 			className="game-gallery-virtual"
 		>
 			{#snippet renderItem(row: { id: string; games: Game[]; startIndex: number }, isPriority: boolean)}
-				<div class="game-row pb-5">
+				<div class="game-row pb-5" style="height: {itemHeight}px;">
 					{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
 						<GameCard
 							{game}

@@ -118,14 +118,21 @@ $effect(() => {
 			if (scheduled) return;
 			scheduled = true;
 
-			// Use requestAnimationFrame to batch the read
 			requestAnimationFrame(() => {
 				updateContainerPosition();
 				scheduled = false;
 			});
 		});
 
-		if (container) resizeObserver.observe(container.parentElement || container);
+		// Observe parent for layout shifts that affect container position
+		if (container) {
+			const parent = container.parentElement;
+			if (parent) {
+				resizeObserver.observe(parent);
+			} else {
+				resizeObserver.observe(container);
+			}
+		}
 
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
@@ -170,6 +177,7 @@ $effect(() => {
 <style>
 	.virtual-list-container {
 		width: 100%;
+		overflow-anchor: none;
 	}
 
 	.virtual-spacer {

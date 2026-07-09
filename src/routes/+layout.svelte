@@ -91,28 +91,6 @@ $effect.pre(() => {
 	}
 });
 
-let lastScrollY = 0;
-let scrollTicking = false;
-
-const handleScroll = () => {
-	if (scrollTicking) return;
-	scrollTicking = true;
-
-	requestAnimationFrame(() => {
-		const currentScrollY = window.scrollY;
-		if (
-			currentScrollY > 80 &&
-			currentScrollY > lastScrollY &&
-			filtersStore.isDesktopFiltersExpanded &&
-			!filtersStore.isAnyFilterApplied()
-		) {
-			filtersStore.setDesktopFiltersExpanded(false);
-		}
-		lastScrollY = currentScrollY;
-		scrollTicking = false;
-	});
-};
-
 $effect(() => {
 	if (!browser) return;
 	return registerServiceWorker();
@@ -248,8 +226,6 @@ let activeFilterPopup = $state<'platforms' | 'genres' | 'tiers' | 'coOp' | null>
 
 let hasActiveFilters = $derived(filtersStore.isAnyFilterApplied());
 
-let savedScrollPosition = $state<number>(0);
-
 $effect(() => {
 	if (browser && (isFiltersOpen || activeFilterPopup)) {
 		document.body.classList.add('no-scroll');
@@ -273,7 +249,7 @@ function onSearchToggle() {
 		pushSearchState(false);
 	} else {
 		if (browser && innerWidth < 768) {
-			savedScrollPosition = window.scrollY;
+			// Intentionally left blank, previously saved scroll position here
 		}
 
 		isSearchOpen = true;
@@ -362,7 +338,7 @@ $effect(() => {
 
 		if (browser && innerWidth < 768) {
 			requestAnimationFrame(() => {
-				window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
+				window.scrollTo({ top: 0, behavior: 'smooth' });
 			});
 		}
 	}
@@ -541,7 +517,7 @@ let shareDescription = $derived.by(() => {
 	{/if}
 </svelte:head>
 
-<svelte:window onscroll={handleScroll} />
+
 
 {#if initialized}
 	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">

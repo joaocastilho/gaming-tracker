@@ -26,11 +26,21 @@ const OFFLINE_FALLBACK_DATA_URI =
 	'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%231a1a2e" width="300" height="450"/%3E%3Ctext x="150" y="225" text-anchor="middle" fill="%23666" font-family="sans-serif" font-size="14"%3EOffline%3C/text%3E%3C/svg%3E';
 
 function imageAction(node: HTMLImageElement) {
-	function handleLoad() {
+	const mountTime = performance.now();
+
+	function handleLoad(instant = false) {
 		if (node) {
+			const isInstant = instant || performance.now() - mountTime < 50;
+			if (isInstant) {
+				node.style.transition = 'none';
+			}
+
 			node.classList.add('loaded');
 			const skeleton = node.previousElementSibling as HTMLElement;
 			if (skeleton && skeleton.classList.contains('skeleton-loader')) {
+				if (isInstant) {
+					skeleton.style.transition = 'none';
+				}
 				skeleton.style.opacity = '0';
 			}
 		}
@@ -53,15 +63,21 @@ function imageAction(node: HTMLImageElement) {
 	}
 
 	if (node.complete && node.naturalHeight !== 0) {
-		handleLoad();
+		// Image is already cached, disable transition to prevent flickering
+		node.style.transition = 'none';
+		handleLoad(true);
 	}
 
-	node.addEventListener('load', handleLoad);
+	function onLoadEvent() {
+		handleLoad(false);
+	}
+
+	node.addEventListener('load', onLoadEvent);
 	node.addEventListener('error', handleError);
 
 	return {
 		destroy() {
-			node.removeEventListener('load', handleLoad);
+			node.removeEventListener('load', onLoadEvent);
 			node.removeEventListener('error', handleError);
 		},
 	};
@@ -113,7 +129,7 @@ function getCompletionDay(dateStr: string | null): string {
 			src={effectiveImageSrc()}
 			alt={game.title}
 			class="cover-image"
-			loading={isAboveFold ? 'eager' : 'lazy'}
+			loading="eager"
 			fetchpriority={isAboveFold ? 'high' : 'auto'}
 			decoding="async"
 			width="300"

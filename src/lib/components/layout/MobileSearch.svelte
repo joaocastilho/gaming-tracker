@@ -14,6 +14,7 @@ let { isOpen, onClose }: Props = $props();
 
 let searchInput = $state<HTMLInputElement | null>(null);
 let localSearchTerm = $state(filtersStore.searchQuery);
+let previousSearchTerm = $state(filtersStore.searchQuery);
 
 $effect(() => {
 	if (isOpen && searchInput) {
@@ -36,11 +37,14 @@ $effect(() => {
 $effect(() => {
 	if (browser && isOpen && window.innerWidth < 768) {
 		const searchTerm = filtersStore.searchQuery;
-		// Scroll to top when there's a search term or when results change
-		if (searchTerm) {
+		// Scroll to top only when there's a search term and it changed
+		if (searchTerm && searchTerm !== previousSearchTerm) {
+			previousSearchTerm = searchTerm;
 			requestAnimationFrame(() => {
 				window.scrollTo({ top: 0, behavior: 'smooth' });
 			});
+		} else if (!searchTerm) {
+			previousSearchTerm = '';
 		}
 	}
 });
