@@ -109,7 +109,7 @@ async function handleLogout() {
 <header class="header-root mb-0 px-4 py-1 md:mb-6 md:px-6">
 	<div class="header-inner container mx-auto">
 		<div class="header-left">
-			<button type="button" class="home-button" onclick={() => goto('/')} aria-label="Home">
+			<button type="button" class="home-button" class:active={appStore.activeTab === 'home'} onclick={() => goto('/')} aria-label="Home">
 				<Home size={20} />
 			</button>
 		</div>
@@ -269,6 +269,12 @@ async function handleLogout() {
 		color: var(--color-text-secondary);
 		cursor: pointer;
 		transition: all var(--transition-fast);
+	}
+
+	.home-button.active {
+		background: var(--color-hover);
+		border-color: var(--color-accent);
+		color: var(--color-accent);
 	}
 
 	@media (hover: hover) {
