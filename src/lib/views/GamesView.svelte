@@ -35,15 +35,13 @@ function handleOpenModal(game: Game) {
 	{#if mounted && filteredGames.length > 0}
 		<div class="game-gallery-grid">
 			{#each filteredGames as game (game.id)}
-				<div class="game-card-grid-item">
-					<GameCard
-						{game}
-						{displayedGames}
-						onOpenModal={handleOpenModal}
-						{onEditGame}
-						{onDeleteGame}
-					/>
-				</div>
+				<GameCard
+					{game}
+					{displayedGames}
+					onOpenModal={handleOpenModal}
+					{onEditGame}
+					{onDeleteGame}
+				/>
 			{/each}
 		</div>
 	{:else if loading || !mounted}
@@ -71,14 +69,10 @@ function handleOpenModal(game: Game) {
 		width: 100%;
 	}
 
-	.game-card-grid-item {
-		display: flex;
-		justify-content: center;
-		min-width: 0;
-	}
-
-	.game-gallery-container :global(.game-card) {
-		margin-bottom: 0;
+	@media (max-width: 767px) {
+		.game-gallery-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.empty-editor-hint {
