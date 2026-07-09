@@ -108,7 +108,7 @@ function intersectionObserver(node: HTMLElement) {
 
 	.tier-games-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		grid-template-columns: repeat(auto-fill, 250px);
 		justify-content: center;
 		gap: 1rem;
 		width: 100%;

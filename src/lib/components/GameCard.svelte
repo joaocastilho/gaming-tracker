@@ -94,7 +94,6 @@ function handleKeyDown(event: KeyboardEvent) {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		max-width: 300px;
 		height: 100%;
 		border-radius: 8px;
 		overflow: hidden;

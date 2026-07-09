@@ -491,8 +491,7 @@ async function installApp() {
 
 let shareDescription = $derived.by(() => {
 	const g = data.sharedGame;
-	if (!g)
-		return 'My personal video game collection with ratings, tier lists, and progress tracking.';
+	if (!g) return 'My personal video game collection with ratings, tier lists, and progress tracking.';
 
 	let desc = `${g.platform} · ${g.genre}`;
 	if (g.tier) {
