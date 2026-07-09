@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Game } from '../../types/game.js';
+import type { Game } from '$lib/types/game';
 
 interface Props {
 	game: Game;

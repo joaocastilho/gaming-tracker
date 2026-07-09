@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import type { CoOpStatus, GameStatus, TierValue } from '../types/game';
+import type { CoOpStatus, GameStatus, TierValue } from '$lib/types/game';
 
 export const GAME_STATUS_VALUES = ['Planned', 'Completed', 'Playing'] as const satisfies GameStatus[];
 export const TIER_VALUES = [

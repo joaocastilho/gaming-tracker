@@ -1,7 +1,7 @@
 <script lang="ts">
-import { filtersStore } from '../../stores/filters.svelte';
-import { getPlatformClasses, getGenreClasses } from '../../utils/colorConstants.js';
-import type { Game } from '../../types/game.js';
+import { filtersStore } from '$lib/stores/filters.svelte';
+import { getPlatformClasses, getGenreClasses } from '$lib/utils/colorConstants';
+import type { Game } from '$lib/types/game';
 import { Users } from '@lucide/svelte';
 
 interface Props {

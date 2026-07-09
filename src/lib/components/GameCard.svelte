@@ -1,6 +1,6 @@
 <script lang="ts">
 import { modalStore } from '$lib/stores/modal.svelte';
-import type { Game } from '../types/game.js';
+import type { Game } from '$lib/types/game';
 import GameCardArtwork from './game-card/GameCardArtwork.svelte';
 import GameCardHeader from './game-card/GameCardHeader.svelte';
 import GameCardBadges from './game-card/GameCardBadges.svelte';

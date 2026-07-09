@@ -1,15 +1,15 @@
 import { pushState, replaceState } from '$app/navigation';
 import { createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
-import type { Game, TierValue } from '../types/game.js';
-import type { SortOption } from './filters.svelte';
-import { gamesStore } from './games.svelte';
-import { filterGamesByContext } from './modalNavigation.svelte.js';
+import type { Game, TierValue } from '$lib/types/game';
+import type { SortOption } from '$lib/stores/filters.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { filterGamesByContext } from '$lib/stores/modalNavigation.svelte';
 import {
 	validateFormData as validateFormDataFn,
 	getTierFromScore as getTierFromScoreFn,
 	buildNewGame,
 	buildUpdatedGame,
-} from './modalForm.svelte.js';
+} from '$lib/stores/modalForm.svelte';
 
 export interface CardRect {
 	x: number;
