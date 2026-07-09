@@ -1,51 +1,70 @@
 <script lang="ts">
-import type { Game, TierValue } from '$lib/types/game';
-import TierRow from '$lib/components/TierRow.svelte';
+	import type { Game, TierValue } from '$lib/types/game';
+	import TierRow from '$lib/components/TierRow.svelte';
+	import VirtualList from '$lib/components/VirtualList.svelte';
 
-interface Props {
-	filteredGames: Game[];
-	onOpenModal?: (game: Game, displayedGames: Game[]) => void;
-}
+	interface Props {
+		filteredGames: Game[];
+		onOpenModal?: (game: Game, displayedGames: Game[]) => void;
+	}
 
-let { filteredGames = [], onOpenModal }: Props = $props();
+	let { filteredGames = [], onOpenModal }: Props = $props();
 
-let tierList = $derived(buildTierList(filteredGames ?? []));
-let allGames = $derived(Object.values(tierList).flat());
+	let tierList = $derived(buildTierList(filteredGames ?? []));
+	let allGames = $derived(Object.values(tierList).flat());
 
-function buildTierList(games: Game[]): Record<string, Game[]> {
-	const gamesByTier: Record<string, Game[]> = {
-		'S - Masterpiece': [],
-		'A - Amazing': [],
-		'B - Great': [],
-		'C - Good': [],
-		'D - Decent': [],
-		'E - Bad': [],
-	};
+	function buildTierList(games: Game[]): Record<string, Game[]> {
+		const gamesByTier: Record<string, Game[]> = {
+			'S - Masterpiece': [],
+			'A - Amazing': [],
+			'B - Great': [],
+			'C - Good': [],
+			'D - Decent': [],
+			'E - Bad': [],
+		};
 
-	games
-		.filter((game): game is Game & { tier: TierValue } => game.tier !== null)
-		.forEach((game) => {
-			const tier = game.tier;
-			if (gamesByTier[tier]) {
-				gamesByTier[tier].push(game);
-			}
-		});
+		games
+			.filter((game): game is Game & { tier: TierValue } => game.tier !== null)
+			.forEach((game) => {
+				const tier = game.tier;
+				if (gamesByTier[tier]) {
+					gamesByTier[tier].push(game);
+				}
+			});
 
-	return gamesByTier;
-}
+		return gamesByTier;
+	}
+
+	let rows = $derived.by(() => {
+		const entries = Object.entries(tierList).filter(([, games]) => games.length > 0);
+		return entries.map(([tierName, games]) => ({
+			tierName,
+			games,
+			allGames,
+		}));
+	});
+
+	const itemHeight = 400;
 </script>
 
-{#if Object.values(tierList).every((games) => games.length === 0)}
+{#if rows.length === 0}
 	<div class="empty-state">
 		<h2>No tiered games found</h2>
 	</div>
 {:else}
 	<div class="tier-list-container max-w-none">
-		{#each Object.entries(tierList) as [tierName, games] (tierName)}
-			{#if games.length > 0}
-				<TierRow {tierName} {games} {allGames} {onOpenModal} />
-			{/if}
-		{/each}
+		<VirtualList
+			items={rows}
+			{itemHeight}
+			useWindowScroll={true}
+			overscan={1}
+			keyExtractor={(row) => row.tierName}
+			className="tier-list-virtual"
+		>
+			{#snippet renderItem(row: { tierName: string; games: Game[]; allGames: Game[] }, _isPriority: boolean)}
+				<TierRow tierName={row.tierName} games={row.games} allGames={row.allGames} {onOpenModal} />
+			{/snippet}
+		</VirtualList>
 	</div>
 {/if}
 
@@ -56,6 +75,10 @@ function buildTierList(games: Game[]): Record<string, Game[]> {
 		gap: 0.5rem;
 		padding-top: 0;
 		padding-bottom: 60px;
+	}
+
+	:global(.tier-list-virtual) {
+		width: 100%;
 	}
 
 	@media (max-width: 768px) {
