@@ -3,7 +3,7 @@ import { editorStore } from '$lib/stores/editor.svelte';
 import { offlineStore } from '$lib/stores/offline.svelte';
 import type { Game } from '$lib/types/game.js';
 import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
-import { X, Pencil, Trash2 } from '@lucide/svelte';
+import { Pencil, Trash2, X, Share2 } from '@lucide/svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
 import { imageErrorStore } from '$lib/stores/imageErrors.svelte.js';
 import { createGameSlug } from '$lib/utils/slugUtils';
@@ -112,22 +112,40 @@ function handleImageError() {
 }
 </script>
 
-{#if onClose}
-	<button
-		onclick={onClose}
-		class="absolute top-3 right-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/20 text-white backdrop-blur-sm transition-colors outline-none hover:bg-black/40 md:hidden touch-manipulation [-webkit-tap-highlight-color:transparent]"
-		aria-label="Close modal"
-	>
-		<X size={20} />
-	</button>
-{/if}
-
 <div
 	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain md:flex-row md:overflow-hidden"
 >
 	<div
 		class="modal-image-container relative shrink-0 overflow-hidden md:h-auto md:w-[400px] md:min-h-0 md:rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
 	>
+		<!-- Floating mobile buttons hovering the cover image -->
+		<div class="absolute top-3 right-3 z-20 flex items-center gap-2 md:hidden">
+			<button
+				onclick={(e) => {
+					e.stopPropagation();
+					shareGame();
+				}}
+				class="flex h-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/40 text-white/90 backdrop-blur-md transition-colors outline-none hover:bg-black/60 touch-manipulation [-webkit-tap-highlight-color:transparent] {linkCopied
+					? 'gap-1.5 px-3'
+					: 'w-8'}"
+				title="Share"
+				aria-label="Share {game.title}"
+			>
+				<Share2 size={18} />
+				{#if linkCopied}
+					<span class="text-xs font-medium">{linkCopied}</span>
+				{/if}
+			</button>
+			{#if onClose}
+				<button
+					onclick={onClose}
+					class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/40 text-white/90 backdrop-blur-md transition-colors outline-none hover:bg-black/60 touch-manipulation [-webkit-tap-highlight-color:transparent]"
+					aria-label="Close modal"
+				>
+					<X size={20} />
+				</button>
+			{/if}
+		</div>
 		<div class="h-full bg-gray-900 md:min-h-0">
 			<button class="contents" onclick={onImageClick} aria-label="View full screen">
 				<img
