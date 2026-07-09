@@ -73,6 +73,7 @@ function handleOpenModal(game: Game) {
 
 	.game-card-grid-item {
 		display: flex;
+		justify-content: center;
 		min-width: 0;
 	}
 
