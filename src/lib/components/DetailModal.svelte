@@ -69,8 +69,36 @@ let visibleGames = $derived.by((): { game: Game; pos: number }[] => {
 	return result as { game: Game; pos: number }[];
 });
 
+let modalHasOpened = $state(false);
+
+$effect(() => {
+	if (modalStore.getState().isOpen) {
+		const t = setTimeout(() => {
+			modalHasOpened = true;
+		}, 100);
+		return () => {
+			clearTimeout(t);
+			modalHasOpened = false;
+		};
+	}
+});
+
+// Preload next/prev cover images to prevent browser rendering flicker during navigation
+$effect(() => {
+	if (!browser) return;
+	if (nextGamePreview?.coverImage) {
+		const img = new Image();
+		img.src = getPreviewImageSrc(nextGamePreview.coverImage);
+	}
+	if (prevGamePreview?.coverImage) {
+		const img = new Image();
+		img.src = getPreviewImageSrc(prevGamePreview.coverImage);
+	}
+});
+
 function conditionalFly(node: HTMLElement, { condition, ...config }: FlyParams & { condition?: boolean }) {
-	if (!condition) return { duration: 0, delay: 0 };
+	const bypassTransition = !isIOS && !isAndroid && modalHasOpened;
+	if (!condition || bypassTransition) return { duration: 0, delay: 0 };
 	return fly(node, config);
 }
 
