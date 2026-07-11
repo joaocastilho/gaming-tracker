@@ -160,7 +160,7 @@ $effect(() => {
 	if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 });
 
-$effect(() => {
+$effect.pre(() => {
 	const pathname = page.url.pathname;
 	let targetTab: TabValue = 'all';
 
