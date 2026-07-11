@@ -7,7 +7,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"prepare": "bun run scripts/setup-svelte-check-ts.ts && (svelte-kit sync || echo '')",
+		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "biome format --write .",
@@ -61,7 +61,7 @@
 		"svelte": "^5.56.4",
 		"svelte-check": "^4.7.2",
 		"tailwindcss": "^4.3.2",
-		"typescript": "^7.0.2",
+		"typescript": "^6.0.3",
 		"typescript6": "npm:typescript@^6.0.3",
 		"vite": "^8.1.4",
 		"vitest": "^4.1.10"
