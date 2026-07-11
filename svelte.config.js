@@ -6,7 +6,7 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		inlineStyleThreshold: 20480,
+		inlineStyleThreshold: 8192,
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',

@@ -25,7 +25,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 		}
 	}
 
-	if (games.length === 0) {
+	if (browser && games.length === 0) {
 		try {
 			const res = await fetch('/games.json', {
 				headers: { accept: 'application/json' },

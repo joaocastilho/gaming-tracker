@@ -22,15 +22,8 @@ function optimizeCss() {
 			// Read critical CSS
 			const criticalCss = fs.readFileSync(path.resolve('src/lib/styles/critical.css'), 'utf-8');
 
-			// 1. Convert stylesheet links to async preload
-			// This matches the pattern SvelteKit uses for CSS links
-			let newHtml = html.replace(
-				/<link rel="stylesheet" href="([^"]+\.css)">/g,
-				'<link rel="preload" href="$1" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">'
-			);
-
-			// 2. Inject critical CSS and noscript fallback
-			newHtml = newHtml.replace('</head>', `    <style>${criticalCss}</style>\n    </head>`);
+			// Just inject critical CSS
+			const newHtml = html.replace('</head>', `    <style>${criticalCss}</style>\n    </head>`);
 
 			return newHtml;
 		},
@@ -105,6 +98,9 @@ export default defineConfig({
 					}
 
 					if (id.includes('node_modules')) {
+						if (id.includes('chart.js') || id.includes('chartjs-plugin-datalabels')) {
+							return 'vendor-charts';
+						}
 						if (id.includes('dexie')) {
 							return 'vendor-db';
 						}
@@ -115,7 +111,7 @@ export default defineConfig({
 							return 'vendor-icons';
 						}
 						if (id.includes('zod')) {
-							return 'vendor-utils';
+							return 'editor';
 						}
 						if (id.includes('svelte') || id.includes('@sveltejs')) {
 							return 'vendor-svelte';

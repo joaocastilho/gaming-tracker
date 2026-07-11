@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./lib/styles/fonts.css";
 
 /* ============================================
    GAMING TRACKER DESIGN SYSTEM
@@ -479,25 +480,6 @@ body {
 	--color-genre-survival-bg: #fffbeb;
 	--color-genre-survival-text: #b45309;
 	--color-genre-survival-border: #fde68a;
-}
-
-/* ============================================
-   SMOOTH THEME TRANSITIONS
-   ============================================ */
-body,
-.header-root,
-.game-card,
-.game-info,
-.badge,
-.tier-badge,
-.total-score-badge,
-.planned-indicator,
-.tier-section,
-.tier-header,
-.tier-content {
-	transition-property: background-color, border-color, color;
-	transition-duration: var(--transition-normal);
-	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ============================================
@@ -1122,4 +1104,23 @@ body,
 	color: #2563eb;
 	background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.12));
 	border-color: var(--color-border-solid);
+}
+
+/* ============================================
+   SMOOTH THEME TRANSITIONS
+   ============================================ */
+.theme-transitioning,
+.theme-transitioning .header-root,
+.theme-transitioning .game-card,
+.theme-transitioning .game-info,
+.theme-transitioning .badge,
+.theme-transitioning .tier-badge,
+.theme-transitioning .total-score-badge,
+.theme-transitioning .planned-indicator,
+.theme-transitioning .tier-section,
+.theme-transitioning .tier-header,
+.theme-transitioning .tier-content {
+	transition-property: background-color, border-color, color;
+	transition-duration: var(--transition-normal);
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

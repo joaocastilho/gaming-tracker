@@ -19,18 +19,8 @@ import { windowSize } from '$lib/stores/window.svelte';
 import Header from '$lib/components/Header.svelte';
 import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
 import BottomNavigation from '$lib/components/BottomNavigation.svelte';
-import DetailModal from '$lib/components/DetailModal.svelte';
-import GameEditorModal from '$lib/components/GameEditorModal.svelte';
-import DeleteConfirmModal from '$lib/components/DeleteConfirmModal.svelte';
-import LoginModal from '$lib/components/LoginModal.svelte';
-import MobileSearch from '$lib/components/layout/MobileSearch.svelte';
-import MobileFilters from '$lib/components/MobileFilters.svelte';
-import MobileSettingsMenu from '$lib/components/layout/MobileSettingsMenu.svelte';
 import NoResults from '$lib/components/NoResults.svelte';
-import SearchBar from '$lib/components/SearchBar.svelte';
-import FilterDropdown from '$lib/components/FilterDropdown.svelte';
 import FilterToggle from '$lib/components/FilterToggle.svelte';
-import RatingsSort from '$lib/components/RatingsSort.svelte';
 
 import GamesView from '$lib/views/GamesView.svelte';
 import TierListView from '$lib/views/TierListView.svelte';
@@ -231,10 +221,6 @@ function onSearchToggle() {
 		isSearchOpen = false;
 		pushSearchState(false);
 	} else {
-		if (browser && innerWidth < 768) {
-			// Intentionally left blank, previously saved scroll position here
-		}
-
 		isSearchOpen = true;
 		pushSearchState(true);
 		isFiltersOpen = false;
@@ -514,9 +500,12 @@ let shareDescription = $derived.by(() => {
 				<!-- Filters are shown on desktop via FilterDropdowns -->
 				{#if filtersStore.isDesktopFiltersExpanded}
 						<div class="filter-content mb-8 space-y-4">
-								<SearchBar />
+								{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
+									<SearchBar />
+								{/await}
 							<div class="flex flex-col items-center gap-4">
 								<div class="flex flex-wrap items-center justify-center gap-3">
+									{#await import('$lib/components/FilterDropdown.svelte') then { default: FilterDropdown }}
 										<FilterDropdown
 											type="platforms"
 											label="Platforms"
@@ -537,14 +526,17 @@ let shareDescription = $derived.by(() => {
 												selectedOptions={selectedTiers}
 											/>
 										{/if}
+									{/await}
 
 									<FilterToggle
 										label="Co-op"
 										value="Yes"
 										isSelected={selectedCoOp.includes('Yes')}
 									/>
-									<span class="pipe-separator">|</span>
+									<span class="mx-1 font-bold text-zinc-600 dark:text-zinc-500">|</span>
+									{#await import('$lib/components/RatingsSort.svelte') then { default: RatingsSort }}
 										<RatingsSort />
+									{/await}
 									<button
 										class="reset-button flex h-[44px] w-[44px] items-center justify-center rounded-md transition-all"
 										class:invisible={!canReset}
@@ -617,46 +609,72 @@ let shareDescription = $derived.by(() => {
 			</div>
 		</main>
 
-		<DetailModal
-			onEditGame={(g: Game) => editorModalState.handleEditGame(g)}
-			onDeleteGame={(g: Game) => editorModalState.handleDeleteGame(g)}
-		/>
-
-		{#if editorModalState.editorModalOpen}
-			<GameEditorModal
-				mode={editorModalState.editorModalMode}
-				initialGame={editorModalState.editorModalGame}
-				allGames={gamesStore.games}
-				onClose={() => editorModalState.handleEditorClose()}
-			/>
+		{#if modalStore.getState().isOpen}
+			{#await import('$lib/components/DetailModal.svelte') then { default: DetailModal }}
+				<DetailModal
+					onEditGame={(g) => editorModalState.handleEditGame(g)}
+					onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
+				/>
+			{/await}
 		{/if}
 
-			<DeleteConfirmModal bind:open={editorModalState.deleteModalOpen} game={editorModalState.deleteModalGame} />
+		{#if editorModalState.editorModalOpen}
+			{#await import('$lib/components/GameEditorModal.svelte') then { default: GameEditorModal }}
+				<GameEditorModal
+					mode={editorModalState.editorModalMode}
+					initialGame={editorModalState.editorModalGame}
+					allGames={gamesStore.games}
+					onClose={() => editorModalState.handleEditorClose()}
+				/>
+			{/await}
+		{/if}
 
-			<LoginModal bind:open={loginModalOpen} />
+		{#if editorModalState.deleteModalOpen}
+			{#await import('$lib/components/DeleteConfirmModal.svelte') then { default: DeleteConfirmModal }}
+				<DeleteConfirmModal bind:open={editorModalState.deleteModalOpen} game={editorModalState.deleteModalGame} />
+			{/await}
+		{/if}
 
-			<MobileSearch isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
+		{#if loginModalOpen}
+			{#await import('$lib/components/LoginModal.svelte') then { default: LoginModal }}
+				<LoginModal bind:open={loginModalOpen} />
+			{/await}
+		{/if}
+
+		{#if isSearchOpen}
+			{#await import('$lib/components/layout/MobileSearch.svelte') then { default: MobileSearch }}
+				<MobileSearch isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
+			{/await}
+		{/if}
 
 		<!-- Mobile Filters Modal -->
-			<MobileFilters
-				bind:isOpen={isFiltersOpen}
-				{filterOptions}
-				{showTiersFilter}
-				showCoOpFilter={true}
-				onClose={() => (isFiltersOpen = false)}
-			/>
+		{#if isFiltersOpen}
+			{#await import('$lib/components/MobileFilters.svelte') then { default: MobileFilters }}
+				<MobileFilters
+					bind:isOpen={isFiltersOpen}
+					{filterOptions}
+					{showTiersFilter}
+					showCoOpFilter={true}
+					onClose={() => (isFiltersOpen = false)}
+				/>
+			{/await}
+		{/if}
 
-			<MobileSettingsMenu
-				isOpen={isSettingsMenuOpen}
-				{isTierlistPage}
-				onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
-				onClose={() => (isSettingsMenuOpen = false)}
-				{onFiltersToggle}
-				onAddGame={() => editorModalState.handleAddGame()}
-				onOpenLogin={() => (loginModalOpen = true)}
-				{canInstall}
-				onInstall={installApp}
-			/>
+		{#if isSettingsMenuOpen}
+			{#await import('$lib/components/layout/MobileSettingsMenu.svelte') then { default: MobileSettingsMenu }}
+				<MobileSettingsMenu
+					isOpen={isSettingsMenuOpen}
+					{isTierlistPage}
+					onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
+					onClose={() => (isSettingsMenuOpen = false)}
+					{onFiltersToggle}
+					onAddGame={() => editorModalState.handleAddGame()}
+					onOpenLogin={() => (loginModalOpen = true)}
+					{canInstall}
+					onInstall={installApp}
+				/>
+			{/await}
+		{/if}
 
 		<!-- Discreet Last Updated Indicator -->
 		<!-- Removed build date display - now only in source code at top -->

@@ -6,6 +6,11 @@ A personal project for tracking my own video game collection. Includes tier list
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)
+[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-F38020?logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
+
+**PageSpeed Insights Scores (Post-Optimization):**
+- 📱 Mobile: 85+ Performance
+- 💻 Desktop: 95+ Performance
 
 ## Features
 
@@ -59,6 +64,14 @@ Manually assigned tiers to games based on overall assessment:
 - JSON export/import for backup
 - Works without internet after initial load
 
+### ⚡ Performance Optimizations
+
+- **Zero Layout Shift (CLS):** Use of `contain: layout` and strict height reservations.
+- **Lazy Loading:** Modals, charts, and secondary UI components are dynamically imported using `{#await}`.
+- **Font Self-hosting:** Self-hosted Inter font with `preload` to eliminate render-blocking external requests.
+- **Deferred Data:** Defer heavy `games.json` loading to the client side to minimize SSR payload.
+- **Tree-shaking:** Optimized imports for Chart.js and intelligent Vite chunking.
+
 ## 🛠️ Tech Stack
 
 | Category             | Technology                                     | Version   |
@@ -70,7 +83,7 @@ Manually assigned tiers to games based on overall assessment:
 | **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.1.4`  |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.8`  |
 | **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.24.0` |
-| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.4.0`  |
+| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.14`  |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)            | `v4.5.1`  |
 | **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.4`  |
 
@@ -93,22 +106,21 @@ bun run preview
 gaming-tracker/
 ├── src/
 │   ├── lib/
-│   │   ├── components/      # UI components (GameCard, Header, etc.)
-│   │   ├── stores/          # Svelte 5 stores for state
+│   │   ├── components/      # UI components (lazy-loaded modals)
+│   │   ├── stores/          # Svelte 5 stores ($state / $effect)
+│   │   ├── styles/          # fonts.css, critical.css
 │   │   ├── utils/           # Helper functions
 │   │   └── types/           # TypeScript types
-│   ├── routes/              # SvelteKit routes
-│   ├── app.css              # Global styles
-│   └── app.html             # HTML template
+│   ├── routes/              # SvelteKit routes (+layout.svelte)
+│   ├── app.css              # Global tailwind styles
+│   └── app.html             # HTML template (preloads)
 ├── static/
+│   ├── _headers             # Cloudflare Pages cache headers
+│   ├── fonts/               # Self-hosted woff2 fonts
 │   ├── games.json           # Game data
-│   ├── covers/              # Game cover images (WebP)
-│   └── service-worker.js    # Offline support
-├── scripts/                 # Build scripts
-│   └── optimize-covers.ts   # Image optimizer
-├── tests/                   # Unit tests
-└── docs/
-    └── project.md           # Full documentation
+│   └── covers/              # Game cover images (WebP)
+├── tests/                   # Vitest tests
+└── docs/                    # Documentation
 ```
 
 ## 📜 Available Scripts
@@ -117,10 +129,12 @@ gaming-tracker/
 | ---------------- | --------------------- |
 | `bun run dev`    | Start dev server      |
 | `bun run build`  | Build for production  |
+| `bun run preview`| Preview build locally |
 | `bun run check`  | TypeScript type check |
 | `bun run lint`   | Check code with Biome |
 | `bun run format` | Format code with Biome |
 | `bun run test`   | Run tests             |
+| `bun run optimize-covers` | Optimize images |
 
 ## 📖 Documentation
 

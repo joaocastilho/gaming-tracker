@@ -26,8 +26,12 @@ class AppStore {
 			$effect.root(() => {
 				$effect(() => {
 					window.localStorage.setItem('gaming-tracker-theme', this.theme);
+					document.documentElement.classList.add('theme-transitioning');
 					document.documentElement.classList.remove('light', 'dark');
 					document.documentElement.classList.add(this.theme);
+					setTimeout(() => {
+						document.documentElement.classList.remove('theme-transitioning');
+					}, 250);
 				});
 			});
 		}

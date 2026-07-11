@@ -1,9 +1,20 @@
 <script lang="ts">
-import { Chart, type ChartType, type ChartData, type ChartOptions, registerables } from 'chart.js';
+import {
+	Chart,
+	BarController,
+	BarElement,
+	CategoryScale,
+	LinearScale,
+	Tooltip,
+	Legend,
+	type ChartType,
+	type ChartData,
+	type ChartOptions,
+} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { appStore } from '$lib/stores/app.svelte';
 
-Chart.register(...registerables, ChartDataLabels);
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ChartDataLabels);
 
 interface Props {
 	type: ChartType;
