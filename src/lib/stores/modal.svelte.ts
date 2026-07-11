@@ -63,6 +63,7 @@ const initialState: ModalState = {
 class ModalStore {
 	private _state = $state<ModalState>({ ...initialState });
 	private isProgrammaticUpdate = false;
+	private programmaticUpdateId = 0;
 
 	// Removed debouncedWriteToURL to prevent race conditions with readFromURL
 
@@ -368,6 +369,7 @@ class ModalStore {
 		if (typeof window === 'undefined') return;
 
 		this.isProgrammaticUpdate = true;
+		const currentUpdateId = ++this.programmaticUpdateId;
 
 		try {
 			const state = this._state;
@@ -394,7 +396,9 @@ class ModalStore {
 			// Ignore router initialization errors
 		} finally {
 			setTimeout(() => {
-				this.isProgrammaticUpdate = false;
+				if (this.programmaticUpdateId === currentUpdateId) {
+					this.isProgrammaticUpdate = false;
+				}
 			}, 50);
 		}
 	}

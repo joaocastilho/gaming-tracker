@@ -44,10 +44,12 @@ export function parseToDate(dateStr: string | null): Date | null {
 	return new Date(timestamp);
 }
 
+const DEFAULT_LOCALE = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
+
 export function formatDate(dateStr: string | null): string {
 	const date = parseToDate(dateStr);
 	if (!date) return 'Unknown';
-	return date.toLocaleDateString('en-US', {
+	return date.toLocaleDateString(DEFAULT_LOCALE, {
 		month: 'long',
 		day: 'numeric',
 		year: 'numeric',
@@ -57,7 +59,7 @@ export function formatDate(dateStr: string | null): string {
 export function formatShortDate(dateStr: string | null): string {
 	const date = parseToDate(dateStr);
 	if (!date) return 'Unknown';
-	return date.toLocaleDateString('en-US', {
+	return date.toLocaleDateString(DEFAULT_LOCALE, {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric',

@@ -25,8 +25,18 @@ export function validateFormData(formData: Partial<Game>): Record<string, string
 		errors.playtime = 'Playtime is required';
 	}
 
+	if (formData.coOp !== undefined && formData.coOp !== 'Yes' && formData.coOp !== 'No') {
+		errors.coOp = 'Co-op must be Yes or No';
+	}
+
+	if (formData.status !== undefined && !['Planned', 'Completed', 'Playing'].includes(formData.status)) {
+		errors.status = 'Status must be Planned, Completed, or Playing';
+	}
+
 	if (formData.year !== undefined) {
-		if (formData.year < 1970 || formData.year > 2099) {
+		if (Number.isNaN(Number(formData.year))) {
+			errors.year = 'Year must be a valid number';
+		} else if (formData.year < 1970 || formData.year > 2099) {
 			errors.year = 'Year must be between 1970 and 2099';
 		}
 	} else {
@@ -123,7 +133,7 @@ export function buildUpdatedGame(activeGame: Game, formData: Partial<Game>): Gam
 		tier:
 			formData.status === 'Completed' && score !== null
 				? getTierFromScore(score)
-				: formData.status === 'Planned'
+				: formData.status === 'Planned' || formData.status === 'Playing'
 					? null
 					: activeGame.tier,
 	};

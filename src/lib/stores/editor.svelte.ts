@@ -1,6 +1,7 @@
 import { browser, dev } from '$app/environment';
 import type { Game } from '$lib/types/game';
 import { db } from '$lib/db';
+import { gamesStore } from './games.svelte';
 import { offlineStore } from './offline.svelte';
 
 const SESSION_STORAGE_KEY = 'gaming-tracker-editor-mode';
@@ -246,6 +247,11 @@ class EditorStore {
 		const success = await this.saveGames(() => ({ games: finalGames }));
 
 		if (success) {
+			try {
+				await gamesStore.setAllGames(finalGames);
+			} catch {
+				// Store update is best-effort; actual save succeeded
+			}
 			this.discardAllChanges();
 		}
 
@@ -274,12 +280,11 @@ class EditorStore {
 		}
 
 		const finalGames = this.buildFinalGames(currentGames);
-		const payload = { games: finalGames };
 
 		this.patchState({ savePending: true, saveSuccess: false, saveError: null });
 
 		try {
-			const formData = this.buildSaveFormData(payload);
+			const formData = this.buildSaveFormData({ games: finalGames });
 
 			const res = await fetch('/api/games-local', {
 				method: 'POST',
@@ -296,6 +301,11 @@ class EditorStore {
 				return false;
 			}
 
+			try {
+				await gamesStore.setAllGames(finalGames);
+			} catch {
+				// Store update is best-effort; actual save succeeded
+			}
 			this.patchState({ savePending: false, saveSuccess: true, saveError: null });
 			this.discardAllChanges();
 			return true;

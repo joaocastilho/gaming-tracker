@@ -105,14 +105,14 @@ function conditionalFly(node: HTMLElement, { condition, ...config }: FlyParams &
 function navigateToPrevious() {
 	if (currentGameIndex > 0) {
 		const prevGame = displayedGames[currentGameIndex - 1];
-		modalStore.openViewModal(prevGame, displayedGames);
+		modalStore.openViewModal(prevGame, displayedGames, undefined, modalStore.cardRect ?? undefined);
 	}
 }
 
 function navigateToNext() {
 	if (currentGameIndex < displayedGames.length - 1) {
 		const nextGame = displayedGames[currentGameIndex + 1];
-		modalStore.openViewModal(nextGame, displayedGames);
+		modalStore.openViewModal(nextGame, displayedGames, undefined, modalStore.cardRect ?? undefined);
 	}
 }
 

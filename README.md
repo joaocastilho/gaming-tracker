@@ -68,8 +68,9 @@ Manually assigned tiers to games based on overall assessment:
 | **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.2`  |
 | **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.5.3`  |
 | **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.1.4`  |
-| **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.5`  |
-| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.3.14` |
+| **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.8`  |
+| **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.24.0` |
+| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.4.0`  |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)            | `v4.5.1`  |
 | **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.4`  |
 
@@ -118,7 +119,7 @@ gaming-tracker/
 | `bun run build`  | Build for production  |
 | `bun run check`  | TypeScript type check |
 | `bun run lint`   | Check code with Biome |
-| `bun run format` | Format with Prettier  |
+| `bun run format` | Format code with Biome |
 | `bun run test`   | Run tests             |
 
 ## 📖 Documentation

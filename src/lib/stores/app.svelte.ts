@@ -8,7 +8,7 @@ export interface AppState {
 
 class AppStore {
 	theme = $state<ThemeValue>('dark');
-	activeTab = $state<TabValue>('all');
+	activeTab = $state<TabValue>('home');
 
 	constructor() {
 		if (

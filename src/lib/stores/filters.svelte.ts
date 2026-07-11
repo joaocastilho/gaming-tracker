@@ -4,7 +4,7 @@ import { debounce } from '$lib/utils/debounce';
 import { toSlug, fromSlug } from '$lib/utils/slugUtils';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { gamesStore } from './games.svelte';
-import { lastManualClearTime } from './searchClearCoordinator';
+import { getLastManualClearTime } from './searchClearCoordinator';
 
 export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishedDate' | 'alphabetical' | 'playtime';
 
@@ -317,7 +317,8 @@ class FiltersStore {
 			return;
 		}
 
-		if (lastManualClearTime > 0 && Date.now() - lastManualClearTime < 500) {
+		const lastClearTime = getLastManualClearTime();
+		if (lastClearTime > 0 && Date.now() - lastClearTime < 500) {
 			return;
 		}
 
@@ -362,7 +363,7 @@ class FiltersStore {
 
 		newState.statuses = searchParams
 			.getAll('status')
-			.map((slug) => fromSlug(slug, ['Completed', 'Planned', 'Dropped', 'Playing']))
+			.map((slug) => fromSlug(slug, ['Completed', 'Planned', 'Playing']))
 			.filter((v): v is string => !!v);
 
 		if (searchParams.has('tier')) {

@@ -34,17 +34,6 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 			if (res.ok) {
 				const data = await res.json();
 				games = data.games || [];
-
-				if (browser && games.length > 0) {
-					import('$lib/db').then(async ({ db }) => {
-						await db
-							.transaction('rw', db.games, async () => {
-								await db.games.clear();
-								await db.games.bulkPut(games);
-							})
-							.catch((err) => console.error('Failed to seed Dexie:', err));
-					});
-				}
 			}
 		} catch {
 			// Silently ignore fetch errors
@@ -59,7 +48,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 		games,
 		sharedGame,
 		meta: null,
-		source: games.length > 0 ? 'dexie' : 'network', // Adding back for compatibility
+		source: games.length > 0 ? 'dexie' : 'network',
 	};
 };
 

@@ -76,25 +76,6 @@ $effect(() => {
 	}
 });
 
-$effect.pre(() => {
-	if (!browser) return;
-
-	setTimeout(() => {
-		gamesStore.loadFromIDB();
-	}, 0);
-
-	if (data.games && data.games instanceof Promise) {
-		data.games
-			.then((resolvedGames) => {
-				gamesStore.initializeGames(resolvedGames);
-				gamesInitialized = true;
-			})
-			.catch((error) => {
-				console.error('Failed to load games:', error);
-			});
-	}
-});
-
 $effect(() => {
 	if (!browser) return;
 	return registerServiceWorker();
@@ -130,6 +111,8 @@ let isGamesPage = $derived(currentPage === 'all' || currentPage === 'completed' 
 let isPlannedPage = $derived(currentPage === 'planned');
 
 let isTierlistPage = $derived(currentPage === 'tierlist');
+let isStatsPage = $derived(currentPage === 'stats');
+let showFilterSection = $derived(!isHomePage && !isTierlistPage && !isStatsPage);
 
 let pageTitle = $derived.by(() => {
 	const path = page.url.pathname;
@@ -144,7 +127,6 @@ let pageTitle = $derived.by(() => {
 });
 
 let showTiersFilter = $derived(!isPlannedPage);
-let showCoOpFilter = true;
 
 $effect(() => {
 	if (browser) {
@@ -295,7 +277,7 @@ $effect(() => {
 		currentPage,
 		onSearchToggle,
 		onDesktopSearch: () => {
-			if (currentPage === 'home') {
+			if (currentPage === 'home' || currentPage === 'tierlist' || currentPage === 'stats') {
 				filtersStore.setDesktopFiltersExpanded(true);
 				goto('/library', { state: { showMobileSearch: true } });
 				return;
@@ -530,7 +512,7 @@ let shareDescription = $derived.by(() => {
 			onApplyChanges={() => editorModalState.handleApplyChanges()}
 			onOpenLogin={() => (loginModalOpen = true)}
 		/>
-		{#if !isHomePage}
+		{#if showFilterSection}
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block" style="min-height: 44px;">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
 				<!-- Filters are shown on desktop via FilterDropdowns -->
@@ -560,13 +542,11 @@ let shareDescription = $derived.by(() => {
 											/>
 										{/if}
 
-									{#if showCoOpFilter}
-										<FilterToggle
-											label="Co-op"
-											value="Yes"
-											isSelected={selectedCoOp.includes('Yes')}
-										/>
-									{/if}
+									<FilterToggle
+										label="Co-op"
+										value="Yes"
+										isSelected={selectedCoOp.includes('Yes')}
+									/>
 									<span class="pipe-separator">|</span>
 										<RatingsSort />
 									<button
@@ -601,15 +581,28 @@ let shareDescription = $derived.by(() => {
 				{#if isHomePage}
 					{@render children?.()}
 				{:else if isGamesPage}
-					{#if hasActiveFilters && currentFilteredGames.length === 0}
-							<NoResults onReset={resetFilters} />
+					{#if !gamesInitialized}
+						<GamesView
+							filteredGames={[]}
+							onOpenModal={openModalWithFilterContext}
+							onEditGame={(g) => editorModalState.handleEditGame(g)}
+							onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
+							loading={true}
+						/>
+					{:else if gamesStore.games.length === 0}
+						<div class="empty-database">
+							<p>No games in your collection yet.</p>
+							<p class="sub">Add your first game to get started.</p>
+						</div>
+					{:else if hasActiveFilters && currentFilteredGames.length === 0}
+						<NoResults onReset={resetFilters} />
 					{:else}
 						<GamesView
 							filteredGames={currentFilteredGames}
 							onOpenModal={openModalWithFilterContext}
 							onEditGame={(g) => editorModalState.handleEditGame(g)}
 							onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
-							loading={!gamesInitialized}
+							loading={false}
 						/>
 					{/if}
 
@@ -653,7 +646,7 @@ let shareDescription = $derived.by(() => {
 				bind:isOpen={isFiltersOpen}
 				{filterOptions}
 				{showTiersFilter}
-				{showCoOpFilter}
+				showCoOpFilter={true}
 				onClose={() => (isFiltersOpen = false)}
 			/>
 
@@ -718,5 +711,17 @@ let shareDescription = $derived.by(() => {
 	/* Push content below the fixed search bar when search is open */
 	:global(main.search-open-mobile) {
 		padding-top: 75px !important;
+	}
+
+	.empty-database {
+		text-align: center;
+		color: var(--color-text-secondary);
+		padding: 4rem 2rem;
+	}
+
+	.empty-database .sub {
+		font-size: 0.875rem;
+		color: var(--color-text-tertiary);
+		margin-top: 0.5rem;
 	}
 </style>

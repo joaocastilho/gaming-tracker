@@ -6,14 +6,20 @@ class WindowSizeStore {
 
 	constructor() {
 		if (browser) {
-			let ticking = false;
-			window.addEventListener('resize', () => {
-				if (ticking) return;
-				ticking = true;
-				requestAnimationFrame(() => {
-					this.width = window.innerWidth;
-					this.height = window.innerHeight;
-					ticking = false;
+			$effect.root(() => {
+				$effect(() => {
+					let ticking = false;
+					const handler = () => {
+						if (ticking) return;
+						ticking = true;
+						requestAnimationFrame(() => {
+							this.width = window.innerWidth;
+							this.height = window.innerHeight;
+							ticking = false;
+						});
+					};
+					window.addEventListener('resize', handler);
+					return () => window.removeEventListener('resize', handler);
 				});
 			});
 		}

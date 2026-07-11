@@ -1,6 +1,4 @@
-import { gamesStore } from './games.svelte';
-import { filtersStore } from './filters.svelte';
-import { filterGamesWithBaseFilters } from '$lib/utils/filtering';
+import { filteredGamesBaseStore } from './filteredGamesBase.svelte';
 
 export interface FilteredTabCounts {
 	all: number;
@@ -11,18 +9,15 @@ export interface FilteredTabCounts {
 
 class FilteredCountsStore {
 	counts = $derived.by(() => {
-		const games = gamesStore.games;
-		const filters = filtersStore.state;
+		const baseFiltered = filteredGamesBaseStore.games;
 
-		if (!games) return { all: 0, completed: 0, planned: 0, tierlist: null };
-
-		const filtered = filterGamesWithBaseFilters(games, filters);
+		if (!baseFiltered) return { all: 0, completed: 0, planned: 0, tierlist: null };
 
 		return {
-			all: filtered.length,
-			completed: filtered.filter((g) => g.status === 'Completed').length,
-			planned: filtered.filter((g) => g.status === 'Planned').length,
-			tierlist: filtered.filter((g) => g.tier).length,
+			all: baseFiltered.length,
+			completed: baseFiltered.filter((g) => g.status === 'Completed').length,
+			planned: baseFiltered.filter((g) => g.status === 'Planned').length,
+			tierlist: baseFiltered.filter((g) => g.tier).length,
 		};
 	});
 }

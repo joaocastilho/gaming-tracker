@@ -38,7 +38,7 @@ interface Props {
 
 let { onAddGame, onApplyChanges, onOpenLogin }: Props = $props();
 
-type NavId = 'library' | 'completed' | 'planned' | 'tierlist' | 'stats';
+type NavId = 'home' | 'library' | 'completed' | 'planned' | 'tierlist' | 'stats';
 
 type NavItem = {
 	id: NavId;
@@ -70,6 +70,7 @@ let navItems = $derived.by(() => {
 	const currentTab = appStore.activeTab;
 
 	return [
+		createNavItem('home', 'Home', '/', null, currentTab === 'home', Home),
 		createNavItem(
 			'library',
 			'Library',
@@ -86,7 +87,11 @@ let navItems = $derived.by(() => {
 });
 
 async function handleNavClick(target: NavId) {
-	await navigateTo(target, { state: page.state, replaceState: true });
+	if (target === 'home') {
+		await goto('/');
+	} else {
+		await navigateTo(target, { state: page.state, replaceState: true });
+	}
 }
 
 function handleAddGame() {
@@ -108,11 +113,6 @@ async function handleLogout() {
 
 <header class="header-root mb-0 px-4 py-1 md:mb-6 md:px-6">
 	<div class="header-inner container mx-auto">
-		<div class="header-left">
-			<button type="button" class="home-button" class:active={appStore.activeTab === 'home'} onclick={() => goto('/')} aria-label="Home">
-				<Home size={20} />
-			</button>
-		</div>
 		<nav class="tabs-nav">
 			<ul class="tabs-list">
 				{#each navItems as item (item.id)}
@@ -178,7 +178,8 @@ async function handleLogout() {
 					type="button"
 					class="filter-toggle-button"
 					onclick={() => {
-						if (page.url.pathname === '/') {
+						const path = page.url.pathname;
+						if (path === '/' || path === '/tierlist' || path === '/stats') {
 							filtersStore.setDesktopFiltersExpanded(true);
 							goto('/library');
 						} else {
@@ -248,42 +249,6 @@ async function handleLogout() {
 		margin: 0 auto;
 		align-items: center;
 		min-height: 20px;
-	}
-
-	.header-left {
-		grid-row: 1;
-		grid-column: 1;
-		display: flex;
-		align-items: center;
-	}
-
-	.home-button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border: 1px solid var(--color-border);
-		border-radius: 10px;
-		background: var(--color-surface);
-		color: var(--color-text-secondary);
-		cursor: pointer;
-		transition: all var(--transition-fast);
-	}
-
-	.home-button.active {
-		background: var(--color-hover);
-		border-color: var(--color-accent);
-		color: var(--color-accent);
-	}
-
-	@media (hover: hover) {
-		.home-button:hover {
-			background: var(--color-hover);
-			border-color: var(--color-accent);
-			color: var(--color-accent);
-			transform: translateY(-1px);
-		}
 	}
 
 	.tabs-nav {
@@ -583,10 +548,6 @@ async function handleLogout() {
 		.header-inner {
 			grid-template-columns: 1fr auto;
 			justify-content: space-between;
-		}
-
-		.header-left {
-			display: none;
 		}
 
 		.header-root {

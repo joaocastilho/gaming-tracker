@@ -12,13 +12,22 @@ class OfflineStore {
 		if (browser) {
 			this.isOnline = navigator.onLine;
 
-			window.addEventListener('online', () => {
-				this.isOnline = true;
-				this.trySync();
-			});
-
-			window.addEventListener('offline', () => {
-				this.isOnline = false;
+			$effect.root(() => {
+				$effect(() => {
+					const onOnline = () => {
+						this.isOnline = true;
+						this.trySync();
+					};
+					const onOffline = () => {
+						this.isOnline = false;
+					};
+					window.addEventListener('online', onOnline);
+					window.addEventListener('offline', onOffline);
+					return () => {
+						window.removeEventListener('online', onOnline);
+						window.removeEventListener('offline', onOffline);
+					};
+				});
 			});
 
 			this.checkPendingSync();

@@ -1,12 +1,12 @@
 export function toSlug(text: string): string {
 	if (!text) return '';
 	return text
-		.toLowerCase()
 		.normalize('NFD')
+		.toLowerCase()
 		.replace(/[\u0300-\u036f]/g, '')
 		.replace(/[^a-z0-9]/g, '-')
-		.replace(/-+/g, '-') // Replace multiple hyphens with one
-		.replace(/^-|-$/g, ''); // Trim hyphens
+		.replace(/-+/g, '-')
+		.replace(/^-|-$/g, '');
 }
 
 export function fromSlug(slug: string, options: string[]): string | undefined {

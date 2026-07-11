@@ -31,8 +31,8 @@
 		"clean": "bun -e \"const fs = require('fs'); ['node_modules', '.svelte-kit', 'build', '.vercel', 'bun.lock'].forEach(f => fs.rmSync(f, { recursive: true, force: true }));\" && bun install"
 	},
 	"dependencies": {
-		"@chenglou/pretext": "^0.0.5",
-		"@lucide/svelte": "^0.577.0",
+		"@chenglou/pretext": "^0.0.8",
+		"@lucide/svelte": "^1.24.0",
 		"chart.js": "^4.5.1",
 		"chartjs-plugin-datalabels": "^2.2.0",
 		"dexie": "^4.4.4",
@@ -65,10 +65,5 @@
 		"typescript6": "npm:typescript@^6.0.3",
 		"vite": "^8.1.4",
 		"vitest": "^4.1.10"
-	},
-	"overrides": {
-		"@sveltejs/kit": {
-			"typescript": "$typescript"
-		}
 	}
 }

@@ -22,6 +22,18 @@ export function transformGameData(game: RawGameData): Game {
 		}
 	}
 
+	if (!gameData.title?.trim()) {
+		gameData.title = 'Untitled Game';
+	}
+
+	if (!gameData.platform?.trim()) {
+		gameData.platform = 'Unknown';
+	}
+
+	if (!gameData.genre?.trim()) {
+		gameData.genre = 'Unknown';
+	}
+
 	if (data.finishedDate && !isValidISODateTime(data.finishedDate)) {
 		const dateMatch = data.finishedDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
 		if (dateMatch) {

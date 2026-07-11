@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { filtersStore } from '$lib/stores/filters.svelte';
 import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
-import { lastManualClearTime, markSearchCleared } from '$lib/stores/searchClearCoordinator';
+import { getLastManualClearTime, markSearchCleared } from '$lib/stores/searchClearCoordinator';
 import type { Game } from '$lib/types/game';
 
 const mockGames: Partial<Game>[] = [
@@ -23,7 +23,8 @@ function resetStores() {
 
 // Simulates the URL sync effect logic from +layout.svelte
 function simulateURLSyncEffect(urlSearchParam: string | null, currentSearchTerm: string): boolean {
-	const timeSinceLastClear = Date.now() - lastManualClearTime;
+	const lastClearTime = getLastManualClearTime();
+	const timeSinceLastClear = Date.now() - lastClearTime;
 	if (timeSinceLastClear < 100) return false;
 
 	if (urlSearchParam !== currentSearchTerm && urlSearchParam) {
@@ -76,7 +77,7 @@ describe('URL Sync Integration Tests', () => {
 		filtersStore.setSearchTerm('');
 
 		// Ensure strictly less than 100ms passed
-		vi.setSystemTime(lastManualClearTime + 50);
+		vi.setSystemTime(getLastManualClearTime() + 50);
 
 		const syncHappened = simulateURLSyncEffect('Ring', '');
 

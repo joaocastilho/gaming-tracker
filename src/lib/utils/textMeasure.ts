@@ -12,6 +12,7 @@ interface TextMeasurementCache {
 }
 
 const measurementCache = new Map<string, TextMeasurementCache>();
+const MAX_CACHE_SIZE = 500;
 
 function getCacheKey(text: string, font: string): string {
 	return `${text}:${font}`;
@@ -31,6 +32,13 @@ function getOrCreateMeasurement(text: string, font: string): TextMeasurementCach
 		preparedWithSegments,
 		font,
 	};
+
+	if (measurementCache.size >= MAX_CACHE_SIZE) {
+		const firstKey = measurementCache.keys().next().value;
+		if (firstKey !== undefined) {
+			measurementCache.delete(firstKey);
+		}
+	}
 
 	measurementCache.set(key, cache);
 	return cache;

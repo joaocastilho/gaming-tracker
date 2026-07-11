@@ -1,8 +1,8 @@
 import type { Game } from '$lib/types/game';
 import { appStore, type TabValue } from './app.svelte';
 import { filtersStore } from './filters.svelte';
-import { gamesStore } from './games.svelte';
-import { filterAndSortGames, type FilterTab } from '$lib/utils/filtering';
+import { filteredGamesBaseStore } from './filteredGamesBase.svelte';
+import { filterGamesByTab, sortGames, type FilterTab } from '$lib/utils/filtering';
 
 function toFilterTab(tab: TabValue): FilterTab {
 	if (tab === 'all' || tab === 'completed' || tab === 'planned' || tab === 'tierlist') return tab;
@@ -11,15 +11,17 @@ function toFilterTab(tab: TabValue): FilterTab {
 
 class FilteredGamesStore {
 	private _filteredGames = $derived.by(() => {
-		const games = gamesStore.games;
+		const baseFiltered = filteredGamesBaseStore.games;
 		const filters = filtersStore.state;
 		const activeTab = appStore.activeTab;
 
-		if (!games || games.length === 0) {
+		if (!baseFiltered || baseFiltered.length === 0) {
 			return [];
 		}
 
-		return filterAndSortGames(games, filters, toFilterTab(activeTab), filters?.sortOption ?? null);
+		const tabFiltered = filterGamesByTab(baseFiltered, toFilterTab(activeTab));
+		const effectiveSort = activeTab === 'tierlist' ? null : (filters?.sortOption ?? null);
+		return sortGames(tabFiltered, effectiveSort, toFilterTab(activeTab));
 	});
 
 	get games(): Game[] {
@@ -35,12 +37,14 @@ class FilteredGamesStore {
 			return this._filteredGames;
 		}
 
-		const games = gamesStore.games;
+		const baseFiltered = filteredGamesBaseStore.games;
 		const filters = filtersStore.state;
 
-		if (!games || games.length === 0) return [];
+		if (!baseFiltered || baseFiltered.length === 0) return [];
 
-		return filterAndSortGames(games, filters, activeTab, filters?.sortOption ?? null);
+		const tabFiltered = filterGamesByTab(baseFiltered, activeTab);
+		const effectiveSort = activeTab === 'tierlist' ? null : (filters?.sortOption ?? null);
+		return sortGames(tabFiltered, effectiveSort, activeTab);
 	}
 }
 

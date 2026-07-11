@@ -4,7 +4,7 @@ import { transformGameData, type RawGameData } from '$lib/utils/dataTransformer'
 import { createGameSlug } from '$lib/utils/slugUtils';
 import { db } from '$lib/db';
 import { completedGamesCache } from './completedGamesCache.svelte';
-import { computeAllCardHeights, type CardHeights } from '$lib/utils/textMeasure';
+import { computeAllCardHeights, computeCardHeights, type CardHeights } from '$lib/utils/textMeasure';
 import { CARD_WIDTHS } from '$lib/constants/fonts';
 
 class GamesStore {
@@ -94,12 +94,27 @@ class GamesStore {
 	addGame(newGame: Game): void {
 		this.games = [...this._games, newGame];
 		completedGamesCache.updateCache(this._games);
-		this.updateCardHeights();
+		this.updateCardHeights([newGame.id]);
 	}
 
-	updateCardHeights(): void {
+	updateCardHeights(gameIds?: string[]): void {
 		const widthValues = Object.values(CARD_WIDTHS);
-		this._cardHeights = computeAllCardHeights(this._games, widthValues);
+		if (gameIds) {
+			const newHeights = new Map(this._cardHeights);
+			for (const id of gameIds) {
+				const game = this._games.find((g) => g.id === id);
+				if (game) {
+					const heights: Record<number, CardHeights> = {};
+					for (const width of widthValues) {
+						heights[width] = computeCardHeights(game, width);
+					}
+					newHeights.set(id, heights);
+				}
+			}
+			this._cardHeights = newHeights;
+		} else {
+			this._cardHeights = computeAllCardHeights(this._games, widthValues);
+		}
 	}
 
 	getCardHeight(gameId: string, cardWidth: number): CardHeights | undefined {
@@ -110,7 +125,7 @@ class GamesStore {
 	updateGame(id: string, updatedGame: Partial<Game>): void {
 		this.games = this._games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
 		completedGamesCache.updateCache(this._games);
-		this.updateCardHeights();
+		this.updateCardHeights([id]);
 	}
 
 	setAllGames(games: Game[]): void {
@@ -130,12 +145,16 @@ class GamesStore {
 		try {
 			const cachedGames = await db.games.toArray();
 			if (cachedGames && cachedGames.length > 0 && this._games.length === 0) {
-				this._games = cachedGames;
-				this.loading = false;
-				completedGamesCache.updateCache(cachedGames);
+				const transformed = cachedGames.map((game) => transformGameData(game as unknown as RawGameData));
+				this._games = transformed;
+				completedGamesCache.updateCache(transformed);
+				this.updateCardHeights();
 			}
 		} catch (err) {
+			this.error = 'Failed to load games from local cache.';
 			console.error('Failed to load games from Dexie:', err);
+		} finally {
+			this.loading = false;
 		}
 	}
 }
