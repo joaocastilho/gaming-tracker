@@ -1,6 +1,6 @@
 import type { Game } from '$lib/types/game';
-import { COOP_COLORS, GENRE_COLORS, PLATFORM_COLORS, TIER_COLORS } from './colorConstants.js';
-import { getTierDisplayName } from './tierUtils';
+import { COOP_COLORS, GENRE_COLORS, PLATFORM_COLORS } from './colorConstants.js';
+import { getTierClass, getTierDisplayName } from './tierUtils';
 
 export function getPlatformColor(platform: string): string {
 	const colorClass = PLATFORM_COLORS[platform] || 'bg-gray-600 text-white';
@@ -19,12 +19,11 @@ export function getGenreColor(genre: string): string {
 }
 
 export function getTierColor(tier: string): string {
-	const fullTierName = getTierDisplayName(tier);
-	const colorClass = TIER_COLORS[fullTierName] || 'bg-gray-600 text-white';
-	if (colorClass.startsWith('tier-')) {
-		return `tier-badge ${colorClass}`;
+	const baseClass = getTierClass(tier);
+	if (baseClass.startsWith('tier-')) {
+		return `tier-badge ${baseClass}`;
 	}
-	return colorClass;
+	return baseClass;
 }
 
 export function getCoOpColor(coOp: string): string {

@@ -52,7 +52,6 @@ let {
 	data: { games: Game[]; sharedGame: Game | null };
 } = $props();
 
-let initialized = $state(true);
 let gamesInitialized = $state(false);
 let urlUpdateTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 let canInstall = $state(false);
@@ -158,9 +157,7 @@ $effect(() => {
 });
 
 $effect(() => {
-	if (initialized) {
-		if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
-	}
+	if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 });
 
 $effect(() => {
@@ -505,8 +502,7 @@ let shareDescription = $derived.by(() => {
 
 
 
-{#if initialized}
-	<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
+<div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
 		<Header
 			onAddGame={() => editorModalState.handleAddGame()}
 			onApplyChanges={() => editorModalState.handleApplyChanges()}
@@ -668,7 +664,6 @@ let shareDescription = $derived.by(() => {
 		<BottomNavigation {onSearchToggle} />
 		<ScrollToTopButton hideWhenFiltersOpen={isFiltersOpen} />
 	</div>
-{/if}
 
 <style>
 	:global(.h-15) {
@@ -696,16 +691,6 @@ let shareDescription = $derived.by(() => {
 		background-color: rgba(99, 102, 241, 0.12);
 		transform: translateY(-2px);
 		box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
-	}
-
-	:global(.light) .reset-button {
-		background-color: rgba(234, 88, 12, 0.08);
-		color: var(--color-accent);
-		border-color: var(--color-accent);
-	}
-
-	:global(.light) .reset-button:hover {
-		background-color: rgba(234, 88, 12, 0.12);
 	}
 
 	/* Push content below the fixed search bar when search is open */

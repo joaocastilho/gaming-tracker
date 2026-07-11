@@ -121,6 +121,7 @@ async function handleLogout() {
 						<button
 							type="button"
 							class:active={item.active}
+							aria-current={item.active ? 'page' : undefined}
 							onclick={() => handleNavClick(item.id)}
 						>
 							<Icon size={20} />

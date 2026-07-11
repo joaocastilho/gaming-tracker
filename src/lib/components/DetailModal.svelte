@@ -406,6 +406,7 @@ $effect(() => {
 						e.stopPropagation();
 						toggleImageExpansion();
 					}}
+					aria-label="Close full screen view"
 				>
 					<X size={24} />
 				</button>

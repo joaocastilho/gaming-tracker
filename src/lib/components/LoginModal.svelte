@@ -61,6 +61,8 @@ function enableDevMode() {
 			class="login-modal"
 			role="dialog"
 			aria-modal="true"
+			aria-labelledby="login-title"
+			aria-describedby="login-description"
 			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(event) => {
@@ -70,8 +72,8 @@ function enableDevMode() {
 				}
 			}}
 		>
-			<h2>Owner Login</h2>
-			<p class="hint">Sign in to enable editor mode.</p>
+			<h2 id="login-title">Owner Login</h2>
+			<p id="login-description" class="hint">Sign in to enable editor mode.</p>
 			<form onsubmit={handleSubmit}>
 				<label>
 					<span>Username</span>

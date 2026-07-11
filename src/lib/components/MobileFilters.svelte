@@ -143,6 +143,7 @@ function togglePendingCoOp(coOp: string) {
 		class="mobile-filters-modal fixed inset-0 z-50 md:hidden"
 		role="dialog"
 		aria-modal="true"
+		aria-label="Filters and sorting"
 		tabindex="-1"
 		onkeydown={(e) => {
 			if (e.key === 'Escape') applyFilters();

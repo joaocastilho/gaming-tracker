@@ -385,11 +385,12 @@ async function handleSave() {
 		class="modal"
 		role="dialog"
 		aria-modal="true"
+		aria-labelledby="editor-title"
 		tabindex="-1"
 		onclick={(event) => event.stopPropagation()}
 		onkeydown={handleKeyDown}
 	>
-		<h2>{mode === 'create' ? 'Add Game' : 'Edit Game'}</h2>
+		<h2 id="editor-title">{mode === 'create' ? 'Add Game' : 'Edit Game'}</h2>
 
 		{#if error}
 			<div class="error">{error}</div>
@@ -420,12 +421,12 @@ async function handleSave() {
 					{/if}
 
 					<div class="field-col">
-						<span class="field-label">
+						<span class="field-label" id="playtime-label">
 							{working.status === 'Completed' ? 'Hours Played *' : 'Time to Beat *'}
 						</span>
 						<div class="playtime-inputs">
 							<div class="input-group">
-								<input type="number" bind:value={hours} name="hours" min="0" placeholder="0" required />
+								<input type="number" bind:value={hours} name="hours" min="0" placeholder="0" required aria-labelledby="playtime-label" />
 								<span class="unit">h</span>
 							</div>
 							<div class="input-group">
@@ -437,6 +438,7 @@ async function handleSave() {
 									max="59"
 									placeholder="0"
 									required
+									aria-labelledby="playtime-label"
 								/>
 								<span class="unit">m</span>
 							</div>
@@ -449,11 +451,12 @@ async function handleSave() {
 					</div>
 
 					<div class="field-col coop-col">
-						<span class="field-label">Co-op</span>
+						<span class="field-label" id="coop-label">Co-op</span>
 						<div class="checkbox-simple">
 							<input
 								type="checkbox"
 								name="coOp"
+								aria-labelledby="coop-label"
 								checked={working.coOp === 'Yes'}
 								onchange={(e) => {
 									if (working) working.coOp = e.currentTarget.checked ? 'Yes' : 'No';

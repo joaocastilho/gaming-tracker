@@ -132,13 +132,15 @@ function getAriaAttributes() {
 	</button>
 
 	{#if isOpen}
-		<div class="filter-options-dropdown">
+		<div class="filter-options-dropdown" role="listbox" aria-label={label.toLowerCase()}>
 			<div class="filter-options-section">
 				<div class="filter-options-grid">
 					{#each options as option (option)}
 						{@const displayName = type === 'tiers' ? getTierDisplayName(option) : option}
 						<button
 							type="button"
+							role="option"
+							aria-selected={selectedOptions.includes(option)}
 							class="badge filter-option-item {getOptionColor(option)} {selectedOptions.includes(
 								option
 							)
