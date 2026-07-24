@@ -438,20 +438,29 @@ let shareDescription = $derived.by(() => {
 	const g = data.sharedGame;
 	if (!g) return 'My personal video game collection with ratings, tier lists, and progress tracking.';
 
-	let desc = `${g.platform} · ${g.genre}`;
-	if (g.tier) {
-		desc += ` · ${getTierDisplayName(g.tier)}`;
-	}
+	let lines: string[] = [];
 
 	if (g.status === 'Completed') {
 		const p = g.ratingPresentation ?? '-';
 		const s = g.ratingStory ?? '-';
 		const gp = g.ratingGameplay ?? '-';
-		const total = g.score ?? '-';
-		desc += ` · Pres: ${p} · Story: ${s} · Gamep: ${gp} · Score: ${total}/20`;
+		lines.push(`Presentation: ${p}/10 · Story: ${s}/10 · Gameplay: ${gp}/10`);
 	}
 
-	return desc;
+	if (g.status === 'Completed' || g.tier) {
+		let secondLine = '';
+		if (g.status === 'Completed') {
+			const total = g.score ?? '-';
+			secondLine += `Score: ${total}/20`;
+		}
+		if (g.tier) {
+			if (secondLine) secondLine += ' · ';
+			secondLine += `Tier: ${getTierDisplayName(g.tier)}`;
+		}
+		lines.push(secondLine);
+	}
+
+	return lines.join('\n');
 });
 </script>
 
@@ -469,6 +478,7 @@ let shareDescription = $derived.by(() => {
 	<meta property="og:image" content={data.sharedGame ? `${page.url.origin}/${data.sharedGame.coverImage}` : `${page.url.origin}/android-chrome-512x512.png`} />
 	<meta property="og:image:width" content={data.sharedGame ? "300" : "512"} />
 	<meta property="og:image:height" content={data.sharedGame ? "450" : "512"} />
+	<meta property="og:image:alt" content={data.sharedGame ? data.sharedGame.title : "Gaming Tracker"} />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={data.sharedGame ? `Gaming Tracker - ${data.sharedGame.title}` : "Gaming Tracker"} />
 	<meta
