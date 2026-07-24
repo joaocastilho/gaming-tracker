@@ -163,7 +163,7 @@ function handleImageError() {
 		</div>
 
 		{#if isEditor}
-			<div class="absolute bottom-2 left-2 z-10 hidden items-center gap-1 md:flex">
+			<div class="absolute bottom-2 left-2 z-10 flex items-center gap-1">
 				<button
 					onclick={(e) => {
 						e.stopPropagation();
