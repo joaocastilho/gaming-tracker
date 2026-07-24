@@ -23,15 +23,18 @@ class AppStore {
 
 			// $effect.root() creates an untracked scope for side effects
 			// inside a class constructor that otherwise has no reactive context
-			$effect.root(() => {
+				$effect.root(() => {
 				$effect(() => {
 					window.localStorage.setItem('gaming-tracker-theme', this.theme);
 					document.documentElement.classList.add('theme-transitioning');
 					document.documentElement.classList.remove('light', 'dark');
 					document.documentElement.classList.add(this.theme);
-					setTimeout(() => {
-						document.documentElement.classList.remove('theme-transitioning');
+					const timeoutId = setTimeout(() => {
+						if (typeof document !== 'undefined') {
+							document.documentElement.classList.remove('theme-transitioning');
+						}
 					}, 250);
+					return () => clearTimeout(timeoutId);
 				});
 			});
 		}
