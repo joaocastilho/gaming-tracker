@@ -660,21 +660,19 @@ let shareDescription = $derived.by(() => {
 			{/await}
 		{/if}
 
-		{#if isSettingsMenuOpen}
-			{#await import('$lib/components/layout/MobileSettingsMenu.svelte') then { default: MobileSettingsMenu }}
-				<MobileSettingsMenu
-					isOpen={isSettingsMenuOpen}
-					{isTierlistPage}
-					onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
-					onClose={() => (isSettingsMenuOpen = false)}
-					{onFiltersToggle}
-					onAddGame={() => editorModalState.handleAddGame()}
-					onOpenLogin={() => (loginModalOpen = true)}
-					{canInstall}
-					onInstall={installApp}
-				/>
-			{/await}
-		{/if}
+		{#await import('$lib/components/layout/MobileSettingsMenu.svelte') then { default: MobileSettingsMenu }}
+			<MobileSettingsMenu
+				isOpen={isSettingsMenuOpen}
+				{isTierlistPage}
+				onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
+				onClose={() => (isSettingsMenuOpen = false)}
+				{onFiltersToggle}
+				onAddGame={() => editorModalState.handleAddGame()}
+				onOpenLogin={() => (loginModalOpen = true)}
+				{canInstall}
+				onInstall={installApp}
+			/>
+		{/await}
 
 		<!-- Discreet Last Updated Indicator -->
 		<!-- Removed build date display - now only in source code at top -->
