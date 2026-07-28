@@ -246,7 +246,7 @@
       "year": 2023,
       "genre": "Survival Horror",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Planned",
       "coverImage": "covers/alan-wake-2.webp",
       "playtime": "19h 0m",
       "finishedDate": null,
@@ -263,16 +263,15 @@
       "year": 2021,
       "genre": "Survival Horror",
       "coOp": "No",
-      "status": "Completed",
+      "status": "Playing",
       "coverImage": "covers/alan-wake.webp",
-      "playtime": "12h 31m",
-      "finishedDate": "24/07/2026",
-      "ratingPresentation": 8,
-      "ratingStory": 8,
-      "ratingGameplay": 7,
-      "score": 15,
-      "tier": "B - Great",
-      "completionOrder": null
+      "playtime": "10h 30m",
+      "finishedDate": null,
+      "ratingPresentation": null,
+      "ratingStory": null,
+      "ratingGameplay": null,
+      "score": null,
+      "tier": null
     },
     {
       "id": "alpha-protocol",
@@ -2292,6 +2291,23 @@
       "status": "Planned",
       "coverImage": "covers/ender-lilies-quietus-of-the-knights.webp",
       "playtime": "12h 30m",
+      "finishedDate": null,
+      "ratingPresentation": null,
+      "ratingStory": null,
+      "ratingGameplay": null,
+      "score": null,
+      "tier": null
+    },
+    {
+      "id": "ender-magnolia-bloom-in-the-mist",
+      "title": "ENDER MAGNOLIA: Bloom in the Mist",
+      "platform": "PC",
+      "year": 2025,
+      "genre": "Metroidvania",
+      "coOp": "No",
+      "status": "Planned",
+      "coverImage": "covers/ender-magnolia-bloom-in-the-mist.webp",
+      "playtime": "20h 30m",
       "finishedDate": null,
       "ratingPresentation": null,
       "ratingStory": null,
@@ -9640,6 +9656,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-07-24T01:44:30.415Z"
+    "lastUpdated": "2026-07-28T19:49:52.317Z"
   }
 }
