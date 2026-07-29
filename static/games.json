@@ -246,7 +246,7 @@
       "year": 2023,
       "genre": "Survival Horror",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/alan-wake-2.webp",
       "playtime": "19h 0m",
       "finishedDate": null,
@@ -263,15 +263,16 @@
       "year": 2021,
       "genre": "Survival Horror",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/alan-wake.webp",
-      "playtime": "10h 30m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "12h 31m",
+      "finishedDate": "24/07/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 8,
+      "ratingGameplay": 7,
+      "score": 15,
+      "tier": "B - Great",
+      "completionOrder": null
     },
     {
       "id": "alpha-protocol",
@@ -9656,6 +9657,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-07-28T19:49:52.317Z"
+    "lastUpdated": "2026-07-29T08:30:00.000Z"
   }
 }

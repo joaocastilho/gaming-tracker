@@ -23,7 +23,7 @@ class AppStore {
 
 			// $effect.root() creates an untracked scope for side effects
 			// inside a class constructor that otherwise has no reactive context
-				$effect.root(() => {
+			$effect.root(() => {
 				$effect(() => {
 					window.localStorage.setItem('gaming-tracker-theme', this.theme);
 					document.documentElement.classList.add('theme-transitioning');

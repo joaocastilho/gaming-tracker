@@ -4,7 +4,6 @@ import type { Game } from '$lib/types/game';
 import { GameSchema, computeScore } from '$lib/validation/game';
 import { editorStore } from '$lib/stores/editor.svelte';
 import { dev } from '$app/environment';
-import { invalidateAll } from '$app/navigation';
 import { gamesStore } from '$lib/stores/games.svelte';
 import GameFormIdDisplay from './game-editor/GameFormIdDisplay.svelte';
 import GameFormBasicInfo from './game-editor/GameFormBasicInfo.svelte';
@@ -352,9 +351,6 @@ async function handleSave() {
 
 			const success = await editorStore.saveLocally(currentGames);
 			if (success) {
-				const finalGames = editorStore.buildFinalGames(currentGames);
-				gamesStore.setAllGames(finalGames);
-				await invalidateAll();
 				onClose();
 			} else {
 				error = editorStore.saveError || 'Failed to save changes locally.';
