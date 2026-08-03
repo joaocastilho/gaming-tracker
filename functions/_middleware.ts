@@ -1,3 +1,5 @@
+import { buildOgDescription } from '../src/lib/utils/ogDescription';
+
 interface Env {
 	ASSETS: {
 		fetch: (request: URL | Request) => Promise<Response>;
@@ -54,11 +56,15 @@ export const onRequest = async (context: { request: Request; env: Env; next: () 
 
 				const game = games.find((g) => toSlug(g.title as string) === decodedSlug);
 				if (game) {
-					const ogTitle = game.title as string;
-					const parts: string[] = [game.platform as string, game.genre as string];
-					if (game.tier) parts.push(game.tier as string);
-					if (game.score != null) parts.push(`Score: ${game.score}/20`);
-					const ogDescription = parts.join(' · ');
+					const ogTitle = `Gaming Tracker - ${game.title as string}`;
+					const ogDescription = buildOgDescription({
+						status: game.status as 'Planned' | 'Completed' | 'Playing',
+						ratingPresentation: (game.ratingPresentation as number | null) ?? null,
+						ratingStory: (game.ratingStory as number | null) ?? null,
+						ratingGameplay: (game.ratingGameplay as number | null) ?? null,
+						score: (game.score as number | null) ?? null,
+						tier: (game.tier as string | null) ?? null,
+					});
 
 					const coverUrl = game.coverImage
 						? `${origin}/${game.coverImage as string}`
@@ -68,6 +74,9 @@ export const onRequest = async (context: { request: Request; env: Env; next: () 
 						`<meta property="og:title" content="${escapeHtml(ogTitle)}" />`,
 						`<meta property="og:description" content="${escapeHtml(ogDescription)}" />`,
 						`<meta property="og:image" content="${escapeHtml(coverUrl)}" />`,
+						`<meta property="og:image:width" content="300" />`,
+						`<meta property="og:image:height" content="450" />`,
+						`<meta property="og:image:alt" content="${escapeHtml(game.title as string)}" />`,
 						`<meta property="og:url" content="${escapeHtml(request.url)}" />`,
 						`<meta property="og:type" content="website" />`,
 						`<meta name="twitter:card" content="summary_large_image" />`,
@@ -78,7 +87,7 @@ export const onRequest = async (context: { request: Request; env: Env; next: () 
 
 					// Strip existing OG/twitter meta tags
 					modifiedHtml = modifiedHtml.replace(
-						/<meta[\s\S]*?(?:property="og:(?:title|type|description|url|site_name|image(?::width|:height)?)"|name="twitter:(?:card|title|description|image)")[\s\S]*?\/?>/g,
+						/<meta[\s\S]*?(?:property="og:(?:title|type|description|url|site_name|image(?::width|:height|:alt)?)"|name="twitter:(?:card|title|description|image)")[\s\S]*?\/?>/g,
 						''
 					);
 

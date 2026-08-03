@@ -28,7 +28,7 @@ import TierListView from '$lib/views/TierListView.svelte';
 import { extractFilterOptions } from '$lib/utils/filterOptions';
 import { registerServiceWorker } from '$lib/utils/serviceWorker';
 import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
-import { getTierDisplayName } from '$lib/utils/tierUtils';
+import { buildOgDescription } from '$lib/utils/ogDescription';
 
 import type { Game } from '$lib/types/game';
 
@@ -437,30 +437,7 @@ async function installApp() {
 let shareDescription = $derived.by(() => {
 	const g = data.sharedGame;
 	if (!g) return 'My personal video game collection with ratings, tier lists, and progress tracking.';
-
-	let lines: string[] = [];
-
-	if (g.status === 'Completed') {
-		const p = g.ratingPresentation ?? '-';
-		const s = g.ratingStory ?? '-';
-		const gp = g.ratingGameplay ?? '-';
-		lines.push(`Presentation: ${p}/10 · Story: ${s}/10 · Gameplay: ${gp}/10`);
-	}
-
-	if (g.status === 'Completed' || g.tier) {
-		let secondLine = '';
-		if (g.status === 'Completed') {
-			const total = g.score ?? '-';
-			secondLine += `Score: ${total}/20`;
-		}
-		if (g.tier) {
-			if (secondLine) secondLine += ' · ';
-			secondLine += `Tier: ${getTierDisplayName(g.tier)}`;
-		}
-		lines.push(secondLine);
-	}
-
-	return lines.join('\n');
+	return buildOgDescription(g);
 });
 </script>
 
