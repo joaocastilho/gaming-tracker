@@ -246,15 +246,16 @@
       "year": 2023,
       "genre": "Survival Horror",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/alan-wake-2.webp",
-      "playtime": "19h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "26h 29m",
+      "finishedDate": "02/08/2026",
+      "ratingPresentation": 10,
+      "ratingStory": 8,
+      "ratingGameplay": 7,
+      "score": 17,
+      "tier": "A - Amazing",
+      "completionOrder": null
     },
     {
       "id": "alan-wake",
@@ -2289,7 +2290,7 @@
       "year": 2021,
       "genre": "Metroidvania",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/ender-lilies-quietus-of-the-knights.webp",
       "playtime": "12h 30m",
       "finishedDate": null,
@@ -9657,6 +9658,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-07-29T08:30:00.000Z"
+    "lastUpdated": "2026-08-03T07:26:57.756Z"
   }
 }
