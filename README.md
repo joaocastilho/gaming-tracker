@@ -8,10 +8,6 @@ A personal project for tracking my own video game collection. Includes tier list
 [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)
 [![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-F38020?logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
 
-**PageSpeed Insights Scores (Post-Optimization):**
-- 📱 Mobile: 85+ Performance
-- 💻 Desktop: 95+ Performance
-
 ## Features
 
 ### 🎯 Game Tracking
@@ -122,20 +118,6 @@ gaming-tracker/
 ├── tests/                   # Vitest tests
 └── docs/                    # Documentation
 ```
-
-## 📜 Available Scripts
-
-| Script           | Description           |
-| ---------------- | --------------------- |
-| `bun run dev`    | Start dev server      |
-| `bun run build`  | Build for production  |
-| `bun run preview`| Preview build locally |
-| `bun run check`  | TypeScript type check |
-| `bun run lint`   | Check code with Biome |
-| `bun run format` | Format code with Biome |
-| `bun run test`   | Run tests             |
-| `bun run optimize-covers` | Optimize images |
-
 ## 📖 Documentation
 
 | Document                               | Purpose                    |
