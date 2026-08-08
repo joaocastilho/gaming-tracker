@@ -254,7 +254,7 @@ $effect(() => {
 		onDesktopSearch: () => {
 			if (currentPage === 'home' || currentPage === 'tierlist' || currentPage === 'stats') {
 				filtersStore.setDesktopSearchOpen(true);
-				goto('/library', { state: { showMobileSearch: true } });
+				goto('/library', { state: { showMobileSearch: windowSize.isMobile } });
 				return;
 			}
 			filtersStore.toggleDesktopSearch();
@@ -474,9 +474,9 @@ let shareDescription = $derived.by(() => {
 			onOpenLogin={() => (loginModalOpen = true)}
 		/>
 	{#if showFilterSection}
-		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block" style="min-height: 44px;">
+		<section class="filter-section hidden md:block" style="min-height: 44px;">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
-				<div class="filter-content mb-8 space-y-4">
+				<div class="filter-content mb-4">
 						{#if filtersStore.isDesktopSearchOpen}
 							{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
 								<SearchBar />
@@ -682,6 +682,15 @@ let shareDescription = $derived.by(() => {
 	/* Push content below the fixed search bar when search is open */
 	:global(main.search-open-mobile) {
 		padding-top: 75px !important;
+	}
+
+	/* The mobile search bar is hidden at md+, so the 75px top padding must not
+	   leak into the desktop layout (it would leave a large empty gap between
+	   the filters and the game grid). */
+	@media (min-width: 768px) {
+		:global(main.search-open-mobile) {
+			padding-top: 0 !important;
+		}
 	}
 
 	.empty-database {
