@@ -1,15 +1,10 @@
 import * as z from 'zod';
-import type { CoOpStatus, GameStatus, TierValue } from '$lib/types/game';
+import type { CoOpStatus, GameStatus } from '$lib/types/game';
+import { TIER_VALUES } from '$lib/utils/tierUtils';
+
+export { TIER_VALUES };
 
 export const GAME_STATUS_VALUES = ['Planned', 'Completed', 'Playing'] as const satisfies GameStatus[];
-export const TIER_VALUES = [
-	'S - Masterpiece',
-	'A - Amazing',
-	'B - Great',
-	'C - Good',
-	'D - Decent',
-	'E - Bad',
-] as const satisfies TierValue[];
 export const COOP_VALUES = ['Yes', 'No'] as const satisfies CoOpStatus[];
 
 export const BaseGameSchema = z.object({

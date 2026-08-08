@@ -289,7 +289,7 @@ describe('Cross-Component Reactivity', () => {
 
 			// Navigate to next game
 			const nextGame = filteredGames[1];
-			modalStore.setActiveGame(nextGame);
+			modalStore.openViewModal(nextGame, filteredGames);
 
 			expect(modalStore.activeGame?.id).toBe(nextGame.id);
 			expect(modalStore.activeGame?.platform).toBe('PC');

@@ -3,8 +3,7 @@ import type { Game } from '$lib/types/game';
 import { transformGameData, type RawGameData } from '$lib/utils/dataTransformer';
 import { createGameSlug } from '$lib/utils/slugUtils';
 import { db } from '$lib/db';
-import { completedGamesCache } from './completedGamesCache.svelte';
-import { computeAllCardHeights, computeCardHeights, type CardHeights } from '$lib/utils/textMeasure';
+import type { CardHeights } from '$lib/utils/textMeasure';
 import { CARD_WIDTHS } from '$lib/constants/fonts';
 
 // Only CARD_WIDTHS.small is consumed today (TierRow), so measuring any other
@@ -75,8 +74,6 @@ class GamesStore {
 
 			if (normalized.length === 0) {
 				this.error = 'No valid games found from pre-loaded data.';
-			} else {
-				completedGamesCache.updateCache(normalized);
 			}
 		} catch (err) {
 			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -97,11 +94,12 @@ class GamesStore {
 
 	addGame(newGame: Game): void {
 		this.games = [...this._games, newGame];
-		completedGamesCache.updateCache(this._games);
-		this.updateCardHeights([newGame.id]);
+		void this.updateCardHeights([newGame.id]);
 	}
 
-	updateCardHeights(gameIds?: string[]): void {
+	async updateCardHeights(gameIds?: string[]): Promise<void> {
+		const { computeAllCardHeights, computeCardHeights } = await import('$lib/utils/textMeasure');
+
 		if (gameIds) {
 			const newHeights = new Map(this._cardHeights);
 			for (const id of gameIds) {
@@ -121,9 +119,12 @@ class GamesStore {
 	}
 
 	// Full-array measurement blocks the main thread (canvas text shaping for every
-	// game), so defer it to idle time. Per-game updates stay synchronous.
+	// game), so defer it to idle time. The dynamic import keeps @chenglou/pretext
+	// out of the initial bundle. Per-game updates stay fire-and-forget.
 	private scheduleCardHeights(): void {
-		const run = () => this.updateCardHeights();
+		const run = () => {
+			void this.updateCardHeights();
+		};
 		if (typeof requestIdleCallback === 'function') {
 			requestIdleCallback(run, { timeout: 500 });
 		} else {
@@ -138,13 +139,11 @@ class GamesStore {
 
 	updateGame(id: string, updatedGame: Partial<Game>): void {
 		this.games = this._games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
-		completedGamesCache.updateCache(this._games);
-		this.updateCardHeights([id]);
+		void this.updateCardHeights([id]);
 	}
 
 	setAllGames(games: Game[]): void {
 		this.games = games;
-		completedGamesCache.updateCache(this._games);
 		this.scheduleCardHeights();
 
 		if (browser && typeof indexedDB !== 'undefined') {
@@ -161,7 +160,6 @@ class GamesStore {
 			if (cachedGames && cachedGames.length > 0 && this._games.length === 0) {
 				const transformed = cachedGames.map((game) => transformGameData(game as unknown as RawGameData));
 				this._games = transformed;
-				completedGamesCache.updateCache(transformed);
 				this.scheduleCardHeights();
 			}
 		} catch (err) {

@@ -63,14 +63,14 @@ describe('Detail Modal Interactions', () => {
 			modalStore.openViewModal(mockGame, mockGames);
 			expect(modalStore.isOpen).toBe(true);
 
-			modalStore.handleEscape();
+			modalStore.closeModal();
 
 			expect(modalStore.isOpen).toBe(false);
 		});
 
 		it('does nothing if modal is already closed', () => {
 			expect(modalStore.isOpen).toBe(false);
-			modalStore.handleEscape();
+			modalStore.closeModal();
 			expect(modalStore.isOpen).toBe(false);
 		});
 	});
@@ -80,7 +80,7 @@ describe('Detail Modal Interactions', () => {
 			modalStore.openViewModal(mockGame, mockGames);
 			expect(modalStore.activeGame?.id).toBe('1');
 
-			modalStore.setActiveGame(mockGame2);
+			modalStore.openViewModal(mockGame2, mockGames);
 			expect(modalStore.activeGame?.id).toBe('2');
 		});
 
@@ -113,9 +113,9 @@ describe('Detail Modal Interactions', () => {
 			expect(state.filterContext.platforms).toEqual(['PC']);
 		});
 
-		it('updates filter context during modal session', () => {
-			modalStore.openViewModal(mockGame, mockGames);
-			modalStore.updateFilterContext({ searchTerm: 'updated' });
+		it('updates filter context when re-opening with a new context', () => {
+			modalStore.openViewModal(mockGame, mockGames, { searchTerm: 'initial' });
+			modalStore.openViewModal(mockGame, mockGames, { searchTerm: 'updated' });
 
 			const state = modalStore.getState();
 			expect(state.filterContext.searchTerm).toBe('updated');

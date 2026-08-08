@@ -123,11 +123,11 @@ describe('DetailModal Lifecycle Behavior', () => {
 	});
 
 	describe('Keyboard Navigation Store Logic', () => {
-		it('closes modal via handleEscape when open', () => {
+		it('closes modal via closeModal when open', () => {
 			modalStore.openViewModal(mockGame, mockGames);
 			expect(modalStore.isOpen).toBe(true);
 
-			modalStore.handleEscape();
+			modalStore.closeModal();
 
 			expect(modalStore.isOpen).toBe(false);
 		});
@@ -136,10 +136,10 @@ describe('DetailModal Lifecycle Behavior', () => {
 			modalStore.openViewModal(mockGame, mockGames);
 			expect(modalStore.activeGame?.id).toBe('1');
 
-			modalStore.setActiveGame(mockGame2);
+			modalStore.openViewModal(mockGame2, mockGames);
 			expect(modalStore.activeGame?.id).toBe('2');
 
-			modalStore.setActiveGame(mockGame);
+			modalStore.openViewModal(mockGame, mockGames);
 			expect(modalStore.activeGame?.id).toBe('1');
 		});
 
@@ -149,7 +149,7 @@ describe('DetailModal Lifecycle Behavior', () => {
 
 			// Try to set a game not in the list
 			const invalidGame = { ...mockGame, id: '999' };
-			modalStore.setActiveGame(invalidGame);
+			modalStore.openViewModal(invalidGame, mockGames);
 
 			// Should still show the invalid game (component handles validation)
 			expect(modalStore.activeGame?.id).toBe('999');
@@ -160,20 +160,21 @@ describe('DetailModal Lifecycle Behavior', () => {
 		it('requires keydown listener for keyboard navigation', () => {
 			// This test documents that the component should add a keydown listener
 			// The actual listener is tested in the component, but here we verify the handlers exist
-			expect(typeof modalStore.handleEscape).toBe('function');
-			expect(typeof modalStore.setActiveGame).toBe('function');
+			expect(typeof modalStore.openViewModal).toBe('function');
+			expect(typeof modalStore.closeModal).toBe('function');
+			expect(typeof modalStore.getReactiveNavigationGames).toBe('function');
 		});
 
 		it('keyboard handler functions work correctly', () => {
 			modalStore.openViewModal(mockGame, mockGames);
 
 			// Test escape handler
-			modalStore.handleEscape();
+			modalStore.closeModal();
 			expect(modalStore.isOpen).toBe(false);
 
 			// Reopen and test navigation
 			modalStore.openViewModal(mockGame, mockGames);
-			modalStore.setActiveGame(mockGame2);
+			modalStore.openViewModal(mockGame2, mockGames);
 			expect(modalStore.activeGame?.id).toBe('2');
 		});
 	});

@@ -1,6 +1,6 @@
 import type { Game } from '$lib/types/game';
 import { COOP_COLORS, GENRE_COLORS, PLATFORM_COLORS } from './colorConstants.js';
-import { getTierClass, getTierDisplayName } from './tierUtils';
+import { getTierClass, getTierDisplayName, TIER_ORDER } from './tierUtils';
 
 export function getPlatformColor(platform: string): string {
 	const colorClass = PLATFORM_COLORS[platform] || 'bg-gray-600 text-white';
@@ -29,8 +29,6 @@ export function getTierColor(tier: string): string {
 export function getCoOpColor(coOp: string): string {
 	return COOP_COLORS[coOp] || 'bg-gray-600 text-white';
 }
-
-const TIER_ORDER = ['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad'];
 
 export function extractFilterOptions(games: Game[]): {
 	platforms: string[];
@@ -65,7 +63,8 @@ export function extractFilterOptions(games: Game[]): {
 		platforms: Array.from(platforms).toSorted(),
 		genres: Array.from(genres).toSorted(),
 		tiers: Array.from(tiers).toSorted((a, b) => {
-			return TIER_ORDER.indexOf(a) - TIER_ORDER.indexOf(b);
+			const order = TIER_ORDER as readonly string[];
+			return order.indexOf(a) - order.indexOf(b);
 		}),
 		coOp: Array.from(coOp).toSorted().toReversed(), // 'Yes' before 'No'
 	};

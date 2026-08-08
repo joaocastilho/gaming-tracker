@@ -116,7 +116,7 @@ describe('DetailModal UI Logic', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
 			expect(modalStore.activeGame?.id).toBe('1');
 
-			modalStore.setActiveGame(mockGames[1]);
+			modalStore.openViewModal(mockGames[1], mockGames);
 			expect(modalStore.activeGame?.id).toBe('2');
 		});
 
@@ -124,7 +124,7 @@ describe('DetailModal UI Logic', () => {
 			modalStore.openViewModal(mockGames[1], mockGames);
 			expect(modalStore.activeGame?.id).toBe('2');
 
-			modalStore.setActiveGame(mockGames[0]);
+			modalStore.openViewModal(mockGames[0], mockGames);
 			expect(modalStore.activeGame?.id).toBe('1');
 		});
 
@@ -138,7 +138,7 @@ describe('DetailModal UI Logic', () => {
 
 		it('should maintain game data during navigation', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
-			modalStore.setActiveGame(mockGames[1]);
+			modalStore.openViewModal(mockGames[1], mockGames);
 
 			expect(modalStore.activeGame?.title).toBe('Second Game');
 			expect(modalStore.activeGame?.platform).toBe('PlayStation');
@@ -197,13 +197,13 @@ describe('DetailModal UI Logic', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
 			expect(modalStore.isOpen).toBe(true);
 
-			modalStore.handleEscape();
+			modalStore.closeModal();
 			expect(modalStore.isOpen).toBe(false);
 		});
 
 		it('should do nothing if modal is already closed', () => {
 			expect(modalStore.isOpen).toBe(false);
-			modalStore.handleEscape();
+			modalStore.closeModal();
 			expect(modalStore.isOpen).toBe(false);
 		});
 	});
@@ -229,9 +229,9 @@ describe('DetailModal UI Logic', () => {
 			expect(state.filterContext.activeTab).toBe('completed');
 		});
 
-		it('should update filter context during modal session', () => {
-			modalStore.openViewModal(mockGames[0], mockGames);
-			modalStore.updateFilterContext({ searchTerm: 'updated search' });
+		it('should update filter context when re-opening with new context', () => {
+			modalStore.openViewModal(mockGames[0], mockGames, { searchTerm: 'initial' });
+			modalStore.openViewModal(mockGames[0], mockGames, { searchTerm: 'updated search' });
 
 			const state = modalStore.getState();
 			expect(state.filterContext.searchTerm).toBe('updated search');
@@ -249,7 +249,7 @@ describe('DetailModal UI Logic', () => {
 			};
 
 			modalStore.openViewModal(mockGames[0], mockGames, filterContext);
-			modalStore.updateFilterContext({ searchTerm: 'modified' });
+			modalStore.openViewModal(mockGames[0], mockGames, { searchTerm: 'modified' });
 
 			const state = modalStore.getState();
 			expect(state.filterContext.searchTerm).toBe('modified');
@@ -372,17 +372,6 @@ describe('DetailModal UI Logic', () => {
 		it('should open in view mode', () => {
 			modalStore.openViewModal(mockGames[0], mockGames);
 			expect(modalStore.getState().mode).toBe('view');
-		});
-
-		it('should switch to edit mode', () => {
-			modalStore.openViewModal(mockGames[0], mockGames);
-			modalStore.openEditModal(mockGames[0]);
-			expect(modalStore.getState().mode).toBe('edit');
-		});
-
-		it('should switch to add mode', () => {
-			modalStore.openAddModal();
-			expect(modalStore.getState().mode).toBe('add');
 		});
 	});
 });

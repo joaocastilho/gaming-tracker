@@ -3,21 +3,10 @@ import { gamesStore } from '$lib/stores/games.svelte';
 import { appStore } from '$lib/stores/app.svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
 import { parsePlaytimeToMinutes, formatMinutes } from '$lib/utils/playtimeUtils';
+import { TIER_ORDER, TIER_LETTERS, TIER_BAR_COLORS, TIER_BG_COLORS } from '$lib/utils/tierUtils';
 import Chart from '$lib/components/Chart.svelte';
 import type { TooltipItem } from 'chart.js';
 import { Clock, Trophy, Star, Calendar, Presentation, NotebookPen, Gamepad2 } from '@lucide/svelte';
-
-const TIER_ORDER = ['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad'] as const;
-const TIER_LABELS = ['S', 'A', 'B', 'C', 'D', 'E'];
-const TIER_BAR_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#6b7280'];
-const TIER_BG_COLORS = [
-	'rgba(239,68,68,0.25)',
-	'rgba(249,115,22,0.25)',
-	'rgba(234,179,8,0.25)',
-	'rgba(34,197,94,0.25)',
-	'rgba(6,182,212,0.25)',
-	'rgba(107,114,128,0.25)',
-];
 
 const GENRE_COLORS = [
 	'#6366f1',
@@ -84,7 +73,7 @@ let yearWeeks = $derived(Math.round((playtimeThisYearMinutes / 10080) * 10) / 10
 let tierData = $derived.by(() => {
 	const counts: number[] = TIER_ORDER.map((tier) => completedGames.filter((g) => g.tier === tier).length);
 	return {
-		labels: [...TIER_LABELS],
+		labels: [...TIER_LETTERS],
 		datasets: [
 			{
 				label: 'Games',
@@ -165,8 +154,6 @@ let yearData = $derived.by(() => {
 	};
 });
 
-let textColor = $derived(appStore.theme === 'dark' ? '#a0a0a0' : '#666666');
-
 let yearlyMonthData = $derived.by(() => {
 	const yearMonth = new Map<number, number[]>();
 	for (const g of completedGames) {
@@ -186,7 +173,6 @@ let tierOptions = $derived({
 	plugins: {
 		legend: { display: false },
 		datalabels: {
-			color: textColor,
 			font: { weight: 'bold' as const, size: 14 },
 			anchor: 'end' as const,
 			align: 'end' as const,
@@ -202,7 +188,7 @@ let tierOptions = $derived({
 	layout: { padding: { right: 40 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: { grid: { display: false }, ticks: { color: textColor, font: { size: 14, weight: 'bold' as const } } },
+		y: { grid: { display: false }, ticks: { font: { size: 14, weight: 'bold' as const } } },
 	},
 });
 
@@ -211,7 +197,6 @@ let genreOptions = $derived({
 	plugins: {
 		legend: { display: false },
 		datalabels: {
-			color: textColor,
 			font: { weight: 'bold' as const, size: 14 },
 			anchor: 'end' as const,
 			align: 'end' as const,
@@ -227,7 +212,7 @@ let genreOptions = $derived({
 	layout: { padding: { right: 40 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: { grid: { display: false }, ticks: { color: textColor, font: { size: 13 } } },
+		y: { grid: { display: false }, ticks: { font: { size: 13 } } },
 	},
 });
 
@@ -248,7 +233,7 @@ let scoreOptions = $derived({
 		},
 	},
 	scales: {
-		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 12 } } },
+		x: { grid: { display: false }, ticks: { font: { size: 12 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
 	},
 });
@@ -257,7 +242,6 @@ let yearOptions = $derived({
 	plugins: {
 		legend: { display: false },
 		datalabels: {
-			color: textColor,
 			font: { weight: 'bold' as const, size: 13 },
 			anchor: 'end' as const,
 			align: 'end' as const,
@@ -272,7 +256,7 @@ let yearOptions = $derived({
 	},
 	layout: { padding: { top: 20, right: 30 } },
 	scales: {
-		x: { grid: { display: false }, ticks: { color: textColor, font: { size: 12 } } },
+		x: { grid: { display: false }, ticks: { font: { size: 12 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
 	},
 });

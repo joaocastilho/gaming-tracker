@@ -1,11 +1,12 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { gamesStore } from '$lib/stores/games.svelte';
 import { modalStore } from '$lib/stores/modal.svelte';
+import { createGameSlug } from '$lib/utils/slugUtils';
 import type { Game } from '$lib/types/game';
 
 /**
  * Comprehensive tests for modalStore
- * Tests modal state management, navigation, and form handling
+ * Tests the live API: view-mode state, navigation, deep links, and URL sync.
  */
 
 const mockGame: Game = {
@@ -38,9 +39,14 @@ const mockGame2: Game = {
 const mockGames = [mockGame, mockGame2];
 
 describe('ModalStore', () => {
-	beforeEach(() => {
-		modalStore.closeModal();
+	beforeEach(async () => {
+		vi.useFakeTimers();
+		modalStore.reset();
 		gamesStore.initializeGames(mockGames);
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
 	});
 
 	describe('Initial State', () => {
@@ -67,23 +73,15 @@ describe('ModalStore', () => {
 			expect(state.displayedGames.length).toBe(2);
 		});
 
-		it('openEditModal opens in edit mode', () => {
-			modalStore.openEditModal(mockGame);
+		it('openViewModal keeps previous displayed games when opening with empty list', () => {
+			modalStore.openViewModal(mockGame, mockGames);
+			modalStore.openViewModal(mockGame2, []);
 			const state = modalStore.getState();
-			expect(state.isOpen).toBe(true);
-			expect(state.mode).toBe('edit');
-			expect(state.formData.title).toBe('Test Game');
+			expect(state.activeGame?.id).toBe('2');
+			expect(state.displayedGames.length).toBe(2);
 		});
 
-		it('openAddModal opens in add mode', () => {
-			modalStore.openAddModal();
-			const state = modalStore.getState();
-			expect(state.isOpen).toBe(true);
-			expect(state.mode).toBe('add');
-			expect(state.formData.status).toBe('Planned');
-		});
-
-		it('closeModal closes modal', () => {
+		it('closeModal closes modal and clears active game', () => {
 			modalStore.openViewModal(mockGame, mockGames);
 			modalStore.closeModal();
 			const state = modalStore.getState();
@@ -91,106 +89,10 @@ describe('ModalStore', () => {
 			expect(state.activeGame).toBeNull();
 		});
 
-		it('toggleModal toggles open state', () => {
-			const initialState = modalStore.getState();
-			expect(initialState.isOpen).toBe(false);
-
-			modalStore.toggleModal();
-			expect(modalStore.getState().isOpen).toBe(true);
-
-			modalStore.toggleModal();
+		it('closeModal when already closed is a no-op', () => {
 			expect(modalStore.getState().isOpen).toBe(false);
-		});
-	});
-
-	describe('Active Game Management', () => {
-		it('setActiveGame updates active game', () => {
-			modalStore.openViewModal(mockGame, mockGames);
-			modalStore.setActiveGame(mockGame2);
-			const state = modalStore.getState();
-			expect(state.activeGame?.id).toBe('2');
-		});
-
-		it('setActiveGame can set null', () => {
-			modalStore.openViewModal(mockGame, mockGames);
-			modalStore.setActiveGame(null);
-			const state = modalStore.getState();
-			expect(state.activeGame).toBeNull();
-		});
-	});
-
-	describe('Mode Management', () => {
-		it('setMode changes modal mode', () => {
-			modalStore.openViewModal(mockGame, mockGames);
-			expect(modalStore.getState().mode).toBe('view');
-
-			modalStore.setMode('edit');
-			expect(modalStore.getState().mode).toBe('edit');
-
-			modalStore.setMode('add');
-			expect(modalStore.getState().mode).toBe('add');
-		});
-	});
-
-	describe('Form Data', () => {
-		it('updateFormData updates form field', () => {
-			modalStore.openEditModal(mockGame);
-			modalStore.updateFormData('title', 'Updated Title');
-			const state = modalStore.getState();
-			expect(state.formData.title).toBe('Updated Title');
-		});
-
-		it('updateFormData clears validation error for field', () => {
-			modalStore.openAddModal();
-			// Trigger validation first to create errors
-			modalStore.validateForm();
-			const stateBefore = modalStore.getState();
-			expect(stateBefore.validationErrors.title).toBeDefined();
-
-			// Update the field
-			modalStore.updateFormData('title', 'New Title');
-			const stateAfter = modalStore.getState();
-			expect(stateAfter.validationErrors.title).toBe('');
-		});
-
-		it('resetForm restores original game data in edit mode', () => {
-			modalStore.openEditModal(mockGame);
-			modalStore.updateFormData('title', 'Changed');
-			modalStore.resetForm();
-			const state = modalStore.getState();
-			expect(state.formData.title).toBe('Test Game');
-		});
-
-		it('resetForm sets defaults in add mode', () => {
-			modalStore.openAddModal();
-			modalStore.updateFormData('title', 'Something');
-			modalStore.resetForm();
-			const state = modalStore.getState();
-			expect(state.formData.status).toBe('Planned');
-			expect(state.formData.coOp).toBe('No');
-		});
-	});
-
-	describe('Form Validation', () => {
-		it('validateForm returns false for empty required fields', () => {
-			modalStore.openAddModal();
-			const isValid = modalStore.validateForm();
-			expect(isValid).toBe(false);
-		});
-
-		it('validateForm returns true for valid data', () => {
-			modalStore.openEditModal(mockGame);
-			const isValid = modalStore.validateForm();
-			expect(isValid).toBe(true);
-		});
-
-		it('validateForm checks required fields', () => {
-			modalStore.openAddModal();
-			modalStore.validateForm();
-			const state = modalStore.getState();
-			expect(state.validationErrors.title).toBeDefined();
-			expect(state.validationErrors.platform).toBeDefined();
-			expect(state.validationErrors.genre).toBeDefined();
+			modalStore.closeModal();
+			expect(modalStore.getState().isOpen).toBe(false);
 		});
 	});
 
@@ -208,58 +110,55 @@ describe('ModalStore', () => {
 			expect(state.filterContext.activeTab).toBe('completed');
 		});
 
-		it('updateFilterContext updates context', () => {
-			modalStore.openViewModal(mockGame, mockGames);
-			modalStore.updateFilterContext({ searchTerm: 'updated' });
+		it('openViewModal preserves existing context fields when partially updated', () => {
+			const filterContext = {
+				searchTerm: 'original',
+				platforms: ['PC', 'PlayStation'],
+				genres: [],
+				statuses: [],
+				tiers: [],
+				sortOption: null,
+				activeTab: 'all' as const,
+			};
+			modalStore.openViewModal(mockGame, mockGames, filterContext);
+			modalStore.openViewModal(mockGame2, mockGames, { searchTerm: 'modified' });
 			const state = modalStore.getState();
-			expect(state.filterContext.searchTerm).toBe('updated');
+			expect(state.filterContext.searchTerm).toBe('modified');
+			expect(state.filterContext.platforms).toEqual(['PC', 'PlayStation']);
 		});
 	});
 
-	describe('Tier Calculation', () => {
-		it('getTierFromScore returns correct tier for S (18+)', () => {
-			expect(modalStore.getTierFromScore(18)).toBe('S - Masterpiece');
-			expect(modalStore.getTierFromScore(20)).toBe('S - Masterpiece');
+	describe('Reactive Navigation', () => {
+		it('getReactiveNavigationGames filters by stored context', () => {
+			modalStore.openViewModal(mockGame, mockGames, { platforms: ['PC'] });
+			const result = modalStore.getReactiveNavigationGames(mockGames);
+			expect(result).toHaveLength(2);
+			expect(result.every((g) => g.platform === 'PC')).toBe(true);
 		});
 
-		it('getTierFromScore returns correct tier for A (15-17)', () => {
-			expect(modalStore.getTierFromScore(15)).toBe('A - Amazing');
-			expect(modalStore.getTierFromScore(17)).toBe('A - Amazing');
-		});
-
-		it('getTierFromScore returns correct tier for B (12-14)', () => {
-			expect(modalStore.getTierFromScore(12)).toBe('B - Great');
-			expect(modalStore.getTierFromScore(14)).toBe('B - Great');
-		});
-
-		it('getTierFromScore returns correct tier for C (9-11)', () => {
-			expect(modalStore.getTierFromScore(9)).toBe('C - Good');
-			expect(modalStore.getTierFromScore(11)).toBe('C - Good');
-		});
-
-		it('getTierFromScore returns correct tier for D (6-8)', () => {
-			expect(modalStore.getTierFromScore(6)).toBe('D - Decent');
-			expect(modalStore.getTierFromScore(8)).toBe('D - Decent');
-		});
-
-		it('getTierFromScore returns E for low scores', () => {
-			expect(modalStore.getTierFromScore(5)).toBe('E - Bad');
-			expect(modalStore.getTierFromScore(0)).toBe('E - Bad');
-		});
-	});
-
-	describe('Escape Handling', () => {
-		it('handleEscape closes open modal', () => {
+		it('getReactiveNavigationGames returns all games when no filters are applied', () => {
 			modalStore.openViewModal(mockGame, mockGames);
+			expect(modalStore.getReactiveNavigationGames(mockGames)).toEqual(mockGames);
+		});
+	});
+
+	describe('Deep Links', () => {
+		it('readFromURL opens the modal for a matching game slug', () => {
+			const params = new URLSearchParams({ game: createGameSlug(mockGame.title) });
+			modalStore.readFromURL(params, mockGames);
+			const state = modalStore.getState();
+			expect(state.isOpen).toBe(true);
+			expect(state.activeGame?.id).toBe('1');
+		});
+
+		it('readFromURL closes the modal when no game is present', async () => {
+			modalStore.readFromURL(new URLSearchParams({ game: createGameSlug(mockGame.title) }), mockGames);
 			expect(modalStore.getState().isOpen).toBe(true);
 
-			modalStore.handleEscape();
-			expect(modalStore.getState().isOpen).toBe(false);
-		});
+			// Clear the writeToURL lock from the open before reading again
+			await vi.advanceTimersByTimeAsync(100);
 
-		it('handleEscape does nothing when modal is closed', () => {
-			expect(modalStore.getState().isOpen).toBe(false);
-			modalStore.handleEscape();
+			modalStore.readFromURL(new URLSearchParams(), mockGames);
 			expect(modalStore.getState().isOpen).toBe(false);
 		});
 	});

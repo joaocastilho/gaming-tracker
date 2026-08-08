@@ -9,7 +9,14 @@ import {
 	getTierColor,
 } from '$lib/utils/filterOptions';
 import { formatRating } from '$lib/validation/game';
-import { getTierClass, getTierDisplayName, getTierWeight } from '$lib/utils/tierUtils';
+import {
+	getTierClass,
+	getTierDisplayName,
+	getTierFromScore,
+	getTierWeight,
+	TIER_ORDER,
+	TIER_VALUES,
+} from '$lib/utils/tierUtils';
 import { toSlug, fromSlug, createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
 import { createCompletedGame } from './helpers/factories';
 
@@ -145,6 +152,41 @@ describe('Utility Tests', () => {
 		it('returns 0 for unknown or empty tiers', () => {
 			expect(getTierWeight('Z')).toBe(0);
 			expect(getTierWeight('')).toBe(0);
+		});
+
+		it('derives the tier from a score (S: 18+)', () => {
+			expect(getTierFromScore(18)).toBe('S - Masterpiece');
+			expect(getTierFromScore(20)).toBe('S - Masterpiece');
+		});
+
+		it('derives the tier from a score (A: 15-17)', () => {
+			expect(getTierFromScore(15)).toBe('A - Amazing');
+			expect(getTierFromScore(17)).toBe('A - Amazing');
+		});
+
+		it('derives the tier from a score (B: 12-14)', () => {
+			expect(getTierFromScore(12)).toBe('B - Great');
+			expect(getTierFromScore(14)).toBe('B - Great');
+		});
+
+		it('derives the tier from a score (C: 9-11)', () => {
+			expect(getTierFromScore(9)).toBe('C - Good');
+			expect(getTierFromScore(11)).toBe('C - Good');
+		});
+
+		it('derives the tier from a score (D: 6-8)', () => {
+			expect(getTierFromScore(6)).toBe('D - Decent');
+			expect(getTierFromScore(8)).toBe('D - Decent');
+		});
+
+		it('derives the tier from a score (E: 5 and below)', () => {
+			expect(getTierFromScore(5)).toBe('E - Bad');
+			expect(getTierFromScore(0)).toBe('E - Bad');
+		});
+
+		it('exposes a consistent ordered tier list', () => {
+			expect(TIER_ORDER).toEqual(['S - Masterpiece', 'A - Amazing', 'B - Great', 'C - Good', 'D - Decent', 'E - Bad']);
+			expect(TIER_VALUES).toEqual([...TIER_ORDER]);
 		});
 	});
 

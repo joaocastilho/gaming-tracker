@@ -71,26 +71,6 @@ export const GENRE_COLORS: Record<string, string> = {
 	Survival: 'genre-survival',
 };
 
-// Tier color mappings - use CSS classes from app.css
-export const TIER_COLORS: Record<string, string> = {
-	'S - Masterpiece': 'tier-s',
-	'A - Amazing': 'tier-a',
-	'B - Great': 'tier-b',
-	'C - Good': 'tier-c',
-	'D - Decent': 'tier-d',
-	'E - Bad': 'tier-e',
-};
-
-// Tier display names
-export const TIER_LABELS: Record<string, string> = {
-	S: 'S - Masterpiece',
-	A: 'A - Amazing',
-	B: 'B - Great',
-	C: 'C - Good',
-	D: 'D - Decent',
-	E: 'E - Bad',
-};
-
 export const COOP_COLORS: Record<string, string> = {
 	Yes: 'coop-yes',
 	No: 'coop-no',
