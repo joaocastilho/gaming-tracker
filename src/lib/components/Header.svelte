@@ -128,7 +128,7 @@ async function handleLogout() {
 }
 </script>
 
-<header class="header-root mb-0 px-4 py-1 md:mb-6 md:px-6">
+<header class="header-root mb-0 px-4 py-1 md:mb-3 md:px-6">
 	<div class="header-inner container mx-auto">
 		<nav class="tabs-nav">
 			<ul class="tabs-list">
