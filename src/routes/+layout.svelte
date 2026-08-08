@@ -594,7 +594,7 @@ let shareDescription = $derived.by(() => {
 			</div>
 		</main>
 
-		{#if modalStore.getState().isOpen}
+		{#if modalStore.isOpen}
 			{#await import('$lib/components/DetailModal.svelte') then { default: DetailModal }}
 				<DetailModal
 					onEditGame={(g) => editorModalState.handleEditGame(g)}

@@ -24,3 +24,4 @@ vite.config.ts.timestamp-*
 
 # Other
 static/covers_raw
+check.log

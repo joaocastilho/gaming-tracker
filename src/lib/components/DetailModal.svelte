@@ -390,8 +390,8 @@ $effect(() => {
 				aria-label="Close full screen view"
 			>
 				<img
-					src={getPreviewImageSrc(modalStore.getState().activeGame?.coverImage || '')}
-					alt="{modalStore.getState().activeGame?.title || 'Game'} cover full screen"
+					src={getPreviewImageSrc(modalState.activeGame?.coverImage || '')}
+					alt="{modalState.activeGame?.title || 'Game'} cover full screen"
 					class="max-h-full max-w-full object-contain"
 					onerror={(e) => {
 						const target = e.target as HTMLImageElement;

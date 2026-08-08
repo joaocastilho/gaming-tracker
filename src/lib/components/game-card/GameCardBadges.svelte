@@ -1,5 +1,6 @@
 <script lang="ts">
 import { filtersStore } from '$lib/stores/filters.svelte';
+import { windowSize } from '$lib/stores/window.svelte';
 import { getPlatformClasses, getGenreClasses } from '$lib/utils/colorConstants';
 import type { Game } from '$lib/types/game';
 import { Users } from '@lucide/svelte';
@@ -47,17 +48,7 @@ function handleCoOpClick(event: MouseEvent | KeyboardEvent) {
 	filtersStore.toggleCoOp('Yes');
 }
 
-let isMobile = $state(false);
-
-$effect(() => {
-	const checkMobile = () => {
-		isMobile = window.innerWidth < 768;
-	};
-
-	checkMobile();
-	window.addEventListener('resize', checkMobile);
-	return () => window.removeEventListener('resize', checkMobile);
-});
+let isMobile = $derived(windowSize.isMobile);
 </script>
 
 <div class="metadata-row">

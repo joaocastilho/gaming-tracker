@@ -20,7 +20,7 @@ let displayedGames = $derived(games.slice(0, displayedCount));
 const tierColumnMin = 300;
 const tierGap = 16;
 
-const estimatedRowHeight = $derived(() => {
+const estimatedRowHeight = $derived.by(() => {
 	if (games.length === 0) return 300;
 	const containerWidth = typeof window !== 'undefined' ? window.innerWidth - 32 : 1200;
 	const columns = Math.max(1, Math.floor((containerWidth - tierGap) / (tierColumnMin + tierGap)));
@@ -57,7 +57,7 @@ function intersectionObserver(node: HTMLElement) {
 }
 </script>
 
-<div class="tier-section" style="contain-intrinsic-size: 1px {estimatedRowHeight()}px;">
+<div class="tier-section" style="contain-intrinsic-size: 1px {estimatedRowHeight}px;">
 	<h3 class="tier-header {getTierClass(tierName)}">
 		{getTierDisplayName(tierName)}
 		<span class="tier-count">{games.length} {games.length === 1 ? 'game' : 'games'}</span>

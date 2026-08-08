@@ -7,6 +7,7 @@ import { filtersStore } from '$lib/stores/filters.svelte';
 import { imageErrorStore } from '$lib/stores/imageErrors.svelte';
 
 import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
+import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset';
 import type { Game } from '$lib/types/game';
 
 interface Props {
@@ -43,6 +44,7 @@ function imageAction(node: HTMLImageElement) {
 				if (isInstant) {
 					skeleton.style.transition = 'none';
 				}
+				skeleton.classList.add('loaded');
 				skeleton.style.opacity = '0';
 			}
 		}
@@ -85,7 +87,7 @@ function imageAction(node: HTMLImageElement) {
 	};
 }
 
-const effectiveImageSrc = $derived(() => {
+const effectiveImageSrc = $derived.by(() => {
 	if (isOffline) {
 		return OFFLINE_FALLBACK_DATA_URI;
 	}
@@ -95,6 +97,8 @@ const effectiveImageSrc = $derived(() => {
 	}
 	return baseImage;
 });
+
+const srcset = $derived(!isOffline ? generateSrcset(effectiveImageSrc) : undefined);
 
 function handleTierClick(event: MouseEvent | KeyboardEvent) {
 	event.stopPropagation();
@@ -128,7 +132,9 @@ function getCompletionDay(dateStr: string | null): string {
 	<div class="image-wrapper">
 		<div class="skeleton-loader"></div>
 		<img
-			src={effectiveImageSrc()}
+			src={effectiveImageSrc}
+			srcset={srcset}
+			sizes={generateSizes('gallery')}
 			alt={game.title}
 			class="cover-image"
 			loading="eager"
@@ -236,7 +242,10 @@ function getCompletionDay(dateStr: string | null): string {
 			transparent 100%
 		);
 		animation: skeleton-shimmer 2s ease-in-out infinite;
-		will-change: transform;
+	}
+
+	.skeleton-loader.loaded::after {
+		animation: none;
 	}
 
 	:global(.light) .skeleton-loader {

@@ -1,6 +1,7 @@
 import type { Game } from '$lib/types/game';
 import type { SortKey, SortDirection } from '$lib/stores/filters.svelte';
 import { parseDate } from '$lib/utils/dateUtils';
+import { parsePlaytimeToMinutes } from '$lib/utils/playtimeUtils';
 import { getTierDisplayName, getTierWeight } from '$lib/utils/tierUtils';
 
 export interface BaseFilters {
@@ -67,12 +68,8 @@ export function filterGamesByTab(games: Game[], activeTab: FilterTab): Game[] {
 }
 
 function parsePlaytime(time: string | null | undefined): number | null {
-	if (!time) return null;
-	const match = time.match(/^(\d+)h\s*(\d+)m$/);
-	if (!match) return null;
-	const hours = parseInt(match[1], 10);
-	const minutes = parseInt(match[2], 10);
-	return hours * 60 + minutes;
+	const minutes = parsePlaytimeToMinutes(time);
+	return minutes === 0 && !time ? null : minutes;
 }
 
 function compareNullableNumbers(a: number | null | undefined, b: number | null | undefined): number {
