@@ -1,6 +1,24 @@
+const dateParseCache = new Map<string, number>();
+const MAX_DATE_CACHE_SIZE = 1000;
+
 export function parseDate(dateStr: string | null): number | null {
 	if (!dateStr) return null;
 
+	const cached = dateParseCache.get(dateStr);
+	if (cached !== undefined) return cached;
+
+	const result = parseDateUncached(dateStr);
+	if (result !== null) {
+		if (dateParseCache.size >= MAX_DATE_CACHE_SIZE) {
+			const firstKey = dateParseCache.keys().next().value;
+			if (firstKey !== undefined) dateParseCache.delete(firstKey);
+		}
+		dateParseCache.set(dateStr, result);
+	}
+	return result;
+}
+
+function parseDateUncached(dateStr: string): number | null {
 	const normalized = dateStr.replace(/[/\-.,]/g, ' ').trim();
 	const numericParts = normalized.match(/^(\d{1,2})\s+(\d{1,2})\s+(\d{4})$/);
 	if (numericParts) {

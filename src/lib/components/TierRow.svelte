@@ -2,6 +2,7 @@
 import type { Game } from '$lib/types/game';
 import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
 import { gamesStore } from '$lib/stores/games.svelte';
+import { windowSize } from '$lib/stores/window.svelte';
 import GameCard from '$lib/components/GameCard.svelte';
 import { CARD_WIDTHS } from '$lib/constants/fonts';
 
@@ -22,7 +23,7 @@ const tierGap = 16;
 
 const estimatedRowHeight = $derived.by(() => {
 	if (games.length === 0) return 300;
-	const containerWidth = typeof window !== 'undefined' ? window.innerWidth - 32 : 1200;
+	const containerWidth = windowSize.width - 32;
 	const columns = Math.max(1, Math.floor((containerWidth - tierGap) / (tierColumnMin + tierGap)));
 	const rows = Math.ceil(games.length / columns);
 

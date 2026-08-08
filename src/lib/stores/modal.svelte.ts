@@ -229,10 +229,6 @@ class ModalStore {
 		};
 	}
 
-	getReactiveNavigationGamesFromContext(allGames: Game[], filterContext: ModalState['filterContext']): Game[] {
-		return filterGamesByContext(allGames, filterContext);
-	}
-
 	getReactiveNavigationGames(allGames: Game[]): Game[] {
 		if (!this._state.filterContext) return allGames;
 		return filterGamesByContext(allGames, this._state.filterContext);

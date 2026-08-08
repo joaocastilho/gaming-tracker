@@ -7,6 +7,10 @@ import { completedGamesCache } from './completedGamesCache.svelte';
 import { computeAllCardHeights, computeCardHeights, type CardHeights } from '$lib/utils/textMeasure';
 import { CARD_WIDTHS } from '$lib/constants/fonts';
 
+// Only CARD_WIDTHS.small is consumed today (TierRow), so measuring any other
+// width is wasted work. Narrowing the list keeps the map shape compatible.
+const MEASURED_WIDTHS = [CARD_WIDTHS.small];
+
 class GamesStore {
 	private _games = $state<Game[]>([]);
 	loading = $state<boolean>(true);
@@ -62,7 +66,7 @@ class GamesStore {
 			});
 
 			this.games = normalized;
-			this.updateCardHeights();
+			this.scheduleCardHeights();
 
 			if (browser && typeof indexedDB !== 'undefined') {
 				const plainGames = structuredClone(normalized);
@@ -98,14 +102,13 @@ class GamesStore {
 	}
 
 	updateCardHeights(gameIds?: string[]): void {
-		const widthValues = Object.values(CARD_WIDTHS);
 		if (gameIds) {
 			const newHeights = new Map(this._cardHeights);
 			for (const id of gameIds) {
 				const game = this._games.find((g) => g.id === id);
 				if (game) {
 					const heights: Record<number, CardHeights> = {};
-					for (const width of widthValues) {
+					for (const width of MEASURED_WIDTHS) {
 						heights[width] = computeCardHeights(game, width);
 					}
 					newHeights.set(id, heights);
@@ -113,7 +116,18 @@ class GamesStore {
 			}
 			this._cardHeights = newHeights;
 		} else {
-			this._cardHeights = computeAllCardHeights(this._games, widthValues);
+			this._cardHeights = computeAllCardHeights(this._games, MEASURED_WIDTHS);
+		}
+	}
+
+	// Full-array measurement blocks the main thread (canvas text shaping for every
+	// game), so defer it to idle time. Per-game updates stay synchronous.
+	private scheduleCardHeights(): void {
+		const run = () => this.updateCardHeights();
+		if (typeof requestIdleCallback === 'function') {
+			requestIdleCallback(run, { timeout: 500 });
+		} else {
+			setTimeout(run, 0);
 		}
 	}
 
@@ -131,7 +145,7 @@ class GamesStore {
 	setAllGames(games: Game[]): void {
 		this.games = games;
 		completedGamesCache.updateCache(this._games);
-		this.updateCardHeights();
+		this.scheduleCardHeights();
 
 		if (browser && typeof indexedDB !== 'undefined') {
 			const plainGames = structuredClone(games);
@@ -148,7 +162,7 @@ class GamesStore {
 				const transformed = cachedGames.map((game) => transformGameData(game as unknown as RawGameData));
 				this._games = transformed;
 				completedGamesCache.updateCache(transformed);
-				this.updateCardHeights();
+				this.scheduleCardHeights();
 			}
 		} catch (err) {
 			this.error = 'Failed to load games from local cache.';

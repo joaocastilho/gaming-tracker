@@ -43,7 +43,6 @@ let {
 } = $props();
 
 let gamesInitialized = $state(false);
-let urlUpdateTimeout = $state<ReturnType<typeof setTimeout> | undefined>(undefined);
 let canInstall = $state(false);
 
 interface BeforeInstallPromptEvent extends Event {
@@ -146,10 +145,6 @@ $effect(() => {
 	}
 });
 
-$effect(() => {
-	if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
-});
-
 $effect.pre(() => {
 	const pathname = page.url.pathname;
 	let targetTab: TabValue = 'all';
@@ -212,8 +207,6 @@ function resetFilters() {
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
 	filtersStore.setSort(null);
-
-	if (urlUpdateTimeout) clearTimeout(urlUpdateTimeout);
 }
 
 function onSearchToggle() {
@@ -578,16 +571,8 @@ let shareDescription = $derived.by(() => {
 							loading={false}
 						/>
 					{/if}
-
-					<div style="display: none;">
-						{@render children?.()}
-					</div>
 				{:else if isTierlistPage}
-						<TierListView filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
-
-					<div style="display: none;">
-						{@render children?.()}
-					</div>
+					<TierListView filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
 				{:else}
 					{@render children?.()}
 				{/if}

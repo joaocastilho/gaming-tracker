@@ -201,15 +201,3 @@ function getBaseSortValue(a: Game, b: Game, sort: SortOption | null, activeTab: 
 function sortByPlaytime(a: Game, b: Game, direction: number): number {
 	return comparePlaytimes(a.playtime, b.playtime) * direction;
 }
-
-export function filterAndSortGames(
-	games: Game[],
-	filters: BaseFilters | null,
-	activeTab: FilterTab,
-	sort: SortOption | null
-): Game[] {
-	let filtered = filterGamesWithBaseFilters(games, filters);
-	filtered = filterGamesByTab(filtered, activeTab);
-	const effectiveSort = activeTab === 'tierlist' ? null : sort;
-	return sortGames(filtered, effectiveSort, activeTab);
-}

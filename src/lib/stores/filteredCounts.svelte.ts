@@ -8,6 +8,8 @@ export interface FilteredTabCounts {
 }
 
 class FilteredCountsStore {
+	private lastCounts: FilteredTabCounts | null = null;
+
 	counts = $derived.by(() => {
 		const baseFiltered = filteredGamesBaseStore.games;
 
@@ -25,7 +27,25 @@ class FilteredCountsStore {
 			if (game.tier) tierlist++;
 		}
 
-		return { all: baseFiltered.length, completed, planned, tierlist };
+		const next: FilteredTabCounts = {
+			all: baseFiltered.length,
+			completed,
+			planned,
+			tierlist,
+		};
+
+		if (
+			this.lastCounts &&
+			this.lastCounts.all === next.all &&
+			this.lastCounts.completed === next.completed &&
+			this.lastCounts.planned === next.planned &&
+			this.lastCounts.tierlist === next.tierlist
+		) {
+			return this.lastCounts;
+		}
+
+		this.lastCounts = next;
+		return next;
 	});
 }
 

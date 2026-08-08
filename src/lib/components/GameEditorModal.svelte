@@ -246,8 +246,10 @@ $effect(() => {
 $effect(() => {
 	if (!working) return;
 
-	working.mainTitle = working.title;
-	working.subtitle = null;
+	if (mode === 'create') {
+		working.mainTitle = working.title;
+		working.subtitle = null;
+	}
 
 	if (mode === 'create' && working.title) {
 		const slug = working.title
