@@ -15,7 +15,15 @@ import { createCompletedGame } from './helpers/factories';
 
 describe('Utility Tests', () => {
 	describe('Debounce', () => {
-		it('delays execution', async () => {
+		beforeEach(() => {
+			vi.useFakeTimers();
+		});
+
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
+		it('delays execution', () => {
 			const fn = vi.fn(() => {});
 			const debounced = debounce(fn, 20);
 
@@ -25,12 +33,12 @@ describe('Utility Tests', () => {
 
 			expect(fn).not.toHaveBeenCalled();
 
-			await new Promise((resolve) => setTimeout(resolve, 30));
+			vi.advanceTimersByTime(30);
 
 			expect(fn).toHaveBeenCalledTimes(1);
 		});
 
-		it('supports immediate execution', async () => {
+		it('supports immediate execution', () => {
 			const fn = vi.fn(() => {});
 			const debounced = debounce(fn, 20, true);
 
@@ -40,21 +48,21 @@ describe('Utility Tests', () => {
 			debounced();
 			expect(fn).toHaveBeenCalledTimes(1);
 
-			await new Promise((resolve) => setTimeout(resolve, 30));
+			vi.advanceTimersByTime(30);
 			debounced();
 			expect(fn).toHaveBeenCalledTimes(2);
 		});
 
-		it('enforces maxWait by invoking at least once per interval', async () => {
+		it('enforces maxWait by invoking at least once per interval', () => {
 			const fn = vi.fn(() => {});
 			const debounced = debounce(fn, 50, false, 80);
 
 			debounced();
-			await new Promise((resolve) => setTimeout(resolve, 40));
+			vi.advanceTimersByTime(40);
 			expect(fn).not.toHaveBeenCalled();
 
 			debounced();
-			await new Promise((resolve) => setTimeout(resolve, 50));
+			vi.advanceTimersByTime(50);
 			expect(fn).toHaveBeenCalledTimes(1);
 		});
 	});

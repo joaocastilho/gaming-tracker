@@ -3,19 +3,16 @@
  * Ensures filter store methods don't trigger unnecessary state updates
  * which could cause infinite effect loops in Svelte components
  */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
 
 describe('Filter Store Idempotency', () => {
 	beforeEach(() => {
-		vi.resetModules();
 		filtersStore.set(createInitialFilters());
 	});
 
 	describe('setSearchTerm', () => {
-		it('should not update state when setting same search term', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should not update state when setting same search term', () => {
 			// Set initial search term
 			filtersStore.setSearchTerm('test');
 			const stateAfterFirstSet = filtersStore.state;
@@ -28,9 +25,7 @@ describe('Filter Store Idempotency', () => {
 			expect(stateAfterFirstSet).toBe(stateAfterSecondSet);
 		});
 
-		it('should update state when setting different search term', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should update state when setting different search term', () => {
 			filtersStore.setSearchTerm('first');
 			const stateAfterFirst = filtersStore.state;
 
@@ -42,9 +37,7 @@ describe('Filter Store Idempotency', () => {
 			expect(filtersStore.state?.searchTerm).toBe('second');
 		});
 
-		it('should not update state when setting empty string on already empty', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should not update state when setting empty string on already empty', () => {
 			// Initial state has empty searchTerm
 			const initialState = filtersStore.state;
 
@@ -57,9 +50,7 @@ describe('Filter Store Idempotency', () => {
 	});
 
 	describe('setSort', () => {
-		it('should not update state when setting null on already null', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should not update state when setting null on already null', () => {
 			// Initial state has null sortOption
 			const initialState = filtersStore.state;
 			expect(initialState?.sortOption).toBeNull();
@@ -71,9 +62,7 @@ describe('Filter Store Idempotency', () => {
 			expect(initialState).toBe(stateAfterSet);
 		});
 
-		it('should not update state when setting same sort option', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should not update state when setting same sort option', () => {
 			const sortOption = { key: 'score' as const, direction: 'desc' as const };
 
 			filtersStore.setSort(sortOption);
@@ -87,9 +76,7 @@ describe('Filter Store Idempotency', () => {
 			expect(stateAfterFirst).toBe(stateAfterSecond);
 		});
 
-		it('should update state when setting different sort option', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should update state when setting different sort option', () => {
 			filtersStore.setSort({ key: 'score', direction: 'asc' });
 			const stateAfterFirst = filtersStore.state;
 
@@ -101,9 +88,7 @@ describe('Filter Store Idempotency', () => {
 			expect(filtersStore.state?.sortOption?.key).toBe('alphabetical');
 		});
 
-		it('should update state when changing sort direction', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should update state when changing sort direction', () => {
 			filtersStore.setSort({ key: 'score', direction: 'asc' });
 			const stateAfterFirst = filtersStore.state;
 
@@ -117,9 +102,7 @@ describe('Filter Store Idempotency', () => {
 	});
 
 	describe('resetFilters / resetAllFilters', () => {
-		it('should not update state when already in initial state', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should not update state when already in initial state', () => {
 			// Initial state
 			const initialState = filtersStore.state;
 			expect(filtersStore.isAnyFilterApplied()).toBe(false);
@@ -131,9 +114,7 @@ describe('Filter Store Idempotency', () => {
 			expect(initialState).toBe(stateAfterReset);
 		});
 
-		it('should update state when filters are applied', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should update state when filters are applied', () => {
 			// Apply some filters
 			filtersStore.togglePlatform('PC');
 			filtersStore.setSearchTerm('test');
@@ -149,9 +130,7 @@ describe('Filter Store Idempotency', () => {
 			expect(filtersStore.isAnyFilterApplied()).toBe(false);
 		});
 
-		it('should update state when sort is applied but no filters', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should update state when sort is applied but no filters', () => {
 			// Apply only sort (not a "filter" per se)
 			filtersStore.setSort({ key: 'score', direction: 'desc' });
 			expect(filtersStore.isAnyFilterApplied()).toBe(false);
@@ -169,38 +148,31 @@ describe('Filter Store Idempotency', () => {
 	});
 
 	describe('isAnyFilterApplied', () => {
-		it('should return false for initial state', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
+		it('should return false for initial state', () => {
 			expect(filtersStore.isAnyFilterApplied()).toBe(false);
 		});
 
-		it('should return true when search term is set', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
+		it('should return true when search term is set', () => {
 			filtersStore.setSearchTerm('test');
 			expect(filtersStore.isAnyFilterApplied()).toBe(true);
 		});
 
-		it('should return true when platform filter is set', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
+		it('should return true when platform filter is set', () => {
 			filtersStore.togglePlatform('PC');
 			expect(filtersStore.isAnyFilterApplied()).toBe(true);
 		});
 
-		it('should return true when genre filter is set', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
+		it('should return true when genre filter is set', () => {
 			filtersStore.toggleGenre('Action');
 			expect(filtersStore.isAnyFilterApplied()).toBe(true);
 		});
 
-		it('should return true when tier filter is set', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
+		it('should return true when tier filter is set', () => {
 			filtersStore.toggleTier('S');
 			expect(filtersStore.isAnyFilterApplied()).toBe(true);
 		});
 
-		it('should return false after all filters are removed', async () => {
-			const { filtersStore } = await import('$lib/stores/filters.svelte');
-
+		it('should return false after all filters are removed', () => {
 			filtersStore.setSearchTerm('test');
 			filtersStore.togglePlatform('PC');
 			expect(filtersStore.isAnyFilterApplied()).toBe(true);

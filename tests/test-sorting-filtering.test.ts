@@ -65,13 +65,11 @@ const mockGames = [
 ];
 
 describe('Sorting and Filtering Logic', () => {
-	beforeEach(async () => {
+	beforeEach(() => {
 		// Reset stores
 		gamesStore.initializeGames(mockGames);
 		appStore.setActiveTab('all');
 		filtersStore.resetFilters();
-		// Wait for stores to update
-		await new Promise((resolve) => setTimeout(resolve, 10));
 	});
 
 	it('returns all games when no filters active', () => {
@@ -114,10 +112,8 @@ describe('Sorting and Filtering Logic', () => {
 		expect(results[0].title).toBe('Elden Ring');
 	});
 
-	it('sorts games correctly', async () => {
+	it('sorts games correctly', () => {
 		appStore.setActiveTab('completed');
-		// Wait for debounce
-		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		// Default sort for completed tab: Date Descending
 		let results = filteredGamesStore.games;
@@ -127,17 +123,14 @@ describe('Sorting and Filtering Logic', () => {
 
 		// Sort by Score Descending
 		filtersStore.setSort({ key: 'score', direction: 'desc' });
-		// Wait for debounce
-		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		results = filteredGamesStore.games;
 		expect(results[0].title).toBe('The Legend of Zelda: Breath of the Wild'); // 10
 		expect(results[1].title).toBe('God of War'); // 9
 	});
 
-	it('defaults to alphabetical sort for planned games', async () => {
+	it('defaults to alphabetical sort for planned games', () => {
 		appStore.setActiveTab('planned');
-		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		const results = filteredGamesStore.games;
 		// Should be sorted alphabetically by default
@@ -150,9 +143,8 @@ describe('Sorting and Filtering Logic', () => {
 		expect(results[0].title).toBe('Elden Ring');
 	});
 
-	it('defaults to alphabetical sort for all games', async () => {
+	it('defaults to alphabetical sort for all games', () => {
 		appStore.setActiveTab('all');
-		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		const results = filteredGamesStore.games;
 		// Default: Alphabetical Ascending
@@ -163,7 +155,7 @@ describe('Sorting and Filtering Logic', () => {
 		expect(results[3].title).toBe('The Legend of Zelda: Breath of the Wild');
 	});
 
-	it('sorts with nulls last for dates', async () => {
+	it('sorts with nulls last for dates', () => {
 		// Add a game with null date to completed for this test
 		const gamesWithNull = [
 			...mockGames,
@@ -184,7 +176,6 @@ describe('Sorting and Filtering Logic', () => {
 		];
 		gamesStore.initializeGames(gamesWithNull);
 		appStore.setActiveTab('completed');
-		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		// Default: Date Descending
 		let results = filteredGamesStore.games;
@@ -193,7 +184,6 @@ describe('Sorting and Filtering Logic', () => {
 
 		// Switch to Date Ascending
 		filtersStore.setSort({ key: 'finishedDate', direction: 'asc' });
-		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		results = filteredGamesStore.games;
 		// Order: Hollow Knight (Dec), Zelda (Jan), God of War (Feb), Null Date Game

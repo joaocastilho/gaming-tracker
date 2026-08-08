@@ -73,7 +73,6 @@ describe('Dexie Integration with Stores', () => {
 		gamesStore.initializeGames(mockGames);
 		appStore.setActiveTab('all');
 		filtersStore.resetFilters();
-		await new Promise((resolve) => setTimeout(resolve, 10));
 	});
 
 	afterEach(async () => {
@@ -140,40 +139,36 @@ describe('Dexie Integration with Stores', () => {
 	});
 
 	describe('Sorts work after Dexie integration', () => {
-		it('sorts by score descending', async () => {
+		it('sorts by score descending', () => {
 			appStore.setActiveTab('completed');
 			filtersStore.setSort({ key: 'score', direction: 'desc' });
-			await new Promise((resolve) => setTimeout(resolve, 150));
 
 			const results = filteredGamesStore.games;
 			expect(results[0].score).toBe(19);
 			expect(results[1].score).toBe(18);
 		});
 
-		it('sorts by score ascending', async () => {
+		it('sorts by score ascending', () => {
 			appStore.setActiveTab('completed');
 			filtersStore.setSort({ key: 'score', direction: 'asc' });
-			await new Promise((resolve) => setTimeout(resolve, 150));
 
 			const results = filteredGamesStore.games;
 			expect(results[0].score).toBe(18);
 			expect(results[1].score).toBe(19);
 		});
 
-		it('sorts by date descending', async () => {
+		it('sorts by date descending', () => {
 			appStore.setActiveTab('completed');
 			filtersStore.setSort({ key: 'finishedDate', direction: 'desc' });
-			await new Promise((resolve) => setTimeout(resolve, 150));
 
 			const results = filteredGamesStore.games;
 			expect(results[0].id).toBe('2');
 			expect(results[1].id).toBe('1');
 		});
 
-		it('sorts alphabetically ascending', async () => {
+		it('sorts alphabetically ascending', () => {
 			appStore.setActiveTab('all');
 			filtersStore.setSort({ key: 'alphabetical', direction: 'asc' });
-			await new Promise((resolve) => setTimeout(resolve, 150));
 
 			const results = filteredGamesStore.games;
 			expect(results[0].title).toBe('Elden Ring');
@@ -181,10 +176,9 @@ describe('Dexie Integration with Stores', () => {
 			expect(results[2].title).toBe('Zelda BOTW');
 		});
 
-		it('sorts alphabetically descending', async () => {
+		it('sorts alphabetically descending', () => {
 			appStore.setActiveTab('all');
 			filtersStore.setSort({ key: 'alphabetical', direction: 'desc' });
-			await new Promise((resolve) => setTimeout(resolve, 150));
 
 			const results = filteredGamesStore.games;
 			expect(results[0].title).toBe('Zelda BOTW');

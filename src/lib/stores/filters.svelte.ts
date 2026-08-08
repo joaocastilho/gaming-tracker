@@ -77,6 +77,8 @@ class FiltersStore {
 
 	public isDesktopFiltersExpanded = $state(true);
 
+	public isDesktopSearchOpen = $state(false);
+
 	private static readonly FILTERS_EXPANDED_KEY = 'filtersExpanded';
 	private static readonly FILTERS_STATE_KEY = 'filtersState';
 
@@ -289,6 +291,15 @@ class FiltersStore {
 		if (browser) {
 			sessionStorage.setItem(FiltersStore.FILTERS_EXPANDED_KEY, String(this.isDesktopFiltersExpanded));
 		}
+	}
+
+	toggleDesktopSearch(): void {
+		this.isDesktopSearchOpen = !this.isDesktopSearchOpen;
+	}
+
+	setDesktopSearchOpen(open: boolean): void {
+		if (this.isDesktopSearchOpen === open) return;
+		this.isDesktopSearchOpen = open;
 	}
 
 	saveToSession(): void {

@@ -8,6 +8,7 @@ import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 import { appStore } from '$lib/stores/app.svelte';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
+import { filtersStore } from '$lib/stores/filters.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
 import {
 	Search,
@@ -100,6 +101,24 @@ function handleApplyChanges() {
 	onApplyChanges?.();
 }
 
+function handleSearchToggle() {
+	const path = page.url.pathname;
+	if (path === '/' || path === '/tierlist' || path === '/stats') {
+		filtersStore.setDesktopSearchOpen(true);
+		goto('/library');
+	} else {
+		filtersStore.toggleDesktopSearch();
+	}
+
+	requestAnimationFrame(() => {
+		const input = document.getElementById('search-input') as HTMLInputElement;
+		if (input) {
+			input.focus();
+			input.select();
+		}
+	});
+}
+
 function handleDiscardChanges() {
 	editorStore.discardAllChanges();
 }
@@ -176,17 +195,16 @@ async function handleLogout() {
 			<button
 				type="button"
 				class="filter-search-toggle"
-				onclick={() => {
-					const input = document.getElementById('search-input') as HTMLInputElement;
-					if (input) {
-						input.focus();
-						input.select();
-					}
-				}}
-				aria-label="Search"
-				title={`Search (${shortcutKey})`}
+				class:active={filtersStore.isDesktopSearchOpen}
+				onclick={handleSearchToggle}
+				aria-expanded={filtersStore.isDesktopSearchOpen}
+				aria-label={filtersStore.isDesktopSearchOpen ? 'Hide search' : 'Show search'}
+				title={filtersStore.isDesktopSearchOpen
+					? `Hide search (${shortcutKey})`
+					: `Show search (${shortcutKey})`}
 			>
 				<Search size={18} />
+				<span class="filter-shortcut hidden md:inline">{shortcutKey}</span>
 			</button>
 		</div>
 
@@ -362,7 +380,8 @@ async function handleLogout() {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 40px;
+		gap: 6px;
+		padding: 0 12px;
 		height: 40px;
 		border: 1px solid var(--color-border);
 		border-radius: 10px;
@@ -389,6 +408,26 @@ async function handleLogout() {
 		:global(.light) .filter-search-toggle:hover {
 			background-color: rgba(234, 88, 12, 0.04);
 		}
+	}
+
+	.filter-search-toggle.active {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+		background-color: rgba(99, 102, 241, 0.08);
+	}
+
+	:global(.light) .filter-search-toggle.active {
+		background-color: rgba(234, 88, 12, 0.08);
+	}
+
+	.filter-shortcut {
+		font-size: 0.7rem;
+		font-weight: 600;
+		padding: 1px 3px;
+		background: var(--color-surface-elevated);
+		border-radius: 2px;
+		opacity: 0.6;
+		white-space: nowrap;
 	}
 
 	.filter-search-toggle:focus-visible {

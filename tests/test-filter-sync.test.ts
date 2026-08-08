@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { filtersStore } from '../src/lib/stores/filters.svelte';
 import { gamesStore } from '../src/lib/stores/games.svelte';
+import { replaceState } from '$app/navigation';
 
 // Mock SvelteKit base modules
 vi.mock('$app/navigation', () => ({
@@ -53,25 +54,30 @@ describe('FiltersStore URL Sync', () => {
 	});
 
 	it('should write multiple filter types to URL', async () => {
-		filtersStore.togglePlatform('PC');
-		filtersStore.toggleGenre('RPG');
-		filtersStore.setSearchTerm('Zelda');
+		vi.useFakeTimers();
 
-		// Manually trigger the write since the automated effect is in +layout.svelte
-		filtersStore.writeSearchToURL({});
+		try {
+			filtersStore.togglePlatform('PC');
+			filtersStore.toggleGenre('RPG');
+			filtersStore.setSearchTerm('Zelda');
 
-		// Wait for debounce (300ms + buffer)
-		await new Promise((resolve) => setTimeout(resolve, 400));
+			// Manually trigger the write since the automated effect is in +layout.svelte
+			filtersStore.writeSearchToURL({});
 
-		const replaceStateMock = (await import('$app/navigation')).replaceState;
-		expect(replaceStateMock).toHaveBeenCalled();
+			// Flush the 300ms debounce synchronously
+			await vi.advanceTimersByTimeAsync(300);
 
-		const lastCall = vi.mocked(replaceStateMock).mock.calls.at(-1);
-		const urlString = lastCall?.[0] as string;
-		const url = new URL(urlString);
+			expect(replaceState).toHaveBeenCalled();
 
-		expect(url.searchParams.get('s')).toBe('Zelda');
-		expect(url.searchParams.getAll('platform')).toContain('pc');
-		expect(url.searchParams.getAll('genre')).toContain('rpg');
+			const lastCall = vi.mocked(replaceState).mock.calls.at(-1);
+			const urlString = lastCall?.[0] as string;
+			const url = new URL(urlString);
+
+			expect(url.searchParams.get('s')).toBe('Zelda');
+			expect(url.searchParams.getAll('platform')).toContain('pc');
+			expect(url.searchParams.getAll('genre')).toContain('rpg');
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 });

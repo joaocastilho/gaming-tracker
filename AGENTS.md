@@ -28,7 +28,13 @@
 
 ## Universal Rules (Always Apply)
 
-### 0. Test-First Development (CRITICAL)
+### 0. Run `bun run validate` (CRITICAL)
+
+`bun run validate` runs **lint:fix → format → check (svelte-check) → test** in one go.
+**Always use `bun run validate` to verify changes are complete** instead of running
+lint/format/check/test separately. If it fails, fix the errors and re-run until it passes.
+
+### 0b. Test-First Development (CRITICAL)
 
 **MANDATORY for all refactors and bug fixes:**
 

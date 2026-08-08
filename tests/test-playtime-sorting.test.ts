@@ -1,4 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
+import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { appStore } from '$lib/stores/app.svelte';
 
 /**
  * Test suite for Hours Played (completed games) and Time to Beat (planned games) sorting
@@ -68,9 +72,7 @@ const createPlannedGame = (overrides: Partial<MockGame>): MockGame => ({
 });
 
 describe('Hours Played Sorting (Completed Games)', () => {
-	beforeEach(async () => {
-		vi.resetModules();
-		const { filtersStore, createInitialFilters } = await import('$lib/stores/filters.svelte');
+	beforeEach(() => {
 		filtersStore.set(createInitialFilters());
 	});
 
@@ -81,16 +83,10 @@ describe('Hours Played Sorting (Completed Games)', () => {
 		createCompletedGame({ id: '4', title: 'Quick Game', playtime: '2h 15m' }),
 	];
 
-	it('should sort by hours played in ascending order (shortest first)', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should sort by hours played in ascending order (shortest first)', () => {
 		gamesStore.initializeGames(completedGames);
 		appStore.setActiveTab('completed');
 		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		expect(results[0].title).toBe('Quick Game'); // 2h 15m
@@ -99,16 +95,10 @@ describe('Hours Played Sorting (Completed Games)', () => {
 		expect(results[3].title).toBe('Long Game'); // 100h 0m
 	});
 
-	it('should sort by hours played in descending order (longest first)', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should sort by hours played in descending order (longest first)', () => {
 		gamesStore.initializeGames(completedGames);
 		appStore.setActiveTab('completed');
 		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		expect(results[0].title).toBe('Long Game'); // 100h 0m
@@ -117,12 +107,7 @@ describe('Hours Played Sorting (Completed Games)', () => {
 		expect(results[3].title).toBe('Quick Game'); // 2h 15m
 	});
 
-	it('should handle null hoursPlayed values by putting them last', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should handle null hoursPlayed values by putting them last', () => {
 		const gamesWithNull: MockGame[] = [
 			...completedGames,
 			createCompletedGame({ id: '5', title: 'No Hours Game', playtime: '1000h 0m' }),
@@ -130,37 +115,25 @@ describe('Hours Played Sorting (Completed Games)', () => {
 		gamesStore.initializeGames(gamesWithNull);
 		appStore.setActiveTab('completed');
 		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		expect(results[results.length - 1].title).toBe('No Hours Game');
 	});
 
-	it('should reactively update when sort option changes via subscriber', async () => {
-		const { filteredGames } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should reactively update when sort option changes via subscriber', () => {
 		gamesStore.initializeGames(completedGames);
 		appStore.setActiveTab('completed');
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		// Change to playtime sort
 		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		// Check the filtered games directly
-		const sortedGames = filteredGames.games;
+		const sortedGames = filteredGamesStore.games;
 		expect(sortedGames[0].title).toBe('Long Game'); // 100h 0m - longest first
 	});
 });
 
 describe('Time to Beat Sorting (Planned Games)', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
-
 	const plannedGames: MockGame[] = [
 		createPlannedGame({ id: '1', title: 'Long RPG', playtime: '80h 0m' }),
 		createPlannedGame({ id: '2', title: 'Short Indie', playtime: '6h 30m' }),
@@ -168,16 +141,10 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		createPlannedGame({ id: '4', title: 'Quick Puzzle', playtime: '3h 0m' }),
 	];
 
-	it('should sort by time to beat in ascending order (shortest first)', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should sort by time to beat in ascending order (shortest first)', () => {
 		gamesStore.initializeGames(plannedGames);
 		appStore.setActiveTab('planned');
 		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		expect(results[0].title).toBe('Quick Puzzle'); // 3h 0m
@@ -186,16 +153,10 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		expect(results[3].title).toBe('Long RPG'); // 80h 0m
 	});
 
-	it('should sort by time to beat in descending order (longest first)', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should sort by time to beat in descending order (longest first)', () => {
 		gamesStore.initializeGames(plannedGames);
 		appStore.setActiveTab('planned');
 		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		expect(results[0].title).toBe('Long RPG'); // 80h 0m
@@ -204,12 +165,7 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		expect(results[3].title).toBe('Quick Puzzle'); // 3h 0m
 	});
 
-	it('should handle games with same time to beat maintaining stable order', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should handle games with same time to beat maintaining stable order', () => {
 		const gamesWithSameTime: MockGame[] = [
 			createPlannedGame({ id: '1', title: 'Game A', playtime: '10h 0m' }),
 			createPlannedGame({ id: '2', title: 'Game B', playtime: '10h 0m' }),
@@ -218,28 +174,20 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 		gamesStore.initializeGames(gamesWithSameTime);
 		appStore.setActiveTab('planned');
 		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		// All games have same timeToBeat, so order should be stable
 		expect(results.length).toBe(3);
 	});
 
-	it('should reactively update when switching from alphabetical to timeToBeat sort', async () => {
-		const { filteredGames } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should reactively update when switching from alphabetical to timeToBeat sort', () => {
 		gamesStore.initializeGames(plannedGames);
 		appStore.setActiveTab('planned');
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		// Change to playtime sort descending
 		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
-		const sortedGames = filteredGames.games;
+		const sortedGames = filteredGamesStore.games;
 		// playtime desc order: Long RPG (80h), Medium Adventure (20h), Short Indie (6h 30m), Quick Puzzle (3h)
 		expect(sortedGames[0].title).toBe('Long RPG');
 		expect(sortedGames[3].title).toBe('Quick Puzzle');
@@ -247,10 +195,6 @@ describe('Time to Beat Sorting (Planned Games)', () => {
 });
 
 describe('Cross-tab Sorting Behavior', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
-
 	const createMixedGames = (): MockGame[] => [
 		createCompletedGame({ id: '1', title: 'Completed A', playtime: '50h 0m' }),
 		createCompletedGame({ id: '2', title: 'Completed B', playtime: '10h 0m' }),
@@ -258,16 +202,10 @@ describe('Cross-tab Sorting Behavior', () => {
 		createPlannedGame({ id: '4', title: 'Planned B', playtime: '5h 0m' }),
 	];
 
-	it('should only show hoursPlayed sort option results for completed tab', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should only show hoursPlayed sort option results for completed tab', () => {
 		gamesStore.initializeGames(createMixedGames());
 		appStore.setActiveTab('completed');
 		filtersStore.setSort({ key: 'playtime', direction: 'desc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		expect(results.length).toBe(2); // Only completed games
@@ -275,16 +213,10 @@ describe('Cross-tab Sorting Behavior', () => {
 		expect(results[1].title).toBe('Completed B');
 	});
 
-	it('should only show timeToBeat sort option results for planned tab', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should only show timeToBeat sort option results for planned tab', () => {
 		gamesStore.initializeGames(createMixedGames());
 		appStore.setActiveTab('planned');
 		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		expect(results.length).toBe(2); // Only planned games
@@ -294,16 +226,7 @@ describe('Cross-tab Sorting Behavior', () => {
 });
 
 describe('Playtime Parsing Edge Cases', () => {
-	beforeEach(() => {
-		vi.resetModules();
-	});
-
-	it('should correctly parse playtime values with varying formats', async () => {
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { appStore } = await import('$lib/stores/app.svelte');
-
+	it('should correctly parse playtime values with varying formats', () => {
 		const edgeCaseGames: MockGame[] = [
 			createCompletedGame({ id: '1', title: 'Zero Minutes', playtime: '10h 0m' }),
 			createCompletedGame({ id: '2', title: 'With Minutes', playtime: '10h 30m' }),
@@ -313,7 +236,6 @@ describe('Playtime Parsing Edge Cases', () => {
 		gamesStore.initializeGames(edgeCaseGames);
 		appStore.setActiveTab('completed');
 		filtersStore.setSort({ key: 'playtime', direction: 'asc' });
-		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		const results = filteredGamesStore.games;
 		expect(results[0].title).toBe('Zero Hours'); // 0h 45m = 45 minutes

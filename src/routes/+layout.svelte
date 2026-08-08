@@ -256,16 +256,15 @@ $effect(() => {
 	if (!browser) return;
 
 	const handler = createGlobalKeydownHandler(() => ({
-		isSearchOpen,
 		currentPage,
 		onSearchToggle,
 		onDesktopSearch: () => {
 			if (currentPage === 'home' || currentPage === 'tierlist' || currentPage === 'stats') {
-				filtersStore.setDesktopFiltersExpanded(true);
+				filtersStore.setDesktopSearchOpen(true);
 				goto('/library', { state: { showMobileSearch: true } });
 				return;
 			}
-			filtersStore.toggleDesktopFiltersExpanded();
+			filtersStore.toggleDesktopSearch();
 			requestAnimationFrame(() => {
 				const input = document.getElementById('search-input') as HTMLInputElement;
 				input?.focus();
@@ -485,9 +484,11 @@ let shareDescription = $derived.by(() => {
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block" style="min-height: 44px;">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
 				<div class="filter-content mb-8 space-y-4">
-						{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
-							<SearchBar />
-						{/await}
+						{#if filtersStore.isDesktopSearchOpen}
+							{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
+								<SearchBar />
+							{/await}
+						{/if}
 					<div class="flex flex-col items-center gap-4">
 						<div class="flex flex-wrap items-center justify-center gap-3">
 							{#await import('$lib/components/FilterDropdown.svelte') then { default: FilterDropdown }}

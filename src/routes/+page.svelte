@@ -162,13 +162,13 @@ function viewAllCompleted() {
 	}
 
 	.np-scroll-row .np-card {
-		flex: 0 0 340px;
+		flex: 0 0 460px;
 		max-width: 85vw;
 	}
 
 	@media (max-width: 767px) {
 		.np-scroll-row .np-card {
-			flex: 0 0 280px;
+			flex: 0 0 340px;
 		}
 	}
 

@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const { mockNavigator, mockWindow } = vi.hoisted(() => ({
-	mockNavigator: { onLine: true },
-	mockWindow: { addEventListener: vi.fn(), removeEventListener: vi.fn() },
-}));
-
-vi.stubGlobal('navigator', mockNavigator);
-vi.stubGlobal('window', mockWindow);
+const { mockNavigator, mockWindow } = vi.hoisted(() => {
+	const mockNavigator: { onLine: boolean } = { onLine: true };
+	const mockWindow = { addEventListener: vi.fn(), removeEventListener: vi.fn() };
+	Object.defineProperty(globalThis, 'navigator', { value: mockNavigator, configurable: true, writable: true });
+	Object.defineProperty(globalThis, 'window', { value: mockWindow, configurable: true, writable: true });
+	return { mockNavigator, mockWindow };
+});
 
 vi.mock('$lib/db', () => ({
 	db: {
@@ -49,24 +49,25 @@ vi.mock('$lib/stores/games.svelte', () => ({
 
 import { db } from '$lib/db';
 import { editorStore } from '$lib/stores/editor.svelte';
+import { offlineStore } from '$lib/stores/offline.svelte';
 
 // Cast to Record to avoid complex type mocking issues
 const mockDb = db as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>;
 const mockEditorStore = editorStore as unknown as Record<string, ReturnType<typeof vi.fn>>;
 
-describe('Offline Support Logic', () => {
-	let offlineStore: {
-		isOnline: boolean;
-		hasPendingSync: boolean;
-		checkPendingSync: () => Promise<void>;
-	};
+// Capture the handlers the store registered at import time
+const addListenerCalls = vi.mocked(mockWindow.addEventListener).mock.calls;
+const onlineHandler = addListenerCalls.find((call) => call[0] === 'online')?.[1] as () => Promise<void>;
+const offlineHandler = addListenerCalls.find((call) => call[0] === 'offline')?.[1] as () => void;
 
-	beforeEach(async () => {
-		vi.resetModules();
-		vi.clearAllMocks();
+describe('Offline Support Logic', () => {
+	beforeEach(() => {
 		mockNavigator.onLine = true;
-		const module = await import('../src/lib/stores/offline.svelte');
-		offlineStore = module.offlineStore;
+		vi.mocked(mockDb.sync_queue.get).mockReset();
+		vi.mocked(mockDb.sync_queue.delete).mockReset();
+		vi.mocked(mockEditorStore.saveGames).mockReset();
+		offlineStore.isOnline = true;
+		offlineStore.setHasPendingSync(false);
 	});
 
 	it('should initialize with correct online status', () => {
@@ -74,14 +75,8 @@ describe('Offline Support Logic', () => {
 	});
 
 	it('should update online status on window events', () => {
-		const onlineCall = mockWindow.addEventListener.mock.calls.find((call) => call[0] === 'online');
-		const offlineCall = mockWindow.addEventListener.mock.calls.find((call) => call[0] === 'offline');
-
-		expect(onlineCall).toBeDefined();
-		expect(offlineCall).toBeDefined();
-
-		const onlineHandler = onlineCall?.[1] as () => void;
-		const offlineHandler = offlineCall?.[1] as () => void;
+		expect(onlineHandler).toBeDefined();
+		expect(offlineHandler).toBeDefined();
 
 		offlineHandler();
 		expect(offlineStore.isOnline).toBe(false);
@@ -102,11 +97,6 @@ describe('Offline Support Logic', () => {
 	it('should try to sync when coming online if there is pending sync', async () => {
 		mockDb.sync_queue.get.mockResolvedValueOnce({ games: [{ id: '1', title: 'Test' }] } as unknown);
 		mockEditorStore.saveGames.mockResolvedValueOnce(true);
-
-		const onlineCall = mockWindow.addEventListener.mock.calls.find((call) => call[0] === 'online');
-
-		expect(onlineCall).toBeDefined();
-		const onlineHandler = onlineCall?.[1] as () => Promise<void>;
 
 		await onlineHandler();
 		await new Promise((resolve) => setTimeout(resolve, 0));

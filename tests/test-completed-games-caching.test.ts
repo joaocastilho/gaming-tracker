@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, beforeEach, afterEach, vi } from 'vitest';
 import { completedGamesCache } from '$lib/stores/completedGamesCache.svelte';
 import { createCompletedGame, createTestGame } from './helpers/factories';
 
@@ -48,10 +48,18 @@ const mockGames = [
 ];
 
 describe('Completed Games Caching', () => {
-	test('Initial cache update and retrieval', async () => {
+	beforeEach(() => {
+		vi.useFakeTimers();
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	test('Initial cache update and retrieval', () => {
 		completedGamesCache.updateCache(mockGames);
-		// Wait for debounce timeout (50ms + buffer)
-		await new Promise((resolve) => setTimeout(resolve, 100));
+		// Flush the 50ms debounce timeout
+		vi.advanceTimersByTime(60);
 
 		const cachedGames = completedGamesCache.getCachedCompletedGames(mockGames);
 
@@ -68,7 +76,7 @@ describe('Completed Games Caching', () => {
 		}
 	});
 
-	test('Cache invalidation on data change', async () => {
+	test('Cache invalidation on data change', () => {
 		const modifiedGames = [
 			...mockGames,
 			createCompletedGame({
@@ -86,18 +94,18 @@ describe('Completed Games Caching', () => {
 		];
 
 		completedGamesCache.updateCache(modifiedGames);
-		// Wait for debounce timeout
-		await new Promise((resolve) => setTimeout(resolve, 100));
+		// Flush the debounce timeout
+		vi.advanceTimersByTime(60);
 
 		const newCachedGames = completedGamesCache.getCachedCompletedGames(modifiedGames);
 		expect(newCachedGames).toBeDefined();
 		expect(newCachedGames?.length).toBe(4);
 	});
 
-	test('Performance comparison simulation', async () => {
+	test('Performance comparison simulation', () => {
 		// Ensure cache is populated first
 		completedGamesCache.updateCache(mockGames);
-		await new Promise((resolve) => setTimeout(resolve, 100));
+		vi.advanceTimersByTime(60);
 
 		// Simulate sorting without cache (old method)
 		const oldMethodResult = mockGames
@@ -117,10 +125,10 @@ describe('Completed Games Caching', () => {
 		expect(cachedResult?.length).toBe(oldMethodResult.length);
 	});
 
-	test('Verify cached and direct sorting results are identical', async () => {
+	test('Verify cached and direct sorting results are identical', () => {
 		// Ensure cache is populated
 		completedGamesCache.updateCache(mockGames);
-		await new Promise((resolve) => setTimeout(resolve, 100));
+		vi.advanceTimersByTime(60);
 
 		const oldMethodResult = mockGames
 			.filter((game) => game.status === 'Completed')

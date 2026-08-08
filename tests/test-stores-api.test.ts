@@ -223,6 +223,34 @@ describe('FiltersStore API', () => {
 		});
 	});
 
+	describe('Desktop Search Toggle', () => {
+		beforeEach(() => {
+			filtersStore.setDesktopSearchOpen(false);
+		});
+
+		it('starts hidden by default', () => {
+			expect(filtersStore.isDesktopSearchOpen).toBe(false);
+		});
+
+		it('toggleDesktopSearch opens the search bar', () => {
+			filtersStore.toggleDesktopSearch();
+			expect(filtersStore.isDesktopSearchOpen).toBe(true);
+		});
+
+		it('toggleDesktopSearch closes the search bar when open', () => {
+			filtersStore.setDesktopSearchOpen(true);
+			filtersStore.toggleDesktopSearch();
+			expect(filtersStore.isDesktopSearchOpen).toBe(false);
+		});
+
+		it('setDesktopSearchOpen sets the open state', () => {
+			filtersStore.setDesktopSearchOpen(true);
+			expect(filtersStore.isDesktopSearchOpen).toBe(true);
+			filtersStore.setDesktopSearchOpen(false);
+			expect(filtersStore.isDesktopSearchOpen).toBe(false);
+		});
+	});
+
 	describe('isAnyFilterApplied', () => {
 		it('returns true when platform filter applied', () => {
 			filtersStore.togglePlatform('PC');
