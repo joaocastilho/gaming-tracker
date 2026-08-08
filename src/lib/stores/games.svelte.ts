@@ -97,8 +97,25 @@ class GamesStore {
 		void this.updateCardHeights([newGame.id]);
 	}
 
+	private textMeasurePromise: Promise<typeof import('$lib/utils/textMeasure') | null> | null = null;
+
+	// Lazy-load textMeasure (which pulls in @chenglou/pretext) so it stays out of
+	// the initial bundle. The promise is cached and never rejects: a failure to
+	// load (e.g. Vitest tearing the environment down mid-import) resolves to null
+	// and card heights simply stay on their estimated defaults.
+	private loadTextMeasure(): Promise<typeof import('$lib/utils/textMeasure') | null> {
+		if (!this.textMeasurePromise) {
+			this.textMeasurePromise = import('$lib/utils/textMeasure').catch(() => {
+				this.textMeasurePromise = null;
+				return null;
+			});
+		}
+		return this.textMeasurePromise;
+	}
+
 	async updateCardHeights(gameIds?: string[]): Promise<void> {
-		const { computeAllCardHeights, computeCardHeights } = await import('$lib/utils/textMeasure');
+		const textMeasure = await this.loadTextMeasure();
+		if (!textMeasure) return;
 
 		if (gameIds) {
 			const newHeights = new Map(this._cardHeights);
@@ -107,14 +124,14 @@ class GamesStore {
 				if (game) {
 					const heights: Record<number, CardHeights> = {};
 					for (const width of MEASURED_WIDTHS) {
-						heights[width] = computeCardHeights(game, width);
+						heights[width] = textMeasure.computeCardHeights(game, width);
 					}
 					newHeights.set(id, heights);
 				}
 			}
 			this._cardHeights = newHeights;
 		} else {
-			this._cardHeights = computeAllCardHeights(this._games, MEASURED_WIDTHS);
+			this._cardHeights = textMeasure.computeAllCardHeights(this._games, MEASURED_WIDTHS);
 		}
 	}
 
