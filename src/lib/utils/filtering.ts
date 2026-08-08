@@ -58,7 +58,7 @@ export function filterGamesByTab(games: Game[], activeTab: FilterTab): Game[] {
 		case 'completed':
 			return games.filter((game) => game.status === 'Completed');
 		case 'planned':
-			return games.filter((game) => game.status === 'Planned');
+			return games.filter((game) => game.status === 'Planned' || game.status === 'Playing');
 		case 'tierlist':
 			return games.filter((game) => game.tier);
 		default:

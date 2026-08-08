@@ -10,9 +10,7 @@ import { Sparkles, ChevronRight, Hourglass, Gamepad2 } from '@lucide/svelte';
 let games = $derived(gamesStore.games);
 
 let completedGames = $derived(games.filter((g) => g.status === 'Completed'));
-let playingGame = $derived(games.filter((g) => g.status === 'Playing'));
-
-let currentSession = $derived(playingGame.length > 0 ? playingGame[0] : null);
+let playingGames = $derived(games.filter((g) => g.status === 'Playing'));
 
 let recentCompletions = $derived.by(() => {
 	const w = windowSize.width;
@@ -35,6 +33,10 @@ function handleRecentOpen(game: Game) {
 	modalStore.openViewModal(game, recentCompletions);
 }
 
+function handlePlayingOpen(game: Game) {
+	modalStore.openViewModal(game, playingGames);
+}
+
 function viewAllCompleted() {
 	goto('/completed');
 }
@@ -43,28 +45,32 @@ function viewAllCompleted() {
 <div class="homepage">
 	<div class="home-content">
 
-		{#if currentSession}
+		{#if playingGames.length > 0}
 			<section class="now-playing-section">
-				<button type="button" class="np-card" onclick={() => modalStore.openViewModal(currentSession, [currentSession])}>
-					<img class="np-cover" src="/{currentSession.coverImage}" alt="" />
-					<div class="np-info">
-						<div class="np-badge-row">
-							<span class="np-badge">
-								<Sparkles size={14} />
-								Now Playing
-							</span>
-						</div>
-						<h2 class="np-title">{currentSession.title}</h2>
-						<div class="np-meta">
-							<span class="np-chip">{currentSession.platform}</span>
-							<span class="np-chip">{currentSession.genre}</span>
-						</div>
-						<div class="np-playtime">
-							<Hourglass size={16} />
-							<span>{currentSession.playtime}</span>
-						</div>
-					</div>
-				</button>
+				<div class="np-header">
+					<span class="np-badge">
+						<Sparkles size={14} />
+						Now Playing
+					</span>
+				</div>
+				<div class="np-grid">
+					{#each playingGames as game (game.id)}
+						<button type="button" class="np-card" onclick={() => handlePlayingOpen(game)}>
+							<img class="np-cover" src="/{game.coverImage}" alt="" />
+							<div class="np-info">
+								<h2 class="np-title">{game.title}</h2>
+								<div class="np-meta">
+									<span class="np-chip">{game.platform}</span>
+									<span class="np-chip">{game.genre}</span>
+								</div>
+								<div class="np-playtime">
+									<Hourglass size={16} />
+									<span>{game.playtime}</span>
+								</div>
+							</div>
+						</button>
+					{/each}
+				</div>
 			</section>
 		{:else}
 			<section class="now-playing-section">
@@ -126,6 +132,27 @@ function viewAllCompleted() {
 
 	.now-playing-section {
 		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.np-header {
+		display: flex;
+		align-items: center;
+	}
+
+	.np-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 12px;
+		width: 100%;
+	}
+
+	@media (max-width: 767px) {
+		.np-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.np-card {
@@ -206,12 +233,6 @@ function viewAllCompleted() {
 		gap: 10px;
 		padding: 24px;
 		flex: 1;
-	}
-
-	.np-badge-row {
-		display: flex;
-		align-items: center;
-		gap: 8px;
 	}
 
 	.np-badge {

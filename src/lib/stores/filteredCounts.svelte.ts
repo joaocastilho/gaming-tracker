@@ -16,7 +16,7 @@ class FilteredCountsStore {
 		return {
 			all: baseFiltered.length,
 			completed: baseFiltered.filter((g) => g.status === 'Completed').length,
-			planned: baseFiltered.filter((g) => g.status === 'Planned').length,
+			planned: baseFiltered.filter((g) => g.status === 'Planned' || g.status === 'Playing').length,
 			tierlist: baseFiltered.filter((g) => g.tier).length,
 		};
 	});
