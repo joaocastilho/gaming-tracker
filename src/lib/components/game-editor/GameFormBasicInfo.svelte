@@ -6,7 +6,7 @@ interface Props {
 	allGames: Game[];
 }
 
-let { working, allGames }: Props = $props();
+let { working = $bindable(), allGames }: Props = $props();
 
 const uniquePlatforms = $derived([...new Set(allGames.map((g) => g.platform))].sort());
 const uniqueGenres = $derived([...new Set(allGames.map((g) => g.genre))].sort());

@@ -6,7 +6,7 @@ interface Props {
 	working: Game;
 }
 
-let { working }: Props = $props();
+let { working = $bindable() }: Props = $props();
 </script>
 
 <div class="ratings-section">

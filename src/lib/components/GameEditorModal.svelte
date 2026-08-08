@@ -396,7 +396,7 @@ async function handleSave() {
 			<div class="loading">Loading...</div>
 		{:else}
 			<div class="form-fields">
-				<GameFormBasicInfo {working} {allGames} />
+				<GameFormBasicInfo bind:working={working} {allGames} />
 
 				<!-- Status, Finished Date, Order + Playtime, Co-op (single row) -->
 				<div class="row-status">
@@ -473,7 +473,7 @@ async function handleSave() {
 				/>
 
 				{#if working.status === 'Completed'}
-					<GameFormRatings {working} />
+					<GameFormRatings bind:working={working} />
 				{/if}
 
 				<GameFormIdDisplay gameId={working.id} onCopy={copyGameId} {copied} />
