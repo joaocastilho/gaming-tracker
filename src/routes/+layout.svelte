@@ -476,12 +476,7 @@ let shareDescription = $derived.by(() => {
 	{#if showFilterSection}
 		<section class="filter-section hidden md:block" style="min-height: 44px;">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
-				<div class="filter-content mb-4">
-						{#if filtersStore.isDesktopSearchOpen}
-							{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
-								<SearchBar />
-							{/await}
-						{/if}
+				<div class="filter-content mb-6">
 					<div class="flex flex-col items-center gap-4">
 						<div class="flex flex-wrap items-center justify-center gap-3">
 							{#await import('$lib/components/FilterDropdown.svelte') then { default: FilterDropdown }}
@@ -526,6 +521,13 @@ let shareDescription = $derived.by(() => {
 							</button>
 						</div>
 					</div>
+					{#if filtersStore.isDesktopSearchOpen}
+						<div class="desktop-search-row">
+							{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
+								<SearchBar />
+							{/await}
+						</div>
+					{/if}
 				</div>
 			</div>
 		</section>
@@ -677,6 +679,17 @@ let shareDescription = $derived.by(() => {
 		background-color: rgba(99, 102, 241, 0.12);
 		transform: translateY(-2px);
 		box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+	}
+
+	/* Search bar sits below the filter row; give it a small top gap and let the
+	   filter-content mb-6 provide the spacing to the grid (the component's own
+	   20px bottom margin would otherwise stack on top of it). */
+	.desktop-search-row {
+		margin-top: 1rem;
+	}
+
+	.desktop-search-row :global(.search-bar-container) {
+		margin-bottom: 0;
 	}
 
 	/* Push content below the fixed search bar when search is open */
