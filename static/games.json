@@ -4055,6 +4055,23 @@
       "tier": null
     },
     {
+      "id": "katamari-damacy-reroll",
+      "title": "Katamari Damacy Reroll",
+      "platform": "PC",
+      "year": 2018,
+      "genre": "Puzzle",
+      "coOp": "No",
+      "status": "Playing",
+      "coverImage": "covers/katamari-damacy-reroll.webp",
+      "playtime": "5h 30m",
+      "finishedDate": null,
+      "ratingPresentation": null,
+      "ratingStory": null,
+      "ratingGameplay": null,
+      "score": null,
+      "tier": null
+    },
+    {
       "id": "katana-hero",
       "title": "Katana HERO",
       "platform": "PC",
@@ -9266,6 +9283,23 @@
       "tier": null
     },
     {
+      "id": "we-love-katamari-reroll-royal-reverie",
+      "title": "We Love Katamari Reroll + Royal Reverie",
+      "platform": "PC",
+      "year": 2023,
+      "genre": "Puzzle",
+      "coOp": "No",
+      "status": "Planned",
+      "coverImage": "covers/we-love-katamari-reroll-royal-reverie.webp",
+      "playtime": "5h 0m",
+      "finishedDate": null,
+      "ratingPresentation": null,
+      "ratingStory": null,
+      "ratingGameplay": null,
+      "score": null,
+      "tier": null
+    },
+    {
       "id": "west-of-loathing",
       "title": "West of Loathing",
       "platform": "PC",
@@ -9658,6 +9692,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-08-03T07:26:57.756Z"
+    "lastUpdated": "2026-08-08T13:51:39.488Z"
   }
 }
