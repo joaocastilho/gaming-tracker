@@ -76,10 +76,10 @@ Manually assigned tiers to games based on overall assessment:
 
 | Category             | Technology                                     | Version   |
 | -------------------- | ---------------------------------------------- | --------- |
-| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.70.1` |
-| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.56.7` |
+| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.70.2` |
+| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.56.8` |
 | **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.3`  |
-| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.5.5`  |
+| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.5.7`  |
 | **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.1.5`  |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.8`  |
 | **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.26.0` |
