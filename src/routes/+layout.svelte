@@ -481,64 +481,61 @@ let shareDescription = $derived.by(() => {
 			onApplyChanges={() => editorModalState.handleApplyChanges()}
 			onOpenLogin={() => (loginModalOpen = true)}
 		/>
-		{#if showFilterSection}
+	{#if showFilterSection}
 		<section class="filter-section top-[104px] z-30 hidden md:top-[110px] md:block" style="min-height: 44px;">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
-				<!-- Filters are shown on desktop via FilterDropdowns -->
-				{#if filtersStore.isDesktopFiltersExpanded}
-						<div class="filter-content mb-8 space-y-4">
-								{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
-									<SearchBar />
-								{/await}
-							<div class="flex flex-col items-center gap-4">
-								<div class="flex flex-wrap items-center justify-center gap-3">
-									{#await import('$lib/components/FilterDropdown.svelte') then { default: FilterDropdown }}
-										<FilterDropdown
-											type="platforms"
-											label="Platforms"
-											options={filterOptions.platforms}
-											selectedOptions={selectedPlatforms}
-										/>
-										<FilterDropdown
-											type="genres"
-											label="Genres"
-											options={filterOptions.genres}
-											selectedOptions={selectedGenres}
-										/>
-										{#if showTiersFilter}
-											<FilterDropdown
-												type="tiers"
-												label="Tiers"
-												options={filterOptions.tiers}
-												selectedOptions={selectedTiers}
-											/>
-										{/if}
-									{/await}
-
-									<FilterToggle
-										label="Co-op"
-										value="Yes"
-										isSelected={selectedCoOp.includes('Yes')}
+				<div class="filter-content mb-8 space-y-4">
+						{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
+							<SearchBar />
+						{/await}
+					<div class="flex flex-col items-center gap-4">
+						<div class="flex flex-wrap items-center justify-center gap-3">
+							{#await import('$lib/components/FilterDropdown.svelte') then { default: FilterDropdown }}
+								<FilterDropdown
+									type="platforms"
+									label="Platforms"
+									options={filterOptions.platforms}
+									selectedOptions={selectedPlatforms}
+								/>
+								<FilterDropdown
+									type="genres"
+									label="Genres"
+									options={filterOptions.genres}
+									selectedOptions={selectedGenres}
+								/>
+								{#if showTiersFilter}
+									<FilterDropdown
+										type="tiers"
+										label="Tiers"
+										options={filterOptions.tiers}
+										selectedOptions={selectedTiers}
 									/>
-									<span class="mx-1 font-bold text-zinc-600 dark:text-zinc-500">|</span>
-									{#await import('$lib/components/RatingsSort.svelte') then { default: RatingsSort }}
-										<RatingsSort />
-									{/await}
-									<button
-										class="reset-button flex h-[44px] w-[44px] items-center justify-center rounded-md transition-all"
-										class:invisible={!canReset}
-										title="Reset all filters"
-										onclick={resetFilters}
-									>
-										<RotateCcw size={18} />
-									</button>
-								</div>
-							</div>
+								{/if}
+							{/await}
+
+							<FilterToggle
+								label="Co-op"
+								value="Yes"
+								isSelected={selectedCoOp.includes('Yes')}
+							/>
+							<span class="mx-1 font-bold text-zinc-600 dark:text-zinc-500">|</span>
+							{#await import('$lib/components/RatingsSort.svelte') then { default: RatingsSort }}
+								<RatingsSort />
+							{/await}
+							<button
+								class="reset-button flex h-[44px] w-[44px] items-center justify-center rounded-md transition-all"
+								class:invisible={!canReset}
+								title="Reset all filters"
+								onclick={resetFilters}
+							>
+								<RotateCcw size={18} />
+							</button>
 						</div>
-					{/if}
+					</div>
+				</div>
 			</div>
 		</section>
-		{/if}
+	{/if}
 
 		<a
 			href="#main-content"

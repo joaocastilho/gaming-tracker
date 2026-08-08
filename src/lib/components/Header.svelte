@@ -8,11 +8,9 @@ import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 import { appStore } from '$lib/stores/app.svelte';
 import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
 import { editorStore } from '$lib/stores/editor.svelte';
 import {
-	ChevronDown,
-	SlidersHorizontal,
+	Search,
 	Plus,
 	Save,
 	X,
@@ -174,32 +172,23 @@ async function handleLogout() {
 				</button>
 			{/if}
 
-			<div class="filter-toggle-wrapper hidden md:block">
-				<button
-					type="button"
-					class="filter-toggle-button"
-					onclick={() => {
-						const path = page.url.pathname;
-						if (path === '/' || path === '/tierlist' || path === '/stats') {
-							filtersStore.setDesktopFiltersExpanded(true);
-							goto('/library');
-						} else {
-							filtersStore.toggleDesktopFiltersExpanded();
-						}
-					}}
-					aria-expanded={filtersStore.isDesktopFiltersExpanded}
-					aria-label={filtersStore.isDesktopFiltersExpanded ? 'Hide filters' : 'Show filters'}
-					title={filtersStore.isDesktopFiltersExpanded
-						? `Hide filters (${shortcutKey})`
-						: `Show filters (${shortcutKey})`}
-				>
-					<SlidersHorizontal size={16} class="filter-icon" /><ChevronDown
-						size={16}
-						class="filter-chevron-icon"
-						style="transform: rotate({filtersStore.isDesktopFiltersExpanded ? '180deg' : '0deg'})"
-					/><span class="filter-shortcut hidden md:inline">{shortcutKey}</span>
-				</button>
-			</div>
+		<div class="filter-toggle-wrapper hidden md:flex">
+			<button
+				type="button"
+				class="filter-search-toggle"
+				onclick={() => {
+					const input = document.getElementById('search-input') as HTMLInputElement;
+					if (input) {
+						input.focus();
+						input.select();
+					}
+				}}
+				aria-label="Search"
+				title={`Search (${shortcutKey})`}
+			>
+				<Search size={18} />
+			</button>
+		</div>
 
 			{#if isEditor}
 				<button
@@ -367,17 +356,14 @@ async function handleLogout() {
 		display: inline-flex;
 		align-items: center;
 		margin-left: 0.5rem;
-		min-width: 62px;
 	}
 
-	.filter-toggle-button {
+	.filter-search-toggle {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 6px;
+		width: 40px;
 		height: 40px;
-		padding: 0 16px;
-		min-width: 130px;
 		border: 1px solid var(--color-border);
 		border-radius: 10px;
 		background-color: var(--color-surface);
@@ -388,41 +374,26 @@ async function handleLogout() {
 			border-color var(--transition-fast),
 			color var(--transition-fast),
 			transform var(--transition-fast);
-		font-weight: 500;
 		touch-action: manipulation;
 		-webkit-tap-highlight-color: transparent;
 	}
 
 	@media (hover: hover) {
-		.filter-toggle-button:hover {
+		.filter-search-toggle:hover {
 			background-color: rgba(99, 102, 241, 0.04);
 			border-color: var(--color-accent);
 			color: var(--color-accent);
 			transform: translateY(-1px);
 		}
 
-		:global(.light) .filter-toggle-button:hover {
+		:global(.light) .filter-search-toggle:hover {
 			background-color: rgba(234, 88, 12, 0.04);
 		}
-
-		.filter-toggle-button:hover :global(.filter-icon),
-		.filter-toggle-button:hover :global(.filter-chevron-icon) {
-			color: var(--color-accent);
-		}
 	}
 
-	.filter-toggle-button :global(.filter-chevron-icon) {
-		transition: transform var(--transition-fast);
-	}
-
-	.filter-shortcut {
-		font-size: 0.7rem;
-		font-weight: 600;
-		padding: 1px 3px;
-		background: var(--color-surface-elevated);
-		border-radius: 2px;
-		margin-left: 4px;
-		opacity: 0.6;
+	.filter-search-toggle:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
 	}
 
 	/* Editor button styles */

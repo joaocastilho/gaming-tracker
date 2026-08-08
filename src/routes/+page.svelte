@@ -53,23 +53,25 @@ function viewAllCompleted() {
 						Now Playing
 					</span>
 				</div>
-				<div class="np-grid">
-					{#each playingGames as game (game.id)}
-						<button type="button" class="np-card" onclick={() => handlePlayingOpen(game)}>
-							<img class="np-cover" src="/{game.coverImage}" alt="" />
-							<div class="np-info">
-								<h2 class="np-title">{game.title}</h2>
-								<div class="np-meta">
-									<span class="np-chip">{game.platform}</span>
-									<span class="np-chip">{game.genre}</span>
+				<div class="np-scroll-container">
+					<div class="np-scroll-row">
+						{#each playingGames as game (game.id)}
+							<button type="button" class="np-card" onclick={() => handlePlayingOpen(game)}>
+								<img class="np-cover" src="/{game.coverImage}" alt="" />
+								<div class="np-info">
+									<h2 class="np-title">{game.title}</h2>
+									<div class="np-meta">
+										<span class="np-chip">{game.platform}</span>
+										<span class="np-chip">{game.genre}</span>
+									</div>
+									<div class="np-playtime">
+										<Hourglass size={16} />
+										<span>{game.playtime}</span>
+									</div>
 								</div>
-								<div class="np-playtime">
-									<Hourglass size={16} />
-									<span>{game.playtime}</span>
-								</div>
-							</div>
-						</button>
-					{/each}
+							</button>
+						{/each}
+					</div>
 				</div>
 			</section>
 		{:else}
@@ -142,23 +144,37 @@ function viewAllCompleted() {
 		align-items: center;
 	}
 
-	.np-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 12px;
+	.np-scroll-container {
 		width: 100%;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.np-scroll-container::-webkit-scrollbar {
+		display: none;
+	}
+
+	.np-scroll-row {
+		display: flex;
+		gap: 16px;
+		padding-bottom: 8px;
+	}
+
+	.np-scroll-row .np-card {
+		flex: 0 0 340px;
+		max-width: 85vw;
 	}
 
 	@media (max-width: 767px) {
-		.np-grid {
-			grid-template-columns: 1fr;
+		.np-scroll-row .np-card {
+			flex: 0 0 280px;
 		}
 	}
 
 	.np-card {
 		display: flex;
 		gap: 0;
-		width: 100%;
 		border-radius: 16px;
 		overflow: hidden;
 		background: var(--color-surface);
@@ -213,26 +229,21 @@ function viewAllCompleted() {
 	}
 
 	.np-cover {
-		width: 160px;
-		min-height: 200px;
+		width: 130px;
+		height: 180px;
 		object-fit: cover;
 		flex-shrink: 0;
 		background: var(--color-surface-elevated);
-	}
-
-	@media (min-width: 640px) {
-		.np-cover {
-			width: 200px;
-		}
 	}
 
 	.np-info {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		gap: 10px;
-		padding: 24px;
+		gap: 8px;
+		padding: 16px;
 		flex: 1;
+		min-width: 0;
 	}
 
 	.np-badge {
@@ -255,16 +266,13 @@ function viewAllCompleted() {
 
 	.np-title {
 		margin: 0;
-		font-size: 1.4rem;
+		font-size: 1.1rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		line-height: 1.25;
-	}
-
-	@media (min-width: 640px) {
-		.np-title {
-			font-size: 1.75rem;
-		}
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.np-meta {
@@ -363,26 +371,5 @@ function viewAllCompleted() {
 		}
 	}
 
-	@media (min-width: 768px) {
-		.np-card {
-			min-height: unset;
-		}
-		.np-title {
-			font-size: 1.75rem;
-		}
-	}
 
-	@media (max-width: 639px) {
-		.np-cover {
-			width: 100px;
-			min-height: 140px;
-		}
-		.np-info {
-			padding: 14px;
-			gap: 6px;
-		}
-		.np-title {
-			font-size: 1.1rem;
-		}
-	}
 </style>
