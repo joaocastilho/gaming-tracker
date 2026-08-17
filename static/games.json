@@ -4061,15 +4061,16 @@
       "year": 2018,
       "genre": "Puzzle",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/katamari-damacy-reroll.webp",
-      "playtime": "5h 30m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "4h 0m",
+      "finishedDate": "17/08/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 5,
+      "ratingGameplay": 6,
+      "score": 13,
+      "tier": "C - Good",
+      "completionOrder": null
     },
     {
       "id": "katana-hero",
@@ -9692,6 +9693,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-08-08T13:51:39.488Z"
+    "lastUpdated": "2026-08-17T18:48:26.776Z"
   }
 }
