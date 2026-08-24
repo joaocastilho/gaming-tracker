@@ -1,8 +1,7 @@
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_NAME = `gaming-tracker-${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `gaming-tracker-static-${CACHE_VERSION}`;
 const IMAGE_CACHE_NAME = `gaming-tracker-images-${CACHE_VERSION}`;
-const APP_SHELL_CACHE_NAME = `gaming-tracker-app-${CACHE_VERSION}`;
 const OFFLINE_QUEUE_NAME = 'gaming-tracker-offline-queue';
 
 const STATIC_ASSETS = [
@@ -66,13 +65,13 @@ self.addEventListener('activate', (event) => {
 				return Promise.all(
 					cacheNames
 						.filter((name) => {
-							// Delete any cache that doesn't match current version
+							// Delete any cache that doesn't match current version,
+							// including the retired app-shell cache from v6
 							return (
 								name.startsWith('gaming-tracker-') &&
 								name !== CACHE_NAME &&
 								name !== STATIC_CACHE_NAME &&
-								name !== IMAGE_CACHE_NAME &&
-								name !== APP_SHELL_CACHE_NAME
+								name !== IMAGE_CACHE_NAME
 							);
 						})
 						.map((name) => {
@@ -119,45 +118,43 @@ self.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	// STRATEGY 1: Cache-first for navigation requests (HTML pages)
-	// This ensures the PWA loads immediately from cache when offline
+	// STRATEGY 1: Network-first for navigation requests (HTML pages)
+	//
+	// The HTML must never be served stale from cache: it references hashed
+	// /_app/immutable/ chunks that are deleted on every deployment. Cache-first
+	// here produced old-HTML/new-cache mismatches after deploys — broken CSS and
+	// hydration failures until a hard refresh. Network keeps HTML fresh while
+	// the cache only covers offline fallback.
 	if (isNavigationRequest(request)) {
 		event.respondWith(
-			caches.open(APP_SHELL_CACHE_NAME).then((cache) => {
-				return cache.match(request).then((cachedResponse) => {
-					// Always try to update cache in background
-					const fetchPromise = fetch(request)
-						.then((networkResponse) => {
-							if (networkResponse && networkResponse.status === 200) {
-								cache.put(request, networkResponse.clone());
-							}
-							return networkResponse;
-						})
-						.catch(() => null);
-
-					// Return cached response immediately if available
-					if (cachedResponse) {
-						return cachedResponse;
+			fetch(request)
+				.then((networkResponse) => {
+					if (networkResponse && networkResponse.status === 200) {
+						const responseClone = networkResponse.clone();
+						caches
+							.open(CACHE_NAME)
+							.then((cache) => cache.put(request, responseClone))
+							.catch(() => {});
 					}
-
-					// Otherwise wait for network
-					return fetchPromise.then((networkResponse) => {
-						if (networkResponse) {
-							return networkResponse;
-						}
-						// Fallback to root if we have it cached
-						return cache.match('/').then(
-							(rootResponse) =>
-								rootResponse ||
-								new Response('Offline - Please check your connection', {
-									status: 503,
-									statusText: 'Service Unavailable',
-									headers: { 'Content-Type': 'text/html' },
-								})
-						);
-					});
-				});
-			})
+					return networkResponse;
+				})
+				.catch(() =>
+					caches.open(CACHE_NAME).then((cache) =>
+						cache.match(request).then(
+							(cachedResponse) =>
+								cachedResponse ||
+								cache.match('/').then(
+									(rootResponse) =>
+										rootResponse ||
+										new Response('Offline - Please check your connection', {
+											status: 503,
+											statusText: 'Service Unavailable',
+											headers: { 'Content-Type': 'text/html' },
+										})
+								)
+						)
+					)
+				)
 		);
 		return;
 	}
@@ -166,7 +163,7 @@ self.addEventListener('fetch', (event) => {
 	// These have hashed filenames so they're safe to cache indefinitely
 	if (isSvelteKitAsset(url)) {
 		event.respondWith(
-			caches.open(APP_SHELL_CACHE_NAME).then((cache) => {
+			caches.open(CACHE_NAME).then((cache) => {
 				return cache.match(request).then((cachedResponse) => {
 					if (cachedResponse) {
 						return cachedResponse;
@@ -197,21 +194,12 @@ self.addEventListener('fetch', (event) => {
 		event.respondWith(
 			caches.open(IMAGE_CACHE_NAME).then((cache) => {
 				return cache.match(request).then((cachedResponse) => {
+					// Covers are immutable (max-age=1y), so a cached response never
+					// needs revalidation — skip the network entirely.
 					if (cachedResponse) {
-						// Update cache in background for better performance
-						fetch(request)
-							.then((response) => {
-								if (response && response.status === 200) {
-									cache.put(request, response.clone());
-								}
-							})
-							.catch(() => {
-								// Silent fail for background updates
-							});
 						return cachedResponse;
 					}
 
-					// Fallback to network if not in cache
 					return fetch(request)
 						.then((response) => {
 							if (response && response.status === 200) {

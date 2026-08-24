@@ -3,9 +3,7 @@ export function registerServiceWorker(): (() => void) | undefined {
 
 	const swPath = '/service-worker.js';
 	let intervalId: ReturnType<typeof setInterval> | null = null;
-	let isPaused = false;
 	let visibilityHandler: (() => void) | null = null;
-	let controllerChangeHandler: (() => void) | null = null;
 
 	navigator.serviceWorker
 		.register(swPath, {
@@ -13,31 +11,24 @@ export function registerServiceWorker(): (() => void) | undefined {
 		})
 		.then((registration) => {
 			const checkForUpdates = () => {
-				if (isPaused || document.hidden) return;
+				if (document.hidden) return;
 				if (registration.installing === null && registration.waiting === null && registration.active !== null) {
 					registration.update().catch(() => {});
 				}
 			};
 			intervalId = setInterval(checkForUpdates, 60000);
-			visibilityHandler = () => {
-				isPaused = document.hidden;
-			};
-			document.addEventListener('visibilitychange', visibilityHandler);
+			document.addEventListener('visibilitychange', checkForUpdates);
+			visibilityHandler = checkForUpdates;
 		})
 		.catch(() => {});
 
-	controllerChangeHandler = () => {
-		window.location.reload();
-	};
-	navigator.serviceWorker.addEventListener('controllerchange', controllerChangeHandler);
-
+	// Deliberately no reload on 'controllerchange': an updated service worker
+	// activates on its next natural page load. Reloading here interrupts
+	// hydration mid-flight and breaks the UI until the user refreshes again.
 	return () => {
 		if (intervalId) clearInterval(intervalId);
 		if (visibilityHandler) {
 			document.removeEventListener('visibilitychange', visibilityHandler);
-		}
-		if (controllerChangeHandler) {
-			navigator.serviceWorker.removeEventListener('controllerchange', controllerChangeHandler);
 		}
 	};
 }
