@@ -60,9 +60,23 @@ Manually assigned tiers to games based on overall assessment:
 - JSON export/import for backup
 - Works without internet after initial load
 
+### 🌐 PWA Service Worker
+
+The service worker (`static/service-worker.js`) uses per-resource-type strategies:
+
+| Resource | Strategy | Rationale |
+| -------- | -------- | --------- |
+| HTML navigations | **Network-first** | Prerendered pages reference hashed `/_app/immutable/` chunks that are deleted on every deployment; serving stale HTML would break hydration |
+| `/_app/*` bundles | Cache-first | Content-hashed filenames are safe to cache indefinitely |
+| Cover images | Cache-first | Immutable (`max-age=1y`), never revalidated |
+| `games.json`, manifest | Cache-first + background refresh | Fresh data arrives on the next request |
+
+Updates apply on the next natural page load — no forced reloads mid-session.
+
 ### ⚡ Performance Optimizations
 
 - **Zero Layout Shift (CLS):** Use of `contain: layout` and strict height reservations.
+- **Virtualized Gallery:** Windowed rendering keeps scrolling smooth with 1000+ games.
 - **Lazy Loading:** Modals, charts, and secondary UI components are dynamically imported using `{#await}`.
 - **Font Self-hosting:** Self-hosted Inter font with `preload` to eliminate render-blocking external requests.
 - **Deferred Data:** Defer heavy `games.json` loading to the client side to minimize SSR payload.
@@ -72,16 +86,18 @@ Manually assigned tiers to games based on overall assessment:
 
 | Category             | Technology                                     | Version   |
 | -------------------- | ---------------------------------------------- | --------- |
-| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.70.2` |
-| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.56.8` |
+| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v2.70.3` |
+| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.56.10` |
 | **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.3`  |
-| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.5.7`  |
-| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.1.5`  |
+| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.5.10` |
+| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.2.2`  |
+| **TypeScript**       | [TypeScript](https://www.typescriptlang.org/)  | `v6.0.3`  |
+| **Test Runner**      | [Vitest](https://vitest.dev/)                  | `v4.1.11` |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v0.0.8`  |
-| **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.26.0` |
+| **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.34.0` |
 | **Runtime**          | [Bun](https://bun.sh/)                         | `v1.4.0`  |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)            | `v4.5.1`  |
-| **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.4`  |
+| **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.5`  |
 
 ## 🚀 Running Locally
 
