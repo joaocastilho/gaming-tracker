@@ -88,7 +88,6 @@ describe('Detail Modal Navigation', () => {
 		searchParams.set('game', 'the-legend-of-zelda-breath-of-the-wild');
 
 		modalStore.readFromURL(searchParams, mockGames);
-		modalStore.openPendingGameFromURL(mockGames);
 
 		const state = modalStore.getState();
 		expect(state.isOpen).toBe(true);

@@ -149,11 +149,6 @@ class GamesStore {
 		}
 	}
 
-	getCardHeight(gameId: string, cardWidth: number): CardHeights | undefined {
-		const widthKey = Math.round(cardWidth);
-		return this._cardHeights.get(gameId)?.[widthKey];
-	}
-
 	updateGame(id: string, updatedGame: Partial<Game>): void {
 		this.games = this._games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
 		void this.updateCardHeights([id]);
@@ -166,24 +161,6 @@ class GamesStore {
 		if (browser && typeof indexedDB !== 'undefined') {
 			const plainGames = structuredClone(games);
 			db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
-		}
-	}
-
-	async loadFromIDB(): Promise<void> {
-		if (typeof window === 'undefined') return;
-
-		try {
-			const cachedGames = await db.games.toArray();
-			if (cachedGames && cachedGames.length > 0 && this._games.length === 0) {
-				const transformed = cachedGames.map((game) => transformGameData(game as unknown as RawGameData));
-				this._games = transformed;
-				this.scheduleCardHeights();
-			}
-		} catch (err) {
-			this.error = 'Failed to load games from local cache.';
-			console.error('Failed to load games from Dexie:', err);
-		} finally {
-			this.loading = false;
 		}
 	}
 }

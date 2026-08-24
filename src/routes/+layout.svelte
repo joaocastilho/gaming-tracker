@@ -173,13 +173,6 @@ $effect(() => {
 	}
 });
 
-$effect(() => {
-	const games = gamesStore.games;
-	if (games.length > 0) {
-		modalStore.openPendingGameFromURL(games);
-	}
-});
-
 let selectedPlatforms = $derived(filtersStore.state?.platforms ?? []);
 let selectedGenres = $derived(filtersStore.state?.genres ?? []);
 let selectedTiers = $derived(filtersStore.state?.tiers ?? []);

@@ -4,6 +4,7 @@ import type { GamingTrackerDB } from '$lib/db';
 import { toSlug } from '$lib/utils/slugUtils';
 import type { Game } from '$lib/types/game';
 
+// Required by @sveltejs/adapter-static: every route prerenders at build time.
 export const prerender = true;
 
 export const load: LayoutLoad = async ({ fetch, url }) => {
@@ -47,8 +48,6 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 	return {
 		games,
 		sharedGame,
-		meta: null,
-		source: games.length > 0 ? 'dexie' : 'network',
 	};
 };
 

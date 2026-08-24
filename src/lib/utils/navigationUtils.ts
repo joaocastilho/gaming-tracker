@@ -75,24 +75,7 @@ export async function navigateToAndReset(target: NavTarget, options: Omit<Naviga
 	}
 }
 
-export async function navigateToAllWithFilters() {
-	await navigateTo('all');
-}
-
-export async function navigateToAllAndClearFilters() {
-	await navigateToAndReset('all', { scrollToTop: true });
-}
-
 export function scrollToTop() {
-	if (typeof window !== 'undefined') {
-		window.scrollTo({
-			top: 0,
-			behavior: 'auto',
-		});
-	}
-}
-
-export function scrollToTopInstant() {
 	if (typeof window !== 'undefined') {
 		window.scrollTo({
 			top: 0,
@@ -105,8 +88,4 @@ export function getRoutePath(target: NavTarget): string {
 	if (target === 'all') return '/library';
 	if (target === 'library') return '/library';
 	return `/${target}`;
-}
-
-export function requiresFilterReset(_target: NavTarget): boolean {
-	return false;
 }

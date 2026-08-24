@@ -87,9 +87,6 @@ export default defineConfig({
 					if (id.includes('$lib/components/GameEditorModal.svelte')) {
 						return 'editor';
 					}
-					if (id.includes('$lib/stores/filteredGamesStore.ts')) {
-						return 'games-store';
-					}
 					if (id.includes('$lib/views/GamesView.svelte')) {
 						return 'games-view';
 					}
@@ -107,7 +104,7 @@ export default defineConfig({
 						if (id.includes('@chenglou/pretext')) {
 							return 'vendor-text';
 						}
-						if (id.includes('lucide-svelte')) {
+						if (id.includes('@lucide/svelte') || id.includes('lucide-svelte')) {
 							return 'vendor-icons';
 						}
 						if (id.includes('zod')) {
@@ -131,8 +128,7 @@ export default defineConfig({
 		},
 	},
 	optimizeDeps: {
-		include: ['lucide-svelte', 'zod', 'dexie'],
-		exclude: ['web-vitals'],
+		include: ['@lucide/svelte', 'zod', 'dexie'],
 	},
 	server: {
 		fs: {

@@ -447,14 +447,6 @@ class EditorStore {
 		}
 	}
 
-	captureSnapshot(snapshot: unknown): void {
-		this.patchState({ lastSnapshot: snapshot });
-	}
-
-	restoreSnapshot(): unknown {
-		return this._state.lastSnapshot;
-	}
-
 	async saveGames(buildPayload: () => { games: Game[] }): Promise<boolean> {
 		const snapshot = buildPayload();
 		this.patchState({

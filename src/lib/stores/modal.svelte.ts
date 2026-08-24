@@ -17,7 +17,6 @@ export interface ModalState {
 	activeGame: Game | null;
 	mode: 'view';
 	displayedGames: Game[];
-	pendingGameFromURL: Game | null;
 	cardRect: CardRect | null;
 	filterContext: {
 		searchTerm: string;
@@ -35,7 +34,6 @@ const initialState: ModalState = {
 	activeGame: null,
 	mode: 'view',
 	displayedGames: [],
-	pendingGameFromURL: null,
 	cardRect: null,
 	filterContext: {
 		searchTerm: '',
@@ -71,10 +69,6 @@ class ModalStore {
 		return this._state.displayedGames;
 	}
 
-	get pendingGameFromURL(): Game | null {
-		return this._state.pendingGameFromURL;
-	}
-
 	get filterContext(): ModalState['filterContext'] {
 		return this._state.filterContext;
 	}
@@ -105,7 +99,6 @@ class ModalStore {
 			activeGame: game,
 			mode: 'view',
 			displayedGames: finalDisplayedGames,
-			pendingGameFromURL: null,
 			cardRect: cardRect ?? null,
 			filterContext: filterContext ? { ...this._state.filterContext, ...filterContext } : this._state.filterContext,
 		};
@@ -120,7 +113,6 @@ class ModalStore {
 			activeGame: null,
 			mode: 'view',
 			displayedGames: [],
-			pendingGameFromURL: null,
 			cardRect: null,
 		};
 
@@ -151,11 +143,6 @@ class ModalStore {
 					const mainTitleSlug = createGameSlug(g.mainTitle);
 					if (mainTitleSlug === gameSlug) return true;
 				}
-
-				const titleLower = g.title.toLowerCase();
-				const slugLower = gameSlug.toLowerCase();
-
-				if (titleLower.includes('witcher') && slugLower === 'witcher-3') return true;
 
 				return false;
 			});
@@ -212,14 +199,6 @@ class ModalStore {
 					this.isProgrammaticUpdate = false;
 				}
 			}, 50);
-		}
-	}
-
-	openPendingGameFromURL(displayedGames: Game[], filterContext?: Partial<ModalState['filterContext']>): void {
-		const state = this._state;
-		const pendingGame = state.pendingGameFromURL;
-		if (pendingGame && displayedGames.some((g) => g.id === pendingGame.id)) {
-			this.openViewModal(pendingGame, displayedGames, filterContext);
 		}
 	}
 }

@@ -74,22 +74,6 @@ describe('EditorStore', () => {
 		});
 	});
 
-	describe('Snapshot', () => {
-		it('captureSnapshot stores data', () => {
-			const testData = { games: [{ id: '1', title: 'Test' }] };
-			editorStore.captureSnapshot(testData);
-
-			const restored = editorStore.restoreSnapshot();
-			expect(restored).toEqual(testData);
-		});
-
-		it('restoreSnapshot returns null when no snapshot', () => {
-			editorStore.logout();
-			const restored = editorStore.restoreSnapshot();
-			expect(restored).toBeNull();
-		});
-	});
-
 	describe('Login Flow', () => {
 		it('login returns true on success', async () => {
 			mockFetch({
@@ -187,6 +171,8 @@ describe('EditorStore', () => {
 				json: () => Promise.resolve({ games: [] }),
 			});
 
+			const formDataSpy = vi.spyOn(FormData.prototype, 'append');
+
 			const testPayload = {
 				games: [
 					{
@@ -212,8 +198,13 @@ describe('EditorStore', () => {
 			};
 			await editorStore.saveGames(() => testPayload);
 
-			const restored = editorStore.restoreSnapshot();
-			expect(restored).toEqual(testPayload);
+			// The payload is serialized into the 'games' FormData blob
+			const gamesBlobCall = formDataSpy.mock.calls.find((call) => call[0] === 'games');
+			expect(gamesBlobCall).toBeDefined();
+
+			const blob = gamesBlobCall![1] as Blob;
+			const serialized = JSON.parse(await blob.text()) as { games: Array<{ id: string }> };
+			expect(serialized.games[0]?.id).toBe('captured');
 		});
 	});
 
