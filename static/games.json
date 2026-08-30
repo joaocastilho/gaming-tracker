@@ -2307,15 +2307,16 @@
       "year": 2021,
       "genre": "Metroidvania",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/ender-lilies-quietus-of-the-knights.webp",
-      "playtime": "12h 30m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "23h 2m",
+      "finishedDate": "30/08/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 7,
+      "ratingGameplay": 7,
+      "score": 15,
+      "tier": "B - Great",
+      "completionOrder": null
     },
     {
       "id": "ender-magnolia-bloom-in-the-mist",
@@ -9710,6 +9711,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-08-30T19:13:45.454Z"
+    "lastUpdated": "2026-08-30T19:14:21.301Z"
   }
 }
