@@ -929,7 +929,7 @@
       "year": 2007,
       "genre": "FPS",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/bioshock.webp",
       "playtime": "12h 0m",
       "finishedDate": null,
@@ -3637,15 +3637,16 @@
       "year": 2024,
       "genre": "Action Adventure",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/horizon-forbidden-west.webp",
-      "playtime": "29h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "47h 32m",
+      "finishedDate": "18/09/2026",
+      "ratingPresentation": 9,
+      "ratingStory": 7,
+      "ratingGameplay": 7,
+      "score": 15,
+      "tier": "B - Great",
+      "completionOrder": null
     },
     {
       "id": "horizon-zero-dawn",
@@ -9711,6 +9712,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-08-30T19:14:21.301Z"
+    "lastUpdated": "2026-09-18T09:31:43.313Z"
   }
 }
