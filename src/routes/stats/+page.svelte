@@ -6,7 +6,19 @@ import { parsePlaytimeToMinutes, formatMinutes } from '$lib/utils/playtimeUtils'
 import { TIER_ORDER, TIER_LETTERS, TIER_BAR_COLORS, TIER_BG_COLORS } from '$lib/utils/tierUtils';
 import Chart from '$lib/components/Chart.svelte';
 import type { TooltipItem } from 'chart.js';
-import { Clock, Trophy, Star, Calendar, Presentation, NotebookPen, Gamepad2 } from '@lucide/svelte';
+import {
+	Clock,
+	Trophy,
+	Star,
+	Calendar,
+	Presentation,
+	NotebookPen,
+	Gamepad2,
+	Hourglass,
+	Library,
+	Play,
+} from '@lucide/svelte';
+import { computeBacklogStats } from '$lib/utils/backlogUtils';
 
 const GENRE_COLORS = [
 	'#6366f1',
@@ -48,6 +60,38 @@ let totalYears = $derived(Math.round((totalPlaytimeMinutes / 525600) * 100) / 10
 
 let completedCount = $derived(completedGames.length);
 let plannedCount = $derived(games.filter((g) => g.status === 'Planned').length);
+
+let backlogStats = $derived(computeBacklogStats(games));
+let backlogPctHoursLabel = $derived(
+	backlogStats.total.minutes === 0 ? '0%' : `${backlogStats.completed.pctHours.toFixed(1)}%`
+);
+let backlogRemainingLabel = $derived(
+	backlogStats.backlog.minutes === 0 ? '0h' : formatMinutes(backlogStats.backlog.minutes)
+);
+let backlogHoursPctCompleted = $derived(backlogStats.completed.pctHours);
+let backlogHoursPctPlaying = $derived(backlogStats.playing.pctHours);
+let backlogHoursPctPlanned = $derived(backlogStats.planned.pctHours);
+let backlogCountsPctCompleted = $derived(backlogStats.completed.pctCount);
+let backlogCountsPctPlaying = $derived(backlogStats.playing.pctCount);
+let backlogCountsPctPlanned = $derived(backlogStats.planned.pctCount);
+
+// Ensure tiny Playing slices remain visible (at least ~1% when present) by stealing from Planned
+let displayHoursPctPlaying = $derived(
+	backlogStats.playing.minutes > 0 && backlogHoursPctPlaying > 0 && backlogHoursPctPlaying < 1
+		? 1
+		: backlogHoursPctPlaying
+);
+let displayHoursPctPlanned = $derived(
+	Math.max(0, backlogHoursPctPlanned - (displayHoursPctPlaying - backlogHoursPctPlaying))
+);
+let displayCountsPctPlaying = $derived(
+	backlogStats.playing.count > 0 && backlogCountsPctPlaying > 0 && backlogCountsPctPlaying < 1
+		? 1
+		: backlogCountsPctPlaying
+);
+let displayCountsPctPlanned = $derived(
+	Math.max(0, backlogCountsPctPlanned - (displayCountsPctPlaying - backlogCountsPctPlaying))
+);
 
 let avgScore = $derived.by(() => {
 	if (completedGames.length === 0) return 0;
@@ -341,6 +385,189 @@ let top10Score = $derived(
 						<span class="stat-pill">{yearWeeks} weeks</span>
 					</div>
 				</div>
+			</div>
+		</section>
+
+		<section class="backlog-card" aria-labelledby="backlog-title">
+			<div class="backlog-header">
+				<div class="backlog-title-wrap">
+					<div class="backlog-icon" aria-hidden="true">
+						<Hourglass size={16} />
+					</div>
+					<div class="backlog-heading">
+						<h3 id="backlog-title" class="backlog-title">Backlog Journey</h3>
+						<p class="backlog-sub">Hours converting from planned to played — <span class="backlog-highlight-playing"><Play size={10} /> playing</span> is backlog in progress</p>
+					</div>
+				</div>
+				<div class="backlog-pct-badge" title="{backlogStats.completed.pctHours.toFixed(1)}% of all hours cleared">
+					<span class="backlog-pct-value">{backlogPctHoursLabel}</span>
+					<span class="backlog-pct-label">cleared</span>
+				</div>
+			</div>
+
+			<div class="backlog-bars">
+				<div class="backlog-metric">
+					<div class="backlog-metric-head">
+						<span class="backlog-metric-label"><Clock size={11} /> Hours</span>
+						<span class="backlog-metric-total">{formatMinutes(backlogStats.total.minutes)} total</span>
+					</div>
+					<div
+						class="backlog-bar"
+						role="progressbar"
+						aria-valuenow={Math.round(backlogStats.completed.pctHours)}
+						aria-valuemin={0}
+						aria-valuemax={100}
+						aria-label="Hours progress: {backlogStats.completed.pctHours.toFixed(1)}% completed, {backlogStats.playing.pctHours.toFixed(1)}% playing, {backlogStats.planned.pctHours.toFixed(1)}% planned"
+						title="Completed {formatMinutes(backlogStats.completed.minutes)} · Playing {formatMinutes(backlogStats.playing.minutes)} · Planned {formatMinutes(backlogStats.planned.minutes)}"
+					>
+						{#if backlogHoursPctCompleted > 0}
+							<div
+								class="backlog-seg seg-completed"
+								style="width: {backlogHoursPctCompleted}%"
+								title="Completed — {formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.count} games ({backlogStats.completed.pctHours.toFixed(1)}%)"
+							>
+								{#if backlogHoursPctCompleted >= 18}
+									<span class="seg-label">{backlogStats.completed.count} · {formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.pctHours.toFixed(0)}%</span>
+								{:else if backlogHoursPctCompleted >= 11}
+									<span class="seg-label">{backlogStats.completed.count} · {backlogStats.completed.pctHours.toFixed(0)}%</span>
+								{:else if backlogHoursPctCompleted >= 7}
+									<span class="seg-label">{backlogStats.completed.pctHours.toFixed(0)}%</span>
+								{/if}
+							</div>
+						{/if}
+						{#if backlogHoursPctPlaying > 0}
+							<div
+								class="backlog-seg seg-playing"
+								style="width: {displayHoursPctPlaying}%"
+								title="Playing — {formatMinutes(backlogStats.playing.minutes)} · {backlogStats.playing.count} games ({backlogStats.playing.pctHours.toFixed(1)}%)"
+							>
+								{#if backlogHoursPctPlaying >= 14}
+									<span class="seg-label seg-label-playing">{backlogStats.playing.count} · {formatMinutes(backlogStats.playing.minutes)}</span>
+								{:else if backlogHoursPctPlaying >= 7}
+									<span class="seg-label seg-label-playing">{backlogStats.playing.count} · {backlogStats.playing.pctHours.toFixed(0)}%</span>
+								{:else if backlogHoursPctPlaying >= 4}
+									<span class="seg-label seg-label-playing">{backlogStats.playing.pctHours.toFixed(0)}%</span>
+								{/if}
+							</div>
+						{/if}
+						{#if backlogHoursPctPlanned > 0}
+							<div
+								class="backlog-seg seg-planned"
+								style="width: {displayHoursPctPlanned}%"
+								title="Planned — {formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.count} games ({backlogStats.planned.pctHours.toFixed(1)}%)"
+							>
+								{#if backlogHoursPctPlanned >= 18}
+									<span class="seg-label seg-label-planned">{backlogStats.planned.count} · {formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.pctHours.toFixed(0)}%</span>
+								{:else if backlogHoursPctPlanned >= 11}
+									<span class="seg-label seg-label-planned">{backlogStats.planned.count} · {backlogStats.planned.pctHours.toFixed(0)}%</span>
+								{:else if backlogHoursPctPlanned >= 7}
+									<span class="seg-label seg-label-planned">{backlogStats.planned.pctHours.toFixed(0)}%</span>
+								{/if}
+							</div>
+						{/if}
+					</div>
+					<div class="backlog-scale">
+						<span>0h</span>
+						<span>{formatMinutes(backlogStats.total.minutes)}</span>
+					</div>
+				</div>
+
+				<div class="backlog-metric">
+					<div class="backlog-metric-head">
+						<span class="backlog-metric-label"><Library size={11} /> Games</span>
+						<span class="backlog-metric-total">{backlogStats.total.count} total</span>
+					</div>
+					<div
+						class="backlog-bar bar-counts"
+						role="progressbar"
+						aria-valuenow={Math.round(backlogStats.completed.pctCount)}
+						aria-valuemin={0}
+						aria-valuemax={100}
+						aria-label="Games progress: {backlogStats.completed.pctCount.toFixed(1)}% completed, {backlogStats.playing.pctCount.toFixed(1)}% playing, {backlogStats.planned.pctCount.toFixed(1)}% planned"
+						title="Completed {backlogStats.completed.count} · Playing {backlogStats.playing.count} · Planned {backlogStats.planned.count}"
+					>
+						{#if backlogCountsPctCompleted > 0}
+							<div
+								class="backlog-seg seg-completed"
+								style="width: {backlogCountsPctCompleted}%"
+								title="Completed — {backlogStats.completed.count} games ({backlogStats.completed.pctCount.toFixed(1)}%)"
+							>
+								{#if backlogCountsPctCompleted >= 18}
+									<span class="seg-label">{backlogStats.completed.count} games · {backlogStats.completed.pctCount.toFixed(0)}%</span>
+								{:else if backlogCountsPctCompleted >= 11}
+									<span class="seg-label">{backlogStats.completed.count} · {backlogStats.completed.pctCount.toFixed(0)}%</span>
+								{:else if backlogCountsPctCompleted >= 7}
+									<span class="seg-label">{backlogStats.completed.pctCount.toFixed(0)}%</span>
+								{/if}
+							</div>
+						{/if}
+						{#if backlogCountsPctPlaying > 0}
+							<div
+								class="backlog-seg seg-playing"
+								style="width: {displayCountsPctPlaying}%"
+								title="Playing — {backlogStats.playing.count} games ({backlogStats.playing.pctCount.toFixed(1)}%)"
+							>
+								{#if backlogCountsPctPlaying >= 12}
+									<span class="seg-label seg-label-playing">{backlogStats.playing.count} · {backlogStats.playing.pctCount.toFixed(0)}%</span>
+								{:else if backlogCountsPctPlaying >= 6}
+									<span class="seg-label seg-label-playing">{backlogStats.playing.pctCount.toFixed(0)}%</span>
+								{/if}
+							</div>
+						{/if}
+						{#if backlogCountsPctPlanned > 0}
+							<div
+								class="backlog-seg seg-planned"
+								style="width: {displayCountsPctPlanned}%"
+								title="Planned — {backlogStats.planned.count} games ({backlogStats.planned.pctCount.toFixed(1)}%)"
+							>
+								{#if backlogCountsPctPlanned >= 18}
+									<span class="seg-label seg-label-planned">{backlogStats.planned.count} games · {backlogStats.planned.pctCount.toFixed(0)}%</span>
+								{:else if backlogCountsPctPlanned >= 11}
+									<span class="seg-label seg-label-planned">{backlogStats.planned.count} · {backlogStats.planned.pctCount.toFixed(0)}%</span>
+								{:else if backlogCountsPctPlanned >= 7}
+									<span class="seg-label seg-label-planned">{backlogStats.planned.pctCount.toFixed(0)}%</span>
+								{/if}
+							</div>
+						{/if}
+					</div>
+					<div class="backlog-scale">
+						<span>0</span>
+						<span>{backlogStats.total.count} games</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="backlog-legend">
+				<div class="legend-item">
+					<span class="legend-dot dot-completed" aria-hidden="true"></span>
+					<span class="legend-key">
+						<span class="legend-label">Completed</span>
+						<span class="legend-value">{formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.count} games · {backlogStats.completed.pctHours.toFixed(1)}% of hours</span>
+					</span>
+				</div>
+				<div class="legend-item">
+					<span class="legend-dot dot-playing" aria-hidden="true"></span>
+					<span class="legend-key">
+						<span class="legend-label">Playing</span>
+						<span class="legend-value">{formatMinutes(backlogStats.playing.minutes)} · {backlogStats.playing.count} games · {backlogStats.playing.pctHours.toFixed(1)}% of hours</span>
+					</span>
+				</div>
+				<div class="legend-item">
+					<span class="legend-dot dot-planned" aria-hidden="true"></span>
+					<span class="legend-key">
+						<span class="legend-label">Planned</span>
+						<span class="legend-value">{formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.count} games · {backlogStats.planned.pctHours.toFixed(1)}% of hours</span>
+					</span>
+				</div>
+			</div>
+
+			<div class="backlog-footer">
+				<span class="backlog-footer-main">
+					<Hourglass size={12} />
+					{backlogRemainingLabel} · {backlogStats.backlog.count} games remaining in backlog
+				</span>
+				<span class="backlog-footer-sep" aria-hidden="true">·</span>
+				<span class="backlog-footer-secondary">{backlogStats.completed.count} of {backlogStats.total.count} games cleared · {backlogStats.completed.pctCount.toFixed(1)}% of games</span>
 			</div>
 		</section>
 
@@ -867,6 +1094,362 @@ let top10Score = $derived(
 		}
 		.rating-value {
 			font-size: 0.72rem;
+		}
+	}
+
+	.backlog-card {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+		padding: 20px;
+		border-radius: 12px;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.backlog-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.backlog-title-wrap {
+		display: flex;
+		gap: 12px;
+		align-items: flex-start;
+	}
+
+	.backlog-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 8px;
+		flex-shrink: 0;
+		color: var(--color-accent);
+		background: var(--color-accent-bg, rgba(99, 102, 241, 0.1));
+	}
+
+	:global(.light) .backlog-icon {
+		background: rgba(194, 65, 12, 0.1);
+	}
+
+	.backlog-heading {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	.backlog-title {
+		margin: 0;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+	}
+
+	.backlog-sub {
+		margin: 2px 0 0 0;
+		font-size: 0.78rem;
+		color: var(--color-text-secondary);
+		line-height: 1.4;
+	}
+
+	.backlog-highlight-playing {
+		display: inline-flex;
+		align-items: center;
+		gap: 3px;
+		color: #f59e0b;
+		font-weight: 700;
+	}
+
+	:global(.light) .backlog-highlight-playing {
+		color: #d97706;
+	}
+
+	.backlog-pct-badge {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 8px 14px;
+		border-radius: 10px;
+		background: var(--color-accent-bg, rgba(99, 102, 241, 0.12));
+		border: 1px solid color-mix(in srgb, var(--color-accent) 18%, transparent);
+		min-width: 78px;
+		flex-shrink: 0;
+	}
+
+	:global(.light) .backlog-pct-badge {
+		background: rgba(79, 70, 229, 0.08);
+		border-color: rgba(79, 70, 229, 0.18);
+	}
+
+	.backlog-pct-value {
+		font-size: 1.35rem;
+		font-weight: 800;
+		color: var(--color-accent);
+		line-height: 1;
+	}
+
+	.backlog-pct-label {
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--color-text-secondary);
+		margin-top: 2px;
+	}
+
+	.backlog-bars {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.backlog-metric {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.backlog-metric-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 0.78rem;
+		font-weight: 600;
+		color: var(--color-text-secondary);
+	}
+
+	.backlog-metric-label {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		font-size: 0.72rem;
+		font-weight: 700;
+		color: var(--color-text-primary);
+		opacity: 0.9;
+	}
+
+	.backlog-metric-total {
+		font-weight: 700;
+		color: var(--color-text-primary);
+		font-size: 0.78rem;
+	}
+
+	.backlog-bar {
+		display: flex;
+		height: 22px;
+		border-radius: 999px;
+		overflow: hidden;
+		background: var(--color-surface-elevated);
+		border: 1px solid var(--color-border);
+		position: relative;
+	}
+
+	.backlog-bar.bar-counts {
+		height: 20px;
+	}
+
+	.backlog-seg {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: width 900ms cubic-bezier(0.4, 0, 0.2, 1);
+		position: relative;
+		min-width: 0;
+	}
+
+	.backlog-seg.seg-completed {
+		background: linear-gradient(90deg, var(--color-accent), #818cf8);
+	}
+
+	.backlog-seg.seg-playing {
+		background: linear-gradient(90deg, #f59e0b, #fbbf24);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+	}
+
+	.backlog-seg.seg-planned {
+		background: linear-gradient(90deg, #334155, #475569);
+		border-left: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.light) .backlog-seg.seg-completed {
+		background: linear-gradient(90deg, #4f46e5, #6366f1);
+	}
+
+	:global(.light) .backlog-seg.seg-playing {
+		background: linear-gradient(90deg, #d97706, #f59e0b);
+	}
+
+	:global(.light) .backlog-seg.seg-planned {
+		background: linear-gradient(90deg, #64748b, #94a3b8);
+	}
+
+	.seg-label {
+		font-size: 0.68rem;
+		font-weight: 800;
+		color: #ffffff;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+		white-space: nowrap;
+		padding: 0 6px;
+		letter-spacing: 0.02em;
+	}
+
+	.seg-label-playing {
+		color: #ffffff;
+	}
+
+	.seg-label-planned {
+		color: #ffffff;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+	}
+
+	:global(.light) .seg-label-planned {
+		color: #ffffff;
+	}
+
+	.backlog-scale {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.68rem;
+		color: var(--color-text-muted);
+		font-weight: 600;
+		padding: 0 2px;
+		letter-spacing: 0.02em;
+	}
+
+	.backlog-legend {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 10px;
+		padding-top: 14px;
+		border-top: 1px solid var(--color-border);
+	}
+
+	@media (min-width: 640px) {
+		.backlog-legend {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	.legend-item {
+		display: flex;
+		gap: 8px;
+		align-items: flex-start;
+	}
+
+	.legend-dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		flex-shrink: 0;
+		margin-top: 3px;
+	}
+
+	.legend-dot.dot-completed {
+		background: var(--color-accent);
+		box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 28%, transparent);
+	}
+
+	.legend-dot.dot-playing {
+		background: #f59e0b;
+		box-shadow: 0 0 8px rgba(245, 158, 11, 0.35);
+	}
+
+	:global(.light) .legend-dot.dot-playing {
+		background: #d97706;
+	}
+
+	.legend-dot.dot-planned {
+		background: #475569;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		box-shadow: 0 0 8px rgba(71, 85, 105, 0.35);
+	}
+
+	:global(.light) .legend-dot.dot-planned {
+		background: #64748b;
+		border-color: #cbd5e1;
+	}
+
+	.legend-key {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	.legend-label {
+		font-size: 0.78rem;
+		font-weight: 700;
+		color: var(--color-text-primary);
+	}
+
+	.legend-value {
+		font-size: 0.72rem;
+		color: var(--color-text-secondary);
+		line-height: 1.4;
+	}
+
+	.backlog-footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 10px;
+		padding-top: 14px;
+		border-top: 1px solid var(--color-border);
+		font-size: 0.78rem;
+		color: var(--color-text-secondary);
+	}
+
+	.backlog-footer-main {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-weight: 700;
+		color: var(--color-text-primary);
+	}
+
+	.backlog-footer-secondary {
+		color: var(--color-text-secondary);
+	}
+
+	.backlog-footer-sep {
+		opacity: 0.35;
+	}
+
+	@media (max-width: 639px) {
+		.backlog-card {
+			padding: 14px;
+			gap: 14px;
+		}
+		.backlog-header {
+			flex-direction: column;
+		}
+		.backlog-pct-badge {
+			align-self: flex-start;
+			flex-direction: row;
+			gap: 8px;
+			padding: 6px 12px;
+		}
+		.backlog-pct-value {
+			font-size: 1.15rem;
+		}
+		.backlog-bar {
+			height: 22px;
+		}
+		.backlog-bar.bar-counts {
+			height: 20px;
+		}
+		.legend-value {
+			font-size: 0.7rem;
 		}
 	}
 </style>
