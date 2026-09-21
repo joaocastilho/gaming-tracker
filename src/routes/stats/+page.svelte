@@ -217,7 +217,7 @@ let tierOptions = $derived({
 	plugins: {
 		legend: { display: false },
 		datalabels: {
-			font: { weight: 'bold' as const, size: 14 },
+			font: { weight: 'bold' as const, size: 15 },
 			anchor: 'end' as const,
 			align: 'end' as const,
 			offset: 4,
@@ -232,7 +232,7 @@ let tierOptions = $derived({
 	layout: { padding: { right: 40 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: { grid: { display: false }, ticks: { font: { size: 14, weight: 'bold' as const } } },
+		y: { grid: { display: false }, ticks: { font: { size: 15, weight: 'bold' as const } } },
 	},
 });
 
@@ -241,7 +241,7 @@ let genreOptions = $derived({
 	plugins: {
 		legend: { display: false },
 		datalabels: {
-			font: { weight: 'bold' as const, size: 14 },
+			font: { weight: 'bold' as const, size: 15 },
 			anchor: 'end' as const,
 			align: 'end' as const,
 			offset: 4,
@@ -256,7 +256,7 @@ let genreOptions = $derived({
 	layout: { padding: { right: 40 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: { grid: { display: false }, ticks: { font: { size: 13 } } },
+		y: { grid: { display: false }, ticks: { font: { size: 14 } } },
 	},
 });
 
@@ -265,7 +265,7 @@ let scoreOptions = $derived({
 		legend: { display: false },
 		datalabels: {
 			color: '#ffffff',
-			font: { weight: 'bold' as const, size: 13 },
+			font: { weight: 'bold' as const, size: 14 },
 			anchor: 'center' as const,
 			align: 'center' as const,
 			formatter: (value: number) => value || '',
@@ -277,7 +277,7 @@ let scoreOptions = $derived({
 		},
 	},
 	scales: {
-		x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+		x: { grid: { display: false }, ticks: { font: { size: 13 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
 	},
 });
@@ -286,7 +286,7 @@ let yearOptions = $derived({
 	plugins: {
 		legend: { display: false },
 		datalabels: {
-			font: { weight: 'bold' as const, size: 13 },
+			font: { weight: 'bold' as const, size: 14 },
 			anchor: 'end' as const,
 			align: 'end' as const,
 			offset: 2,
@@ -300,7 +300,7 @@ let yearOptions = $derived({
 	},
 	layout: { padding: { top: 20, right: 30 } },
 	scales: {
-		x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+		x: { grid: { display: false }, ticks: { font: { size: 13 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
 	},
 });
@@ -715,7 +715,7 @@ let top10Score = $derived(
 
 	.section-title {
 		margin: 0;
-		font-size: 1.15rem;
+		font-size: 1.22rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 	}
@@ -766,14 +766,14 @@ let top10Score = $derived(
 	}
 
 	.stat-value {
-		font-size: 1.6rem;
+		font-size: 1.72rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		line-height: 1.2;
 	}
 
 	.stat-label {
-		font-size: 0.8rem;
+		font-size: 0.85rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		text-transform: uppercase;
@@ -789,7 +789,7 @@ let top10Score = $derived(
 	}
 
 	.stat-pill {
-		font-size: 0.78rem;
+		font-size: 0.83rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		background: var(--color-accent-bg, rgba(99, 102, 241, 0.15));
@@ -851,14 +851,14 @@ let top10Score = $derived(
 
 	.chart-title {
 		margin: 0;
-		font-size: 1rem;
+		font-size: 1.07rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 	}
 
 	.chart-sub {
 		margin: 4px 0 0 0;
-		font-size: 0.8rem;
+		font-size: 0.85rem;
 		color: var(--color-text-secondary);
 	}
 
@@ -873,7 +873,7 @@ let top10Score = $derived(
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
-		font-size: 0.78rem;
+		font-size: 0.83rem;
 		overflow-x: auto;
 	}
 
@@ -894,7 +894,7 @@ let top10Score = $derived(
 		color: var(--color-text-primary);
 		text-align: right;
 		padding-right: 6px;
-		font-size: 0.8rem;
+		font-size: 0.85rem;
 	}
 
 	.mt-cell {
@@ -904,14 +904,14 @@ let top10Score = $derived(
 		font-weight: 600;
 		color: var(--color-text-secondary);
 		background: var(--color-surface-elevated);
-		font-size: 0.82rem;
+		font-size: 0.87rem;
 	}
 
 	.mt-header-cell {
 		font-weight: 700;
 		color: var(--color-text-primary);
 		background: var(--color-surface);
-		font-size: 0.72rem;
+		font-size: 0.76rem;
 		text-transform: uppercase;
 	}
 
@@ -930,7 +930,7 @@ let top10Score = $derived(
 			grid-template-columns: 40px repeat(12, 1fr) 40px;
 		}
 		.mt-cell {
-			font-size: 0.75rem;
+			font-size: 0.80rem;
 			padding: 3px 1px;
 		}
 	}
@@ -987,7 +987,7 @@ let top10Score = $derived(
 
 	.rating-cat-title {
 		margin: 0;
-		font-size: 0.85rem;
+		font-size: 0.90rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		text-transform: uppercase;
@@ -1038,7 +1038,7 @@ let top10Score = $derived(
 
 	.rating-pos {
 		width: 18px;
-		font-size: 0.7rem;
+		font-size: 0.74rem;
 		font-weight: 700;
 		color: var(--color-text-secondary);
 		text-align: center;
@@ -1056,7 +1056,7 @@ let top10Score = $derived(
 
 	.rating-game {
 		flex: 1;
-		font-size: 0.78rem;
+		font-size: 0.83rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 		overflow: hidden;
@@ -1066,7 +1066,7 @@ let top10Score = $derived(
 	}
 
 	.rating-value {
-		font-size: 0.8rem;
+		font-size: 0.85rem;
 		font-weight: 700;
 		color: var(--color-accent);
 		flex-shrink: 0;
@@ -1087,13 +1087,13 @@ let top10Score = $derived(
 		}
 		.rating-pos {
 			width: 14px;
-			font-size: 0.65rem;
+			font-size: 0.69rem;
 		}
 		.rating-game {
-			font-size: 0.72rem;
+			font-size: 0.76rem;
 		}
 		.rating-value {
-			font-size: 0.72rem;
+			font-size: 0.76rem;
 		}
 	}
 
@@ -1146,14 +1146,14 @@ let top10Score = $derived(
 
 	.backlog-title {
 		margin: 0;
-		font-size: 1rem;
+		font-size: 1.07rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 	}
 
 	.backlog-sub {
 		margin: 2px 0 0 0;
-		font-size: 0.78rem;
+		font-size: 0.83rem;
 		color: var(--color-text-secondary);
 		line-height: 1.4;
 	}
@@ -1189,14 +1189,14 @@ let top10Score = $derived(
 	}
 
 	.backlog-pct-value {
-		font-size: 1.35rem;
+		font-size: 1.44rem;
 		font-weight: 800;
 		color: var(--color-accent);
 		line-height: 1;
 	}
 
 	.backlog-pct-label {
-		font-size: 0.68rem;
+		font-size: 0.72rem;
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
@@ -1220,7 +1220,7 @@ let top10Score = $derived(
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		font-size: 0.78rem;
+		font-size: 0.83rem;
 		font-weight: 600;
 		color: var(--color-text-secondary);
 	}
@@ -1231,7 +1231,7 @@ let top10Score = $derived(
 		gap: 5px;
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
-		font-size: 0.72rem;
+		font-size: 0.76rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		opacity: 0.9;
@@ -1240,7 +1240,7 @@ let top10Score = $derived(
 	.backlog-metric-total {
 		font-weight: 700;
 		color: var(--color-text-primary);
-		font-size: 0.78rem;
+		font-size: 0.83rem;
 	}
 
 	.backlog-bar {
@@ -1294,7 +1294,7 @@ let top10Score = $derived(
 	}
 
 	.seg-label {
-		font-size: 0.68rem;
+		font-size: 0.72rem;
 		font-weight: 800;
 		color: #ffffff;
 		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -1319,7 +1319,7 @@ let top10Score = $derived(
 	.backlog-scale {
 		display: flex;
 		justify-content: space-between;
-		font-size: 0.68rem;
+		font-size: 0.72rem;
 		color: var(--color-text-muted);
 		font-weight: 600;
 		padding: 0 2px;
@@ -1387,13 +1387,13 @@ let top10Score = $derived(
 	}
 
 	.legend-label {
-		font-size: 0.78rem;
+		font-size: 0.83rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 	}
 
 	.legend-value {
-		font-size: 0.72rem;
+		font-size: 0.76rem;
 		color: var(--color-text-secondary);
 		line-height: 1.4;
 	}
@@ -1405,7 +1405,7 @@ let top10Score = $derived(
 		gap: 6px 10px;
 		padding-top: 14px;
 		border-top: 1px solid var(--color-border);
-		font-size: 0.78rem;
+		font-size: 0.83rem;
 		color: var(--color-text-secondary);
 	}
 
@@ -1440,7 +1440,7 @@ let top10Score = $derived(
 			padding: 6px 12px;
 		}
 		.backlog-pct-value {
-			font-size: 1.15rem;
+			font-size: 1.22rem;
 		}
 		.backlog-bar {
 			height: 22px;
@@ -1449,7 +1449,7 @@ let top10Score = $derived(
 			height: 20px;
 		}
 		.legend-value {
-			font-size: 0.7rem;
+			font-size: 0.74rem;
 		}
 	}
 </style>
