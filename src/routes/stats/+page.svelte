@@ -199,20 +199,32 @@ let tierData = $derived.by(() => {
 	};
 });
 
-let genreData = $derived.by(() => {
+const GENRE_TOP_N = 8;
+let genreSortedAll = $derived.by(() => {
 	const genreCount = new Map<string, number>();
-	for (const g of completedGames) {
-		genreCount.set(g.genre, (genreCount.get(g.genre) ?? 0) + 1);
+	for (const g of completedGames) genreCount.set(g.genre, (genreCount.get(g.genre) ?? 0) + 1);
+	return [...genreCount.entries()].toSorted((a, b) => b[1] - a[1]);
+});
+let genreData = $derived.by(() => {
+	const sorted = genreSortedAll;
+	let display: [string, number][];
+	let otherCount = 0;
+	if (sorted.length > GENRE_TOP_N) {
+		const top = sorted.slice(0, GENRE_TOP_N);
+		otherCount = sorted.slice(GENRE_TOP_N).reduce((s, [, c]) => s + c, 0);
+		display = [...top, ['Other', otherCount] as [string, number]];
+	} else {
+		display = sorted;
 	}
-	const sorted = [...genreCount.entries()].toSorted((a, b) => b[1] - a[1]);
-	const colors = sorted.map((_, i) => GENRE_COLORS[i % GENRE_COLORS.length]);
+	const colors = display.map(([name], i) => (name === 'Other' ? '#64748b' : GENRE_COLORS[i % GENRE_COLORS.length]));
+	const bgs = display.map(([name], i) => (name === 'Other' ? 'rgba(100,116,139,0.22)' : GENRE_COLORS[i % GENRE_COLORS.length]));
 	return {
-		labels: sorted.map(([name]) => name),
+		labels: display.map(([name]) => name),
 		datasets: [
 			{
 				label: 'Games',
-				data: sorted.map(([, count]) => count),
-				backgroundColor: colors,
+				data: display.map(([, c]) => c),
+				backgroundColor: bgs,
 				borderColor: colors,
 				borderWidth: 2,
 				borderRadius: 4,
@@ -221,10 +233,13 @@ let genreData = $derived.by(() => {
 		],
 	};
 });
-let genreChartHeight = $derived.by(() => {
-	const count = genreData.labels.length;
-	return Math.max(220, Math.min(520, count * 22 + 40));
+let genreOtherInfo = $derived.by(() => {
+	if (genreSortedAll.length <= GENRE_TOP_N) return null;
+	const rest = genreSortedAll.slice(GENRE_TOP_N);
+	const count = rest.reduce((s, [, c]) => s + c, 0);
+	return { count, genres: rest.length, names: rest.map(([n]) => n).join(', ') };
 });
+let genreChartHeight = $derived(200);
 
 let playtimeCounts = $derived(
 	PLAYTIME_BUCKETS.map(
@@ -357,9 +372,18 @@ let genreOptions = $derived({
 			callbacks: {
 				label: (item: TooltipItem<'bar'>) => {
 					const genre = String(item.label);
-					const avg = genreAvgMap.get(genre)?.avg;
 					const count = Number(item.raw);
+					if (genre === 'Other' && genreOtherInfo) {
+						return `${count} games · ${genreOtherInfo.genres} other genres`;
+					}
+					const avg = genreAvgMap.get(genre)?.avg;
 					return avg != null ? `${count} games · avg ${avg}/20` : `${count} game${count !== 1 ? 's' : ''}`;
+				},
+				afterLabel: (item: TooltipItem<'bar'>) => {
+					if (String(item.label) === 'Other' && genreOtherInfo) {
+						return genreOtherInfo.names;
+					}
+					return '';
 				},
 			},
 		},
@@ -725,10 +749,16 @@ let rankedScore = $derived(buildRanked(completedGames, (g) => g.score));
 			</div>
 			<div class="chart-card span-2">
 				<h3 class="chart-title"><Disc3 size={14} /> Genre Breakdown</h3>
-				<p class="chart-sub">{genreData.labels.length} genres · all games · hover for avg</p>
+				<p class="chart-sub">{genreSortedAll.length} genres · top {GENRE_TOP_N} + Other · {completedCount} games total</p>
 				<div class="chart-body">
 					<Chart type="bar" data={genreData} options={genreOptions} height={genreChartHeight} />
 				</div>
+				{#if genreOtherInfo}
+					<div class="chart-footnote">
+						Other: {genreOtherInfo.count} games in {genreOtherInfo.genres} genres
+						<span class="chart-footnote-names" title={genreOtherInfo.names}>{genreOtherInfo.names}</span>
+					</div>
+				{/if}
 			</div>
 			<div class="chart-card span-2">
 				<h3 class="chart-title"><Timer size={14} /> Playtime Distribution</h3>
@@ -1165,6 +1195,24 @@ let rankedScore = $derived(buildRanked(completedGames, (g) => g.score));
 		flex: 1;
 		margin-top: 12px;
 		min-height: 0;
+	}
+
+	.chart-footnote {
+		margin-top: 10px;
+		padding-top: 8px;
+		border-top: 1px dashed var(--color-border);
+		font-size: 0.76rem;
+		color: var(--color-text-secondary);
+		line-height: 1.4;
+	}
+
+	.chart-footnote-names {
+		color: var(--color-text-muted);
+		display: block;
+		margin-top: 2px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.monthly-table {
