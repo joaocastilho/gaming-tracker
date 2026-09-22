@@ -19,6 +19,7 @@ import {
 	Play,
 } from '@lucide/svelte';
 import { computeBacklogStats } from '$lib/utils/backlogUtils';
+import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
 
 const GENRE_COLORS = [
 	'#6366f1',
@@ -210,6 +211,8 @@ let yearlyMonthData = $derived.by(() => {
 	}
 	return [...yearMonth.entries()].map(([year, months]) => ({ year, data: months })).toSorted((a, b) => a.year - b.year);
 });
+
+let maxMonthly = $derived(getMonthlyMax(yearlyMonthData));
 
 let tierOptions = $derived({
 	indexAxis: 'y' as const,
@@ -606,14 +609,14 @@ let top10Score = $derived(
 						<div class="mt-row">
 							<span class="mt-year">{ym.year}</span>
 							{#each ym.data as val}
-								<span class="mt-cell" class:mt-positive={val > 0}>{val}</span>
+								<span class="mt-cell {getMonthlyHeatClass(val, maxMonthly)}">{val}</span>
 							{/each}
 							<span class="mt-cell mt-total">{ym.data.reduce((a, b) => a + b, 0)}</span>
 						</div>
 					{/each}
 				</div>
 			</div>
-			<div class="chart-card span-2 hide-mobile">
+			<div class="chart-card span-2">
 				<h3 class="chart-title">Year Over Year</h3>
 				<p class="chart-sub">Completions per year</p>
 				<div class="chart-body">
@@ -915,9 +918,63 @@ let top10Score = $derived(
 		text-transform: uppercase;
 	}
 
-	.mt-positive {
-		color: var(--color-accent);
+	.mt-heat-1 {
+		background: rgba(99, 102, 241, 0.2);
+		color: #c7d2fe;
 		font-weight: 700;
+	}
+
+	.mt-heat-2 {
+		background: rgba(34, 211, 238, 0.28);
+		color: #a5f3fc;
+		font-weight: 700;
+	}
+
+	.mt-heat-3 {
+		background: rgba(250, 204, 21, 0.34);
+		color: #fde047;
+		font-weight: 700;
+	}
+
+	.mt-heat-4 {
+		background: rgba(249, 115, 22, 0.52);
+		color: #ffffff;
+		font-weight: 800;
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+	}
+
+	.mt-heat-5 {
+		background: linear-gradient(135deg, #f97316, #ef4444 60%, #dc2626);
+		color: #ffffff;
+		font-weight: 800;
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+			0 0 10px rgba(239, 68, 68, 0.35);
+	}
+
+	:global(.light) .mt-heat-1 {
+		background: rgba(99, 102, 241, 0.16);
+		color: #4338ca;
+	}
+
+	:global(.light) .mt-heat-2 {
+		background: rgba(6, 182, 212, 0.22);
+		color: #0e7490;
+	}
+
+	:global(.light) .mt-heat-3 {
+		background: rgba(234, 179, 8, 0.32);
+		color: #854d0e;
+	}
+
+	:global(.light) .mt-heat-4 {
+		background: rgba(249, 115, 22, 0.5);
+		color: #ffffff;
+	}
+
+	:global(.light) .mt-heat-5 {
+		background: linear-gradient(135deg, #f97316, #ef4444 60%, #dc2626);
+		color: #ffffff;
 	}
 
 	.mt-total {
@@ -1146,14 +1203,14 @@ let top10Score = $derived(
 
 	.backlog-title {
 		margin: 0;
-		font-size: 1.07rem;
+		font-size: 1.15rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
 	}
 
 	.backlog-sub {
 		margin: 2px 0 0 0;
-		font-size: 0.83rem;
+		font-size: 0.9rem;
 		color: var(--color-text-secondary);
 		line-height: 1.4;
 	}
@@ -1189,14 +1246,14 @@ let top10Score = $derived(
 	}
 
 	.backlog-pct-value {
-		font-size: 1.44rem;
+		font-size: 1.6rem;
 		font-weight: 800;
 		color: var(--color-accent);
 		line-height: 1;
 	}
 
 	.backlog-pct-label {
-		font-size: 0.72rem;
+		font-size: 0.78rem;
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
@@ -1220,7 +1277,7 @@ let top10Score = $derived(
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		font-size: 0.83rem;
+		font-size: 0.9rem;
 		font-weight: 600;
 		color: var(--color-text-secondary);
 	}
@@ -1231,7 +1288,7 @@ let top10Score = $derived(
 		gap: 5px;
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
-		font-size: 0.76rem;
+		font-size: 0.83rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		opacity: 0.9;
@@ -1240,12 +1297,12 @@ let top10Score = $derived(
 	.backlog-metric-total {
 		font-weight: 700;
 		color: var(--color-text-primary);
-		font-size: 0.83rem;
+		font-size: 0.9rem;
 	}
 
 	.backlog-bar {
 		display: flex;
-		height: 22px;
+		height: 30px;
 		border-radius: 999px;
 		overflow: hidden;
 		background: var(--color-surface-elevated);
@@ -1254,7 +1311,7 @@ let top10Score = $derived(
 	}
 
 	.backlog-bar.bar-counts {
-		height: 20px;
+		height: 28px;
 	}
 
 	.backlog-seg {
@@ -1294,12 +1351,12 @@ let top10Score = $derived(
 	}
 
 	.seg-label {
-		font-size: 0.72rem;
+		font-size: 0.82rem;
 		font-weight: 800;
 		color: #ffffff;
 		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 		white-space: nowrap;
-		padding: 0 6px;
+		padding: 0 8px;
 		letter-spacing: 0.02em;
 	}
 
@@ -1319,7 +1376,7 @@ let top10Score = $derived(
 	.backlog-scale {
 		display: flex;
 		justify-content: space-between;
-		font-size: 0.72rem;
+		font-size: 0.78rem;
 		color: var(--color-text-muted);
 		font-weight: 600;
 		padding: 0 2px;
@@ -1387,13 +1444,13 @@ let top10Score = $derived(
 	}
 
 	.legend-label {
-		font-size: 0.83rem;
+		font-size: 0.9rem;
 		font-weight: 700;
 		color: var(--color-text-primary);
 	}
 
 	.legend-value {
-		font-size: 0.76rem;
+		font-size: 0.82rem;
 		color: var(--color-text-secondary);
 		line-height: 1.4;
 	}
@@ -1405,7 +1462,7 @@ let top10Score = $derived(
 		gap: 6px 10px;
 		padding-top: 14px;
 		border-top: 1px solid var(--color-border);
-		font-size: 0.83rem;
+		font-size: 0.9rem;
 		color: var(--color-text-secondary);
 	}
 
@@ -1440,16 +1497,16 @@ let top10Score = $derived(
 			padding: 6px 12px;
 		}
 		.backlog-pct-value {
-			font-size: 1.22rem;
+			font-size: 1.35rem;
 		}
 		.backlog-bar {
-			height: 22px;
+			height: 28px;
 		}
 		.backlog-bar.bar-counts {
-			height: 20px;
+			height: 26px;
 		}
 		.legend-value {
-			font-size: 0.74rem;
+			font-size: 0.8rem;
 		}
 	}
 </style>
