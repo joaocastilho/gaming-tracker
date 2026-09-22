@@ -1,6 +1,5 @@
 <script lang="ts">
 import type { Game } from '$lib/types/game';
-import { getRatingHeatClass } from '$lib/utils/heatmapUtils';
 import { Presentation, NotebookPen, Gamepad2 } from '@lucide/svelte';
 
 interface Props {
@@ -12,10 +11,6 @@ let { game }: Props = $props();
 const hasRatings = $derived(
 	game.ratingPresentation !== null && game.ratingStory !== null && game.ratingGameplay !== null
 );
-
-const presentationHeat = $derived(getRatingHeatClass(game.ratingPresentation));
-const storyHeat = $derived(getRatingHeatClass(game.ratingStory));
-const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 </script>
 
 <div class="ratings-wrapper mt-6 md:mt-0 md:flex md:flex-1 md:flex-col">
@@ -38,8 +33,8 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
 				style="color: var(--color-text-tertiary);">Presentation</span
 			>
-			<Presentation size={32} class="rating-icon flex-shrink-0 {presentationHeat}" />
-			<span class="rating-value text-2xl font-bold {presentationHeat}"
+			<Presentation size={32} class="rating-icon flex-shrink-0 text-rose-500" />
+			<span class="rating-value text-xl font-bold" style="color: var(--color-text-primary);"
 				>{game.ratingPresentation ?? '-'}</span
 			>
 		</div>
@@ -52,8 +47,8 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
 				style="color: var(--color-text-tertiary);">Story</span
 			>
-			<NotebookPen size={32} class="rating-icon flex-shrink-0 {storyHeat}" />
-			<span class="rating-value text-2xl font-bold {storyHeat}"
+			<NotebookPen size={32} class="rating-icon flex-shrink-0 text-sky-500" />
+			<span class="rating-value text-xl font-bold" style="color: var(--color-text-primary);"
 				>{game.ratingStory ?? '-'}</span
 			>
 		</div>
@@ -66,8 +61,8 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 				class="rating-label text-base font-bold tracking-wider uppercase opacity-70"
 				style="color: var(--color-text-tertiary);">Gameplay</span
 			>
-			<Gamepad2 size={32} class="rating-icon flex-shrink-0 {gameplayHeat}" />
-			<span class="rating-value text-2xl font-bold {gameplayHeat}"
+			<Gamepad2 size={32} class="rating-icon flex-shrink-0 text-emerald-500" />
+			<span class="rating-value text-xl font-bold" style="color: var(--color-text-primary);"
 				>{game.ratingGameplay ?? '-'}</span
 			>
 		</div>
@@ -97,10 +92,6 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 </div>
 
 <style>
-	.rating-value:not(.heat-1):not(.heat-2):not(.heat-3):not(.heat-4):not(.heat-5) {
-		color: var(--color-text-primary);
-	}
-
 	@media (max-width: 767px) and (orientation: portrait) {
 		.ratings-wrapper {
 			margin-top: auto;
@@ -138,7 +129,7 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 		}
 
 		.rating-value {
-			font-size: 2rem !important;
+			font-size: 1.75rem !important;
 		}
 
 		.rating-label {

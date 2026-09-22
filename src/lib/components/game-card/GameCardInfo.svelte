@@ -1,7 +1,6 @@
 <script lang="ts">
 import type { Game } from '$lib/types/game';
 import { formatShortDate, formatMobileDate } from '$lib/utils/dateUtils';
-import { getRatingHeatClass } from '$lib/utils/heatmapUtils';
 import { Timer, CalendarDays, Presentation, NotebookPen, Gamepad2, Award } from '@lucide/svelte';
 
 interface Props {
@@ -22,10 +21,6 @@ function formatSmartTime(timeStr: string | null): string {
 const hasPresentation = $derived(game.status === 'Completed' && game.ratingPresentation !== null);
 const hasStory = $derived(game.status === 'Completed' && game.ratingStory !== null);
 const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay !== null);
-
-const presentationHeat = $derived(getRatingHeatClass(game.ratingPresentation));
-const storyHeat = $derived(getRatingHeatClass(game.ratingStory));
-const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 </script>
 
 <!-- Time and Date Section -->
@@ -48,8 +43,8 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 		class="rating-item {hasPresentation ? '' : 'placeholder'}"
 		title={hasPresentation ? `Presentation: ${game.ratingPresentation}/10` : 'Presentation'}
 	>
-		<Presentation size={32} class={hasPresentation ? presentationHeat : 'text-muted'} />
-		<span class="rating-value {hasPresentation ? presentationHeat : ''}">
+		<Presentation size={32} class={hasPresentation ? 'text-rose-500' : 'text-muted'} />
+		<span class="rating-value">
 			{hasPresentation ? game.ratingPresentation : '-'}
 		</span>
 	</div>
@@ -58,15 +53,15 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 		class="rating-item {hasStory ? '' : 'placeholder'}"
 		title={hasStory ? `Story: ${game.ratingStory}/10` : 'Story'}
 	>
-		<NotebookPen size={32} class={hasStory ? storyHeat : 'text-muted'} />
-		<span class="rating-value {hasStory ? storyHeat : ''}">
+		<NotebookPen size={32} class={hasStory ? 'text-sky-500' : 'text-muted'} />
+		<span class="rating-value">
 			{hasStory ? game.ratingStory : '-'}
 		</span>
 	</div>
 
 	<div class="rating-item {hasGameplay ? '' : 'placeholder'}" title={hasGameplay ? `Gameplay: ${game.ratingGameplay}/10` : 'Gameplay'}>
-		<Gamepad2 size={32} class={hasGameplay ? gameplayHeat : 'text-muted'} />
-		<span class="rating-value {hasGameplay ? gameplayHeat : ''}">
+		<Gamepad2 size={32} class={hasGameplay ? 'text-emerald-500' : 'text-muted'} />
+		<span class="rating-value">
 			{hasGameplay ? game.ratingGameplay : '-'}
 		</span>
 	</div>
@@ -137,7 +132,7 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		gap: clamp(4px, 1.5cqi, 8px);
+		gap: clamp(6px, 2cqi, 10px);
 		flex: 1;
 		min-width: 0;
 	}
@@ -151,16 +146,16 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 		color: var(--color-text-tertiary, #888);
 	}
 
-	.rating-value:not(.heat-1):not(.heat-2):not(.heat-3):not(.heat-4):not(.heat-5) {
-		font-size: clamp(0.9rem, 6.5cqi, 1.3rem);
+	.rating-value {
+		font-size: clamp(0.85rem, 6.2cqi, 1.25rem);
 		font-weight: 800;
 		color: var(--color-text-primary);
 		line-height: 1;
 	}
 
 	.rating-item :global(svg) {
-		width: clamp(14px, 6cqi, 22px);
-		height: clamp(14px, 6cqi, 22px);
+		width: clamp(15px, 6.5cqi, 24px);
+		height: clamp(15px, 6.5cqi, 24px);
 		flex-shrink: 0;
 		margin-right: 1px;
 	}
@@ -272,12 +267,12 @@ const gameplayHeat = $derived(getRatingHeatClass(game.ratingGameplay));
 		}
 
 		.rating-item {
-			gap: clamp(3px, 1.5cqw, 6px);
+			gap: clamp(5px, 2cqw, 8px);
 		}
 
 		.rating-item :global(svg) {
-			width: clamp(18px, 6cqw, 28px);
-			height: clamp(18px, 6cqw, 28px);
+			width: clamp(19px, 6.5cqw, 30px);
+			height: clamp(19px, 6.5cqw, 30px);
 			margin-right: 2px;
 		}
 

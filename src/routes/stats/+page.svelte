@@ -19,7 +19,7 @@ import {
 	Play,
 } from '@lucide/svelte';
 import { computeBacklogStats } from '$lib/utils/backlogUtils';
-import { getMonthlyHeatClass, getMonthlyMax, getRatingHeatClass } from '$lib/utils/heatmapUtils';
+import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
 
 const GENRE_COLORS = [
 	'#6366f1',
@@ -639,7 +639,7 @@ let top10Score = $derived(
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
-								<span class="rating-value {getRatingHeatClass(game.ratingPresentation)}">{game.ratingPresentation}/10</span>
+								<span class="rating-value">{game.ratingPresentation}/10</span>
 							</button>
 						{/each}
 					</div>
@@ -655,7 +655,7 @@ let top10Score = $derived(
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
-								<span class="rating-value {getRatingHeatClass(game.ratingStory)}">{game.ratingStory}/10</span>
+								<span class="rating-value">{game.ratingStory}/10</span>
 							</button>
 						{/each}
 					</div>
@@ -671,7 +671,7 @@ let top10Score = $derived(
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
-								<span class="rating-value {getRatingHeatClass(game.ratingGameplay)}">{game.ratingGameplay}/10</span>
+								<span class="rating-value">{game.ratingGameplay}/10</span>
 							</button>
 						{/each}
 					</div>
@@ -1105,8 +1105,8 @@ let top10Score = $derived(
 		min-width: 0;
 	}
 
-	.rating-value:not(.heat-1):not(.heat-2):not(.heat-3):not(.heat-4):not(.heat-5) {
-		font-size: 0.85rem;
+	.rating-value {
+		font-size: 0.8rem;
 		font-weight: 700;
 		color: var(--color-accent);
 		flex-shrink: 0;
@@ -1133,7 +1133,7 @@ let top10Score = $derived(
 			font-size: 0.76rem;
 		}
 		.rating-value {
-			font-size: 0.76rem;
+			font-size: 0.72rem;
 		}
 	}
 

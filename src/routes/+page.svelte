@@ -146,29 +146,24 @@ function viewAllCompleted() {
 
 	.np-scroll-container {
 		width: 100%;
-		overflow-x: auto;
-		scrollbar-width: none;
-		-ms-overflow-style: none;
-	}
-
-	.np-scroll-container::-webkit-scrollbar {
-		display: none;
 	}
 
 	.np-scroll-row {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 16px;
-		padding-bottom: 8px;
 	}
 
 	.np-scroll-row .np-card {
-		flex: 0 0 460px;
-		max-width: 85vw;
+		flex: 1 1 420px;
+		max-width: 640px;
+		min-width: 0;
 	}
 
 	@media (max-width: 767px) {
 		.np-scroll-row .np-card {
-			flex: 0 0 340px;
+			flex: 1 1 300px;
+			max-width: 100%;
 		}
 	}
 
