@@ -441,12 +441,12 @@ let yearOptions = $derived({
 		datalabels: {
 			display: (ctx: { datasetIndex: number }) => ctx.datasetIndex === 0,
 			color: '#ffffff',
-			font: { weight: 'bold' as const, size: 12 },
+			font: { weight: 'bold' as const, size: 11 },
 			anchor: 'center' as const,
 			align: 'center' as const,
 			offset: 0,
-			textShadowColor: 'rgba(0,0,0,0.35)',
-			textShadowBlur: 3,
+			textShadowColor: 'rgba(0,0,0,0.5)',
+			textShadowBlur: 4,
 			formatter: (value: number, ctx: { dataIndex: number }) => {
 				const h = yearHours[ctx.dataIndex];
 				if (!value && !h) return '';
@@ -468,13 +468,17 @@ let yearOptions = $derived({
 			},
 		},
 	},
-	layout: { padding: { top: 12, right: 16 } },
+	layout: { padding: { top: 6, right: 12, bottom: 0 } },
 	scales: {
-		x: { grid: { display: false }, ticks: { font: { size: 12 } } },
-		y: {
+		x: {
 			grid: { display: false },
-			ticks: { display: false },
+			ticks: { font: { size: 12 }, color: appStore.theme === 'dark' ? '#a0a8b8' : '#525252' },
+		},
+		y: {
+			grid: { display: true, color: 'rgba(255,255,255,0.04)', drawTicks: false },
+			ticks: { display: true, font: { size: 10 }, color: appStore.theme === 'dark' ? '#717684' : '#8c8c8c', maxTicksLimit: 4 },
 			beginAtZero: true,
+			grace: 0,
 			title: { display: false },
 		},
 		y1: {
@@ -482,6 +486,7 @@ let yearOptions = $derived({
 			grid: { display: false },
 			ticks: { display: false },
 			beginAtZero: true,
+			grace: 0,
 		},
 	},
 });
@@ -567,8 +572,7 @@ let top10Score = $derived(
 					<div class="stat-label">{currentYear} · {gamesThisYear.length} games</div>
 					<div class="stat-pills">
 						{#if yearAllStats.totalYears > 0}
-							<span class="stat-pill">{yearAllStats.totalYears} yrs · {yearAllStats.firstYear}–{yearAllStats.lastYear}</span>
-							<span class="stat-pill">avg {yearAllStats.avg}/yr · peak {yearAllStats.bestYear} · {yearAllStats.bestCount}</span>
+							<span class="stat-pill">{yearAllStats.totalYears} yrs · {yearAllStats.firstYear}–{yearAllStats.lastYear} · avg {yearAllStats.avg}/yr · peak {yearAllStats.bestYear}</span>
 						{/if}
 					</div>
 				</div>
@@ -790,7 +794,7 @@ let top10Score = $derived(
 				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
 				<p class="chart-sub">Bars = games (hours inside) · dashed = cumulative</p>
 				<div class="chart-body">
-					<Chart type="bar" data={yearData} options={yearOptions} height={320} />
+					<Chart type="bar" data={yearData} options={yearOptions} height={240} />
 				</div>
 			</div>
 			<div class="chart-card span-6 hide-mobile">
