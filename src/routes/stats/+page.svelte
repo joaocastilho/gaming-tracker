@@ -145,7 +145,11 @@ let yearAllStats = $derived.by(() => {
 	const avg = totalYears ? Math.round((completedCount / totalYears) * 10) / 10 : 0;
 	let bestYear = 0;
 	let bestCount = 0;
-	for (const [y, c] of yearMap) if (c > bestCount) { bestYear = y; bestCount = c; }
+	for (const [y, c] of yearMap)
+		if (c > bestCount) {
+			bestYear = y;
+			bestCount = c;
+		}
 	return { totalYears, avg, bestYear, bestCount, firstYear: years[0], lastYear: years[years.length - 1] };
 });
 
@@ -477,7 +481,12 @@ let yearOptions = $derived({
 		},
 		y: {
 			grid: { display: true, color: 'rgba(255,255,255,0.04)', drawTicks: false },
-			ticks: { display: true, font: { size: 10 }, color: appStore.theme === 'dark' ? '#717684' : '#8c8c8c', maxTicksLimit: 4 },
+			ticks: {
+				display: true,
+				font: { size: 10 },
+				color: appStore.theme === 'dark' ? '#717684' : '#8c8c8c',
+				maxTicksLimit: 4,
+			},
 			beginAtZero: true,
 			grace: 0,
 			title: { display: false },
