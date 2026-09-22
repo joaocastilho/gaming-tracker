@@ -430,9 +430,9 @@ let top10Score = $derived(
 								title="Completed — {formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.count} games ({backlogStats.completed.pctHours.toFixed(1)}%)"
 							>
 								{#if backlogHoursPctCompleted >= 18}
-									<span class="seg-label">{backlogStats.completed.count} · {formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.pctHours.toFixed(0)}%</span>
+									<span class="seg-label">{formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.pctHours.toFixed(0)}%</span>
 								{:else if backlogHoursPctCompleted >= 11}
-									<span class="seg-label">{backlogStats.completed.count} · {backlogStats.completed.pctHours.toFixed(0)}%</span>
+									<span class="seg-label">{formatMinutes(backlogStats.completed.minutes)}</span>
 								{:else if backlogHoursPctCompleted >= 7}
 									<span class="seg-label">{backlogStats.completed.pctHours.toFixed(0)}%</span>
 								{/if}
@@ -445,9 +445,9 @@ let top10Score = $derived(
 								title="Playing — {formatMinutes(backlogStats.playing.minutes)} · {backlogStats.playing.count} games ({backlogStats.playing.pctHours.toFixed(1)}%)"
 							>
 								{#if backlogHoursPctPlaying >= 14}
-									<span class="seg-label seg-label-playing">{backlogStats.playing.count} · {formatMinutes(backlogStats.playing.minutes)}</span>
+									<span class="seg-label seg-label-playing">{formatMinutes(backlogStats.playing.minutes)}</span>
 								{:else if backlogHoursPctPlaying >= 7}
-									<span class="seg-label seg-label-playing">{backlogStats.playing.count} · {backlogStats.playing.pctHours.toFixed(0)}%</span>
+									<span class="seg-label seg-label-playing">{backlogStats.playing.pctHours.toFixed(0)}%</span>
 								{:else if backlogHoursPctPlaying >= 4}
 									<span class="seg-label seg-label-playing">{backlogStats.playing.pctHours.toFixed(0)}%</span>
 								{/if}
@@ -460,9 +460,9 @@ let top10Score = $derived(
 								title="Planned — {formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.count} games ({backlogStats.planned.pctHours.toFixed(1)}%)"
 							>
 								{#if backlogHoursPctPlanned >= 18}
-									<span class="seg-label seg-label-planned">{backlogStats.planned.count} · {formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.pctHours.toFixed(0)}%</span>
+									<span class="seg-label seg-label-planned">{formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.pctHours.toFixed(0)}%</span>
 								{:else if backlogHoursPctPlanned >= 11}
-									<span class="seg-label seg-label-planned">{backlogStats.planned.count} · {backlogStats.planned.pctHours.toFixed(0)}%</span>
+									<span class="seg-label seg-label-planned">{formatMinutes(backlogStats.planned.minutes)}</span>
 								{:else if backlogHoursPctPlanned >= 7}
 									<span class="seg-label seg-label-planned">{backlogStats.planned.pctHours.toFixed(0)}%</span>
 								{/if}
