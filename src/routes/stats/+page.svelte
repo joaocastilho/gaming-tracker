@@ -133,6 +133,22 @@ let playtimeThisYear = $derived(
 	formatMinutes(gamesThisYear.reduce((sum, g) => sum + parsePlaytimeToMinutes(g.playtime), 0))
 );
 
+let yearAllStats = $derived.by(() => {
+	const yearMap = new Map<number, number>();
+	for (const g of completedGames) {
+		if (!g.finishedDate) continue;
+		const y = new Date(g.finishedDate).getFullYear();
+		yearMap.set(y, (yearMap.get(y) ?? 0) + 1);
+	}
+	const years = [...yearMap.keys()].toSorted((a, b) => a - b);
+	const totalYears = years.length;
+	const avg = totalYears ? Math.round((completedCount / totalYears) * 10) / 10 : 0;
+	let bestYear = 0;
+	let bestCount = 0;
+	for (const [y, c] of yearMap) if (c > bestCount) { bestYear = y; bestCount = c; }
+	return { totalYears, avg, bestYear, bestCount, firstYear: years[0], lastYear: years[years.length - 1] };
+});
+
 let genreAvgMap = $derived.by(() => {
 	const map = new Map<string, { count: number; total: number; avg: number }>();
 	for (const g of completedGames) {
@@ -549,6 +565,12 @@ let top10Score = $derived(
 				<div class="stat-body">
 					<div class="stat-value">{playtimeThisYear}</div>
 					<div class="stat-label">{currentYear} · {gamesThisYear.length} games</div>
+					<div class="stat-pills">
+						{#if yearAllStats.totalYears > 0}
+							<span class="stat-pill">{yearAllStats.totalYears} yrs · {yearAllStats.firstYear}–{yearAllStats.lastYear}</span>
+							<span class="stat-pill">avg {yearAllStats.avg}/yr · peak {yearAllStats.bestYear} · {yearAllStats.bestCount}</span>
+						{/if}
+					</div>
 				</div>
 			</div>
 		</section>
