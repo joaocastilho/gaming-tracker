@@ -794,7 +794,7 @@ let top10Score = $derived(
 				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
 				<p class="chart-sub">Bars = games (hours inside) · dashed = cumulative</p>
 				<div class="chart-body">
-					<Chart type="bar" data={yearData} options={yearOptions} height={240} />
+					<Chart type="bar" data={yearData} options={yearOptions} height={340} />
 				</div>
 			</div>
 			<div class="chart-card span-6 hide-mobile">
