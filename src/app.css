@@ -265,6 +265,18 @@ body {
 	--color-rating-gameplay: #10b981;
 	--color-rating-total: #f59e0b;
 
+	/* Heat Scale - Shared by monthly breakdown + game ratings (1 cold → 5 hot) */
+	--heat-1-bg: rgba(99, 102, 241, 0.2);
+	--heat-1-text: #c7d2fe;
+	--heat-2-bg: rgba(34, 211, 238, 0.28);
+	--heat-2-text: #a5f3fc;
+	--heat-3-bg: rgba(250, 204, 21, 0.34);
+	--heat-3-text: #fde047;
+	--heat-4-bg: rgba(249, 115, 22, 0.52);
+	--heat-4-text: #fdba74;
+	--heat-5-bg: linear-gradient(135deg, #f97316, #ef4444 60%, #dc2626);
+	--heat-5-text: #fca5a5;
+
 	/* Animations - Smooth transitions */
 	--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	--transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -480,11 +492,43 @@ body {
 	--color-genre-survival-bg: #fffbeb;
 	--color-genre-survival-text: #b45309;
 	--color-genre-survival-border: #fde68a;
+
+	/* Heat Scale - Light mode text stays readable on white surfaces */
+	--heat-1-bg: rgba(99, 102, 241, 0.16);
+	--heat-1-text: #4338ca;
+	--heat-2-bg: rgba(6, 182, 212, 0.22);
+	--heat-2-text: #0e7490;
+	--heat-3-bg: rgba(234, 179, 8, 0.32);
+	--heat-3-text: #854d0e;
+	--heat-4-bg: rgba(249, 115, 22, 0.5);
+	--heat-4-text: #ea580c;
+	--heat-5-bg: linear-gradient(135deg, #f97316, #ef4444 60%, #dc2626);
+	--heat-5-text: #dc2626;
 }
 
 /* ============================================
    TIER BADGE STYLES WITH GLOW EFFECTS
    ============================================ */
+.heat-1 {
+	color: var(--heat-1-text);
+}
+
+.heat-2 {
+	color: var(--heat-2-text);
+}
+
+.heat-3 {
+	color: var(--heat-3-text);
+}
+
+.heat-4 {
+	color: var(--heat-4-text);
+}
+
+.heat-5 {
+	color: var(--heat-5-text);
+}
+
 .tier-badge {
 	font-weight: 700;
 	letter-spacing: 0.02em;

@@ -19,7 +19,7 @@ import {
 	Play,
 } from '@lucide/svelte';
 import { computeBacklogStats } from '$lib/utils/backlogUtils';
-import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
+import { getMonthlyHeatClass, getMonthlyMax, getRatingHeatClass } from '$lib/utils/heatmapUtils';
 
 const GENRE_COLORS = [
 	'#6366f1',
@@ -639,7 +639,7 @@ let top10Score = $derived(
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
-								<span class="rating-value">{game.ratingPresentation}/10</span>
+								<span class="rating-value {getRatingHeatClass(game.ratingPresentation)}">{game.ratingPresentation}/10</span>
 							</button>
 						{/each}
 					</div>
@@ -655,7 +655,7 @@ let top10Score = $derived(
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
-								<span class="rating-value">{game.ratingStory}/10</span>
+								<span class="rating-value {getRatingHeatClass(game.ratingStory)}">{game.ratingStory}/10</span>
 							</button>
 						{/each}
 					</div>
@@ -671,7 +671,7 @@ let top10Score = $derived(
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
-								<span class="rating-value">{game.ratingGameplay}/10</span>
+								<span class="rating-value {getRatingHeatClass(game.ratingGameplay)}">{game.ratingGameplay}/10</span>
 							</button>
 						{/each}
 					</div>
@@ -919,32 +919,32 @@ let top10Score = $derived(
 	}
 
 	.mt-heat-1 {
-		background: rgba(99, 102, 241, 0.2);
-		color: #c7d2fe;
+		background: var(--heat-1-bg);
+		color: var(--heat-1-text);
 		font-weight: 700;
 	}
 
 	.mt-heat-2 {
-		background: rgba(34, 211, 238, 0.28);
-		color: #a5f3fc;
+		background: var(--heat-2-bg);
+		color: var(--heat-2-text);
 		font-weight: 700;
 	}
 
 	.mt-heat-3 {
-		background: rgba(250, 204, 21, 0.34);
-		color: #fde047;
+		background: var(--heat-3-bg);
+		color: var(--heat-3-text);
 		font-weight: 700;
 	}
 
 	.mt-heat-4 {
-		background: rgba(249, 115, 22, 0.52);
+		background: var(--heat-4-bg);
 		color: #ffffff;
 		font-weight: 800;
 		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 	}
 
 	.mt-heat-5 {
-		background: linear-gradient(135deg, #f97316, #ef4444 60%, #dc2626);
+		background: var(--heat-5-bg);
 		color: #ffffff;
 		font-weight: 800;
 		box-shadow:
@@ -952,28 +952,11 @@ let top10Score = $derived(
 			0 0 10px rgba(239, 68, 68, 0.35);
 	}
 
-	:global(.light) .mt-heat-1 {
-		background: rgba(99, 102, 241, 0.16);
-		color: #4338ca;
-	}
-
-	:global(.light) .mt-heat-2 {
-		background: rgba(6, 182, 212, 0.22);
-		color: #0e7490;
-	}
-
-	:global(.light) .mt-heat-3 {
-		background: rgba(234, 179, 8, 0.32);
-		color: #854d0e;
-	}
-
 	:global(.light) .mt-heat-4 {
-		background: rgba(249, 115, 22, 0.5);
 		color: #ffffff;
 	}
 
 	:global(.light) .mt-heat-5 {
-		background: linear-gradient(135deg, #f97316, #ef4444 60%, #dc2626);
 		color: #ffffff;
 	}
 
@@ -1122,7 +1105,7 @@ let top10Score = $derived(
 		min-width: 0;
 	}
 
-	.rating-value {
+	.rating-value:not(.heat-1):not(.heat-2):not(.heat-3):not(.heat-4):not(.heat-5) {
 		font-size: 0.85rem;
 		font-weight: 700;
 		color: var(--color-accent);
