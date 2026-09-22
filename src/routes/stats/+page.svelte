@@ -279,9 +279,9 @@ let yearData = $derived.by(() => {
 				clip: false as const,
 				order: 2,
 				yAxisID: 'y',
-				barPercentage: 0.95,
-				categoryPercentage: 0.88,
-				maxBarThickness: 72,
+				barPercentage: 1,
+				categoryPercentage: 0.95,
+				maxBarThickness: 96,
 			},
 			{
 				type: 'line' as const,
