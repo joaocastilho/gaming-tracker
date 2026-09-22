@@ -216,7 +216,6 @@ let genreData = $derived.by(() => {
 		],
 	};
 });
-let genreChartHeight = $derived(200);
 
 let playtimeCounts = $derived(
 	PLAYTIME_BUCKETS.map(
@@ -748,28 +747,28 @@ let top10Score = $derived(
 				<h3 class="chart-title"><Trophy size={14} /> Tier Distribution</h3>
 				<p class="chart-sub">{completedCount} completed · S tier is masterpiece</p>
 				<div class="chart-body">
-					<Chart type="bar" data={tierData} options={tierOptions} height={200} />
+					<Chart type="bar" data={tierData} options={tierOptions} height={260} />
 				</div>
 			</div>
 			<div class="chart-card span-2">
 				<h3 class="chart-title"><Disc3 size={14} /> Genre Breakdown</h3>
 				<p class="chart-sub">Top 5 · hover for avg</p>
 				<div class="chart-body">
-					<Chart type="bar" data={genreData} options={genreOptions} height={genreChartHeight} />
+					<Chart type="bar" data={genreData} options={genreOptions} height={260} />
 				</div>
 			</div>
 			<div class="chart-card span-2">
 				<h3 class="chart-title"><Timer size={14} /> Playtime Distribution</h3>
 				<p class="chart-sub">Median {formatMinutes(medianPlaytimeMinutes)} · hover for total hours</p>
 				<div class="chart-body">
-					<Chart type="bar" data={playtimeData} options={playtimeOptions} height={200} />
+					<Chart type="bar" data={playtimeData} options={playtimeOptions} height={280} />
 				</div>
 			</div>
 			<div class="chart-card span-6">
 				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
 				<p class="chart-sub">Bars = games (hours inside) · dashed = cumulative</p>
 				<div class="chart-body">
-					<Chart type="bar" data={yearData} options={yearOptions} height={260} />
+					<Chart type="bar" data={yearData} options={yearOptions} height={320} />
 				</div>
 			</div>
 			<div class="chart-card span-6 hide-mobile">
@@ -1221,10 +1220,10 @@ let top10Score = $derived(
 			padding: 14px;
 		}
 		.chart-card .chart-body :global(.chart-wrapper) {
-			height: 180px !important;
+			height: 220px !important;
 		}
 		.chart-card .chart-body :global(canvas) {
-			max-height: 180px;
+			max-height: 220px;
 		}
 	}
 
