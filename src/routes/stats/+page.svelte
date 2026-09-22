@@ -22,6 +22,7 @@ import {
 	TrendingUp,
 	Disc3,
 } from '@lucide/svelte';
+import type { Game } from '$lib/types/game';
 import { computeBacklogStats } from '$lib/utils/backlogUtils';
 import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
 
@@ -83,21 +84,6 @@ let medianPlaytimeMinutes = $derived.by(() => {
 	const mid = Math.floor(sorted.length / 2);
 	return sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
 });
-let longestGame = $derived.by(() => {
-	if (completedGames.length === 0) return null;
-	return (
-		[...completedGames].toSorted(
-			(a, b) => parsePlaytimeToMinutes(b.playtime) - parsePlaytimeToMinutes(a.playtime)
-		)[0] ?? null
-	);
-});
-let shortestGame = $derived.by(() => {
-	const withTime = completedGames.filter((g) => parsePlaytimeToMinutes(g.playtime) > 0);
-	if (withTime.length === 0) return null;
-	return (
-		[...withTime].toSorted((a, b) => parsePlaytimeToMinutes(a.playtime) - parsePlaytimeToMinutes(b.playtime))[0] ?? null
-	);
-});
 
 let backlogStats = $derived(computeBacklogStats(games));
 let backlogPctHoursLabel = $derived(
@@ -145,23 +131,8 @@ let gamesThisYear = $derived(
 		return d.getFullYear() === currentYear;
 	})
 );
-let gamesLastYear = $derived(
-	completedGames.filter((g) => {
-		if (!g.finishedDate) return false;
-		const d = new Date(g.finishedDate);
-		return d.getFullYear() === currentYear - 1;
-	})
-);
 let playtimeThisYear = $derived(
 	formatMinutes(gamesThisYear.reduce((sum, g) => sum + parsePlaytimeToMinutes(g.playtime), 0))
-);
-let yearDelta = $derived(gamesThisYear.length - gamesLastYear.length);
-let yearDeltaLabel = $derived(
-	gamesLastYear.length === 0 && gamesThisYear.length === 0
-		? 'no games yet'
-		: yearDelta === 0
-			? 'same as last year'
-			: `${yearDelta > 0 ? '+' : ''}${yearDelta} vs ${currentYear - 1}`
 );
 
 let genreAvgMap = $derived.by(() => {
@@ -233,15 +204,16 @@ let genreData = $derived.by(() => {
 	for (const g of completedGames) {
 		genreCount.set(g.genre, (genreCount.get(g.genre) ?? 0) + 1);
 	}
-	const sorted = [...genreCount.entries()].toSorted((a, b) => b[1] - a[1]).slice(0, 8);
+	const sorted = [...genreCount.entries()].toSorted((a, b) => b[1] - a[1]);
+	const colors = sorted.map((_, i) => GENRE_COLORS[i % GENRE_COLORS.length]);
 	return {
 		labels: sorted.map(([name]) => name),
 		datasets: [
 			{
 				label: 'Games',
 				data: sorted.map(([, count]) => count),
-				backgroundColor: GENRE_COLORS.slice(0, sorted.length),
-				borderColor: GENRE_COLORS.slice(0, sorted.length),
+				backgroundColor: colors,
+				borderColor: colors,
 				borderWidth: 2,
 				borderRadius: 4,
 				clip: false as const,
@@ -249,19 +221,36 @@ let genreData = $derived.by(() => {
 		],
 	};
 });
+let genreChartHeight = $derived.by(() => {
+	const count = genreData.labels.length;
+	return Math.max(220, Math.min(520, count * 22 + 40));
+});
 
+let playtimeCounts = $derived(
+	PLAYTIME_BUCKETS.map(
+		(b) =>
+			completedGames.filter((g) => {
+				const m = parsePlaytimeToMinutes(g.playtime);
+				return m >= b.min && m <= b.max;
+			}).length
+	)
+);
+let playtimeTotals = $derived(
+	PLAYTIME_BUCKETS.map((b) =>
+		completedGames
+			.filter((g) => {
+				const m = parsePlaytimeToMinutes(g.playtime);
+				return m >= b.min && m <= b.max;
+			})
+			.reduce((s, g) => s + parsePlaytimeToMinutes(g.playtime), 0)
+	)
+);
 let playtimeData = $derived.by(() => ({
 	labels: PLAYTIME_BUCKETS.map((b) => b.label),
 	datasets: [
 		{
 			label: 'Games',
-			data: PLAYTIME_BUCKETS.map(
-				(b) =>
-					completedGames.filter((g) => {
-						const m = parsePlaytimeToMinutes(g.playtime);
-						return m >= b.min && m <= b.max;
-					}).length
-			),
+			data: playtimeCounts,
 			backgroundColor: PLAYTIME_BGS,
 			borderColor: PLAYTIME_COLORS,
 			borderWidth: 2,
@@ -269,52 +258,6 @@ let playtimeData = $derived.by(() => ({
 		},
 	],
 }));
-
-let platformData = $derived.by(() => {
-	const platforms = new Map<string, { completed: number; planned: number; playing: number }>();
-	for (const g of games) {
-		if (!platforms.has(g.platform)) platforms.set(g.platform, { completed: 0, planned: 0, playing: 0 });
-		const e = platforms.get(g.platform)!;
-		if (g.status === 'Completed') e.completed++;
-		else if (g.status === 'Planned') e.planned++;
-		else if (g.status === 'Playing') e.playing++;
-	}
-	const sorted = [...platforms.entries()]
-		.toSorted((a, b) => b[1].completed + b[1].planned + b[1].playing - (a[1].completed + a[1].planned + a[1].playing))
-		.slice(0, 6);
-	return {
-		labels: sorted.map(([name]) => name),
-		datasets: [
-			{
-				label: 'Completed',
-				data: sorted.map(([, v]) => v.completed),
-				backgroundColor: 'rgba(99,102,241,0.55)',
-				borderColor: 'rgba(99,102,241,0.85)',
-				borderWidth: 1,
-				borderRadius: 4,
-				stack: 'platform',
-			},
-			{
-				label: 'Playing',
-				data: sorted.map(([, v]) => v.playing),
-				backgroundColor: 'rgba(245,158,11,0.55)',
-				borderColor: 'rgba(245,158,11,0.85)',
-				borderWidth: 1,
-				borderRadius: 4,
-				stack: 'platform',
-			},
-			{
-				label: 'Planned',
-				data: sorted.map(([, v]) => v.planned),
-				backgroundColor: 'rgba(100,116,139,0.45)',
-				borderColor: 'rgba(100,116,139,0.7)',
-				borderWidth: 1,
-				borderRadius: 4,
-				stack: 'platform',
-			},
-		],
-	};
-});
 
 let yearData = $derived.by(() => {
 	const yearMap = new Map<number, number>();
@@ -440,33 +383,19 @@ let playtimeOptions = $derived({
 		},
 		tooltip: {
 			callbacks: {
-				label: (item: TooltipItem<'bar'>) => `${item.raw} game${Number(item.raw) !== 1 ? 's' : ''}`,
+				label: (item: TooltipItem<'bar'>) => {
+					const count = Number(item.raw);
+					const idx = item.dataIndex;
+					const totalMins = playtimeTotals[idx] ?? 0;
+					const hoursLabel = totalMins ? ` · ${formatMinutes(totalMins)} total` : '';
+					return `${count} game${count !== 1 ? 's' : ''}${hoursLabel}`;
+				},
 			},
 		},
 	},
 	scales: {
 		x: { grid: { display: false }, ticks: { font: { size: 13 } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-	},
-});
-
-let platformOptions = $derived({
-	plugins: {
-		legend: {
-			display: true,
-			position: 'bottom' as const,
-			labels: { boxWidth: 14, font: { size: 11, weight: 'bold' as const }, padding: 12 },
-		},
-		datalabels: { display: false },
-		tooltip: {
-			callbacks: {
-				label: (item: TooltipItem<'bar'>) => `${item.dataset.label}: ${item.raw}`,
-			},
-		},
-	},
-	scales: {
-		x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
-		y: { stacked: true, grid: { display: false }, ticks: { display: false }, beginAtZero: true },
 	},
 });
 
@@ -511,30 +440,33 @@ let yearOptions = $derived({
 	},
 });
 
-let top10Presentation = $derived(
-	[...completedGames]
-		.toSorted((a, b) => (b.ratingPresentation ?? 0) - (a.ratingPresentation ?? 0))
-		.slice(0, 10)
-		.filter((g) => g.ratingPresentation != null)
-);
-let top10Story = $derived(
-	[...completedGames]
-		.toSorted((a, b) => (b.ratingStory ?? 0) - (a.ratingStory ?? 0))
-		.slice(0, 10)
-		.filter((g) => g.ratingStory != null)
-);
-let top10Gameplay = $derived(
-	[...completedGames]
-		.toSorted((a, b) => (b.ratingGameplay ?? 0) - (a.ratingGameplay ?? 0))
-		.slice(0, 10)
-		.filter((g) => g.ratingGameplay != null)
-);
-let top10Score = $derived(
-	[...completedGames]
-		.toSorted((a, b) => (b.score ?? 0) - (a.score ?? 0))
-		.slice(0, 10)
-		.filter((g) => g.score != null)
-);
+type RankedGame = { game: Game; rank: number; score: number };
+
+function buildRanked(games: Game[], getScore: (g: Game) => number | null, limit = 10): RankedGame[] {
+	const filtered = games.filter((g) => getScore(g) != null);
+	const sorted = [...filtered].toSorted((a, b) => {
+		const diff = (getScore(b) ?? 0) - (getScore(a) ?? 0);
+		if (diff !== 0) return diff;
+		return a.title.localeCompare(b.title);
+	});
+	if (sorted.length === 0) return [];
+	const ranked: RankedGame[] = [];
+	let currentRank = 1;
+	for (let i = 0; i < sorted.length; i++) {
+		if (i > 0 && (getScore(sorted[i]) ?? 0) !== (getScore(sorted[i - 1]) ?? 0)) {
+			currentRank = i + 1;
+		}
+		ranked.push({ game: sorted[i], rank: currentRank, score: getScore(sorted[i]) ?? 0 });
+	}
+	if (ranked.length <= limit) return ranked;
+	const cutoff = ranked[limit - 1].score;
+	return ranked.filter((r, idx) => idx < limit || r.score === cutoff);
+}
+
+let rankedPresentation = $derived(buildRanked(completedGames, (g) => g.ratingPresentation));
+let rankedStory = $derived(buildRanked(completedGames, (g) => g.ratingStory));
+let rankedGameplay = $derived(buildRanked(completedGames, (g) => g.ratingGameplay));
+let rankedScore = $derived(buildRanked(completedGames, (g) => g.score));
 </script>
 
 <div class="stats-page">
@@ -552,12 +484,6 @@ let top10Score = $derived(
 						<span class="stat-pill"><Timer size={11} /> {formatMinutes(avgPlaytimeMinutes)} avg</span>
 						<span class="stat-pill">{formatMinutes(medianPlaytimeMinutes)} median</span>
 					</div>
-					{#if longestGame && shortestGame}
-						<div class="stat-extremes">
-							<span class="extreme"><TrendingUp size={10} /> {longestGame.title} · {longestGame.playtime}</span>
-							<span class="extreme muted">{shortestGame.title} · {shortestGame.playtime}</span>
-						</div>
-					{/if}
 				</div>
 			</div>
 			<div class="stat-card">
@@ -596,12 +522,6 @@ let top10Score = $derived(
 				<div class="stat-body">
 					<div class="stat-value">{playtimeThisYear}</div>
 					<div class="stat-label">{currentYear} · {gamesThisYear.length} games</div>
-					<div class="stat-pills">
-						<span class="stat-pill" class:delta-pos={yearDelta > 0} class:delta-neg={yearDelta < 0} class:delta-zero={yearDelta === 0}>{yearDeltaLabel}</span>
-						{#if gamesLastYear.length > 0}
-							<span class="stat-pill muted">{gamesLastYear.length} in {currentYear - 1}</span>
-						{/if}
-					</div>
 				</div>
 			</div>
 		</section>
@@ -805,26 +725,19 @@ let top10Score = $derived(
 			</div>
 			<div class="chart-card span-2">
 				<h3 class="chart-title"><Disc3 size={14} /> Genre Breakdown</h3>
-				<p class="chart-sub">Top 8 · hover for avg score</p>
+				<p class="chart-sub">{genreData.labels.length} genres · all games · hover for avg</p>
 				<div class="chart-body">
-					<Chart type="bar" data={genreData} options={genreOptions} height={200} />
+					<Chart type="bar" data={genreData} options={genreOptions} height={genreChartHeight} />
 				</div>
 			</div>
 			<div class="chart-card span-2">
 				<h3 class="chart-title"><Timer size={14} /> Playtime Distribution</h3>
-				<p class="chart-sub">How long you play · median {formatMinutes(medianPlaytimeMinutes)}</p>
+				<p class="chart-sub">Median {formatMinutes(medianPlaytimeMinutes)} · hover for total hours</p>
 				<div class="chart-body">
 					<Chart type="bar" data={playtimeData} options={playtimeOptions} height={200} />
 				</div>
 			</div>
-			<div class="chart-card span-2">
-				<h3 class="chart-title"><Library size={14} /> Platform Mix</h3>
-				<p class="chart-sub">Completed vs backlog per platform</p>
-				<div class="chart-body">
-					<Chart type="bar" data={platformData} options={platformOptions} height={220} />
-				</div>
-			</div>
-			<div class="chart-card span-4">
+			<div class="chart-card span-6">
 				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
 				<p class="chart-sub">Bars = that year · line = cumulative</p>
 				<div class="chart-body">
@@ -855,36 +768,43 @@ let top10Score = $derived(
 
 		<section class="ratings-section">
 			<h3 class="section-title"><Medal size={18} /> Hall of Fame</h3>
-			<p class="section-sub">Top 10 per dimension · click any game to open</p>
+			<p class="section-sub">Ties share the same rank — no arbitrary ordering. Click any game to open.</p>
 			<div class="ratings-categories">
 				<div class="rating-category">
 					<h4 class="rating-cat-title" style="border-bottom-color: #f43f5e;">
 						<Presentation size={16} style="color: #f43f5e;" />
 						Presentation
 					</h4>
-					{#if top10Presentation.length > 0}
+					{#if rankedPresentation.length > 0}
 						<div class="podium">
-							{#each top10Presentation.slice(0, 3) as game, i}
-								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingPresentation}/10">
-									<span class="podium-rank">{i + 1}</span>
-									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-									<span class="podium-title">{game.title}</span>
-									<span class="podium-score">{game.ratingPresentation}/10</span>
+							{#each rankedPresentation.slice(0, 3) as entry, idx}
+								{@const isTie = idx > 0 && entry.rank === rankedPresentation[idx - 1].rank}
+								<button type="button" class="podium-card rank-{Math.min(entry.rank, 3)} {isTie ? 'is-tie' : ''}" onclick={() => modalStore.openViewModal(entry.game, [entry.game])} title="{entry.game.title} — {entry.score}/10 {isTie ? '(tied)' : ''}">
+									<span class="podium-rank">{entry.rank}{isTie ? '=' : ''}</span>
+									{#if isTie}<span class="podium-tie">tied</span>{/if}
+									<img class="podium-cover" src="/{entry.game.coverImage}" alt="" loading="lazy" />
+									<span class="podium-title">{entry.game.title}</span>
+									<span class="podium-score">{entry.score}/10</span>
 								</button>
 							{/each}
 						</div>
 					{/if}
 					<div class="rating-list">
-						{#each top10Presentation.slice(3) as game, i}
-							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 4}</span>
-								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-								<span class="rating-game">{game.title}</span>
-								<span class="rating-value">{game.ratingPresentation}/10</span>
+						{#each rankedPresentation.slice(3) as entry, idx}
+							{@const prev = rankedPresentation[idx + 2]}
+							{@const isTie = prev && entry.rank === prev.rank}
+							<button type="button" class="rating-entry {isTie ? 'is-tie' : ''}" onclick={() => modalStore.openViewModal(entry.game, [entry.game])}>
+								<span class="rating-pos">{entry.rank}{isTie ? '=' : ''}</span>
+								<img class="rating-cover" src="/{entry.game.coverImage}" alt="" loading="lazy" />
+								<span class="rating-game">{entry.game.title}</span>
+								<span class="rating-value">{entry.score}/10{#if isTie} <span class="tie-mark">· tied</span>{/if}</span>
 							</button>
 						{/each}
-						{#if top10Presentation.length <= 3}
+						{#if rankedPresentation.length <= 3}
 							<span class="rating-empty">No more rated games</span>
+						{/if}
+						{#if rankedPresentation.length > 10}
+							<span class="rating-footnote">+{rankedPresentation.length - 10} more tied at #{rankedPresentation[9].rank}</span>
 						{/if}
 					</div>
 				</div>
@@ -893,29 +813,36 @@ let top10Score = $derived(
 						<NotebookPen size={16} style="color: #0ea5e9;" />
 						Story
 					</h4>
-					{#if top10Story.length > 0}
+					{#if rankedStory.length > 0}
 						<div class="podium">
-							{#each top10Story.slice(0, 3) as game, i}
-								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingStory}/10">
-									<span class="podium-rank">{i + 1}</span>
-									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-									<span class="podium-title">{game.title}</span>
-									<span class="podium-score">{game.ratingStory}/10</span>
+							{#each rankedStory.slice(0, 3) as entry, idx}
+								{@const isTie = idx > 0 && entry.rank === rankedStory[idx - 1].rank}
+								<button type="button" class="podium-card rank-{Math.min(entry.rank, 3)} {isTie ? 'is-tie' : ''}" onclick={() => modalStore.openViewModal(entry.game, [entry.game])} title="{entry.game.title} — {entry.score}/10 {isTie ? '(tied)' : ''}">
+									<span class="podium-rank">{entry.rank}{isTie ? '=' : ''}</span>
+									{#if isTie}<span class="podium-tie">tied</span>{/if}
+									<img class="podium-cover" src="/{entry.game.coverImage}" alt="" loading="lazy" />
+									<span class="podium-title">{entry.game.title}</span>
+									<span class="podium-score">{entry.score}/10</span>
 								</button>
 							{/each}
 						</div>
 					{/if}
 					<div class="rating-list">
-						{#each top10Story.slice(3) as game, i}
-							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 4}</span>
-								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-								<span class="rating-game">{game.title}</span>
-								<span class="rating-value">{game.ratingStory}/10</span>
+						{#each rankedStory.slice(3) as entry, idx}
+							{@const prev = rankedStory[idx + 2]}
+							{@const isTie = prev && entry.rank === prev.rank}
+							<button type="button" class="rating-entry {isTie ? 'is-tie' : ''}" onclick={() => modalStore.openViewModal(entry.game, [entry.game])}>
+								<span class="rating-pos">{entry.rank}{isTie ? '=' : ''}</span>
+								<img class="rating-cover" src="/{entry.game.coverImage}" alt="" loading="lazy" />
+								<span class="rating-game">{entry.game.title}</span>
+								<span class="rating-value">{entry.score}/10{#if isTie} <span class="tie-mark">· tied</span>{/if}</span>
 							</button>
 						{/each}
-						{#if top10Story.length <= 3}
+						{#if rankedStory.length <= 3}
 							<span class="rating-empty">No more rated games</span>
+						{/if}
+						{#if rankedStory.length > 10}
+							<span class="rating-footnote">+{rankedStory.length - 10} more tied at #{rankedStory[9].rank}</span>
 						{/if}
 					</div>
 				</div>
@@ -924,29 +851,36 @@ let top10Score = $derived(
 						<Gamepad2 size={16} style="color: #10b981;" />
 						Gameplay
 					</h4>
-					{#if top10Gameplay.length > 0}
+					{#if rankedGameplay.length > 0}
 						<div class="podium">
-							{#each top10Gameplay.slice(0, 3) as game, i}
-								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingGameplay}/10">
-									<span class="podium-rank">{i + 1}</span>
-									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-									<span class="podium-title">{game.title}</span>
-									<span class="podium-score">{game.ratingGameplay}/10</span>
+							{#each rankedGameplay.slice(0, 3) as entry, idx}
+								{@const isTie = idx > 0 && entry.rank === rankedGameplay[idx - 1].rank}
+								<button type="button" class="podium-card rank-{Math.min(entry.rank, 3)} {isTie ? 'is-tie' : ''}" onclick={() => modalStore.openViewModal(entry.game, [entry.game])} title="{entry.game.title} — {entry.score}/10 {isTie ? '(tied)' : ''}">
+									<span class="podium-rank">{entry.rank}{isTie ? '=' : ''}</span>
+									{#if isTie}<span class="podium-tie">tied</span>{/if}
+									<img class="podium-cover" src="/{entry.game.coverImage}" alt="" loading="lazy" />
+									<span class="podium-title">{entry.game.title}</span>
+									<span class="podium-score">{entry.score}/10</span>
 								</button>
 							{/each}
 						</div>
 					{/if}
 					<div class="rating-list">
-						{#each top10Gameplay.slice(3) as game, i}
-							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 4}</span>
-								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-								<span class="rating-game">{game.title}</span>
-								<span class="rating-value">{game.ratingGameplay}/10</span>
+						{#each rankedGameplay.slice(3) as entry, idx}
+							{@const prev = rankedGameplay[idx + 2]}
+							{@const isTie = prev && entry.rank === prev.rank}
+							<button type="button" class="rating-entry {isTie ? 'is-tie' : ''}" onclick={() => modalStore.openViewModal(entry.game, [entry.game])}>
+								<span class="rating-pos">{entry.rank}{isTie ? '=' : ''}</span>
+								<img class="rating-cover" src="/{entry.game.coverImage}" alt="" loading="lazy" />
+								<span class="rating-game">{entry.game.title}</span>
+								<span class="rating-value">{entry.score}/10{#if isTie} <span class="tie-mark">· tied</span>{/if}</span>
 							</button>
 						{/each}
-						{#if top10Gameplay.length <= 3}
+						{#if rankedGameplay.length <= 3}
 							<span class="rating-empty">No more rated games</span>
+						{/if}
+						{#if rankedGameplay.length > 10}
+							<span class="rating-footnote">+{rankedGameplay.length - 10} more tied at #{rankedGameplay[9].rank}</span>
 						{/if}
 					</div>
 				</div>
@@ -955,29 +889,36 @@ let top10Score = $derived(
 						<Star size={16} style="color: #f59e0b;" />
 						Score
 					</h4>
-					{#if top10Score.length > 0}
+					{#if rankedScore.length > 0}
 						<div class="podium">
-							{#each top10Score.slice(0, 3) as game, i}
-								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.score}/20">
-									<span class="podium-rank">{i + 1}</span>
-									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-									<span class="podium-title">{game.title}</span>
-									<span class="podium-score">{game.score}/20</span>
+							{#each rankedScore.slice(0, 3) as entry, idx}
+								{@const isTie = idx > 0 && entry.rank === rankedScore[idx - 1].rank}
+								<button type="button" class="podium-card rank-{Math.min(entry.rank, 3)} {isTie ? 'is-tie' : ''}" onclick={() => modalStore.openViewModal(entry.game, [entry.game])} title="{entry.game.title} — {entry.score}/20 {isTie ? '(tied)' : ''}">
+									<span class="podium-rank">{entry.rank}{isTie ? '=' : ''}</span>
+									{#if isTie}<span class="podium-tie">tied</span>{/if}
+									<img class="podium-cover" src="/{entry.game.coverImage}" alt="" loading="lazy" />
+									<span class="podium-title">{entry.game.title}</span>
+									<span class="podium-score">{entry.score}/20</span>
 								</button>
 							{/each}
 						</div>
 					{/if}
 					<div class="rating-list">
-						{#each top10Score.slice(3) as game, i}
-							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 4}</span>
-								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-								<span class="rating-game">{game.title}</span>
-								<span class="rating-value">{game.score}/20</span>
+						{#each rankedScore.slice(3) as entry, idx}
+							{@const prev = rankedScore[idx + 2]}
+							{@const isTie = prev && entry.rank === prev.rank}
+							<button type="button" class="rating-entry {isTie ? 'is-tie' : ''}" onclick={() => modalStore.openViewModal(entry.game, [entry.game])}>
+								<span class="rating-pos">{entry.rank}{isTie ? '=' : ''}</span>
+								<img class="rating-cover" src="/{entry.game.coverImage}" alt="" loading="lazy" />
+								<span class="rating-game">{entry.game.title}</span>
+								<span class="rating-value">{entry.score}/20{#if isTie} <span class="tie-mark">· tied</span>{/if}</span>
 							</button>
 						{/each}
-						{#if top10Score.length <= 3}
+						{#if rankedScore.length <= 3}
 							<span class="rating-empty">No more rated games</span>
+						{/if}
+						{#if rankedScore.length > 10}
+							<span class="rating-footnote">+{rankedScore.length - 10} more tied at #{rankedScore[9].rank}</span>
 						{/if}
 					</div>
 				</div>
@@ -1471,6 +1412,45 @@ let top10Score = $derived(
 
 	.podium-card.rank-3 .podium-rank {
 		background: #c08438;
+	}
+
+	.podium-card.is-tie {
+		border-style: dashed;
+	}
+
+	.podium-tie {
+		position: absolute;
+		top: 6px;
+		right: 6px;
+		font-size: 0.6rem;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--color-text-secondary);
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		padding: 1px 4px;
+		border-radius: 4px;
+	}
+
+	.rating-entry.is-tie .rating-pos {
+		color: var(--color-accent);
+	}
+
+	.tie-mark {
+		font-weight: 600;
+		color: var(--color-text-muted);
+		font-size: 0.7rem;
+	}
+
+	.rating-footnote {
+		font-size: 0.74rem;
+		color: var(--color-text-secondary);
+		text-align: center;
+		padding: 6px;
+		font-style: italic;
+		border-top: 1px dashed var(--color-border);
+		margin-top: 4px;
 	}
 
 	.podium-cover {
