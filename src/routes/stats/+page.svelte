@@ -297,6 +297,7 @@ let yearData = $derived.by(() => {
 				barPercentage: 1,
 				categoryPercentage: 0.95,
 				maxBarThickness: 96,
+				minBarLength: 42,
 			},
 			{
 				type: 'line' as const,
@@ -794,7 +795,7 @@ let top10Score = $derived(
 				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
 				<p class="chart-sub">Bars = games (hours inside) · dashed = cumulative</p>
 				<div class="chart-body">
-					<Chart type="bar" data={yearData} options={yearOptions} height={340} />
+					<Chart type="bar" data={yearData} options={yearOptions} height={360} />
 				</div>
 			</div>
 			<div class="chart-card span-6 hide-mobile">
