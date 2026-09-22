@@ -263,7 +263,6 @@ let yearData = $derived.by(() => {
 	const sorted = [...yearMap.entries()].toSorted((a, b) => a[0] - b[0]);
 	const labels = sorted.map(([y]) => String(y));
 	const counts = sorted.map(([, c]) => c);
-	const hours = sorted.map(([y]) => Math.round(((hoursMap.get(y) ?? 0) / 60) * 10) / 10);
 	let cumulative = 0;
 	const cumulData = counts.map((c) => (cumulative += c));
 	return {
@@ -273,26 +272,16 @@ let yearData = $derived.by(() => {
 				type: 'bar' as const,
 				label: 'Games',
 				data: counts,
-				backgroundColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.55)' : 'rgba(99,102,241,0.45)',
-				borderColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.75)',
-				borderWidth: 1,
-				borderRadius: 4,
+				backgroundColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.62)' : 'rgba(99,102,241,0.52)',
+				borderColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.95)' : 'rgba(99,102,241,0.85)',
+				borderWidth: 1.5,
+				borderRadius: 8,
 				clip: false as const,
-				order: 3,
-				yAxisID: 'y',
-			},
-			{
-				type: 'line' as const,
-				label: 'Hours',
-				data: hours,
-				borderColor: appStore.theme === 'dark' ? '#14b8a6' : '#0d9488',
-				backgroundColor: 'transparent',
-				borderWidth: 2,
-				pointRadius: 3,
-				pointBackgroundColor: appStore.theme === 'dark' ? '#5eead4' : '#0d9488',
-				tension: 0.3,
-				yAxisID: 'y1',
 				order: 2,
+				yAxisID: 'y',
+				barPercentage: 0.95,
+				categoryPercentage: 0.88,
+				maxBarThickness: 72,
 			},
 			{
 				type: 'line' as const,
@@ -300,16 +289,34 @@ let yearData = $derived.by(() => {
 				data: cumulData,
 				borderColor: appStore.theme === 'dark' ? '#f59e0b' : '#d97706',
 				backgroundColor: 'transparent',
-				borderWidth: 2,
-				pointRadius: 3,
+				borderWidth: 2.5,
+				pointRadius: 4,
 				pointBackgroundColor: appStore.theme === 'dark' ? '#fbbf24' : '#d97706',
-				tension: 0.3,
-				yAxisID: 'y',
+				pointBorderColor: appStore.theme === 'dark' ? '#1a1c23' : '#ffffff',
+				pointBorderWidth: 1.5,
+				tension: 0.35,
+				yAxisID: 'y1',
 				order: 1,
 				borderDash: [6, 4],
 			},
 		],
 	};
+});
+let yearHours = $derived.by(() => {
+	const hoursMap = new Map<number, number>();
+	for (const g of completedGames) {
+		if (!g.finishedDate) continue;
+		const year = new Date(g.finishedDate).getFullYear();
+		hoursMap.set(year, (hoursMap.get(year) ?? 0) + parsePlaytimeToMinutes(g.playtime));
+	}
+	const yearMap = new Map<number, number>();
+	for (const g of completedGames) {
+		if (!g.finishedDate) continue;
+		const year = new Date(g.finishedDate).getFullYear();
+		yearMap.set(year, (yearMap.get(year) ?? 0) + 1);
+	}
+	const sorted = [...yearMap.entries()].toSorted((a, b) => a[0] - b[0]);
+	return sorted.map(([y]) => Math.round(((hoursMap.get(y) ?? 0) / 60) * 10) / 10);
 });
 
 let yearlyMonthData = $derived.by(() => {
@@ -418,19 +425,30 @@ let yearOptions = $derived({
 		},
 		datalabels: {
 			display: (ctx: { datasetIndex: number }) => ctx.datasetIndex === 0,
-			font: { weight: 'bold' as const, size: 13 },
-			anchor: 'end' as const,
-			align: 'end' as const,
-			offset: 2,
-			formatter: (value: number) => value || '',
+			color: '#ffffff',
+			font: { weight: 'bold' as const, size: 12 },
+			anchor: 'center' as const,
+			align: 'center' as const,
+			offset: 0,
+			textShadowColor: 'rgba(0,0,0,0.35)',
+			textShadowBlur: 3,
+			formatter: (value: number, ctx: { dataIndex: number }) => {
+				const h = yearHours[ctx.dataIndex];
+				if (!value && !h) return '';
+				if (h) return `${value} · ${h}h`;
+				return `${value}`;
+			},
 		},
 		tooltip: {
 			mode: 'index' as const,
 			intersect: false,
 			callbacks: {
-				label: (item: TooltipItem<'bar'>) => {
-					if (item.dataset.label === 'Hours') return `Hours: ${item.raw}h`;
-					return `${item.dataset.label}: ${item.raw}`;
+				label: (item: TooltipItem<'bar'>) => `${item.dataset.label}: ${item.raw}`,
+				afterBody: (items: TooltipItem<'bar'>[]) => {
+					const idx = items[0]?.dataIndex;
+					if (idx == null) return '';
+					const h = yearHours[idx];
+					return h ? `Hours: ${h}h` : '';
 				},
 			},
 		},
@@ -749,9 +767,9 @@ let top10Score = $derived(
 			</div>
 			<div class="chart-card span-6">
 				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
-				<p class="chart-sub">Bars = games · teal line = hours · dashed = cumulative</p>
+				<p class="chart-sub">Bars = games (hours inside) · dashed = cumulative</p>
 				<div class="chart-body">
-					<Chart type="bar" data={yearData} options={yearOptions} height={220} />
+					<Chart type="bar" data={yearData} options={yearOptions} height={260} />
 				</div>
 			</div>
 			<div class="chart-card span-6 hide-mobile">
