@@ -17,6 +17,10 @@ import {
 	Hourglass,
 	Library,
 	Play,
+	Medal,
+	Timer,
+	TrendingUp,
+	Disc3,
 } from '@lucide/svelte';
 import { computeBacklogStats } from '$lib/utils/backlogUtils';
 import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
@@ -40,13 +44,21 @@ const GENRE_COLORS = [
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const SCORE_RANGES = [
-	{ label: '0-5', min: 0, max: 5, color: '#6b7280', bg: 'rgba(107,114,128,0.25)' },
-	{ label: '6-8', min: 6, max: 8, color: '#f97316', bg: 'rgba(249,115,22,0.25)' },
-	{ label: '9-11', min: 9, max: 11, color: '#eab308', bg: 'rgba(234,179,8,0.25)' },
-	{ label: '12-14', min: 12, max: 14, color: '#22c55e', bg: 'rgba(34,197,94,0.25)' },
-	{ label: '15-17', min: 15, max: 17, color: '#06b6d4', bg: 'rgba(6,182,212,0.25)' },
-	{ label: '18-20', min: 18, max: 20, color: '#8b5cf6', bg: 'rgba(139,92,246,0.25)' },
+const PLAYTIME_BUCKETS = [
+	{ label: '0-5h', min: 0, max: 300 },
+	{ label: '5-10h', min: 301, max: 600 },
+	{ label: '10-20h', min: 601, max: 1200 },
+	{ label: '20-40h', min: 1201, max: 2400 },
+	{ label: '40h+', min: 2401, max: Infinity },
+] as const;
+
+const PLAYTIME_COLORS = ['#06b6d4', '#22c55e', '#6366f1', '#f59e0b', '#ef4444'];
+const PLAYTIME_BGS = [
+	'rgba(6,182,212,0.22)',
+	'rgba(34,197,94,0.22)',
+	'rgba(99,102,241,0.22)',
+	'rgba(245,158,11,0.22)',
+	'rgba(239,68,68,0.22)',
 ];
 
 let games = $derived(gamesStore.games);
@@ -55,12 +67,37 @@ let completedGames = $derived(games.filter((g) => g.status === 'Completed'));
 
 let totalPlaytimeMinutes = $derived(completedGames.reduce((sum, g) => sum + parsePlaytimeToMinutes(g.playtime), 0));
 let totalPlaytimeFormatted = $derived(formatMinutes(totalPlaytimeMinutes));
-let totalDays = $derived(Math.round((totalPlaytimeMinutes / 1440) * 10) / 10);
-let totalWeeks = $derived(Math.round((totalPlaytimeMinutes / 10080) * 10) / 10);
-let totalYears = $derived(Math.round((totalPlaytimeMinutes / 525600) * 100) / 100);
 
 let completedCount = $derived(completedGames.length);
 let plannedCount = $derived(games.filter((g) => g.status === 'Planned').length);
+let playingCount = $derived(games.filter((g) => g.status === 'Playing').length);
+
+let avgPlaytimeMinutes = $derived(completedCount === 0 ? 0 : Math.round(totalPlaytimeMinutes / completedCount));
+let medianPlaytimeMinutes = $derived.by(() => {
+	if (completedGames.length === 0) return 0;
+	const sorted = completedGames
+		.map((g) => parsePlaytimeToMinutes(g.playtime))
+		.filter((m) => m > 0)
+		.toSorted((a, b) => a - b);
+	if (sorted.length === 0) return 0;
+	const mid = Math.floor(sorted.length / 2);
+	return sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
+});
+let longestGame = $derived.by(() => {
+	if (completedGames.length === 0) return null;
+	return (
+		[...completedGames].toSorted(
+			(a, b) => parsePlaytimeToMinutes(b.playtime) - parsePlaytimeToMinutes(a.playtime)
+		)[0] ?? null
+	);
+});
+let shortestGame = $derived.by(() => {
+	const withTime = completedGames.filter((g) => parsePlaytimeToMinutes(g.playtime) > 0);
+	if (withTime.length === 0) return null;
+	return (
+		[...withTime].toSorted((a, b) => parsePlaytimeToMinutes(a.playtime) - parsePlaytimeToMinutes(b.playtime))[0] ?? null
+	);
+});
 
 let backlogStats = $derived(computeBacklogStats(games));
 let backlogPctHoursLabel = $derived(
@@ -108,12 +145,70 @@ let gamesThisYear = $derived(
 		return d.getFullYear() === currentYear;
 	})
 );
+let gamesLastYear = $derived(
+	completedGames.filter((g) => {
+		if (!g.finishedDate) return false;
+		const d = new Date(g.finishedDate);
+		return d.getFullYear() === currentYear - 1;
+	})
+);
 let playtimeThisYear = $derived(
 	formatMinutes(gamesThisYear.reduce((sum, g) => sum + parsePlaytimeToMinutes(g.playtime), 0))
 );
-let playtimeThisYearMinutes = $derived(gamesThisYear.reduce((sum, g) => sum + parsePlaytimeToMinutes(g.playtime), 0));
-let yearDays = $derived(Math.round((playtimeThisYearMinutes / 1440) * 10) / 10);
-let yearWeeks = $derived(Math.round((playtimeThisYearMinutes / 10080) * 10) / 10);
+let yearDelta = $derived(gamesThisYear.length - gamesLastYear.length);
+let yearDeltaLabel = $derived(
+	gamesLastYear.length === 0 && gamesThisYear.length === 0
+		? 'no games yet'
+		: yearDelta === 0
+			? 'same as last year'
+			: `${yearDelta > 0 ? '+' : ''}${yearDelta} vs ${currentYear - 1}`
+);
+
+let genreAvgMap = $derived.by(() => {
+	const map = new Map<string, { count: number; total: number; avg: number }>();
+	for (const g of completedGames) {
+		if (g.score == null) continue;
+		const e = map.get(g.genre) ?? { count: 0, total: 0, avg: 0 };
+		e.count++;
+		e.total += g.score;
+		map.set(g.genre, e);
+	}
+	for (const e of map.values()) e.avg = Math.round((e.total / e.count) * 10) / 10;
+	return map;
+});
+let topGenreByAvg = $derived.by(() => {
+	let best: { name: string; avg: number; count: number } | null = null;
+	for (const [name, v] of genreAvgMap.entries()) {
+		if (v.count < 3) continue;
+		if (!best || v.avg > best.avg) best = { name, avg: v.avg, count: v.count };
+	}
+	if (best) return best;
+	// fallback: any genre
+	for (const [name, v] of genreAvgMap.entries()) {
+		if (!best || v.avg > best.avg) best = { name, avg: v.avg, count: v.count };
+	}
+	return best;
+});
+
+let backlogEta = $derived.by(() => {
+	const lastYears = [currentYear - 1, currentYear - 2, currentYear - 3];
+	const perYear: number[] = [];
+	for (const y of lastYears) {
+		const c = completedGames.filter((g) => {
+			if (!g.finishedDate) return false;
+			return new Date(g.finishedDate).getFullYear() === y;
+		}).length;
+		if (c > 0) perYear.push(c);
+	}
+	const avg = perYear.length === 0 ? 0 : perYear.reduce((a, b) => a + b, 0) / perYear.length;
+	if (avg === 0 || backlogStats.backlog.count === 0) return null;
+	const years = backlogStats.backlog.count / avg;
+	return {
+		avgPerYear: Math.round(avg * 10) / 10,
+		years: Math.round(years * 10) / 10,
+		label: years < 1 ? `${Math.round(years * 12)} months` : `${years.toFixed(1)} years`,
+	};
+});
 
 let tierData = $derived.by(() => {
 	const counts: number[] = TIER_ORDER.map((tier) => completedGames.filter((g) => g.tier === tier).length);
@@ -155,25 +250,71 @@ let genreData = $derived.by(() => {
 	};
 });
 
-let scoreData = $derived.by(() => ({
-	labels: SCORE_RANGES.map((r) => r.label),
+let playtimeData = $derived.by(() => ({
+	labels: PLAYTIME_BUCKETS.map((b) => b.label),
 	datasets: [
 		{
 			label: 'Games',
-			data: SCORE_RANGES.map(
-				(r) =>
+			data: PLAYTIME_BUCKETS.map(
+				(b) =>
 					completedGames.filter((g) => {
-						const s = g.score ?? -1;
-						return s >= r.min && s <= r.max;
+						const m = parsePlaytimeToMinutes(g.playtime);
+						return m >= b.min && m <= b.max;
 					}).length
 			),
-			backgroundColor: SCORE_RANGES.map((r) => r.bg),
-			borderColor: SCORE_RANGES.map((r) => r.color),
+			backgroundColor: PLAYTIME_BGS,
+			borderColor: PLAYTIME_COLORS,
 			borderWidth: 2,
 			borderRadius: 4,
 		},
 	],
 }));
+
+let platformData = $derived.by(() => {
+	const platforms = new Map<string, { completed: number; planned: number; playing: number }>();
+	for (const g of games) {
+		if (!platforms.has(g.platform)) platforms.set(g.platform, { completed: 0, planned: 0, playing: 0 });
+		const e = platforms.get(g.platform)!;
+		if (g.status === 'Completed') e.completed++;
+		else if (g.status === 'Planned') e.planned++;
+		else if (g.status === 'Playing') e.playing++;
+	}
+	const sorted = [...platforms.entries()]
+		.toSorted((a, b) => b[1].completed + b[1].planned + b[1].playing - (a[1].completed + a[1].planned + a[1].playing))
+		.slice(0, 6);
+	return {
+		labels: sorted.map(([name]) => name),
+		datasets: [
+			{
+				label: 'Completed',
+				data: sorted.map(([, v]) => v.completed),
+				backgroundColor: 'rgba(99,102,241,0.55)',
+				borderColor: 'rgba(99,102,241,0.85)',
+				borderWidth: 1,
+				borderRadius: 4,
+				stack: 'platform',
+			},
+			{
+				label: 'Playing',
+				data: sorted.map(([, v]) => v.playing),
+				backgroundColor: 'rgba(245,158,11,0.55)',
+				borderColor: 'rgba(245,158,11,0.85)',
+				borderWidth: 1,
+				borderRadius: 4,
+				stack: 'platform',
+			},
+			{
+				label: 'Planned',
+				data: sorted.map(([, v]) => v.planned),
+				backgroundColor: 'rgba(100,116,139,0.45)',
+				borderColor: 'rgba(100,116,139,0.7)',
+				borderWidth: 1,
+				borderRadius: 4,
+				stack: 'platform',
+			},
+		],
+	};
+});
 
 let yearData = $derived.by(() => {
 	const yearMap = new Map<number, number>();
@@ -183,17 +324,36 @@ let yearData = $derived.by(() => {
 		yearMap.set(year, (yearMap.get(year) ?? 0) + 1);
 	}
 	const sorted = [...yearMap.entries()].toSorted((a, b) => a[0] - b[0]);
+	const labels = sorted.map(([y]) => String(y));
+	const counts = sorted.map(([, c]) => c);
+	let cumulative = 0;
+	const cumulData = counts.map((c) => (cumulative += c));
 	return {
-		labels: sorted.map(([y]) => String(y)),
+		labels,
 		datasets: [
 			{
+				type: 'bar' as const,
 				label: 'Games',
-				data: sorted.map(([, c]) => c),
+				data: counts,
 				backgroundColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.55)' : 'rgba(99,102,241,0.45)',
 				borderColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.75)',
 				borderWidth: 1,
 				borderRadius: 4,
 				clip: false as const,
+				order: 2,
+			},
+			{
+				type: 'line' as const,
+				label: 'Cumulative',
+				data: cumulData,
+				borderColor: appStore.theme === 'dark' ? '#f59e0b' : '#d97706',
+				backgroundColor: 'transparent',
+				borderWidth: 2,
+				pointRadius: 3,
+				pointBackgroundColor: appStore.theme === 'dark' ? '#fbbf24' : '#d97706',
+				tension: 0.3,
+				yAxisID: 'y1',
+				order: 1,
 			},
 		],
 	};
@@ -252,7 +412,12 @@ let genreOptions = $derived({
 		},
 		tooltip: {
 			callbacks: {
-				label: (item: TooltipItem<'bar'>) => `${item.raw} game${Number(item.raw) !== 1 ? 's' : ''}`,
+				label: (item: TooltipItem<'bar'>) => {
+					const genre = String(item.label);
+					const avg = genreAvgMap.get(genre)?.avg;
+					const count = Number(item.raw);
+					return avg != null ? `${count} games · avg ${avg}/20` : `${count} game${count !== 1 ? 's' : ''}`;
+				},
 			},
 		},
 	},
@@ -263,7 +428,7 @@ let genreOptions = $derived({
 	},
 });
 
-let scoreOptions = $derived({
+let playtimeOptions = $derived({
 	plugins: {
 		legend: { display: false },
 		datalabels: {
@@ -285,26 +450,64 @@ let scoreOptions = $derived({
 	},
 });
 
+let platformOptions = $derived({
+	plugins: {
+		legend: {
+			display: true,
+			position: 'bottom' as const,
+			labels: { boxWidth: 14, font: { size: 11, weight: 'bold' as const }, padding: 12 },
+		},
+		datalabels: { display: false },
+		tooltip: {
+			callbacks: {
+				label: (item: TooltipItem<'bar'>) => `${item.dataset.label}: ${item.raw}`,
+			},
+		},
+	},
+	scales: {
+		x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+		y: { stacked: true, grid: { display: false }, ticks: { display: false }, beginAtZero: true },
+	},
+});
+
 let yearOptions = $derived({
 	plugins: {
-		legend: { display: false },
+		legend: {
+			display: true,
+			position: 'bottom' as const,
+			labels: { boxWidth: 14, font: { size: 11 }, padding: 12, usePointStyle: true },
+		},
 		datalabels: {
-			font: { weight: 'bold' as const, size: 14 },
+			display: (ctx: { datasetIndex: number }) => ctx.datasetIndex === 0,
+			font: { weight: 'bold' as const, size: 13 },
 			anchor: 'end' as const,
 			align: 'end' as const,
 			offset: 2,
 			formatter: (value: number) => value || '',
 		},
 		tooltip: {
+			mode: 'index' as const,
+			intersect: false,
 			callbacks: {
-				label: (item: TooltipItem<'bar'>) => `${item.raw} game${Number(item.raw) !== 1 ? 's' : ''}`,
+				label: (item: TooltipItem<'bar'>) => `${item.dataset.label}: ${item.raw}`,
 			},
 		},
 	},
-	layout: { padding: { top: 20, right: 30 } },
+	layout: { padding: { top: 12, right: 16 } },
 	scales: {
-		x: { grid: { display: false }, ticks: { font: { size: 13 } } },
-		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
+		x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+		y: {
+			grid: { display: false },
+			ticks: { display: false },
+			beginAtZero: true,
+			title: { display: false },
+		},
+		y1: {
+			position: 'right' as const,
+			grid: { display: false },
+			ticks: { display: false },
+			beginAtZero: true,
+		},
 	},
 });
 
@@ -338,18 +541,23 @@ let top10Score = $derived(
 	<div class="stats-content">
 
 		<section class="stats-grid">
-			<div class="stat-card">
+			<div class="stat-card stat-card-hero">
 				<div class="stat-icon">
 					<Clock size={16} />
 				</div>
 				<div class="stat-body">
 					<div class="stat-value">{totalPlaytimeFormatted}</div>
-					<div class="stat-label">Total Played</div>
+					<div class="stat-label">Total Played · {completedCount} games</div>
 					<div class="stat-pills">
-						<span class="stat-pill">{totalDays} days</span>
-						<span class="stat-pill">{totalWeeks} weeks</span>
-						<span class="stat-pill">{totalYears} years</span>
+						<span class="stat-pill"><Timer size={11} /> {formatMinutes(avgPlaytimeMinutes)} avg</span>
+						<span class="stat-pill">{formatMinutes(medianPlaytimeMinutes)} median</span>
 					</div>
+					{#if longestGame && shortestGame}
+						<div class="stat-extremes">
+							<span class="extreme"><TrendingUp size={10} /> {longestGame.title} · {longestGame.playtime}</span>
+							<span class="extreme muted">{shortestGame.title} · {shortestGame.playtime}</span>
+						</div>
+					{/if}
 				</div>
 			</div>
 			<div class="stat-card">
@@ -357,9 +565,10 @@ let top10Score = $derived(
 					<Trophy size={16} />
 				</div>
 				<div class="stat-body">
-					<div class="stat-value">{completedCount}</div>
+					<div class="stat-value">{completedCount}<span class="stat-value-suffix">/{backlogStats.total.count}</span></div>
 					<div class="stat-label">Completed</div>
 					<div class="stat-pills">
+						<span class="stat-pill">{playingCount} playing</span>
 						<span class="stat-pill">{plannedCount} planned</span>
 					</div>
 				</div>
@@ -369,10 +578,14 @@ let top10Score = $derived(
 					<Star size={16} />
 				</div>
 				<div class="stat-body">
-					<div class="stat-value">{avgScore}</div>
+					<div class="stat-value">{avgScore}<span class="stat-value-suffix">/20</span></div>
 					<div class="stat-label">Average Score</div>
 					<div class="stat-pills">
-						<span class="stat-pill">of 20</span>
+						{#if topGenreByAvg}
+							<span class="stat-pill">Top: {topGenreByAvg.name} · {topGenreByAvg.avg}</span>
+						{:else}
+							<span class="stat-pill">{completedCount} rated</span>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -382,10 +595,12 @@ let top10Score = $derived(
 				</div>
 				<div class="stat-body">
 					<div class="stat-value">{playtimeThisYear}</div>
-					<div class="stat-label">Played in {currentYear}</div>
+					<div class="stat-label">{currentYear} · {gamesThisYear.length} games</div>
 					<div class="stat-pills">
-						<span class="stat-pill">{yearDays} days</span>
-						<span class="stat-pill">{yearWeeks} weeks</span>
+						<span class="stat-pill" class:delta-pos={yearDelta > 0} class:delta-neg={yearDelta < 0} class:delta-zero={yearDelta === 0}>{yearDeltaLabel}</span>
+						{#if gamesLastYear.length > 0}
+							<span class="stat-pill muted">{gamesLastYear.length} in {currentYear - 1}</span>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -567,38 +782,58 @@ let top10Score = $derived(
 			<div class="backlog-footer">
 				<span class="backlog-footer-main">
 					<Hourglass size={12} />
-					{backlogRemainingLabel} · {backlogStats.backlog.count} games remaining in backlog
+					{backlogRemainingLabel} · {backlogStats.backlog.count} games remaining
 				</span>
 				<span class="backlog-footer-sep" aria-hidden="true">·</span>
 				<span class="backlog-footer-secondary">{backlogStats.completed.count} of {backlogStats.total.count} games cleared · {backlogStats.completed.pctCount.toFixed(1)}% of games</span>
+				{#if backlogEta}
+					<span class="backlog-footer-sep" aria-hidden="true">·</span>
+					<span class="backlog-footer-eta" title="Based on avg {backlogEta.avgPerYear}/year last 3 years">
+						<TrendingUp size={12} /> ~{backlogEta.label} at {backlogEta.avgPerYear}/yr
+					</span>
+				{/if}
 			</div>
 		</section>
 
 		<section class="charts-grid">
 			<div class="chart-card span-2">
-				<h3 class="chart-title">Tier Distribution</h3>
-				<p class="chart-sub">{completedCount} completed games</p>
+				<h3 class="chart-title"><Trophy size={14} /> Tier Distribution</h3>
+				<p class="chart-sub">{completedCount} completed · S tier is masterpiece</p>
 				<div class="chart-body">
 					<Chart type="bar" data={tierData} options={tierOptions} height={200} />
 				</div>
 			</div>
 			<div class="chart-card span-2">
-				<h3 class="chart-title">Genre Breakdown</h3>
-				<p class="chart-sub">Top genres played</p>
+				<h3 class="chart-title"><Disc3 size={14} /> Genre Breakdown</h3>
+				<p class="chart-sub">Top 8 · hover for avg score</p>
 				<div class="chart-body">
 					<Chart type="bar" data={genreData} options={genreOptions} height={200} />
 				</div>
 			</div>
 			<div class="chart-card span-2">
-				<h3 class="chart-title">Score Distribution</h3>
-				<p class="chart-sub">How scores are spread</p>
+				<h3 class="chart-title"><Timer size={14} /> Playtime Distribution</h3>
+				<p class="chart-sub">How long you play · median {formatMinutes(medianPlaytimeMinutes)}</p>
 				<div class="chart-body">
-					<Chart type="bar" data={scoreData} options={scoreOptions} height={200} />
+					<Chart type="bar" data={playtimeData} options={playtimeOptions} height={200} />
 				</div>
 			</div>
-			<div class="chart-card span-4 hide-mobile">
+			<div class="chart-card span-2">
+				<h3 class="chart-title"><Library size={14} /> Platform Mix</h3>
+				<p class="chart-sub">Completed vs backlog per platform</p>
+				<div class="chart-body">
+					<Chart type="bar" data={platformData} options={platformOptions} height={220} />
+				</div>
+			</div>
+			<div class="chart-card span-4">
+				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
+				<p class="chart-sub">Bars = that year · line = cumulative</p>
+				<div class="chart-body">
+					<Chart type="bar" data={yearData} options={yearOptions} height={220} />
+				</div>
+			</div>
+			<div class="chart-card span-6 hide-mobile">
 				<h3 class="chart-title">Monthly Breakdown by Year</h3>
-				<p class="chart-sub">Completions per month</p>
+				<p class="chart-sub">Completions per month · heat is relative to peak ({maxMonthly})</p>
 				<div class="monthly-table">
 					<div class="mt-row mt-header">
 						<span class="mt-year"></span>
@@ -616,32 +851,41 @@ let top10Score = $derived(
 					{/each}
 				</div>
 			</div>
-			<div class="chart-card span-2">
-				<h3 class="chart-title">Year Over Year</h3>
-				<p class="chart-sub">Completions per year</p>
-				<div class="chart-body">
-					<Chart type="bar" data={yearData} options={yearOptions} height={200} />
-				</div>
-			</div>
 		</section>
 
 		<section class="ratings-section">
-			<h3 class="section-title">Top Rated</h3>
+			<h3 class="section-title"><Medal size={18} /> Hall of Fame</h3>
+			<p class="section-sub">Top 10 per dimension · click any game to open</p>
 			<div class="ratings-categories">
 				<div class="rating-category">
 					<h4 class="rating-cat-title" style="border-bottom-color: #f43f5e;">
 						<Presentation size={16} style="color: #f43f5e;" />
 						Presentation
 					</h4>
+					{#if top10Presentation.length > 0}
+						<div class="podium">
+							{#each top10Presentation.slice(0, 3) as game, i}
+								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingPresentation}/10">
+									<span class="podium-rank">{i + 1}</span>
+									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
+									<span class="podium-title">{game.title}</span>
+									<span class="podium-score">{game.ratingPresentation}/10</span>
+								</button>
+							{/each}
+						</div>
+					{/if}
 					<div class="rating-list">
-						{#each top10Presentation as game, i}
+						{#each top10Presentation.slice(3) as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 1}</span>
+								<span class="rating-pos">{i + 4}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingPresentation}/10</span>
 							</button>
 						{/each}
+						{#if top10Presentation.length <= 3}
+							<span class="rating-empty">No more rated games</span>
+						{/if}
 					</div>
 				</div>
 				<div class="rating-category">
@@ -649,15 +893,30 @@ let top10Score = $derived(
 						<NotebookPen size={16} style="color: #0ea5e9;" />
 						Story
 					</h4>
+					{#if top10Story.length > 0}
+						<div class="podium">
+							{#each top10Story.slice(0, 3) as game, i}
+								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingStory}/10">
+									<span class="podium-rank">{i + 1}</span>
+									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
+									<span class="podium-title">{game.title}</span>
+									<span class="podium-score">{game.ratingStory}/10</span>
+								</button>
+							{/each}
+						</div>
+					{/if}
 					<div class="rating-list">
-						{#each top10Story as game, i}
+						{#each top10Story.slice(3) as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 1}</span>
+								<span class="rating-pos">{i + 4}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingStory}/10</span>
 							</button>
 						{/each}
+						{#if top10Story.length <= 3}
+							<span class="rating-empty">No more rated games</span>
+						{/if}
 					</div>
 				</div>
 				<div class="rating-category">
@@ -665,15 +924,30 @@ let top10Score = $derived(
 						<Gamepad2 size={16} style="color: #10b981;" />
 						Gameplay
 					</h4>
+					{#if top10Gameplay.length > 0}
+						<div class="podium">
+							{#each top10Gameplay.slice(0, 3) as game, i}
+								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingGameplay}/10">
+									<span class="podium-rank">{i + 1}</span>
+									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
+									<span class="podium-title">{game.title}</span>
+									<span class="podium-score">{game.ratingGameplay}/10</span>
+								</button>
+							{/each}
+						</div>
+					{/if}
 					<div class="rating-list">
-						{#each top10Gameplay as game, i}
+						{#each top10Gameplay.slice(3) as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 1}</span>
+								<span class="rating-pos">{i + 4}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingGameplay}/10</span>
 							</button>
 						{/each}
+						{#if top10Gameplay.length <= 3}
+							<span class="rating-empty">No more rated games</span>
+						{/if}
 					</div>
 				</div>
 				<div class="rating-category">
@@ -681,15 +955,30 @@ let top10Score = $derived(
 						<Star size={16} style="color: #f59e0b;" />
 						Score
 					</h4>
+					{#if top10Score.length > 0}
+						<div class="podium">
+							{#each top10Score.slice(0, 3) as game, i}
+								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.score}/20">
+									<span class="podium-rank">{i + 1}</span>
+									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
+									<span class="podium-title">{game.title}</span>
+									<span class="podium-score">{game.score}/20</span>
+								</button>
+							{/each}
+						</div>
+					{/if}
 					<div class="rating-list">
-						{#each top10Score as game, i}
+						{#each top10Score.slice(3) as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 1}</span>
+								<span class="rating-pos">{i + 4}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.score}/20</span>
 							</button>
 						{/each}
+						{#if top10Score.length <= 3}
+							<span class="rating-empty">No more rated games</span>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -800,11 +1089,69 @@ let top10Score = $derived(
 		border-radius: 6px;
 		line-height: 1.5;
 		border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
 	}
 
 	:global(.light) .stat-pill {
 		background: rgba(194, 65, 12, 0.12);
 		border-color: rgba(194, 65, 12, 0.25);
+	}
+
+	.stat-pill.muted {
+		opacity: 0.75;
+		font-weight: 600;
+	}
+
+	.stat-pill.delta-pos {
+		color: #22c55e;
+		border-color: rgba(34, 197, 94, 0.3);
+		background: rgba(34, 197, 94, 0.12);
+	}
+
+	.stat-pill.delta-neg {
+		color: #ef4444;
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.12);
+	}
+
+	.stat-value-suffix {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--color-text-secondary);
+		margin-left: 2px;
+	}
+
+	.stat-extremes {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		margin-top: 6px;
+		font-size: 0.75rem;
+		color: var(--color-text-secondary);
+	}
+
+	.extreme {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-weight: 600;
+		color: var(--color-text-primary);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.extreme.muted {
+		opacity: 0.65;
+		font-weight: 500;
+	}
+
+	.section-sub {
+		margin: 4px 0 0 0;
+		font-size: 0.85rem;
+		color: var(--color-text-secondary);
 	}
 
 	.charts-grid {
@@ -845,9 +1192,14 @@ let top10Score = $derived(
 		grid-column: span 4;
 	}
 
+	.chart-card.span-6 {
+		grid-column: span 6;
+	}
+
 	@media (max-width: 1399px) {
 		.chart-card.span-2,
-		.chart-card.span-4 {
+		.chart-card.span-4,
+		.chart-card.span-6 {
 			grid-column: span 1;
 		}
 	}
@@ -857,6 +1209,9 @@ let top10Score = $derived(
 		font-size: 1.07rem;
 		font-weight: 600;
 		color: var(--color-text-primary);
+		display: flex;
+		align-items: center;
+		gap: 6px;
 	}
 
 	.chart-sub {
@@ -1039,6 +1394,113 @@ let top10Score = $derived(
 		gap: 6px;
 	}
 
+	.podium {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 6px;
+	}
+
+	.podium-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+		padding: 8px 6px 10px;
+		border-radius: 10px;
+		background: var(--color-surface-elevated);
+		border: 1px solid var(--color-border);
+		cursor: pointer;
+		transition:
+			transform var(--transition-fast),
+			box-shadow var(--transition-fast),
+			border-color var(--transition-fast);
+		text-align: center;
+		position: relative;
+		overflow: hidden;
+	}
+
+	@media (hover: hover) {
+		.podium-card:hover {
+			transform: translateY(-2px);
+			box-shadow: var(--shadow-md);
+			border-color: var(--color-accent);
+		}
+	}
+
+	.podium-card.rank-1 {
+		border-color: rgba(234, 179, 8, 0.5);
+		background: linear-gradient(180deg, rgba(234, 179, 8, 0.12), var(--color-surface-elevated));
+		order: 2;
+		transform: scale(1.03);
+	}
+
+	.podium-card.rank-2 {
+		border-color: rgba(148, 163, 184, 0.4);
+		order: 1;
+	}
+
+	.podium-card.rank-3 {
+		border-color: rgba(194, 120, 40, 0.35);
+		order: 3;
+	}
+
+	.podium-rank {
+		position: absolute;
+		top: 6px;
+		left: 6px;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.7rem;
+		font-weight: 800;
+		color: #fff;
+		background: var(--color-accent);
+	}
+
+	.podium-card.rank-1 .podium-rank {
+		background: linear-gradient(135deg, #facc15, #eab308);
+		color: #422006;
+	}
+
+	.podium-card.rank-2 .podium-rank {
+		background: #94a3b8;
+	}
+
+	.podium-card.rank-3 .podium-rank {
+		background: #c08438;
+	}
+
+	.podium-cover {
+		width: 56px;
+		height: 80px;
+		border-radius: 6px;
+		object-fit: cover;
+		background: var(--color-surface-elevated);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	}
+
+	.podium-title {
+		font-size: 0.76rem;
+		font-weight: 700;
+		color: var(--color-text-primary);
+		line-height: 1.2;
+		display: -webkit-box;
+		line-clamp: 2;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		min-height: 1.9em;
+	}
+
+	.podium-score {
+		font-size: 0.72rem;
+		font-weight: 800;
+		color: var(--color-accent);
+	}
+
 	.rating-list {
 		display: flex;
 		flex-direction: column;
@@ -1047,6 +1509,14 @@ let top10Score = $derived(
 		border: 1px solid var(--color-border);
 		border-radius: 10px;
 		padding: 4px;
+	}
+
+	.rating-empty {
+		font-size: 0.78rem;
+		color: var(--color-text-muted);
+		text-align: center;
+		padding: 8px;
+		font-style: italic;
 	}
 
 	.rating-entry {
@@ -1463,6 +1933,19 @@ let top10Score = $derived(
 
 	.backlog-footer-sep {
 		opacity: 0.35;
+	}
+
+	.backlog-footer-eta {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		font-weight: 700;
+		color: var(--color-accent);
+		background: var(--color-accent-bg, rgba(99, 102, 241, 0.12));
+		padding: 2px 8px;
+		border-radius: 6px;
+		font-size: 0.82rem;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 18%, transparent);
 	}
 
 	@media (max-width: 639px) {

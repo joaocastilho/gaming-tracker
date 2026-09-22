@@ -7,6 +7,10 @@ import {
 	LinearScale,
 	Tooltip,
 	Legend,
+	LineController,
+	LineElement,
+	PointElement,
+	Filler,
 	type ChartType,
 	type ChartData,
 	type ChartOptions,
@@ -15,7 +19,19 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { untrack } from 'svelte';
 import { appStore } from '$lib/stores/app.svelte';
 
-Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ChartDataLabels);
+Chart.register(
+	BarController,
+	BarElement,
+	CategoryScale,
+	LinearScale,
+	Tooltip,
+	Legend,
+	LineController,
+	LineElement,
+	PointElement,
+	Filler,
+	ChartDataLabels
+);
 
 interface Props {
 	type: ChartType;
