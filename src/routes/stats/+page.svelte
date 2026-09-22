@@ -17,7 +17,6 @@ import {
 	Hourglass,
 	Library,
 	Play,
-	Medal,
 	Timer,
 	TrendingUp,
 	Disc3,
@@ -201,7 +200,7 @@ let tierData = $derived.by(() => {
 let genreData = $derived.by(() => {
 	const genreCount = new Map<string, number>();
 	for (const g of completedGames) genreCount.set(g.genre, (genreCount.get(g.genre) ?? 0) + 1);
-	const sorted = [...genreCount.entries()].toSorted((a, b) => b[1] - a[1]).slice(0, 10);
+	const sorted = [...genreCount.entries()].toSorted((a, b) => b[1] - a[1]).slice(0, 5);
 	return {
 		labels: sorted.map(([name]) => name),
 		datasets: [
@@ -217,7 +216,7 @@ let genreData = $derived.by(() => {
 		],
 	};
 });
-let genreChartHeight = $derived(240);
+let genreChartHeight = $derived(200);
 
 let playtimeCounts = $derived(
 	PLAYTIME_BUCKETS.map(
@@ -736,7 +735,7 @@ let top10Score = $derived(
 			</div>
 			<div class="chart-card span-2">
 				<h3 class="chart-title"><Disc3 size={14} /> Genre Breakdown</h3>
-				<p class="chart-sub">Top 10 · {completedCount} games · hover for avg</p>
+				<p class="chart-sub">Top 5 · hover for avg</p>
 				<div class="chart-body">
 					<Chart type="bar" data={genreData} options={genreOptions} height={genreChartHeight} />
 				</div>
@@ -778,38 +777,22 @@ let top10Score = $derived(
 		</section>
 
 		<section class="ratings-section">
-			<h3 class="section-title"><Medal size={18} /> Hall of Fame</h3>
-			<p class="section-sub">Top 10 per dimension · click any game to open</p>
+			<h3 class="section-title">Top Rated</h3>
 			<div class="ratings-categories">
 				<div class="rating-category">
 					<h4 class="rating-cat-title" style="border-bottom-color: #f43f5e;">
 						<Presentation size={16} style="color: #f43f5e;" />
 						Presentation
 					</h4>
-					{#if top10Presentation.length > 0}
-						<div class="podium">
-							{#each top10Presentation.slice(0, 3) as game, i}
-								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingPresentation}/10">
-									<span class="podium-rank">{i + 1}</span>
-									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-									<span class="podium-title">{game.title}</span>
-									<span class="podium-score">{game.ratingPresentation}/10</span>
-								</button>
-							{/each}
-						</div>
-					{/if}
 					<div class="rating-list">
-						{#each top10Presentation.slice(3) as game, i}
+						{#each top10Presentation as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 4}</span>
+								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingPresentation}/10</span>
 							</button>
 						{/each}
-						{#if top10Presentation.length <= 3}
-							<span class="rating-empty">No more rated games</span>
-						{/if}
 					</div>
 				</div>
 				<div class="rating-category">
@@ -817,30 +800,15 @@ let top10Score = $derived(
 						<NotebookPen size={16} style="color: #0ea5e9;" />
 						Story
 					</h4>
-					{#if top10Story.length > 0}
-						<div class="podium">
-							{#each top10Story.slice(0, 3) as game, i}
-								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingStory}/10">
-									<span class="podium-rank">{i + 1}</span>
-									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-									<span class="podium-title">{game.title}</span>
-									<span class="podium-score">{game.ratingStory}/10</span>
-								</button>
-							{/each}
-						</div>
-					{/if}
 					<div class="rating-list">
-						{#each top10Story.slice(3) as game, i}
+						{#each top10Story as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 4}</span>
+								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingStory}/10</span>
 							</button>
 						{/each}
-						{#if top10Story.length <= 3}
-							<span class="rating-empty">No more rated games</span>
-						{/if}
 					</div>
 				</div>
 				<div class="rating-category">
@@ -848,30 +816,15 @@ let top10Score = $derived(
 						<Gamepad2 size={16} style="color: #10b981;" />
 						Gameplay
 					</h4>
-					{#if top10Gameplay.length > 0}
-						<div class="podium">
-							{#each top10Gameplay.slice(0, 3) as game, i}
-								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.ratingGameplay}/10">
-									<span class="podium-rank">{i + 1}</span>
-									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-									<span class="podium-title">{game.title}</span>
-									<span class="podium-score">{game.ratingGameplay}/10</span>
-								</button>
-							{/each}
-						</div>
-					{/if}
 					<div class="rating-list">
-						{#each top10Gameplay.slice(3) as game, i}
+						{#each top10Gameplay as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 4}</span>
+								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingGameplay}/10</span>
 							</button>
 						{/each}
-						{#if top10Gameplay.length <= 3}
-							<span class="rating-empty">No more rated games</span>
-						{/if}
 					</div>
 				</div>
 				<div class="rating-category">
@@ -879,30 +832,15 @@ let top10Score = $derived(
 						<Star size={16} style="color: #f59e0b;" />
 						Score
 					</h4>
-					{#if top10Score.length > 0}
-						<div class="podium">
-							{#each top10Score.slice(0, 3) as game, i}
-								<button type="button" class="podium-card rank-{i + 1}" onclick={() => modalStore.openViewModal(game, [game])} title="{game.title} — {game.score}/20">
-									<span class="podium-rank">{i + 1}</span>
-									<img class="podium-cover" src="/{game.coverImage}" alt="" loading="lazy" />
-									<span class="podium-title">{game.title}</span>
-									<span class="podium-score">{game.score}/20</span>
-								</button>
-							{/each}
-						</div>
-					{/if}
 					<div class="rating-list">
-						{#each top10Score.slice(3) as game, i}
+						{#each top10Score as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
-								<span class="rating-pos">{i + 4}</span>
+								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.score}/20</span>
 							</button>
 						{/each}
-						{#if top10Score.length <= 3}
-							<span class="rating-empty">No more rated games</span>
-						{/if}
 					</div>
 				</div>
 			</div>
@@ -1316,113 +1254,6 @@ let top10Score = $derived(
 		display: flex;
 		align-items: center;
 		gap: 6px;
-	}
-
-	.podium {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 6px;
-	}
-
-	.podium-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 4px;
-		padding: 8px 6px 10px;
-		border-radius: 10px;
-		background: var(--color-surface-elevated);
-		border: 1px solid var(--color-border);
-		cursor: pointer;
-		transition:
-			transform var(--transition-fast),
-			box-shadow var(--transition-fast),
-			border-color var(--transition-fast);
-		text-align: center;
-		position: relative;
-		overflow: hidden;
-	}
-
-	@media (hover: hover) {
-		.podium-card:hover {
-			transform: translateY(-2px);
-			box-shadow: var(--shadow-md);
-			border-color: var(--color-accent);
-		}
-	}
-
-	.podium-card.rank-1 {
-		border-color: rgba(234, 179, 8, 0.5);
-		background: linear-gradient(180deg, rgba(234, 179, 8, 0.12), var(--color-surface-elevated));
-		order: 2;
-		transform: scale(1.03);
-	}
-
-	.podium-card.rank-2 {
-		border-color: rgba(148, 163, 184, 0.4);
-		order: 1;
-	}
-
-	.podium-card.rank-3 {
-		border-color: rgba(194, 120, 40, 0.35);
-		order: 3;
-	}
-
-	.podium-rank {
-		position: absolute;
-		top: 6px;
-		left: 6px;
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 0.7rem;
-		font-weight: 800;
-		color: #fff;
-		background: var(--color-accent);
-	}
-
-	.podium-card.rank-1 .podium-rank {
-		background: linear-gradient(135deg, #facc15, #eab308);
-		color: #422006;
-	}
-
-	.podium-card.rank-2 .podium-rank {
-		background: #94a3b8;
-	}
-
-	.podium-card.rank-3 .podium-rank {
-		background: #c08438;
-	}
-
-	.podium-cover {
-		width: 56px;
-		height: 80px;
-		border-radius: 6px;
-		object-fit: cover;
-		background: var(--color-surface-elevated);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-	}
-
-	.podium-title {
-		font-size: 0.76rem;
-		font-weight: 700;
-		color: var(--color-text-primary);
-		line-height: 1.2;
-		display: -webkit-box;
-		line-clamp: 2;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-		min-height: 1.9em;
-	}
-
-	.podium-score {
-		font-size: 0.72rem;
-		font-weight: 800;
-		color: var(--color-accent);
 	}
 
 	.rating-list {
