@@ -294,14 +294,13 @@ let yearData = $derived.by(() => {
 				backgroundColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.62)' : 'rgba(99,102,241,0.52)',
 				borderColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.95)' : 'rgba(99,102,241,0.85)',
 				borderWidth: 1.5,
-				borderRadius: 8,
+				borderRadius: 6,
 				clip: false as const,
 				order: 2,
 				yAxisID: 'y',
-				barPercentage: 1,
-				categoryPercentage: 0.95,
-				maxBarThickness: 96,
-				minBarLength: 42,
+				barPercentage: 0.75,
+				categoryPercentage: 0.85,
+				maxBarThickness: 72,
 			},
 			{
 				type: 'line' as const,
@@ -309,8 +308,8 @@ let yearData = $derived.by(() => {
 				data: cumulData,
 				borderColor: appStore.theme === 'dark' ? '#f59e0b' : '#d97706',
 				backgroundColor: 'transparent',
-				borderWidth: 2.5,
-				pointRadius: 4,
+				borderWidth: 2,
+				pointRadius: 3,
 				pointBackgroundColor: appStore.theme === 'dark' ? '#fbbf24' : '#d97706',
 				pointBorderColor: appStore.theme === 'dark' ? '#1a1c23' : '#ffffff',
 				pointBorderWidth: 1.5,
@@ -338,6 +337,10 @@ let yearHours = $derived.by(() => {
 	const sorted = [...yearMap.entries()].toSorted((a, b) => a[0] - b[0]);
 	return sorted.map(([y]) => Math.round(((hoursMap.get(y) ?? 0) / 60) * 10) / 10);
 });
+
+// Number of year bars — drives the scrollable minimum width so bars keep a
+// readable minimum width on narrow viewports instead of squeezing together.
+let yearCount = $derived(yearData.labels.length);
 
 let yearlyMonthData = $derived.by(() => {
 	const yearMonth = new Map<number, number[]>();
@@ -445,25 +448,23 @@ let yearOptions = $derived({
 		},
 		datalabels: {
 			display: (ctx: { datasetIndex: number }) => ctx.datasetIndex === 0,
-			color: '#ffffff',
+			// Labels sit ABOVE the bars (not inside) so long "count · hours"
+			// strings can never overflow a narrow bar. Count only — hours live
+			// in the tooltip.
+			color: appStore.theme === 'dark' ? '#e5e7eb' : '#374151',
 			font: { weight: 'bold' as const, size: 11 },
-			anchor: 'center' as const,
-			align: 'center' as const,
-			offset: 0,
-			textShadowColor: 'rgba(0,0,0,0.5)',
-			textShadowBlur: 4,
-			formatter: (value: number, ctx: { dataIndex: number }) => {
-				const h = yearHours[ctx.dataIndex];
-				if (!value && !h) return '';
-				if (h) return `${value} · ${h}h`;
-				return `${value}`;
-			},
+			anchor: 'end' as const,
+			align: 'end' as const,
+			offset: 4,
+			clip: false,
+			formatter: (value: number) => (value ? String(value) : ''),
 		},
 		tooltip: {
 			mode: 'index' as const,
 			intersect: false,
 			callbacks: {
-				label: (item: TooltipItem<'bar'>) => `${item.dataset.label}: ${item.raw}`,
+				label: (item: TooltipItem<'bar'>) =>
+					item.datasetIndex === 0 ? `Games: ${item.raw}` : `Cumulative: ${item.raw}`,
 				afterBody: (items: TooltipItem<'bar'>[]) => {
 					const idx = items[0]?.dataIndex;
 					if (idx == null) return '';
@@ -473,11 +474,17 @@ let yearOptions = $derived({
 			},
 		},
 	},
-	layout: { padding: { top: 6, right: 12, bottom: 0 } },
+	layout: { padding: { top: 22, right: 8, bottom: 0 } },
 	scales: {
 		x: {
 			grid: { display: false },
-			ticks: { font: { size: 12 }, color: appStore.theme === 'dark' ? '#a0a8b8' : '#525252' },
+			ticks: {
+				font: { size: 11 },
+				color: appStore.theme === 'dark' ? '#a0a8b8' : '#525252',
+				maxRotation: 45,
+				minRotation: 0,
+				autoSkip: false,
+			},
 		},
 		y: {
 			grid: { display: true, color: 'rgba(255,255,255,0.04)', drawTicks: false },
@@ -485,10 +492,11 @@ let yearOptions = $derived({
 				display: true,
 				font: { size: 10 },
 				color: appStore.theme === 'dark' ? '#717684' : '#8c8c8c',
-				maxTicksLimit: 4,
+				maxTicksLimit: 5,
+				precision: 0,
 			},
 			beginAtZero: true,
-			grace: 0,
+			grace: '15%',
 			title: { display: false },
 		},
 		y1: {
@@ -496,7 +504,7 @@ let yearOptions = $derived({
 			grid: { display: false },
 			ticks: { display: false },
 			beginAtZero: true,
-			grace: 0,
+			grace: '15%',
 		},
 	},
 });
@@ -582,7 +590,8 @@ let top10Score = $derived(
 					<div class="stat-label">{currentYear} · {gamesThisYear.length} games</div>
 					<div class="stat-pills">
 						{#if yearAllStats.totalYears > 0}
-							<span class="stat-pill">{yearAllStats.totalYears} yrs · {yearAllStats.firstYear}–{yearAllStats.lastYear} · avg {yearAllStats.avg}/yr · peak {yearAllStats.bestYear}</span>
+							<span class="stat-pill">{yearAllStats.totalYears} yrs · {yearAllStats.firstYear}–{yearAllStats.lastYear}</span>
+							<span class="stat-pill">avg {yearAllStats.avg}/yr · peak {yearAllStats.bestYear}</span>
 						{/if}
 					</div>
 				</div>
@@ -802,9 +811,13 @@ let top10Score = $derived(
 			</div>
 			<div class="chart-card span-6">
 				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
-				<p class="chart-sub">Bars = games (hours inside) · dashed = cumulative</p>
-				<div class="chart-body">
-					<Chart type="bar" data={yearData} options={yearOptions} height={360} />
+				<p class="chart-sub">Games per year (count above bar) · hover for hours · dashed = cumulative</p>
+				<div class="chart-body chart-body-year">
+					<div class="year-scroll">
+						<div class="year-scroll-inner" style="min-width: {Math.max(yearCount * 64, 280)}px;">
+							<Chart type="bar" data={yearData} options={yearOptions} height={340} />
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="chart-card span-6 hide-mobile">
@@ -931,6 +944,7 @@ let top10Score = $derived(
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: 10px;
+		align-items: stretch;
 	}
 
 	@media (min-width: 768px) {
@@ -947,6 +961,8 @@ let top10Score = $derived(
 		border-radius: 12px;
 		background: var(--color-surface);
 		border: 1px solid var(--color-border);
+		height: 100%;
+		min-width: 0;
 	}
 
 	.stat-icon {
@@ -970,13 +986,27 @@ let top10Score = $derived(
 		flex-direction: column;
 		gap: 2px;
 		min-width: 0;
+		flex: 1;
 	}
 
 	.stat-value {
-		font-size: 1.72rem;
+		font-size: clamp(1.2rem, 5.2vw, 1.72rem);
 		font-weight: 700;
 		color: var(--color-text-primary);
 		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-height: 1.4em;
+	}
+
+	@media (min-width: 768px) {
+		.stat-value {
+			font-size: 1.72rem;
+			white-space: normal;
+			overflow: visible;
+			text-overflow: clip;
+		}
 	}
 
 	.stat-label {
@@ -986,13 +1016,16 @@ let top10Score = $derived(
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		opacity: 0.75;
+		overflow-wrap: break-word;
 	}
 
 	.stat-pills {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 6px;
-		margin-top: 6px;
+		margin-top: auto;
+		padding-top: 6px;
+		min-height: 30px;
 	}
 
 	.stat-pill {
@@ -1036,6 +1069,30 @@ let top10Score = $derived(
 		font-weight: 600;
 		color: var(--color-text-secondary);
 		margin-left: 2px;
+	}
+
+	@media (max-width: 479px) {
+		.stats-grid {
+			gap: 8px;
+		}
+		.stat-card {
+			gap: 8px;
+			padding: 10px;
+		}
+		.stat-icon {
+			width: 28px;
+			height: 28px;
+		}
+		.stat-label {
+			font-size: 0.72rem;
+		}
+		.stat-pill {
+			font-size: 0.72rem;
+			padding: 2px 8px;
+		}
+		.stat-value-suffix {
+			font-size: 0.85rem;
+		}
 	}
 
 	.stat-extremes {
@@ -1139,6 +1196,23 @@ let top10Score = $derived(
 		flex: 1;
 		margin-top: 12px;
 		min-height: 0;
+	}
+
+	.chart-body-year {
+		min-width: 0;
+	}
+
+	.year-scroll {
+		overflow-x: auto;
+		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		margin: 0 -4px;
+		padding: 0 4px 4px 4px;
+	}
+
+	.year-scroll-inner {
+		width: 100%;
 	}
 
 	.monthly-table {
@@ -1255,11 +1329,17 @@ let top10Score = $derived(
 		.chart-card {
 			padding: 14px;
 		}
-		.chart-card .chart-body :global(.chart-wrapper) {
+		.chart-card .chart-body:not(.chart-body-year) :global(.chart-wrapper) {
 			height: 220px !important;
 		}
-		.chart-card .chart-body :global(canvas) {
+		.chart-card .chart-body:not(.chart-body-year) :global(canvas) {
 			max-height: 220px;
+		}
+		.chart-card .chart-body-year :global(.chart-wrapper) {
+			height: 300px !important;
+		}
+		.chart-card .chart-body-year :global(canvas) {
+			max-height: 300px;
 		}
 	}
 
