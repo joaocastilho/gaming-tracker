@@ -956,12 +956,16 @@ The application uses a **fixed header layout** with content areas below:
 
 **Color Coding:**
 
-- Action RPG: Background #2d1f3f, Text #c084fc (purple)
-- Story Adventure: Background #422006, Text #fbbf24 (amber)
-- Action Adventure: Background #164e63, Text #22d3ee (cyan)
-- Puzzle: Background #3f1f4d, Text #e879f9 (fuchsia)
-- Metroidvania: Background #4c1d95, Text #a78bfa (violet)
-- Add more with distinct color pairings
+- Action: Background #E6194B (Vivid Crimson)
+- Action Adventure: Background #4363D8 (Electric Cyan)
+- RPG: Background #FFE119 (Vibrant Amber)
+- Shooter: Background #3CB44B (Emerald Green)
+- Horror: Background #9A6324 (Saddle Brown)
+- Metroidvania: Background #911EB4 (Royal Purple)
+- Platformer: Background #F032E6 (Hot Magenta)
+- Puzzle: Background #42D4F4 (Bright Turquoise)
+- Strategy: Background #008080 (Rich Teal)
+- Survival: Background #F58231 (Deep Orange)
 
 **Styling:**
 

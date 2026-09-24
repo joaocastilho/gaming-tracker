@@ -34,7 +34,7 @@ const mockGames: Partial<Game>[] = [
 		id: '2',
 		title: 'Dark Souls III',
 		platform: 'PC',
-		genre: 'Action RPG',
+		genre: 'RPG',
 		status: 'Completed',
 		score: 16,
 		tier: 'A - Amazing',
@@ -62,7 +62,7 @@ const mockGames: Partial<Game>[] = [
 		id: '4',
 		title: 'Elden Ring',
 		platform: 'PC',
-		genre: 'Action RPG',
+		genre: 'RPG',
 		status: 'Planned',
 		score: null,
 		tier: null,
@@ -142,7 +142,7 @@ describe('Search Functionality', () => {
 		gamesStore.initializeGames(mockGames);
 
 		// Use genre filter instead of search (search is title-only)
-		filtersStore.setFilters({ genres: ['Action RPG'] });
+		filtersStore.setFilters({ genres: ['RPG'] });
 
 		const results = filteredGamesStore.games;
 		expect(results).toHaveLength(2); // Dark Souls III and Elden Ring
@@ -359,11 +359,11 @@ describe('Genre Filter Functionality', () => {
 
 		gamesStore.initializeGames(mockGames);
 
-		filtersStore.toggleGenre('Action RPG');
+		filtersStore.toggleGenre('RPG');
 
 		const results = filteredGamesStore.games;
 		expect(results).toHaveLength(2); // Dark Souls and Elden Ring
-		expect(results.every((g) => g.genre === 'Action RPG')).toBe(true);
+		expect(results.every((g) => g.genre === 'RPG')).toBe(true);
 	});
 
 	it('should remove genre filter when toggled off', async () => {
@@ -607,7 +607,7 @@ describe('Combined Filters', () => {
 
 		gamesStore.initializeGames(mockGames);
 
-		filtersStore.toggleGenre('Action RPG');
+		filtersStore.toggleGenre('RPG');
 		filtersStore.toggleTier('A - Amazing');
 
 		const results = filteredGamesStore.games;

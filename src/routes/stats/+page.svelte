@@ -24,23 +24,9 @@ import { modalStore } from '$lib/stores/modal.svelte';
 import { computeBacklogStats } from '$lib/utils/backlogUtils';
 import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
 import { formatMinutes, parsePlaytimeToMinutes } from '$lib/utils/playtimeUtils';
+import { getGenreChartColor } from '$lib/utils/colorConstants';
 import { computeGenreStats, computeScoreDistribution, type GenreStat } from '$lib/utils/statsUtils';
 import { TIER_BAR_COLORS, TIER_BG_COLORS, TIER_LETTERS, TIER_ORDER } from '$lib/utils/tierUtils';
-
-// Keep chart colors aligned with the existing genre badge palette. Genres
-// without a dedicated badge use the same Action fallback there.
-const GENRE_CHART_COLORS: Record<string, { dark: string; light: string }> = {
-	Action: { dark: '#fca5a5', light: '#b91c1c' },
-	'Action Adventure': { dark: '#67e8f9', light: '#0e7490' },
-	RPG: { dark: '#fca5a5', light: '#b91c1c' },
-	Shooter: { dark: '#fca5a5', light: '#b91c1c' },
-	Horror: { dark: '#fca5a5', light: '#b91c1c' },
-	Platformer: { dark: '#f9a8d4', light: '#be185d' },
-	Metroidvania: { dark: '#d8b4fe', light: '#7e22ce' },
-	Survival: { dark: '#fcd34d', light: '#b45309' },
-	Strategy: { dark: '#86efac', light: '#15803d' },
-	Puzzle: { dark: '#f0abfc', light: '#a21caf' },
-};
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -69,11 +55,6 @@ const SCORE_BGS = [
 	'rgba(139,92,246,0.2)',
 	'rgba(245,158,11,0.22)',
 ];
-
-function getGenreChartColor(genre: string): string {
-	const colors = GENRE_CHART_COLORS[genre] ?? { dark: '#a5b4fc', light: '#4338ca' };
-	return appStore.theme === 'dark' ? colors.dark : colors.light;
-}
 
 let games = $derived(gamesStore.games);
 
@@ -220,7 +201,7 @@ let tierData = $derived.by(() => {
 });
 
 let genreData = $derived.by(() => {
-	const colors = genreStats.map((genre) => getGenreChartColor(genre.name));
+	const colors = genreStats.map((genre) => getGenreChartColor(genre.name, appStore.theme));
 	return {
 		labels: genreStats.map((genre) => genre.name),
 		datasets: [

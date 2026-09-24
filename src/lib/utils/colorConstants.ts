@@ -30,46 +30,38 @@ export const PLATFORM_COLORS: Record<string, string> = {
 	Dreamcast: 'platform-dreamcast',
 };
 
-// Genre color mappings using CSS variables
+// Genre color mappings for the genres currently used by the library.
 export const GENRE_COLORS: Record<string, string> = {
-	// Action genres
 	Action: 'genre-action',
-	'Action Platformer': 'genre-action-platformer',
-	'Bullet Hell': 'genre-bullet-hell',
-	'Hack & Slash': 'genre-hack-slash',
-
-	// Adventure genres
 	'Action Adventure': 'genre-action-adventure',
-	'Story Adventure': 'genre-story-adventure',
-
-	// RPG genres
-	'Action RPG': 'genre-action-rpg',
-	'Classic RPG': 'genre-classic-rpg',
-	'Japanese RPG': 'genre-japanese-rpg',
-	'Sandbox RPG': 'genre-sandbox-rpg',
-	'Story RPG': 'genre-story-rpg',
-
-	// Platformer genres
+	RPG: 'genre-rpg',
+	Shooter: 'genre-shooter',
+	Horror: 'genre-horror',
 	Platformer: 'genre-platformer',
-	'Puzzle Platformer': 'genre-puzzle-platformer',
-	'Story Platformer': 'genre-story-platformer',
-
-	// Puzzle genres
 	Puzzle: 'genre-puzzle',
-	'Story Puzzle': 'genre-story-puzzle',
-
-	// Horror genres
-	'Survival Horror': 'genre-survival-horror',
-	'Story Horror': 'genre-story-horror',
-	'Horror RPG': 'genre-horror-rpg',
-
-	// Other genres
-	FPS: 'genre-fps',
 	Metroidvania: 'genre-metroidvania',
-	Roguelike: 'genre-roguelike',
 	Strategy: 'genre-strategy',
 	Survival: 'genre-survival',
 };
+
+export type ColorTheme = 'dark' | 'light';
+
+export const GENRE_CHART_COLORS: Record<string, Record<ColorTheme, string>> = {
+	Action: { dark: '#E6194B', light: '#E6194B' },
+	'Action Adventure': { dark: '#4363D8', light: '#4363D8' },
+	RPG: { dark: '#FFE119', light: '#FFE119' },
+	Shooter: { dark: '#3CB44B', light: '#3CB44B' },
+	Horror: { dark: '#9A6324', light: '#9A6324' },
+	Platformer: { dark: '#F032E6', light: '#F032E6' },
+	Puzzle: { dark: '#42D4F4', light: '#42D4F4' },
+	Metroidvania: { dark: '#911EB4', light: '#911EB4' },
+	Strategy: { dark: '#008080', light: '#008080' },
+	Survival: { dark: '#F58231', light: '#F58231' },
+};
+
+export function getGenreChartColor(genre: string, theme: ColorTheme): string {
+	return GENRE_CHART_COLORS[genre]?.[theme] ?? GENRE_CHART_COLORS.Action[theme];
+}
 
 export const COOP_COLORS: Record<string, string> = {
 	Yes: 'coop-yes',

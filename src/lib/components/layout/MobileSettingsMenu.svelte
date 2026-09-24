@@ -15,6 +15,7 @@ import {
 	RotateCcw,
 } from '@lucide/svelte';
 import { focusTrap } from '$lib/utils/focusTrap';
+import { createShareData } from '$lib/utils/share';
 
 interface Props {
 	isOpen: boolean;
@@ -56,6 +57,28 @@ function handleResetFilters() {
 	filtersStore.resetAllFilters();
 	filtersStore.setSearchTerm('');
 	filtersStore.setSort(null);
+}
+
+function isShareCancellation(error: unknown): boolean {
+	return error instanceof DOMException && error.name === 'AbortError';
+}
+
+async function handleShare() {
+	const shareData = createShareData(window.location.href, document.title);
+
+	try {
+		if (navigator.share) {
+			await navigator.share(shareData);
+		} else if (navigator.clipboard) {
+			await navigator.clipboard.writeText(shareData.url);
+			window.alert('Link copied to clipboard!');
+		}
+	} catch (error: unknown) {
+		if (isShareCancellation(error)) return;
+		return;
+	}
+
+	onClose();
 }
 </script>
 
@@ -130,22 +153,7 @@ function handleResetFilters() {
 					</button>
 				{/if}
 
-<button
-				type="button"
-				class="sheet-item"
-				onclick={() => {
-					if (navigator.share) {
-						navigator.share({
-							title: 'Gaming Tracker',
-							url: '/',
-						});
-					} else {
-						navigator.clipboard.writeText(window.location.origin + '/');
-						alert('Link copied to clipboard!');
-					}
-					onClose();
-				}}
-			>
+<button type="button" class="sheet-item" onclick={handleShare}>
 				<Share size={20} />
 				<span>Share</span>
 			</button>
