@@ -1,45 +1,46 @@
 <script lang="ts">
-import { gamesStore } from '$lib/stores/games.svelte';
-import { appStore } from '$lib/stores/app.svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { parsePlaytimeToMinutes, formatMinutes } from '$lib/utils/playtimeUtils';
-import { TIER_ORDER, TIER_LETTERS, TIER_BAR_COLORS, TIER_BG_COLORS } from '$lib/utils/tierUtils';
-import Chart from '$lib/components/Chart.svelte';
 import type { TooltipItem } from 'chart.js';
 import {
-	Clock,
-	Trophy,
-	Star,
+	BarChart3,
 	Calendar,
-	Presentation,
-	NotebookPen,
+	Clock,
+	Disc3,
 	Gamepad2,
 	Hourglass,
 	Library,
+	NotebookPen,
 	Play,
+	Presentation,
+	Star,
 	Timer,
 	TrendingUp,
-	Disc3,
+	Trophy,
 } from '@lucide/svelte';
+
+import Chart from '$lib/components/Chart.svelte';
+import { appStore } from '$lib/stores/app.svelte';
+import { gamesStore } from '$lib/stores/games.svelte';
+import { modalStore } from '$lib/stores/modal.svelte';
 import { computeBacklogStats } from '$lib/utils/backlogUtils';
 import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
+import { formatMinutes, parsePlaytimeToMinutes } from '$lib/utils/playtimeUtils';
+import { computeGenreStats, computeScoreDistribution, type GenreStat } from '$lib/utils/statsUtils';
+import { TIER_BAR_COLORS, TIER_BG_COLORS, TIER_LETTERS, TIER_ORDER } from '$lib/utils/tierUtils';
 
-const GENRE_COLORS = [
-	'#6366f1',
-	'#ec4899',
-	'#14b8a6',
-	'#f59e0b',
-	'#8b5cf6',
-	'#06b6d4',
-	'#84cc16',
-	'#f97316',
-	'#22d3ee',
-	'#a78bfa',
-	'#fb7185',
-	'#34d399',
-	'#fbbf24',
-	'#60a5fa',
-];
+// Keep chart colors aligned with the existing genre badge palette. Genres
+// without a dedicated badge use the same Action fallback there.
+const GENRE_CHART_COLORS: Record<string, { dark: string; light: string }> = {
+	Action: { dark: '#fca5a5', light: '#b91c1c' },
+	'Action Adventure': { dark: '#67e8f9', light: '#0e7490' },
+	RPG: { dark: '#fca5a5', light: '#b91c1c' },
+	Shooter: { dark: '#fca5a5', light: '#b91c1c' },
+	Horror: { dark: '#fca5a5', light: '#b91c1c' },
+	Platformer: { dark: '#f9a8d4', light: '#be185d' },
+	Metroidvania: { dark: '#d8b4fe', light: '#7e22ce' },
+	Survival: { dark: '#fcd34d', light: '#b45309' },
+	Strategy: { dark: '#86efac', light: '#15803d' },
+	Puzzle: { dark: '#f0abfc', light: '#a21caf' },
+};
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -59,6 +60,20 @@ const PLAYTIME_BGS = [
 	'rgba(245,158,11,0.22)',
 	'rgba(239,68,68,0.22)',
 ];
+
+const SCORE_COLORS = ['#64748b', '#06b6d4', '#6366f1', '#8b5cf6', '#f59e0b'];
+const SCORE_BGS = [
+	'rgba(100,116,139,0.18)',
+	'rgba(6,182,212,0.2)',
+	'rgba(99,102,241,0.2)',
+	'rgba(139,92,246,0.2)',
+	'rgba(245,158,11,0.22)',
+];
+
+function getGenreChartColor(genre: string): string {
+	const colors = GENRE_CHART_COLORS[genre] ?? { dark: '#a5b4fc', light: '#4338ca' };
+	return appStore.theme === 'dark' ? colors.dark : colors.light;
+}
 
 let games = $derived(gamesStore.games);
 
@@ -153,30 +168,17 @@ let yearAllStats = $derived.by(() => {
 	return { totalYears, avg, bestYear, bestCount, firstYear: years[0], lastYear: years[years.length - 1] };
 });
 
-let genreAvgMap = $derived.by(() => {
-	const map = new Map<string, { count: number; total: number; avg: number }>();
-	for (const g of completedGames) {
-		if (g.score == null) continue;
-		const e = map.get(g.genre) ?? { count: 0, total: 0, avg: 0 };
-		e.count++;
-		e.total += g.score;
-		map.set(g.genre, e);
-	}
-	for (const e of map.values()) e.avg = Math.round((e.total / e.count) * 10) / 10;
-	return map;
-});
+let genreStats = $derived(computeGenreStats(completedGames));
+let scoreDistribution = $derived(computeScoreDistribution(completedGames));
+let ratedCount = $derived(
+	completedGames.filter((game) => game.score != null && game.score >= 0 && game.score <= 20).length
+);
 let topGenreByAvg = $derived.by(() => {
-	let best: { name: string; avg: number; count: number } | null = null;
-	for (const [name, v] of genreAvgMap.entries()) {
-		if (v.count < 3) continue;
-		if (!best || v.avg > best.avg) best = { name, avg: v.avg, count: v.count };
-	}
-	if (best) return best;
-	// fallback: any genre
-	for (const [name, v] of genreAvgMap.entries()) {
-		if (!best || v.avg > best.avg) best = { name, avg: v.avg, count: v.count };
-	}
-	return best;
+	const wellRated = genreStats.filter((genre) => genre.ratedCount >= 3);
+	return (wellRated.length > 0 ? wellRated : genreStats).reduce<GenreStat | null>((best, genre) => {
+		if (!best || genre.averageScore > best.averageScore) return genre;
+		return best;
+	}, null);
 });
 
 let backlogEta = $derived.by(() => {
@@ -218,19 +220,17 @@ let tierData = $derived.by(() => {
 });
 
 let genreData = $derived.by(() => {
-	const genreCount = new Map<string, number>();
-	for (const g of completedGames) genreCount.set(g.genre, (genreCount.get(g.genre) ?? 0) + 1);
-	const sorted = [...genreCount.entries()].toSorted((a, b) => b[1] - a[1]).slice(0, 5);
+	const colors = genreStats.map((genre) => getGenreChartColor(genre.name));
 	return {
-		labels: sorted.map(([name]) => name),
+		labels: genreStats.map((genre) => genre.name),
 		datasets: [
 			{
 				label: 'Games',
-				data: sorted.map(([, c]) => c),
-				backgroundColor: GENRE_COLORS.slice(0, sorted.length),
-				borderColor: GENRE_COLORS.slice(0, sorted.length),
+				data: genreStats.map((genre) => genre.count),
+				backgroundColor: colors.map((color) => `${color}44`),
+				borderColor: colors,
 				borderWidth: 2,
-				borderRadius: 4,
+				borderRadius: 6,
 				clip: false as const,
 			},
 		],
@@ -387,19 +387,19 @@ let genreOptions = $derived({
 	plugins: {
 		legend: { display: false },
 		datalabels: {
-			font: { weight: 'bold' as const, size: 15 },
+			font: { weight: 'bold' as const, size: 13 },
 			anchor: 'end' as const,
 			align: 'end' as const,
-			offset: 4,
+			offset: 5,
 			formatter: (value: number) => value || '',
 		},
 		tooltip: {
 			callbacks: {
 				label: (item: TooltipItem<'bar'>) => {
-					const genre = String(item.label);
-					const avg = genreAvgMap.get(genre)?.avg;
-					const count = Number(item.raw);
-					return avg != null ? `${count} games · avg ${avg}/20` : `${count} game${count !== 1 ? 's' : ''}`;
+					const genre = genreStats.find((entry) => entry.name === item.label);
+					if (!genre) return `${item.raw} games`;
+					const score = genre.ratedCount > 0 ? ` · avg ${genre.averageScore}/20` : '';
+					return `${genre.count} games · ${genre.percentage}% of completed${score}`;
 				},
 			},
 		},
@@ -407,7 +407,14 @@ let genreOptions = $derived({
 	layout: { padding: { right: 40 } },
 	scales: {
 		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: { grid: { display: false }, ticks: { font: { size: 14 } } },
+		y: {
+			grid: { display: false },
+			ticks: {
+				autoSkip: false,
+				font: { size: 12 },
+				padding: 8,
+			},
+		},
 	},
 });
 
@@ -435,6 +442,48 @@ let playtimeOptions = $derived({
 	},
 	scales: {
 		x: { grid: { display: false }, ticks: { font: { size: 13 } } },
+		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
+	},
+});
+
+let scoreDistributionData = $derived.by(() => ({
+	labels: scoreDistribution.map((band) => band.label),
+	datasets: [
+		{
+			label: 'Games',
+			data: scoreDistribution.map((band) => band.count),
+			backgroundColor: SCORE_BGS,
+			borderColor: SCORE_COLORS,
+			borderWidth: 2,
+			borderRadius: 7,
+			clip: false as const,
+		},
+	],
+}));
+
+let scoreDistributionOptions = $derived({
+	plugins: {
+		legend: { display: false },
+		datalabels: {
+			color: '#ffffff',
+			font: { weight: 'bold' as const, size: 13 },
+			anchor: 'center' as const,
+			align: 'center' as const,
+			formatter: (value: number) => value || '',
+		},
+		tooltip: {
+			callbacks: {
+				label: (item: TooltipItem<'bar'>) => {
+					const band = scoreDistribution[item.dataIndex];
+					if (!band) return `${item.raw} games`;
+					return `${band.count} game${band.count === 1 ? '' : 's'} · ${band.percentage}% of rated games`;
+				},
+			},
+		},
+	},
+	layout: { padding: { top: 18 } },
+	scales: {
+		x: { grid: { display: false }, ticks: { font: { size: 12, weight: 'bold' as const } } },
 		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
 	},
 });
@@ -537,65 +586,84 @@ let top10Score = $derived(
 
 <div class="stats-page">
 	<div class="stats-content">
+		<header class="stats-intro">
+			<div class="stats-intro-copy">
+				<div class="stats-eyebrow"><Disc3 size={14} /> Collection insights</div>
+				<h1>Your gaming, in numbers.</h1>
+				<p>A clear look at what you play, how much you play, and how your library is changing.</p>
+			</div>
+			<div class="library-total" aria-label="{backlogStats.total.count} games in your library">
+				<span class="library-total-label">Library</span>
+				<strong>{backlogStats.total.count}</strong>
+				<span class="library-total-caption">tracked games</span>
+			</div>
+		</header>
 
-		<section class="stats-grid">
-			<div class="stat-card stat-card-hero">
-				<div class="stat-icon">
-					<Clock size={16} />
-				</div>
-				<div class="stat-body">
-					<div class="stat-value">{totalPlaytimeFormatted}</div>
-					<div class="stat-label">Total Played · {completedCount} games</div>
-					<div class="stat-pills">
-						<span class="stat-pill"><Timer size={11} /> {formatMinutes(avgPlaytimeMinutes)} avg</span>
-						<span class="stat-pill">{formatMinutes(medianPlaytimeMinutes)} median</span>
+		<section class="stats-grid" aria-label="Library summary">
+			<article class="stat-card stat-card--playtime">
+				<div class="stat-card-head">
+					<div class="stat-icon" aria-hidden="true"><Clock size={17} /></div>
+					<div>
+						<p class="stat-label">Total played</p>
+						<p class="stat-context">Across {completedCount} completed games</p>
 					</div>
 				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon">
-					<Trophy size={16} />
+				<div class="stat-value">{totalPlaytimeFormatted}</div>
+				<div class="stat-pills">
+					<span class="stat-pill"><Timer size={12} /> {formatMinutes(avgPlaytimeMinutes)} avg</span>
+					<span class="stat-pill">{formatMinutes(medianPlaytimeMinutes)} median</span>
 				</div>
-				<div class="stat-body">
-					<div class="stat-value">{completedCount}<span class="stat-value-suffix">/{backlogStats.total.count}</span></div>
-					<div class="stat-label">Completed</div>
-					<div class="stat-pills">
-						<span class="stat-pill">{playingCount} playing</span>
-						<span class="stat-pill">{plannedCount} planned</span>
+			</article>
+
+			<article class="stat-card stat-card--progress">
+				<div class="stat-card-head">
+					<div class="stat-icon" aria-hidden="true"><Trophy size={17} /></div>
+					<div>
+						<p class="stat-label">Completed</p>
+						<p class="stat-context">{backlogStats.completed.pctCount.toFixed(1)}% of your library</p>
 					</div>
 				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon">
-					<Star size={16} />
+				<div class="stat-value">{completedCount}<span class="stat-value-suffix">/{backlogStats.total.count}</span></div>
+				<div class="stat-pills">
+					<span class="stat-pill">{playingCount} playing</span>
+					<span class="stat-pill">{plannedCount} planned</span>
 				</div>
-				<div class="stat-body">
-					<div class="stat-value">{avgScore}<span class="stat-value-suffix">/20</span></div>
-					<div class="stat-label">Average Score</div>
-					<div class="stat-pills">
-						{#if topGenreByAvg}
-							<span class="stat-pill">Top: {topGenreByAvg.name} · {topGenreByAvg.avg}</span>
-						{:else}
-							<span class="stat-pill">{completedCount} rated</span>
-						{/if}
+			</article>
+
+			<article class="stat-card stat-card--score">
+				<div class="stat-card-head">
+					<div class="stat-icon" aria-hidden="true"><Star size={17} /></div>
+					<div>
+						<p class="stat-label">Average score</p>
+						<p class="stat-context">Your personal ratings</p>
 					</div>
 				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon">
-					<Calendar size={16} />
+				<div class="stat-value">{avgScore}<span class="stat-value-suffix">/20</span></div>
+				<div class="stat-pills">
+					{#if topGenreByAvg}
+						<span class="stat-pill">Top: {topGenreByAvg.name} · {topGenreByAvg.averageScore}</span>
+					{:else}
+						<span class="stat-pill">{completedCount} rated</span>
+					{/if}
 				</div>
-				<div class="stat-body">
-					<div class="stat-value">{playtimeThisYear}</div>
-					<div class="stat-label">{currentYear} · {gamesThisYear.length} games</div>
-					<div class="stat-pills">
-						{#if yearAllStats.totalYears > 0}
-							<span class="stat-pill">{yearAllStats.totalYears} yrs · {yearAllStats.firstYear}–{yearAllStats.lastYear}</span>
-							<span class="stat-pill">avg {yearAllStats.avg}/yr · peak {yearAllStats.bestYear}</span>
-						{/if}
+			</article>
+
+			<article class="stat-card stat-card--year">
+				<div class="stat-card-head">
+					<div class="stat-icon" aria-hidden="true"><Calendar size={17} /></div>
+					<div>
+						<p class="stat-label">{currentYear} playtime</p>
+						<p class="stat-context">{gamesThisYear.length} games finished</p>
 					</div>
 				</div>
-			</div>
+				<div class="stat-value">{playtimeThisYear}</div>
+				<div class="stat-pills">
+					{#if yearAllStats.totalYears > 0}
+						<span class="stat-pill">{yearAllStats.firstYear}–{yearAllStats.lastYear}</span>
+						<span class="stat-pill">Peak: {yearAllStats.bestYear}</span>
+					{/if}
+				</div>
+			</article>
 		</section>
 
 		<section class="backlog-card" aria-labelledby="backlog-title">
@@ -787,63 +855,141 @@ let top10Score = $derived(
 			</div>
 		</section>
 
-		<section class="charts-grid">
-			<div class="chart-card span-2">
-				<h3 class="chart-title"><Trophy size={14} /> Tier Distribution</h3>
-				<p class="chart-sub">{completedCount} completed · S tier is masterpiece</p>
-				<div class="chart-body">
-					<Chart type="bar" data={tierData} options={tierOptions} height={260} />
+		<section class="analysis-section" aria-labelledby="analysis-title">
+			<div class="section-header">
+				<div>
+					<span class="section-eyebrow">Collection patterns</span>
+					<h2 id="analysis-title">How your library breaks down</h2>
 				</div>
+				<p>Compare ratings, genres, playtime, and completion habits across your collection.</p>
 			</div>
-			<div class="chart-card span-2">
-				<h3 class="chart-title"><Disc3 size={14} /> Genre Breakdown</h3>
-				<p class="chart-sub">Top 5 · hover for avg</p>
-				<div class="chart-body">
-					<Chart type="bar" data={genreData} options={genreOptions} height={260} />
-				</div>
-			</div>
-			<div class="chart-card span-2">
-				<h3 class="chart-title"><Timer size={14} /> Playtime Distribution</h3>
-				<p class="chart-sub">Median {formatMinutes(medianPlaytimeMinutes)} · hover for total hours</p>
-				<div class="chart-body">
-					<Chart type="bar" data={playtimeData} options={playtimeOptions} height={280} />
-				</div>
-			</div>
-			<div class="chart-card span-6">
-				<h3 class="chart-title"><TrendingUp size={14} /> Year Over Year</h3>
-				<p class="chart-sub">Games per year (count above bar) · hover for hours · dashed = cumulative</p>
-				<div class="chart-body chart-body-year">
-					<div class="year-scroll">
-						<div class="year-scroll-inner" style="min-width: {Math.max(yearCount * 64, 280)}px;">
-							<Chart type="bar" data={yearData} options={yearOptions} height={340} />
+
+			<div class="charts-grid">
+				<article class="chart-card">
+					<div class="chart-header">
+						<div class="chart-heading">
+							<div class="chart-icon tier-icon" aria-hidden="true"><Trophy size={16} /></div>
+							<div>
+								<h3 class="chart-title">Tier distribution</h3>
+								<p class="chart-sub">How your completed games fall across each tier</p>
+							</div>
+						</div>
+						<span class="chart-badge">{completedCount} games</span>
+					</div>
+					<div class="chart-body">
+						<Chart type="bar" data={tierData} options={tierOptions} height={360} />
+					</div>
+				</article>
+
+				<article class="chart-card">
+					<div class="chart-header">
+						<div class="chart-heading">
+							<div class="chart-icon genre-icon" aria-hidden="true"><Disc3 size={16} /></div>
+							<div>
+								<h3 class="chart-title">Genre breakdown</h3>
+								<p class="chart-sub">Every completed genre, ranked by game count</p>
+							</div>
+						</div>
+						<span class="chart-badge">{genreStats.length} genres</span>
+					</div>
+					<div class="chart-body">
+						<Chart type="bar" data={genreData} options={genreOptions} height={360} />
+					</div>
+				</article>
+
+				<article class="chart-card chart-card--wide">
+					<div class="chart-header">
+						<div class="chart-heading">
+							<div class="chart-icon playtime-icon" aria-hidden="true"><Timer size={16} /></div>
+							<div>
+								<h3 class="chart-title">Playtime distribution</h3>
+								<p class="chart-sub">The game-length ranges that define your year</p>
+							</div>
+						</div>
+						<span class="chart-badge">{formatMinutes(medianPlaytimeMinutes)} median</span>
+					</div>
+					<div class="chart-body">
+						<Chart type="bar" data={playtimeData} options={playtimeOptions} height={360} />
+					</div>
+				</article>
+
+				<article class="chart-card chart-card--year">
+					<div class="chart-header">
+						<div class="chart-heading">
+							<div class="chart-icon year-icon" aria-hidden="true"><TrendingUp size={16} /></div>
+							<div>
+								<h3 class="chart-title">Year over year</h3>
+								<p class="chart-sub">Annual completions with your cumulative total</p>
+							</div>
+						</div>
+						<span class="chart-badge">Peak {yearAllStats.bestYear || '—'}</span>
+					</div>
+					<div class="chart-body chart-body-year">
+						<div class="year-scroll">
+							<div class="year-scroll-inner" style="min-width: {Math.max(yearCount * 64, 280)}px;">
+								<Chart type="bar" data={yearData} options={yearOptions} height={300} />
+							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="chart-card span-6 hide-mobile">
-				<h3 class="chart-title">Monthly Breakdown by Year</h3>
-				<p class="chart-sub">Completions per month · heat is relative to peak ({maxMonthly})</p>
-				<div class="monthly-table">
-					<div class="mt-row mt-header">
-						<span class="mt-year"></span>
-						{#each MONTHS as m}<span class="mt-cell mt-header-cell">{m}</span>{/each}
-						<span class="mt-cell mt-header-cell mt-total">Total</span>
+				</article>
+
+				<article class="chart-card">
+					<div class="chart-header">
+						<div class="chart-heading">
+							<div class="chart-icon rating-icon" aria-hidden="true"><BarChart3 size={16} /></div>
+							<div>
+								<h3 class="chart-title">Rating distribution</h3>
+								<p class="chart-sub">See how your personal scores cluster</p>
+							</div>
+						</div>
+						<span class="chart-badge">{ratedCount} rated</span>
 					</div>
-					{#each yearlyMonthData as ym}
-						<div class="mt-row">
-							<span class="mt-year">{ym.year}</span>
-							{#each ym.data as val}
-								<span class="mt-cell {getMonthlyHeatClass(val, maxMonthly)}">{val}</span>
+					<div class="chart-body">
+						<Chart type="bar" data={scoreDistributionData} options={scoreDistributionOptions} height={300} />
+					</div>
+				</article>
+
+				<article class="chart-card chart-card--months">
+					<div class="chart-header">
+						<div class="chart-heading">
+							<div class="chart-icon months-icon" aria-hidden="true"><Calendar size={16} /></div>
+							<div>
+								<h3 class="chart-title">Monthly breakdown</h3>
+								<p class="chart-sub">A completion heatmap for every month on record</p>
+							</div>
+						</div>
+						<span class="chart-badge">Peak {maxMonthly}/mo</span>
+					</div>
+					<div class="monthly-table-scroll">
+						<div class="monthly-table">
+							<div class="mt-row mt-header">
+								<span class="mt-year"></span>
+								{#each MONTHS as month}<span class="mt-cell mt-header-cell">{month}</span>{/each}
+								<span class="mt-cell mt-header-cell mt-total">Total</span>
+							</div>
+							{#each yearlyMonthData as yearData}
+								<div class="mt-row">
+									<span class="mt-year">{yearData.year}</span>
+									{#each yearData.data as value}
+										<span class="mt-cell {getMonthlyHeatClass(value, maxMonthly)}">{value}</span>
+									{/each}
+									<span class="mt-cell mt-total">{yearData.data.reduce((total, value) => total + value, 0)}</span>
+								</div>
 							{/each}
-							<span class="mt-cell mt-total">{ym.data.reduce((a, b) => a + b, 0)}</span>
 						</div>
-					{/each}
-				</div>
+					</div>
+				</article>
 			</div>
 		</section>
 
-		<section class="ratings-section">
-			<h3 class="section-title">Top Rated</h3>
+		<section class="ratings-section" aria-labelledby="ratings-title">
+			<div class="section-header">
+				<div>
+					<span class="section-eyebrow">Personal bests</span>
+					<h2 id="ratings-title">Top rated games</h2>
+				</div>
+				<p>Your ten highest-rated titles across each scoring category.</p>
+			</div>
 			<div class="ratings-categories">
 				<div class="rating-category">
 					<h4 class="rating-cat-title" style="border-bottom-color: #f43f5e;">
@@ -933,196 +1079,238 @@ let top10Score = $derived(
 		gap: 16px;
 	}
 
-	.section-title {
+	.stats-intro {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 24px;
+		padding: 28px;
+		border: 1px solid var(--color-border);
+		border-radius: 18px;
+		background:
+			radial-gradient(circle at 88% 20%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 34%),
+			var(--color-surface);
+		box-shadow: var(--shadow-sm);
+		overflow: hidden;
+	}
+
+	.stats-intro-copy {
+		max-width: 760px;
+	}
+
+	.stats-eyebrow,
+	.section-eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 0.72rem;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-accent);
+	}
+
+	.stats-intro h1 {
+		margin: 8px 0 6px;
+		font-size: clamp(1.8rem, 4vw, 3rem);
+		line-height: 1.08;
+		letter-spacing: -0.035em;
+		color: var(--color-text-primary);
+	}
+
+	.stats-intro p {
+		max-width: 680px;
 		margin: 0;
-		font-size: 1.22rem;
-		font-weight: 600;
+		font-size: 0.96rem;
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+
+	.library-total {
+		display: flex;
+		flex: 0 0 148px;
+		flex-direction: column;
+		align-items: center;
+		padding: 16px;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 20%, var(--color-border));
+		border-radius: 14px;
+		background: color-mix(in srgb, var(--color-surface-elevated) 84%, transparent);
+	}
+
+	.library-total-label,
+	.library-total-caption {
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-text-secondary);
+	}
+
+	.library-total strong {
+		margin: 2px 0;
+		font-size: 2.2rem;
+		line-height: 1;
 		color: var(--color-text-primary);
 	}
 
 	.stats-grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 10px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
 		align-items: stretch;
 	}
 
-	@media (min-width: 768px) {
-		.stats-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
+	.stat-card {
+		--stat-color: var(--color-accent);
+		position: relative;
+		display: flex;
+		min-width: 0;
+		min-height: 178px;
+		flex-direction: column;
+		gap: 18px;
+		padding: 20px;
+		border: 1px solid var(--color-border);
+		border-radius: 14px;
+		background: var(--color-surface);
+		box-shadow: var(--shadow-sm);
+		overflow: hidden;
 	}
 
-	.stat-card {
+	.stat-card::before {
+		content: '';
+		position: absolute;
+		inset: 0 0 auto;
+		height: 3px;
+		background: linear-gradient(90deg, var(--stat-color), color-mix(in srgb, var(--stat-color) 28%, transparent));
+	}
+
+	.stat-card--playtime {
+		--stat-color: #06b6d4;
+	}
+
+	.stat-card--progress {
+		--stat-color: #22c55e;
+	}
+
+	.stat-card--score {
+		--stat-color: #f59e0b;
+	}
+
+	.stat-card--year {
+		--stat-color: #8b5cf6;
+	}
+
+	.stat-card-head,
+	.stat-icon,
+	.stat-pill {
 		display: flex;
-		align-items: flex-start;
-		gap: 12px;
-		padding: 14px;
-		border-radius: 12px;
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		height: 100%;
-		min-width: 0;
+		align-items: center;
+	}
+
+	.stat-card-head {
+		gap: 11px;
 	}
 
 	.stat-icon {
-		display: flex;
-		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
-		border-radius: 8px;
-		flex-shrink: 0;
-		color: var(--color-accent);
-		background: var(--color-accent-bg, rgba(99, 102, 241, 0.1));
+		width: 36px;
+		height: 36px;
+		flex: 0 0 36px;
+		border: 1px solid color-mix(in srgb, var(--stat-color) 22%, transparent);
+		border-radius: 10px;
+		color: var(--stat-color);
+		background: color-mix(in srgb, var(--stat-color) 11%, transparent);
 	}
 
-	:global(.light) .stat-icon {
-		background: rgba(194, 65, 12, 0.1);
-	}
-
-	.stat-body {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-		min-width: 0;
-		flex: 1;
-	}
-
+	.stat-label,
+	.stat-context,
 	.stat-value {
-		font-size: clamp(1.2rem, 5.2vw, 1.72rem);
-		font-weight: 700;
-		color: var(--color-text-primary);
-		line-height: 1.2;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		min-height: 1.4em;
-	}
-
-	@media (min-width: 768px) {
-		.stat-value {
-			font-size: 1.72rem;
-			white-space: normal;
-			overflow: visible;
-			text-overflow: clip;
-		}
+		margin: 0;
 	}
 
 	.stat-label {
-		font-size: 0.85rem;
-		font-weight: 700;
+		font-size: 0.84rem;
+		font-weight: 750;
+		line-height: 1.3;
 		color: var(--color-text-primary);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		opacity: 0.75;
-		overflow-wrap: break-word;
+	}
+
+	.stat-context {
+		margin-top: 2px;
+		font-size: 0.76rem;
+		line-height: 1.4;
+		color: var(--color-text-secondary);
+	}
+
+	.stat-value {
+		font-size: clamp(1.55rem, 2.5vw, 2.15rem);
+		font-weight: 780;
+		line-height: 1.1;
+		letter-spacing: -0.035em;
+		color: var(--color-text-primary);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.stat-value-suffix {
+		margin-left: 3px;
+		font-size: 0.95rem;
+		font-weight: 650;
+		letter-spacing: 0;
+		color: var(--color-text-tertiary);
 	}
 
 	.stat-pills {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
+		gap: 7px;
 		margin-top: auto;
-		padding-top: 6px;
-		min-height: 30px;
 	}
 
 	.stat-pill {
-		font-size: 0.83rem;
+		min-height: 27px;
+		gap: 5px;
+		padding: 3px 9px;
+		border: 1px solid color-mix(in srgb, var(--stat-color) 18%, transparent);
+		border-radius: 999px;
+		font-size: 0.75rem;
 		font-weight: 700;
-		color: var(--color-text-primary);
-		background: var(--color-accent-bg, rgba(99, 102, 241, 0.15));
-		padding: 2px 10px;
-		border-radius: 6px;
-		line-height: 1.5;
-		border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-	}
-
-	:global(.light) .stat-pill {
-		background: rgba(194, 65, 12, 0.12);
-		border-color: rgba(194, 65, 12, 0.25);
-	}
-
-	.stat-pill.muted {
-		opacity: 0.75;
-		font-weight: 600;
-	}
-
-	.stat-pill.delta-pos {
-		color: #22c55e;
-		border-color: rgba(34, 197, 94, 0.3);
-		background: rgba(34, 197, 94, 0.12);
-	}
-
-	.stat-pill.delta-neg {
-		color: #ef4444;
-		border-color: rgba(239, 68, 68, 0.3);
-		background: rgba(239, 68, 68, 0.12);
-	}
-
-	.stat-value-suffix {
-		font-size: 1rem;
-		font-weight: 600;
+		line-height: 1.3;
 		color: var(--color-text-secondary);
-		margin-left: 2px;
+		background: color-mix(in srgb, var(--stat-color) 7%, var(--color-surface-elevated));
 	}
 
-	@media (max-width: 479px) {
-		.stats-grid {
-			gap: 8px;
-		}
-		.stat-card {
-			gap: 8px;
-			padding: 10px;
-		}
-		.stat-icon {
-			width: 28px;
-			height: 28px;
-		}
-		.stat-label {
-			font-size: 0.72rem;
-		}
-		.stat-pill {
-			font-size: 0.72rem;
-			padding: 2px 8px;
-		}
-		.stat-value-suffix {
-			font-size: 0.85rem;
-		}
-	}
-
-	.stat-extremes {
+	.analysis-section,
+	.ratings-section {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
-		margin-top: 6px;
-		font-size: 0.75rem;
-		color: var(--color-text-secondary);
+		gap: 16px;
+		padding-top: 18px;
+		border-top: 1px solid var(--color-border);
 	}
 
-	.extreme {
+	.section-header {
 		display: flex;
-		align-items: center;
-		gap: 4px;
-		font-weight: 600;
+		align-items: end;
+		justify-content: space-between;
+		gap: 24px;
+	}
+
+	.section-header h2 {
+		margin: 4px 0 0;
+		font-size: clamp(1.2rem, 2vw, 1.5rem);
+		line-height: 1.2;
+		letter-spacing: -0.02em;
 		color: var(--color-text-primary);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 	}
 
-	.extreme.muted {
-		opacity: 0.65;
-		font-weight: 500;
-	}
-
-	.section-sub {
-		margin: 4px 0 0 0;
-		font-size: 0.85rem;
+	.section-header > p {
+		max-width: 520px;
+		margin: 0;
+		font-size: 0.86rem;
+		line-height: 1.5;
+		text-align: right;
 		color: var(--color-text-secondary);
 	}
 
@@ -1130,72 +1318,188 @@ let top10Score = $derived(
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 16px;
-		padding-top: 16px;
-		border-top: 1px solid var(--color-border);
 	}
 
 	@media (min-width: 900px) {
 		.charts-grid {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.chart-card--wide {
+			grid-column: 1 / -1;
 		}
 	}
 
 	@media (min-width: 1400px) {
 		.charts-grid {
-			grid-template-columns: repeat(6, 1fr);
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.chart-card--wide {
+			grid-column: auto;
+		}
+
+		.chart-card--year {
+			grid-column: span 2;
+		}
+	}
+
+	@media (max-width: 767px) {
+		.stats-intro {
+			align-items: flex-start;
+			padding: 20px;
+		}
+
+		.library-total {
+			flex-basis: 116px;
+			padding: 12px;
+		}
+
+		.library-total strong {
+			font-size: 1.8rem;
+		}
+
+		.section-header {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.section-header > p {
+			text-align: left;
+		}
+	}
+
+	@media (max-width: 479px) {
+		.stats-intro {
+			flex-direction: column;
+		}
+
+		.library-total {
+			width: 100%;
+			flex-basis: auto;
+			flex-direction: row;
+			justify-content: space-between;
+		}
+
+		.stats-grid {
+			grid-template-columns: 1fr;
+			gap: 10px;
+		}
+
+		.stat-card {
+			min-height: 164px;
+			padding: 16px;
 		}
 	}
 
 	.chart-card {
 		display: flex;
+		min-width: 0;
 		flex-direction: column;
 		padding: 20px;
-		border-radius: 12px;
-		background: var(--color-surface);
 		border: 1px solid var(--color-border);
+		border-radius: 14px;
+		background: var(--color-surface);
 		box-shadow: var(--shadow-sm);
 	}
 
-	.chart-card.span-2 {
-		grid-column: span 2;
+	.chart-card--months {
+		grid-column: 1 / -1;
 	}
 
-	.chart-card.span-4 {
-		grid-column: span 4;
+	.chart-header,
+	.chart-heading,
+	.chart-icon,
+	.chart-badge {
+		display: flex;
+		align-items: center;
 	}
 
-	.chart-card.span-6 {
-		grid-column: span 6;
+	.chart-header {
+		justify-content: space-between;
+		gap: 16px;
 	}
 
-	@media (max-width: 1399px) {
-		.chart-card.span-2,
-		.chart-card.span-4,
-		.chart-card.span-6 {
-			grid-column: span 1;
-		}
+	.chart-heading {
+		min-width: 0;
+		gap: 11px;
+	}
+
+	.chart-icon {
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		flex: 0 0 36px;
+		border-radius: 10px;
+	}
+
+	.tier-icon {
+		color: #f59e0b;
+		background: rgba(245, 158, 11, 0.12);
+	}
+
+	.genre-icon {
+		color: #ec4899;
+		background: rgba(236, 72, 153, 0.12);
+	}
+
+	.playtime-icon {
+		color: #06b6d4;
+		background: rgba(6, 182, 212, 0.12);
+	}
+
+	.year-icon {
+		color: #6366f1;
+		background: rgba(99, 102, 241, 0.12);
+	}
+
+	.months-icon {
+		color: #8b5cf6;
+		background: rgba(139, 92, 246, 0.12);
+	}
+
+	.rating-icon {
+		color: #f59e0b;
+		background: rgba(245, 158, 11, 0.12);
+	}
+
+	.chart-title,
+	.chart-sub {
+		margin: 0;
 	}
 
 	.chart-title {
-		margin: 0;
-		font-size: 1.07rem;
-		font-weight: 600;
+		font-size: 1rem;
+		font-weight: 750;
+		line-height: 1.3;
 		color: var(--color-text-primary);
-		display: flex;
-		align-items: center;
-		gap: 6px;
 	}
 
 	.chart-sub {
-		margin: 4px 0 0 0;
-		font-size: 0.85rem;
+		margin-top: 3px;
+		font-size: 0.78rem;
+		line-height: 1.4;
 		color: var(--color-text-secondary);
 	}
 
+	.chart-badge {
+		min-height: 28px;
+		flex: 0 0 auto;
+		padding: 4px 10px;
+		border: 1px solid var(--color-border);
+		border-radius: 999px;
+		font-size: 0.72rem;
+		font-weight: 750;
+		white-space: nowrap;
+		color: var(--color-text-secondary);
+		background: var(--color-surface-elevated);
+	}
+
 	.chart-body {
-		flex: 1;
-		margin-top: 12px;
 		min-height: 0;
+		margin-top: 18px;
+		flex: 1;
 	}
 
 	.chart-body-year {
@@ -1215,19 +1519,24 @@ let top10Score = $derived(
 		width: 100%;
 	}
 
-	.monthly-table {
-		margin-top: 12px;
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-		font-size: 0.83rem;
+	.monthly-table-scroll {
+		margin-top: 18px;
 		overflow-x: auto;
+		padding-bottom: 4px;
+	}
+
+	.monthly-table {
+		display: flex;
+		min-width: 700px;
+		flex-direction: column;
+		gap: 3px;
+		font-size: 0.83rem;
 	}
 
 	.mt-row {
 		display: grid;
-		grid-template-columns: 50px repeat(12, 1fr) 50px;
-		gap: 2px;
+		grid-template-columns: 52px repeat(12, minmax(34px, 1fr)) 52px;
+		gap: 3px;
 		align-items: center;
 	}
 
@@ -1309,46 +1618,38 @@ let top10Score = $derived(
 		color: var(--color-text-primary);
 	}
 
-	@media (max-width: 1399px) {
-		.mt-row {
-			grid-template-columns: 40px repeat(12, 1fr) 40px;
-		}
-		.mt-cell {
-			font-size: 0.80rem;
-			padding: 3px 1px;
-		}
-	}
-
 	@media (max-width: 767px) {
-		.hide-mobile {
+		.chart-card--months {
 			display: none;
 		}
+
 		.charts-grid {
 			gap: 12px;
 		}
+
 		.chart-card {
 			padding: 14px;
 		}
-		.chart-card .chart-body:not(.chart-body-year) :global(.chart-wrapper) {
-			height: 220px !important;
-		}
-		.chart-card .chart-body:not(.chart-body-year) :global(canvas) {
-			max-height: 220px;
-		}
-		.chart-card .chart-body-year :global(.chart-wrapper) {
-			height: 300px !important;
-		}
-		.chart-card .chart-body-year :global(canvas) {
-			max-height: 300px;
-		}
-	}
 
-	.ratings-section {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-		padding-top: 16px;
-		border-top: 1px solid var(--color-border);
+		.chart-header {
+			align-items: flex-start;
+		}
+
+		.chart-icon {
+			width: 32px;
+			height: 32px;
+			flex-basis: 32px;
+		}
+
+		.chart-badge {
+			padding-inline: 8px;
+			font-size: 0.68rem;
+		}
+
+		.mt-cell {
+			padding: 3px 1px;
+			font-size: 0.8rem;
+		}
 	}
 
 	.ratings-categories {
