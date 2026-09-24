@@ -52,6 +52,10 @@ export function computeGenreStats(games: Game[]): GenreStat[] {
 		.toSorted((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
+export function getNextMilestone(percentage: number): number {
+	return [25, 50, 75, 100].find((milestone) => percentage < milestone) ?? 100;
+}
+
 export function computeScoreDistribution(games: Game[]): ScoreBandStat[] {
 	const scores = games
 		.filter((game) => game.status === 'Completed' && game.score != null && game.score >= 0 && game.score <= 20)

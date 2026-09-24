@@ -25,7 +25,7 @@ import { computeBacklogStats } from '$lib/utils/backlogUtils';
 import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
 import { formatMinutes, parsePlaytimeToMinutes } from '$lib/utils/playtimeUtils';
 import { getGenreChartColor } from '$lib/utils/colorConstants';
-import { computeGenreStats, computeScoreDistribution, type GenreStat } from '$lib/utils/statsUtils';
+import { computeGenreStats, computeScoreDistribution, getNextMilestone, type GenreStat } from '$lib/utils/statsUtils';
 import { TIER_BAR_COLORS, TIER_BG_COLORS, TIER_LETTERS, TIER_ORDER } from '$lib/utils/tierUtils';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -80,6 +80,8 @@ let medianPlaytimeMinutes = $derived.by(() => {
 });
 
 let backlogStats = $derived(computeBacklogStats(games));
+let nextBacklogMilestone = $derived(getNextMilestone(backlogStats.completed.pctHours));
+let backlogMilestoneGap = $derived(Math.max(0, nextBacklogMilestone - backlogStats.completed.pctHours));
 let backlogPctHoursLabel = $derived(
 	backlogStats.total.minutes === 0 ? '0%' : `${backlogStats.completed.pctHours.toFixed(1)}%`
 );
@@ -89,9 +91,6 @@ let backlogRemainingLabel = $derived(
 let backlogHoursPctCompleted = $derived(backlogStats.completed.pctHours);
 let backlogHoursPctPlaying = $derived(backlogStats.playing.pctHours);
 let backlogHoursPctPlanned = $derived(backlogStats.planned.pctHours);
-let backlogCountsPctCompleted = $derived(backlogStats.completed.pctCount);
-let backlogCountsPctPlaying = $derived(backlogStats.playing.pctCount);
-let backlogCountsPctPlanned = $derived(backlogStats.planned.pctCount);
 
 // Ensure tiny Playing slices remain visible (at least ~1% when present) by stealing from Planned
 let displayHoursPctPlaying = $derived(
@@ -101,14 +100,6 @@ let displayHoursPctPlaying = $derived(
 );
 let displayHoursPctPlanned = $derived(
 	Math.max(0, backlogHoursPctPlanned - (displayHoursPctPlaying - backlogHoursPctPlaying))
-);
-let displayCountsPctPlaying = $derived(
-	backlogStats.playing.count > 0 && backlogCountsPctPlaying > 0 && backlogCountsPctPlaying < 1
-		? 1
-		: backlogCountsPctPlaying
-);
-let displayCountsPctPlanned = $derived(
-	Math.max(0, backlogCountsPctPlanned - (displayCountsPctPlaying - backlogCountsPctPlaying))
 );
 
 let avgScore = $derived.by(() => {
@@ -658,141 +649,87 @@ let top10Score = $derived(
 						<p class="backlog-sub">Hours converting from planned to played — <span class="backlog-highlight-playing"><Play size={10} /> playing</span> is backlog in progress</p>
 					</div>
 				</div>
-				<div class="backlog-pct-badge" title="{backlogStats.completed.pctHours.toFixed(1)}% of all hours cleared">
-					<span class="backlog-pct-value">{backlogPctHoursLabel}</span>
-					<span class="backlog-pct-label">cleared</span>
-				</div>
-			</div>
-
-			<div class="backlog-bars">
-				<div class="backlog-metric">
-					<div class="backlog-metric-head">
-						<span class="backlog-metric-label"><Clock size={11} /> Hours</span>
-						<span class="backlog-metric-total">{formatMinutes(backlogStats.total.minutes)} total</span>
-					</div>
+				<div class="journey-progress-summary">
 					<div
-						class="backlog-bar"
+						class="journey-ring"
+						style="--journey-progress: {backlogStats.completed.pctHours}%"
 						role="progressbar"
 						aria-valuenow={Math.round(backlogStats.completed.pctHours)}
 						aria-valuemin={0}
 						aria-valuemax={100}
-						aria-label="Hours progress: {backlogStats.completed.pctHours.toFixed(1)}% completed, {backlogStats.playing.pctHours.toFixed(1)}% playing, {backlogStats.planned.pctHours.toFixed(1)}% planned"
-						title="Completed {formatMinutes(backlogStats.completed.minutes)} · Playing {formatMinutes(backlogStats.playing.minutes)} · Planned {formatMinutes(backlogStats.planned.minutes)}"
+						aria-label="{backlogStats.completed.pctHours.toFixed(1)}% of planned hours cleared"
 					>
-						{#if backlogHoursPctCompleted > 0}
-							<div
-								class="backlog-seg seg-completed"
-								style="width: {backlogHoursPctCompleted}%"
-								title="Completed — {formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.count} games ({backlogStats.completed.pctHours.toFixed(1)}%)"
-							>
-								{#if backlogHoursPctCompleted >= 18}
-									<span class="seg-label">{formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.pctHours.toFixed(0)}%</span>
-								{:else if backlogHoursPctCompleted >= 11}
-									<span class="seg-label">{formatMinutes(backlogStats.completed.minutes)}</span>
-								{:else if backlogHoursPctCompleted >= 7}
-									<span class="seg-label">{backlogStats.completed.pctHours.toFixed(0)}%</span>
-								{/if}
-							</div>
-						{/if}
-						{#if backlogHoursPctPlaying > 0}
-							<div
-								class="backlog-seg seg-playing"
-								style="width: {displayHoursPctPlaying}%"
-								title="Playing — {formatMinutes(backlogStats.playing.minutes)} · {backlogStats.playing.count} games ({backlogStats.playing.pctHours.toFixed(1)}%)"
-							>
-								{#if backlogHoursPctPlaying >= 14}
-									<span class="seg-label seg-label-playing">{formatMinutes(backlogStats.playing.minutes)}</span>
-								{:else if backlogHoursPctPlaying >= 7}
-									<span class="seg-label seg-label-playing">{backlogStats.playing.pctHours.toFixed(0)}%</span>
-								{:else if backlogHoursPctPlaying >= 4}
-									<span class="seg-label seg-label-playing">{backlogStats.playing.pctHours.toFixed(0)}%</span>
-								{/if}
-							</div>
-						{/if}
-						{#if backlogHoursPctPlanned > 0}
-							<div
-								class="backlog-seg seg-planned"
-								style="width: {displayHoursPctPlanned}%"
-								title="Planned — {formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.count} games ({backlogStats.planned.pctHours.toFixed(1)}%)"
-							>
-								{#if backlogHoursPctPlanned >= 18}
-									<span class="seg-label seg-label-planned">{formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.pctHours.toFixed(0)}%</span>
-								{:else if backlogHoursPctPlanned >= 11}
-									<span class="seg-label seg-label-planned">{formatMinutes(backlogStats.planned.minutes)}</span>
-								{:else if backlogHoursPctPlanned >= 7}
-									<span class="seg-label seg-label-planned">{backlogStats.planned.pctHours.toFixed(0)}%</span>
-								{/if}
-							</div>
-						{/if}
+						<div class="journey-ring-inner">
+							<strong>{backlogPctHoursLabel}</strong>
+							<span>cleared</span>
+						</div>
 					</div>
-					<div class="backlog-scale">
-						<span>0h</span>
-						<span>{formatMinutes(backlogStats.total.minutes)}</span>
+					<div class="journey-next-milestone">
+						<span>Next milestone</span>
+						<strong>{nextBacklogMilestone}%</strong>
+						<small>{nextBacklogMilestone === 100 ? 'All milestones reached' : `${backlogMilestoneGap.toFixed(1)}% hours to go`}</small>
 					</div>
 				</div>
+			</div>
 
-				<div class="backlog-metric">
-					<div class="backlog-metric-head">
-						<span class="backlog-metric-label"><Library size={11} /> Games</span>
-						<span class="backlog-metric-total">{backlogStats.total.count} total</span>
-					</div>
-					<div
-						class="backlog-bar bar-counts"
-						role="progressbar"
-						aria-valuenow={Math.round(backlogStats.completed.pctCount)}
-						aria-valuemin={0}
-						aria-valuemax={100}
-						aria-label="Games progress: {backlogStats.completed.pctCount.toFixed(1)}% completed, {backlogStats.playing.pctCount.toFixed(1)}% playing, {backlogStats.planned.pctCount.toFixed(1)}% planned"
-						title="Completed {backlogStats.completed.count} · Playing {backlogStats.playing.count} · Planned {backlogStats.planned.count}"
-					>
-						{#if backlogCountsPctCompleted > 0}
-							<div
-								class="backlog-seg seg-completed"
-								style="width: {backlogCountsPctCompleted}%"
-								title="Completed — {backlogStats.completed.count} games ({backlogStats.completed.pctCount.toFixed(1)}%)"
-							>
-								{#if backlogCountsPctCompleted >= 18}
-									<span class="seg-label">{backlogStats.completed.count} games · {backlogStats.completed.pctCount.toFixed(0)}%</span>
-								{:else if backlogCountsPctCompleted >= 11}
-									<span class="seg-label">{backlogStats.completed.count} · {backlogStats.completed.pctCount.toFixed(0)}%</span>
-								{:else if backlogCountsPctCompleted >= 7}
-									<span class="seg-label">{backlogStats.completed.pctCount.toFixed(0)}%</span>
-								{/if}
-							</div>
+			<div class="backlog-unified">
+				<div class="backlog-metric-head">
+					<span class="backlog-metric-label"><Library size={11} /> Library progress</span>
+					<span class="backlog-metric-total">
+						{formatMinutes(backlogStats.total.minutes)} total · {backlogStats.total.count} games
+						{#if playingCount > 0}
+							<small class="backlog-playing-total">Includes {formatMinutes(backlogStats.playing.minutes)} currently playing</small>
 						{/if}
-						{#if backlogCountsPctPlaying > 0}
-							<div
-								class="backlog-seg seg-playing"
-								style="width: {displayCountsPctPlaying}%"
-								title="Playing — {backlogStats.playing.count} games ({backlogStats.playing.pctCount.toFixed(1)}%)"
-							>
-								{#if backlogCountsPctPlaying >= 12}
-									<span class="seg-label seg-label-playing">{backlogStats.playing.count} · {backlogStats.playing.pctCount.toFixed(0)}%</span>
-								{:else if backlogCountsPctPlaying >= 6}
-									<span class="seg-label seg-label-playing">{backlogStats.playing.pctCount.toFixed(0)}%</span>
-								{/if}
-							</div>
-						{/if}
-						{#if backlogCountsPctPlanned > 0}
-							<div
-								class="backlog-seg seg-planned"
-								style="width: {displayCountsPctPlanned}%"
-								title="Planned — {backlogStats.planned.count} games ({backlogStats.planned.pctCount.toFixed(1)}%)"
-							>
-								{#if backlogCountsPctPlanned >= 18}
-									<span class="seg-label seg-label-planned">{backlogStats.planned.count} games · {backlogStats.planned.pctCount.toFixed(0)}%</span>
-								{:else if backlogCountsPctPlanned >= 11}
-									<span class="seg-label seg-label-planned">{backlogStats.planned.count} · {backlogStats.planned.pctCount.toFixed(0)}%</span>
-								{:else if backlogCountsPctPlanned >= 7}
-									<span class="seg-label seg-label-planned">{backlogStats.planned.pctCount.toFixed(0)}%</span>
-								{/if}
-							</div>
-						{/if}
-					</div>
-					<div class="backlog-scale">
-						<span>0</span>
-						<span>{backlogStats.total.count} games</span>
-					</div>
+					</span>
+				</div>
+				<div
+					class="backlog-bar backlog-unified-bar"
+					role="progressbar"
+					aria-valuenow={Math.round(backlogStats.completed.pctHours)}
+					aria-valuemin={0}
+					aria-valuemax={100}
+					aria-label="Library progress: {backlogStats.completed.pctHours.toFixed(1)}% of hours completed, {backlogStats.completed.pctCount.toFixed(1)}% of games completed"
+					title="Completed {formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.count} games"
+				>
+					{#if backlogHoursPctCompleted > 0}
+						<div
+							class="backlog-seg seg-completed"
+							style="width: {backlogHoursPctCompleted}%"
+							title="Completed — {formatMinutes(backlogStats.completed.minutes)} · {backlogStats.completed.count} games ({backlogStats.completed.pctHours.toFixed(1)}% of hours)"
+						>
+							{#if backlogHoursPctCompleted >= 10}
+								<span class="seg-label"><strong>{formatMinutes(backlogStats.completed.minutes)}</strong><small>{backlogStats.completed.count} games</small></span>
+							{:else if backlogHoursPctCompleted >= 7}
+								<span class="seg-label">{backlogStats.completed.pctHours.toFixed(0)}%</span>
+							{/if}
+						</div>
+					{/if}
+					{#if backlogHoursPctPlaying > 0}
+						<div
+							class="backlog-seg seg-playing"
+							style="width: {displayHoursPctPlaying}%"
+							title="Playing — {formatMinutes(backlogStats.playing.minutes)} · {backlogStats.playing.count} games ({backlogStats.playing.pctHours.toFixed(1)}% of hours)"
+						>
+							{#if displayHoursPctPlaying >= 10}
+								<span class="seg-label seg-label-playing"><strong>{formatMinutes(backlogStats.playing.minutes)}</strong><small>{backlogStats.playing.count} games</small></span>
+							{:else if displayHoursPctPlaying >= 4}
+								<span class="seg-label seg-label-playing">{backlogStats.playing.pctHours.toFixed(0)}%</span>
+							{/if}
+						</div>
+					{/if}
+					{#if backlogHoursPctPlanned > 0}
+						<div
+							class="backlog-seg seg-planned"
+							style="width: {displayHoursPctPlanned}%"
+							title="Planned — {formatMinutes(backlogStats.planned.minutes)} · {backlogStats.planned.count} games ({backlogStats.planned.pctHours.toFixed(1)}% of hours)"
+						>
+							{#if backlogHoursPctPlanned >= 10}
+								<span class="seg-label seg-label-planned"><strong>{formatMinutes(backlogStats.planned.minutes)}</strong><small>{backlogStats.planned.count} games</small></span>
+							{:else if backlogHoursPctPlanned >= 7}
+								<span class="seg-label seg-label-planned">{backlogStats.planned.pctHours.toFixed(0)}%</span>
+							{/if}
+						</div>
+					{/if}
 				</div>
 			</div>
 
@@ -1850,50 +1787,110 @@ let top10Score = $derived(
 		color: #d97706;
 	}
 
-	.backlog-pct-badge {
+	.journey-progress-summary {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
-		justify-content: center;
-		padding: 8px 14px;
-		border-radius: 10px;
-		background: var(--color-accent-bg, rgba(99, 102, 241, 0.12));
-		border: 1px solid color-mix(in srgb, var(--color-accent) 18%, transparent);
-		min-width: 78px;
+		gap: 12px;
 		flex-shrink: 0;
 	}
 
-	:global(.light) .backlog-pct-badge {
-		background: rgba(79, 70, 229, 0.08);
-		border-color: rgba(79, 70, 229, 0.18);
+	.journey-ring {
+		--journey-progress: 0%;
+		display: grid;
+		width: 104px;
+		height: 104px;
+		padding: 5px;
+		place-items: center;
+		border-radius: 50%;
+		background: conic-gradient(var(--color-accent) var(--journey-progress), var(--color-surface-elevated) 0);
+		box-shadow: 0 0 0 1px var(--color-border), 0 0 20px color-mix(in srgb, var(--color-accent) 16%, transparent);
 	}
 
-	.backlog-pct-value {
-		font-size: 1.6rem;
+	.journey-ring-inner {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		border-radius: 50%;
+		background: var(--color-surface);
+	}
+
+	.journey-ring-inner strong {
+		font-size: 1.45rem;
 		font-weight: 800;
-		color: var(--color-accent);
 		line-height: 1;
+		color: var(--color-text-primary);
 	}
 
-	.backlog-pct-label {
-		font-size: 0.78rem;
+	.journey-ring-inner span {
+		margin-top: 4px;
+		font-size: 0.68rem;
 		font-weight: 700;
+		letter-spacing: 0.05em;
 		text-transform: uppercase;
-		letter-spacing: 0.06em;
+		color: var(--color-text-tertiary);
+	}
+
+	.journey-next-milestone {
+		display: flex;
+		min-width: 112px;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.journey-next-milestone span,
+	.journey-next-milestone small {
+		font-size: 0.82rem;
+		font-weight: 700;
 		color: var(--color-text-secondary);
-		margin-top: 2px;
 	}
 
-	.backlog-bars {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
+	.journey-next-milestone strong {
+		font-size: 1.6rem;
+		line-height: 1;
+		color: var(--color-accent);
 	}
 
-	.backlog-metric {
+	.journey-next-milestone small {
+		font-size: 0.76rem;
+		font-weight: 600;
+		color: var(--color-text-tertiary);
+	}
+
+	.backlog-unified {
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
+		gap: 8px;
+	}
+
+	.backlog-unified-bar {
+		width: calc(100% + 16px);
+		height: 68px;
+		margin-left: -8px;
+	}
+
+	.backlog-unified-bar .seg-label {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		gap: 2px;
+		padding: 0 6px;
+		font-size: 0.9rem;
+		line-height: 1.05;
+	}
+
+	.backlog-unified-bar .seg-label strong {
+		font-size: 1rem;
+		font-weight: 800;
+	}
+
+	.backlog-unified-bar .seg-label small {
+		font-size: 0.8rem;
+		font-weight: 750;
+		white-space: nowrap;
 	}
 
 	.backlog-metric-head {
@@ -1918,23 +1915,34 @@ let top10Score = $derived(
 	}
 
 	.backlog-metric-total {
+		display: flex;
+		align-items: flex-end;
+		flex-direction: column;
+		gap: 2px;
 		font-weight: 700;
 		color: var(--color-text-primary);
 		font-size: 0.9rem;
+		text-align: right;
+	}
+
+	.backlog-playing-total {
+		font-size: 0.68rem;
+		font-weight: 700;
+		color: #f59e0b;
+	}
+
+	:global(.light) .backlog-playing-total {
+		color: #d97706;
 	}
 
 	.backlog-bar {
 		display: flex;
-		height: 30px;
+		height: 68px;
 		border-radius: 999px;
 		overflow: hidden;
 		background: var(--color-surface-elevated);
 		border: 1px solid var(--color-border);
 		position: relative;
-	}
-
-	.backlog-bar.bar-counts {
-		height: 28px;
 	}
 
 	.backlog-seg {
@@ -1994,16 +2002,6 @@ let top10Score = $derived(
 
 	:global(.light) .seg-label-planned {
 		color: #ffffff;
-	}
-
-	.backlog-scale {
-		display: flex;
-		justify-content: space-between;
-		font-size: 0.78rem;
-		color: var(--color-text-muted);
-		font-weight: 600;
-		padding: 0 2px;
-		letter-spacing: 0.02em;
 	}
 
 	.backlog-legend {
@@ -2123,23 +2121,56 @@ let top10Score = $derived(
 			padding: 14px;
 			gap: 14px;
 		}
+		.backlog-metric-head {
+			flex-wrap: wrap;
+			gap: 4px 10px;
+		}
+
+		.backlog-metric-total {
+			align-items: flex-start;
+			text-align: left;
+		}
+
 		.backlog-header {
+			align-items: stretch;
 			flex-direction: column;
 		}
-		.backlog-pct-badge {
+
+		.journey-progress-summary {
 			align-self: flex-start;
-			flex-direction: row;
-			gap: 8px;
-			padding: 6px 12px;
 		}
-		.backlog-pct-value {
-			font-size: 1.35rem;
+
+		.journey-ring {
+			width: 88px;
+			height: 88px;
 		}
+
+		.journey-ring-inner strong {
+			font-size: 1.3rem;
+		}
+
+		.journey-next-milestone {
+			min-width: 100px;
+		}
+
+		.journey-milestone {
+			font-size: 0.6rem;
+		}
+
+		.journey-milestone-dot {
+			width: 23px;
+			height: 23px;
+			border-width: 2px;
+			font-size: 0.5rem;
+		}
+
 		.backlog-bar {
 			height: 28px;
 		}
-		.backlog-bar.bar-counts {
-			height: 26px;
+		.backlog-unified-bar {
+			width: calc(100% + 12px);
+			height: 62px;
+			margin-left: -6px;
 		}
 		.legend-value {
 			font-size: 0.8rem;

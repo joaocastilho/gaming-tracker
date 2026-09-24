@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Game } from '$lib/types/game';
-import { computeGenreStats, computeScoreDistribution } from '$lib/utils/statsUtils';
+import { computeGenreStats, computeScoreDistribution, getNextMilestone } from '$lib/utils/statsUtils';
 import { createTestGame } from './helpers/factories';
 
 describe('computeGenreStats', () => {
@@ -56,6 +56,16 @@ describe('computeGenreStats', () => {
 				{ label: '13–16', min: 13, max: 16, count: 1, percentage: 20 },
 				{ label: '17–20', min: 17, max: 20, count: 1, percentage: 20 },
 			]);
+		});
+	});
+
+	describe('getNextMilestone', () => {
+		it('returns the next quarter-based milestone', () => {
+			expect(getNextMilestone(0)).toBe(25);
+			expect(getNextMilestone(24.9)).toBe(25);
+			expect(getNextMilestone(25)).toBe(50);
+			expect(getNextMilestone(76.2)).toBe(100);
+			expect(getNextMilestone(100)).toBe(100);
 		});
 	});
 });
