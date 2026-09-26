@@ -121,23 +121,6 @@
       "tier": null
     },
     {
-      "id": "ace-combat-6-fires-of-liberation",
-      "title": "Ace Combat 6: Fires of Liberation",
-      "platform": "Xbox 360",
-      "year": 2007,
-      "genre": "Action",
-      "coOp": "No",
-      "status": "Planned",
-      "coverImage": "covers/ace-combat-6-fires-of-liberation.webp",
-      "playtime": "8h 30m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
-    },
-    {
       "id": "ace-combat-7-skies-unknown",
       "title": "Ace Combat 7: Skies Unknown",
       "platform": "PC",
@@ -9713,6 +9696,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-09-20T20:55:28.401Z"
+    "lastUpdated": "2026-09-26T11:16:21.699Z"
   }
 }
