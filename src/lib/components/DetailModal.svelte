@@ -340,7 +340,9 @@ $effect(() => {
 					style="
 						background-color: {game.status === 'Completed'
 						? 'var(--color-surface-completed)'
-						: 'var(--color-surface)'}; 
+						: game.status === 'Playing'
+							? 'var(--color-surface-playing, var(--color-surface))'
+							: 'var(--color-surface)'}; 
 						transform: translateX(calc({pos *
 						swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px); 
 						opacity: {isCurrent

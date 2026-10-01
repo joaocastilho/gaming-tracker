@@ -59,9 +59,12 @@ function handleKeyDown(event: KeyboardEvent) {
 <div
 	bind:this={cardElement}
 	class="game-card {size === 'tierlist' ? 'tierlist-size' : ''}"
+	data-status={game.status.toLowerCase()}
 	style="background-color: {game.status === 'Completed'
 		? 'var(--color-surface-completed)'
-		: 'var(--color-surface)'}; color: var(--color-text-primary);"
+		: game.status === 'Playing'
+			? 'var(--color-surface-playing, var(--color-surface))'
+			: 'var(--color-surface)'}; color: var(--color-text-primary);"
 	role="button"
 	tabindex="0"
 	onclick={handleCardClick}
