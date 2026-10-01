@@ -49,13 +49,9 @@ let { game }: Props = $props();
 			{getTierDisplayName(game.tier)}
 		</span>
 	{:else if game.status === 'Playing'}
-		<span class="status-indicator playing-badge rounded-md px-3 py-1.5 text-sm font-semibold md:text-sm">
-			PLAYING
-		</span>
+		<span class="status-word status-playing text-sm font-semibold md:text-sm"> PLAYING </span>
 	{:else if game.status === 'Planned'}
-		<span class="status-indicator planned-badge rounded-md px-3 py-1.5 text-sm font-semibold md:text-sm">
-			PLANNED
-		</span>
+		<span class="status-word status-planned text-sm font-semibold md:text-sm"> PLANNED </span>
 	{/if}
 </div>
 
@@ -128,40 +124,28 @@ let { game }: Props = $props();
 </div>
 
 <style>
-	.status-indicator {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: 800;
+	.status-word {
+		font-weight: 700;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
-		border: 1px solid rgba(255, 255, 255, 0.1);
 		white-space: nowrap;
+		align-self: center;
 	}
 
-	.planned-badge {
-		color: #60a5fa;
-		background: rgba(59, 130, 246, 0.15);
-		border-color: rgba(59, 130, 246, 0.25);
-		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
-	}
-
-	.playing-badge {
+	.status-playing {
 		color: #34d399;
-		background: rgba(16, 185, 129, 0.15);
-		border-color: rgba(16, 185, 129, 0.25);
-		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
 	}
 
-	:global(.light) .planned-badge {
-		background: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.2);
+	.status-planned {
+		color: #60a5fa;
 	}
 
-	:global(.light) .playing-badge {
+	:global(.light) .status-playing {
 		color: #059669;
-		background: rgba(16, 185, 129, 0.1);
-		border-color: rgba(16, 185, 129, 0.2);
+	}
+
+	:global(.light) .status-planned {
+		color: #2563eb;
 	}
 
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {

@@ -73,9 +73,7 @@ const hasRatings = $derived(
 					{game.score ?? '-'}
 				</span>
 			{:else}
-				<span
-					class="status-indicator {game.status === 'Playing' ? 'playing-badge' : 'planned-badge'}"
-				>
+				<span class="status-word {game.status === 'Playing' ? 'status-playing' : 'status-planned'}">
 					{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
 				</span>
 			{/if}
@@ -100,7 +98,9 @@ const hasRatings = $derived(
 		{:else}
 			<div class="flex items-center justify-center py-1">
 				<span
-					class="status-indicator {game.status === 'Playing' ? 'playing-badge' : 'planned-badge'}"
+					class="status-word score-status-word {game.status === 'Playing'
+						? 'status-playing'
+						: 'status-planned'}"
 				>
 					{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
 				</span>
@@ -110,43 +110,31 @@ const hasRatings = $derived(
 </div>
 
 <style>
-	.status-indicator {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.4rem 1rem;
-		border-radius: 0.375rem;
-		font-size: 0.95rem;
+	.status-word {
 		font-weight: 800;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
-		border: 1px solid rgba(255, 255, 255, 0.1);
 		white-space: nowrap;
 	}
 
-	.planned-badge {
-		color: #60a5fa;
-		background: rgba(59, 130, 246, 0.15);
-		border-color: rgba(59, 130, 246, 0.25);
-		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+	.score-status-word {
+		font-size: 1.5rem;
 	}
 
-	.playing-badge {
+	.status-playing {
 		color: #34d399;
-		background: rgba(16, 185, 129, 0.15);
-		border-color: rgba(16, 185, 129, 0.25);
-		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
 	}
 
-	:global(.light) .planned-badge {
-		background: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.2);
+	.status-planned {
+		color: #60a5fa;
 	}
 
-	:global(.light) .playing-badge {
+	:global(.light) .status-playing {
 		color: #059669;
-		background: rgba(16, 185, 129, 0.1);
-		border-color: rgba(16, 185, 129, 0.2);
+	}
+
+	:global(.light) .status-planned {
+		color: #2563eb;
 	}
 
 	@media (max-width: 767px) and (orientation: portrait) {
@@ -208,6 +196,10 @@ const hasRatings = $derived(
 		.landscape-score .ls-value {
 			font-size: 3rem !important;
 			line-height: 1 !important;
+		}
+
+		.landscape-score .status-word {
+			font-size: 1.25rem !important;
 		}
 	}
 </style>
