@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { Game } from '$lib/types/game';
-import { Presentation, NotebookPen, Gamepad2 } from '@lucide/svelte';
+import { Presentation, NotebookPen, Gamepad2, Award } from '@lucide/svelte';
 
 interface Props {
 	game: Game;
@@ -69,72 +69,78 @@ const hasRatings = $derived(
 
 		<div class="landscape-score hidden items-center gap-2">
 			{#if game.status === 'Completed'}
-				<span class="ls-value text-2xl font-extrabold" style="color: var(--color-rating-total);">
-					{game.score ?? '-'}
+				<span class="status-badge score-badge" class:opacity-40={game.score === null}>
+					<Award size={18} />
+					<span class="score-num">{game.score ?? '-'}</span>
 				</span>
 			{:else}
-				<span class="status-word {game.status === 'Playing' ? 'status-playing' : 'status-planned'}">
+				<span class="status-badge {game.status === 'Playing' ? 'playing-badge' : 'planned-badge'}">
 					{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
 				</span>
 			{/if}
 		</div>
 	</div>
 
-	<div
-		class="score-result mt-2 rounded-lg border p-2 md:mt-auto"
-		style="background-color: var(--color-surface-elevated); border-color: var(--color-border);"
-		class:opacity-40={game.status === 'Completed' && game.score === null}
-	>
+	<!-- The fixed height on .status-badge keeps this block the same size for every
+	     status, so the Ratings row above never shifts when swiping between games. -->
+	<div class="score-result mx-4 mt-2 md:mt-auto">
 		{#if game.status === 'Completed'}
-			<div class="flex flex-col items-center justify-center gap-1">
-				<span
-					class="text-base font-bold tracking-widest uppercase opacity-70 md:text-lg"
-					style="color: var(--color-text-tertiary);">Score</span
-				>
-				<span class="text-3xl font-extrabold md:text-4xl" style="color: var(--color-rating-total);">
-					{game.score ?? '-'}
-				</span>
-			</div>
+			<span class="status-badge score-badge" class:opacity-40={game.score === null}>
+				<Award size={28} />
+				<span class="score-num">{game.score ?? '-'}</span>
+			</span>
 		{:else}
-			<div class="flex items-center justify-center py-1">
-				<span
-					class="status-word score-status-word {game.status === 'Playing'
-						? 'status-playing'
-						: 'status-planned'}"
-				>
-					{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
-				</span>
-			</div>
+			<span class="status-badge {game.status === 'Playing' ? 'playing-badge' : 'planned-badge'}">
+				{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
+			</span>
 		{/if}
 	</div>
 </div>
 
 <style>
-	.status-word {
+	/* Mirrors the grid card status badge (GameCardInfo.svelte) but spans the full
+	   width with a fixed height, so every status occupies exactly the same box
+	   regardless of how long its text is or which game is being swiped to. */
+	.status-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 12px;
+		width: 100%;
+		padding: 8px 16px;
+		height: 4rem;
+		border: 1px solid;
+		border-radius: 8px;
+		font-size: 1.25rem;
 		font-weight: 800;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
+		line-height: 1;
 		white-space: nowrap;
 	}
 
-	.score-status-word {
-		font-size: 1.5rem;
+	.score-badge {
+		color: var(--color-status-score-text);
+		background: var(--color-status-score-bg);
+		border-color: var(--color-status-score-border);
 	}
 
-	.status-playing {
-		color: #34d399;
+	.playing-badge {
+		color: var(--color-status-playing-text);
+		background: var(--color-status-playing-bg);
+		border-color: var(--color-status-playing-border);
 	}
 
-	.status-planned {
-		color: #60a5fa;
+	.planned-badge {
+		color: var(--color-status-planned-text);
+		background: var(--color-status-planned-bg);
+		border-color: var(--color-status-planned-border);
 	}
 
-	:global(.light) .status-playing {
-		color: #059669;
-	}
-
-	:global(.light) .status-planned {
-		color: #2563eb;
+	.score-num {
+		font-size: 2rem;
+		font-weight: 900;
+		line-height: 1;
 	}
 
 	@media (max-width: 767px) and (orientation: portrait) {
@@ -193,12 +199,15 @@ const hasRatings = $derived(
 			gap: 1.25rem !important;
 		}
 
-		.landscape-score .ls-value {
-			font-size: 3rem !important;
-			line-height: 1 !important;
+		.landscape-score .status-badge {
+			font-size: 0.95rem !important;
+			padding: 6px 12px !important;
+			height: 2.5rem !important;
+			width: auto !important;
+			border-radius: 4px;
 		}
 
-		.landscape-score .status-word {
+		.landscape-score .score-num {
 			font-size: 1.25rem !important;
 		}
 	}

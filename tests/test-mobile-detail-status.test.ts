@@ -30,15 +30,15 @@ describe('Mobile detail modal status word (plain text, no colored badge)', () =>
 	});
 });
 
-describe('Detail modal score section shows status word, not dash or badge', () => {
-	it('shows PLAYING word instead of score dash for Playing games', () => {
+describe('Detail modal score section shows the status, not a dash', () => {
+	it('shows PLAYING instead of the score dash for Playing games', () => {
 		const game = createTestGame({ status: 'Playing' });
 		const { container } = render(ModalRatings, { props: { game } });
 
 		expect(screen.getAllByText('PLAYING').length).toBeGreaterThanOrEqual(1);
 
-		// No colored badge pill — plain word only
-		expect(container.querySelector('.playing-badge')).toBeNull();
+		// Uses the same badge colours as the grid game card
+		expect(container.querySelector('.playing-badge')).toBeTruthy();
 		expect(container.querySelector('.status-indicator')).toBeNull();
 
 		// Score area must not render the placeholder dash
@@ -51,13 +51,13 @@ describe('Detail modal score section shows status word, not dash or badge', () =
 		expect(landscapeScore?.textContent).not.toContain('-');
 	});
 
-	it('shows PLANNED word instead of score dash for Planned games', () => {
+	it('shows PLANNED instead of the score dash for Planned games', () => {
 		const game = createTestGame({ status: 'Planned' });
 		const { container } = render(ModalRatings, { props: { game } });
 
 		expect(screen.getAllByText('PLANNED').length).toBeGreaterThanOrEqual(1);
 
-		expect(container.querySelector('.planned-badge')).toBeNull();
+		expect(container.querySelector('.planned-badge')).toBeTruthy();
 		expect(container.querySelector('.status-indicator')).toBeNull();
 
 		const scoreResult = container.querySelector('.score-result');

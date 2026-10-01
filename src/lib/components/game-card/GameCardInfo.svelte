@@ -190,41 +190,24 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 	}
 
 	.score-badge {
-		color: #fbbf24;
-		background: rgba(245, 158, 11, 0.15);
-		border-color: rgba(245, 158, 11, 0.25);
+		color: var(--color-status-score-text);
+		background: var(--color-status-score-bg);
+		border-color: var(--color-status-score-border);
 		box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
 	}
 
 	.planned-badge {
-		color: #60a5fa;
-		background: rgba(59, 130, 246, 0.15);
-		border-color: rgba(59, 130, 246, 0.25);
+		color: var(--color-status-planned-text);
+		background: var(--color-status-planned-bg);
+		border-color: var(--color-status-planned-border);
 		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
 	}
 
 	.playing-badge {
-		color: #34d399;
-		background: rgba(16, 185, 129, 0.15);
-		border-color: rgba(16, 185, 129, 0.25);
+		color: var(--color-status-playing-text);
+		background: var(--color-status-playing-bg);
+		border-color: var(--color-status-playing-border);
 		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
-	}
-
-	:global(.light) .score-badge {
-		color: #d97706;
-		background: rgba(245, 158, 11, 0.15);
-		border-color: rgba(245, 158, 11, 0.3);
-	}
-
-	:global(.light) .planned-badge {
-		background: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.2);
-	}
-
-	:global(.light) .playing-badge {
-		color: #059669;
-		background: rgba(16, 185, 129, 0.1);
-		border-color: rgba(16, 185, 129, 0.2);
 	}
 
 	.mobile-text {
