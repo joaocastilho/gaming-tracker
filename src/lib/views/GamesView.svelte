@@ -78,11 +78,7 @@ let itemHeight = $derived.by(() => {
 	}
 
 	const coverHeight = cardWidth * 1.5;
-	// Mobile cards are narrower so titles wrap more and badges stack into a
-	// 2-row grid — info section needs MORE height than desktop, not less.
-	// Overestimate to avoid clipping the PLANNED/PLAYING status badge at the
-	// bottom (fixed row height + overflow hidden would cut it off).
-	const infoHeight = containerWidth < 768 ? 310 : 280;
+	const infoHeight = containerWidth < 768 ? 220 : 250;
 	const paddingBottom = 20; // pb-5 is 20px
 
 	return Math.floor(coverHeight + infoHeight + paddingBottom);
@@ -100,7 +96,7 @@ let itemHeight = $derived.by(() => {
 				className="game-gallery-virtual"
 			>
 				{#snippet renderItem(row: { id: string; games: Game[]; startIndex: number }, isPriority: boolean)}
-					<div class="game-row pb-5" style="min-height: {itemHeight}px;">
+					<div class="game-row pb-5" style="height: {itemHeight}px;">
 						{#each row.games as game, i (game.id ?? `fallback-${row.id}-${game.title || 'unknown'}`)}
 							<GameCard
 								{game}

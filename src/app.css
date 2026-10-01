@@ -578,10 +578,6 @@ body {
 	background: var(--color-surface-playing, var(--color-surface));
 }
 
-.game-card[data-status="planned"] {
-	background: var(--color-surface);
-}
-
 .modal-content {
 	background: var(--color-surface);
 	border-radius: 20px;
