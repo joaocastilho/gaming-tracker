@@ -931,7 +931,7 @@
       "year": 2010,
       "genre": "Shooter",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/bioshock-2.webp",
       "playtime": "15h 0m",
       "finishedDate": null,
@@ -9697,6 +9697,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-10-01T08:22:44.905Z"
+    "lastUpdated": "2026-10-01T08:38:39.659Z"
   }
 }
