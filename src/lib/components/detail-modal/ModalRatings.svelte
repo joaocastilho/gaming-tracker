@@ -68,30 +68,87 @@ const hasRatings = $derived(
 		</div>
 
 		<div class="landscape-score hidden items-center gap-2">
-			<span class="text-2xl font-extrabold" style="color: var(--color-rating-total);">
-				{game.score ?? '-'}
-			</span>
+			{#if game.status === 'Completed'}
+				<span class="ls-value text-2xl font-extrabold" style="color: var(--color-rating-total);">
+					{game.score ?? '-'}
+				</span>
+			{:else}
+				<span
+					class="status-indicator {game.status === 'Playing' ? 'playing-badge' : 'planned-badge'}"
+				>
+					{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
+				</span>
+			{/if}
 		</div>
 	</div>
 
 	<div
 		class="score-result mt-2 rounded-lg border p-2 md:mt-auto"
 		style="background-color: var(--color-surface-elevated); border-color: var(--color-border);"
-		class:opacity-40={game.score === null}
+		class:opacity-40={game.status === 'Completed' && game.score === null}
 	>
-		<div class="flex flex-col items-center justify-center gap-1">
-			<span
-				class="text-base font-bold tracking-widest uppercase opacity-70 md:text-lg"
-				style="color: var(--color-text-tertiary);">Score</span
-			>
-			<span class="text-3xl font-extrabold md:text-4xl" style="color: var(--color-rating-total);">
-				{game.score ?? '-'}
-			</span>
-		</div>
+		{#if game.status === 'Completed'}
+			<div class="flex flex-col items-center justify-center gap-1">
+				<span
+					class="text-base font-bold tracking-widest uppercase opacity-70 md:text-lg"
+					style="color: var(--color-text-tertiary);">Score</span
+				>
+				<span class="text-3xl font-extrabold md:text-4xl" style="color: var(--color-rating-total);">
+					{game.score ?? '-'}
+				</span>
+			</div>
+		{:else}
+			<div class="flex items-center justify-center py-1">
+				<span
+					class="status-indicator {game.status === 'Playing' ? 'playing-badge' : 'planned-badge'}"
+				>
+					{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
+				</span>
+			</div>
+		{/if}
 	</div>
 </div>
 
 <style>
+	.status-indicator {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.4rem 1rem;
+		border-radius: 0.375rem;
+		font-size: 0.95rem;
+		font-weight: 800;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		white-space: nowrap;
+	}
+
+	.planned-badge {
+		color: #60a5fa;
+		background: rgba(59, 130, 246, 0.15);
+		border-color: rgba(59, 130, 246, 0.25);
+		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+	}
+
+	.playing-badge {
+		color: #34d399;
+		background: rgba(16, 185, 129, 0.15);
+		border-color: rgba(16, 185, 129, 0.25);
+		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+	}
+
+	:global(.light) .planned-badge {
+		background: rgba(59, 130, 246, 0.1);
+		border-color: rgba(59, 130, 246, 0.2);
+	}
+
+	:global(.light) .playing-badge {
+		color: #059669;
+		background: rgba(16, 185, 129, 0.1);
+		border-color: rgba(16, 185, 129, 0.2);
+	}
+
 	@media (max-width: 767px) and (orientation: portrait) {
 		.ratings-wrapper {
 			margin-top: auto;
@@ -148,15 +205,7 @@ const hasRatings = $derived(
 			gap: 1.25rem !important;
 		}
 
-		.landscape-score span:first-child {
-			font-size: 0.75rem !important;
-			font-weight: 700 !important;
-			letter-spacing: 0.05em !important;
-			text-transform: uppercase !important;
-			opacity: 0.7 !important;
-		}
-
-		.landscape-score span:last-child {
+		.landscape-score .ls-value {
 			font-size: 3rem !important;
 			line-height: 1 !important;
 		}
