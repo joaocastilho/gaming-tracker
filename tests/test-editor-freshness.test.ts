@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTestGame } from './helpers/factories';
 import { editorStore } from '$lib/stores/editor.svelte';
 
-function gameList(games: Array<ReturnType<typeof createTestGame>>) {
+function gameList(games: unknown[]) {
 	return { games };
 }
 
@@ -35,6 +35,53 @@ describe('editor freshness guard (stale games.json overwrite)', () => {
 		expect(result?.[0].genre).toBe('FPS');
 	});
 
+	it('fetchLatestGames transforms raw storage format (strips nothing, derives computed fields)', async () => {
+		const transformed = createTestGame({ id: 'raw-1', title: 'Raw Title: Sub', status: 'Planned' });
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { mainTitle, subtitle, ...raw } = transformed as unknown as Record<string, unknown>;
+		vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+			ok: true,
+			json: () => Promise.resolve({ games: [raw] }),
+		} as Response);
+
+		const result = await editorStore.fetchLatestGames();
+
+		expect(result).toHaveLength(1);
+		// Raw storage has no computed fields; the guard must derive them
+		// or the server validation (mainTitle/subtitle required) rejects with 400.
+		expect(result?.[0].mainTitle).toBe('Raw Title: Sub');
+		expect(result?.[0].subtitle).toBeNull();
+	});
+
+	it('fetchLatestGames converts storage dates to ISO datetimes', async () => {
+		const raw = {
+			id: 'raw-date',
+			title: 'Dated Game',
+			platform: 'PC',
+			year: 2024,
+			genre: 'Action',
+			coOp: 'No',
+			status: 'Completed',
+			coverImage: 'covers/dated.webp',
+			playtime: '10h 0m',
+			finishedDate: '20/09/2026',
+			ratingPresentation: 8,
+			ratingStory: 7,
+			ratingGameplay: 9,
+			score: 16,
+			tier: 'A - Amazing',
+		};
+		vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+			ok: true,
+			json: () => Promise.resolve({ games: [raw] }),
+		} as Response);
+
+		const result = await editorStore.fetchLatestGames();
+
+		expect(result).toHaveLength(1);
+		expect(result?.[0].finishedDate).toBe('2026-09-20T00:00:00.000Z');
+	});
+
 	it('fetchLatestGames returns null when server request fails', async () => {
 		vi.mocked(globalThis.fetch).mockRejectedValueOnce(new Error('Network error'));
 
@@ -48,9 +95,16 @@ describe('editor freshness guard (stale games.json overwrite)', () => {
 		const staleEdited = createTestGame({ id: 'edited', title: 'Edited', status: 'Planned' });
 		const staleGames = [staleUntouched, staleEdited];
 
-		const freshUntouched = createTestGame({ id: 'untouched', title: 'Untouched', genre: 'FPS' });
+		const freshUntouchedBase = createTestGame({ id: 'untouched', title: 'Untouched', genre: 'FPS' });
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const {
+			mainTitle: _u,
+			subtitle: _us,
+			...freshUntouchedRaw
+		} = freshUntouchedBase as unknown as Record<string, unknown>;
 		const freshEdited = createTestGame({ id: 'edited', title: 'Edited', status: 'Planned' });
-		const freshGames = [freshUntouched, freshEdited];
+		// Server stores raw games (no computed mainTitle/subtitle)
+		const freshGames = [freshUntouchedRaw, freshEdited];
 
 		const editedVersion = createTestGame({ id: 'edited', title: 'Edited', status: 'Playing' });
 		editorStore.editPendingGame('edited', editedVersion);
@@ -76,13 +130,17 @@ describe('editor freshness guard (stale games.json overwrite)', () => {
 		expect(postCall).toBeDefined();
 		const formData = postCall?.[1]?.body as FormData;
 		const blob = formData.get('games') as Blob;
-		const saved = JSON.parse(await blob.text()) as { games: Array<{ id: string; genre: string; status: string }> };
+		const saved = JSON.parse(await blob.text()) as {
+			games: Array<{ id: string; genre: string; status: string; mainTitle?: string }>;
+		};
 
 		const savedUntouched = saved.games.find((g) => g.id === 'untouched');
 		const savedEdited = saved.games.find((g) => g.id === 'edited');
 
 		// Untouched game must keep FRESH server value, not stale cache value
 		expect(savedUntouched?.genre).toBe('FPS');
+		// Raw server base must be transformed or validation rejects with 400
+		expect(savedUntouched?.mainTitle).toBe('Untouched');
 		// Edited game must carry the pending edit
 		expect(savedEdited?.status).toBe('Playing');
 	});

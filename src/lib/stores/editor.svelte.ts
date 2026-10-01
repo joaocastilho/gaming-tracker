@@ -1,6 +1,7 @@
 import { browser, dev } from '$app/environment';
 import type { Game } from '$lib/types/game';
 import { db } from '$lib/db';
+import { transformGameData, type RawGameData } from '$lib/utils/dataTransformer';
 import { gamesStore } from './games.svelte';
 import { offlineStore } from './offline.svelte';
 
@@ -230,6 +231,11 @@ class EditorStore {
 	 * Returns null when the fetch fails so callers can fall back to stale data
 	 * (offline-safe). This prevents full-file overwrites from stale
 	 * IndexedDB/cache state clobbering unrelated server-side changes.
+	 *
+	 * Server storage omits computed fields (mainTitle/subtitle) and uses
+	 * DD/MM/YYYY dates, so the raw payload is run through transformGameData
+	 * (same as initial load) before use, otherwise server validation
+	 * rejects the save with 400.
 	 */
 	async fetchLatestGames(): Promise<Game[] | null> {
 		try {
@@ -240,7 +246,7 @@ class EditorStore {
 			if (!res.ok) return null;
 			const data = (await res.json()) as { games?: unknown };
 			if (!data || !Array.isArray(data.games)) return null;
-			return data.games as Game[];
+			return data.games.map((gameRaw) => transformGameData(gameRaw as RawGameData));
 		} catch {
 			return null;
 		}
