@@ -30,44 +30,47 @@ describe('Mobile detail modal status word (plain text, no colored badge)', () =>
 	});
 });
 
-describe('Detail modal score/status badge matches game card design', () => {
-	it('shows PLAYING badge (same classes as game card) for Playing games', () => {
+describe('Detail modal score section shows status word, not dash or badge', () => {
+	it('shows PLAYING word instead of score dash for Playing games', () => {
 		const game = createTestGame({ status: 'Playing' });
 		const { container } = render(ModalRatings, { props: { game } });
 
-		// Same badge design as the grid game card
-		expect(container.querySelector('.playing-badge')).toBeTruthy();
 		expect(screen.getAllByText('PLAYING').length).toBeGreaterThanOrEqual(1);
+
+		// No colored badge pill — plain word only
+		expect(container.querySelector('.playing-badge')).toBeNull();
+		expect(container.querySelector('.status-indicator')).toBeNull();
 
 		// Score area must not render the placeholder dash
 		const scoreResult = container.querySelector('.score-result');
 		expect(scoreResult?.textContent).not.toContain('-');
+		expect(scoreResult?.textContent).toContain('PLAYING');
 
 		// Landscape score slot must not render the dash either
 		const landscapeScore = container.querySelector('.landscape-score');
 		expect(landscapeScore?.textContent).not.toContain('-');
 	});
 
-	it('shows PLANNED badge (same classes as game card) for Planned games', () => {
+	it('shows PLANNED word instead of score dash for Planned games', () => {
 		const game = createTestGame({ status: 'Planned' });
 		const { container } = render(ModalRatings, { props: { game } });
 
-		expect(container.querySelector('.planned-badge')).toBeTruthy();
 		expect(screen.getAllByText('PLANNED').length).toBeGreaterThanOrEqual(1);
+
+		expect(container.querySelector('.planned-badge')).toBeNull();
+		expect(container.querySelector('.status-indicator')).toBeNull();
 
 		const scoreResult = container.querySelector('.score-result');
 		expect(scoreResult?.textContent).not.toContain('-');
+		expect(scoreResult?.textContent).toContain('PLANNED');
 	});
 
-	it('shows score badge with Award icon (same as game card) for Completed games', () => {
+	it('shows actual score for Completed games', () => {
 		const game = createCompletedGame({ score: 8 });
 		const { container } = render(ModalRatings, { props: { game } });
 
-		const badge = container.querySelector('.score-result .score-badge');
-		expect(badge).toBeTruthy();
-		expect(badge?.textContent).toContain('8');
-		expect(badge?.querySelector('svg')).toBeTruthy();
-
+		const scoreResult = container.querySelector('.score-result');
+		expect(scoreResult?.textContent).toContain('8');
 		expect(screen.queryByText('PLAYING')).toBeNull();
 		expect(screen.queryByText('PLANNED')).toBeNull();
 	});

@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { Game } from '$lib/types/game';
-import { Presentation, NotebookPen, Gamepad2, Award } from '@lucide/svelte';
+import { Presentation, NotebookPen, Gamepad2 } from '@lucide/svelte';
 
 interface Props {
 	game: Game;
@@ -69,92 +69,72 @@ const hasRatings = $derived(
 
 		<div class="landscape-score hidden items-center gap-2">
 			{#if game.status === 'Completed'}
-				<span class="status-badge score-badge">
-					<Award size={18} />
-					<span class="score-num">{game.score ?? '-'}</span>
+				<span class="ls-value text-2xl font-extrabold" style="color: var(--color-rating-total);">
+					{game.score ?? '-'}
 				</span>
 			{:else}
-				<span class="status-badge {game.status === 'Playing' ? 'playing-badge' : 'planned-badge'}">
+				<span class="status-word {game.status === 'Playing' ? 'status-playing' : 'status-planned'}">
 					{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
 				</span>
 			{/if}
 		</div>
 	</div>
 
-	<div class="score-result mt-2 flex justify-center md:mt-auto">
+	<div
+		class="score-result mt-2 rounded-lg border p-2 md:mt-auto"
+		style="background-color: var(--color-surface-elevated); border-color: var(--color-border);"
+		class:opacity-40={game.status === 'Completed' && game.score === null}
+	>
 		{#if game.status === 'Completed'}
-			<span class="status-badge score-badge" class:opacity-40={game.score === null}>
-				<Award size={22} />
-				<span class="score-num">{game.score ?? '-'}</span>
-			</span>
+			<div class="flex flex-col items-center justify-center gap-1">
+				<span
+					class="text-base font-bold tracking-widest uppercase opacity-70 md:text-lg"
+					style="color: var(--color-text-tertiary);">Score</span
+				>
+				<span class="text-3xl font-extrabold md:text-4xl" style="color: var(--color-rating-total);">
+					{game.score ?? '-'}
+				</span>
+			</div>
 		{:else}
-			<span class="status-badge {game.status === 'Playing' ? 'playing-badge' : 'planned-badge'}">
-				{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
-			</span>
+			<div class="flex items-center justify-center py-1">
+				<span
+					class="status-word score-status-word {game.status === 'Playing'
+						? 'status-playing'
+						: 'status-planned'}"
+				>
+					{game.status === 'Playing' ? 'PLAYING' : 'PLANNED'}
+				</span>
+			</div>
 		{/if}
 	</div>
 </div>
 
 <style>
-	/* Matches the grid game card status badge (GameCardInfo.svelte) */
-	.status-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 10px;
-		padding: 8px 16px;
-		border-radius: 4px;
-		font-size: 1.05rem;
+	.status-word {
 		font-weight: 800;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		line-height: 1;
 		white-space: nowrap;
 	}
 
-	.score-badge {
-		color: #fbbf24;
-		background: rgba(245, 158, 11, 0.15);
-		border-color: rgba(245, 158, 11, 0.25);
-		box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
-	}
-
-	.planned-badge {
-		color: #60a5fa;
-		background: rgba(59, 130, 246, 0.15);
-		border-color: rgba(59, 130, 246, 0.25);
-		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
-	}
-
-	.playing-badge {
-		color: #34d399;
-		background: rgba(16, 185, 129, 0.15);
-		border-color: rgba(16, 185, 129, 0.25);
-		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
-	}
-
-	:global(.light) .score-badge {
-		color: #d97706;
-		background: rgba(245, 158, 11, 0.15);
-		border-color: rgba(245, 158, 11, 0.3);
-	}
-
-	:global(.light) .planned-badge {
-		background: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.2);
-	}
-
-	:global(.light) .playing-badge {
-		color: #059669;
-		background: rgba(16, 185, 129, 0.1);
-		border-color: rgba(16, 185, 129, 0.2);
-	}
-
-	.score-num {
+	.score-status-word {
 		font-size: 1.5rem;
-		font-weight: 900;
-		line-height: 1;
+	}
+
+	.status-playing {
+		color: #34d399;
+	}
+
+	.status-planned {
+		color: #60a5fa;
+	}
+
+	:global(.light) .status-playing {
+		color: #059669;
+	}
+
+	:global(.light) .status-planned {
+		color: #2563eb;
 	}
 
 	@media (max-width: 767px) and (orientation: portrait) {
@@ -213,12 +193,12 @@ const hasRatings = $derived(
 			gap: 1.25rem !important;
 		}
 
-		.landscape-score .status-badge {
-			font-size: 0.95rem !important;
-			padding: 6px 12px !important;
+		.landscape-score .ls-value {
+			font-size: 3rem !important;
+			line-height: 1 !important;
 		}
 
-		.landscape-score .score-num {
+		.landscape-score .status-word {
 			font-size: 1.25rem !important;
 		}
 	}
