@@ -59,7 +59,8 @@ let isMobile = $derived(windowSize.isMobile);
 			onkeydown={handlePlatformClick}
 			aria-label="Filter by {game.platform}"
 			title="Platform: {game.platform}"
-			disabled={isMobile}
+			aria-disabled={isMobile}
+			tabindex={isMobile ? -1 : 0}
 		>
 			{game.platform}
 		</button>
@@ -69,7 +70,8 @@ let isMobile = $derived(windowSize.isMobile);
 			onkeydown={handleGenreClick}
 			aria-label="Filter by {game.genre}"
 			title="Genre: {game.genre}"
-			disabled={isMobile}
+			aria-disabled={isMobile}
+			tabindex={isMobile ? -1 : 0}
 		>
 			{game.genre}
 		</button>
@@ -83,7 +85,8 @@ let isMobile = $derived(windowSize.isMobile);
 				onkeydown={handleCoOpClick}
 				aria-label="Filter by Co-op"
 				title="Co-op Available"
-				disabled={isMobile}
+				aria-disabled={isMobile}
+				tabindex={isMobile ? -1 : 0}
 			>
 				<Users size={16} class="text-blue-500" />
 			</button>
@@ -158,6 +161,15 @@ let isMobile = $derived(windowSize.isMobile);
 		.coop-badge {
 			pointer-events: none;
 		}
+	}
+
+	/* Mobile uses aria-disabled (not disabled) so badge colors are preserved.
+	   Keep non-interactive but fully opaque with original colors. */
+	.badge[aria-disabled='true'],
+	.coop-badge[aria-disabled='true'] {
+		pointer-events: none;
+		cursor: default;
+		opacity: 1;
 	}
 
 	@container game-card (max-width: 300px) {
