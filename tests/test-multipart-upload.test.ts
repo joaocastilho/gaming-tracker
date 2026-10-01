@@ -79,12 +79,16 @@ describe('Editor Store Multipart Upload', () => {
 		expect(editorStore.pendingAdds.length).toBe(1);
 
 		// Trigger saveLocally
-		// We pass empty array as current games for simplicity
+		// We pass empty array as current games for simplicity.
+		// saveLocally first fetches latest /games.json (freshness guard),
+		// then POSTs to /api/games-local.
 		await editorStore.saveLocally([]);
 
-		expect(fetchMock).toHaveBeenCalledTimes(1);
-		const url = fetchMock.mock.calls[0]![0];
-		const options = fetchMock.mock.calls[0]![1];
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		const postCall = fetchMock.mock.calls.find((call) => call[0] === '/api/games-local');
+		expect(postCall).toBeDefined();
+		const url = postCall![0];
+		const options = postCall![1];
 
 		expect(url).toBe('/api/games-local');
 		expect(options!.method).toBe('POST');

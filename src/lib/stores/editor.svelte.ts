@@ -225,6 +225,44 @@ class EditorStore {
 		return result;
 	}
 
+	/**
+	 * Fetch the latest games.json from the server, bypassing HTTP cache.
+	 * Returns null when the fetch fails so callers can fall back to stale data
+	 * (offline-safe). This prevents full-file overwrites from stale
+	 * IndexedDB/cache state clobbering unrelated server-side changes.
+	 */
+	async fetchLatestGames(): Promise<Game[] | null> {
+		try {
+			const res = await fetch(`/games.json?t=${Date.now()}`, {
+				cache: 'no-store',
+				headers: { accept: 'application/json' },
+			});
+			if (!res.ok) return null;
+			const data = (await res.json()) as { games?: unknown };
+			if (!data || !Array.isArray(data.games)) return null;
+			return data.games as Game[];
+		} catch {
+			return null;
+		}
+	}
+
+	private async resolveBaseGames(currentGames: Game[]): Promise<Game[]> {
+		try {
+			if (browser && typeof navigator !== 'undefined' && !navigator.onLine) {
+				return currentGames;
+			}
+		} catch {
+			return currentGames;
+		}
+		try {
+			const latest = await this.fetchLatestGames();
+			if (latest && latest.length > 0) return latest;
+		} catch {
+			// Fall through to stale base
+		}
+		return currentGames;
+	}
+
 	async applyAllChanges(currentGames: Game[]): Promise<boolean> {
 		if (!this.hasPendingChanges) {
 			return true;
@@ -243,7 +281,7 @@ class EditorStore {
 			}
 		}
 
-		const finalGames = this.buildFinalGames(currentGames);
+		const finalGames = this.buildFinalGames(await this.resolveBaseGames(currentGames));
 		const success = await this.saveGames(() => ({ games: finalGames }));
 
 		if (success) {
@@ -279,7 +317,7 @@ class EditorStore {
 			return true;
 		}
 
-		const finalGames = this.buildFinalGames(currentGames);
+		const finalGames = this.buildFinalGames(await this.resolveBaseGames(currentGames));
 
 		this.patchState({ savePending: true, saveSuccess: false, saveError: null });
 

@@ -33,12 +33,10 @@ class EditorModalState {
 
 	async handleApplyChanges(): Promise<void> {
 		const games = gamesStore.games;
-		const finalGames = editorStore.buildFinalGames(games);
 
-		const success = await editorStore.applyAllChanges(games);
-		if (success) {
-			gamesStore.setAllGames(finalGames);
-		}
+		// applyAllChanges fetches the latest server data and updates the store
+		// itself on success, so the caller must not overwrite it with a stale base.
+		await editorStore.applyAllChanges(games);
 	}
 }
 

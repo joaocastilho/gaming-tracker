@@ -71,26 +71,16 @@ describe('editorModalState', () => {
 		expect(editorModalState.editorModalGame).toBeNull();
 	});
 
-	it('handleApplyChanges applies changes and updates games on success', async () => {
+	it('handleApplyChanges delegates freshness and store update to applyAllChanges', async () => {
 		const games = [createTestGame({ id: 'a' }), createTestGame({ id: 'b' })];
 		mocks.gamesStore.games = games;
-		const finalGames = [createTestGame({ id: 'a' })];
-		mocks.editorStore.buildFinalGames.mockReturnValue(finalGames);
 		mocks.editorStore.applyAllChanges.mockResolvedValue(true);
 
 		await editorModalState.handleApplyChanges();
 
-		expect(mocks.editorStore.buildFinalGames).toHaveBeenCalledWith(games);
 		expect(mocks.editorStore.applyAllChanges).toHaveBeenCalledWith(games);
-		expect(mocks.gamesStore.setAllGames).toHaveBeenCalledWith(finalGames);
-	});
-
-	it('does not update games when applyAllChanges fails', async () => {
-		mocks.gamesStore.games = [createTestGame({ id: 'a' })];
-		mocks.editorStore.applyAllChanges.mockResolvedValue(false);
-
-		await editorModalState.handleApplyChanges();
-
+		// handleApplyChanges must not overwrite the store with a stale base:
+		// applyAllChanges fetches latest server data and updates the store itself.
 		expect(mocks.gamesStore.setAllGames).not.toHaveBeenCalled();
 	});
 });

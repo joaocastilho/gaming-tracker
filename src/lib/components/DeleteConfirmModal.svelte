@@ -18,13 +18,12 @@ async function handleConfirm() {
 	if (game) {
 		editorStore.deletePendingGame(game.id);
 
-		// In dev mode: save immediately to local JSON file
+		// In dev mode: save immediately to local JSON file.
+		// saveLocally fetches the latest base and updates the store itself.
 		if (dev) {
 			const currentGames = gamesStore.games;
-			const finalGames = editorStore.buildFinalGames(currentGames);
 			const success = await editorStore.saveLocally(currentGames);
 			if (success) {
-				gamesStore.setAllGames(finalGames);
 				await invalidateAll();
 			}
 		}
