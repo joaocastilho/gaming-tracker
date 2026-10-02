@@ -86,7 +86,7 @@ const hasRatings = $derived(
 	<div class="score-result mx-4 mt-2 md:mt-auto">
 		{#if game.status === 'Completed'}
 			<span class="status-badge score-badge" class:opacity-40={game.score === null}>
-				<Award size={28} />
+				<Award size={26} />
 				<span class="score-num">{game.score ?? '-'}</span>
 			</span>
 		{:else}
@@ -107,11 +107,11 @@ const hasRatings = $derived(
 		justify-content: center;
 		gap: 12px;
 		width: 100%;
-		padding: 8px 16px;
-		height: 4rem;
+		padding: 6px 16px;
+		height: 3.5rem;
 		border: 1px solid;
 		border-radius: 8px;
-		font-size: 1.25rem;
+		font-size: 1.125rem;
 		font-weight: 800;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
@@ -138,7 +138,7 @@ const hasRatings = $derived(
 	}
 
 	.score-num {
-		font-size: 2rem;
+		font-size: 1.875rem;
 		font-weight: 900;
 		line-height: 1;
 	}
@@ -146,6 +146,16 @@ const hasRatings = $derived(
 	@media (max-width: 767px) and (orientation: portrait) {
 		.ratings-wrapper {
 			margin-top: auto;
+		}
+
+		/* The badge is narrower on phones, so the score digit scales down to suit. */
+		.score-num {
+			font-size: 1.625rem;
+		}
+
+		:global(.score-badge svg) {
+			width: 22px;
+			height: 22px;
 		}
 	}
 

@@ -14,7 +14,11 @@ let { game }: Props = $props();
 
 
 
-<div class="mb-6 flex items-center justify-between md:mb-4">
+<div
+	class="metadata-badge-row mb-6 flex items-center md:mb-4 {game.tier
+		? 'justify-between'
+		: 'justify-start'}"
+>
 	<div class="flex flex-wrap gap-2">
 		<span
 			class="badge rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
@@ -48,10 +52,6 @@ let { game }: Props = $props();
 		>
 			{getTierDisplayName(game.tier)}
 		</span>
-	{:else if game.status === 'Playing'}
-		<span class="status-word status-playing text-sm font-semibold md:text-sm"> PLAYING </span>
-	{:else if game.status === 'Planned'}
-		<span class="status-word status-planned text-sm font-semibold md:text-sm"> PLANNED </span>
 	{/if}
 </div>
 
@@ -124,30 +124,6 @@ let { game }: Props = $props();
 </div>
 
 <style>
-	.status-word {
-		font-weight: 700;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-		white-space: nowrap;
-		align-self: center;
-	}
-
-	.status-playing {
-		color: #34d399;
-	}
-
-	.status-planned {
-		color: #60a5fa;
-	}
-
-	:global(.light) .status-playing {
-		color: #059669;
-	}
-
-	:global(.light) .status-planned {
-		color: #2563eb;
-	}
-
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
 		.metadata-grid {
 			display: grid !important;

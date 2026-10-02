@@ -130,6 +130,35 @@ describe('Score block has one consistent height for every status', () => {
 		expect(height).toBeGreaterThan(3);
 	});
 
+	it('keeps the badge within a compact height range', () => {
+		const badgeRule = MODAL_SOURCE.match(/\.status-badge\s*\{([^}]*)\}/)?.[1] ?? '';
+		const height = Number(badgeRule.match(/height:\s*([\d.]+)rem/)?.[1]);
+
+		expect(height).toBeGreaterThanOrEqual(3.25);
+		expect(height).toBeLessThanOrEqual(3.75);
+
+		// Font scales down with the box so the text does not crowd it.
+		const fontSize = Number(badgeRule.match(/font-size:\s*([\d.]+)rem/)?.[1]);
+		expect(fontSize).toBeLessThan(1.25);
+		expect(fontSize).toBeGreaterThan(1);
+	});
+
+	it('scales the score number down on mobile portrait', () => {
+		const baseSize = Number(MODAL_SOURCE.match(/\.score-num\s*\{[^}]*font-size:\s*([\d.]+)rem/)?.[1]);
+		expect(baseSize).toBeGreaterThan(0);
+
+		// A mobile portrait override must exist and be smaller than the base size,
+		// otherwise the digit crowds the narrower phone badge.
+		const portraitBlock = MODAL_SOURCE.match(
+			/@media \(max-width: 767px\) and \(orientation: portrait\)\s*\{([\s\S]*?)\n\t\}/
+		)?.[1];
+		expect(portraitBlock).toBeTruthy();
+
+		const mobileSize = Number(portraitBlock?.match(/\.score-num\s*\{[^}]*font-size:\s*([\d.]+)rem/)?.[1]);
+		expect(mobileSize).toBeGreaterThan(0);
+		expect(mobileSize).toBeLessThan(baseSize);
+	});
+
 	it('narrows the badge symmetrically so it stays centred', () => {
 		// Narrowing happens through matching left/right insets on the wrapper, so
 		// the badge never depends on its own text length for width.
