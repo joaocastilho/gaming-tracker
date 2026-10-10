@@ -222,7 +222,7 @@ function handleImageError() {
 	@media (max-width: 767px) and (orientation: portrait) {
 		.modal-image-container {
 			flex: 1 1 18vh;
-			max-height: 28vh;
+			max-height: 35vh;
 			min-height: 14vh;
 		}
 

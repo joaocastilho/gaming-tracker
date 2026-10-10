@@ -327,7 +327,7 @@ $effect(() => {
 				}}
 			>
 				<div
-					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[660px] md:w-[1100px] md:max-w-full md:rounded-xl md:shadow-2xl {isIOS
+					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[600px] md:w-[1000px] md:max-w-[calc(100%/1.1)] md:rounded-xl md:shadow-2xl {isIOS
 						? 'ios-modal'
 						: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
 						? 'swiping-close'
@@ -476,12 +476,19 @@ $effect(() => {
 			opacity: 1;
 		}
 	}
+	@media (min-width: 768px) {
+		:global(.modal-content) {
+			zoom: 1.1;
+		}
+	}
+
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
 		:global(.modal-content) {
 			height: 100% !important;
 			max-height: none !important;
 			max-width: none !important;
 			width: 100% !important;
+			zoom: 1 !important;
 			border-radius: 0 !important;
 		}
 	}
