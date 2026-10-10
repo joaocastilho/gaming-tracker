@@ -17,7 +17,6 @@ import { modalStore } from '#lib/stores/modal.svelte.js';
 import { windowSize } from '#lib/stores/window.svelte.js';
 
 import Header from '#lib/components/Header.svelte';
-import ResultCount from '#lib/components/ResultCount.svelte';
 import ScrollToTopButton from '#lib/components/ScrollToTopButton.svelte';
 import BottomNavigation from '#lib/components/BottomNavigation.svelte';
 import NoResults from '#lib/components/NoResults.svelte';
@@ -588,7 +587,6 @@ let shareDescription = $derived.by(() => {
 						<p class="sub">Add your first game to get started.</p>
 					</div>
 				{:else}
-					<ResultCount count={currentFilteredGames.length} filtered={hasActiveFilters} />
 					{#if hasActiveFilters && currentFilteredGames.length === 0}
 						<NoResults onReset={resetFilters} />
 					{:else if currentFilteredGames.length === 0}
