@@ -46,7 +46,6 @@ body {
 	z-index: 50;
 	background: var(--color-surface);
 	backdrop-filter: blur(12px);
-	border-bottom: 1px solid var(--color-border);
 }
 
 /* CLS Prevention */
