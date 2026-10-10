@@ -67,6 +67,10 @@ body {
 	--color-primary: var(--color-accent);
 	--color-primary-rgb: var(--color-accent-rgb);
 
+	/* Danger accent for destructive dialogs */
+	--color-danger: #f87171;
+	--color-danger-strong: #ef4444;
+
 	/* Interactive States */
 	--color-hover: rgba(99, 102, 241, 0.12);
 	--color-active: rgba(99, 102, 241, 0.2);
@@ -246,54 +250,59 @@ body {
    LIGHT MODE - Clean Slate Theme
    ============================================ */
 .light {
-	/* Base Background Colors - Clean warm-light neutral */
-	--color-background: #f2f0ed;
-	--color-background-rgb: 242, 240, 237;
-	--color-surface: #ffffff;
-	--color-surface-solid: #ffffff;
-	--color-surface-elevated: #faf9f7;
-	--color-surface-elevated-solid: #faf9f7;
-	--color-surface-completed: #f0fdf4;
-	--color-surface-completed-solid: #f0fdf4;
-	--color-surface-playing: #fffbeb;
-	--color-surface-playing-solid: #fffbeb;
-	--color-border: rgba(0, 0, 0, 0.08);
-	--color-border-subtle: rgba(0, 0, 0, 0.04);
-	--color-border-solid: #e5e3e0;
+	/* Base Background Colors - Warm stone neutrals, deliberately a step below
+	   pure white so cards read as raised panels instead of glaring. */
+	--color-background: #eae6df;
+	--color-background-rgb: 234, 230, 223;
+	--color-surface: #fbfaf7;
+	--color-surface-solid: #fbfaf7;
+	--color-surface-elevated: #f3f0e9;
+	--color-surface-elevated-solid: #f3f0e9;
+	--color-surface-completed: #e7efe6;
+	--color-surface-completed-solid: #e7efe6;
+	--color-surface-playing: #f5eddb;
+	--color-surface-playing-solid: #f5eddb;
+	--color-border: rgba(62, 52, 40, 0.13);
+	--color-border-subtle: rgba(62, 52, 40, 0.07);
+	--color-border-solid: #dbd5c9;
 
-	/* Text Colors - Strong contrast on light backgrounds */
-	--color-text-primary: #0f0f0f;
-	--color-text-secondary: #525252;
-	--color-text-tertiary: #8c8c8c;
-	--color-text-muted: #a3a3a3;
+	/* Text Colors - Warm near-black with stone greys */
+	--color-text-primary: #1c1917;
+	--color-text-secondary: #57534e;
+	--color-text-tertiary: #6b665d;
+	--color-text-muted: #837c72;
 
-	/* Accent Colors - Indigo (consistent with dark mode) */
+	/* Accent Colors - Indigo, deepened so hover lands darker not lighter */
 	--color-accent: #4f46e5;
-	--color-accent-hover: #6366f1;
-	--color-accent-secondary: #0d9488;
-	--color-accent-secondary-hover: #14b8a6;
+	--color-accent-hover: #4338ca;
+	--color-accent-secondary: #0f766e;
+	--color-accent-secondary-hover: #115e59;
 	--color-accent-rgb: 79, 70, 229;
 	--color-accent-foreground: #ffffff;
 	--color-primary: var(--color-accent);
 	--color-primary-rgb: var(--color-accent-rgb);
 
 	/* Interactive States */
-	--color-hover: rgba(79, 70, 229, 0.08);
-	--color-active: rgba(79, 70, 229, 0.16);
-	--color-focus-ring: rgba(79, 70, 229, 0.3);
+	--color-hover: rgba(79, 70, 229, 0.07);
+	--color-active: rgba(79, 70, 229, 0.15);
+	--color-focus-ring: rgba(79, 70, 229, 0.35);
 
-	/* Glassmorphism */
-	--glass-bg: rgba(255, 255, 255, 0.85);
-	--glass-border: rgba(0, 0, 0, 0.08);
-	--glass-backdrop: blur(16px) saturate(180%);
+	/* Glassmorphism - backed off saturation keeps content calm through blur */
+	--glass-bg: rgba(251, 250, 247, 0.82);
+	--glass-border: rgba(62, 52, 40, 0.12);
+	--glass-backdrop: blur(16px) saturate(130%);
 
-	/* Shadows - Soft and clean */
-	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-	--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-	--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-	--shadow-glow: 0 0 20px rgba(79, 70, 229, 0.12);
-	--shadow-glow-secondary: 0 0 20px rgba(13, 148, 136, 0.12);
+	/* Shadows - Warm-tinted so depth never reads as grey smudge */
+	--shadow-sm: 0 1px 2px rgba(41, 33, 24, 0.06);
+	--shadow-md: 0 4px 8px -1px rgba(41, 33, 24, 0.09), 0 2px 4px -2px rgba(41, 33, 24, 0.05);
+	--shadow-lg: 0 10px 20px -3px rgba(41, 33, 24, 0.12), 0 4px 8px -4px rgba(41, 33, 24, 0.07);
+	--shadow-xl: 0 20px 30px -5px rgba(41, 33, 24, 0.14), 0 8px 12px -6px rgba(41, 33, 24, 0.08);
+	--shadow-glow: 0 0 20px rgba(79, 70, 229, 0.1);
+	--shadow-glow-secondary: 0 0 20px rgba(15, 118, 110, 0.1);
+
+	/* Delete/danger accent - red-400 text is invisible on light surfaces */
+	--color-danger: #b91c1c;
+	--color-danger-strong: #dc2626;
 
 	/* Platform Colors - Light Mode (clean pastels on white) */
 	--color-platform-pc-bg: #eef2ff;
@@ -316,21 +325,21 @@ body {
 	--color-platform-ps4-text: #1d4ed8;
 	--color-platform-ps4-border: #bfdbfe;
 
-	--color-platform-ps2-bg: #f8fafc;
-	--color-platform-ps2-text: #475569;
-	--color-platform-ps2-border: #e2e8f0;
+	--color-platform-ps2-bg: #f1f0ec;
+	--color-platform-ps2-text: #44403c;
+	--color-platform-ps2-border: #e2ded5;
 
-	--color-platform-ps3-bg: #fafafa;
-	--color-platform-ps3-text: #525252;
-	--color-platform-ps3-border: #e5e5e5;
+	--color-platform-ps3-bg: #f4f2ee;
+	--color-platform-ps3-text: #57534e;
+	--color-platform-ps3-border: #e5e1d8;
 
 	--color-platform-xbox-360-bg: #f0fdf4;
 	--color-platform-xbox-360-text: #15803d;
 	--color-platform-xbox-360-border: #bbf7d0;
 
-	--color-platform-ps1-bg: #fafafa;
-	--color-platform-ps1-text: #525252;
-	--color-platform-ps1-border: #e5e5e5;
+	--color-platform-ps1-bg: #f5f3ef;
+	--color-platform-ps1-text: #57534e;
+	--color-platform-ps1-border: #e7e3da;
 
 	--color-platform-3ds-bg: #fef2f2;
 	--color-platform-3ds-text: #b91c1c;
@@ -356,69 +365,74 @@ body {
 	--color-platform-dreamcast-text: #be123c;
 	--color-platform-dreamcast-border: #fecdd3;
 
-	/* Genre Colors - Light Mode (clean tints on white) */
-	--color-genre-action-bg: #fff1f4;
-	--color-genre-action-text: #e6194b;
+	/* Genre Colors - Light Mode. The dark-mode text hexes are bright
+	   saturated hues meant for dark fills; reused on pale tints they were
+	   effectively unreadable (yellow-on-pale-yellow, cyan-on-pale-cyan).
+	   Each text tone is now the 700-800 shade of the same hue, which clears
+	   ~4.5:1 on its tint. */
+
+	--color-genre-action-bg: #fff1f2;
+	--color-genre-action-text: #be123c;
 	--color-genre-action-border: #fecdd3;
 
 	--color-genre-action-adventure-bg: #eef2ff;
-	--color-genre-action-adventure-text: #4363d8;
+	--color-genre-action-adventure-text: #1e40af;
 	--color-genre-action-adventure-border: #c7d2fe;
 
-	--color-genre-rpg-bg: #fff9c4;
-	--color-genre-rpg-text: #ffe119;
+	--color-genre-rpg-bg: #fefce8;
+	--color-genre-rpg-text: #a16207;
 	--color-genre-rpg-border: #fef08a;
 
-	--color-genre-shooter-bg: #eaf8ed;
-	--color-genre-shooter-text: #3cb44b;
+	--color-genre-shooter-bg: #f0fdf4;
+	--color-genre-shooter-text: #15803d;
 	--color-genre-shooter-border: #bbf7d0;
 
-	--color-genre-horror-bg: #fff7ed;
-	--color-genre-horror-text: #9a6324;
-	--color-genre-horror-border: #fed7aa;
+	--color-genre-horror-bg: #fdf8f3;
+	--color-genre-horror-text: #78350f;
+	--color-genre-horror-border: #eadbc8;
 
-	--color-genre-metroidvania-bg: #fdf4ff;
-	--color-genre-metroidvania-text: #911eb4;
+	--color-genre-metroidvania-bg: #faf5ff;
+	--color-genre-metroidvania-text: #7e22ce;
 	--color-genre-metroidvania-border: #e9d5ff;
 
-	--color-genre-platformer-bg: #fdf2ff;
-	--color-genre-platformer-text: #f032e6;
+	--color-genre-platformer-bg: #fdf4ff;
+	--color-genre-platformer-text: #a21caf;
 	--color-genre-platformer-border: #f5d0fe;
 
 	--color-genre-puzzle-bg: #ecfeff;
-	--color-genre-puzzle-text: #42d4f4;
+	--color-genre-puzzle-text: #0e7490;
 	--color-genre-puzzle-border: #a5f3fc;
 
-	--color-genre-strategy-bg: #e0f2f1;
-	--color-genre-strategy-text: #008080;
+	--color-genre-strategy-bg: #f0fdfa;
+	--color-genre-strategy-text: #115e59;
 	--color-genre-strategy-border: #99f6e4;
 
-	--color-genre-survival-bg: #fff3e8;
-	--color-genre-survival-text: #f58231;
+	--color-genre-survival-bg: #fff7ed;
+	--color-genre-survival-text: #9a3412;
 	--color-genre-survival-border: #fed7aa;
 
 	/* Status badge colors - light mode keeps the darker text tones for contrast */
-	--color-status-score-text: #d97706;
-	--color-status-score-bg: rgba(245, 158, 11, 0.15);
-	--color-status-score-border: rgba(245, 158, 11, 0.3);
-	--color-status-playing-text: #059669;
-	--color-status-playing-bg: rgba(16, 185, 129, 0.1);
+	--color-status-score-text: #92400e;
+	--color-status-score-bg: rgba(245, 158, 11, 0.13);
+	--color-status-score-border: rgba(245, 158, 11, 0.26);
+	--color-status-playing-text: #047857;
+	--color-status-playing-bg: rgba(16, 185, 129, 0.09);
 	--color-status-playing-border: rgba(16, 185, 129, 0.2);
-	--color-status-planned-text: #60a5fa;
-	--color-status-planned-bg: rgba(59, 130, 246, 0.1);
+	--color-status-planned-text: #1d4ed8;
+	--color-status-planned-bg: rgba(59, 130, 246, 0.09);
 	--color-status-planned-border: rgba(59, 130, 246, 0.2);
 
 	/* Heat Scale - Light mode text stays readable on white surfaces */
-	--heat-1-bg: rgba(99, 102, 241, 0.16);
+	--heat-1-bg: rgba(99, 102, 241, 0.14);
 	--heat-1-text: #4338ca;
-	--heat-2-bg: rgba(6, 182, 212, 0.22);
-	--heat-2-text: #0e7490;
-	--heat-3-bg: rgba(234, 179, 8, 0.32);
+	--heat-2-bg: rgba(6, 182, 212, 0.18);
+	--heat-2-text: #155e75;
+	--heat-3-bg: rgba(234, 179, 8, 0.28);
 	--heat-3-text: #854d0e;
-	--heat-4-bg: rgba(249, 115, 22, 0.5);
-	--heat-4-text: #ea580c;
+	--heat-4-bg: rgba(249, 115, 22, 0.42);
+	--heat-4-text: #ffffff;
 	--heat-5-bg: linear-gradient(135deg, #f97316, #ef4444 60%, #dc2626);
-	--heat-5-text: #dc2626;
+	--heat-5-text: #ffffff;
 }
 
 /* ============================================
@@ -511,13 +525,6 @@ body {
 		transform: translateY(-1px);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
-}
-
-/* Light mode - stronger badge borders for visibility */
-.light .platform-badge,
-.light .genre-badge {
-	border-color: var(--color-border-solid);
-	filter: saturate(1.1);
 }
 
 @media (hover: hover) {
