@@ -292,7 +292,7 @@ $effect(() => {
 						e.stopPropagation();
 						navigateToPrevious();
 					}}
-					class="nav-arrow-btn absolute top-1/2 left-[calc(50%-600px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
+					class="nav-arrow-btn absolute top-1/2 left-[calc(50%-566px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
 					aria-label="Previous game"
 				>
 					<ChevronLeft size={28} />
@@ -304,7 +304,7 @@ $effect(() => {
 						e.stopPropagation();
 						navigateToNext();
 					}}
-					class="nav-arrow-btn absolute top-1/2 right-[calc(50%-600px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
+					class="nav-arrow-btn absolute top-1/2 right-[calc(50%-566px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
 					aria-label="Next game"
 				>
 					<ChevronRight size={28} />

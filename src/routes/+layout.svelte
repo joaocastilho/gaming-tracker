@@ -693,6 +693,11 @@ let shareDescription = $derived.by(() => {
 	.filter-section {
 		background-color: var(--color-background);
 		border-color: var(--color-border);
+		/* Own stacking context so the filter dropdowns (z-index 1000, confined
+		   here) paint above the game grid, which sits at z-index auto. Without
+		   this the panel lost to the grid's `contain: layout style` cards. */
+		position: relative;
+		z-index: 30;
 	}
 
 	.reset-button {
