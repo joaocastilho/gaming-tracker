@@ -3,9 +3,10 @@ import { goto } from '$app/navigation';
 import { gamesStore } from '#lib/stores/games.svelte.js';
 import { modalStore } from '#lib/stores/modal.svelte.js';
 import { windowSize } from '#lib/stores/window.svelte.js';
+import { getGenreClasses, getPlatformClasses } from '#lib/utils/colorConstants.js';
 import GameCard from '#lib/components/GameCard.svelte';
 import type { Game } from '#lib/types/game.js';
-import { Sparkles, ChevronRight, Hourglass, Gamepad2 } from '@lucide/svelte';
+import { Sparkles, ChevronRight, Gamepad2 } from '@lucide/svelte';
 
 let games = $derived(gamesStore.games);
 
@@ -61,13 +62,15 @@ function viewAllCompleted() {
 								<div class="np-info">
 									<h2 class="np-title">{game.title}</h2>
 									<div class="np-meta">
-										<span class="np-chip">{game.platform}</span>
-										<span class="np-chip">{game.genre}</span>
-										<span class="np-chip">{game.year}</span>
+										<span class="chip {getPlatformClasses(game.platform)}">{game.platform}</span>
+										<span class="chip {getGenreClasses(game.genre)}">{game.genre}</span>
+										<span class="chip chip-neutral">{game.year}</span>
 									</div>
 									<div class="np-playtime">
-										<Hourglass size={16} />
-										<span>{game.playtime}</span>
+										<span class="np-playtime-label">Time to Beat</span>
+										<div class="np-playtime-value">
+											<span>{game.playtime}</span>
+										</div>
 									</div>
 								</div>
 							</button>
@@ -236,7 +239,7 @@ function viewAllCompleted() {
 	.np-info {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: flex-start;
 		gap: 8px;
 		padding: 16px;
 		flex: 1;
@@ -278,19 +281,39 @@ function viewAllCompleted() {
 		gap: 6px;
 	}
 
-	.np-chip {
+	.chip {
 		display: inline-flex;
 		padding: 3px 10px;
 		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 600;
+		border-width: 1px;
+		border-style: solid;
+	}
+
+	.chip-neutral {
 		background: var(--color-surface-elevated);
 		color: var(--color-text-secondary);
-		border: 1px solid var(--color-border);
+		border-color: var(--color-border);
 	}
 
 	.np-playtime {
 		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.np-playtime-label {
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		opacity: 0.7;
+		color: var(--color-text-tertiary);
+	}
+
+	.np-playtime-value {
+		display: inline-flex;
 		align-items: center;
 		gap: 6px;
 		font-size: 0.85rem;
@@ -356,8 +379,7 @@ function viewAllCompleted() {
 
 	.recent-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, 300px);
-		justify-content: center;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 12px;
 		width: 100%;
 	}
