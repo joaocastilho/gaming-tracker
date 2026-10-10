@@ -150,7 +150,7 @@ const hasRatings = $derived(
 		   used to strand the whole block at the bottom and leave a large empty
 		   gap between Hours Played and the Ratings heading. */
 		.ratings-wrapper {
-			margin-top: 1.5rem;
+			margin-top: 1.25rem;
 		}
 
 		/* The badge is narrower on phones, so the score digit scales down to suit. */

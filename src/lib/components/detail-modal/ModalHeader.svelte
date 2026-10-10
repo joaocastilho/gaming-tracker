@@ -114,6 +114,18 @@ $effect(() => {
 		}
 	}
 
+	@media (max-width: 767px) and (orientation: portrait) {
+		#modal-title {
+			min-height: 60px;
+			line-height: 25px;
+		}
+
+		/* The subtitle carries an inline line-height; the tighter rhythm must win. */
+		#modal-title span {
+			line-height: 25px !important;
+		}
+	}
+
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
 		#modal-title {
 			min-height: auto !important;

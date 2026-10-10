@@ -124,6 +124,16 @@ let { game }: Props = $props();
 </div>
 
 <style>
+	@media (max-width: 767px) and (orientation: portrait) {
+		.metadata-badge-row {
+			margin-bottom: 1rem;
+		}
+
+		.metadata-grid {
+			margin-bottom: 0.75rem;
+		}
+	}
+
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
 		.metadata-grid {
 			display: grid !important;
