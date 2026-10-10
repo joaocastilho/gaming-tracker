@@ -14,7 +14,7 @@ const hasRatings = $derived(
 </script>
 
 <div class="ratings-wrapper mt-6 md:mt-0 md:flex md:flex-1 md:flex-col">
-	<div class="landscape-hidden-title mb-4 flex items-center gap-3 md:mb-4">
+	<div class="landscape-hidden-title mb-4 flex items-center gap-3 md:mt-auto md:mb-4">
 		<h3
 			class="text-base font-bold tracking-[0.2em] uppercase md:text-lg"
 			style="color: var(--color-text-tertiary);"
@@ -83,7 +83,7 @@ const hasRatings = $derived(
 
 	<!-- The fixed height on .status-badge keeps this block the same size for every
 	     status, so the Ratings row above never shifts when swiping between games. -->
-	<div class="score-result mx-4 mt-2 md:mt-auto">
+	<div class="score-result mx-4 mt-2">
 		{#if game.status === 'Completed'}
 			<span class="status-badge score-badge" class:opacity-40={game.score === null}>
 				<Award size={26} />
@@ -144,13 +144,8 @@ const hasRatings = $derived(
 	}
 
 	@media (max-width: 767px) and (orientation: portrait) {
-		/* Natural flow on phones: Ratings sit directly under the metadata grid
-		   (Hours Played) and the score badge follows the rating cards, instead
-		   of being pushed to the bottom of the column. `margin-top: auto` here
-		   used to strand the whole block at the bottom and leave a large empty
-		   gap between Hours Played and the Ratings heading. */
 		.ratings-wrapper {
-			margin-top: 1.25rem;
+			margin-top: auto;
 		}
 
 		/* The badge is narrower on phones, so the score digit scales down to suit. */
