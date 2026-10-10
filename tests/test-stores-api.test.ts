@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { appStore } from '#lib/stores/app.svelte.js';
 import { filtersStore } from '#lib/stores/filters.svelte.js';
 import { gamesStore } from '#lib/stores/games.svelte.js';
+import { db } from '#lib/db.js';
 
 /**
  * Comprehensive tests for stores API (Svelte 5 version)
@@ -398,6 +399,69 @@ describe('GamesStore API', () => {
 		it('getGameBySlug finds game by slug', () => {
 			const game = gamesStore.getGameBySlug('test-game-1');
 			expect(game).toBeDefined();
+		});
+
+		it('findByUrlSlug matches the title slug', () => {
+			const game = gamesStore.findByUrlSlug('test-game-1');
+			expect(game).toBeDefined();
+		});
+
+		it('findByUrlSlug matches the main title slug when a subtitle exists', () => {
+			gamesStore.initializeGames([
+				{
+					id: 'sub-1',
+					title: 'The Legend of Zelda: Breath of the Wild (Switch)',
+					platform: 'Switch',
+					genre: 'Adventure',
+					status: 'Completed',
+					year: 2017,
+					coOp: 'No',
+					coverImage: 'covers/zelda.webp',
+					playtime: '50h 0m',
+					finishedDate: '2023-01-01T00:00:00.000Z',
+					ratingPresentation: 10,
+					ratingStory: 9,
+					ratingGameplay: 10,
+					score: 19,
+					tier: 'S - Masterpiece',
+				},
+			]);
+
+			expect(gamesStore.findByUrlSlug('the-legend-of-zelda-breath-of-the-wild')).toBeDefined();
+			expect(gamesStore.findByUrlSlug('the-legend-of-zelda-breath-of-the-wild-switch')).toBeDefined();
+			expect(gamesStore.findByUrlSlug('no-such-game')).toBeUndefined();
+		});
+
+		it('findByUrlSlug falls back to the game id', () => {
+			const firstGameId = gamesStore.games[0]?.id;
+			expect(firstGameId).toBeDefined();
+			if (!firstGameId) return;
+			expect(gamesStore.findByUrlSlug(firstGameId)?.id).toBe(firstGameId);
+		});
+	});
+
+	describe('Dexie persistence', () => {
+		it('initializeGames persists to IndexedDB by default', async () => {
+			const spy = vi.spyOn(db.games, 'bulkPut');
+			try {
+				gamesStore.initializeGames(mockGames);
+				await Promise.resolve();
+				expect(spy).toHaveBeenCalled();
+			} finally {
+				spy.mockRestore();
+			}
+		});
+
+		it('initializeGames skips the IndexedDB write-back when persist is false', async () => {
+			const spy = vi.spyOn(db.games, 'bulkPut');
+			try {
+				gamesStore.initializeGames(mockGames, { persist: false });
+				await Promise.resolve();
+				expect(spy).not.toHaveBeenCalled();
+				expect(gamesStore.games.length).toBe(2);
+			} finally {
+				spy.mockRestore();
+			}
 		});
 	});
 

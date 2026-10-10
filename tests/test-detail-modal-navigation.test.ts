@@ -77,7 +77,10 @@ describe('Detail Modal Navigation', () => {
 		modalStore.readFromURL(searchParams, mockGames);
 		const state = modalStore.getState();
 
-		expect(state.activeGame).toEqual(mockGame);
+		// The store resolves the slug against its transformed games (the app
+		// always passes gamesStore.games here), so the active game is the
+		// transformed fixture, not the raw object.
+		expect(state.activeGame).toEqual(gamesStore.games[0]);
 		expect(state.isOpen).toBe(true);
 	});
 
@@ -89,7 +92,7 @@ describe('Detail Modal Navigation', () => {
 
 		const state = modalStore.getState();
 		expect(state.isOpen).toBe(true);
-		expect(state.activeGame).toEqual(mockGame);
+		expect(state.activeGame).toEqual(gamesStore.games[0]);
 	});
 
 	it('updates URL when opening modal', async () => {

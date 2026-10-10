@@ -136,21 +136,8 @@ class ModalStore {
 
 		const gameSlug = searchParams.get('game');
 		if (gameSlug && isValidSlug(gameSlug)) {
-			let game = games.find((g) => {
-				const exactSlug = createGameSlug(g.title);
-				if (exactSlug === gameSlug) return true;
-
-				if (g.mainTitle && g.subtitle) {
-					const mainTitleSlug = createGameSlug(g.mainTitle);
-					if (mainTitleSlug === gameSlug) return true;
-				}
-
-				return false;
-			});
-
-			if (!game) {
-				game = games.find((g) => g.id === gameSlug);
-			}
+			// Indexed lookup: title slug, main-title slug, then id.
+			const game = gamesStore.findByUrlSlug(gameSlug);
 			if (game) {
 				const state = this._state;
 				if (!state.isOpen || state.activeGame?.id !== game.id) {
@@ -181,15 +168,15 @@ class ModalStore {
 
 				if (currentSlug) {
 					url.searchParams.set('game', slug);
-					await goto(url.toString(), { shallow: true, replace: true, state: { noscroll: true } });
+					await goto(url.toString(), { shallow: true, replace: true });
 				} else {
 					url.searchParams.set('game', slug);
-					await goto(url.toString(), { shallow: true, state: { noscroll: true } });
+					await goto(url.toString(), { shallow: true });
 				}
 			} else {
 				if (currentSlug) {
 					url.searchParams.delete('game');
-					await goto(url.toString(), { shallow: true, replace: true, state: { noscroll: true } });
+					await goto(url.toString(), { shallow: true, replace: true });
 				}
 			}
 		} catch {

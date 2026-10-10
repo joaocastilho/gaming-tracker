@@ -17,6 +17,34 @@ class GamesStore {
 
 	private _cardHeights = $state<Map<string, Record<number, CardHeights>>>(new Map());
 
+	// Slug/id lookup index, rebuilt only when the games array identity
+	// changes. Modal URL parsing and the lookup helpers used to scan the
+	// whole array with a slug computation per game on every call.
+	private lookupIndex = new Map<string, Game>();
+	private lookupIndexSource: Game[] | null = null;
+
+	private buildLookupIndex(): Map<string, Game> {
+		if (this.lookupIndexSource === this._games) return this.lookupIndex;
+
+		const index = new Map<string, Game>();
+		for (const game of this._games) {
+			// First key wins, matching the previous first-match find() semantics.
+			if (game.title) {
+				const slug = createGameSlug(game.title);
+				if (!index.has(slug)) index.set(slug, game);
+			}
+			if (game.mainTitle && game.subtitle) {
+				const mainSlug = createGameSlug(game.mainTitle);
+				if (!index.has(mainSlug)) index.set(mainSlug, game);
+			}
+			if (game.id && !index.has(game.id)) index.set(game.id, game);
+		}
+
+		this.lookupIndex = index;
+		this.lookupIndexSource = this._games;
+		return index;
+	}
+
 	get cardHeights(): Map<string, Record<number, CardHeights>> {
 		return this._cardHeights;
 	}
@@ -51,7 +79,16 @@ class GamesStore {
 		return Array.from(optionsSet).toSorted((a, b) => a.localeCompare(b));
 	}
 
-	initializeGames(rawGames: unknown[]): void {
+	/**
+	 * Initialize the store from raw data.
+	 *
+	 * `persist: false` skips the IndexedDB write-back for data that was just
+	 * read out of that same database (the layout's cache path), avoiding a
+	 * full-table rewrite on every page load. The default keeps the seeding
+	 * behavior for network-fetched data.
+	 */
+	initializeGames(rawGames: unknown[], options: { persist?: boolean } = {}): void {
+		const persist = options.persist !== false;
 		this.loading = true;
 		this.error = null;
 		try {
@@ -67,7 +104,7 @@ class GamesStore {
 			this.games = normalized;
 			this.scheduleCardHeights();
 
-			if (browser && typeof indexedDB !== 'undefined') {
+			if (persist && browser && typeof indexedDB !== 'undefined') {
 				const plainGames = structuredClone(normalized);
 				db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
 			}
@@ -85,11 +122,20 @@ class GamesStore {
 	}
 
 	getGameById(id: string): Game | undefined {
-		return this._games.find((game) => game.id === id);
+		return this.buildLookupIndex().get(id);
 	}
 
 	getGameBySlug(slug: string): Game | undefined {
-		return this._games.find((game) => createGameSlug(game.title) === slug);
+		return this.buildLookupIndex().get(slug);
+	}
+
+	/**
+	 * Resolve the `?game=` URL parameter: the full-title slug, the main-title
+	 * slug (for games with a parenthetical subtitle), or the raw game id.
+	 */
+	findByUrlSlug(slug: string): Game | undefined {
+		if (!slug) return undefined;
+		return this.buildLookupIndex().get(slug);
 	}
 
 	addGame(newGame: Game): void {
