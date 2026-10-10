@@ -87,14 +87,19 @@ function intersectionObserver(node: HTMLElement) {
 		margin-bottom: 2rem;
 		content-visibility: auto;
 		overflow: hidden;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, 250px);
+		justify-content: center;
+		gap: 1rem;
 	}
 
 	.tier-header {
+		grid-column: 1 / -1;
 		font-size: 1.5rem;
 		font-weight: 600;
 		padding: 0.75rem 1rem;
 		border-radius: 0.5rem;
-		margin-bottom: 1rem;
+		margin-bottom: 0;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -108,11 +113,7 @@ function intersectionObserver(node: HTMLElement) {
 	}
 
 	.tier-games-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, 250px);
-		justify-content: center;
-		gap: 1rem;
-		width: 100%;
+		display: contents;
 	}
 
 	.tier-card-wrapper {
@@ -122,14 +123,14 @@ function intersectionObserver(node: HTMLElement) {
 	}
 
 	@media (max-width: 767px) {
-		.tier-games-grid {
+		.tier-section {
 			grid-template-columns: repeat(2, 1fr);
 			gap: 0.75rem;
 		}
 	}
 
 	@media (max-width: 480px) {
-		.tier-games-grid {
+		.tier-section {
 			gap: 0.5rem;
 		}
 	}
