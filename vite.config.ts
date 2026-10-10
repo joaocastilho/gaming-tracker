@@ -8,6 +8,7 @@ import tailwindcss from '@tailwindcss/vite';
 import fs from 'node:fs';
 import path from 'node:path';
 import { brotliCompressSync, gzipSync } from 'node:zlib';
+import { minifySync } from 'rolldown/experimental';
 
 // Stylesheets for components that are only ever dynamically imported (the
 // layout's {#await import(...)} modals and menus) must not block first paint.
@@ -54,17 +55,15 @@ function deferLazyCss(html: string): string {
 // and emit it as a plain asset instead. The `.source` suffix keeps Vite from
 // treating `service-worker.js` as its own service-worker entry, which builds
 // with code splitting disabled and rejects the manualChunks config below.
+// minifySync comes from Rolldown (Vite's own bundler) so it runs on Node too -
+// a Bun-only minifier silently shipped the unminified file on Cloudflare.
 function emitServiceWorker(): Plugin {
 	return {
 		name: 'emit-service-worker',
 		generateBundle() {
 			const source = fs.readFileSync(path.resolve('src/service-worker.source.js'), 'utf-8');
-			let output = source;
-			if (typeof Bun !== 'undefined') {
-				// @ts-expect-error bun-types ships TranspilerOptions without `minify`, but Bun 1.4 supports it
-				output = new Bun.Transpiler({ loader: 'js', minify: true, target: 'browser' }).transformSync(source);
-			}
-			this.emitFile({ type: 'asset', fileName: 'service-worker.js', source: output });
+			const minified = minifySync('service-worker.js', source).code;
+			this.emitFile({ type: 'asset', fileName: 'service-worker.js', source: minified });
 		},
 	};
 }
