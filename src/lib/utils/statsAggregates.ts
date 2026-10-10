@@ -30,17 +30,10 @@ export interface YearMonthAggregates {
 	lastYear?: number;
 }
 
-interface MutableYear {
-	year: number;
-	count: number;
-	months: number[];
-	minutes: number;
-}
-
 export function computeYearMonthAggregates(games: Game[]): YearMonthAggregates {
 	// Insertion order matters: bestYear picks the first year (in map order)
 	// holding the maximum count, matching the previous Map-based derivation.
-	const byYear = new Map<number, MutableYear>();
+	const byYear = new Map<number, YearAggregate>();
 
 	for (const game of games) {
 		if (!game.finishedDate) continue;

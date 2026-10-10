@@ -99,15 +99,6 @@ let yearAggregates = $derived(computeYearMonthAggregates(completedGames));
 let gamesThisYearCount = $derived(countInYear(yearAggregates, currentYear));
 let playtimeThisYear = $derived(formatMinutes(minutesInYear(yearAggregates, currentYear)));
 
-let yearAllStats = $derived.by(() => ({
-	totalYears: yearAggregates.totalYears,
-	avg: yearAggregates.avgPerYear,
-	bestYear: yearAggregates.bestYear,
-	bestCount: yearAggregates.bestCount,
-	firstYear: yearAggregates.firstYear,
-	lastYear: yearAggregates.lastYear,
-}));
-
 let genreStats = $derived(computeGenreStats(completedGames));
 let scoreChart = $derived(buildScoreChart(completedGames));
 let ratedCount = $derived(
@@ -233,9 +224,9 @@ let topRated = $derived(computeTopRated(completedGames));
 				</div>
 				<div class="stat-value">{playtimeThisYear}</div>
 				<div class="stat-pills">
-					{#if yearAllStats.totalYears > 0}
-						<span class="stat-pill">{yearAllStats.firstYear}–{yearAllStats.lastYear}</span>
-						<span class="stat-pill">Peak: {yearAllStats.bestYear}</span>
+					{#if yearAggregates.totalYears > 0}
+						<span class="stat-pill">{yearAggregates.firstYear}–{yearAggregates.lastYear}</span>
+						<span class="stat-pill">Peak: {yearAggregates.bestYear}</span>
 					{/if}
 				</div>
 			</article>
@@ -448,7 +439,7 @@ let topRated = $derived(computeTopRated(completedGames));
 								<p class="chart-sub">Annual completions with your cumulative total</p>
 							</div>
 						</div>
-						<span class="chart-badge">Peak {yearAllStats.bestYear || '—'}</span>
+						<span class="chart-badge">Peak {yearAggregates.bestYear || '—'}</span>
 					</div>
 					<div class="chart-body chart-body-year">
 						<div class="year-scroll">
