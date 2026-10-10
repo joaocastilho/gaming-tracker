@@ -1,7 +1,6 @@
 import type { LayoutLoad } from './$types';
-import { browser, dev, building } from '$app/env';
+import { browser, dev } from '$app/env';
 import type { GamingTrackerDB } from '#lib/db.js';
-import { toSlug } from '#lib/utils/slugUtils.js';
 import { decideGamesRefresh, readPayloadLastUpdated } from '#lib/utils/gamesRefreshPolicy.js';
 import type { Game } from '#lib/types/game.js';
 
@@ -10,10 +9,8 @@ const GAMES_MARKER_KEY = 'games-last-updated';
 // Required by @sveltejs/adapter-static: every route prerenders at build time.
 export const prerender = true;
 
-export const load: LayoutLoad = async ({ fetch, url }) => {
-	const gameSlug = building ? null : url.searchParams.get('game');
+export const load: LayoutLoad = async ({ fetch }) => {
 	let games: Game[] = [];
-	let sharedGame: Game | null = null;
 	let gamesSource: 'cache' | 'network' | 'none' = 'none';
 
 	if (browser) {
@@ -47,13 +44,8 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 		}
 	}
 
-	if (gameSlug && games.length > 0) {
-		sharedGame = games.find((g) => toSlug(g.title) === gameSlug) || null;
-	}
-
 	return {
 		games,
-		sharedGame,
 		gamesSource,
 	};
 };

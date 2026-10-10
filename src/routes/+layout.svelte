@@ -41,7 +41,7 @@ let {
 	data,
 }: {
 	children: import('svelte').Snippet;
-	data: { games: Game[]; sharedGame: Game | null; gamesSource: 'cache' | 'network' | 'none' };
+	data: { games: Game[]; gamesSource: 'cache' | 'network' | 'none' };
 } = $props();
 
 let gamesInitialized = $state(false);
@@ -429,16 +429,18 @@ async function installApp() {
 	}
 }
 
+let sharedGame = $derived(browser ? (gamesStore.findByUrlSlug(page.url.searchParams.get('game') ?? '') ?? null) : null);
+
 let shareDescription = $derived.by(() => {
-	const g = data.sharedGame;
+	const g = sharedGame;
 	if (!g) return 'My personal video game collection with ratings, tier lists, and progress tracking.';
 	return buildOgDescription(g);
 });
 </script>
 
 <svelte:head>
-	<title>{data.sharedGame
-		? `Gaming Tracker - ${data.sharedGame.title}`
+	<title>{sharedGame
+		? `Gaming Tracker - ${sharedGame.title}`
 		: pageTitle === 'Gaming Tracker' ? 'Gaming Tracker' : `Gaming Tracker - ${pageTitle}`}</title>
 
 	<meta
@@ -448,8 +450,8 @@ let shareDescription = $derived.by(() => {
 
 	<meta
 		property="og:title"
-		content={data.sharedGame
-			? `Gaming Tracker - ${data.sharedGame.title}`
+		content={sharedGame
+			? `Gaming Tracker - ${sharedGame.title}`
 			: "Gaming Tracker"}
 	/>
 
@@ -460,16 +462,16 @@ let shareDescription = $derived.by(() => {
 	/>
 	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:site_name" content="Gaming Tracker" />
-	<meta property="og:image" content={data.sharedGame ? `${page.url.origin}/${data.sharedGame.coverImage}` : `${page.url.origin}/android-chrome-512x512.png`} />
-	<meta property="og:image:width" content={data.sharedGame ? "300" : "512"} />
-	<meta property="og:image:height" content={data.sharedGame ? "450" : "512"} />
-	<meta property="og:image:alt" content={data.sharedGame ? data.sharedGame.title : "Gaming Tracker"} />
+	<meta property="og:image" content={sharedGame ? `${page.url.origin}/${sharedGame.coverImage}` : `${page.url.origin}/android-chrome-512x512.png`} />
+	<meta property="og:image:width" content={sharedGame ? "300" : "512"} />
+	<meta property="og:image:height" content={sharedGame ? "450" : "512"} />
+	<meta property="og:image:alt" content={sharedGame ? sharedGame.title : "Gaming Tracker"} />
 	<meta name="twitter:card" content="summary_large_image" />
 
 	<meta
 		name="twitter:title"
-		content={data.sharedGame
-			? `Gaming Tracker - ${data.sharedGame.title}`
+		content={sharedGame
+			? `Gaming Tracker - ${sharedGame.title}`
 			: "Gaming Tracker"}
 	/>
 
@@ -477,7 +479,7 @@ let shareDescription = $derived.by(() => {
 		name="twitter:description"
 		content={shareDescription}
 	/>
-	<meta name="twitter:image" content={data.sharedGame ? `${page.url.origin}/${data.sharedGame.coverImage}` : `${page.url.origin}/android-chrome-512x512.png`} />
+	<meta name="twitter:image" content={sharedGame ? `${page.url.origin}/${sharedGame.coverImage}` : `${page.url.origin}/android-chrome-512x512.png`} />
 	<link rel="canonical" href={canonicalUrl} />
 	<meta
 		name="apple-mobile-web-app-status-bar-style"

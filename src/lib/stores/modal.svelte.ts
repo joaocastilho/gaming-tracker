@@ -131,7 +131,7 @@ class ModalStore {
 		return filterGamesByContext(allGames, this._state.filterContext);
 	}
 
-	readFromURL(searchParams: ReadonlyURLSearchParams, games: Game[]): void {
+	readFromURL(searchParams: ReadonlyURLSearchParams, displayedGames: Game[]): void {
 		if (this.isProgrammaticUpdate) return;
 
 		const gameSlug = searchParams.get('game');
@@ -141,7 +141,7 @@ class ModalStore {
 			if (game) {
 				const state = this._state;
 				if (!state.isOpen || state.activeGame?.id !== game.id) {
-					this.openViewModal(game, games);
+					this.openViewModal(game, displayedGames);
 				}
 			}
 		} else {
