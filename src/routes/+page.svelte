@@ -152,12 +152,13 @@ function viewAllCompleted() {
 	.np-scroll-row {
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: center;
 		gap: 16px;
 	}
 
 	.np-scroll-row .np-card {
 		flex: 1 1 420px;
-		max-width: 640px;
+		max-width: 800px;
 		min-width: 0;
 	}
 
