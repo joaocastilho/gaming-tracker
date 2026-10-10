@@ -207,7 +207,7 @@ function getAriaAttributes() {
 	}
 
 	:global(.light) .filter-button:hover:not(.selected) {
-		background-color: rgba(234, 88, 12, 0.04) !important;
+		background-color: var(--color-hover) !important;
 	}
 
 	.filter-button.selected {
@@ -273,11 +273,11 @@ function getAriaAttributes() {
 	}
 
 	:global(.light) .option-item:hover {
-		background-color: rgba(234, 88, 12, 0.04);
+		background-color: var(--color-hover);
 	}
 
 	.option-checkbox {
-		accent-color: #3b82f6;
+		accent-color: var(--color-accent);
 	}
 
 	.option-badge {
@@ -301,7 +301,7 @@ function getAriaAttributes() {
 	}
 
 	.option-checkbox:focus {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--color-accent);
 		outline-offset: 2px;
 	}
 

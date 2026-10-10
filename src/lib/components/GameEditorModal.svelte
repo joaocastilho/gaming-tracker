@@ -556,7 +556,7 @@ async function handleSave() {
 		padding: 0.6rem 0.8rem;
 		border-radius: 0.5rem;
 		background: rgba(239, 68, 68, 0.1);
-		color: #fca5a5;
+		color: var(--color-danger);
 		font-size: 0.85rem;
 		border: 1px solid rgba(239, 68, 68, 0.2);
 	}

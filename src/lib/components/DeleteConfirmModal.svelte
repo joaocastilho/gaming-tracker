@@ -107,14 +107,14 @@ function handleKeydown(event: KeyboardEvent) {
 		margin: 0 0 0.75rem;
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #fca5a5;
+		color: var(--color-danger);
 	}
 
 	p {
 		margin: 0 0 1.25rem;
 		font-size: 0.9rem;
 		line-height: 1.5;
-		color: #9ca3af;
+		color: var(--color-text-secondary);
 	}
 
 	strong {
@@ -140,7 +140,7 @@ function handleKeydown(event: KeyboardEvent) {
 
 	.secondary {
 		background: transparent;
-		color: #9ca3af;
+		color: var(--color-text-secondary);
 	}
 
 	.secondary:hover {

@@ -420,7 +420,7 @@ async function handleShare() {
 		}
 
 		:global(.light) .sheet-item:hover {
-			background-color: rgba(234, 88, 12, 0.03);
+			background-color: var(--color-hover);
 		}
 	}
 
@@ -458,7 +458,7 @@ async function handleShare() {
 		}
 
 		:global(.light) .sheet-item-blue:hover {
-			background-color: rgba(234, 88, 12, 0.03);
+			background-color: var(--color-hover);
 		}
 	}
 

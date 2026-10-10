@@ -88,15 +88,15 @@ let { type, count = 0, onClick }: Props = $props();
 		}
 
 		:global(.light) .mobile-filter-category-compact:hover {
-			background-color: rgba(234, 88, 12, 0.04);
-			border-color: rgba(234, 88, 12, 0.15);
+			background-color: var(--color-hover);
+			border-color: var(--color-accent);
 		}
 	}
 
 	.mobile-filter-category-compact.has-selection {
 		background-color: rgba(59, 130, 246, 0.15);
-		border-color: #3b82f6;
-		color: #60a5fa;
+		border-color: var(--color-accent);
+		color: var(--color-accent);
 	}
 
 	.category-count-small {
@@ -107,7 +107,7 @@ let { type, count = 0, onClick }: Props = $props();
 		height: 16px;
 		padding: 0 4px;
 		border-radius: 8px;
-		background-color: #3b82f6;
+		background-color: var(--color-accent);
 		color: white;
 		font-size: 0.65rem;
 		font-weight: 600;

@@ -57,12 +57,12 @@ function handleKeydown(event: KeyboardEvent) {
 	}
 
 	:global(.light) .filter-toggle:hover:not(.selected) {
-		background-color: rgba(234, 88, 12, 0.04);
+		background-color: var(--color-hover);
 	}
 
 	.filter-toggle.selected {
 		font-weight: 600;
-		color: #3b82f6;
+		color: var(--color-accent);
 	}
 
 	.filter-toggle.selected::after {
@@ -72,7 +72,7 @@ function handleKeydown(event: KeyboardEvent) {
 		left: 0;
 		right: 0;
 		height: 2px;
-		background-color: #3b82f6;
+		background-color: var(--color-accent);
 		border-radius: 2px;
 	}
 

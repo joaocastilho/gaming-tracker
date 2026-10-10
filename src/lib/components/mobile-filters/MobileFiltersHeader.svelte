@@ -93,7 +93,7 @@ let canReset = $derived(hasActiveFilters || isSortModified);
 	}
 
 	:global(.light) .mobile-header-icon.reset-icon.is-active {
-		background-color: rgba(234, 88, 12, 0.15);
+		background-color: var(--color-active);
 		color: var(--color-accent);
 		border-color: var(--color-accent);
 	}

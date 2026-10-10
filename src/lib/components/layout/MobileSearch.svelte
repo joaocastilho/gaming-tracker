@@ -202,7 +202,7 @@ function clearMobileSearch() {
 	}
 
 	:global(.light) .mobile-clear-button:hover {
-		background: rgba(234, 88, 12, 0.04);
+		background: var(--color-hover);
 	}
 
 	.mobile-close-button {
@@ -225,7 +225,7 @@ function clearMobileSearch() {
 
 	:global(.light) .mobile-close-button {
 		background: rgba(59, 130, 246, 0.08);
-		color: #3b82f6;
+		color: var(--color-accent);
 	}
 
 	.mobile-close-button:hover {

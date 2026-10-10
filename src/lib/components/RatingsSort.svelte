@@ -197,7 +197,7 @@ function handleSort(key: SortKey) {
 	}
 
 	:global(.light) .sort-button:hover {
-		background-color: rgba(234, 88, 12, 0.04);
+		background-color: var(--color-hover);
 	}
 
 	.sort-button.active {

@@ -154,7 +154,7 @@ function enableDevMode() {
 	.hint {
 		margin: 0 0 1rem;
 		font-size: 0.8rem;
-		color: #9ca3af;
+		color: var(--color-text-secondary);
 	}
 
 	form {
@@ -168,7 +168,7 @@ function enableDevMode() {
 		flex-direction: column;
 		gap: 0.25rem;
 		font-size: 0.8rem;
-		color: #9ca3af;
+		color: var(--color-text-secondary);
 	}
 
 	input {
@@ -189,7 +189,7 @@ function enableDevMode() {
 	.error {
 		margin-top: 0.2rem;
 		font-size: 0.75rem;
-		color: #fca5a5;
+		color: var(--color-danger);
 	}
 
 	.actions {
@@ -224,7 +224,7 @@ function enableDevMode() {
 
 	button.secondary {
 		background: transparent;
-		color: #9ca3af;
+		color: var(--color-text-secondary);
 	}
 
 	@media (hover: hover) {

@@ -137,7 +137,7 @@ function handleKeydown(event: KeyboardEvent) {
 	}
 
 	.search-input::placeholder {
-		color: var(--color-text-muted);
+		color: var(--color-text-tertiary);
 	}
 
 	.clear-button {

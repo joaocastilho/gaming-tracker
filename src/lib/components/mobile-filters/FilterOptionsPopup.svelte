@@ -228,14 +228,14 @@ function handleBackdropClick(e: MouseEvent) {
 	}
 
 	.popup-icon-btn.accept {
-		background-color: #3b82f6;
+		background-color: var(--color-accent);
 		color: white;
 		opacity: 0.9;
 	}
 
 	@media (hover: hover) {
 		.popup-icon-btn.accept:hover {
-			background-color: #2563eb;
+			background-color: var(--color-accent-hover);
 			opacity: 1;
 		}
 	}
@@ -281,8 +281,8 @@ function handleBackdropClick(e: MouseEvent) {
 	}
 
 	.themed-filter-pill.selected {
-		background-color: #3b82f6;
-		border-color: #3b82f6;
+		background-color: var(--color-accent);
+		border-color: var(--color-accent);
 		color: white;
 		box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 	}

@@ -406,7 +406,7 @@ async function handleLogout() {
 		}
 
 		:global(.light) .filter-search-toggle:hover {
-			background-color: rgba(234, 88, 12, 0.04);
+			background-color: var(--color-hover);
 		}
 	}
 
@@ -417,7 +417,7 @@ async function handleLogout() {
 	}
 
 	:global(.light) .filter-search-toggle.active {
-		background-color: rgba(234, 88, 12, 0.08);
+		background-color: var(--color-active);
 	}
 
 	.filter-shortcut {
