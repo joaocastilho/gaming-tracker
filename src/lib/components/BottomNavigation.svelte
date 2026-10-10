@@ -166,14 +166,15 @@ function handleKeyDown(event: KeyboardEvent, target: NavId) {
 
 	.count-badge {
 		position: absolute;
-		top: -8px;
+		top: auto;
+		bottom: -6px;
 		right: -12px;
 		background-color: var(--color-surface-completed);
 		color: var(--color-text-primary);
-		font-size: 0.7rem;
+		font-size: 0.8rem;
 		font-weight: 700;
-		min-width: 20px;
-		height: 20px;
+		min-width: 22px;
+		height: 22px;
 		border-radius: 10px;
 		display: flex;
 		align-items: center;
