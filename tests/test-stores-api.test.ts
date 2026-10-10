@@ -3,6 +3,7 @@ import { appStore } from '#lib/stores/app.svelte.js';
 import { filtersStore } from '#lib/stores/filters.svelte.js';
 import { gamesStore } from '#lib/stores/games.svelte.js';
 import { db } from '#lib/db.js';
+import { toSlug } from '#lib/utils/slugUtils.js';
 
 /**
  * Comprehensive tests for stores API (Svelte 5 version)
@@ -437,6 +438,32 @@ describe('GamesStore API', () => {
 			expect(firstGameId).toBeDefined();
 			if (!firstGameId) return;
 			expect(gamesStore.findByUrlSlug(firstGameId)?.id).toBe(firstGameId);
+		});
+
+		it('findByUrlSlug resolves like the legacy two-pass array scan', () => {
+			gamesStore.initializeGames([
+				{
+					id: 'collide-1',
+					title: 'Halo (Anniversary)',
+					platform: 'PC',
+					genre: 'Action',
+					status: 'Planned',
+					coOp: 'No',
+				},
+				{ id: 'halo', title: 'Halo', platform: 'PC', genre: 'Action', status: 'Planned', coOp: 'No' },
+				{ id: 'mass-effect', title: 'Unrelated Title', platform: 'PC', genre: 'Action', status: 'Planned', coOp: 'No' },
+				{ id: 'plain-1', title: 'Mass Effect', platform: 'PC', genre: 'RPG', status: 'Planned', coOp: 'No' },
+				{ id: 'plain-2', title: 'Mass Effect', platform: 'PC', genre: 'RPG', status: 'Planned', coOp: 'No' },
+			]);
+
+			const legacyResolve = (slug: string) =>
+				gamesStore.games.find(
+					(g) => toSlug(g.title) === slug || (g.mainTitle && g.subtitle && toSlug(g.mainTitle) === slug)
+				) ?? gamesStore.games.find((g) => g.id === slug);
+
+			for (const slug of ['halo', 'halo-anniversary', 'mass-effect', 'collide-1', 'plain-2', 'no-such-game']) {
+				expect(gamesStore.findByUrlSlug(slug)?.id).toBe(legacyResolve(slug)?.id);
+			}
 		});
 	});
 

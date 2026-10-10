@@ -28,7 +28,6 @@ class GamesStore {
 
 		const index = new Map<string, Game>();
 		for (const game of this._games) {
-			// First key wins, matching the previous first-match find() semantics.
 			if (game.title) {
 				const slug = createGameSlug(game.title);
 				if (!index.has(slug)) index.set(slug, game);
@@ -37,6 +36,8 @@ class GamesStore {
 				const mainSlug = createGameSlug(game.mainTitle);
 				if (!index.has(mainSlug)) index.set(mainSlug, game);
 			}
+		}
+		for (const game of this._games) {
 			if (game.id && !index.has(game.id)) index.set(game.id, game);
 		}
 
