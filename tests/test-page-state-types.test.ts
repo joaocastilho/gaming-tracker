@@ -9,13 +9,11 @@ describe('Page state type safety', () => {
 		const pageState: App.PageState = {
 			showMobileSearch: true,
 			fromTierlist: false,
-			noscroll: true,
 		};
 
 		// Act & Assert: Properties should be accessible with proper types
 		expect(pageState.showMobileSearch).toBe(true);
 		expect(pageState.fromTierlist).toBe(false);
-		expect(pageState.noscroll).toBe(true);
 	});
 
 	test('page state should accept partial properties', () => {

@@ -3,7 +3,6 @@ declare global {
 		interface PageState {
 			showMobileSearch?: boolean;
 			fromTierlist?: boolean;
-			noscroll?: boolean;
 		}
 	}
 

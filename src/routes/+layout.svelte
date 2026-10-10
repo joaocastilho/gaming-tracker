@@ -41,7 +41,7 @@ let {
 	data,
 }: {
 	children: import('svelte').Snippet;
-	data: { games: Game[]; sharedGame: Game | null };
+	data: { games: Game[]; sharedGame: Game | null; gamesSource: 'cache' | 'network' | 'none' };
 } = $props();
 
 let gamesInitialized = $state(false);
@@ -61,7 +61,9 @@ let deferredPrompt = $state<BeforeInstallPromptEvent | null>(null);
 $effect(() => {
 	if (gamesInitialized) return;
 	if (data.games && Array.isArray(data.games)) {
-		gamesStore.initializeGames(data.games);
+		// Data read straight out of IndexedDB is already there — skip the
+		// redundant write-back on every page load.
+		gamesStore.initializeGames(data.games, { persist: data.gamesSource !== 'cache' });
 		gamesInitialized = true;
 	}
 });

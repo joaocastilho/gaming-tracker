@@ -14,6 +14,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 	const gameSlug = building ? null : url.searchParams.get('game');
 	let games: Game[] = [];
 	let sharedGame: Game | null = null;
+	let gamesSource: 'cache' | 'network' | 'none' = 'none';
 
 	if (browser) {
 		try {
@@ -23,6 +24,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 			if (cachedGames.length > 0) {
 				refreshGamesInBackground(fetch, db);
 				games = cachedGames;
+				gamesSource = 'cache';
 			}
 		} catch (e) {
 			if (dev) console.warn('Failed to load from Dexie:', e);
@@ -38,6 +40,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 			if (res.ok) {
 				const data = await res.json();
 				games = data.games || [];
+				if (games.length > 0) gamesSource = 'network';
 			}
 		} catch {
 			// Silently ignore fetch errors
@@ -51,6 +54,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 	return {
 		games,
 		sharedGame,
+		gamesSource,
 	};
 };
 

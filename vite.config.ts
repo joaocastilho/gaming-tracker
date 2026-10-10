@@ -61,22 +61,11 @@ export default defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks(id: string) {
-					if (id.includes('#lib/components/FilterDropdown.svelte')) {
-						return 'filters';
-					}
-					if (id.includes('#lib/components/DetailModal.svelte')) {
-						return 'modals';
-					}
-					if (id.includes('#lib/components/GameEditorModal.svelte')) {
-						return 'editor';
-					}
-					if (id.includes('#lib/views/GamesView.svelte')) {
-						return 'games-view';
-					}
-					if (id.includes('#lib/components/VirtualList.svelte')) {
-						return 'virtual-list';
-					}
-
+					// Vendor splitting only. Component-level rules that matched on
+					// '#lib/...' specifiers never fired (Vite passes resolved file
+					// paths here), and the components they targeted are lazily
+					// imported via {#await import(...)} anyway, so they get their
+					// own chunks from the dynamic imports themselves.
 					if (id.includes('node_modules')) {
 						if (id.includes('chart.js') || id.includes('chartjs-plugin-datalabels')) {
 							return 'vendor-charts';
