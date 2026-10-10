@@ -1,5 +1,9 @@
 export function registerServiceWorker(): (() => void) | undefined {
 	if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+	// The worker is built from src/ by the emitServiceWorker Vite plugin, so it
+	// only exists in the built output. Registering it in dev would also cache
+	// stale hashed chunks across rebuilds.
+	if (!import.meta.env.PROD) return;
 
 	const swPath = '/service-worker.js';
 	let intervalId: ReturnType<typeof setInterval> | null = null;

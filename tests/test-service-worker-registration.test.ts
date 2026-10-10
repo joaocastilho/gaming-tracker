@@ -73,6 +73,9 @@ describe('registerServiceWorker', () => {
 
 	beforeEach(() => {
 		vi.useFakeTimers();
+		// Registration is production-only, so the behaviour tests below must
+		// run with the production build flag set.
+		vi.stubEnv('PROD', true);
 		reloadSpy = vi.fn();
 		Object.defineProperty(window.location, 'reload', { configurable: true, value: reloadSpy });
 		originalHidden = document.hidden;
@@ -81,6 +84,7 @@ describe('registerServiceWorker', () => {
 
 	afterEach(() => {
 		vi.useRealTimers();
+		vi.unstubAllEnvs();
 		Object.defineProperty(document, 'hidden', { configurable: true, value: originalHidden });
 	});
 
@@ -157,5 +161,17 @@ describe('registerServiceWorker', () => {
 	test('handles unsupported browsers gracefully', () => {
 		setNavigatorServiceWorker(undefined);
 		expect(() => registerServiceWorker()).not.toThrow();
+	});
+
+	test('skips registration outside production builds', () => {
+		// The worker only exists in the built output, and registering it in dev
+		// would cache stale hashed chunks between rebuilds.
+		vi.stubEnv('PROD', false);
+		const swMock = createServiceWorkerMock();
+		setNavigatorServiceWorker(swMock);
+
+		registerServiceWorker();
+
+		expect(swMock.register).not.toHaveBeenCalled();
 	});
 });
