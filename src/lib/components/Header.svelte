@@ -286,17 +286,12 @@ async function handleLogout() {
 		gap: 0.0625rem;
 	}
 
-	/* The 1rem right padding would push the badge away from the title. */
-	.tabs-list li:has(.count-badge) button {
-		padding-right: 0.2rem;
-	}
-
 	.tabs-list button {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.6rem 1rem;
+		padding: 0.6rem 0.6rem;
 		border: none;
 		background: transparent;
 		cursor: pointer;
@@ -321,10 +316,10 @@ async function handleLogout() {
 	}
 
 	.tabs-list .count-badge {
-		min-width: 1.8rem;
-		padding: 0.2rem 0.5rem;
+		min-width: 1.6rem;
+		padding: 0.15rem 0.5rem;
 		border-radius: 999px;
-		font-size: 1.05rem;
+		font-size: 0.9rem;
 		font-weight: 700;
 		text-align: center;
 		background: var(--color-surface-elevated);
