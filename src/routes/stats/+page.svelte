@@ -36,6 +36,7 @@ import {
 	buildYearChart,
 } from '#lib/utils/statsCharts.js';
 import { computeAverageScore, computeGenreStats, getNextMilestone, type GenreStat } from '#lib/utils/statsUtils.js';
+import { computeTopRated, computeYearMonthAggregates, countInYear, minutesInYear } from '#lib/utils/statsAggregates.js';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -89,34 +90,23 @@ $effect(() => {
 	return () => clearInterval(interval);
 });
 let currentYear = $derived(now.getFullYear());
-let gamesThisYear = $derived(
-	completedGames.filter((g) => {
-		if (!g.finishedDate) return false;
-		const d = new Date(g.finishedDate);
-		return d.getFullYear() === currentYear;
-	})
-);
-let playtimeThisYear = $derived(formatMinutes(computeTotalPlaytimeMinutes(gamesThisYear)));
 
-let yearAllStats = $derived.by(() => {
-	const yearMap = new Map<number, number>();
-	for (const g of completedGames) {
-		if (!g.finishedDate) continue;
-		const y = new Date(g.finishedDate).getFullYear();
-		yearMap.set(y, (yearMap.get(y) ?? 0) + 1);
-	}
-	const years = [...yearMap.keys()].toSorted((a, b) => a - b);
-	const totalYears = years.length;
-	const avg = totalYears ? Math.round((completedCount / totalYears) * 10) / 10 : 0;
-	let bestYear = 0;
-	let bestCount = 0;
-	for (const [y, c] of yearMap)
-		if (c > bestCount) {
-			bestYear = y;
-			bestCount = c;
-		}
-	return { totalYears, avg, bestYear, bestCount, firstYear: years[0], lastYear: years[years.length - 1] };
-});
+// One pass over completedGames replaces the previous per-derivation date
+// work (gamesThisYear, yearAllStats, backlogEta, yearlyMonthData each used
+// to re-filter the array and re-parse every finishedDate).
+let yearAggregates = $derived(computeYearMonthAggregates(completedGames));
+
+let gamesThisYearCount = $derived(countInYear(yearAggregates, currentYear));
+let playtimeThisYear = $derived(formatMinutes(minutesInYear(yearAggregates, currentYear)));
+
+let yearAllStats = $derived.by(() => ({
+	totalYears: yearAggregates.totalYears,
+	avg: yearAggregates.avgPerYear,
+	bestYear: yearAggregates.bestYear,
+	bestCount: yearAggregates.bestCount,
+	firstYear: yearAggregates.firstYear,
+	lastYear: yearAggregates.lastYear,
+}));
 
 let genreStats = $derived(computeGenreStats(completedGames));
 let scoreChart = $derived(buildScoreChart(completedGames));
@@ -135,10 +125,7 @@ let backlogEta = $derived.by(() => {
 	const lastYears = [currentYear - 1, currentYear - 2, currentYear - 3];
 	const perYear: number[] = [];
 	for (const y of lastYears) {
-		const c = completedGames.filter((g) => {
-			if (!g.finishedDate) return false;
-			return new Date(g.finishedDate).getFullYear() === y;
-		}).length;
+		const c = countInYear(yearAggregates, y);
 		if (c > 0) perYear.push(c);
 	}
 	const avg = perYear.length === 0 ? 0 : perYear.reduce((a, b) => a + b, 0) / perYear.length;
@@ -163,45 +150,13 @@ let yearChart = $derived(buildYearChart(completedGames, appStore.theme));
 // readable minimum width on narrow viewports instead of squeezing together.
 let yearCount = $derived(yearChart.data.labels?.length ?? 0);
 
-let yearlyMonthData = $derived.by(() => {
-	const yearMonth = new Map<number, number[]>();
-	for (const g of completedGames) {
-		if (!g.finishedDate) continue;
-		const d = new Date(g.finishedDate);
-		const y = d.getFullYear();
-		const m = d.getMonth();
-		if (!yearMonth.has(y)) yearMonth.set(y, new Array(12).fill(0));
-		yearMonth.get(y)![m]++;
-	}
-	return [...yearMonth.entries()].map(([year, months]) => ({ year, data: months })).toSorted((a, b) => a.year - b.year);
-});
+let yearlyMonthData = $derived(
+	yearAggregates.years.map((yearData) => ({ year: yearData.year, data: yearData.months }))
+);
 
 let maxMonthly = $derived(getMonthlyMax(yearlyMonthData));
 
-let top10Presentation = $derived(
-	[...completedGames]
-		.toSorted((a, b) => (b.ratingPresentation ?? 0) - (a.ratingPresentation ?? 0))
-		.slice(0, 10)
-		.filter((g) => g.ratingPresentation != null)
-);
-let top10Story = $derived(
-	[...completedGames]
-		.toSorted((a, b) => (b.ratingStory ?? 0) - (a.ratingStory ?? 0))
-		.slice(0, 10)
-		.filter((g) => g.ratingStory != null)
-);
-let top10Gameplay = $derived(
-	[...completedGames]
-		.toSorted((a, b) => (b.ratingGameplay ?? 0) - (a.ratingGameplay ?? 0))
-		.slice(0, 10)
-		.filter((g) => g.ratingGameplay != null)
-);
-let top10Score = $derived(
-	[...completedGames]
-		.toSorted((a, b) => (b.score ?? 0) - (a.score ?? 0))
-		.slice(0, 10)
-		.filter((g) => g.score != null)
-);
+let topRated = $derived(computeTopRated(completedGames));
 </script>
 
 <div class="stats-page">
@@ -273,7 +228,7 @@ let top10Score = $derived(
 					<div class="stat-icon" aria-hidden="true"><Calendar size={17} /></div>
 					<div>
 						<p class="stat-label">{currentYear} playtime</p>
-						<p class="stat-context">{gamesThisYear.length} games finished</p>
+						<p class="stat-context">{gamesThisYearCount} games finished</p>
 					</div>
 				</div>
 				<div class="stat-value">{playtimeThisYear}</div>
@@ -568,7 +523,7 @@ let top10Score = $derived(
 						Presentation
 					</h4>
 					<div class="rating-list">
-						{#each top10Presentation as game, i}
+						{#each topRated.presentation as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
@@ -584,7 +539,7 @@ let top10Score = $derived(
 						Story
 					</h4>
 					<div class="rating-list">
-						{#each top10Story as game, i}
+						{#each topRated.story as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
@@ -600,7 +555,7 @@ let top10Score = $derived(
 						Gameplay
 					</h4>
 					<div class="rating-list">
-						{#each top10Gameplay as game, i}
+						{#each topRated.gameplay as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
@@ -616,7 +571,7 @@ let top10Score = $derived(
 						Score
 					</h4>
 					<div class="rating-list">
-						{#each top10Score as game, i}
+						{#each topRated.score as game, i}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
 								<span class="rating-pos">{i + 1}</span>
 								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
