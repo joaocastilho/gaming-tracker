@@ -1,5 +1,5 @@
 <script lang="ts">
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
 import MobileFiltersHeader from './mobile-filters/MobileFiltersHeader.svelte';
 import FilterSection from './mobile-filters/FilterSection.svelte';
 import SortSection from './mobile-filters/SortSection.svelte';

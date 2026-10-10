@@ -7,8 +7,8 @@
  */
 import { render, fireEvent, screen, waitFor } from '@testing-library/svelte';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import SearchBar from '$lib/components/SearchBar.svelte';
-import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
+import SearchBar from '#lib/components/SearchBar.svelte';
+import { filtersStore, createInitialFilters } from '#lib/stores/filters.svelte.js';
 
 // Mock the stores and app modules
 vi.mock('$app/state', () => ({
@@ -18,14 +18,14 @@ vi.mock('$app/state', () => ({
 }));
 
 vi.mock('$app/navigation', () => ({
-	replaceState: vi.fn(),
+	goto: vi.fn(),
 }));
 
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 }));
 
-vi.mock('$lib/stores/searchClearCoordinator', () => ({
+vi.mock('#lib/stores/searchClearCoordinator.js', () => ({
 	markSearchCleared: vi.fn(),
 	lastManualClearTime: 0,
 }));
@@ -108,7 +108,7 @@ describe('SearchBar UI', () => {
 		});
 
 		it('should call markSearchCleared when clear is clicked', async () => {
-			const { markSearchCleared } = await import('$lib/stores/searchClearCoordinator');
+			const { markSearchCleared } = await import('#lib/stores/searchClearCoordinator.js');
 			filtersStore.setSearchTerm('test');
 			render(SearchBar);
 
@@ -119,14 +119,14 @@ describe('SearchBar UI', () => {
 		});
 
 		it('should clear URL search param when clear is clicked', async () => {
-			const { replaceState } = await import('$app/navigation');
+			const { goto } = await import('$app/navigation');
 			filtersStore.setSearchTerm('test');
 			render(SearchBar);
 
 			const clearButton = await screen.findByRole('button', { name: /clear search/i });
 			await fireEvent.click(clearButton);
 
-			expect(replaceState).toHaveBeenCalled();
+			expect(goto).toHaveBeenCalled();
 		});
 	});
 

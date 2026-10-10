@@ -1,9 +1,9 @@
 import { render, fireEvent, screen } from '@testing-library/svelte';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import MobileFilters from '$lib/components/MobileFilters.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import MobileFilters from '#lib/components/MobileFilters.svelte';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
 
-vi.mock('$lib/stores/filters.svelte', () => {
+vi.mock('#lib/stores/filters.svelte.js', () => {
 	const mockStore = {
 		togglePlatform: vi.fn(),
 		toggleGenre: vi.fn(),
@@ -37,7 +37,7 @@ vi.mock('$lib/stores/filters.svelte', () => {
 	};
 });
 
-vi.mock('$lib/components/RatingsSort.svelte', () => ({
+vi.mock('#lib/components/RatingsSort.svelte', () => ({
 	default: () => ({ html: '<div data-testid="ratings-sort">RatingsSort</div>' }),
 }));
 

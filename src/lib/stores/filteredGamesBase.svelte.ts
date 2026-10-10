@@ -1,7 +1,7 @@
 import { gamesStore } from './games.svelte';
 import { filtersStore } from './filters.svelte';
-import { filterGamesWithBaseFilters } from '$lib/utils/filtering';
-import type { Game } from '$lib/types/game';
+import { filterGamesWithBaseFilters } from '#lib/utils/filtering.js';
+import type { Game } from '#lib/types/game.js';
 
 class FilteredGamesBaseStore {
 	games = $derived.by((): Game[] => {

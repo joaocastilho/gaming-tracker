@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import SearchBar from '$lib/components/SearchBar.svelte';
+import SearchBar from '#lib/components/SearchBar.svelte';
 
 // Use hoisted state for mutable mock values
 const mocks = vi.hoisted(() => ({
@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 // Mock stores
-vi.mock('$lib/stores/filters.svelte', () => ({
+vi.mock('#lib/stores/filters.svelte.js', () => ({
 	filtersStore: {
 		get searchTerm() {
 			return mocks.searchTerm;
@@ -30,7 +30,7 @@ vi.mock('$lib/stores/filters.svelte', () => ({
 	},
 }));
 
-vi.mock('$lib/stores/searchClearCoordinator', () => ({
+vi.mock('#lib/stores/searchClearCoordinator.js', () => ({
 	markSearchCleared: vi.fn(),
 	lastManualClearTime: 0,
 }));

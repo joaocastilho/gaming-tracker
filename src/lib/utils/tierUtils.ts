@@ -1,4 +1,4 @@
-import type { TierValue } from '$lib/types/game';
+import type { TierValue } from '#lib/types/game.js';
 
 export const TIER_ORDER = [
 	'S - Masterpiece',

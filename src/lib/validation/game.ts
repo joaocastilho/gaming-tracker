@@ -1,6 +1,6 @@
 import * as z from 'zod';
-import type { CoOpStatus, GameStatus } from '$lib/types/game';
-import { TIER_VALUES } from '$lib/utils/tierUtils';
+import type { CoOpStatus, GameStatus } from '#lib/types/game.js';
+import { TIER_VALUES } from '#lib/utils/tierUtils.js';
 
 export { TIER_VALUES };
 

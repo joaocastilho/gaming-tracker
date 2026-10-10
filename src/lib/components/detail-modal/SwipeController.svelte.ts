@@ -1,6 +1,6 @@
-import { modalStore } from '$lib/stores/modal.svelte';
-import { windowSize } from '$lib/stores/window.svelte';
-import type { Game } from '$lib/types/game.js';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { windowSize } from '#lib/stores/window.svelte.js';
+import type { Game } from '#lib/types/game.js';
 
 export class SwipeController {
 	swipeOffsetX = $state(0);

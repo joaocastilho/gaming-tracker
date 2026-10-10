@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { replaceState } from '$app/navigation';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { modalStore } from '#lib/stores/modal.svelte.js';
 import { createTestGame } from './helpers/factories';
 
 const mockGame = createTestGame({
@@ -46,7 +45,6 @@ describe('Detail Modal Navigation', () => {
 		} as unknown as Window & typeof globalThis;
 
 		// Reset mocks
-		vi.fn(replaceState).mockClear();
 	});
 
 	afterEach(() => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { binarySearchStart, binarySearchEnd } from '$lib/utils/virtualScroll';
+import { binarySearchStart, binarySearchEnd } from '#lib/utils/virtualScroll.js';
 
 describe('binarySearchStart', () => {
 	it('returns 0 for null or empty offsets', () => {

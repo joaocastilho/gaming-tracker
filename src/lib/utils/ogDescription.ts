@@ -1,5 +1,5 @@
-import type { Game } from '$lib/types/game';
-import { getTierDisplayName } from '$lib/utils/tierUtils';
+import type { Game } from '#lib/types/game.js';
+import { getTierDisplayName } from '#lib/utils/tierUtils.js';
 
 export interface OgDescriptionInput {
 	status: Game['status'];

@@ -8,12 +8,12 @@
  */
 import { render, fireEvent, screen } from '@testing-library/svelte';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import BottomNavigation from '$lib/components/BottomNavigation.svelte';
-import { appStore } from '$lib/stores/app.svelte';
+import BottomNavigation from '#lib/components/BottomNavigation.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
 
 // Mock the navigation utility
 const mockNavigateTo = vi.fn();
-vi.mock('$lib/utils/navigationUtils', () => ({
+vi.mock('#lib/utils/navigationUtils.js', () => ({
 	navigateTo: (tab: string) => mockNavigateTo(tab),
 }));
 

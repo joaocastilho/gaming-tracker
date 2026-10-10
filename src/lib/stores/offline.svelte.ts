@@ -1,5 +1,5 @@
-import { browser } from '$app/environment';
-import { db } from '$lib/db';
+import { browser } from '$app/env';
+import { db } from '#lib/db.js';
 import { editorStore } from './editor.svelte';
 import { gamesStore } from './games.svelte';
 

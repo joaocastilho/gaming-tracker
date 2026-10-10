@@ -1,5 +1,3 @@
-import { json } from '@sveltejs/kit';
-
 export async function POST({ request }: { request: Request }) {
 	if (import.meta.env.PROD) {
 		return new Response('Not found', { status: 404 });
@@ -12,7 +10,7 @@ export async function POST({ request }: { request: Request }) {
 		const payload = await request.json();
 
 		if (!payload || !Array.isArray(payload.games)) {
-			return json({ error: 'Invalid payload' }, { status: 400 });
+			return Response.json({ error: 'Invalid payload' }, { status: 400 });
 		}
 
 		const filePath = path.join(process.cwd(), 'static', 'games.json');
@@ -36,6 +34,7 @@ export async function POST({ request }: { request: Request }) {
 
 			delete gameHeader.mainTitle;
 			delete gameHeader.subtitle;
+			delete gameHeader.searchKey;
 
 			if (gameHeader.completionOrder === null || gameHeader.completionOrder === undefined) {
 				delete gameHeader.completionOrder;
@@ -56,9 +55,9 @@ export async function POST({ request }: { request: Request }) {
 
 		await fs.writeFile(filePath, JSON.stringify(outputPayload, null, 4), 'utf-8');
 
-		return json({ success: true, games: payload.games });
+		return Response.json({ success: true, games: payload.games });
 	} catch (error) {
 		console.error('[Dev API] Error writing to games.json:', error);
-		return json({ error: 'Failed to write file' }, { status: 500 });
+		return Response.json({ error: 'Failed to write file' }, { status: 500 });
 	}
 }

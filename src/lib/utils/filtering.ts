@@ -1,8 +1,8 @@
-import type { Game } from '$lib/types/game';
-import type { SortKey, SortDirection } from '$lib/stores/filters.svelte';
-import { parseDate } from '$lib/utils/dateUtils';
-import { parsePlaytimeToMinutes } from '$lib/utils/playtimeUtils';
-import { getTierDisplayName, getTierWeight } from '$lib/utils/tierUtils';
+import type { Game } from '#lib/types/game.js';
+import type { SortKey, SortDirection } from '#lib/stores/filters.svelte.js';
+import { parseDate } from '#lib/utils/dateUtils.js';
+import { parsePlaytimeToMinutes } from '#lib/utils/playtimeUtils.js';
+import { getTierDisplayName, getTierWeight } from '#lib/utils/tierUtils.js';
 
 export interface BaseFilters {
 	searchTerm: string;
@@ -23,35 +23,34 @@ export type FilterTab = 'all' | 'completed' | 'planned' | 'tierlist';
 export function filterGamesWithBaseFilters(games: Game[], filters: BaseFilters | null): Game[] {
 	if (!filters) return games;
 
-	let filtered = games;
+	// Compute the query and membership sets once, then evaluate every predicate
+	// in a single pass. The previous chained .filter() calls re-scanned the
+	// array up to six times; combined with the per-game toLowerCase() this was
+	// the hot path on every search keystroke.
+	const query = filters.searchTerm ? filters.searchTerm.trim().toLowerCase() : '';
+	const platforms = new Set(filters.platforms);
+	const genres = new Set(filters.genres);
+	const statuses = new Set(filters.statuses);
+	const coOp = new Set(filters.coOp);
+	const tiers = new Set(filters.tiers);
 
-	if (filters.searchTerm?.trim()) {
-		const query = filters.searchTerm.toLowerCase().trim();
-		filtered = filtered.filter((game) => game.title.toLowerCase().includes(query));
-	}
+	return games.filter((game) => {
+		if (query) {
+			const searchKey = game.searchKey ?? game.title.toLowerCase();
+			if (!searchKey.includes(query)) return false;
+		}
 
-	if (filters.platforms.length > 0) {
-		filtered = filtered.filter((game) => filters.platforms.includes(game.platform));
-	}
-	if (filters.genres.length > 0) {
-		filtered = filtered.filter((game) => filters.genres.includes(game.genre));
-	}
-	if (filters.statuses.length > 0) {
-		filtered = filtered.filter((game) => filters.statuses.includes(game.status));
-	}
+		if (platforms.size > 0 && !platforms.has(game.platform)) return false;
+		if (genres.size > 0 && !genres.has(game.genre)) return false;
+		if (statuses.size > 0 && !statuses.has(game.status)) return false;
+		if (coOp.size > 0 && !coOp.has(game.coOp)) return false;
 
-	if (filters.tiers.length > 0) {
-		filtered = filtered.filter((game) => {
-			if (!game.tier) return false;
-			return filters.tiers.includes(getTierDisplayName(game.tier));
-		});
-	}
+		if (tiers.size > 0) {
+			if (!game.tier || !tiers.has(getTierDisplayName(game.tier))) return false;
+		}
 
-	if (filters.coOp.length > 0) {
-		filtered = filtered.filter((game) => filters.coOp.includes(game.coOp));
-	}
-
-	return filtered;
+		return true;
+	});
 }
 
 export function filterGamesByTab(games: Game[], activeTab: FilterTab): Game[] {

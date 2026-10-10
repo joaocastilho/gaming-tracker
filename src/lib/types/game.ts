@@ -24,4 +24,6 @@ export interface Game {
 	tier: TierValue | null;
 	completionOrder?: number | null;
 	sortPriority?: number | null;
+	/** Lowercased title precomputed by the data transformer for fast search. */
+	searchKey?: string;
 }

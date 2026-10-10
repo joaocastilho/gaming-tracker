@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
-import ModalRatings from '$lib/components/detail-modal/ModalRatings.svelte';
+import ModalRatings from '#lib/components/detail-modal/ModalRatings.svelte';
 import { createTestGame, createCompletedGame } from './helpers/factories';
 
 function readSource(relativePath: string): string {

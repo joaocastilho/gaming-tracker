@@ -1,8 +1,8 @@
 <script lang="ts">
-import { navigateTo } from '$lib/utils/navigationUtils';
+import { navigateTo } from '#lib/utils/navigationUtils.js';
 import { goto } from '$app/navigation';
-import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
-import { appStore } from '$lib/stores/app.svelte';
+import { filteredCountsStore } from '#lib/stores/filteredCounts.svelte.js';
+import { appStore } from '#lib/stores/app.svelte.js';
 import { page } from '$app/state';
 import { Gamepad, CheckCircle, Calendar, List, Search, Home, BarChart3 } from '@lucide/svelte';
 

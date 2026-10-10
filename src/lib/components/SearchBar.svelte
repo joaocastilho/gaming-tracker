@@ -1,10 +1,10 @@
 <script lang="ts">
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
 import { page } from '$app/state';
-import { browser } from '$app/environment';
-import { replaceState, goto } from '$app/navigation';
+import { browser } from '$app/env';
+import { goto } from '$app/navigation';
 import { X } from '@lucide/svelte';
-import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
+import { markSearchCleared } from '#lib/stores/searchClearCoordinator.js';
 
 let inputElement = $state<HTMLInputElement | undefined>(undefined);
 let localSearchTerm = $state(filtersStore.searchQuery);
@@ -32,7 +32,7 @@ function clearSearch() {
 	if (browser) {
 		const url = new URL(window.location.href);
 		url.searchParams.delete('s');
-		replaceState(url.toString(), page.state);
+		goto(url.toString(), { shallow: true, replace: true, state: page.state });
 	}
 
 	markSearchCleared();

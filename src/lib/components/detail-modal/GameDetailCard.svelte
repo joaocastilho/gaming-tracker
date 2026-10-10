@@ -1,13 +1,13 @@
 <script lang="ts">
-import { editorStore } from '$lib/stores/editor.svelte';
-import { offlineStore } from '$lib/stores/offline.svelte';
-import type { Game } from '$lib/types/game.js';
-import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset.js';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import { offlineStore } from '#lib/stores/offline.svelte.js';
+import type { Game } from '#lib/types/game.js';
+import { generateSrcset, generateSizes } from '#lib/utils/imageSrcset.js';
 import { Pencil, Trash2, X, Share2 } from '@lucide/svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { imageErrorStore } from '$lib/stores/imageErrors.svelte.js';
-import { createGameSlug } from '$lib/utils/slugUtils';
-import { browser } from '$app/environment';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
+import { createGameSlug } from '#lib/utils/slugUtils.js';
+import { browser } from '$app/env';
 import ModalHeader from './ModalHeader.svelte';
 import ModalMetadata from './ModalMetadata.svelte';
 import ModalRatings from './ModalRatings.svelte';
@@ -196,9 +196,15 @@ function handleImageError() {
 		<div
 			class="modal-details-section flex-1 overflow-y-auto px-5 pb-6 md:flex md:flex-col md:pb-6 lg:pr-8 lg:pb-6 lg:pl-8"
 		>
-			<ModalHeader {game} {onClose} onShare={shareGame} {linkCopied} />
-			<ModalMetadata {game} />
-			<ModalRatings {game} />
+			<ModalHeader
+				game={game}
+				onClose={onClose}
+				onShare={shareGame}
+				linkCopied={linkCopied}
+			/>
+
+			<ModalMetadata game={game} />
+			<ModalRatings game={game} />
 		</div>
 	</div>
 </div>

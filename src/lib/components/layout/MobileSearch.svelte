@@ -1,9 +1,9 @@
 <script lang="ts">
 import { page } from '$app/state';
-import { replaceState, goto } from '$app/navigation';
-import { browser } from '$app/environment';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { markSearchCleared } from '$lib/stores/searchClearCoordinator';
+import { goto } from '$app/navigation';
+import { browser } from '$app/env';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { markSearchCleared } from '#lib/stores/searchClearCoordinator.js';
 
 interface Props {
 	isOpen: boolean;
@@ -66,7 +66,7 @@ function clearMobileSearch() {
 	if (browser) {
 		const url = new URL(window.location.href);
 		url.searchParams.delete('s');
-		replaceState(url.toString(), page.state);
+		goto(url.toString(), { shallow: true, replace: true, state: page.state });
 	}
 }
 </script>

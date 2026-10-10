@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { transformGameData } from '$lib/utils/dataTransformer';
+import { transformGameData } from '#lib/utils/dataTransformer.js';
 
 describe('Data Transformer', () => {
 	test('Title Parsing', () => {
@@ -50,6 +50,21 @@ describe('Data Transformer', () => {
 		const transformed9 = transformGameData(gameWithId);
 
 		expect(transformed9.id).toBe('existing-id');
+	});
+
+	test('Search Key Precomputation', () => {
+		const mixedCase = transformGameData({ title: 'Hollow Knight: Silksong' });
+		expect(mixedCase.searchKey).toBe('hollow knight: silksong');
+
+		const padded = transformGameData({ title: '  Elden Ring  ' });
+		expect(padded.searchKey).toBe('elden ring');
+
+		// Untitled games still get a usable key
+		const untitled = transformGameData({});
+		expect(untitled.searchKey).toBe('untitled game');
+
+		// The key tracks the final title, not the raw input
+		expect(mixedCase.searchKey).toBe(mixedCase.title.toLowerCase());
 	});
 
 	test('ID Generation Edge Cases', () => {

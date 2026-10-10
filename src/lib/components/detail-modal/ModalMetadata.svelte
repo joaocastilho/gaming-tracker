@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { Game } from '$lib/types/game';
-import { getPlatformClasses, getGenreClasses } from '$lib/utils/colorConstants';
-import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
-import { formatDate } from '$lib/utils/dateUtils';
+import type { Game } from '#lib/types/game.js';
+import { getPlatformClasses, getGenreClasses } from '#lib/utils/colorConstants.js';
+import { getTierClass, getTierDisplayName } from '#lib/utils/tierUtils.js';
+import { formatDate } from '#lib/utils/dateUtils.js';
 import { Users, Calendar, Flag, Clock } from '@lucide/svelte';
 
 interface Props {

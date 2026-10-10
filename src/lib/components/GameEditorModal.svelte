@@ -1,10 +1,10 @@
 <script lang="ts">
 import { untrack } from 'svelte';
-import type { Game } from '$lib/types/game';
-import { GameSchema, computeScore } from '$lib/validation/game';
-import { editorStore } from '$lib/stores/editor.svelte';
-import { dev } from '$app/environment';
-import { gamesStore } from '$lib/stores/games.svelte';
+import type { Game } from '#lib/types/game.js';
+import { GameSchema, computeScore } from '#lib/validation/game.js';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import { dev } from '$app/env';
+import { gamesStore } from '#lib/stores/games.svelte.js';
 import GameFormIdDisplay from './game-editor/GameFormIdDisplay.svelte';
 import GameFormBasicInfo from './game-editor/GameFormBasicInfo.svelte';
 import GameFormCover from './game-editor/GameFormCover.svelte';
@@ -375,7 +375,7 @@ async function handleSave() {
 			onClose();
 		}
 	}}
-/>
+></svelte:window>
 
 <div class="backdrop" role="presentation" onclick={onClose} onkeydown={handleKeyDown} tabindex="-1">
 	<div
@@ -398,7 +398,7 @@ async function handleSave() {
 			<div class="loading">Loading...</div>
 		{:else}
 			<div class="form-fields">
-				<GameFormBasicInfo bind:working={working} {allGames} />
+				<GameFormBasicInfo bind:working allGames={allGames} />
 
 				<!-- Status, Finished Date, Order + Playtime, Co-op (single row) -->
 				<div class="row-status">
@@ -465,9 +465,9 @@ async function handleSave() {
 				</div>
 
 				<GameFormCover
-					{coverUrl}
-					{coverPreview}
-					{coverError}
+					coverUrl={coverUrl}
+					coverPreview={coverPreview}
+					coverError={coverError}
 					onUrlChange={handleCoverUrlChange}
 					onFileSelect={handleFileSelect}
 					onClear={clearCover}
@@ -475,10 +475,14 @@ async function handleSave() {
 				/>
 
 				{#if working.status === 'Completed'}
-					<GameFormRatings bind:working={working} />
+					<GameFormRatings bind:working />
 				{/if}
 
-				<GameFormIdDisplay gameId={working.id} onCopy={copyGameId} {copied} />
+				<GameFormIdDisplay
+					gameId={working.id}
+					onCopy={copyGameId}
+					copied={copied}
+				/>
 			</div>
 
 			<div class="actions">
@@ -564,12 +568,12 @@ async function handleSave() {
 		font-size: 0.85rem;
 	}
 
-	input[type='number']::-webkit-inner-spin-button,
-	input[type='number']::-webkit-outer-spin-button {
+	input[type="number"]::-webkit-inner-spin-button,
+	input[type="number"]::-webkit-outer-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
 	}
-	input[type='number'] {
+	input[type="number"] {
 		-moz-appearance: textfield;
 		appearance: textfield;
 	}
@@ -623,8 +627,8 @@ async function handleSave() {
 	}
 
 	/* Shared input appearance */
-	input[type='date'],
-	input[type='number'],
+	input[type="date"],
+	input[type="number"],
 	select {
 		padding: 0.5rem 0.75rem;
 		border-radius: 0.5rem;
@@ -642,8 +646,8 @@ async function handleSave() {
 			background-color 0.2s;
 	}
 
-	input[type='date']:focus,
-	input[type='number']:focus,
+	input[type="date"]:focus,
+	input[type="number"]:focus,
 	select:focus {
 		outline: none;
 		border-color: #6366f1;
@@ -651,7 +655,7 @@ async function handleSave() {
 	}
 
 	/* Override date picker icon colour in webkit */
-	input[type='date']::-webkit-calendar-picker-indicator {
+	input[type="date"]::-webkit-calendar-picker-indicator {
 		filter: invert(0.6);
 		cursor: pointer;
 	}
@@ -673,7 +677,7 @@ async function handleSave() {
 		align-items: center;
 	}
 
-	.checkbox-simple input[type='checkbox'] {
+	.checkbox-simple input[type="checkbox"] {
 		-webkit-appearance: none;
 		appearance: none;
 		width: 1.25rem;
@@ -689,7 +693,7 @@ async function handleSave() {
 			border-color 0.2s;
 	}
 
-	.checkbox-simple input[type='checkbox']:checked {
+	.checkbox-simple input[type="checkbox"]:checked {
 		background-color: #6366f1;
 		border-color: #6366f1;
 		background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
@@ -710,7 +714,7 @@ async function handleSave() {
 		gap: 0.4rem;
 	}
 
-	.input-group input[type='number'] {
+	.input-group input[type="number"] {
 		width: 44px;
 		text-align: center;
 		padding: 0.4rem 0.35rem;

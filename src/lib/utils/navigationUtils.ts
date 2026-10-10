@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
-import { appStore } from '$lib/stores/app.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
 import { toSlug } from './slugUtils';
 
 export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist' | 'stats' | 'library';
@@ -47,9 +47,8 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 	appStore.setActiveTab(target, true);
 
 	await goto(url.toString(), {
-		replaceState: opts.replaceState ?? false,
-		noScroll: opts.noScroll ?? false,
-		keepFocus: true,
+		replace: opts.replaceState ?? false,
+		reset: !opts.noScroll,
 		state: opts.state ?? {},
 	});
 
@@ -65,9 +64,8 @@ export async function navigateToAndReset(target: NavTarget, options: Omit<Naviga
 
 	const route = getRoutePath(target);
 	await goto(route, {
-		replaceState: opts.replaceState ?? false,
-		noScroll: opts.noScroll ?? false,
-		keepFocus: true,
+		replace: opts.replaceState ?? false,
+		reset: !opts.noScroll,
 	});
 
 	if (opts.scrollToTop) {

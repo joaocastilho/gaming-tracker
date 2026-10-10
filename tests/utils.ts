@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 
 /**
  * Flushes all pending promises by queuing a new macrotask.

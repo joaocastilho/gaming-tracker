@@ -1,9 +1,9 @@
 <script lang="ts">
-import type { Game } from '$lib/types/game';
-import { browser } from '$app/environment';
+import type { Game } from '#lib/types/game.js';
+import { browser } from '$app/env';
 import { Share2, X } from '@lucide/svelte';
 
-import { FONT_CONFIG } from '$lib/constants/fonts';
+import { FONT_CONFIG } from '#lib/constants/fonts.js';
 
 interface Props {
 	game: Game;

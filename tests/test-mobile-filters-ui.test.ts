@@ -1,8 +1,8 @@
 import { render, fireEvent, screen, waitFor } from '@testing-library/svelte';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import MobileFilters from '$lib/components/MobileFilters.svelte';
+import MobileFilters from '#lib/components/MobileFilters.svelte';
 
-vi.mock('$lib/stores/filters.svelte', () => {
+vi.mock('#lib/stores/filters.svelte.js', () => {
 	const mockStore = {
 		togglePlatform: vi.fn(),
 		toggleGenre: vi.fn(),
@@ -36,7 +36,7 @@ vi.mock('$lib/stores/filters.svelte', () => {
 	};
 });
 
-vi.mock('$lib/components/RatingsSort.svelte', () => ({
+vi.mock('#lib/components/RatingsSort.svelte', () => ({
 	default: () => null,
 }));
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { editorStore } from '$lib/stores/editor.svelte';
+import { editorStore } from '#lib/stores/editor.svelte.js';
 
 /**
  * Comprehensive tests for editorStore (Svelte 5 version)

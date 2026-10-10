@@ -1,6 +1,6 @@
 <script lang="ts">
-import { editorStore } from '$lib/stores/editor.svelte';
-import { dev } from '$app/environment';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import { dev } from '$app/env';
 
 interface Props {
 	open?: boolean;

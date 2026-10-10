@@ -1,5 +1,5 @@
 <script lang="ts">
-import { appStore } from '$lib/stores/app.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
 let theme = $derived(appStore.theme);
 
 function toggleTheme() {

@@ -1,10 +1,10 @@
-import { browser } from '$app/environment';
-import type { Game } from '$lib/types/game';
-import { transformGameData, type RawGameData } from '$lib/utils/dataTransformer';
-import { createGameSlug } from '$lib/utils/slugUtils';
-import { db } from '$lib/db';
-import type { CardHeights } from '$lib/utils/textMeasure';
-import { CARD_WIDTHS } from '$lib/constants/fonts';
+import { browser } from '$app/env';
+import type { Game } from '#lib/types/game.js';
+import { transformGameData, type RawGameData } from '#lib/utils/dataTransformer.js';
+import { createGameSlug } from '#lib/utils/slugUtils.js';
+import { db } from '#lib/db.js';
+import type { CardHeights } from '#lib/utils/textMeasure.js';
+import { CARD_WIDTHS } from '#lib/constants/fonts.js';
 
 // Only CARD_WIDTHS.small is consumed today (TierRow), so measuring any other
 // width is wasted work. Narrowing the list keeps the map shape compatible.
@@ -97,15 +97,15 @@ class GamesStore {
 		void this.updateCardHeights([newGame.id]);
 	}
 
-	private textMeasurePromise: Promise<typeof import('$lib/utils/textMeasure') | null> | null = null;
+	private textMeasurePromise: Promise<typeof import('#lib/utils/textMeasure.js') | null> | null = null;
 
 	// Lazy-load textMeasure (which pulls in @chenglou/pretext) so it stays out of
 	// the initial bundle. The promise is cached and never rejects: a failure to
 	// load (e.g. Vitest tearing the environment down mid-import) resolves to null
 	// and card heights simply stay on their estimated defaults.
-	private loadTextMeasure(): Promise<typeof import('$lib/utils/textMeasure') | null> {
+	private loadTextMeasure(): Promise<typeof import('#lib/utils/textMeasure.js') | null> {
 		if (!this.textMeasurePromise) {
-			this.textMeasurePromise = import('$lib/utils/textMeasure').catch(() => {
+			this.textMeasurePromise = import('#lib/utils/textMeasure.js').catch(() => {
 				this.textMeasurePromise = null;
 				return null;
 			});

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
-import GameCardInfo from '$lib/components/game-card/GameCardInfo.svelte';
+import GameCardInfo from '#lib/components/game-card/GameCardInfo.svelte';
 import { createTestGame, createCompletedGame } from './helpers/factories';
 
 describe('GameCardInfo status badge', () => {

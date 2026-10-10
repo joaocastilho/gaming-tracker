@@ -1,8 +1,8 @@
 <script lang="ts">
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { windowSize } from '$lib/stores/window.svelte';
-import { getPlatformClasses, getGenreClasses } from '$lib/utils/colorConstants';
-import type { Game } from '$lib/types/game';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { windowSize } from '#lib/stores/window.svelte.js';
+import { getPlatformClasses, getGenreClasses } from '#lib/utils/colorConstants.js';
+import type { Game } from '#lib/types/game.js';
 import { Users } from '@lucide/svelte';
 
 interface Props {

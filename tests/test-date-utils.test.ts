@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDate, formatShortDate, formatMobileDate, parseDate } from '$lib/utils/dateUtils';
+import { formatDate, formatShortDate, formatMobileDate, parseDate } from '#lib/utils/dateUtils.js';
 
 describe('Date Utilities', () => {
 	describe('parseDate', () => {

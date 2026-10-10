@@ -1,7 +1,7 @@
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 import type { SortOption } from './filters.svelte';
-import { filterGamesWithBaseFilters, filterGamesByTab, sortGames } from '$lib/utils/filtering';
-import type { BaseFilters } from '$lib/utils/filtering';
+import { filterGamesWithBaseFilters, filterGamesByTab, sortGames } from '#lib/utils/filtering.js';
+import type { BaseFilters } from '#lib/utils/filtering.js';
 
 export interface FilterContext {
 	searchTerm: string;

@@ -1,9 +1,10 @@
-import { pushState, replaceState } from '$app/navigation';
-import { createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
-import type { Game } from '$lib/types/game';
-import type { SortOption } from '$lib/stores/filters.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { filterGamesByContext } from '$lib/stores/modalNavigation.svelte';
+import { goto } from '$app/navigation';
+import type { ReadonlyURLSearchParams } from '$app/state';
+import { createGameSlug, isValidSlug } from '#lib/utils/slugUtils.js';
+import type { Game } from '#lib/types/game.js';
+import type { SortOption } from '#lib/stores/filters.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { filterGamesByContext } from '#lib/stores/modalNavigation.svelte.js';
 
 export interface CardRect {
 	x: number;
@@ -130,7 +131,7 @@ class ModalStore {
 		return filterGamesByContext(allGames, this._state.filterContext);
 	}
 
-	readFromURL(searchParams: URLSearchParams, games: Game[]): void {
+	readFromURL(searchParams: ReadonlyURLSearchParams, games: Game[]): void {
 		if (this.isProgrammaticUpdate) return;
 
 		const gameSlug = searchParams.get('game');
@@ -180,15 +181,15 @@ class ModalStore {
 
 				if (currentSlug) {
 					url.searchParams.set('game', slug);
-					await replaceState(url.toString(), { noscroll: true });
+					await goto(url.toString(), { shallow: true, replace: true, state: { noscroll: true } });
 				} else {
 					url.searchParams.set('game', slug);
-					await pushState(url.toString(), { noscroll: true });
+					await goto(url.toString(), { shallow: true, state: { noscroll: true } });
 				}
 			} else {
 				if (currentSlug) {
 					url.searchParams.delete('game');
-					await replaceState(url.toString(), { noscroll: true });
+					await goto(url.toString(), { shallow: true, replace: true, state: { noscroll: true } });
 				}
 			}
 		} catch {

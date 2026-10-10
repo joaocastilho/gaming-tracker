@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Game } from '$lib/types/game';
-import { computeBacklogStats } from '$lib/utils/backlogUtils';
+import type { Game } from '#lib/types/game.js';
+import { computeBacklogStats } from '#lib/utils/backlogUtils.js';
 import { createTestGame } from './helpers/factories';
 
 describe('Backlog Utils', () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { computeScore, formatRating, GameSchema, GamesPayloadSchema } from '$lib/validation/game';
+import { computeScore, formatRating, GameSchema, GamesPayloadSchema } from '#lib/validation/game.js';
 import { createTestGame } from './helpers/factories';
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 
 function createValidCompletedGame(overrides: Partial<Game> = {}): Game {
 	return createTestGame({

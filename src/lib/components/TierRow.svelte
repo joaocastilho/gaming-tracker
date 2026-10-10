@@ -1,10 +1,10 @@
 <script lang="ts">
-import type { Game } from '$lib/types/game';
-import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { windowSize } from '$lib/stores/window.svelte';
-import GameCard from '$lib/components/GameCard.svelte';
-import { CARD_WIDTHS } from '$lib/constants/fonts';
+import type { Game } from '#lib/types/game.js';
+import { getTierClass, getTierDisplayName } from '#lib/utils/tierUtils.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { windowSize } from '#lib/stores/window.svelte.js';
+import GameCard from '#lib/components/GameCard.svelte';
+import { CARD_WIDTHS } from '#lib/constants/fonts.js';
 
 interface Props {
 	tierName: string;

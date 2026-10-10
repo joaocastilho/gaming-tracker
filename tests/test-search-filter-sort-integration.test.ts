@@ -8,11 +8,11 @@
  * store reset methods instead of vi.resetModules().
  */
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { Game } from '$lib/types/game';
-import { appStore } from '$lib/stores/app.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
-import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
+import type { Game } from '#lib/types/game.js';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { filtersStore, createInitialFilters } from '#lib/stores/filters.svelte.js';
+import { filteredGamesStore } from '#lib/stores/filteredGamesStore.svelte.js';
 
 // Mock game data for testing
 const mockGames: Partial<Game>[] = [
@@ -120,9 +120,9 @@ describe('Search Functionality', () => {
 	});
 
 	it('should filter games by partial title match (case insensitive)', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -135,9 +135,9 @@ describe('Search Functionality', () => {
 	});
 
 	it('should filter games by genre', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -151,9 +151,9 @@ describe('Search Functionality', () => {
 	});
 
 	it('should filter games by platform', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -165,9 +165,9 @@ describe('Search Functionality', () => {
 	});
 
 	it('should return all games when search term is cleared', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -179,9 +179,9 @@ describe('Search Functionality', () => {
 	});
 
 	it('should allow clearing search multiple times in sequence', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -208,7 +208,7 @@ describe('Search Functionality', () => {
 	});
 
 	it('should not interfere with typing when setting consecutive search terms', async () => {
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
 
 		// Simulate typing "Zelda" character by character (like user typing)
 		filtersStore.setSearchTerm('Z');
@@ -229,9 +229,9 @@ describe('Search Functionality', () => {
 	});
 
 	it('should clear search and show all games even when no results match', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -246,9 +246,9 @@ describe('Search Functionality', () => {
 	});
 
 	it('should clear search but preserve other filters', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -267,9 +267,9 @@ describe('Search Functionality', () => {
 	});
 
 	it('should return empty array when no games match search', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -281,7 +281,7 @@ describe('Search Functionality', () => {
 	it('should clear search and show all tab games after navigation (bug fix test)', async () => {
 		// This test verifies the fix for: search → tab change → clear
 		// Bug was: URL sync effect restored search term after clear
-		const { appStore } = await import('$lib/stores/app.svelte');
+		const { appStore } = await import('#lib/stores/app.svelte.js');
 
 		// Search for "Ring" on default tab
 		filtersStore.setSearchTerm('Ring');
@@ -307,9 +307,9 @@ describe('Platform Filter Functionality', () => {
 	beforeEach(resetStoreState);
 
 	it('should filter games by single platform', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -321,9 +321,9 @@ describe('Platform Filter Functionality', () => {
 	});
 
 	it('should filter games by Nintendo Switch', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -335,9 +335,9 @@ describe('Platform Filter Functionality', () => {
 	});
 
 	it('should remove platform filter when toggled off', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -353,9 +353,9 @@ describe('Genre Filter Functionality', () => {
 	beforeEach(resetStoreState);
 
 	it('should filter games by genre', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -367,9 +367,9 @@ describe('Genre Filter Functionality', () => {
 	});
 
 	it('should remove genre filter when toggled off', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -385,9 +385,9 @@ describe('Tier Filter Functionality', () => {
 	beforeEach(resetStoreState);
 
 	it('should filter games by tier', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -399,9 +399,9 @@ describe('Tier Filter Functionality', () => {
 	});
 
 	it('should filter games by A tier', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -417,9 +417,9 @@ describe('Co-Op Filter Functionality', () => {
 	beforeEach(resetStoreState);
 
 	it('should filter games by co-op Yes', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -431,9 +431,9 @@ describe('Co-Op Filter Functionality', () => {
 	});
 
 	it('should filter games by co-op No', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -449,9 +449,9 @@ describe('Sorting Functionality', () => {
 	beforeEach(resetStoreState);
 
 	it('should sort games by score descending', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -467,9 +467,9 @@ describe('Sorting Functionality', () => {
 	});
 
 	it('should sort games by score ascending', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -483,9 +483,9 @@ describe('Sorting Functionality', () => {
 	});
 
 	it('should sort games alphabetically ascending', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -498,9 +498,9 @@ describe('Sorting Functionality', () => {
 	});
 
 	it('should sort games alphabetically descending', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -513,9 +513,9 @@ describe('Sorting Functionality', () => {
 	});
 
 	it('should sort games by gameplay rating', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -529,9 +529,9 @@ describe('Sorting Functionality', () => {
 	});
 
 	it('should sort games by presentation rating', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -547,9 +547,9 @@ describe('Sorting Functionality', () => {
 	});
 
 	it('should sort games by story rating', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -567,9 +567,9 @@ describe('Combined Filters', () => {
 	beforeEach(resetStoreState);
 
 	it('should apply both search and platform filter', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -582,9 +582,9 @@ describe('Combined Filters', () => {
 	});
 
 	it('should apply search, platform, and sort together', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -601,9 +601,9 @@ describe('Combined Filters', () => {
 	});
 
 	it('should apply genre and tier filters together', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -616,9 +616,9 @@ describe('Combined Filters', () => {
 	});
 
 	it('should return empty when combined filters match nothing', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -636,9 +636,9 @@ describe('Reset Filters', () => {
 	beforeEach(resetStoreState);
 
 	it('should clear all filters and return all games', async () => {
-		const { gamesStore } = await import('$lib/stores/games.svelte');
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
-		const { filteredGamesStore } = await import('$lib/stores/filteredGamesStore.svelte');
+		const { gamesStore } = await import('#lib/stores/games.svelte.js');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
+		const { filteredGamesStore } = await import('#lib/stores/filteredGamesStore.svelte.js');
 
 		gamesStore.initializeGames(mockGames);
 
@@ -660,7 +660,7 @@ describe('Reset Filters', () => {
 	});
 
 	it('should report isAnyFilterApplied correctly', async () => {
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
 
 		expect(filtersStore.isAnyFilterApplied()).toBe(false);
 
@@ -682,7 +682,7 @@ describe('Filter Removal', () => {
 	beforeEach(resetStoreState);
 
 	it('should remove individual platform filter', async () => {
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
 
 		filtersStore.togglePlatform('PC');
 		filtersStore.togglePlatform('Nintendo Switch');
@@ -694,7 +694,7 @@ describe('Filter Removal', () => {
 	});
 
 	it('should remove individual genre filter', async () => {
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
 
 		filtersStore.toggleGenre('Action');
 		filtersStore.toggleGenre('RPG');
@@ -706,7 +706,7 @@ describe('Filter Removal', () => {
 	});
 
 	it('should remove individual tier filter', async () => {
-		const { filtersStore } = await import('$lib/stores/filters.svelte');
+		const { filtersStore } = await import('#lib/stores/filters.svelte.js');
 
 		filtersStore.toggleTier('S - Masterpiece');
 		filtersStore.toggleTier('A - Amazing');

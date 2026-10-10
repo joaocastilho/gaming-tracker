@@ -1,7 +1,7 @@
 <script lang="ts">
-import { appStore } from '$lib/stores/app.svelte';
-import { editorStore } from '$lib/stores/editor.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
 import {
 	SlidersHorizontal,
 	Settings,
@@ -14,8 +14,8 @@ import {
 	Share,
 	RotateCcw,
 } from '@lucide/svelte';
-import { focusTrap } from '$lib/utils/focusTrap';
-import { createShareData } from '$lib/utils/share';
+import { focusTrap } from '#lib/utils/focusTrap.js';
+import { createShareData } from '#lib/utils/share.js';
 
 interface Props {
 	isOpen: boolean;

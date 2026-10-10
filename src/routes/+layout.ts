@@ -1,8 +1,8 @@
 import type { LayoutLoad } from './$types';
-import { browser, dev, building } from '$app/environment';
-import type { GamingTrackerDB } from '$lib/db';
-import { toSlug } from '$lib/utils/slugUtils';
-import type { Game } from '$lib/types/game';
+import { browser, dev, building } from '$app/env';
+import type { GamingTrackerDB } from '#lib/db.js';
+import { toSlug } from '#lib/utils/slugUtils.js';
+import type { Game } from '#lib/types/game.js';
 
 // Required by @sveltejs/adapter-static: every route prerenders at build time.
 export const prerender = true;
@@ -14,7 +14,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
 
 	if (browser) {
 		try {
-			const { db } = await import('$lib/db');
+			const { db } = await import('#lib/db.js');
 			const cachedGames = await db.games.toArray();
 
 			if (cachedGames.length > 0) {

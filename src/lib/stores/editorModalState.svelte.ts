@@ -1,4 +1,4 @@
-import type { Game } from '$lib/types/game.js';
+import type { Game } from '#lib/types/game.js';
 import { editorStore } from './editor.svelte';
 import { gamesStore } from './games.svelte';
 

@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, test } from 'vitest';
-import { generateSizes, generateSrcset, generateTinySrcset } from '$lib/utils/imageSrcset';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { generateSizes, generateSrcset, generateTinySrcset } from '#lib/utils/imageSrcset.js';
+import { preloadImage, resetPreloadedImages } from '#lib/utils/imagePreload.js';
 
 // Mock imageCache for testing without SvelteKit dependencies
 const mockImageCache = {
@@ -173,5 +174,51 @@ describe('Cover Loading Optimization', () => {
 
 		// Just verify it runs without error
 		expect(duration).toBeGreaterThan(0);
+	});
+});
+
+describe('preloadImage', () => {
+	beforeEach(() => {
+		resetPreloadedImages();
+		vi.restoreAllMocks();
+	});
+
+	test('creates a single Image for repeated calls with the same src', () => {
+		const constructorSpy = vi.spyOn(globalThis, 'Image');
+
+		preloadImage('/covers/game-detail.webp');
+		preloadImage('/covers/game-detail.webp');
+		preloadImage('/covers/game-detail.webp');
+
+		expect(constructorSpy).toHaveBeenCalledTimes(1);
+		expect(constructorSpy.mock.instances[0]).toBeInstanceOf(HTMLImageElement);
+		expect((constructorSpy.mock.instances[0] as HTMLImageElement).src).toContain('/covers/game-detail.webp');
+	});
+
+	test('creates separate Images for different srcs', () => {
+		const constructorSpy = vi.spyOn(globalThis, 'Image');
+
+		preloadImage('/covers/a-detail.webp');
+		preloadImage('/covers/b-detail.webp');
+
+		expect(constructorSpy).toHaveBeenCalledTimes(2);
+	});
+
+	test('ignores empty srcs', () => {
+		const constructorSpy = vi.spyOn(globalThis, 'Image');
+
+		preloadImage('');
+
+		expect(constructorSpy).not.toHaveBeenCalled();
+	});
+
+	test('resetPreloadedImages allows re-preloading the same src', () => {
+		const constructorSpy = vi.spyOn(globalThis, 'Image');
+
+		preloadImage('/covers/game-detail.webp');
+		resetPreloadedImages();
+		preloadImage('/covers/game-detail.webp');
+
+		expect(constructorSpy).toHaveBeenCalledTimes(2);
 	});
 });

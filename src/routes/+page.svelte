@@ -1,10 +1,10 @@
 <script lang="ts">
 import { goto } from '$app/navigation';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { windowSize } from '$lib/stores/window.svelte';
-import GameCard from '$lib/components/GameCard.svelte';
-import type { Game } from '$lib/types/game';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { windowSize } from '#lib/stores/window.svelte.js';
+import GameCard from '#lib/components/GameCard.svelte';
+import type { Game } from '#lib/types/game.js';
 import { Sparkles, ChevronRight, Hourglass, Gamepad2 } from '@lucide/svelte';
 
 let games = $derived(gamesStore.games);
@@ -63,6 +63,7 @@ function viewAllCompleted() {
 									<div class="np-meta">
 										<span class="np-chip">{game.platform}</span>
 										<span class="np-chip">{game.genre}</span>
+										<span class="np-chip">{game.year}</span>
 									</div>
 									<div class="np-playtime">
 										<Hourglass size={16} />

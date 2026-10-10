@@ -1,36 +1,36 @@
 <script lang="ts">
 import { page } from '$app/state';
-import { goto, replaceState, afterNavigate } from '$app/navigation';
-import { browser, dev } from '$app/environment';
+import { goto, afterNavigate } from '$app/navigation';
+import { browser, dev } from '$app/env';
 import { untrack } from 'svelte';
 
 import { RotateCcw } from '@lucide/svelte';
 
-import { appStore, type TabValue } from '$lib/stores/app.svelte';
-import { editorStore } from '$lib/stores/editor.svelte';
-import { editorModalState } from '$lib/stores/editorModalState.svelte';
-import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
-import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { windowSize } from '$lib/stores/window.svelte';
+import { appStore, type TabValue } from '#lib/stores/app.svelte.js';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import { editorModalState } from '#lib/stores/editorModalState.svelte.js';
+import { filteredCountsStore } from '#lib/stores/filteredCounts.svelte.js';
+import { filteredGamesStore } from '#lib/stores/filteredGamesStore.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { windowSize } from '#lib/stores/window.svelte.js';
 
-import Header from '$lib/components/Header.svelte';
-import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
-import BottomNavigation from '$lib/components/BottomNavigation.svelte';
-import NoResults from '$lib/components/NoResults.svelte';
-import FilterToggle from '$lib/components/FilterToggle.svelte';
+import Header from '#lib/components/Header.svelte';
+import ScrollToTopButton from '#lib/components/ScrollToTopButton.svelte';
+import BottomNavigation from '#lib/components/BottomNavigation.svelte';
+import NoResults from '#lib/components/NoResults.svelte';
+import FilterToggle from '#lib/components/FilterToggle.svelte';
 
-import GamesView from '$lib/views/GamesView.svelte';
-import TierListView from '$lib/views/TierListView.svelte';
+import GamesView from '#lib/views/GamesView.svelte';
+import TierListView from '#lib/views/TierListView.svelte';
 
-import { extractFilterOptions } from '$lib/utils/filterOptions';
-import { registerServiceWorker } from '$lib/utils/serviceWorker';
-import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
-import { buildOgDescription } from '$lib/utils/ogDescription';
+import { extractFilterOptions } from '#lib/utils/filterOptions.js';
+import { registerServiceWorker } from '#lib/utils/serviceWorker.js';
+import { createGlobalKeydownHandler } from '#lib/utils/keyboardShortcuts.js';
+import { buildOgDescription } from '#lib/utils/ogDescription.js';
 
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 
 import '../app.css';
 
@@ -235,7 +235,12 @@ let internalSearchChange = false;
 
 function pushSearchState(open: boolean) {
 	internalSearchChange = true;
-	replaceState(page.url, { ...page.state, showMobileSearch: open });
+
+	goto(page.url.href, {
+		shallow: true,
+		replace: true,
+		state: { ...page.state, showMobileSearch: open },
+	});
 }
 
 $effect(() => {
@@ -287,7 +292,7 @@ $effect(() => {
 		if (browser) {
 			const url = new URL(window.location.href);
 			url.searchParams.delete('s');
-			replaceState(url.toString(), page.state);
+			goto(url.toString(), { shallow: true, replace: true, state: page.state });
 		}
 
 		if (browser && innerWidth < 768) {
@@ -313,40 +318,35 @@ $effect(() => {
 
 		if (currentTab === 'home' || currentTab === 'stats') {
 			goto(`/library${searchParam}`, {
-				keepFocus: true,
-				noScroll: true,
-				replaceState: true,
+				reset: false,
+				replace: true,
 				state: { showMobileSearch: true },
 			});
 		} else if (currentTab === 'tierlist') {
 			if (counts.completed > 0) {
 				goto(`/completed${searchParam}`, {
-					keepFocus: true,
-					noScroll: true,
-					replaceState: true,
+					reset: false,
+					replace: true,
 					state: { showMobileSearch: true },
 				});
 			} else if (counts.planned > 0) {
 				goto(`/planned${searchParam}`, {
-					keepFocus: true,
-					noScroll: true,
-					replaceState: true,
+					reset: false,
+					replace: true,
 					state: { showMobileSearch: true },
 				});
 			}
 		} else if (currentTab === lastActiveTab && currentCount === 0) {
 			if (currentTab === 'planned' && counts.completed > 0) {
 				goto(`/completed${searchParam}`, {
-					keepFocus: true,
-					noScroll: true,
-					replaceState: true,
+					reset: false,
+					replace: true,
 					state: { showMobileSearch: true },
 				});
 			} else if (currentTab === 'completed' && counts.planned > 0) {
 				goto(`/planned${searchParam}`, {
-					keepFocus: true,
-					noScroll: true,
-					replaceState: true,
+					reset: false,
+					replace: true,
 					state: { showMobileSearch: true },
 				});
 			}
@@ -363,12 +363,18 @@ function openModalWithFilterContext(game: Game, contextGames?: Game[]) {
 
 let canReset = $derived(hasActiveFilters || filtersStore.isSortModified());
 
-afterNavigate(({ from }) => {
+afterNavigate(({ from, shallow, type }) => {
+	if (shallow && type === 'goto') return;
+
 	if (!from) {
 		const searchParam = page.url.searchParams.get('s');
 		if (searchParam && innerWidth < 768) {
 			try {
-				replaceState(window.location.href, { ...page.state, showMobileSearch: true });
+				goto(window.location.href, {
+					shallow: true,
+					replace: true,
+					state: { ...page.state, showMobileSearch: true },
+				});
 			} catch {
 				// Ignore replaceState errors during initial navigation
 			}
@@ -427,9 +433,22 @@ let shareDescription = $derived.by(() => {
 </script>
 
 <svelte:head>
-	<title>{data.sharedGame ? `Gaming Tracker - ${data.sharedGame.title}` : (pageTitle === 'Gaming Tracker' ? 'Gaming Tracker' : `Gaming Tracker - ${pageTitle}`)}</title>
-	<meta name="theme-color" content={appStore.theme === 'dark' ? '#0a0c10' : '#d0cbc4'} />
-	<meta property="og:title" content={data.sharedGame ? `Gaming Tracker - ${data.sharedGame.title}` : "Gaming Tracker"} />
+	<title>{data.sharedGame
+		? `Gaming Tracker - ${data.sharedGame.title}`
+		: pageTitle === 'Gaming Tracker' ? 'Gaming Tracker' : `Gaming Tracker - ${pageTitle}`}</title>
+
+	<meta
+		name="theme-color"
+		content={appStore.theme === 'dark' ? '#0a0c10' : '#d0cbc4'}
+	/>
+
+	<meta
+		property="og:title"
+		content={data.sharedGame
+			? `Gaming Tracker - ${data.sharedGame.title}`
+			: "Gaming Tracker"}
+	/>
+
 	<meta property="og:type" content="website" />
 	<meta
 		property="og:description"
@@ -442,7 +461,14 @@ let shareDescription = $derived.by(() => {
 	<meta property="og:image:height" content={data.sharedGame ? "450" : "512"} />
 	<meta property="og:image:alt" content={data.sharedGame ? data.sharedGame.title : "Gaming Tracker"} />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={data.sharedGame ? `Gaming Tracker - ${data.sharedGame.title}` : "Gaming Tracker"} />
+
+	<meta
+		name="twitter:title"
+		content={data.sharedGame
+			? `Gaming Tracker - ${data.sharedGame.title}`
+			: "Gaming Tracker"}
+	/>
+
 	<meta
 		name="twitter:description"
 		content={shareDescription}
@@ -461,18 +487,18 @@ let shareDescription = $derived.by(() => {
 
 
 <div class="bg-background text-foreground min-h-screen bg-[var(--color-background)]">
-		<Header
-			onAddGame={() => editorModalState.handleAddGame()}
-			onApplyChanges={() => editorModalState.handleApplyChanges()}
-			onOpenLogin={() => (loginModalOpen = true)}
-		/>
+	<Header
+		onAddGame={() => editorModalState.handleAddGame()}
+		onApplyChanges={() => editorModalState.handleApplyChanges()}
+		onOpenLogin={() => loginModalOpen = true}
+	/>
 	{#if showFilterSection}
 		<section class="filter-section hidden md:block" style="min-height: 44px;">
 			<div class="mx-auto px-6" style="max-width: 1800px;">
 				<div class="filter-content mb-6">
 					<div class="flex flex-col items-center gap-4">
 						<div class="flex flex-wrap items-center justify-center gap-3">
-							{#await import('$lib/components/FilterDropdown.svelte') then { default: FilterDropdown }}
+							{#await import('#lib/components/FilterDropdown.svelte') then { default: FilterDropdown }}
 								<FilterDropdown
 									type="platforms"
 									label="Platforms"
@@ -501,7 +527,7 @@ let shareDescription = $derived.by(() => {
 								isSelected={selectedCoOp.includes('Yes')}
 							/>
 							<span class="mx-1 font-bold text-zinc-600 dark:text-zinc-500">|</span>
-							{#await import('$lib/components/RatingsSort.svelte') then { default: RatingsSort }}
+							{#await import('#lib/components/RatingsSort.svelte') then { default: RatingsSort }}
 								<RatingsSort />
 							{/await}
 							<button
@@ -516,7 +542,7 @@ let shareDescription = $derived.by(() => {
 					</div>
 					{#if filtersStore.isDesktopSearchOpen}
 						<div class="desktop-search-row">
-							{#await import('$lib/components/SearchBar.svelte') then { default: SearchBar }}
+							{#await import('#lib/components/SearchBar.svelte') then { default: SearchBar }}
 								<SearchBar />
 							{/await}
 						</div>
@@ -533,118 +559,118 @@ let shareDescription = $derived.by(() => {
 			Skip to main content
 		</a>
 
-		<main
-			id="main-content"
-			class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6"
-			class:search-open-mobile={isSearchOpen}
-		>
-			<div class="mx-auto" style="max-width: 1800px;">
-				{#if isHomePage}
-					{@render children?.()}
-				{:else if isGamesPage}
-					{#if !gamesInitialized}
-						<GamesView
-							filteredGames={[]}
-							onOpenModal={openModalWithFilterContext}
-							onEditGame={(g) => editorModalState.handleEditGame(g)}
-							onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
-							loading={true}
-						/>
-					{:else if gamesStore.games.length === 0}
-						<div class="empty-database">
-							<p>No games in your collection yet.</p>
-							<p class="sub">Add your first game to get started.</p>
-						</div>
-					{:else if hasActiveFilters && currentFilteredGames.length === 0}
-						<NoResults onReset={resetFilters} />
-					{:else}
-						<GamesView
-							filteredGames={currentFilteredGames}
-							onOpenModal={openModalWithFilterContext}
-							onEditGame={(g) => editorModalState.handleEditGame(g)}
-							onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
-							loading={false}
-						/>
-					{/if}
-				{:else if isTierlistPage}
-					<TierListView filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
+	<main
+		id="main-content"
+		class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6"
+		class:search-open-mobile={isSearchOpen}
+	>
+		<div class="mx-auto" style="max-width: 1800px;">
+			{#if isHomePage}
+				{@render children?.()}
+			{:else if isGamesPage}
+				{#if !gamesInitialized}
+					<GamesView
+						filteredGames={[]}
+						onOpenModal={openModalWithFilterContext}
+						onEditGame={(g) => editorModalState.handleEditGame(g)}
+						onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
+						loading={true}
+					/>
+				{:else if gamesStore.games.length === 0}
+					<div class="empty-database">
+						<p>No games in your collection yet.</p>
+						<p class="sub">Add your first game to get started.</p>
+					</div>
+				{:else if hasActiveFilters && currentFilteredGames.length === 0}
+					<NoResults onReset={resetFilters} />
 				{:else}
-					{@render children?.()}
+					<GamesView
+						filteredGames={currentFilteredGames}
+						onOpenModal={openModalWithFilterContext}
+						onEditGame={(g) => editorModalState.handleEditGame(g)}
+						onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
+						loading={false}
+					/>
 				{/if}
-			</div>
-		</main>
+			{:else if isTierlistPage}
+					<TierListView filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
+			{:else}
+				{@render children?.()}
+			{/if}
+		</div>
+	</main>
 
-		{#if modalStore.isOpen}
-			{#await import('$lib/components/DetailModal.svelte') then { default: DetailModal }}
-				<DetailModal
-					onEditGame={(g) => editorModalState.handleEditGame(g)}
-					onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
-				/>
-			{/await}
-		{/if}
-
-		{#if editorModalState.editorModalOpen}
-			{#await import('$lib/components/GameEditorModal.svelte') then { default: GameEditorModal }}
-				<GameEditorModal
-					mode={editorModalState.editorModalMode}
-					initialGame={editorModalState.editorModalGame}
-					allGames={gamesStore.games}
-					onClose={() => editorModalState.handleEditorClose()}
-				/>
-			{/await}
-		{/if}
-
-		{#if editorModalState.deleteModalOpen}
-			{#await import('$lib/components/DeleteConfirmModal.svelte') then { default: DeleteConfirmModal }}
-				<DeleteConfirmModal bind:open={editorModalState.deleteModalOpen} game={editorModalState.deleteModalGame} />
-			{/await}
-		{/if}
-
-		{#if loginModalOpen}
-			{#await import('$lib/components/LoginModal.svelte') then { default: LoginModal }}
-				<LoginModal bind:open={loginModalOpen} />
-			{/await}
-		{/if}
-
-		{#if isSearchOpen}
-			{#await import('$lib/components/layout/MobileSearch.svelte') then { default: MobileSearch }}
-				<MobileSearch isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
-			{/await}
-		{/if}
-
-		<!-- Mobile Filters Modal -->
-		{#if isFiltersOpen}
-			{#await import('$lib/components/MobileFilters.svelte') then { default: MobileFilters }}
-				<MobileFilters
-					bind:isOpen={isFiltersOpen}
-					{filterOptions}
-					{showTiersFilter}
-					showCoOpFilter={true}
-					onClose={() => (isFiltersOpen = false)}
-				/>
-			{/await}
-		{/if}
-
-		{#await import('$lib/components/layout/MobileSettingsMenu.svelte') then { default: MobileSettingsMenu }}
-			<MobileSettingsMenu
-				isOpen={isSettingsMenuOpen}
-				{isTierlistPage}
-				onToggle={() => (isSettingsMenuOpen = !isSettingsMenuOpen)}
-				onClose={() => (isSettingsMenuOpen = false)}
-				{onFiltersToggle}
-				onAddGame={() => editorModalState.handleAddGame()}
-				onOpenLogin={() => (loginModalOpen = true)}
-				{canInstall}
-				onInstall={installApp}
+	{#if modalStore.isOpen}
+		{#await import('#lib/components/DetailModal.svelte') then { default: DetailModal }}
+			<DetailModal
+				onEditGame={(g) => editorModalState.handleEditGame(g)}
+				onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
 			/>
 		{/await}
+	{/if}
 
-		<!-- Discreet Last Updated Indicator -->
-		<!-- Removed build date display - now only in source code at top -->
+	{#if editorModalState.editorModalOpen}
+		{#await import('#lib/components/GameEditorModal.svelte') then { default: GameEditorModal }}
+			<GameEditorModal
+				mode={editorModalState.editorModalMode}
+				initialGame={editorModalState.editorModalGame}
+				allGames={gamesStore.games}
+				onClose={() => editorModalState.handleEditorClose()}
+			/>
+		{/await}
+	{/if}
 
-		<BottomNavigation {onSearchToggle} />
-		<ScrollToTopButton hideWhenFiltersOpen={isFiltersOpen} />
-	</div>
+	{#if editorModalState.deleteModalOpen}
+		{#await import('#lib/components/DeleteConfirmModal.svelte') then { default: DeleteConfirmModal }}
+				<DeleteConfirmModal bind:open={editorModalState.deleteModalOpen} game={editorModalState.deleteModalGame} />
+		{/await}
+	{/if}
+
+	{#if loginModalOpen}
+		{#await import('#lib/components/LoginModal.svelte') then { default: LoginModal }}
+			<LoginModal bind:open={loginModalOpen} />
+		{/await}
+	{/if}
+
+	{#if isSearchOpen}
+		{#await import('#lib/components/layout/MobileSearch.svelte') then { default: MobileSearch }}
+				<MobileSearch isOpen={isSearchOpen} onClose={onCloseSearchAndFilters} />
+		{/await}
+	{/if}
+
+	<!-- Mobile Filters Modal -->
+	{#if isFiltersOpen}
+		{#await import('#lib/components/MobileFilters.svelte') then { default: MobileFilters }}
+			<MobileFilters
+				bind:isOpen={isFiltersOpen}
+				filterOptions={filterOptions}
+				showTiersFilter={showTiersFilter}
+				showCoOpFilter={true}
+				onClose={() => isFiltersOpen = false}
+			/>
+		{/await}
+	{/if}
+
+	{#await import('#lib/components/layout/MobileSettingsMenu.svelte') then { default: MobileSettingsMenu }}
+		<MobileSettingsMenu
+			isOpen={isSettingsMenuOpen}
+			isTierlistPage={isTierlistPage}
+			onToggle={() => isSettingsMenuOpen = !isSettingsMenuOpen}
+			onClose={() => isSettingsMenuOpen = false}
+			onFiltersToggle={onFiltersToggle}
+			onAddGame={() => editorModalState.handleAddGame()}
+			onOpenLogin={() => loginModalOpen = true}
+			canInstall={canInstall}
+			onInstall={installApp}
+		/>
+	{/await}
+
+	<!-- Discreet Last Updated Indicator -->
+	<!-- Removed build date display - now only in source code at top -->
+
+	<BottomNavigation onSearchToggle={onSearchToggle} />
+	<ScrollToTopButton hideWhenFiltersOpen={isFiltersOpen} />
+</div>
 
 <style>
 	:global(.h-15) {

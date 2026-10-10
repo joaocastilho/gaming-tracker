@@ -1,7 +1,7 @@
-import { browser, dev } from '$app/environment';
-import type { Game } from '$lib/types/game';
-import { db } from '$lib/db';
-import { transformGameData, type RawGameData } from '$lib/utils/dataTransformer';
+import { browser, dev } from '$app/env';
+import type { Game } from '#lib/types/game.js';
+import { db } from '#lib/db.js';
+import { transformGameData, type RawGameData } from '#lib/utils/dataTransformer.js';
 import { gamesStore } from './games.svelte';
 import { offlineStore } from './offline.svelte';
 

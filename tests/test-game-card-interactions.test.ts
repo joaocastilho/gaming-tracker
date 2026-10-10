@@ -1,9 +1,9 @@
 import { render, fireEvent, screen } from '@testing-library/svelte';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import GameCard from '$lib/components/GameCard.svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import type { Game } from '$lib/types/game';
+import GameCard from '#lib/components/GameCard.svelte';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import type { Game } from '#lib/types/game.js';
 
 // Use hoisted state for editor mode to allow changing it in tests
 const mocks = vi.hoisted(() => ({
@@ -11,13 +11,13 @@ const mocks = vi.hoisted(() => ({
 }));
 
 // Mock stores
-vi.mock('$lib/stores/modal.svelte', () => ({
+vi.mock('#lib/stores/modal.svelte.js', () => ({
 	modalStore: {
 		openViewModal: vi.fn(),
 	},
 }));
 
-vi.mock('$lib/stores/filters.svelte', () => ({
+vi.mock('#lib/stores/filters.svelte.js', () => ({
 	filtersStore: {
 		togglePlatform: vi.fn(),
 		toggleGenre: vi.fn(),
@@ -27,7 +27,7 @@ vi.mock('$lib/stores/filters.svelte', () => ({
 	},
 }));
 
-vi.mock('$lib/stores/editor.svelte', () => ({
+vi.mock('#lib/stores/editor.svelte.js', () => ({
 	editorStore: {
 		get editorMode() {
 			return mocks.editorMode;
@@ -35,7 +35,7 @@ vi.mock('$lib/stores/editor.svelte', () => ({
 	},
 }));
 
-vi.mock('$lib/stores/offline.svelte', () => ({
+vi.mock('#lib/stores/offline.svelte.js', () => ({
 	offlineStore: {
 		get isOnline() {
 			return true;

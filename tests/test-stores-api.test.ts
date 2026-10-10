@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { appStore } from '$lib/stores/app.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
 
 /**
  * Comprehensive tests for stores API (Svelte 5 version)

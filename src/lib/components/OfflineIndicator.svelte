@@ -1,5 +1,5 @@
 <script lang="ts">
-import { offlineStore } from '$lib/stores/offline.svelte';
+import { offlineStore } from '#lib/stores/offline.svelte.js';
 import { CloudOff, WifiOff, CloudUpload } from '@lucide/svelte';
 import { fade } from 'svelte/transition';
 

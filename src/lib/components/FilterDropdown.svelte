@@ -1,7 +1,7 @@
 <script lang="ts">
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { getPlatformColor, getGenreColor, getTierColor, getCoOpColor } from '$lib/utils/filterOptions.js';
-import { getTierDisplayName } from '$lib/utils/tierUtils';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { getPlatformColor, getGenreColor, getTierColor, getCoOpColor } from '#lib/utils/filterOptions.js';
+import { getTierDisplayName } from '#lib/utils/tierUtils.js';
 import { Monitor, Tag, Trophy, ChevronDown, Users, RotateCcw } from '@lucide/svelte';
 
 interface Props {

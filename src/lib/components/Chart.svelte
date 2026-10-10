@@ -17,7 +17,7 @@ import {
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { untrack } from 'svelte';
-import { appStore } from '$lib/stores/app.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
 
 Chart.register(
 	BarController,

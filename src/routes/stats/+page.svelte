@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { TooltipItem } from 'chart.js';
 import {
 	BarChart3,
 	Calendar,
@@ -17,67 +16,44 @@ import {
 	Trophy,
 } from '@lucide/svelte';
 
-import Chart from '$lib/components/Chart.svelte';
-import { appStore } from '$lib/stores/app.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { computeBacklogStats } from '$lib/utils/backlogUtils';
-import { getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
-import { formatMinutes, parsePlaytimeToMinutes } from '$lib/utils/playtimeUtils';
-import { getGenreChartColor } from '$lib/utils/colorConstants';
-import { computeGenreStats, computeScoreDistribution, getNextMilestone, type GenreStat } from '$lib/utils/statsUtils';
-import { TIER_BAR_COLORS, TIER_BG_COLORS, TIER_LETTERS, TIER_ORDER } from '$lib/utils/tierUtils';
+import Chart from '#lib/components/Chart.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { computeBacklogStats } from '#lib/utils/backlogUtils.js';
+import { getMonthlyHeatClass, getMonthlyMax } from '#lib/utils/heatmapUtils.js';
+import {
+	computeAveragePlaytimeMinutes,
+	computeMedianPlaytimeMinutes,
+	computeTotalPlaytimeMinutes,
+	formatMinutes,
+} from '#lib/utils/playtimeUtils.js';
+import {
+	buildGenreChart,
+	buildPlaytimeChart,
+	buildScoreChart,
+	buildTierChart,
+	buildYearChart,
+} from '#lib/utils/statsCharts.js';
+import { computeAverageScore, computeGenreStats, getNextMilestone, type GenreStat } from '#lib/utils/statsUtils.js';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-const PLAYTIME_BUCKETS = [
-	{ label: '0-5h', min: 0, max: 300 },
-	{ label: '5-10h', min: 301, max: 600 },
-	{ label: '10-20h', min: 601, max: 1200 },
-	{ label: '20-40h', min: 1201, max: 2400 },
-	{ label: '40h+', min: 2401, max: Infinity },
-] as const;
-
-const PLAYTIME_COLORS = ['#06b6d4', '#22c55e', '#6366f1', '#f59e0b', '#ef4444'];
-const PLAYTIME_BGS = [
-	'rgba(6,182,212,0.22)',
-	'rgba(34,197,94,0.22)',
-	'rgba(99,102,241,0.22)',
-	'rgba(245,158,11,0.22)',
-	'rgba(239,68,68,0.22)',
-];
-
-const SCORE_COLORS = ['#64748b', '#06b6d4', '#6366f1', '#8b5cf6', '#f59e0b'];
-const SCORE_BGS = [
-	'rgba(100,116,139,0.18)',
-	'rgba(6,182,212,0.2)',
-	'rgba(99,102,241,0.2)',
-	'rgba(139,92,246,0.2)',
-	'rgba(245,158,11,0.22)',
-];
 
 let games = $derived(gamesStore.games);
 
 let completedGames = $derived(games.filter((g) => g.status === 'Completed'));
 
-let totalPlaytimeMinutes = $derived(completedGames.reduce((sum, g) => sum + parsePlaytimeToMinutes(g.playtime), 0));
+let totalPlaytimeMinutes = $derived(computeTotalPlaytimeMinutes(completedGames));
 let totalPlaytimeFormatted = $derived(formatMinutes(totalPlaytimeMinutes));
 
 let completedCount = $derived(completedGames.length);
 let plannedCount = $derived(games.filter((g) => g.status === 'Planned').length);
 let playingCount = $derived(games.filter((g) => g.status === 'Playing').length);
 
-let avgPlaytimeMinutes = $derived(completedCount === 0 ? 0 : Math.round(totalPlaytimeMinutes / completedCount));
-let medianPlaytimeMinutes = $derived.by(() => {
-	if (completedGames.length === 0) return 0;
-	const sorted = completedGames
-		.map((g) => parsePlaytimeToMinutes(g.playtime))
-		.filter((m) => m > 0)
-		.toSorted((a, b) => a - b);
-	if (sorted.length === 0) return 0;
-	const mid = Math.floor(sorted.length / 2);
-	return sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
-});
+// Average and median both ignore games without playtime so the two pills
+// always describe the same population.
+let avgPlaytimeMinutes = $derived(computeAveragePlaytimeMinutes(completedGames));
+let medianPlaytimeMinutes = $derived(computeMedianPlaytimeMinutes(completedGames));
 
 let backlogStats = $derived(computeBacklogStats(games));
 let nextBacklogMilestone = $derived(getNextMilestone(backlogStats.completed.pctHours));
@@ -102,13 +78,17 @@ let displayHoursPctPlanned = $derived(
 	Math.max(0, backlogHoursPctPlanned - (displayHoursPctPlaying - backlogHoursPctPlaying))
 );
 
-let avgScore = $derived.by(() => {
-	if (completedGames.length === 0) return 0;
-	const total = completedGames.reduce((sum, g) => sum + (g.score ?? 0), 0);
-	return Math.round((total / completedGames.length) * 10) / 10;
-});
+let avgScore = $derived(computeAverageScore(completedGames));
 
-let currentYear = new Date().getFullYear();
+let now = $state(new Date());
+$effect(() => {
+	// Keep "{year} playtime" honest on tabs left open across New Year's.
+	const interval = setInterval(() => {
+		now = new Date();
+	}, 60_000);
+	return () => clearInterval(interval);
+});
+let currentYear = $derived(now.getFullYear());
 let gamesThisYear = $derived(
 	completedGames.filter((g) => {
 		if (!g.finishedDate) return false;
@@ -116,9 +96,7 @@ let gamesThisYear = $derived(
 		return d.getFullYear() === currentYear;
 	})
 );
-let playtimeThisYear = $derived(
-	formatMinutes(gamesThisYear.reduce((sum, g) => sum + parsePlaytimeToMinutes(g.playtime), 0))
-);
+let playtimeThisYear = $derived(formatMinutes(computeTotalPlaytimeMinutes(gamesThisYear)));
 
 let yearAllStats = $derived.by(() => {
 	const yearMap = new Map<number, number>();
@@ -141,7 +119,7 @@ let yearAllStats = $derived.by(() => {
 });
 
 let genreStats = $derived(computeGenreStats(completedGames));
-let scoreDistribution = $derived(computeScoreDistribution(completedGames));
+let scoreChart = $derived(buildScoreChart(completedGames));
 let ratedCount = $derived(
 	completedGames.filter((game) => game.score != null && game.score >= 0 && game.score <= 20).length
 );
@@ -173,146 +151,17 @@ let backlogEta = $derived.by(() => {
 	};
 });
 
-let tierData = $derived.by(() => {
-	const counts: number[] = TIER_ORDER.map((tier) => completedGames.filter((g) => g.tier === tier).length);
-	return {
-		labels: [...TIER_LETTERS],
-		datasets: [
-			{
-				label: 'Games',
-				data: counts,
-				backgroundColor: TIER_BG_COLORS,
-				borderColor: TIER_BAR_COLORS,
-				borderWidth: 2,
-				borderRadius: 4,
-				clip: false as const,
-			},
-		],
-	};
-});
+let tierChart = $derived(buildTierChart(completedGames));
 
-let genreData = $derived.by(() => {
-	const colors = genreStats.map((genre) => getGenreChartColor(genre.name, appStore.theme));
-	return {
-		labels: genreStats.map((genre) => genre.name),
-		datasets: [
-			{
-				label: 'Games',
-				data: genreStats.map((genre) => genre.count),
-				backgroundColor: colors.map((color) => `${color}44`),
-				borderColor: colors,
-				borderWidth: 2,
-				borderRadius: 6,
-				clip: false as const,
-			},
-		],
-	};
-});
+let genreChart = $derived(buildGenreChart(completedGames, appStore.theme));
 
-let playtimeCounts = $derived(
-	PLAYTIME_BUCKETS.map(
-		(b) =>
-			completedGames.filter((g) => {
-				const m = parsePlaytimeToMinutes(g.playtime);
-				return m >= b.min && m <= b.max;
-			}).length
-	)
-);
-let playtimeTotals = $derived(
-	PLAYTIME_BUCKETS.map((b) =>
-		completedGames
-			.filter((g) => {
-				const m = parsePlaytimeToMinutes(g.playtime);
-				return m >= b.min && m <= b.max;
-			})
-			.reduce((s, g) => s + parsePlaytimeToMinutes(g.playtime), 0)
-	)
-);
-let playtimeData = $derived.by(() => ({
-	labels: PLAYTIME_BUCKETS.map((b) => b.label),
-	datasets: [
-		{
-			label: 'Games',
-			data: playtimeCounts,
-			backgroundColor: PLAYTIME_BGS,
-			borderColor: PLAYTIME_COLORS,
-			borderWidth: 2,
-			borderRadius: 4,
-		},
-	],
-}));
+let playtimeChart = $derived(buildPlaytimeChart(completedGames));
 
-let yearData = $derived.by(() => {
-	const yearMap = new Map<number, number>();
-	const hoursMap = new Map<number, number>();
-	for (const g of completedGames) {
-		if (!g.finishedDate) continue;
-		const year = new Date(g.finishedDate).getFullYear();
-		yearMap.set(year, (yearMap.get(year) ?? 0) + 1);
-		hoursMap.set(year, (hoursMap.get(year) ?? 0) + parsePlaytimeToMinutes(g.playtime));
-	}
-	const sorted = [...yearMap.entries()].toSorted((a, b) => a[0] - b[0]);
-	const labels = sorted.map(([y]) => String(y));
-	const counts = sorted.map(([, c]) => c);
-	let cumulative = 0;
-	const cumulData = counts.map((c) => (cumulative += c));
-	return {
-		labels,
-		datasets: [
-			{
-				type: 'bar' as const,
-				label: 'Games',
-				data: counts,
-				backgroundColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.62)' : 'rgba(99,102,241,0.52)',
-				borderColor: appStore.theme === 'dark' ? 'rgba(99,102,241,0.95)' : 'rgba(99,102,241,0.85)',
-				borderWidth: 1.5,
-				borderRadius: 6,
-				clip: false as const,
-				order: 2,
-				yAxisID: 'y',
-				barPercentage: 0.75,
-				categoryPercentage: 0.85,
-				maxBarThickness: 72,
-			},
-			{
-				type: 'line' as const,
-				label: 'Cumulative',
-				data: cumulData,
-				borderColor: appStore.theme === 'dark' ? '#f59e0b' : '#d97706',
-				backgroundColor: 'transparent',
-				borderWidth: 2,
-				pointRadius: 3,
-				pointBackgroundColor: appStore.theme === 'dark' ? '#fbbf24' : '#d97706',
-				pointBorderColor: appStore.theme === 'dark' ? '#1a1c23' : '#ffffff',
-				pointBorderWidth: 1.5,
-				tension: 0.35,
-				yAxisID: 'y1',
-				order: 1,
-				borderDash: [6, 4],
-			},
-		],
-	};
-});
-let yearHours = $derived.by(() => {
-	const hoursMap = new Map<number, number>();
-	for (const g of completedGames) {
-		if (!g.finishedDate) continue;
-		const year = new Date(g.finishedDate).getFullYear();
-		hoursMap.set(year, (hoursMap.get(year) ?? 0) + parsePlaytimeToMinutes(g.playtime));
-	}
-	const yearMap = new Map<number, number>();
-	for (const g of completedGames) {
-		if (!g.finishedDate) continue;
-		const year = new Date(g.finishedDate).getFullYear();
-		yearMap.set(year, (yearMap.get(year) ?? 0) + 1);
-	}
-	const sorted = [...yearMap.entries()].toSorted((a, b) => a[0] - b[0]);
-	return sorted.map(([y]) => Math.round(((hoursMap.get(y) ?? 0) / 60) * 10) / 10);
-});
+let yearChart = $derived(buildYearChart(completedGames, appStore.theme));
 
 // Number of year bars — drives the scrollable minimum width so bars keep a
 // readable minimum width on narrow viewports instead of squeezing together.
-let yearCount = $derived(yearData.labels.length);
+let yearCount = $derived(yearChart.data.labels?.length ?? 0);
 
 let yearlyMonthData = $derived.by(() => {
 	const yearMonth = new Map<number, number[]>();
@@ -328,207 +177,6 @@ let yearlyMonthData = $derived.by(() => {
 });
 
 let maxMonthly = $derived(getMonthlyMax(yearlyMonthData));
-
-let tierOptions = $derived({
-	indexAxis: 'y' as const,
-	clip: false,
-	plugins: {
-		legend: { display: false },
-		datalabels: {
-			font: { weight: 'bold' as const, size: 15 },
-			anchor: 'end' as const,
-			align: 'end' as const,
-			offset: 4,
-			formatter: (value: number) => value || '',
-		},
-		tooltip: {
-			callbacks: {
-				label: (item: TooltipItem<'bar'>) => `${item.raw} game${Number(item.raw) !== 1 ? 's' : ''}`,
-			},
-		},
-	},
-	layout: { padding: { right: 40 } },
-	scales: {
-		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: { grid: { display: false }, ticks: { font: { size: 15, weight: 'bold' as const } } },
-	},
-});
-
-let genreOptions = $derived({
-	indexAxis: 'y' as const,
-	plugins: {
-		legend: { display: false },
-		datalabels: {
-			font: { weight: 'bold' as const, size: 13 },
-			anchor: 'end' as const,
-			align: 'end' as const,
-			offset: 5,
-			formatter: (value: number) => value || '',
-		},
-		tooltip: {
-			callbacks: {
-				label: (item: TooltipItem<'bar'>) => {
-					const genre = genreStats.find((entry) => entry.name === item.label);
-					if (!genre) return `${item.raw} games`;
-					const score = genre.ratedCount > 0 ? ` · avg ${genre.averageScore}/20` : '';
-					return `${genre.count} games · ${genre.percentage}% of completed${score}`;
-				},
-			},
-		},
-	},
-	layout: { padding: { right: 40 } },
-	scales: {
-		x: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-		y: {
-			grid: { display: false },
-			ticks: {
-				autoSkip: false,
-				font: { size: 12 },
-				padding: 8,
-			},
-		},
-	},
-});
-
-let playtimeOptions = $derived({
-	plugins: {
-		legend: { display: false },
-		datalabels: {
-			color: '#ffffff',
-			font: { weight: 'bold' as const, size: 14 },
-			anchor: 'center' as const,
-			align: 'center' as const,
-			formatter: (value: number) => value || '',
-		},
-		tooltip: {
-			callbacks: {
-				label: (item: TooltipItem<'bar'>) => {
-					const count = Number(item.raw);
-					const idx = item.dataIndex;
-					const totalMins = playtimeTotals[idx] ?? 0;
-					const hoursLabel = totalMins ? ` · ${formatMinutes(totalMins)} total` : '';
-					return `${count} game${count !== 1 ? 's' : ''}${hoursLabel}`;
-				},
-			},
-		},
-	},
-	scales: {
-		x: { grid: { display: false }, ticks: { font: { size: 13 } } },
-		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-	},
-});
-
-let scoreDistributionData = $derived.by(() => ({
-	labels: scoreDistribution.map((band) => band.label),
-	datasets: [
-		{
-			label: 'Games',
-			data: scoreDistribution.map((band) => band.count),
-			backgroundColor: SCORE_BGS,
-			borderColor: SCORE_COLORS,
-			borderWidth: 2,
-			borderRadius: 7,
-			clip: false as const,
-		},
-	],
-}));
-
-let scoreDistributionOptions = $derived({
-	plugins: {
-		legend: { display: false },
-		datalabels: {
-			color: '#ffffff',
-			font: { weight: 'bold' as const, size: 13 },
-			anchor: 'center' as const,
-			align: 'center' as const,
-			formatter: (value: number) => value || '',
-		},
-		tooltip: {
-			callbacks: {
-				label: (item: TooltipItem<'bar'>) => {
-					const band = scoreDistribution[item.dataIndex];
-					if (!band) return `${item.raw} games`;
-					return `${band.count} game${band.count === 1 ? '' : 's'} · ${band.percentage}% of rated games`;
-				},
-			},
-		},
-	},
-	layout: { padding: { top: 18 } },
-	scales: {
-		x: { grid: { display: false }, ticks: { font: { size: 12, weight: 'bold' as const } } },
-		y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true },
-	},
-});
-
-let yearOptions = $derived({
-	plugins: {
-		legend: {
-			display: true,
-			position: 'bottom' as const,
-			labels: { boxWidth: 14, font: { size: 11 }, padding: 12, usePointStyle: true },
-		},
-		datalabels: {
-			display: (ctx: { datasetIndex: number }) => ctx.datasetIndex === 0,
-			// Labels sit ABOVE the bars (not inside) so long "count · hours"
-			// strings can never overflow a narrow bar. Count only — hours live
-			// in the tooltip.
-			color: appStore.theme === 'dark' ? '#e5e7eb' : '#374151',
-			font: { weight: 'bold' as const, size: 11 },
-			anchor: 'end' as const,
-			align: 'end' as const,
-			offset: 4,
-			clip: false,
-			formatter: (value: number) => (value ? String(value) : ''),
-		},
-		tooltip: {
-			mode: 'index' as const,
-			intersect: false,
-			callbacks: {
-				label: (item: TooltipItem<'bar'>) =>
-					item.datasetIndex === 0 ? `Games: ${item.raw}` : `Cumulative: ${item.raw}`,
-				afterBody: (items: TooltipItem<'bar'>[]) => {
-					const idx = items[0]?.dataIndex;
-					if (idx == null) return '';
-					const h = yearHours[idx];
-					return h ? `Hours: ${h}h` : '';
-				},
-			},
-		},
-	},
-	layout: { padding: { top: 22, right: 8, bottom: 0 } },
-	scales: {
-		x: {
-			grid: { display: false },
-			ticks: {
-				font: { size: 11 },
-				color: appStore.theme === 'dark' ? '#a0a8b8' : '#525252',
-				maxRotation: 45,
-				minRotation: 0,
-				autoSkip: false,
-			},
-		},
-		y: {
-			grid: { display: true, color: 'rgba(255,255,255,0.04)', drawTicks: false },
-			ticks: {
-				display: true,
-				font: { size: 10 },
-				color: appStore.theme === 'dark' ? '#717684' : '#8c8c8c',
-				maxTicksLimit: 5,
-				precision: 0,
-			},
-			beginAtZero: true,
-			grace: '15%',
-			title: { display: false },
-		},
-		y1: {
-			position: 'right' as const,
-			grid: { display: false },
-			ticks: { display: false },
-			beginAtZero: true,
-			grace: '15%',
-		},
-	},
-});
 
 let top10Presentation = $derived(
 	[...completedGames]
@@ -615,7 +263,7 @@ let top10Score = $derived(
 					{#if topGenreByAvg}
 						<span class="stat-pill">Top: {topGenreByAvg.name} · {topGenreByAvg.averageScore}</span>
 					{:else}
-						<span class="stat-pill">{completedCount} rated</span>
+						<span class="stat-pill">{ratedCount} rated</span>
 					{/if}
 				</div>
 			</article>
@@ -666,8 +314,13 @@ let top10Score = $derived(
 					</div>
 					<div class="journey-next-milestone">
 						<span>Next milestone</span>
-						<strong>{nextBacklogMilestone}%</strong>
-						<small>{nextBacklogMilestone === 100 ? 'All milestones reached' : `${backlogMilestoneGap.toFixed(1)}% hours to go`}</small>
+						{#if backlogStats.total.count === 0}
+							<strong>—</strong>
+							<small>No games tracked yet</small>
+						{:else}
+							<strong>{nextBacklogMilestone}%</strong>
+							<small>{nextBacklogMilestone === 100 ? 'All milestones reached' : `${backlogMilestoneGap.toFixed(1)}% of hours to go`}</small>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -795,7 +448,7 @@ let top10Score = $derived(
 						<span class="chart-badge">{completedCount} games</span>
 					</div>
 					<div class="chart-body">
-						<Chart type="bar" data={tierData} options={tierOptions} height={360} />
+						<Chart type="bar" data={tierChart.data} options={tierChart.options} height={360} />
 					</div>
 				</article>
 
@@ -811,7 +464,7 @@ let top10Score = $derived(
 						<span class="chart-badge">{genreStats.length} genres</span>
 					</div>
 					<div class="chart-body">
-						<Chart type="bar" data={genreData} options={genreOptions} height={360} />
+						<Chart type="bar" data={genreChart.data} options={genreChart.options} height={360} />
 					</div>
 				</article>
 
@@ -827,7 +480,7 @@ let top10Score = $derived(
 						<span class="chart-badge">{formatMinutes(medianPlaytimeMinutes)} median</span>
 					</div>
 					<div class="chart-body">
-						<Chart type="bar" data={playtimeData} options={playtimeOptions} height={360} />
+						<Chart type="bar" data={playtimeChart.data} options={playtimeChart.options} height={360} />
 					</div>
 				</article>
 
@@ -845,7 +498,7 @@ let top10Score = $derived(
 					<div class="chart-body chart-body-year">
 						<div class="year-scroll">
 							<div class="year-scroll-inner" style="min-width: {Math.max(yearCount * 64, 280)}px;">
-								<Chart type="bar" data={yearData} options={yearOptions} height={300} />
+								<Chart type="bar" data={yearChart.data} options={yearChart.options} height={300} />
 							</div>
 						</div>
 					</div>
@@ -863,7 +516,7 @@ let top10Score = $derived(
 						<span class="chart-badge">{ratedCount} rated</span>
 					</div>
 					<div class="chart-body">
-						<Chart type="bar" data={scoreDistributionData} options={scoreDistributionOptions} height={300} />
+						<Chart type="bar" data={scoreChart.data} options={scoreChart.options} height={300} />
 					</div>
 				</article>
 
@@ -876,7 +529,7 @@ let top10Score = $derived(
 								<p class="chart-sub">A completion heatmap for every month on record</p>
 							</div>
 						</div>
-						<span class="chart-badge">Peak {maxMonthly}/mo</span>
+						<span class="chart-badge">Peak {maxMonthly > 0 ? `${maxMonthly}/mo` : '—'}</span>
 					</div>
 					<div class="monthly-table-scroll">
 						<div class="monthly-table">

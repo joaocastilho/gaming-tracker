@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { Game } from '$lib/types/game';
-import { debounce } from '$lib/utils/debounce';
+import type { Game } from '#lib/types/game.js';
+import { debounce } from '#lib/utils/debounce.js';
 import {
 	extractFilterOptions,
 	getCoOpColor,
 	getGenreColor,
 	getPlatformColor,
 	getTierColor,
-} from '$lib/utils/filterOptions';
-import { formatRating } from '$lib/validation/game';
+} from '#lib/utils/filterOptions.js';
+import { formatRating } from '#lib/validation/game.js';
 import {
 	getTierClass,
 	getTierDisplayName,
@@ -16,8 +16,8 @@ import {
 	getTierWeight,
 	TIER_ORDER,
 	TIER_VALUES,
-} from '$lib/utils/tierUtils';
-import { toSlug, fromSlug, createGameSlug, isValidSlug } from '$lib/utils/slugUtils';
+} from '#lib/utils/tierUtils.js';
+import { toSlug, fromSlug, createGameSlug, isValidSlug } from '#lib/utils/slugUtils.js';
 import { createCompletedGame } from './helpers/factories';
 
 describe('Utility Tests', () => {

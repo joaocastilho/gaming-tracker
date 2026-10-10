@@ -1,5 +1,5 @@
-import type { Game } from '$lib/types/game';
-import { parsePlaytimeToMinutes } from '$lib/utils/playtimeUtils';
+import type { Game } from '#lib/types/game.js';
+import { parsePlaytimeToMinutes } from '#lib/utils/playtimeUtils.js';
 
 export interface BacklogSlice {
 	/** Number of games in this slice */

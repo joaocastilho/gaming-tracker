@@ -1,7 +1,7 @@
 <script lang="ts">
 import { goto } from '$app/navigation';
-import LoginModal from '$lib/components/LoginModal.svelte';
-import { editorStore } from '$lib/stores/editor.svelte';
+import LoginModal from '#lib/components/LoginModal.svelte';
+import { editorStore } from '#lib/stores/editor.svelte.js';
 
 let isModalOpen = $state(true);
 let editorMode = $derived(editorStore.editorMode);

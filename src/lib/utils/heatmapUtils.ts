@@ -6,6 +6,13 @@ export interface YearlyMonthRow {
 /** Number of heat degrees (0 = empty, 1-5 = cold to hot). */
 export const HEAT_LEVELS = 5;
 
+/**
+ * Heat is relative to the busiest month. Below this busiest-month count the
+ * ratios are noise (a single completion would render the hottest color), so
+ * colors are suppressed entirely until there is enough spread to read.
+ */
+const MIN_MAX_FOR_HEAT = 3;
+
 function levelFromRatio(ratio: number): number {
 	if (ratio <= 0.2) return 1;
 	if (ratio <= 0.4) return 2;
@@ -25,7 +32,7 @@ export function getMonthlyMax(rows: YearlyMonthRow[]): number {
 }
 
 export function getMonthlyHeatLevel(value: number, max: number): number {
-	if (max <= 0 || value <= 0) return 0;
+	if (max < MIN_MAX_FOR_HEAT || value <= 0) return 0;
 	return levelFromRatio(value / max);
 }
 

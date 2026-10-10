@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
+import { createGlobalKeydownHandler } from '#lib/utils/keyboardShortcuts.js';
 import { setViewportWidth, resetViewport } from './setup';
 
 describe('createGlobalKeydownHandler (mobile path)', () => {

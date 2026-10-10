@@ -1,6 +1,6 @@
 import { prepare, layout, prepareWithSegments, layoutWithLines } from '@chenglou/pretext';
-import { FONT_CONFIG, BREAKPOINTS, LINE_HEIGHT } from '$lib/constants/fonts';
-import type { Game } from '$lib/types/game';
+import { FONT_CONFIG, BREAKPOINTS, LINE_HEIGHT } from '#lib/constants/fonts.js';
+import type { Game } from '#lib/types/game.js';
 
 type PreparedText = ReturnType<typeof prepare>;
 type PreparedTextWithSegments = ReturnType<typeof prepareWithSegments>;

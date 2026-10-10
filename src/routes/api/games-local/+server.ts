@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import { spawn } from 'child_process';
 
 export async function POST({ request }: { request: Request }) {
@@ -18,7 +17,7 @@ export async function POST({ request }: { request: Request }) {
 			const gamesJson = formData.get('games') as string;
 
 			if (!gamesJson) {
-				return json({ error: 'Invalid payload: games JSON required' }, { status: 400 });
+				return Response.json({ error: 'Invalid payload: games JSON required' }, { status: 400 });
 			}
 			payload = JSON.parse(gamesJson);
 
@@ -83,7 +82,7 @@ export async function POST({ request }: { request: Request }) {
 		const data = payload as { games?: unknown[] };
 		const games = data?.games;
 		if (!games || !Array.isArray(games)) {
-			return json({ error: 'Invalid payload: games array required' }, { status: 400 });
+			return Response.json({ error: 'Invalid payload: games array required' }, { status: 400 });
 		}
 
 		const filePath = path.join(process.cwd(), 'static', 'games.json');
@@ -108,6 +107,7 @@ export async function POST({ request }: { request: Request }) {
 			// Remove computed fields that shouldn't be persisted
 			delete gameHeader.mainTitle;
 			delete gameHeader.subtitle;
+			delete gameHeader.searchKey;
 
 			if (gameHeader.completionOrder === null || gameHeader.completionOrder === undefined) {
 				delete gameHeader.completionOrder;
@@ -128,10 +128,10 @@ export async function POST({ request }: { request: Request }) {
 
 		await fs.writeFile(filePath, JSON.stringify(outputPayload, null, 4), 'utf-8');
 
-		return json({ ok: true, saved: games.length });
+		return Response.json({ ok: true, saved: games.length });
 	} catch (error) {
 		console.error('[Dev API] Error processing request:', error);
-		return json(
+		return Response.json(
 			{
 				error: 'Failed to save games',
 				message: error instanceof Error ? error.message : String(error),

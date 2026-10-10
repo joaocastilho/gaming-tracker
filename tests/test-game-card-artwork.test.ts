@@ -2,30 +2,30 @@ import { render, screen } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock stores
-vi.mock('$lib/stores/editor.svelte', () => ({
+vi.mock('#lib/stores/editor.svelte.js', () => ({
 	editorStore: {
 		editorMode: false,
 	},
 }));
-vi.mock('$lib/stores/offline.svelte', () => ({
+vi.mock('#lib/stores/offline.svelte.js', () => ({
 	offlineStore: {
 		isOnline: true,
 	},
 }));
-vi.mock('$lib/stores/filters.svelte', () => ({
+vi.mock('#lib/stores/filters.svelte.js', () => ({
 	filtersStore: {
 		toggleTier: vi.fn(),
 	},
 }));
-vi.mock('$lib/stores/imageErrors.svelte', () => ({
+vi.mock('#lib/stores/imageErrors.svelte.js', () => ({
 	imageErrorStore: {
 		hasFailed: () => false,
 		markFailed: vi.fn(),
 	},
 }));
 
-import GameCardArtwork from '$lib/components/game-card/GameCardArtwork.svelte';
-import type { Game } from '$lib/types/game';
+import GameCardArtwork from '#lib/components/game-card/GameCardArtwork.svelte';
+import type { Game } from '#lib/types/game.js';
 
 describe('GameCardArtwork Component', () => {
 	const mockGame: Game = {

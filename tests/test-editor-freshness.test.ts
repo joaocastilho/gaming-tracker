@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTestGame } from './helpers/factories';
-import { editorStore } from '$lib/stores/editor.svelte';
+import { editorStore } from '#lib/stores/editor.svelte.js';
 
 function gameList(games: unknown[]) {
 	return { games };

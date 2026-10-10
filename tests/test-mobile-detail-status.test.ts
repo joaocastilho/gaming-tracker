@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
-import ModalMetadata from '$lib/components/detail-modal/ModalMetadata.svelte';
-import ModalRatings from '$lib/components/detail-modal/ModalRatings.svelte';
+import ModalMetadata from '#lib/components/detail-modal/ModalMetadata.svelte';
+import ModalRatings from '#lib/components/detail-modal/ModalRatings.svelte';
 import { createTestGame, createCompletedGame } from './helpers/factories';
 
 /**

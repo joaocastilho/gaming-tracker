@@ -1,9 +1,9 @@
 <script lang="ts">
-import type { Game } from '$lib/types/game';
-import GameCard from '$lib/components/GameCard.svelte';
-import { editorStore } from '$lib/stores/editor.svelte';
-import SkeletonGrid from '$lib/components/SkeletonGrid.svelte';
-import VirtualList from '$lib/components/VirtualList.svelte';
+import type { Game } from '#lib/types/game.js';
+import GameCard from '#lib/components/GameCard.svelte';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import SkeletonGrid from '#lib/components/SkeletonGrid.svelte';
+import VirtualList from '#lib/components/VirtualList.svelte';
 
 interface Props {
 	filteredGames: Game[];

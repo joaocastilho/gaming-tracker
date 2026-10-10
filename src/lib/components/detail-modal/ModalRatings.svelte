@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 import { Presentation, NotebookPen, Gamepad2, Award } from '@lucide/svelte';
 
 interface Props {

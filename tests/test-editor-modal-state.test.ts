@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 import { createTestGame } from './helpers/factories';
 
 const mocks = vi.hoisted(() => ({
@@ -13,15 +13,15 @@ const mocks = vi.hoisted(() => ({
 	},
 }));
 
-vi.mock('$lib/stores/editor.svelte', () => ({
+vi.mock('#lib/stores/editor.svelte.js', () => ({
 	editorStore: mocks.editorStore,
 }));
 
-vi.mock('$lib/stores/games.svelte', () => ({
+vi.mock('#lib/stores/games.svelte.js', () => ({
 	gamesStore: mocks.gamesStore,
 }));
 
-import { editorModalState } from '$lib/stores/editorModalState.svelte';
+import { editorModalState } from '#lib/stores/editorModalState.svelte.js';
 
 describe('editorModalState', () => {
 	beforeEach(() => {

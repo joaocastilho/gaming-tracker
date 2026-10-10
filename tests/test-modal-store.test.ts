@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { createGameSlug } from '$lib/utils/slugUtils';
-import type { Game } from '$lib/types/game';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { createGameSlug } from '#lib/utils/slugUtils.js';
+import type { Game } from '#lib/types/game.js';
 
 /**
  * Comprehensive tests for modalStore

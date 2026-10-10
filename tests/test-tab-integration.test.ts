@@ -7,11 +7,11 @@
  * - Tierlist tab shows tiered games in order
  */
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
-import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { appStore } from '$lib/stores/app.svelte';
-import type { Game } from '$lib/types/game';
+import { filtersStore, createInitialFilters } from '#lib/stores/filters.svelte.js';
+import { filteredGamesStore } from '#lib/stores/filteredGamesStore.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { appStore } from '#lib/stores/app.svelte.js';
+import type { Game } from '#lib/types/game.js';
 
 // Test game data covering all statuses and tiers
 const mockGames: Game[] = [

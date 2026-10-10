@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { buildOgDescription } from '$lib/utils/ogDescription';
+import { buildOgDescription } from '#lib/utils/ogDescription.js';
 
 describe('buildOgDescription', () => {
 	test('completed game returns two lines with ratings, score, and tier', () => {

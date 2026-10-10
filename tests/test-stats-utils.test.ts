@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { Game } from '$lib/types/game';
-import { computeGenreStats, computeScoreDistribution, getNextMilestone } from '$lib/utils/statsUtils';
+import type { Game } from '#lib/types/game.js';
+import {
+	computeAverageScore,
+	computeGenreStats,
+	computeScoreDistribution,
+	getNextMilestone,
+} from '#lib/utils/statsUtils.js';
 import { createTestGame } from './helpers/factories';
 
 describe('computeGenreStats', () => {
@@ -66,6 +71,34 @@ describe('computeGenreStats', () => {
 			expect(getNextMilestone(25)).toBe(50);
 			expect(getNextMilestone(76.2)).toBe(100);
 			expect(getNextMilestone(100)).toBe(100);
+		});
+	});
+
+	describe('computeAverageScore', () => {
+		it('averages completed rated games and ignores unrated or unfinished ones', () => {
+			const average = computeAverageScore([
+				createTestGame({ status: 'Completed', score: 16 }),
+				createTestGame({ status: 'Completed', score: 14 }),
+				createTestGame({ status: 'Completed', score: null }),
+				createTestGame({ status: 'Playing', score: 20 }),
+				createTestGame({ status: 'Planned', score: 1 }),
+			]);
+
+			expect(average).toBe(15);
+		});
+
+		it('rounds to one decimal place', () => {
+			expect(
+				computeAverageScore([
+					createTestGame({ status: 'Completed', score: 10 }),
+					createTestGame({ status: 'Completed', score: 11 }),
+				])
+			).toBe(10.5);
+		});
+
+		it('returns 0 when no completed game has a score', () => {
+			expect(computeAverageScore([])).toBe(0);
+			expect(computeAverageScore([createTestGame({ status: 'Completed', score: null })])).toBe(0);
 		});
 	});
 });

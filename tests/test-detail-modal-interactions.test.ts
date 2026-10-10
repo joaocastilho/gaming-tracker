@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import type { Game } from '$lib/types/game';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import type { Game } from '#lib/types/game.js';
 
 // Mock game data
 const mockGame: Game = {

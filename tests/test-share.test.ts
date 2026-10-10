@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createShareData } from '$lib/utils/share';
+import { createShareData } from '#lib/utils/share.js';
 
 describe('createShareData', () => {
 	it('keeps the current route and query string when sharing', () => {

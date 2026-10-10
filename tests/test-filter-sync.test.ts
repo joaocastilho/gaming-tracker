@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { goto } from '$app/navigation';
 import { filtersStore } from '../src/lib/stores/filters.svelte';
 import { gamesStore } from '../src/lib/stores/games.svelte';
-import { replaceState } from '$app/navigation';
 
 // Mock SvelteKit base modules
 vi.mock('$app/navigation', () => ({
-	replaceState: vi.fn(() => Promise.resolve()),
+	goto: vi.fn(() => Promise.resolve()),
 }));
 
 describe('FiltersStore URL Sync', () => {
@@ -67,9 +67,9 @@ describe('FiltersStore URL Sync', () => {
 			// Flush the 300ms debounce synchronously
 			await vi.advanceTimersByTimeAsync(300);
 
-			expect(replaceState).toHaveBeenCalled();
+			expect(goto).toHaveBeenCalled();
 
-			const lastCall = vi.mocked(replaceState).mock.calls.at(-1);
+			const lastCall = vi.mocked(goto).mock.calls.at(-1);
 			const urlString = lastCall?.[0] as string;
 			const url = new URL(urlString);
 

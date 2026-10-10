@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getMonthlyHeatLevel, getMonthlyHeatClass, getMonthlyMax } from '$lib/utils/heatmapUtils';
+import { getMonthlyHeatLevel, getMonthlyHeatClass, getMonthlyMax } from '#lib/utils/heatmapUtils.js';
 
 describe('Heatmap Utils', () => {
 	it('returns 0 for empty or non-positive values', () => {
@@ -26,6 +26,20 @@ describe('Heatmap Utils', () => {
 		expect(getMonthlyHeatClass(0, 10)).toBe('');
 		expect(getMonthlyHeatClass(1, 10)).toBe('mt-heat-1');
 		expect(getMonthlyHeatClass(10, 10)).toBe('mt-heat-5');
+	});
+
+	it('suppresses heat when the busiest month is too small to be meaningful', () => {
+		expect(getMonthlyHeatLevel(1, 1)).toBe(0);
+		expect(getMonthlyHeatLevel(1, 2)).toBe(0);
+		expect(getMonthlyHeatLevel(2, 2)).toBe(0);
+		expect(getMonthlyHeatClass(2, 2)).toBe('');
+		expect(getMonthlyHeatClass(1, 1)).toBe('');
+	});
+
+	it('still colors heat once at least three completions share a month', () => {
+		expect(getMonthlyHeatLevel(1, 3)).toBe(2);
+		expect(getMonthlyHeatLevel(2, 3)).toBe(4);
+		expect(getMonthlyHeatLevel(3, 3)).toBe(5);
 	});
 
 	it('computes max across yearly month data', () => {

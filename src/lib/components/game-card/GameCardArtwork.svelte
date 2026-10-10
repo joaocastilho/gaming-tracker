@@ -1,14 +1,15 @@
 <script lang="ts">
 import { Pencil, Trash2 } from '@lucide/svelte';
 
-import { editorStore } from '$lib/stores/editor.svelte';
-import { offlineStore } from '$lib/stores/offline.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { imageErrorStore } from '$lib/stores/imageErrors.svelte';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import { offlineStore } from '#lib/stores/offline.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
 
-import { getTierClass, getTierDisplayName } from '$lib/utils/tierUtils';
-import { generateSrcset, generateSizes } from '$lib/utils/imageSrcset';
-import type { Game } from '$lib/types/game';
+import { getTierClass, getTierDisplayName } from '#lib/utils/tierUtils.js';
+import { generateSrcset, generateSizes } from '#lib/utils/imageSrcset.js';
+import { preloadImage } from '#lib/utils/imagePreload.js';
+import type { Game } from '#lib/types/game.js';
 
 interface Props {
 	game: Game;
@@ -115,8 +116,7 @@ function handleTierClick(event: MouseEvent | KeyboardEvent) {
 
 function preloadDetailImage() {
 	const imgPath = game.coverImage ? `/${game.coverImage}` : PLACEHOLDER_SRC;
-	const detailImg = new Image();
-	detailImg.src = imgPath.replace('.webp', '-detail.webp');
+	preloadImage(imgPath.replace('.webp', '-detail.webp'));
 }
 
 function getCompletionDay(dateStr: string | null): string {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { db } from '$lib/db';
-import type { Game } from '$lib/types/game';
+import { db } from '#lib/db.js';
+import type { Game } from '#lib/types/game.js';
 
 const mockGame: Game = {
 	id: 'test-game-1',

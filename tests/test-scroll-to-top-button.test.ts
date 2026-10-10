@@ -1,9 +1,9 @@
 import { render, fireEvent, screen, act } from '@testing-library/svelte';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
+import ScrollToTopButton from '#lib/components/ScrollToTopButton.svelte';
 
 // Mock the modal store
-vi.mock('$lib/stores/modal.svelte', () => ({
+vi.mock('#lib/stores/modal.svelte.js', () => ({
 	modalStore: {
 		getState: () => ({ isOpen: false }),
 	},

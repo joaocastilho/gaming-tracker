@@ -115,12 +115,16 @@ describe('Theme Switching', () => {
 		dom = new MockDOM();
 
 		// We assume localStorage is already mocked globally in setup.ts
-		(global as Record<string, unknown>).document = {
-			documentElement: dom.createElement('html'),
-			body: dom.createElement('body'),
-			querySelector: (selector: string) => dom.querySelector(selector),
-			querySelectorAll: (selector: string) => dom.querySelectorAll(selector),
-		};
+		Object.defineProperty(globalThis, 'document', {
+			value: {
+				documentElement: dom.createElement('html'),
+				body: dom.createElement('body'),
+				querySelector: (selector: string) => dom.querySelector(selector),
+				querySelectorAll: (selector: string) => dom.querySelectorAll(selector),
+			},
+			configurable: true,
+			writable: true,
+		});
 	});
 
 	test('Theme Toggle Functionality', () => {

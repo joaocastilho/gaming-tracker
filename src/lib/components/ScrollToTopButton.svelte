@@ -1,5 +1,5 @@
 <script lang="ts">
-import { modalStore } from '$lib/stores/modal.svelte';
+import { modalStore } from '#lib/stores/modal.svelte.js';
 
 interface Props {
 	hideWhenFiltersOpen?: boolean;

@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { Game, TierValue } from '$lib/types/game';
-import TierRow from '$lib/components/TierRow.svelte';
+import type { Game, TierValue } from '#lib/types/game.js';
+import TierRow from '#lib/components/TierRow.svelte';
 
 interface Props {
 	filteredGames: Game[];

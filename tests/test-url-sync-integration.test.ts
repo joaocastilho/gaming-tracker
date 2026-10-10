@@ -4,11 +4,11 @@
  * These tests verify the searchClearCoordinator prevents race conditions
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
-import { getLastManualClearTime, markSearchCleared } from '$lib/stores/searchClearCoordinator';
-import type { Game } from '$lib/types/game';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { filteredGamesStore } from '#lib/stores/filteredGamesStore.svelte.js';
+import { getLastManualClearTime, markSearchCleared } from '#lib/stores/searchClearCoordinator.js';
+import type { Game } from '#lib/types/game.js';
 
 const mockGames: Partial<Game>[] = [
 	{ id: '1', title: 'Elden Ring', platform: 'PC', genre: 'RPG', status: 'Planned' },
@@ -68,7 +68,7 @@ describe('URL Sync Integration Tests', () => {
 	});
 
 	it('should verify search -> tab change -> clear scenario', async () => {
-		const { appStore } = await import('$lib/stores/app.svelte');
+		const { appStore } = await import('#lib/stores/app.svelte.js');
 
 		filtersStore.setSearchTerm('Ring');
 		appStore.setActiveTab('planned');

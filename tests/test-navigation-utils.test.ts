@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { goto } from '$app/navigation';
-import { appStore } from '$lib/stores/app.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { navigateTo } from '$lib/utils/navigationUtils';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { navigateTo } from '#lib/utils/navigationUtils.js';
 
 // Mock goto
 vi.mock('$app/navigation', () => ({

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
-import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { appStore } from '$lib/stores/app.svelte';
+import { filteredGamesStore } from '#lib/stores/filteredGamesStore.svelte.js';
+import { filtersStore, createInitialFilters } from '#lib/stores/filters.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { appStore } from '#lib/stores/app.svelte.js';
 
 /**
  * Test suite for Hours Played (completed games) and Time to Beat (planned games) sorting

@@ -336,13 +336,13 @@ import { goto } from '$app/navigation';
 import { RotateCcw } from 'lucide-svelte';
 
 // 3. Internal absolute imports — stores
-import { gamesStore } from '$lib/stores/games.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
 
 // 4. Internal absolute imports — utils, types, components
-import { createGameSlug } from '$lib/utils/slugUtils';
-import type { Game } from '$lib/types/game';
-import GamesView from '$lib/views/GamesView.svelte';
+import { createGameSlug } from '#lib/utils/slugUtils.js';
+import type { Game } from '#lib/types/game.js';
+import GamesView from '#lib/views/GamesView.svelte';
 
 // 5. Relative imports
 import { formatDate } from './utils';

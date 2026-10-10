@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { appStore } from '$lib/stores/app.svelte';
-import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { filteredGamesStore } from '#lib/stores/filteredGamesStore.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { filterGamesWithBaseFilters } from '#lib/utils/filtering.js';
+import type { Game } from '#lib/types/game.js';
 
 // Mock data
 const mockGames = [
@@ -206,5 +208,94 @@ describe('Sorting and Filtering Logic', () => {
 		expect(results.length).toBe(1);
 		expect(results[0].title).toBe('Elden Ring');
 		expect(results[0].coOp).toBe('Yes');
+	});
+});
+
+function makeGame(overrides: Partial<Game> & { id: string }): Game {
+	return {
+		title: 'Test Game',
+		mainTitle: 'Test Game',
+		subtitle: null,
+		platform: 'PC',
+		year: 2024,
+		genre: 'RPG',
+		coOp: 'No',
+		status: 'Planned',
+		coverImage: 'covers/test.webp',
+		playtime: '10h 0m',
+		finishedDate: null,
+		ratingPresentation: null,
+		ratingStory: null,
+		ratingGameplay: null,
+		score: null,
+		tier: null,
+		...overrides,
+	} as Game;
+}
+
+describe('filterGamesWithBaseFilters search key', () => {
+	it('matches search against the precomputed searchKey', () => {
+		const game = makeGame({ id: '1', title: 'Hollow Knight', searchKey: 'hollow knight silksong' });
+
+		const results = filterGamesWithBaseFilters([game], {
+			searchTerm: 'SILKSONG',
+			platforms: [],
+			genres: [],
+			statuses: [],
+			tiers: [],
+			coOp: [],
+		});
+
+		expect(results).toHaveLength(1);
+	});
+
+	it('falls back to the title for games without a precomputed key', () => {
+		const game = makeGame({ id: '2', title: 'Elden Ring', searchKey: undefined });
+
+		const results = filterGamesWithBaseFilters([game], {
+			searchTerm: 'elden',
+			platforms: [],
+			genres: [],
+			statuses: [],
+			tiers: [],
+			coOp: [],
+		});
+
+		expect(results).toHaveLength(1);
+	});
+
+	it('keeps applying the remaining filters in a single combined pass', () => {
+		const matching = makeGame({
+			id: '3',
+			title: 'Hollow Knight',
+			searchKey: 'hollow knight',
+			platform: 'PC',
+			genre: 'Metroidvania',
+			status: 'Completed',
+			tier: 'A - Amazing',
+			coOp: 'No',
+		});
+		const wrongPlatform = makeGame({
+			id: '4',
+			title: 'Hollow Knight',
+			searchKey: 'hollow knight',
+			platform: 'PlayStation 5',
+			genre: 'Metroidvania',
+			status: 'Completed',
+			tier: 'A - Amazing',
+			coOp: 'No',
+		});
+
+		const results = filterGamesWithBaseFilters([matching, wrongPlatform], {
+			searchTerm: 'hollow',
+			platforms: ['PC'],
+			genres: [],
+			statuses: [],
+			tiers: [],
+			coOp: [],
+		});
+
+		expect(results).toHaveLength(1);
+		expect(results[0].id).toBe('3');
 	});
 });

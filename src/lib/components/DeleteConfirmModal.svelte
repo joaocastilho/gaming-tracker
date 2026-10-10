@@ -1,9 +1,9 @@
 <script lang="ts">
-import { dev } from '$app/environment';
-import { invalidateAll } from '$app/navigation';
-import { editorStore } from '$lib/stores/editor.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import type { Game } from '$lib/types/game';
+import { dev } from '$app/env';
+import { refreshAll } from '$app/navigation';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import type { Game } from '#lib/types/game.js';
 
 interface Props {
 	game: Game | null;
@@ -24,7 +24,7 @@ async function handleConfirm() {
 			const currentGames = gamesStore.games;
 			const success = await editorStore.saveLocally(currentGames);
 			if (success) {
-				await invalidateAll();
+				await refreshAll();
 			}
 		}
 	}

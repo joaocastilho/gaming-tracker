@@ -1,10 +1,10 @@
 <script lang="ts" generics="T">
 import type { Snippet } from 'svelte';
 
-import { safeKeyExtractor } from '$lib/utils/safeKeyExtractor';
+import { safeKeyExtractor } from '#lib/utils/safeKeyExtractor.js';
 
-import { windowSize } from '$lib/stores/window.svelte';
-import { binarySearchStart, binarySearchEnd } from '$lib/utils/virtualScroll.js';
+import { windowSize } from '#lib/stores/window.svelte.js';
+import { binarySearchStart, binarySearchEnd } from '#lib/utils/virtualScroll.js';
 
 interface Props {
 	items: T[];

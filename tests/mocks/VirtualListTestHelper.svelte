@@ -1,5 +1,5 @@
 <script lang="ts">
-import VirtualList from '$lib/components/VirtualList.svelte';
+import VirtualList from '#lib/components/VirtualList.svelte';
 
 interface Item {
 	id: string;

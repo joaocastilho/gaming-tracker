@@ -1,4 +1,4 @@
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 
 /**
  * Creates a fully-typed Game object with sensible defaults.

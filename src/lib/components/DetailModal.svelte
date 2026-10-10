@@ -1,12 +1,13 @@
 <script lang="ts">
 import { fade, fly, type FlyParams } from 'svelte/transition';
 import { cubicOut, backOut } from 'svelte/easing';
-import { browser } from '$app/environment';
-import { modalStore } from '$lib/stores/modal.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { offlineStore } from '$lib/stores/offline.svelte';
-import { imageErrorStore } from '$lib/stores/imageErrors.svelte.js';
-import type { Game } from '$lib/types/game.js';
+import { browser } from '$app/env';
+import { modalStore } from '#lib/stores/modal.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { offlineStore } from '#lib/stores/offline.svelte.js';
+import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
+import { preloadImage } from '#lib/utils/imagePreload.js';
+import type { Game } from '#lib/types/game.js';
 import { ChevronLeft, ChevronRight, X } from '@lucide/svelte';
 
 import { SwipeController } from './detail-modal/SwipeController.svelte';
@@ -89,12 +90,10 @@ $effect(() => {
 $effect(() => {
 	if (!browser) return;
 	if (nextGamePreview?.coverImage) {
-		const img = new Image();
-		img.src = getPreviewImageSrc(nextGamePreview.coverImage);
+		preloadImage(getPreviewImageSrc(nextGamePreview.coverImage));
 	}
 	if (prevGamePreview?.coverImage) {
-		const img = new Image();
-		img.src = getPreviewImageSrc(prevGamePreview.coverImage);
+		preloadImage(getPreviewImageSrc(prevGamePreview.coverImage));
 	}
 });
 
@@ -262,7 +261,7 @@ $effect(() => {
 							stroke-width="3"
 							stroke-linecap="round"
 							stroke-linejoin="round"
-						/>
+						></path>
 						<path
 							class="swipe-arrow swipe-arrow-down"
 							d="M55 58 L60 63 L65 58 M55 66 L60 71 L65 66"
@@ -270,7 +269,7 @@ $effect(() => {
 							stroke-width="3"
 							stroke-linecap="round"
 							stroke-linejoin="round"
-						/>
+						></path>
 						<path
 							class="swipe-arrow swipe-arrow-right"
 							d="M100 33 L107 40 L100 47 M90 33 L97 40 L90 47"
@@ -278,7 +277,7 @@ $effect(() => {
 							stroke-width="3"
 							stroke-linecap="round"
 							stroke-linejoin="round"
-						/>
+						></path>
 					</svg>
 					<span class="swipe-hint-text">Swipe to navigate</span>
 				</div>
@@ -315,11 +314,7 @@ $effect(() => {
 
 		{#each visibleGames as { game, pos } (game.id)}
 			{@const isCurrent = pos === 0}
-			{@const isVisible =
-				isCurrent ||
-				(pos === -1 && swipe.swipeDirection === 'right') ||
-				(pos === 1 && swipe.swipeDirection === 'left')}
-
+			{@const isVisible = isCurrent || pos === -1 && swipe.swipeDirection === 'right' || pos === 1 && swipe.swipeDirection === 'left'}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
@@ -369,7 +364,7 @@ $effect(() => {
 					}}
 				>
 					<GameDetailCard
-						{game}
+						game={game}
 						onEditGame={isCurrent ? onEditGame : undefined}
 						onDeleteGame={isCurrent ? onDeleteGame : undefined}
 						onClose={isCurrent ? () => modalStore.closeModal() : undefined}

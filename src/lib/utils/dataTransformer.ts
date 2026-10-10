@@ -1,4 +1,4 @@
-import type { Game, CoOpStatus } from '$lib/types/game';
+import type { Game, CoOpStatus } from '#lib/types/game.js';
 
 export interface RawGameData extends Record<string, unknown> {
 	title?: string;
@@ -25,6 +25,10 @@ export function transformGameData(game: RawGameData): Game {
 	if (!gameData.title?.trim()) {
 		gameData.title = 'Untitled Game';
 	}
+
+	// Precompute the lowercase title once so search filtering does not have to
+	// re-lowercase every game on every keystroke.
+	gameData.searchKey = gameData.title.trim().toLowerCase();
 
 	if (!gameData.platform?.trim()) {
 		gameData.platform = 'Unknown';

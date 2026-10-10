@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 class WindowSizeStore {
 	width = $state(typeof window !== 'undefined' ? window.innerWidth : 1024);

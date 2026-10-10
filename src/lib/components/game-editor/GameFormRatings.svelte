@@ -1,6 +1,6 @@
 <script lang="ts">
-import { formatRating, TIER_VALUES } from '$lib/validation/game';
-import type { Game } from '$lib/types/game';
+import { formatRating, TIER_VALUES } from '#lib/validation/game.js';
+import type { Game } from '#lib/types/game.js';
 
 interface Props {
 	working: Game;

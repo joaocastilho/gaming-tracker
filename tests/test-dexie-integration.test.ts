@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, afterEach } from 'vitest';
-import { appStore } from '$lib/stores/app.svelte';
-import { filteredGamesStore } from '$lib/stores/filteredGamesStore.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { gamesStore } from '$lib/stores/games.svelte';
-import { db } from '$lib/db';
-import type { Game } from '$lib/types/game';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { filteredGamesStore } from '#lib/stores/filteredGamesStore.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
+import { db } from '#lib/db.js';
+import type { Game } from '#lib/types/game.js';
 
 const mockGames: Game[] = [
 	{

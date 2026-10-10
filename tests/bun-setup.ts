@@ -27,7 +27,7 @@ mock.module('$app/navigation', () => ({
 	replaceState: () => {},
 	pushState: () => {},
 	invalidate: () => Promise.resolve(),
-	invalidateAll: () => Promise.resolve(),
+	refreshAll: () => Promise.resolve(),
 }));
 
 // Mock SvelteKit state
@@ -35,28 +35,6 @@ mock.module('$app/state', () => ({
 	page: {
 		subscribe: (fn: (value: unknown) => void) => {
 			fn({ url: new URL('http://localhost:3000/'), params: {} });
-			return () => {};
-		},
-	},
-}));
-
-// Mock SvelteKit stores
-mock.module('$app/stores', () => ({
-	page: {
-		subscribe: (fn: (value: unknown) => void) => {
-			fn({ url: new URL('http://localhost:3000/'), params: {} });
-			return () => {};
-		},
-	},
-	navigating: {
-		subscribe: (fn: (value: unknown) => void) => {
-			fn(null);
-			return () => {};
-		},
-	},
-	updated: {
-		subscribe: (fn: (value: unknown) => void) => {
-			fn(false);
 			return () => {};
 		},
 	},

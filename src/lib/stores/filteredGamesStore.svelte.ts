@@ -1,4 +1,4 @@
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 import { appStore, type TabValue } from './app.svelte';
 import { filtersStore } from './filters.svelte';
 import { gamesStore } from './games.svelte';
@@ -8,7 +8,7 @@ import {
 	sortGames,
 	type FilterTab,
 	type SortOption,
-} from '$lib/utils/filtering';
+} from '#lib/utils/filtering.js';
 
 function toFilterTab(tab: TabValue): FilterTab {
 	if (tab === 'all' || tab === 'completed' || tab === 'planned' || tab === 'tierlist') return tab;

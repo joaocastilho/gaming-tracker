@@ -1,15 +1,15 @@
 <script lang="ts">
-import { browser } from '$app/environment';
-import { dev } from '$app/environment';
+import { browser } from '$app/env';
+import { dev } from '$app/env';
 import { goto } from '$app/navigation';
-import { navigateTo } from '$lib/utils/navigationUtils';
+import { navigateTo } from '#lib/utils/navigationUtils.js';
 import { page } from '$app/state';
-import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+import ThemeToggle from '#lib/components/ThemeToggle.svelte';
 
-import { appStore } from '$lib/stores/app.svelte';
-import { filteredCountsStore } from '$lib/stores/filteredCounts.svelte';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import { editorStore } from '$lib/stores/editor.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
+import { filteredCountsStore } from '#lib/stores/filteredCounts.svelte.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import { editorStore } from '#lib/stores/editor.svelte.js';
 import {
 	Search,
 	Plus,
@@ -24,7 +24,7 @@ import {
 	List,
 	BarChart3,
 } from '@lucide/svelte';
-import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
+import OfflineIndicator from '#lib/components/OfflineIndicator.svelte';
 
 const isMac = $derived(browser && navigator.platform.toLowerCase().includes('mac'));
 const shortcutKey = $derived(isMac ? 'Cmd + /' : 'Ctrl + /');

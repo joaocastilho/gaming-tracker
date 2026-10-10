@@ -1,7 +1,7 @@
 import { render, fireEvent, screen } from '@testing-library/svelte';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import GameEditorModal from '$lib/components/GameEditorModal.svelte';
-import type { Game } from '$lib/types/game';
+import GameEditorModal from '#lib/components/GameEditorModal.svelte';
+import type { Game } from '#lib/types/game.js';
 
 // Use hoisted state for mutable mock values
 const mocks = vi.hoisted(() => ({
@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 // Mock stores
-vi.mock('$lib/stores/editor.svelte', () => ({
+vi.mock('#lib/stores/editor.svelte.js', () => ({
 	editorStore: {
 		get editorMode() {
 			return mocks.isEditorMode;
@@ -18,7 +18,7 @@ vi.mock('$lib/stores/editor.svelte', () => ({
 	},
 }));
 
-vi.mock('$lib/stores/games.svelte', () => ({
+vi.mock('#lib/stores/games.svelte.js', () => ({
 	gamesStore: {
 		games: [],
 		addGame: vi.fn(),
@@ -27,7 +27,7 @@ vi.mock('$lib/stores/games.svelte', () => ({
 }));
 
 vi.mock('$app/navigation', () => ({
-	invalidateAll: vi.fn().mockResolvedValue(undefined),
+	refreshAll: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('$app/environment', () => ({

@@ -1,4 +1,4 @@
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 
 export interface GenreStat {
 	name: string;
@@ -24,6 +24,15 @@ const SCORE_BANDS = [
 	{ label: '13–16', min: 13, max: 16 },
 	{ label: '17–20', min: 17, max: 20 },
 ] as const;
+
+export function computeAverageScore(games: Game[]): number {
+	const ratedScores = games
+		.filter((game) => game.status === 'Completed' && game.score != null)
+		.map((game) => game.score ?? 0);
+	if (ratedScores.length === 0) return 0;
+	const total = ratedScores.reduce((sum, score) => sum + score, 0);
+	return Math.round((total / ratedScores.length) * 10) / 10;
+}
 
 export function computeGenreStats(games: Game[]): GenreStat[] {
 	const completedGames = games.filter((game) => game.status === 'Completed');

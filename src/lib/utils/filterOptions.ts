@@ -1,4 +1,4 @@
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 import { COOP_COLORS, GENRE_COLORS, PLATFORM_COLORS } from './colorConstants.js';
 import { getTierClass, getTierDisplayName, TIER_ORDER } from './tierUtils';
 

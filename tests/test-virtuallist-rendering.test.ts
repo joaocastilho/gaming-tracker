@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import VirtualListTestHelper from './mocks/VirtualListTestHelper.svelte';
 
 // Mock windowSize store
-vi.mock('$lib/stores/window.svelte', () => ({
+vi.mock('#lib/stores/window.svelte.js', () => ({
 	windowSize: {
 		height: 400,
 		width: 800,

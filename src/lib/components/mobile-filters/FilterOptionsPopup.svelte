@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Monitor, Tag, Trophy } from '@lucide/svelte';
-import { getPlatformColor, getGenreColor, getTierColor } from '$lib/utils/filterOptions';
+import { getPlatformColor, getGenreColor, getTierColor } from '#lib/utils/filterOptions.js';
 
 interface FilterOption {
 	value: string;

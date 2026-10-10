@@ -14,7 +14,7 @@
  * @vitest-environment happy-dom
  */
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { registerServiceWorker } from '$lib/utils/serviceWorker';
+import { registerServiceWorker } from '#lib/utils/serviceWorker.js';
 
 type SWEventListener = (event: Event) => void;
 

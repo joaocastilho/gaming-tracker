@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getGenreChartColor, getGenreClasses } from '$lib/utils/colorConstants';
+import { getGenreChartColor, getGenreClasses } from '#lib/utils/colorConstants.js';
 
 describe('genre color constants', () => {
 	it('gives the main genre families distinct chart colors in both themes', () => {

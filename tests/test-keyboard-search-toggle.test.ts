@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import KeyboardSearchHarness from './components/KeyboardSearchHarness.svelte';
-import { filtersStore, createInitialFilters } from '$lib/stores/filters.svelte';
+import { filtersStore, createInitialFilters } from '#lib/stores/filters.svelte.js';
 import { setViewportWidth } from './setup';
 
 vi.mock('$app/state', () => ({
@@ -18,7 +18,7 @@ vi.mock('$app/environment', () => ({
 	browser: true,
 }));
 
-vi.mock('$lib/stores/searchClearCoordinator', () => ({
+vi.mock('#lib/stores/searchClearCoordinator.js', () => ({
 	markSearchCleared: vi.fn(),
 	lastManualClearTime: 0,
 }));

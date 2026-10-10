@@ -8,7 +8,7 @@ const { mockNavigator, mockWindow } = vi.hoisted(() => {
 	return { mockNavigator, mockWindow };
 });
 
-vi.mock('$lib/db', () => ({
+vi.mock('#lib/db.js', () => ({
 	db: {
 		games: {
 			toArray: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock('$app/environment', () => ({
 	dev: false,
 }));
 
-vi.mock('$lib/stores/editor.svelte', () => ({
+vi.mock('#lib/stores/editor.svelte.js', () => ({
 	editorStore: {
 		editorMode: true,
 		applyAllChanges: vi.fn(),
@@ -41,15 +41,15 @@ vi.mock('$lib/stores/editor.svelte', () => ({
 	},
 }));
 
-vi.mock('$lib/stores/games.svelte', () => ({
+vi.mock('#lib/stores/games.svelte.js', () => ({
 	gamesStore: {
 		setAllGames: vi.fn(),
 	},
 }));
 
-import { db } from '$lib/db';
-import { editorStore } from '$lib/stores/editor.svelte';
-import { offlineStore } from '$lib/stores/offline.svelte';
+import { db } from '#lib/db.js';
+import { editorStore } from '#lib/stores/editor.svelte.js';
+import { offlineStore } from '#lib/stores/offline.svelte.js';
 
 // Cast to Record to avoid complex type mocking issues
 const mockDb = db as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>;

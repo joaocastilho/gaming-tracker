@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { Game } from '$lib/types/game';
+import type { Game } from '#lib/types/game.js';
 
 export interface SyncPayload {
 	games: Game[];

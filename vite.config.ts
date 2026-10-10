@@ -1,50 +1,25 @@
+import type { Plugin } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import fs from 'node:fs';
 import path from 'node:path';
 
-function stripHtmlComments() {
+// SvelteKit 3 no longer supports transformIndexHtml (it renders HTML itself),
+// so post-process the emitted HTML assets at the end of the build instead.
+// Only safe transforms are applied here — Svelte's hydration markers must be
+// preserved, so comments are intentionally left untouched.
+function postProcessHtml(): Plugin {
 	return {
-		name: 'strip-html-comments',
-		apply: 'build' as const,
-		transformIndexHtml(html: string) {
-			return html.replace(/<!--(?!\[\[!-?-?])(?:\s|[\S\s])*?-->/g, '');
-		},
-	};
-}
-
-function optimizeCss() {
-	return {
-		name: 'optimize-css',
-		apply: 'build' as const,
-		transformIndexHtml(html: string) {
-			// Read critical CSS
+		name: 'post-process-html',
+		writeBundle(_options, bundle) {
 			const criticalCss = fs.readFileSync(path.resolve('src/lib/styles/critical.css'), 'utf-8');
-
-			// Just inject critical CSS
-			const newHtml = html.replace('</head>', `    <style>${criticalCss}</style>\n    </head>`);
-
-			return newHtml;
-		},
-	};
-}
-
-function injectBuildDate() {
-	return {
-		name: 'inject-build-date',
-		transformIndexHtml(html: string) {
-			const buildDate = new Date().toLocaleString(undefined, {
-				month: 'short',
-				day: 'numeric',
-				year: 'numeric',
-				hour: 'numeric',
-				minute: '2-digit',
-				second: '2-digit',
-				hour12: false,
-				timeZoneName: 'short',
-			});
-			return html.replace('%build-date%', buildDate);
+			for (const file of Object.values(bundle)) {
+				if (file.type !== 'asset' || !file.fileName.endsWith('.html')) continue;
+				file.source = String(file.source).replace('</head>', `    <style>${criticalCss}</style>\n    </head>`);
+			}
 		},
 	};
 }
@@ -55,10 +30,18 @@ export default defineConfig({
 	},
 	plugins: [
 		tailwindcss(),
-		sveltekit(),
-		optimizeCss(),
-		injectBuildDate(),
-		stripHtmlComments(),
+		sveltekit({
+			preprocess: vitePreprocess(),
+			inlineStyleThreshold: 8192,
+			adapter: adapter({
+				pages: 'build',
+				assets: 'build',
+				fallback: '404.html',
+				precompress: true,
+				strict: true,
+			}),
+		}),
+		postProcessHtml(),
 		{
 			name: 'fix-mjs-content-type',
 			configureServer(server) {
@@ -78,19 +61,19 @@ export default defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks(id: string) {
-					if (id.includes('$lib/components/FilterDropdown.svelte')) {
+					if (id.includes('#lib/components/FilterDropdown.svelte')) {
 						return 'filters';
 					}
-					if (id.includes('$lib/components/DetailModal.svelte')) {
+					if (id.includes('#lib/components/DetailModal.svelte')) {
 						return 'modals';
 					}
-					if (id.includes('$lib/components/GameEditorModal.svelte')) {
+					if (id.includes('#lib/components/GameEditorModal.svelte')) {
 						return 'editor';
 					}
-					if (id.includes('$lib/views/GamesView.svelte')) {
+					if (id.includes('#lib/views/GamesView.svelte')) {
 						return 'games-view';
 					}
-					if (id.includes('$lib/components/VirtualList.svelte')) {
+					if (id.includes('#lib/components/VirtualList.svelte')) {
 						return 'virtual-list';
 					}
 

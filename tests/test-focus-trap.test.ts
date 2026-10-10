@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { focusTrap } from '$lib/utils/focusTrap';
+import { focusTrap } from '#lib/utils/focusTrap.js';
 
 function setup() {
 	document.body.innerHTML = `

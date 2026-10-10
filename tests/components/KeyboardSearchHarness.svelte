@@ -1,8 +1,8 @@
 <script lang="ts">
-import { browser } from '$app/environment';
-import { createGlobalKeydownHandler } from '$lib/utils/keyboardShortcuts';
-import { filtersStore } from '$lib/stores/filters.svelte';
-import SearchBar from '$lib/components/SearchBar.svelte';
+import { browser } from '$app/env';
+import { createGlobalKeydownHandler } from '#lib/utils/keyboardShortcuts.js';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import SearchBar from '#lib/components/SearchBar.svelte';
 
 $effect(() => {
 	if (!browser) return;

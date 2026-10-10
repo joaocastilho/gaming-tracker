@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { transformGameData } from '$lib/utils/dataTransformer';
+import { transformGameData } from '#lib/utils/dataTransformer.js';
 
 describe('Data Transformer - Date Loading', () => {
 	it('should transform DD/MM/YYYY to ISO on load', () => {

@@ -1,8 +1,9 @@
-import { replaceState } from '$app/navigation';
-import { browser } from '$app/environment';
-import { debounce } from '$lib/utils/debounce';
-import { toSlug, fromSlug } from '$lib/utils/slugUtils';
-import { extractFilterOptions } from '$lib/utils/filterOptions';
+import { goto } from '$app/navigation';
+import { browser } from '$app/env';
+import type { ReadonlyURLSearchParams } from '$app/state';
+import { debounce } from '#lib/utils/debounce.js';
+import { toSlug, fromSlug } from '#lib/utils/slugUtils.js';
+import { extractFilterOptions } from '#lib/utils/filterOptions.js';
 import { gamesStore } from './games.svelte';
 import { getLastManualClearTime } from './searchClearCoordinator';
 
@@ -320,7 +321,7 @@ class FiltersStore {
 		}
 	}
 
-	readSearchFromURL(searchParams: URLSearchParams, _pathname?: string): void {
+	readSearchFromURL(searchParams: ReadonlyURLSearchParams, _pathname?: string): void {
 		if (!this._state) return;
 
 		// Skip if we just updated the URL ourselves to avoid race conditions
@@ -429,7 +430,7 @@ class FiltersStore {
 			if (url.searchParams.toString() === newParams.toString()) return;
 
 			url.search = newParams.toString();
-			await replaceState(url.toString(), pageState);
+			await goto(url.toString(), { shallow: true, replace: true, state: pageState });
 		} catch {
 			// Ignore URL replaceState errors during rapid filter updates
 		}

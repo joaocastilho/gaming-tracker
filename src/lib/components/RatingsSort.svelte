@@ -1,6 +1,6 @@
 <script lang="ts">
-import { filtersStore } from '$lib/stores/filters.svelte';
-import type { SortKey } from '$lib/stores/filters.svelte';
+import { filtersStore } from '#lib/stores/filters.svelte.js';
+import type { SortKey } from '#lib/stores/filters.svelte.js';
 import {
 	Presentation,
 	NotebookPen,
@@ -13,7 +13,7 @@ import {
 	Clock,
 	Timer,
 } from '@lucide/svelte';
-import { appStore } from '$lib/stores/app.svelte';
+import { appStore } from '#lib/stores/app.svelte.js';
 
 let sortOption = $derived(filtersStore.state?.sortOption ?? null);
 let currentTab = $derived(appStore.activeTab);
