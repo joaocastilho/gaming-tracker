@@ -17,6 +17,7 @@ import { modalStore } from '#lib/stores/modal.svelte.js';
 import { windowSize } from '#lib/stores/window.svelte.js';
 
 import Header from '#lib/components/Header.svelte';
+import ResultCount from '#lib/components/ResultCount.svelte';
 import ScrollToTopButton from '#lib/components/ScrollToTopButton.svelte';
 import BottomNavigation from '#lib/components/BottomNavigation.svelte';
 import NoResults from '#lib/components/NoResults.svelte';
@@ -26,6 +27,7 @@ import GamesView from '#lib/views/GamesView.svelte';
 import TierListView from '#lib/views/TierListView.svelte';
 
 import { extractFilterOptions } from '#lib/utils/filterOptions.js';
+import { tabEmptyState } from '#lib/utils/emptyState.js';
 import { registerServiceWorker } from '#lib/utils/serviceWorker.js';
 import { createGlobalKeydownHandler } from '#lib/utils/keyboardShortcuts.js';
 import { buildOgDescription } from '#lib/utils/ogDescription.js';
@@ -581,16 +583,22 @@ let shareDescription = $derived.by(() => {
 						<p>No games in your collection yet.</p>
 						<p class="sub">Add your first game to get started.</p>
 					</div>
-				{:else if hasActiveFilters && currentFilteredGames.length === 0}
-					<NoResults onReset={resetFilters} />
 				{:else}
-					<GamesView
-						filteredGames={currentFilteredGames}
-						onOpenModal={openModalWithFilterContext}
-						onEditGame={(g) => editorModalState.handleEditGame(g)}
-						onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
-						loading={false}
-					/>
+					<ResultCount count={currentFilteredGames.length} filtered={hasActiveFilters} />
+					{#if hasActiveFilters && currentFilteredGames.length === 0}
+						<NoResults onReset={resetFilters} />
+					{:else if currentFilteredGames.length === 0}
+						{@const emptyCopy = tabEmptyState(currentPage)}
+						<NoResults message={emptyCopy.message} description={emptyCopy.description} />
+					{:else}
+						<GamesView
+							filteredGames={currentFilteredGames}
+							onOpenModal={openModalWithFilterContext}
+							onEditGame={(g) => editorModalState.handleEditGame(g)}
+							onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
+							loading={false}
+						/>
+					{/if}
 				{/if}
 			{:else if isTierlistPage}
 					<TierListView filteredGames={currentFilteredGames} onOpenModal={openModalWithFilterContext} />
