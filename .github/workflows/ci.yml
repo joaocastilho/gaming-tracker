@@ -34,3 +34,6 @@ jobs:
 
       - name: Build
         run: bun run build
+
+      - name: Build Cloudflare Functions
+        run: bun run check:functions

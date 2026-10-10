@@ -26,6 +26,7 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:bun": "bun run test --preload ./tests/bun-setup.ts",
+		"check:functions": "bunx wrangler@3.114.17 pages functions build --outdir .wrangler/functions-build",
 		"validate": "bun run lint:fix && bun run format && bun run check && bun run test",
 		"clean": "bun -e \"const fs = require('fs'); ['node_modules', '.svelte-kit', 'build', '.vercel', 'bun.lock'].forEach(f => fs.rmSync(f, { recursive: true, force: true }));\" && bun install"
 	},

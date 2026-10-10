@@ -446,6 +446,7 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
 			// Remove computed fields that shouldn't be persisted
 			delete (game as Record<string, unknown>).mainTitle;
 			delete (game as Record<string, unknown>).subtitle;
+			delete (game as Record<string, unknown>).searchKey;
 
 			if (game.sortPriority === null || game.sortPriority === undefined) {
 				delete game.sortPriority;
