@@ -144,8 +144,13 @@ const hasRatings = $derived(
 	}
 
 	@media (max-width: 767px) and (orientation: portrait) {
+		/* Natural flow on phones: Ratings sit directly under the metadata grid
+		   (Hours Played) and the score badge follows the rating cards, instead
+		   of being pushed to the bottom of the column. `margin-top: auto` here
+		   used to strand the whole block at the bottom and leave a large empty
+		   gap between Hours Played and the Ratings heading. */
 		.ratings-wrapper {
-			margin-top: auto;
+			margin-top: 1.5rem;
 		}
 
 		/* The badge is narrower on phones, so the score digit scales down to suit. */
