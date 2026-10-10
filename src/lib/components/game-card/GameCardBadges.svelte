@@ -116,7 +116,7 @@ let isMobile = $derived(windowSize.isMobile);
 	}
 
 	.game-year {
-		font-size: clamp(0.85rem, 0.65rem + 1cqw, 1rem);
+		font-size: clamp(0.85rem, 0.65rem + 1cqw, 0.9rem);
 		font-weight: 600;
 		color: var(--color-text-secondary);
 		line-height: 1.1;

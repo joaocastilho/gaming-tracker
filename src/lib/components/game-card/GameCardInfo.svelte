@@ -106,7 +106,7 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		display: flex;
 		align-items: flex-end;
 		gap: clamp(3px, 1.2cqi, 6px);
-		font-size: clamp(0.75rem, 5cqi, 1rem);
+		font-size: clamp(0.75rem, 5cqi, 0.9rem);
 		color: var(--color-text-secondary);
 		flex-shrink: 1;
 		min-width: 0;
@@ -116,8 +116,8 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 
 	.time-item :global(svg),
 	.date-item :global(svg) {
-		width: clamp(0.75rem, 5cqi, 1rem);
-		height: clamp(0.75rem, 5cqi, 1rem);
+		width: clamp(0.75rem, 5cqi, 0.9rem);
+		height: clamp(0.75rem, 5cqi, 0.9rem);
 		flex-shrink: 0;
 		margin-bottom: 1px;
 	}
