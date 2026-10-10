@@ -3,7 +3,7 @@ import { tabEmptyState } from '#lib/utils/emptyState.js';
 
 describe('tabEmptyState', () => {
 	test('gives each games tab its own empty-state copy', () => {
-		expect(tabEmptyState('library')).toEqual({
+		expect(tabEmptyState('all')).toEqual({
 			message: 'Your library is empty',
 			description: 'Add your first game to see it here.',
 		});
@@ -17,8 +17,10 @@ describe('tabEmptyState', () => {
 		});
 	});
 
-	test('falls back to library copy for unknown tabs', () => {
-		expect(tabEmptyState('home')).toEqual(tabEmptyState('library'));
-		expect(tabEmptyState('')).toEqual(tabEmptyState('library'));
+	test('falls back to library copy for non-games tabs', () => {
+		// currentPage only ever returns these on home/tierlist/stats routes,
+		// where the empty state is never rendered — the copy is a safety net.
+		expect(tabEmptyState('home')).toEqual(tabEmptyState('all'));
+		expect(tabEmptyState('')).toEqual(tabEmptyState('all'));
 	});
 });
