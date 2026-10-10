@@ -18,8 +18,6 @@ describe('tabEmptyState', () => {
 	});
 
 	test('falls back to library copy for non-games tabs', () => {
-		// currentPage only ever returns these on home/tierlist/stats routes,
-		// where the empty state is never rendered — the copy is a safety net.
 		expect(tabEmptyState('home')).toEqual(tabEmptyState('all'));
 		expect(tabEmptyState('')).toEqual(tabEmptyState('all'));
 	});
