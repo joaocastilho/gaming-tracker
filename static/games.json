@@ -111,15 +111,16 @@
       "year": 2004,
       "genre": "Action",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/ace-combat-5-the-unsung-war.webp",
-      "playtime": "7h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "20h 23m",
+      "finishedDate": "10/10/2026",
+      "ratingPresentation": 8,
+      "ratingStory": 8,
+      "ratingGameplay": 7,
+      "score": 15,
+      "tier": "B - Great",
+      "completionOrder": null
     },
     {
       "id": "ace-combat-7-skies-unknown",
@@ -145,7 +146,7 @@
       "year": 2026,
       "genre": "Action",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/ace-combat-zero-the-belkan-war.webp",
       "playtime": "4h 30m",
       "finishedDate": null,
@@ -9697,6 +9698,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-10-03T10:16:05.260Z"
+    "lastUpdated": "2026-10-10T09:07:23.290Z"
   }
 }
