@@ -316,10 +316,10 @@ async function handleLogout() {
 	}
 
 	.tabs-list .count-badge {
-		min-width: 1.6rem;
+		min-width: 1.5rem;
 		padding: 0.15rem 0.5rem;
 		border-radius: 999px;
-		font-size: 0.9rem;
+		font-size: 0.85rem;
 		font-weight: 700;
 		text-align: center;
 		background: var(--color-surface-elevated);
