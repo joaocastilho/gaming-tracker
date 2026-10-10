@@ -110,8 +110,6 @@ Updates apply on the next natural page load — no forced reloads mid-session.
 | **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.6`  |
 | **Validation**       | [Zod](https://zod.dev/)                        | `v4.6.5`  |
 
-> `jsdom` is pinned to `30.0.x`: 30.1+ requires `this === globalThis` inside its vm context, which Bun's `vm` does not provide ([oven-sh/bun#43671](https://github.com/oven-sh/bun/issues/43671)). It can be bumped once that lands.
-
 ## 🚀 Running Locally
 
 ```bash
@@ -148,13 +146,4 @@ gaming-tracker/
 │   ├── games.json           # Game data
 │   └── covers/              # Game cover images (WebP)
 ├── tests/                   # Vitest tests
-└── docs/                    # Documentation
 ```
-
-## 📖 Documentation
-
-| Document                               | Purpose                    |
-| -------------------------------------- | -------------------------- |
-| [docs/project.md](docs/project.md)     | Full project specification |
-| [docs/TECHNICAL.md](docs/TECHNICAL.md) | Architecture & data flow   |
-| [AGENTS.md](AGENTS.md)                 | AI agent instructions      |
