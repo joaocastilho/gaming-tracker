@@ -229,17 +229,6 @@ function getAriaAttributes() {
 		justify-content: center;
 	}
 
-	.dropdown-panel {
-		position: absolute;
-		top: calc(100% + 4px);
-		left: 0;
-		min-width: 220px;
-		z-index: 50;
-		animation: fadeIn 0.15s ease-out;
-		background-color: var(--color-background);
-		border-color: var(--color-border);
-	}
-
 	@keyframes fadeIn {
 		from {
 			opacity: 0;
@@ -305,31 +294,7 @@ function getAriaAttributes() {
 		outline-offset: 2px;
 	}
 
-	@media (max-width: 640px) {
-		.dropdown-panel {
-			position: fixed;
-			top: auto;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			min-width: unset;
-			border-radius: 12px 12px 0 0;
-			animation: slideUp 0.3s ease-out;
-		}
 
-		@keyframes slideUp {
-			from {
-				transform: translateY(100%);
-			}
-			to {
-				transform: translateY(0);
-			}
-		}
-
-		.dropdown-options {
-			max-height: 50vh;
-		}
-	}
 
 	.filter-options-dropdown {
 		position: absolute;
@@ -389,10 +354,6 @@ function getAriaAttributes() {
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.dropdown-panel {
-			animation: none;
-		}
-
 		.dropdown-arrow {
 			transition: none;
 		}
@@ -409,10 +370,5 @@ function getAriaAttributes() {
 			transition: none;
 		}
 
-		@media (max-width: 640px) {
-			.dropdown-panel {
-				animation: none;
-			}
-		}
 	}
 </style>
