@@ -37,12 +37,20 @@ body {
 	background-color: var(--color-background);
 }
 
+/* The 64px height is a desktop-only constraint: on phones the header's own
+   rule shrinks the padding, so a fixed height adds ~24px of dead space above
+   the tabs. Let it size to content below 835px instead. */
+@media (min-width: 835px) {
+	.header-root {
+		height: 64px;
+	}
+}
+
 .header-root {
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
-	height: 64px;
 	z-index: 50;
 	background: var(--color-surface);
 	backdrop-filter: blur(12px);
