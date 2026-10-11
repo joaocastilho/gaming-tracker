@@ -292,7 +292,7 @@ $effect(() => {
 						e.stopPropagation();
 						navigateToPrevious();
 					}}
-					class="nav-arrow-btn absolute top-1/2 left-[calc(50%-566px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
+					class="nav-arrow-btn absolute top-1/2 left-[max(0.75rem,calc(50%-622px))] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
 					aria-label="Previous game"
 				>
 					<ChevronLeft size={28} />
@@ -304,7 +304,7 @@ $effect(() => {
 						e.stopPropagation();
 						navigateToNext();
 					}}
-					class="nav-arrow-btn absolute top-1/2 right-[calc(50%-566px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 md:flex"
+					class="nav-arrow-btn absolute top-1/2 right-[max(0.75rem,calc(50%-622px))] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
 					aria-label="Next game"
 				>
 					<ChevronRight size={28} />
@@ -327,7 +327,7 @@ $effect(() => {
 				}}
 			>
 				<div
-					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[600px] md:w-[1000px] md:max-w-[calc(100%/1.1)] md:rounded-xl md:shadow-2xl {isIOS
+					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[1000px] md:max-w-[calc(100%/1.1)] md:rounded-xl md:shadow-2xl {isIOS
 						? 'ios-modal'
 						: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
 						? 'swiping-close'

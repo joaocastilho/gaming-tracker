@@ -28,13 +28,29 @@ const LAZY_COMPONENT_CSS = [
 ];
 
 const DEFER_SCRIPT = `    <script>
-document.querySelectorAll('link[data-deferred-css]').forEach(function (l) {
-	if (l.sheet) {
-		l.media = 'all';
-		return;
+// Deferred sheets load in print media, which the browser fetches but does not
+// apply. Flip to 'all' once the file arrives. The domContentLoaded guard covers
+// the case where the sheet is still in flight when the parser reaches this
+// point: 'load' alone would be missed if the document had already finished.
+(function () {
+	var nodeList = document.querySelectorAll('link[data-deferred-css]');
+	var pending = [];
+	for (var i = 0; i < nodeList.length; i++) {
+		var l = nodeList[i];
+		if (l.sheet) l.media = 'all';
+		else pending.push(l);
 	}
-	l.addEventListener('load', function () { l.media = 'all'; }, { once: true });
-});
+	function flush() {
+		for (var j = 0; j < pending.length; j++) {
+			if (pending[j].sheet) pending[j].media = 'all';
+		}
+	}
+	for (var k = 0; k < pending.length; k++) {
+		pending[k].addEventListener('load', function (e) { e.target.media = 'all'; }, { once: true });
+	}
+	if (document.readyState === 'complete') flush();
+	else window.addEventListener('DOMContentLoaded', flush, { once: true });
+})();
 </script>
 `;
 
