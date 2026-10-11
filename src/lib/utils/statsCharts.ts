@@ -276,12 +276,12 @@ export function buildYearChart(games: Game[], theme: ColorTheme): ChartConfig {
 					type: 'line' as const,
 					label: 'Cumulative',
 					data: cumulData,
-					borderColor: theme === 'dark' ? '#f59e0b' : '#d97706',
+					borderColor: theme === 'dark' ? '#f59e0b' : '#92400e',
 					backgroundColor: 'transparent',
 					borderWidth: 2,
 					pointRadius: 3,
-					pointBackgroundColor: theme === 'dark' ? '#fbbf24' : '#d97706',
-					pointBorderColor: theme === 'dark' ? '#1a1c23' : '#ffffff',
+					pointBackgroundColor: theme === 'dark' ? '#fbbf24' : '#92400e',
+					pointBorderColor: theme === 'dark' ? '#1a1c23' : '#fbfaf7',
 					pointBorderWidth: 1.5,
 					tension: 0.35,
 					yAxisID: 'y1',
@@ -302,7 +302,7 @@ export function buildYearChart(games: Game[], theme: ColorTheme): ChartConfig {
 					// Labels sit ABOVE the bars (not inside) so long "count · hours"
 					// strings can never overflow a narrow bar. Count only — hours live
 					// in the tooltip.
-					color: theme === 'dark' ? '#e5e7eb' : '#374151',
+					color: theme === 'dark' ? '#e5e7eb' : '#1c1917',
 					font: { weight: 'bold' as const, size: 11 },
 					anchor: 'end' as const,
 					align: 'end' as const,
@@ -331,18 +331,22 @@ export function buildYearChart(games: Game[], theme: ColorTheme): ChartConfig {
 					grid: { display: false },
 					ticks: {
 						font: { size: 11 },
-						color: theme === 'dark' ? '#a0a8b8' : '#525252',
+						color: theme === 'dark' ? '#a0a8b8' : '#57534e',
 						maxRotation: 45,
 						minRotation: 0,
 						autoSkip: false,
 					},
 				},
 				y: {
-					grid: { display: true, color: 'rgba(255,255,255,0.04)', drawTicks: false },
+					grid: {
+						display: true,
+						color: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(62,52,40,0.09)',
+						drawTicks: false,
+					},
 					ticks: {
 						display: true,
 						font: { size: 10 },
-						color: theme === 'dark' ? '#717684' : '#8c8c8c',
+						color: theme === 'dark' ? '#717684' : '#6b665d',
 						maxTicksLimit: 5,
 						precision: 0,
 					},
