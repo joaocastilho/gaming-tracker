@@ -566,7 +566,7 @@ let shareDescription = $derived.by(() => {
 
 	<main
 		id="main-content"
-		class="bg-[var(--color-background)] px-2 pt-4 pb-6 md:px-6"
+		class="bg-[var(--color-background)] px-2 pt-0 pb-6 md:px-6 md:pt-4"
 		class:search-open-mobile={isSearchOpen}
 	>
 		<div class="mx-auto" style="max-width: 1800px;">
