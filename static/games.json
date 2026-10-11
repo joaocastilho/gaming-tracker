@@ -146,15 +146,16 @@
       "year": 2026,
       "genre": "Action",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/ace-combat-zero-the-belkan-war.webp",
-      "playtime": "4h 30m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "7h 51m",
+      "finishedDate": "11/10/2026",
+      "ratingPresentation": 7,
+      "ratingStory": 6,
+      "ratingGameplay": 7,
+      "score": 13,
+      "tier": "B - Great",
+      "completionOrder": null
     },
     {
       "id": "afterimage",
@@ -2208,7 +2209,7 @@
       "year": 2012,
       "genre": "RPG",
       "coOp": "No",
-      "status": "Planned",
+      "status": "Playing",
       "coverImage": "covers/dragons-dogma-dark-arisen.webp",
       "playtime": "33h 0m",
       "finishedDate": null,
@@ -9698,6 +9699,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-10-10T09:07:23.290Z"
+    "lastUpdated": "2026-10-11T18:58:39.629Z"
   }
 }
