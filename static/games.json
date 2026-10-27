@@ -2209,15 +2209,16 @@
       "year": 2012,
       "genre": "RPG",
       "coOp": "No",
-      "status": "Playing",
+      "status": "Completed",
       "coverImage": "covers/dragons-dogma-dark-arisen.webp",
-      "playtime": "33h 0m",
-      "finishedDate": null,
-      "ratingPresentation": null,
-      "ratingStory": null,
-      "ratingGameplay": null,
-      "score": null,
-      "tier": null
+      "playtime": "30h 41m",
+      "finishedDate": "25/10/2026",
+      "ratingPresentation": 7,
+      "ratingStory": 7,
+      "ratingGameplay": 7,
+      "score": 14,
+      "tier": "C - Good",
+      "completionOrder": null
     },
     {
       "id": "dredge",
@@ -9699,6 +9700,6 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-10-11T18:58:39.629Z"
+    "lastUpdated": "2026-10-27T08:57:26.321Z"
   }
 }
