@@ -322,10 +322,12 @@ describe('DetailModal continuum', () => {
 		const cards = container.querySelectorAll<HTMLElement>('.modal-content');
 		const incomingCard = cards[2];
 
-		// At rest, the next neighbour card waits off to the right at opacity 0.
+		// At rest, the next neighbour card waits off to the right at opacity 0
+		// while remaining visibility: visible so Firefox pre-promotes its GPU layer.
 		expect(incomingCard.style.transform).toContain('translate3d(236.36px');
 		expect(incomingCard.style.opacity).toBe('0');
-		expect(incomingCard.parentElement?.style.visibility).toBe('hidden');
+		expect(incomingCard.parentElement?.style.visibility).toBe('visible');
+		expect(incomingCard).not.toHaveClass('shadow-2xl');
 
 		dispatchPointer(card, 'pointerdown', { clientX: 700, clientY: 400 });
 		dispatchPointer(window, 'pointermove', { clientX: 570, clientY: 400 });
@@ -339,7 +341,6 @@ describe('DetailModal continuum', () => {
 		expect(incomingCard.style.transform).toContain('translate3d(163.2px, 0px, 0) scale(1)');
 		expect(Number(incomingCard.style.opacity)).toBeGreaterThan(0);
 		expect(incomingCard.parentElement?.style.visibility).toBe('visible');
-		expect(cards[0].parentElement?.style.visibility).toBe('hidden');
 
 		dispatchPointer(window, 'pointerup', { clientX: 570, clientY: 400 });
 		await tick();

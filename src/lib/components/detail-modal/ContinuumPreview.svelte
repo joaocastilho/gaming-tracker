@@ -163,6 +163,12 @@ function handleImageError(event: Event): void {
 		transition: none;
 	}
 
+	@supports (-moz-appearance: none) {
+		:global(.continuum-dragging) .continuum-preview {
+			opacity: 0.76;
+		}
+	}
+
 	.continuum-preview:hover,
 	.continuum-preview:focus-visible {
 		opacity: 1;

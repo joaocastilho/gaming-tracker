@@ -356,6 +356,7 @@ function handleContinuumPointerDown(event: PointerEvent): void {
 	if (!onBackdrop) {
 		if (!isCardTarget(event.target)) return;
 		if (!isDragHandleTarget(event.target) && isInteractiveCardTarget(event.target)) return;
+		event.preventDefault();
 	}
 
 	if (continuumPhase === 'settling') {
@@ -387,16 +388,21 @@ function handleContinuumPointerMove(event: PointerEvent): void {
 
 	if (!isContinuumDragging) {
 		isContinuumDragging = true;
-		capturePointer(event.pointerId);
 		window.getSelection()?.removeAllRanges();
 	}
 
-	continuumDragOffset = constrainContinuumOffset(movement.offset, {
-		canGoPrevious,
-		canGoNext,
-	});
-	if (continuumDragOffset !== 0) {
-		continuumTurnDirection = continuumDragOffset < 0 ? 1 : -1;
+	const nextOffset =
+		Math.round(
+			constrainContinuumOffset(movement.offset, {
+				canGoPrevious,
+				canGoNext,
+			}) * 2
+		) / 2;
+	if (nextOffset !== continuumDragOffset) {
+		continuumDragOffset = nextOffset;
+		if (continuumDragOffset !== 0) {
+			continuumTurnDirection = continuumDragOffset < 0 ? 1 : -1;
+		}
 	}
 	event.preventDefault();
 }
@@ -438,23 +444,7 @@ function cancelPointerGesture(): void {
 	void settleContinuumDrag();
 }
 
-function capturePointer(pointerId: number): void {
-	const node = overlayElement;
-	if (!node) return;
-
-	try {
-		node.setPointerCapture(pointerId);
-	} catch {
-		// The pointer can be gone by the time the drag passes its threshold;
-		// the window listeners still complete the gesture.
-	}
-}
-
 function stopPointerTracking(): void {
-	if (activePointerId !== null && overlayElement?.hasPointerCapture?.(activePointerId)) {
-		overlayElement.releasePointerCapture(activePointerId);
-	}
-
 	activePointerId = null;
 	isContinuumDragging = false;
 
@@ -636,6 +626,7 @@ $effect(() => {
 	<div
 		bind:this={overlayElement}
 		class="fixed inset-0 z-[60] flex items-center justify-center bg-black md:bg-black/80 md:p-4 md:backdrop-blur-[4px]"
+		class:continuum-overlay={isContinuum}
 		class:continuum-dragging={isContinuumDragging}
 		style="--continuum-turn-duration: {CONTINUUM_TURN_MS}ms; --continuum-settle-duration: {CONTINUUM_SETTLE_MS}ms;"
 		transition:fade={{ duration: isIOS ? 250 : 200 }}
@@ -759,11 +750,9 @@ $effect(() => {
 			{@const isCurrent = pos === 0}
 			{@const isIncomingNeighbor =
 				(pos === 1 && continuumTurnDirection === 1) || (pos === -1 && continuumTurnDirection === -1)}
-			{@const isContinuumActiveCard =
-				isCurrent || (isIncomingNeighbor && (continuumDragOffset !== 0 || continuumPhase !== 'idle'))}
 			{@const isVisible =
 				isCurrent ||
-				(isContinuum && isContinuumActiveCard) ||
+				isContinuum ||
 				(pos === -1 && swipe.swipeDirection === 'right') ||
 				(pos === 1 && swipe.swipeDirection === 'left')}
 			<div
@@ -774,8 +763,8 @@ $effect(() => {
 				aria-hidden={!isCurrent ? 'true' : undefined}
 			>
 				<div
-					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[960px] md:max-w-[calc(100%/1.1)] md:cursor-grab md:rounded-xl md:shadow-2xl {isCurrent
-						? 'pointer-events-auto'
+					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[960px] md:max-w-[calc(100%/1.1)] md:cursor-grab md:rounded-xl {isCurrent
+						? 'pointer-events-auto shadow-2xl md:shadow-2xl'
 						: ''} {isIOS
 						? 'ios-modal'
 						: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
@@ -797,7 +786,7 @@ $effect(() => {
 					style:transform={getCardTransform(pos, isCurrent)}
 					style:opacity={getCardOpacity(pos, isCurrent)}
 					style:border-radius="{isCurrent ? 12 + Math.max(0, swipe.swipeOffsetY) * 0.1 : 12}px"
-					style:will-change={isCurrent || (isContinuum && isContinuumActiveCard) ? 'transform' : 'auto'}
+					style:will-change={isContinuum ? 'transform, opacity' : isCurrent ? 'transform' : 'auto'}
 					role={isCurrent ? 'document' : undefined}
 					ontouchstart={isCurrent ? (e) => swipe.handleTouchStart(e) : undefined}
 					ontouchmove={isCurrent ? (e) => swipe.handleTouchMove(e) : undefined}
@@ -952,6 +941,7 @@ $effect(() => {
 	   fights the drag before it passes its start threshold. */
 	.continuum-card {
 		user-select: none;
+		backface-visibility: hidden;
 	}
 
 	.continuum-dragging,
@@ -959,6 +949,32 @@ $effect(() => {
 	.continuum-dragging :global(.modal-cover-image) {
 		user-select: none;
 		cursor: grabbing;
+	}
+
+	/* Firefox/Zen WebRender re-rasterises elements with CSS zoom != 1 on every
+	   transform update because Gecko implements zoom via fractional layout
+	   AppUnitsPerDevPixel (55 instead of 60), and re-runs backdrop-filter over
+	   the viewport whenever a child layer moves. Individual CSS `scale: 1.1`
+	   runs entirely on the GPU compositor before `style:transform`, preserving
+	   identical visual dimensions and 1:1 cursor tracking at full frame rate. */
+	@supports (-moz-appearance: none) {
+		.continuum-overlay {
+			backdrop-filter: none !important;
+			background-color: rgba(0, 0, 0, 0.85);
+		}
+
+		@media (min-width: 768px) {
+			:global(.modal-content) {
+				zoom: 1;
+				scale: 1.1;
+			}
+		}
+
+		@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
+			:global(.modal-content) {
+				scale: none !important;
+			}
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
