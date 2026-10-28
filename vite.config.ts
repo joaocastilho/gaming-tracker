@@ -54,6 +54,16 @@ const DEFER_SCRIPT = `    <script>
 </script>
 `;
 
+// SvelteKit resolves the browser runtime by following a dynamic import from
+// entry.js to client-entry.js. Capturing either module in a vendor group makes
+// that import intra-chunk, so Kit cannot find the runtime and the build fails.
+function isSvelteKitClientEntry(id: string): boolean {
+	return (
+		id.includes('@sveltejs/kit/src/runtime/client/entry.js') ||
+		id.includes('@sveltejs/kit/src/runtime/client/client-entry.js')
+	);
+}
+
 function deferLazyCss(html: string): string {
 	let deferred = 0;
 	const withMedia = html.replace(/<link([^>]*rel="stylesheet"[^>]*)>/g, (tag: string, attrs: string) => {
@@ -160,35 +170,37 @@ export default defineConfig({
 		},
 	],
 	build: {
-		rollupOptions: {
+		rolldownOptions: {
 			output: {
-				manualChunks(id: string) {
-					// Vendor splitting only. Component-level rules that matched on
-					// '#lib/...' specifiers never fired (Vite passes resolved file
-					// paths here), and the components they targeted are lazily
-					// imported via {#await import(...)} anyway, so they get their
-					// own chunks from the dynamic imports themselves.
-					if (id.includes('node_modules')) {
-						if (id.includes('chart.js') || id.includes('chartjs-plugin-datalabels')) {
-							return 'vendor-charts';
-						}
-						if (id.includes('dexie')) {
-							return 'vendor-db';
-						}
-						if (id.includes('@chenglou/pretext')) {
-							return 'vendor-text';
-						}
-						if (id.includes('@lucide/svelte') || id.includes('lucide-svelte')) {
-							return 'vendor-icons';
-						}
-						if (id.includes('zod')) {
-							return 'editor';
-						}
-						if (id.includes('svelte') || id.includes('@sveltejs')) {
-							return 'vendor-svelte';
-						}
-						return 'vendor';
-					}
+				// SvelteKit 3.1 sets output.codeSplitting for its manifest group, and
+				// Rolldown ignores manualChunks whenever codeSplitting is present.
+				// Keep the vendor split in the same API, repeating Kit's group so the
+				// manifest keeps its stable filename.
+				codeSplitting: {
+					groups: [
+						{
+							name: 'sveltekit-manifest',
+							test: '<sveltekit:generated>/app-manifest.js',
+						},
+						// Vendor splitting only. Component-level rules that matched on
+						// '#lib/...' specifiers never fired (Vite passes resolved file
+						// paths here), and the components they targeted are lazily
+						// imported via {#await import(...)} anyway, so they get their
+						// own chunks from the dynamic imports themselves.
+						{
+							name: 'vendor-charts',
+							test: /node_modules[\\/](chart\.js|chartjs-plugin-datalabels)/,
+						},
+						{ name: 'vendor-db', test: /node_modules[\\/]dexie/ },
+						{ name: 'vendor-text', test: /node_modules[\\/]@chenglou[\\/]pretext/ },
+						{ name: 'vendor-icons', test: /node_modules[\\/](@lucide[\\/]svelte|lucide-svelte)/ },
+						{ name: 'editor', test: /node_modules[\\/]zod/ },
+						{
+							name: 'vendor-svelte',
+							test: (id) => /node_modules[\\/](svelte|@sveltejs)/.test(id) && !isSvelteKitClientEntry(id),
+						},
+						{ name: 'vendor', test: (id) => /node_modules/.test(id) && !isSvelteKitClientEntry(id) },
+					],
 				},
 			},
 		},

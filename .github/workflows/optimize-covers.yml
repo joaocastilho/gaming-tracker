@@ -5,13 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'static/covers_raw/*.png'
+      - "static/covers_raw/*.png"
 
   # Triggered via API from Cloudflare after cover upload
   workflow_dispatch:
     inputs:
       game_id:
-        description: 'Game ID to optimize'
+        description: "Game ID to optimize"
         required: true
         type: string
 
