@@ -153,22 +153,19 @@ function viewAllCompleted() {
 	}
 
 	.np-scroll-row {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 16px;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 12px;
 	}
 
 	.np-scroll-row .np-card {
-		flex: 1 1 420px;
-		max-width: 800px;
+		width: 100%;
 		min-width: 0;
 	}
 
 	@media (max-width: 767px) {
-		.np-scroll-row .np-card {
-			flex: 1 1 300px;
-			max-width: 100%;
+		.np-scroll-row {
+			grid-template-columns: 1fr;
 		}
 	}
 
