@@ -726,12 +726,15 @@ let shareDescription = $derived.by(() => {
 		margin-bottom: 0;
 	}
 
-	/* Push content below the fixed search bar when search is open */
+	/* Push content just below the fixed search bar when search is open. The
+	   panel adds 6px top + 6px bottom padding around a ~58px bar, so 48px
+	   (measured from the 28px-tall mobile header) leaves a small gap instead
+	   of the old 20px band. */
 	:global(main.search-open-mobile) {
-		padding-top: 75px !important;
+		padding-top: 48px !important;
 	}
 
-	/* The mobile search bar is hidden at md+, so the 75px top padding must not
+	/* The mobile search bar is hidden at md+, so the mobile top padding must not
 	   leak into the desktop layout (it would leave a large empty gap between
 	   the filters and the game grid). */
 	@media (min-width: 768px) {

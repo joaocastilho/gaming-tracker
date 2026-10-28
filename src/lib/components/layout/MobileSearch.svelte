@@ -131,8 +131,8 @@ function clearMobileSearch() {
 		right: 0;
 		z-index: 40;
 		background-color: var(--color-background);
-		padding: 12px 16px;
-		padding-top: calc(12px + env(safe-area-inset-top, 0px));
+		padding: 6px 16px 6px;
+		padding-top: calc(6px + env(safe-area-inset-top, 0px));
 		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	}
 
