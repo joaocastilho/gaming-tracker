@@ -6,12 +6,22 @@ import { modalStore } from '#lib/stores/modal.svelte.js';
 import { gamesStore } from '#lib/stores/games.svelte.js';
 import { offlineStore } from '#lib/stores/offline.svelte.js';
 import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
+import { windowSize } from '#lib/stores/window.svelte.js';
 import { preloadImage } from '#lib/utils/imagePreload.js';
+import { prefersReducedMotion } from '#lib/utils/motion.js';
 import type { Game } from '#lib/types/game.js';
 import { ChevronLeft, ChevronRight, X } from '@lucide/svelte';
 
 import { SwipeController } from './detail-modal/SwipeController.svelte';
 import GameDetailCard from './detail-modal/GameDetailCard.svelte';
+import ContinuumPreview from './detail-modal/ContinuumPreview.svelte';
+import { getContinuumNeighbors, getContinuumPreviewCount } from './detail-modal/continuumNeighbors';
+import {
+	ContinuumDragTracker,
+	ContinuumWheelNavigator,
+	constrainContinuumOffset,
+	toContinuumCardOffset,
+} from './detail-modal/continuumGestures';
 
 interface Props {
 	onEditGame?: (game: Game) => void;
@@ -21,6 +31,8 @@ interface Props {
 let { onEditGame, onDeleteGame }: Props = $props();
 
 let modalState = $derived(modalStore.getState());
+let isModalOpen = $derived(modalState.isOpen);
+let isViewMode = $derived(modalState.mode === 'view');
 
 let isIOS = $state(false);
 let isAndroid = $state(false);
@@ -64,18 +76,37 @@ let nextGamePreview = $derived(
 );
 let prevGamePreview = $derived(currentGameIndex > 0 ? displayedGames[currentGameIndex - 1] : null);
 
+type ContinuumPhase = 'idle' | 'settling' | 'exiting';
+
+let continuumTurnDirection = $state<1 | -1>(1);
+let continuumPhase = $state<ContinuumPhase>('idle');
+let continuumDragOffset = $state(0);
+let isContinuumDragging = $state(false);
+let turnTargetGame = $state<Game | null>(null);
+let overlayElement = $state<HTMLDivElement>();
+let suppressClickUntil = 0;
+let activePointerId: number | null = null;
+let transitionToken = 0;
+
+let prevCardGame = $derived(
+	continuumPhase === 'exiting' && continuumTurnDirection === -1 && turnTargetGame ? turnTargetGame : prevGamePreview
+);
+let nextCardGame = $derived(
+	continuumPhase === 'exiting' && continuumTurnDirection === 1 && turnTargetGame ? turnTargetGame : nextGamePreview
+);
+
 let visibleGames = $derived.by((): { game: Game; pos: number }[] => {
 	const result = [];
-	if (prevGamePreview) result.push({ game: prevGamePreview, pos: -1 });
+	if (prevCardGame) result.push({ game: prevCardGame, pos: -1 });
 	if (modalState.activeGame) result.push({ game: modalState.activeGame, pos: 0 });
-	if (nextGamePreview) result.push({ game: nextGamePreview, pos: 1 });
+	if (nextCardGame) result.push({ game: nextCardGame, pos: 1 });
 	return result as { game: Game; pos: number }[];
 });
 
 let modalHasOpened = $state(false);
 
 $effect(() => {
-	if (modalState.isOpen) {
+	if (isModalOpen) {
 		const t = setTimeout(() => {
 			modalHasOpened = true;
 		}, 100);
@@ -86,40 +117,356 @@ $effect(() => {
 	}
 });
 
+const wheelNavigator = new ContinuumWheelNavigator();
+const dragTracker = new ContinuumDragTracker();
+
+const CONTINUUM_EXIT_DISTANCE = 420;
+const CONTINUUM_ENTER_OFFSET = 260;
+const CONTINUUM_MIN_RELEASE_TRAVEL = 160;
+const CONTINUUM_TURN_MS = 240;
+const CONTINUUM_SETTLE_MS = 260;
+
+const continuumPreviewCount = $derived(isIOS || isAndroid ? 0 : getContinuumPreviewCount(windowSize.width));
+const isContinuum = $derived(continuumPreviewCount > 0);
+const continuumNeighbors = $derived(getContinuumNeighbors(displayedGames, currentGameIndex, continuumPreviewCount));
+const canGoPrevious = $derived(currentGameIndex > 0);
+const canGoNext = $derived(currentGameIndex < displayedGames.length - 1);
+const continuumDragProgress = $derived(isContinuum ? Math.max(-1, Math.min(1, continuumDragOffset / 260)) : 0);
+const previousDragEmphasis = $derived(Math.max(0, continuumDragProgress));
+const nextDragEmphasis = $derived(Math.max(0, -continuumDragProgress));
+const previewEnterX = $derived(continuumTurnDirection === 1 ? 40 : -40);
+const previewEnterDuration = $derived(prefersReducedMotion() || !modalHasOpened ? 0 : 200);
+
 // Preload next/prev cover images to prevent browser rendering flicker during navigation
 $effect(() => {
 	if (!browser) return;
-	if (nextGamePreview?.coverImage) {
-		preloadImage(getPreviewImageSrc(nextGamePreview.coverImage));
-	}
-	if (prevGamePreview?.coverImage) {
-		preloadImage(getPreviewImageSrc(prevGamePreview.coverImage));
+	for (let step = -2; step <= 2; step++) {
+		if (step === 0) continue;
+		const candidate = displayedGames[currentGameIndex + step];
+		if (candidate?.coverImage) {
+			preloadImage(getPreviewImageSrc(candidate.coverImage));
+		}
 	}
 });
 
 function conditionalFly(node: HTMLElement, { condition, ...config }: FlyParams & { condition?: boolean }) {
+	if (!condition) return { duration: 0, delay: 0 };
+
 	const bypassTransition = !isIOS && !isAndroid && modalHasOpened;
-	if (!condition || bypassTransition) return { duration: 0, delay: 0 };
+	if (bypassTransition) return { duration: 0, delay: 0 };
 	return fly(node, config);
 }
 
-function navigateToPrevious() {
-	if (currentGameIndex > 0) {
-		const prevGame = displayedGames[currentGameIndex - 1];
-		modalStore.openViewModal(prevGame, displayedGames, undefined, modalStore.cardRect ?? undefined);
+function getIncomingProgress(pos: number): number {
+	if (pos === 1 && continuumDragOffset < 0) {
+		return Math.min(1, -continuumDragOffset / CONTINUUM_EXIT_DISTANCE);
+	}
+	if (pos === -1 && continuumDragOffset > 0) {
+		return Math.min(1, continuumDragOffset / CONTINUUM_EXIT_DISTANCE);
+	}
+	return 0;
+}
+
+function isTouchSwipeActive(): boolean {
+	return swipe.swipeDirection !== null || swipe.swipeOffsetX !== 0 || swipe.swipeOffsetY !== 0;
+}
+
+function getCardTransform(pos: number, isCurrent: boolean): string {
+	const x = pos * swipe.offsetMagnitude + swipe.swipeOffsetX + (isCurrent ? continuumDragOffset : 0);
+	const y = swipe.swipeOffsetY;
+
+	if (!isContinuum || isTouchSwipeActive()) {
+		return `translateX(${x}px) translateY(${y}px)`;
+	}
+
+	if (!isCurrent) {
+		const progress = getIncomingProgress(pos);
+		const visualX = pos * CONTINUUM_ENTER_OFFSET * (1 - progress);
+		const cardX = Number(toContinuumCardOffset(visualX).toFixed(2));
+		return `translate3d(${cardX}px, 0px, 0) scale(1)`;
+	}
+
+	// Keep scale constant at 1 so Firefox WebRender and Chromium never
+	// re-rasterise the zoomed card's picture cache tiles during a drag or turn.
+	const cardX = Number(toContinuumCardOffset(continuumDragOffset).toFixed(2));
+	const cardY = Number(toContinuumCardOffset(y).toFixed(2));
+
+	return `translate3d(${cardX}px, ${cardY}px, 0) scale(1)`;
+}
+
+function getCardOpacity(pos: number, isCurrent: boolean): number {
+	if (isContinuum && !isTouchSwipeActive()) {
+		if (!isCurrent) {
+			return Number(getIncomingProgress(pos).toFixed(3));
+		}
+		// Keep opacity at 1 while dragging so Firefox WebRender does not allocate
+		// an offscreen group surface for the zoomed card + box-shadow mid-drag.
+		return continuumPhase === 'exiting' ? 0 : 1;
+	}
+
+	if (!isCurrent) return 1;
+
+	return 1 - (Math.abs(swipe.swipeOffsetX) * 0.0005 + Math.max(0, swipe.swipeOffsetY) * 0.0005);
+}
+
+function delay(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function commitNavigation(direction: 1 | -1): void {
+	const target = direction === 1 ? nextGamePreview : prevGamePreview;
+	if (!target) return;
+	modalStore.openViewModal(target, displayedGames, undefined, modalStore.cardRect ?? undefined);
+}
+
+/**
+ * Springs both the active card and the peeked neighbour back to their resting
+ * positions when a drag ends without turning the page.
+ */
+async function settleContinuumDrag(): Promise<void> {
+	if (continuumDragOffset === 0) {
+		continuumPhase = 'idle';
+		return;
+	}
+
+	const token = ++transitionToken;
+	continuumTurnDirection = continuumDragOffset < 0 ? 1 : -1;
+	continuumPhase = 'settling';
+	continuumDragOffset = 0;
+
+	await delay(CONTINUUM_SETTLE_MS);
+	if (token !== transitionToken) return;
+	continuumPhase = 'idle';
+}
+
+/**
+ * Slides the current card out while simultaneously gliding the incoming
+ * neighbour card into the centre, then commits the active game swap once the
+ * incoming card is already resting at translate3d(0px, 0px, 0) scale(1).
+ */
+async function runContinuumTurn(direction: 1 | -1, commit: () => void, targetGame?: Game): Promise<void> {
+	if (continuumPhase === 'exiting') return;
+
+	const token = ++transitionToken;
+	if (activePointerId !== null) {
+		dragTracker.cancel();
+		stopPointerTracking();
+	}
+	isContinuumDragging = false;
+
+	const adjacentGame = direction === 1 ? nextGamePreview : prevGamePreview;
+	turnTargetGame = targetGame && targetGame.id !== adjacentGame?.id ? targetGame : null;
+
+	const draggedInDirection = Math.max(0, -direction * continuumDragOffset);
+	const exitDistance = Math.max(CONTINUUM_EXIT_DISTANCE, draggedInDirection + CONTINUUM_MIN_RELEASE_TRAVEL);
+
+	continuumPhase = 'exiting';
+	continuumDragOffset = -direction * exitDistance;
+
+	await delay(CONTINUUM_TURN_MS);
+	if (token !== transitionToken) return;
+	if (!isModalOpen) return;
+
+	continuumDragOffset = 0;
+	continuumPhase = 'idle';
+	turnTargetGame = null;
+	commit();
+}
+
+function navigateBy(direction: 1 | -1, skipTransition = false): void {
+	const canNavigate = direction === 1 ? canGoNext : canGoPrevious;
+	if (!canNavigate) return;
+	if (isContinuum && continuumPhase === 'exiting') return;
+
+	continuumTurnDirection = direction;
+
+	if (!isContinuum || prefersReducedMotion() || skipTransition) {
+		transitionToken++;
+		continuumPhase = 'idle';
+		turnTargetGame = null;
+		continuumDragOffset = 0;
+		commitNavigation(direction);
+		return;
+	}
+
+	void runContinuumTurn(direction, () => commitNavigation(direction));
+}
+
+function focusDialog(): void {
+	overlayElement?.focus({ preventScroll: true });
+}
+
+function selectContinuumGame(game: Game): void {
+	const index = displayedGames.findIndex((candidate) => candidate.id === game.id);
+	if (index < 0 || index === currentGameIndex) return;
+
+	const direction = index < currentGameIndex ? -1 : 1;
+
+	if (!isContinuum || prefersReducedMotion()) {
+		transitionToken++;
+		continuumPhase = 'idle';
+		turnTargetGame = null;
+		continuumDragOffset = 0;
+		continuumTurnDirection = direction;
+		modalStore.openViewModal(game, displayedGames, undefined, modalStore.cardRect ?? undefined);
+		focusDialog();
+		return;
+	}
+
+	if (continuumPhase === 'exiting') return;
+	continuumTurnDirection = direction;
+
+	void runContinuumTurn(
+		direction,
+		() => {
+			modalStore.openViewModal(game, displayedGames, undefined, modalStore.cardRect ?? undefined);
+		},
+		game
+	);
+	focusDialog();
+}
+
+function handleOverlayClick(event: MouseEvent): void {
+	if (event.target !== event.currentTarget) return;
+	if (performance.now() < suppressClickUntil) return;
+	modalStore.closeModal();
+}
+
+function isDragHandleTarget(target: EventTarget | null): boolean {
+	return target instanceof Element && target.closest('[data-continuum-drag-handle]') !== null;
+}
+
+function isCardTarget(target: EventTarget | null): boolean {
+	return target instanceof Element && target.closest('.modal-content') !== null;
+}
+
+const INTERACTIVE_CARD_SELECTOR =
+	'button, a, input, select, textarea, label, [role="button"], [contenteditable="true"]';
+
+function isInteractiveCardTarget(target: EventTarget | null): boolean {
+	return target instanceof Element && target.closest(INTERACTIVE_CARD_SELECTOR) !== null;
+}
+
+function handleContinuumPointerDown(event: PointerEvent): void {
+	if (!isContinuum || continuumPhase === 'exiting') return;
+	if (event.pointerType !== 'mouse' || event.button !== 0) return;
+	if (activePointerId !== null) cancelPointerGesture();
+
+	const onBackdrop = event.target === overlayElement;
+	if (!onBackdrop) {
+		if (!isCardTarget(event.target)) return;
+		if (!isDragHandleTarget(event.target) && isInteractiveCardTarget(event.target)) return;
+	}
+
+	if (continuumPhase === 'settling') {
+		transitionToken++;
+		continuumPhase = 'idle';
+	}
+
+	activePointerId = event.pointerId;
+	dragTracker.start(event.clientX, event.clientY, performance.now());
+
+	window.addEventListener('pointermove', handleContinuumPointerMove);
+	window.addEventListener('pointerup', handleContinuumPointerUp);
+	window.addEventListener('pointercancel', handleContinuumPointerCancel);
+	window.addEventListener('blur', handleWindowBlur);
+}
+
+function handleContinuumPointerMove(event: PointerEvent): void {
+	if (event.pointerId !== activePointerId) return;
+
+	// A release outside the window can miss pointerup. The next hover move
+	// reports no buttons and is the only signal that the gesture is over.
+	if ((event.buttons & 1) === 0) {
+		finishPointerGesture(performance.now());
+		return;
+	}
+
+	const movement = dragTracker.move(event.clientX, event.clientY, performance.now());
+	if (!movement.active) return;
+
+	if (!isContinuumDragging) {
+		isContinuumDragging = true;
+		capturePointer(event.pointerId);
+		window.getSelection()?.removeAllRanges();
+	}
+
+	continuumDragOffset = constrainContinuumOffset(movement.offset, {
+		canGoPrevious,
+		canGoNext,
+	});
+	if (continuumDragOffset !== 0) {
+		continuumTurnDirection = continuumDragOffset < 0 ? 1 : -1;
+	}
+	event.preventDefault();
+}
+
+/** Completes a gesture from its last tracked position, even without a pointerup. */
+function finishPointerGesture(now: number): void {
+	const wasDragging = isContinuumDragging;
+	const direction = dragTracker.end(now);
+	stopPointerTracking();
+
+	if (wasDragging) suppressClickUntil = now + 350;
+
+	const canNavigate = direction === 1 ? canGoNext : direction === -1 ? canGoPrevious : false;
+
+	if (direction !== 0 && canNavigate) {
+		navigateBy(direction);
+	} else {
+		void settleContinuumDrag();
 	}
 }
 
-function navigateToNext() {
-	if (currentGameIndex < displayedGames.length - 1) {
-		const nextGame = displayedGames[currentGameIndex + 1];
-		modalStore.openViewModal(nextGame, displayedGames, undefined, modalStore.cardRect ?? undefined);
+function handleContinuumPointerUp(event: PointerEvent): void {
+	if (event.pointerId !== activePointerId) return;
+	finishPointerGesture(performance.now());
+}
+
+function handleContinuumPointerCancel(event: PointerEvent): void {
+	if (event.pointerId !== activePointerId) return;
+	cancelPointerGesture();
+}
+
+function handleWindowBlur(): void {
+	if (activePointerId !== null) cancelPointerGesture();
+}
+
+function cancelPointerGesture(): void {
+	dragTracker.cancel();
+	stopPointerTracking();
+	void settleContinuumDrag();
+}
+
+function capturePointer(pointerId: number): void {
+	const node = overlayElement;
+	if (!node) return;
+
+	try {
+		node.setPointerCapture(pointerId);
+	} catch {
+		// The pointer can be gone by the time the drag passes its threshold;
+		// the window listeners still complete the gesture.
 	}
+}
+
+function stopPointerTracking(): void {
+	if (activePointerId !== null && overlayElement?.hasPointerCapture?.(activePointerId)) {
+		overlayElement.releasePointerCapture(activePointerId);
+	}
+
+	activePointerId = null;
+	isContinuumDragging = false;
+
+	window.removeEventListener('pointermove', handleContinuumPointerMove);
+	window.removeEventListener('pointerup', handleContinuumPointerUp);
+	window.removeEventListener('pointercancel', handleContinuumPointerCancel);
+	window.removeEventListener('blur', handleWindowBlur);
 }
 
 const swipe = new SwipeController(
-	navigateToNext,
-	navigateToPrevious,
+	(skip) => navigateBy(1, skip),
+	(skip) => navigateBy(-1, skip),
 	() => nextGamePreview,
 	() => prevGamePreview,
 	dismissSwipeHint
@@ -134,7 +481,7 @@ function toggleImageExpansion() {
 }
 
 function handleKeydown(event: KeyboardEvent) {
-	if (!modalState.isOpen || modalState.mode !== 'view') return;
+	if (!isModalOpen || !isViewMode) return;
 
 	if (event.key === 'Escape') {
 		event.preventDefault();
@@ -146,10 +493,10 @@ function handleKeydown(event: KeyboardEvent) {
 	} else if (!isImageExpanded) {
 		if (event.key === 'ArrowLeft') {
 			event.preventDefault();
-			navigateToPrevious();
+			navigateBy(-1);
 		} else if (event.key === 'ArrowRight') {
 			event.preventDefault();
-			navigateToNext();
+			navigateBy(1);
 		}
 	}
 }
@@ -162,7 +509,7 @@ let hasTriggeredHint = false;
 
 $effect(() => {
 	const games = displayedGames;
-	if (!browser || !modalState.isOpen || modalState.mode !== 'view') return;
+	if (!browser || !isModalOpen || !isViewMode) return;
 
 	if (sessionStorage.getItem(SWIPE_HINT_KEY)) return;
 	if (window.innerWidth >= 768 || games.length <= 1) return;
@@ -189,7 +536,7 @@ $effect(() => {
 	if (!browser) return;
 
 	// Only add listener when modal is open in view mode
-	if (modalState.isOpen && modalState.mode === 'view') {
+	if (isModalOpen && isViewMode) {
 		document.addEventListener('keydown', handleKeydown, true);
 
 		// Cleanup function removes listener when modal closes or component destroys
@@ -200,9 +547,69 @@ $effect(() => {
 });
 
 $effect(() => {
+	if (!browser || !overlayElement) return;
+
+	const node = overlayElement;
+	wheelNavigator.reset();
+
+	const handleWheel = (event: WheelEvent) => {
+		if (!isContinuum || !isModalOpen) return;
+
+		const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+		const direction = wheelNavigator.push(event.deltaX, event.deltaY);
+		if (horizontal) event.preventDefault();
+
+		if (direction === 1) navigateBy(1);
+		else if (direction === -1) navigateBy(-1);
+	};
+
+	node.addEventListener('wheel', handleWheel, { passive: false });
+	return () => node.removeEventListener('wheel', handleWheel);
+});
+
+$effect(() => {
+	if (!browser || !overlayElement) return;
+
+	const node = overlayElement;
+	const suppressDragClick = (event: MouseEvent) => {
+		if (performance.now() < suppressClickUntil) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	};
+
+	node.addEventListener('click', suppressDragClick, true);
+	return () => node.removeEventListener('click', suppressDragClick, true);
+});
+
+$effect(() => {
+	if (isModalOpen) return;
+
+	transitionToken++;
+	continuumPhase = 'idle';
+	turnTargetGame = null;
+	isContinuumDragging = false;
+	continuumDragOffset = 0;
+
+	if (activePointerId !== null) {
+		dragTracker.cancel();
+		stopPointerTracking();
+	}
+});
+
+$effect(() => {
+	return () => {
+		window.removeEventListener('pointermove', handleContinuumPointerMove);
+		window.removeEventListener('pointerup', handleContinuumPointerUp);
+		window.removeEventListener('pointercancel', handleContinuumPointerCancel);
+		window.removeEventListener('blur', handleWindowBlur);
+	};
+});
+
+$effect(() => {
 	if (!browser) return;
 
-	if (modalState.isOpen || isImageExpanded) {
+	if (isModalOpen || isImageExpanded) {
 		document.body.classList.add('no-scroll');
 		document.documentElement.classList.add('no-scroll');
 	} else {
@@ -225,12 +632,17 @@ $effect(() => {
 });
 </script>
 
-{#if modalState.isOpen && modalState.activeGame && modalState.mode === 'view'}
+{#if isModalOpen && modalState.activeGame && isViewMode}
 	<div
+		bind:this={overlayElement}
 		class="fixed inset-0 z-[60] flex items-center justify-center bg-black md:bg-black/80 md:p-4 md:backdrop-blur-[4px]"
+		class:continuum-dragging={isContinuumDragging}
+		style="--continuum-turn-duration: {CONTINUUM_TURN_MS}ms; --continuum-settle-duration: {CONTINUUM_SETTLE_MS}ms;"
 		transition:fade={{ duration: isIOS ? 250 : 200 }}
-		onclick={(e: MouseEvent) => {
-			if (e.target === e.currentTarget) modalStore.closeModal();
+		onclick={handleOverlayClick}
+		onpointerdown={handleContinuumPointerDown}
+		ondragstart={(e: DragEvent) => {
+			if (isContinuum) e.preventDefault();
 		}}
 		onkeydown={(e: KeyboardEvent) => {
 			if (e.key === 'Escape') modalStore.closeModal();
@@ -240,6 +652,10 @@ $effect(() => {
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
+		<p class="sr-only" aria-live="polite" aria-atomic="true">
+			Now viewing {modalState.activeGame?.title ?? ''}
+		</p>
+
 		<!-- Swipe Hint Overlay -->
 		{#if showSwipeIndicator}
 			<div
@@ -290,9 +706,9 @@ $effect(() => {
 				<button
 					onclick={(e) => {
 						e.stopPropagation();
-						navigateToPrevious();
+						navigateBy(-1);
 					}}
-					class="nav-arrow-btn absolute top-1/2 left-[max(0.75rem,calc(50%-622px))] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
+					class="nav-arrow-btn absolute top-1/2 left-[calc(50%-568px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
 					aria-label="Previous game"
 				>
 					<ChevronLeft size={28} />
@@ -302,9 +718,9 @@ $effect(() => {
 				<button
 					onclick={(e) => {
 						e.stopPropagation();
-						navigateToNext();
+						navigateBy(1);
 					}}
-					class="nav-arrow-btn absolute top-1/2 right-[max(0.75rem,calc(50%-622px))] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
+					class="nav-arrow-btn absolute top-1/2 right-[calc(50%-568px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
 					aria-label="Next game"
 				>
 					<ChevronRight size={28} />
@@ -312,40 +728,76 @@ $effect(() => {
 			{/if}
 		{/if}
 
+		{#if isContinuum}
+			<div class="pointer-events-none absolute inset-0 z-[58]">
+				{#each continuumNeighbors.previous as game, index (game.id)}
+					<ContinuumPreview
+						{game}
+						direction="previous"
+						depth={index === 1 ? 1 : 0}
+						emphasis={previousDragEmphasis}
+						enterFromX={previewEnterX}
+						enterDuration={previewEnterDuration}
+						onSelect={selectContinuumGame}
+					/>
+				{/each}
+				{#each continuumNeighbors.next as game, index (game.id)}
+					<ContinuumPreview
+						{game}
+						direction="next"
+						depth={index === 1 ? 1 : 0}
+						emphasis={nextDragEmphasis}
+						enterFromX={previewEnterX}
+						enterDuration={previewEnterDuration}
+						onSelect={selectContinuumGame}
+					/>
+				{/each}
+			</div>
+		{/if}
+
 		{#each visibleGames as { game, pos } (game.id)}
 			{@const isCurrent = pos === 0}
-			{@const isVisible = isCurrent || pos === -1 && swipe.swipeDirection === 'right' || pos === 1 && swipe.swipeDirection === 'left'}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			{@const isIncomingNeighbor =
+				(pos === 1 && continuumTurnDirection === 1) || (pos === -1 && continuumTurnDirection === -1)}
+			{@const isContinuumActiveCard =
+				isCurrent || (isIncomingNeighbor && (continuumDragOffset !== 0 || continuumPhase !== 'idle'))}
+			{@const isVisible =
+				isCurrent ||
+				(isContinuum && isContinuumActiveCard) ||
+				(pos === -1 && swipe.swipeDirection === 'right') ||
+				(pos === 1 && swipe.swipeDirection === 'left')}
 			<div
-				class="absolute inset-0 flex items-center justify-center md:p-4 {isCurrent
+				class="absolute inset-0 flex items-center justify-center pointer-events-none md:p-4 {isCurrent
 					? 'z-[60]'
-					: 'pointer-events-none z-[59]'}"
+					: 'z-[59]'}"
 				style="visibility: {isVisible ? 'visible' : 'hidden'};"
-				onclick={(e: MouseEvent) => {
-					if (isCurrent && e.target === e.currentTarget) modalStore.closeModal();
-				}}
+				aria-hidden={!isCurrent ? 'true' : undefined}
 			>
 				<div
-					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[960px] md:max-w-[calc(100%/1.1)] md:rounded-xl md:shadow-2xl {isIOS
+					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[960px] md:max-w-[calc(100%/1.1)] md:cursor-grab md:rounded-xl md:shadow-2xl {isCurrent
+						? 'pointer-events-auto'
+						: ''} {isIOS
 						? 'ios-modal'
 						: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
 						? 'swiping-close'
 						: ''}"
-					style="
-						background-color: {game.status === 'Completed'
+					class:continuum-card={isContinuum}
+					class:continuum-settling={isContinuum &&
+						!isContinuumDragging &&
+						continuumPhase === 'settling' &&
+						(isCurrent || isIncomingNeighbor)}
+					class:continuum-exiting={isContinuum &&
+						continuumPhase === 'exiting' &&
+						(isCurrent || isIncomingNeighbor)}
+					style:background-color={game.status === 'Completed'
 						? 'var(--color-surface-completed)'
 						: game.status === 'Playing'
 							? 'var(--color-surface-playing, var(--color-surface))'
-							: 'var(--color-surface)'}; 
-						transform: translateX(calc({pos *
-						swipe.offsetMagnitude}px + {swipe.swipeOffsetX}px)) translateY({swipe.swipeOffsetY}px); 
-						opacity: {isCurrent
-						? 1 - (Math.abs(swipe.swipeOffsetX) * 0.0005 + Math.max(0, swipe.swipeOffsetY) * 0.0005)
-						: 1};
-						border-radius: {isCurrent ? 12 + Math.max(0, swipe.swipeOffsetY) * 0.1 : 12}px;
-						will-change: transform;
-					"
+							: 'var(--color-surface)'}
+					style:transform={getCardTransform(pos, isCurrent)}
+					style:opacity={getCardOpacity(pos, isCurrent)}
+					style:border-radius="{isCurrent ? 12 + Math.max(0, swipe.swipeOffsetY) * 0.1 : 12}px"
+					style:will-change={isCurrent || (isContinuum && isContinuumActiveCard) ? 'transform' : 'auto'}
 					role={isCurrent ? 'document' : undefined}
 					ontouchstart={isCurrent ? (e) => swipe.handleTouchStart(e) : undefined}
 					ontouchmove={isCurrent ? (e) => swipe.handleTouchMove(e) : undefined}
@@ -479,6 +931,40 @@ $effect(() => {
 	@media (min-width: 768px) {
 		:global(.modal-content) {
 			zoom: 1.1;
+		}
+	}
+
+	/* Release physics: both the active card and the peeked neighbour spring back
+	   on a cancelled drag, or glide simultaneously to their turn targets. */
+	.continuum-settling {
+		transition:
+			transform var(--continuum-settle-duration, 260ms) cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 200ms ease-out;
+	}
+
+	.continuum-exiting {
+		transition:
+			transform var(--continuum-turn-duration, 240ms) cubic-bezier(0.22, 1, 0.36, 1),
+			opacity var(--continuum-turn-duration, 240ms) cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	/* Pressing on the details text would otherwise begin a text selection that
+	   fights the drag before it passes its start threshold. */
+	.continuum-card {
+		user-select: none;
+	}
+
+	.continuum-dragging,
+	.continuum-dragging .modal-content,
+	.continuum-dragging :global(.modal-cover-image) {
+		user-select: none;
+		cursor: grabbing;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.continuum-settling,
+		.continuum-exiting {
+			transition: none;
 		}
 	}
 

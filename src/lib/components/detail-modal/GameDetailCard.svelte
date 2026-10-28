@@ -147,15 +147,21 @@ function handleImageError() {
 			{/if}
 		</div>
 		<div class="h-full bg-gray-900 md:min-h-0">
-			<button class="contents" onclick={onImageClick} aria-label="View full screen">
+			<button
+				class="contents"
+				onclick={onImageClick}
+				aria-label="View full screen"
+				data-continuum-drag-handle
+			>
 				<img
 					bind:this={modalImageElement}
 					src={detailImageSrc}
 					srcset={detailImageSrcset}
 					sizes={detailImageSizes}
 					alt="{game.title} cover"
-					class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform"
+					class="modal-cover-image h-full w-full cursor-pointer object-cover transition-transform select-none md:cursor-grab md:active:cursor-grabbing"
 					loading="eager"
+					draggable="false"
 					onload={handleImageLoad}
 					onerror={handleImageError}
 				/>

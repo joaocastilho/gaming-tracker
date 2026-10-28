@@ -49,6 +49,44 @@ if (typeof window !== 'undefined') {
 	});
 }
 
+// jsdom has no Web Animations API, but Svelte's JS transitions use
+// element.animate() to sequence outro delays.
+if (typeof Element !== 'undefined' && typeof Element.prototype.animate !== 'function') {
+	Object.defineProperty(Element.prototype, 'animate', {
+		writable: true,
+		configurable: true,
+		value: vi.fn(() => ({
+			cancel: vi.fn(),
+			finish: vi.fn(),
+			onfinish: null,
+			oncancel: null,
+		})),
+	});
+}
+
+// jsdom has no pointer capture, so keep a per-element set for the drag code.
+if (typeof Element !== 'undefined' && typeof Element.prototype.setPointerCapture !== 'function') {
+	const capturedPointers = new WeakMap<Element, Set<number>>();
+	const pointersFor = (element: Element): Set<number> => {
+		let pointers = capturedPointers.get(element);
+		if (!pointers) {
+			pointers = new Set();
+			capturedPointers.set(element, pointers);
+		}
+		return pointers;
+	};
+
+	Element.prototype.setPointerCapture = function (this: Element, pointerId: number) {
+		pointersFor(this).add(pointerId);
+	};
+	Element.prototype.releasePointerCapture = function (this: Element, pointerId: number) {
+		capturedPointers.get(this)?.delete(pointerId);
+	};
+	Element.prototype.hasPointerCapture = function (this: Element, pointerId: number) {
+		return capturedPointers.get(this)?.has(pointerId) ?? false;
+	};
+}
+
 // Mock HTMLCanvasElement.getContext to prevent jsdom "not implemented" warning
 if (typeof HTMLCanvasElement !== 'undefined') {
 	HTMLCanvasElement.prototype.getContext = vi.fn(function (
