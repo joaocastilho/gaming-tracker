@@ -108,6 +108,21 @@ describe('DetailModal continuum', () => {
 		expect(getActiveCard()).toHaveClass('continuum-card');
 	});
 
+	it('scopes the Firefox drag-shadow workaround to the continuum overlay', () => {
+		openAt(2);
+		render(DetailModal);
+
+		expect(screen.getByRole('dialog')).toHaveClass('continuum-overlay');
+	});
+
+	it('does not apply the continuum shadow workaround below 1280px', () => {
+		windowSize.width = 1279;
+		openAt(2);
+		render(DetailModal);
+
+		expect(screen.getByRole('dialog')).not.toHaveClass('continuum-overlay');
+	});
+
 	it('leaves text selectable on the card below 1280px', () => {
 		windowSize.width = 1279;
 		openAt(2);

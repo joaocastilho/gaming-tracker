@@ -963,6 +963,15 @@ $effect(() => {
 			background-color: rgba(0, 0, 0, 0.85);
 		}
 
+		/* Shadowed card layers are re-rasterised on every transform update:
+		   WebRender paints the blur against the layer's new subpixel position
+		   instead of sliding a cached surface. Against the near-opaque overlay
+		   the shadow is almost invisible, so drop it for the whole continuum
+		   rather than hitch on drag start, release, and shadow restoration. */
+		.continuum-overlay :global(.modal-content) {
+			box-shadow: none !important;
+		}
+
 		@media (min-width: 768px) {
 			:global(.modal-content) {
 				zoom: 1;
