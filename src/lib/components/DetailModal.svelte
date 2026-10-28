@@ -327,7 +327,7 @@ $effect(() => {
 				}}
 			>
 				<div
-					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[1000px] md:max-w-[calc(100%/1.1)] md:rounded-xl md:shadow-2xl {isIOS
+					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 shadow-2xl md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[960px] md:max-w-[calc(100%/1.1)] md:rounded-xl md:shadow-2xl {isIOS
 						? 'ios-modal'
 						: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
 						? 'swiping-close'
@@ -479,6 +479,15 @@ $effect(() => {
 	@media (min-width: 768px) {
 		:global(.modal-content) {
 			zoom: 1.1;
+		}
+	}
+
+	/* Portrait tablets have a narrow details column, so the enlarged tier and
+	   score badges stack instead of sharing a row. Give the shell enough height
+	   to show both without hiding the score below a scroll. */
+	@media (min-width: 768px) and (max-width: 899px) and (orientation: portrait) {
+		:global(.modal-content) {
+			max-height: min(660px, calc((100dvh - 32px) / 1.1)) !important;
 		}
 	}
 

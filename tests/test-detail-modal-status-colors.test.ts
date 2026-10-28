@@ -159,13 +159,42 @@ describe('Score block has one consistent height for every status', () => {
 		expect(mobileSize).toBeLessThan(baseSize);
 	});
 
-	it('narrows the badge symmetrically so it stays centred', () => {
-		// Narrowing happens through matching left/right insets on the wrapper, so
-		// the badge never depends on its own text length for width.
+	it('aligns the verdict strip with the three rating columns', () => {
+		// The strip used to be inset with mx-4, so it did not line up with the
+		// rating cards above it. It now shares their grid edges.
 		const wrapper = MODAL_SOURCE.match(/<div class="score-result[^"]*"/)?.[0] ?? '';
 
-		expect(wrapper).toMatch(/mx-\d/);
+		expect(wrapper).not.toMatch(/\bmx-\d/);
 		expect(wrapper).not.toMatch(/\bml-\d/);
 		expect(wrapper).not.toMatch(/\bmr-\d/);
+
+		const strip = MODAL_SOURCE.match(/\.verdict-strip\s*\{([^}]*)\}/)?.[1] ?? '';
+		expect(strip).toMatch(/display:\s*flex/);
+		expect(strip).toMatch(/flex-wrap:\s*wrap/);
+
+		// The score badge grows into the space the tier leaves; the tier keeps
+		// its intrinsic width so the larger name never collapses.
+		const badge = MODAL_SOURCE.match(/\.verdict-strip\s+\.status-badge\s*\{([^}]*)\}/)?.[1] ?? '';
+		expect(badge).toMatch(/flex:\s*1\s+1/);
+
+		const tier = MODAL_SOURCE.match(/\.verdict-tier\s*\{([^}]*)\}/)?.[1] ?? '';
+		expect(tier).toMatch(/flex:\s*0\s+0\s+auto/);
+	});
+
+	it('renders the tier name at the same size as the tier letter', () => {
+		const typography =
+			MODAL_SOURCE.match(/\.verdict-letter,\s*\.verdict-name,\s*\.verdict-separator\s*\{([^}]*)\}/)?.[1] ?? '';
+
+		expect(typography).toMatch(/font-size:\s*clamp\(/);
+	});
+
+	it('leaves the tier name in its written case', () => {
+		const tier = MODAL_SOURCE.match(/\.verdict-tier\s*\{([^}]*)\}/)?.[1] ?? '';
+
+		expect(tier).not.toMatch(/text-transform:\s*uppercase/);
+	});
+
+	it('does not render a score caption inside the badge', () => {
+		expect(MODAL_SOURCE).not.toContain('score-label');
 	});
 });

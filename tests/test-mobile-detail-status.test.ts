@@ -5,59 +5,45 @@ import ModalRatings from '#lib/components/detail-modal/ModalRatings.svelte';
 import { createTestGame, createCompletedGame } from './helpers/factories';
 
 /**
- * The tier slot in the metadata row is reserved for the tier badge. A game with
- * no tier must leave that slot empty rather than filling it with a status word,
- * so it no longer reads as if the status were a ranked tier.
+ * Tier is a summary of the ratings, so it now lives in the ratings panel
+ * beside the score. The metadata row must not duplicate it.
  */
-describe('Detail modal metadata tier slot only shows an actual tier', () => {
-	it('shows nothing in the tier slot for a Playing game with no tier', () => {
-		const game = createTestGame({ status: 'Playing', tier: null });
-		const { container } = render(ModalMetadata, { props: { game } });
+describe('Detail modal metadata row leaves tier to the ratings panel', () => {
+	it('shows no tier badge for Playing or Planned games', () => {
+		for (const game of [
+			createTestGame({ status: 'Playing', tier: null }),
+			createTestGame({ status: 'Planned', tier: null }),
+		]) {
+			const { container, unmount } = render(ModalMetadata, { props: { game } });
 
-		expect(container.querySelector('.tier-badge')).toBeNull();
-		expect(screen.queryByText('PLAYING')).toBeNull();
-		expect(screen.queryByText('PLANNED')).toBeNull();
+			expect(container.querySelector('.tier-badge')).toBeNull();
+			expect(screen.queryByText('PLAYING')).toBeNull();
+			expect(screen.queryByText('PLANNED')).toBeNull();
+			unmount();
+		}
 	});
 
-	it('shows nothing in the tier slot for a Planned game with no tier', () => {
-		const game = createTestGame({ status: 'Planned', tier: null });
-		const { container } = render(ModalMetadata, { props: { game } });
-
-		expect(container.querySelector('.tier-badge')).toBeNull();
-		expect(screen.queryByText('PLAYING')).toBeNull();
-		expect(screen.queryByText('PLANNED')).toBeNull();
-	});
-
-	it('shows nothing in the tier slot for a Completed game with no tier', () => {
-		const game = createCompletedGame({ tier: null });
+	it('does not duplicate the tier badge for a completed game', () => {
+		const game = createCompletedGame({ tier: 'A - Amazing' });
 		const { container } = render(ModalMetadata, { props: { game } });
 
 		expect(container.querySelector('.tier-badge')).toBeNull();
 	});
 
-	it('still shows the tier badge when a tier is applied', () => {
-		const game = createTestGame({ status: 'Planned', tier: 'A - Amazing' });
-		const { container } = render(ModalMetadata, { props: { game } });
-
-		expect(container.querySelector('.tier-badge')).toBeTruthy();
-	});
-
-	it('does not render a status word for tiered games either', () => {
+	it('never renders a status word in the badge row', () => {
 		const game = createCompletedGame();
-		const { container } = render(ModalMetadata, { props: { game } });
+		render(ModalMetadata, { props: { game } });
 
-		expect(container.querySelector('.tier-badge')).toBeTruthy();
 		expect(screen.queryByText('PLAYING')).toBeNull();
 		expect(screen.queryByText('PLANNED')).toBeNull();
 	});
 });
 
 /**
- * The metadata row pins the tier badge to the right edge with justify-between.
- * Once untiered games stopped rendering a status word there, that left an empty
- * gap on the right. The row now packs left unless there is a tier to align.
+ * With the tier gone there is no trailing element to pin, so the metadata
+ * badges always pack left instead of leaving an empty right-hand gap.
  */
-describe('Metadata badge row does not leave a gap when there is no tier', () => {
+describe('Metadata badge row always packs left', () => {
 	function badgeRowClass(container: HTMLElement): string {
 		return container.querySelector('.metadata-badge-row')?.className ?? '';
 	}
@@ -70,19 +56,12 @@ describe('Metadata badge row does not leave a gap when there is no tier', () => 
 		expect(badgeRowClass(container)).not.toContain('justify-between');
 	});
 
-	it('still pins the tier badge right when a tier is applied', () => {
-		const game = createTestGame({ status: 'Planned', tier: 'A - Amazing' });
-		const { container } = render(ModalMetadata, { props: { game } });
-
-		expect(badgeRowClass(container)).toContain('justify-between');
-		expect(badgeRowClass(container)).not.toContain('justify-start');
-	});
-
-	it('packs left for a Completed game with no tier', () => {
-		const game = createCompletedGame({ tier: null });
+	it('packs left even when the game has a tier', () => {
+		const game = createCompletedGame({ tier: 'A - Amazing' });
 		const { container } = render(ModalMetadata, { props: { game } });
 
 		expect(badgeRowClass(container)).toContain('justify-start');
+		expect(badgeRowClass(container)).not.toContain('justify-between');
 	});
 });
 

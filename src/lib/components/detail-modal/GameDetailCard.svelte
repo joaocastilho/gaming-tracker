@@ -116,7 +116,7 @@ function handleImageError() {
 	class="modal-layout flex h-full min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain md:flex-row md:overflow-hidden"
 >
 	<div
-		class="modal-image-container relative shrink-0 overflow-hidden md:h-auto md:w-[400px] md:min-h-0 md:rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
+		class="modal-image-container relative shrink-0 overflow-hidden md:h-auto md:w-[360px] md:min-h-0 md:rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
 	>
 		<!-- Floating mobile buttons hovering the cover image -->
 		<div class="absolute top-3 right-3 z-20 flex items-center gap-2 md:hidden">
@@ -192,7 +192,7 @@ function handleImageError() {
 		{/if}
 	</div>
 
-	<div class="flex flex-1 flex-col min-h-0 max-h-full">
+	<div class="modal-details-wrapper flex flex-1 flex-col min-h-0 max-h-full">
 		<div
 			class="modal-details-section flex-1 overflow-y-auto px-5 pb-6 md:flex md:flex-col md:pb-6 lg:pr-8 lg:pb-6 lg:pl-8"
 		>
@@ -220,10 +220,18 @@ function handleImageError() {
 	}
 
 	@media (max-width: 767px) and (orientation: portrait) {
+		/* The cover takes every pixel the details column does not need, so the
+		   verdict strip sits at the bottom of the card instead of floating above
+		   a dead band. The details column keeps its natural height and the modal
+		   scrolls if a long title pushes the two past the viewport. */
 		.modal-image-container {
-			flex: 1 1 18vh;
-			max-height: 35vh;
+			flex: 1 1 auto;
+			max-height: none;
 			min-height: 14vh;
+		}
+
+		.modal-details-wrapper {
+			flex: 0 0 auto;
 		}
 
 		.modal-details-section {

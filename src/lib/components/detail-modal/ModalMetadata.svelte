@@ -1,7 +1,6 @@
 <script lang="ts">
 import type { Game } from '#lib/types/game.js';
 import { getPlatformClasses, getGenreClasses } from '#lib/utils/colorConstants.js';
-import { getTierClass, getTierDisplayName } from '#lib/utils/tierUtils.js';
 import { formatDate } from '#lib/utils/dateUtils.js';
 import { Users, Calendar, Flag, Clock } from '@lucide/svelte';
 
@@ -12,13 +11,7 @@ interface Props {
 let { game }: Props = $props();
 </script>
 
-
-
-<div
-	class="metadata-badge-row mb-6 flex items-center md:mb-4 {game.tier
-		? 'justify-between'
-		: 'justify-start'}"
->
+<div class="metadata-badge-row mb-6 flex items-center justify-start md:mb-4">
 	<div class="flex flex-wrap gap-2">
 		<span
 			class="badge rounded-md px-3 py-1.5 text-sm font-medium md:text-sm {getPlatformClasses(
@@ -43,16 +36,6 @@ let { game }: Props = $props();
 			</div>
 		{/if}
 	</div>
-
-	{#if game.tier}
-		<span
-			class="tier-badge rounded-md px-3 py-1.5 text-sm font-semibold md:text-sm {getTierClass(
-				game.tier
-			)}"
-		>
-			{getTierDisplayName(game.tier)}
-		</span>
-	{/if}
 </div>
 
 <div class="metadata-grid mb-4 grid grid-cols-2 gap-4 md:mb-6 md:gap-4">
