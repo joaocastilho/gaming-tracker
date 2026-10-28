@@ -23,6 +23,17 @@ interface RegistrationMock {
 	waiting: null;
 	active: { scriptURL: string };
 	update: ReturnType<typeof vi.fn>;
+	unregister: ReturnType<typeof vi.fn>;
+}
+
+function createRegistration(): RegistrationMock {
+	return {
+		installing: null,
+		waiting: null,
+		active: { scriptURL: '/service-worker.js' },
+		update: vi.fn(() => Promise.resolve()),
+		unregister: vi.fn(() => Promise.resolve(true)),
+	};
 }
 
 function createServiceWorkerMock() {
@@ -30,13 +41,9 @@ function createServiceWorkerMock() {
 	const registrations: RegistrationMock[] = [];
 	return {
 		registrations,
+		getRegistrations: vi.fn(() => Promise.resolve(registrations)),
 		register: vi.fn(() => {
-			const registration: RegistrationMock = {
-				installing: null,
-				waiting: null,
-				active: { scriptURL: '/service-worker.js' },
-				update: vi.fn(() => Promise.resolve()),
-			};
+			const registration = createRegistration();
 			registrations.push(registration);
 			return Promise.resolve(registration);
 		}),
@@ -173,5 +180,31 @@ describe('registerServiceWorker', () => {
 		registerServiceWorker();
 
 		expect(swMock.register).not.toHaveBeenCalled();
+	});
+
+	test('removes stale workers outside production builds', async () => {
+		// An old dev worker keeps requesting the since-renamed
+		// src/service-worker.js and reloads the page whenever svelte-kit sync
+		// rewrites the generated service-worker env module.
+		vi.stubEnv('PROD', false);
+		const swMock = createServiceWorkerMock();
+		swMock.registrations.push(createRegistration());
+		setNavigatorServiceWorker(swMock);
+
+		registerServiceWorker();
+		await vi.advanceTimersByTimeAsync(0);
+
+		expect(swMock.getRegistrations).toHaveBeenCalled();
+		expect(swMock.registrations[0]?.unregister).toHaveBeenCalled();
+	});
+
+	test('ignores stale worker cleanup failures', async () => {
+		vi.stubEnv('PROD', false);
+		const swMock = createServiceWorkerMock();
+		swMock.getRegistrations.mockImplementation(() => Promise.reject(new Error('unavailable')));
+		setNavigatorServiceWorker(swMock);
+
+		expect(() => registerServiceWorker()).not.toThrow();
+		await vi.advanceTimersByTimeAsync(0);
 	});
 });

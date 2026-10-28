@@ -3,7 +3,16 @@ export function registerServiceWorker(): (() => void) | undefined {
 	// The worker is built from src/ by the emitServiceWorker Vite plugin, so it
 	// only exists in the built output. Registering it in dev would also cache
 	// stale hashed chunks across rebuilds.
-	if (!import.meta.env.PROD) return;
+	if (!import.meta.env.PROD) {
+		// Older dev setups served a worker from src/service-worker.js. That
+		// registration outlives the rename, keeps requesting the missing module
+		// and reloads the page whenever svelte-kit sync rewrites its env file.
+		void navigator.serviceWorker
+			.getRegistrations()
+			.then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
+			.catch(() => {});
+		return;
+	}
 
 	const swPath = '/service-worker.js';
 	let intervalId: ReturnType<typeof setInterval> | null = null;
