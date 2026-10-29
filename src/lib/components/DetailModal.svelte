@@ -964,6 +964,15 @@ $effect(() => {
 		.continuum-overlay :global(.modal-content) {
 			box-shadow: none !important;
 		}
+
+		/* WebRender snaps axis-aligned transform translations to whole device
+		   pixels, so a slow drag advances the card in visible 1px steps instead
+		   of tracking the pointer continuously. A 0.001deg rotation keeps the
+		   layer off the snapping path; it moves the card's corners by under a
+		   hundredth of a pixel and leaves text rendering unchanged. */
+		.continuum-overlay :global(.modal-content) {
+			rotate: 0.001deg;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
