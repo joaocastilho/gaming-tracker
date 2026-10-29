@@ -391,13 +391,10 @@ function handleContinuumPointerMove(event: PointerEvent): void {
 		window.getSelection()?.removeAllRanges();
 	}
 
-	const nextOffset =
-		Math.round(
-			constrainContinuumOffset(movement.offset, {
-				canGoPrevious,
-				canGoNext,
-			}) * 2
-		) / 2;
+	const nextOffset = constrainContinuumOffset(movement.offset, {
+		canGoPrevious,
+		canGoNext,
+	});
 	if (nextOffset !== continuumDragOffset) {
 		continuumDragOffset = nextOffset;
 		if (continuumDragOffset !== 0) {
@@ -951,12 +948,8 @@ $effect(() => {
 		cursor: grabbing;
 	}
 
-	/* Firefox/Zen WebRender re-rasterises elements with CSS zoom != 1 on every
-	   transform update because Gecko implements zoom via fractional layout
-	   AppUnitsPerDevPixel (55 instead of 60), and re-runs backdrop-filter over
-	   the viewport whenever a child layer moves. Individual CSS `scale: 1.1`
-	   runs entirely on the GPU compositor before `style:transform`, preserving
-	   identical visual dimensions and 1:1 cursor tracking at full frame rate. */
+	/* Firefox/Zen WebRender re-runs backdrop-filter over the viewport whenever
+	   a child layer moves, so the near-opaque fallback keeps drags cheap. */
 	@supports (-moz-appearance: none) {
 		.continuum-overlay {
 			backdrop-filter: none !important;
@@ -970,19 +963,6 @@ $effect(() => {
 		   rather than hitch on drag start, release, and shadow restoration. */
 		.continuum-overlay :global(.modal-content) {
 			box-shadow: none !important;
-		}
-
-		@media (min-width: 768px) {
-			:global(.modal-content) {
-				zoom: 1;
-				scale: 1.1;
-			}
-		}
-
-		@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
-			:global(.modal-content) {
-				scale: none !important;
-			}
 		}
 	}
 
