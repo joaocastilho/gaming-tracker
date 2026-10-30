@@ -3,6 +3,7 @@ import { goto } from '$app/navigation';
 import { gamesStore } from '#lib/stores/games.svelte.js';
 import { modalStore } from '#lib/stores/modal.svelte.js';
 import { windowSize } from '#lib/stores/window.svelte.js';
+import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
 import { getGenreClasses, getPlatformClasses } from '#lib/utils/colorConstants.js';
 import GameCard from '#lib/components/GameCard.svelte';
 import type { Game } from '#lib/types/game.js';
@@ -12,6 +13,32 @@ let games = $derived(gamesStore.games);
 
 let completedGames = $derived(games.filter((g) => g.status === 'Completed'));
 let playingGames = $derived(games.filter((g) => g.status === 'Playing'));
+
+const PLACEHOLDER_SRC = '/covers/placeholder_cover.webp';
+
+// A save points a new game at a cover whose generated assets don't exist yet
+// (the optimize-covers GitHub Action runs after games.json is committed), so
+// covers can 404 for a while. Show the shared no-cover placeholder instead of
+// a broken image until the real asset is available.
+function coverSource(coverImage: string): string {
+	if (!coverImage || imageErrorStore.hasFailed(`/${coverImage}`)) {
+		return PLACEHOLDER_SRC;
+	}
+	return `/${coverImage}`;
+}
+
+function handleCoverError(event: Event) {
+	const target = event.currentTarget;
+	if (!(target instanceof HTMLImageElement)) return;
+	// Already on the placeholder; don't re-request a URL that just failed.
+	if (target.getAttribute('src')?.includes('placeholder_cover')) return;
+
+	const failedSrc = target.currentSrc || target.src;
+	if (failedSrc && !failedSrc.includes('placeholder_cover')) {
+		imageErrorStore.markFailed(failedSrc);
+	}
+	target.src = PLACEHOLDER_SRC;
+}
 
 let recentCompletions = $derived.by(() => {
 	const w = windowSize.width;
@@ -57,8 +84,9 @@ function viewAllCompleted() {
 				<div class="np-scroll-container">
 					<div class="np-scroll-row">
 						{#each playingGames as game (game.id)}
+							{@const npCover = coverSource(game.coverImage)}
 							<button type="button" class="np-card" onclick={() => handlePlayingOpen(game)}>
-								<img class="np-cover" src="/{game.coverImage}" alt="" />
+								<img class="np-cover" src={npCover} alt="" onerror={handleCoverError} />
 								<div class="np-info">
 									<h2 class="np-title">{game.title}</h2>
 									<div class="np-meta">

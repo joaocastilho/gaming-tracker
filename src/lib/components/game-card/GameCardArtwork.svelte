@@ -55,6 +55,13 @@ function imageAction(node: HTMLImageElement) {
 		const failedSrc = node.currentSrc || node.src;
 		if (failedSrc && !failedSrc.includes('placeholder_cover')) {
 			imageErrorStore.markFailed(failedSrc);
+			// With srcset the failing URL is usually a size variant while the
+			// reactive src below only knows the base path — mark that too so the
+			// card switches to the placeholder instead of re-requesting a missing
+			// cover (e.g. while the optimize-covers action generates the asset).
+			if (game.coverImage) {
+				imageErrorStore.markFailed(`/${game.coverImage}`);
+			}
 		}
 
 		if (!failedSrc || !failedSrc.includes('placeholder_cover')) {

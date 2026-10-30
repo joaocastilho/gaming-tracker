@@ -20,6 +20,7 @@ import Chart from '#lib/components/Chart.svelte';
 import { appStore } from '#lib/stores/app.svelte.js';
 import { gamesStore } from '#lib/stores/games.svelte.js';
 import { modalStore } from '#lib/stores/modal.svelte.js';
+import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
 import { computeBacklogStats } from '#lib/utils/backlogUtils.js';
 import { getMonthlyHeatClass, getMonthlyMax } from '#lib/utils/heatmapUtils.js';
 import {
@@ -148,6 +149,31 @@ let yearlyMonthData = $derived(
 let maxMonthly = $derived(getMonthlyMax(yearlyMonthData));
 
 let topRated = $derived(computeTopRated(completedGames));
+
+const PLACEHOLDER_SRC = '/covers/placeholder_cover.webp';
+
+// Same fallback as the home and grid cards: a cover whose generated assets
+// don't exist yet (optimize-covers still running) must show the no-cover
+// placeholder instead of a broken image.
+function coverSource(coverImage: string): string {
+	if (!coverImage || imageErrorStore.hasFailed(`/${coverImage}`)) {
+		return PLACEHOLDER_SRC;
+	}
+	return `/${coverImage}`;
+}
+
+function handleCoverError(event: Event) {
+	const target = event.currentTarget;
+	if (!(target instanceof HTMLImageElement)) return;
+	// Already on the placeholder; don't re-request a URL that just failed.
+	if (target.getAttribute('src')?.includes('placeholder_cover')) return;
+
+	const failedSrc = target.currentSrc || target.src;
+	if (failedSrc && !failedSrc.includes('placeholder_cover')) {
+		imageErrorStore.markFailed(failedSrc);
+	}
+	target.src = PLACEHOLDER_SRC;
+}
 </script>
 
 <div class="stats-page">
@@ -515,9 +541,10 @@ let topRated = $derived(computeTopRated(completedGames));
 					</h4>
 					<div class="rating-list">
 						{#each topRated.presentation as game, i}
+							{@const ratingCover = coverSource(game.coverImage)}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
 								<span class="rating-pos">{i + 1}</span>
-								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
+								<img class="rating-cover" src={ratingCover} alt="" loading="lazy" onerror={handleCoverError} />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingPresentation}/10</span>
 							</button>
@@ -531,9 +558,10 @@ let topRated = $derived(computeTopRated(completedGames));
 					</h4>
 					<div class="rating-list">
 						{#each topRated.story as game, i}
+							{@const ratingCover = coverSource(game.coverImage)}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
 								<span class="rating-pos">{i + 1}</span>
-								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
+								<img class="rating-cover" src={ratingCover} alt="" loading="lazy" onerror={handleCoverError} />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingStory}/10</span>
 							</button>
@@ -547,9 +575,10 @@ let topRated = $derived(computeTopRated(completedGames));
 					</h4>
 					<div class="rating-list">
 						{#each topRated.gameplay as game, i}
+							{@const ratingCover = coverSource(game.coverImage)}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
 								<span class="rating-pos">{i + 1}</span>
-								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
+								<img class="rating-cover" src={ratingCover} alt="" loading="lazy" onerror={handleCoverError} />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.ratingGameplay}/10</span>
 							</button>
@@ -563,9 +592,10 @@ let topRated = $derived(computeTopRated(completedGames));
 					</h4>
 					<div class="rating-list">
 						{#each topRated.score as game, i}
+							{@const ratingCover = coverSource(game.coverImage)}
 							<button type="button" class="rating-entry" onclick={() => modalStore.openViewModal(game, [game])}>
 								<span class="rating-pos">{i + 1}</span>
-								<img class="rating-cover" src="/{game.coverImage}" alt="" loading="lazy" />
+								<img class="rating-cover" src={ratingCover} alt="" loading="lazy" onerror={handleCoverError} />
 								<span class="rating-game">{game.title}</span>
 								<span class="rating-value">{game.score}/20</span>
 							</button>

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/svelte';
-import { describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 
 // Mock stores
 vi.mock('#lib/stores/editor.svelte.js', () => ({
@@ -17,15 +17,58 @@ vi.mock('#lib/stores/filters.svelte.js', () => ({
 		toggleTier: vi.fn(),
 	},
 }));
-vi.mock('#lib/stores/imageErrors.svelte.js', () => ({
-	imageErrorStore: {
-		hasFailed: () => false,
-		markFailed: vi.fn(),
-	},
-}));
 
 import GameCardArtwork from '#lib/components/game-card/GameCardArtwork.svelte';
+import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
 import type { Game } from '#lib/types/game.js';
+
+beforeEach(() => {
+	imageErrorStore.failedUrls.length = 0;
+});
+
+describe('GameCardArtwork cover failures', () => {
+	it('marks the game base cover path as failed and shows the placeholder', async () => {
+		const game: Game = {
+			id: 'cover-failure-1',
+			title: 'Missing Cover',
+			mainTitle: 'Missing Cover',
+			subtitle: null,
+			platform: 'Switch',
+			genre: 'Action',
+			year: 2024,
+			coOp: 'No',
+			status: 'Playing',
+			coverImage: 'covers/missing-cover.webp',
+			playtime: '3h 0m',
+			finishedDate: null,
+			ratingPresentation: null,
+			ratingStory: null,
+			ratingGameplay: null,
+			score: null,
+			tier: null,
+		};
+		const { container } = render(GameCardArtwork, {
+			props: { game },
+		});
+
+		const img = screen.getByRole('img');
+		// The browser picked a srcset variant of the missing cover; simulate its error.
+		Object.defineProperty(img, 'currentSrc', {
+			value: 'http://localhost:4173/covers/missing-cover-200w.webp',
+			configurable: true,
+		});
+		img.dispatchEvent(new Event('error'));
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		// The variant that actually failed and the cover's base path are both
+		// recorded, so the reactive src derivation stops re-requesting a 404ing
+		// cover on remounts.
+		expect(imageErrorStore.hasFailed('/covers/missing-cover-200w.webp')).toBe(true);
+		expect(imageErrorStore.hasFailed('/covers/missing-cover.webp')).toBe(true);
+
+		expect(container.querySelector('img')).toHaveAttribute('src', '/covers/placeholder_cover.webp');
+	});
+});
 
 describe('GameCardArtwork Component', () => {
 	const mockGame: Game = {
