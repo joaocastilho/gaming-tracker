@@ -13,12 +13,23 @@ interface Props {
 	depth: 0 | 1;
 	/** 0–1, grows as the card is dragged toward this preview. */
 	emphasis?: number;
+	/** Fades the preview out while its full card takes over the drag. */
+	suppressed?: boolean;
 	onSelect: (game: Game) => void;
 	enterFromX?: number;
 	enterDuration?: number;
 }
 
-let { game, direction, depth, emphasis = 0, onSelect, enterFromX = 40, enterDuration = 200 }: Props = $props();
+let {
+	game,
+	direction,
+	depth,
+	emphasis = 0,
+	suppressed = false,
+	onSelect,
+	enterFromX = 40,
+	enterDuration = 200,
+}: Props = $props();
 
 const PLACEHOLDER_SRC = '/covers/placeholder_cover.webp';
 const PLACEHOLDER_SRCSET = `${PLACEHOLDER_SRC} 300w`;
@@ -90,14 +101,17 @@ function handleImageError(event: Event): void {
 	class="continuum-preview-slot pointer-events-none absolute top-1/2 {positionClass} {isPrevious
 		? 'origin-right'
 		: 'origin-left'}"
-	style="--preview-emphasis: {emphasis};"
+	style="--preview-emphasis: {emphasis}; --preview-visibility: {suppressed ? 0 : 1};"
 >
 	<button
 		type="button"
 		class="continuum-preview pointer-events-auto relative block h-[312px] w-[208px] cursor-pointer overflow-hidden rounded-xl bg-neutral-900 text-left shadow-2xl outline-none transition-transform duration-200 hover:scale-[1.02] focus-visible:scale-[1.02] focus-visible:ring-2 focus-visible:ring-white/80 {isPrevious
 			? 'origin-right'
 			: 'origin-left'}"
+		class:suppressed
 		aria-label="View {game.title}, {direction} game"
+		aria-hidden={suppressed ? 'true' : undefined}
+		tabindex={suppressed ? -1 : undefined}
 		onclick={() => onSelect(game)}
 		in:previewIn={{ x: enterFromX, duration: enterDuration }}
 	>
@@ -153,20 +167,14 @@ function handleImageError(event: Event): void {
 	}
 
 	.continuum-preview {
-		opacity: calc(0.76 + var(--preview-emphasis, 0) * 0.24);
+		opacity: calc((0.76 + var(--preview-emphasis, 0) * 0.24) * var(--preview-visibility, 1));
 		transition:
-			opacity 180ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 140ms cubic-bezier(0.22, 1, 0.36, 1),
 			transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
-	:global(.continuum-dragging) .continuum-preview {
-		transition: none;
-	}
-
-	@supports (-moz-appearance: none) {
-		:global(.continuum-dragging) .continuum-preview {
-			opacity: 0.76;
-		}
+	.continuum-preview.suppressed {
+		pointer-events: none;
 	}
 
 	.continuum-preview:hover,

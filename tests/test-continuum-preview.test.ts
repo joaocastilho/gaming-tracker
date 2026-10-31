@@ -110,6 +110,30 @@ describe('ContinuumPreview', () => {
 		expect(slot.style.getPropertyValue('--preview-emphasis')).toBe('0.6');
 	});
 
+	it('fades out and disables interaction while its full card takes over', () => {
+		const { container } = render(ContinuumPreview, {
+			props: {
+				game: createTestGame({ title: 'Taking over' }),
+				direction: 'next',
+				depth: 0,
+				suppressed: true,
+				onSelect: vi.fn(),
+			},
+		});
+
+		const slot = container.firstElementChild;
+		expect(slot).toBeInstanceOf(HTMLElement);
+		if (!(slot instanceof HTMLElement)) throw new Error('Expected a preview slot');
+		expect(slot.style.getPropertyValue('--preview-visibility')).toBe('0');
+
+		const preview = container.querySelector<HTMLButtonElement>('.continuum-preview');
+		expect(preview).toBeInstanceOf(HTMLButtonElement);
+		if (!preview) throw new Error('Expected a preview button');
+		expect(preview).toHaveClass('suppressed');
+		expect(preview).toHaveAttribute('aria-hidden', 'true');
+		expect(preview).toHaveAttribute('tabindex', '-1');
+	});
+
 	it('calls onSelect with the previewed game', async () => {
 		const game = createTestGame({ title: 'Click me' });
 		const onSelect = vi.fn();

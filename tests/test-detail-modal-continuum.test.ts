@@ -55,6 +55,14 @@ function getActiveCard(): HTMLElement {
 	return screen.getByRole('document');
 }
 
+function getCardLayer(card: HTMLElement): HTMLElement {
+	const layer = card.parentElement;
+	if (!layer?.classList.contains('modal-card-layer')) {
+		throw new Error('Active card is not wrapped in a continuum layer');
+	}
+	return layer;
+}
+
 describe('DetailModal continuum', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
@@ -106,6 +114,50 @@ describe('DetailModal continuum', () => {
 		render(DetailModal);
 
 		expect(getActiveCard()).toHaveClass('continuum-card');
+	});
+
+	it('moves the wrapper layer and leaves the zoomed card untransformed', async () => {
+		openAt(2);
+		render(DetailModal);
+
+		const card = getActiveCard();
+		const layer = getCardLayer(card);
+
+		expect(layer).toHaveAttribute('data-continuum-layer', '3');
+		expect(layer).toHaveAttribute('data-continuum-pos', '0');
+		expect(card.style.transform).toBe('');
+		expect(layer.style.transform).toContain('translate3d(0.00px');
+
+		dispatchPointer(card, 'pointerdown', { clientX: 700, clientY: 400 });
+		dispatchPointer(window, 'pointermove', { clientX: 570, clientY: 400 });
+		await tick();
+
+		expect(card.style.transform).toBe('');
+		expect(layer.style.transform).toContain('translate3d(-130.00px');
+	});
+
+	it('fades the incoming side preview out while its full card is dragged in', async () => {
+		openAt(2);
+		render(DetailModal);
+
+		const card = getActiveCard();
+		const nextPreview = screen.getByRole('button', { name: 'View Delta, next game' });
+		const previousPreview = screen.getByRole('button', { name: 'View Bravo, previous game' });
+
+		dispatchPointer(card, 'pointerdown', { clientX: 700, clientY: 400 });
+		dispatchPointer(window, 'pointermove', { clientX: 650, clientY: 400 });
+		await tick();
+
+		expect(nextPreview).toHaveClass('suppressed');
+		expect(nextPreview).toHaveAttribute('aria-hidden', 'true');
+		expect(previousPreview).not.toHaveClass('suppressed');
+
+		await vi.advanceTimersByTimeAsync(200);
+		dispatchPointer(window, 'pointerup', { clientX: 650, clientY: 400 });
+		await settle();
+
+		expect(nextPreview).not.toHaveClass('suppressed');
+		expect(modalStore.activeGame?.id).toBe('3');
 	});
 
 	it('scopes the Firefox drag-shadow workaround to the continuum overlay', () => {
@@ -220,9 +272,9 @@ describe('DetailModal continuum', () => {
 		dispatchPointer(window, 'pointermove', { clientX: 570, clientY: 400 });
 		await tick();
 
-		// The card is zoomed 1.1, so a 130px pointer move is a 118.18px
-		// local translate and exactly 130px on screen.
-		expect(card.style.transform).toContain('translate3d(-118.18px');
+		// The wrapper layer tracks the pointer 1:1; the zoomed card inside is
+		// never transformed, so it stays a cached compositor surface.
+		expect(getCardLayer(card).style.transform).toContain('translate3d(-130.00px');
 
 		dispatchPointer(window, 'pointerup', { clientX: 570, clientY: 400 });
 
@@ -241,7 +293,7 @@ describe('DetailModal continuum', () => {
 		dispatchPointer(window, 'pointermove', { clientX: 840, clientY: 400 });
 		await tick();
 
-		expect(card.style.transform).toContain('translate3d(127.27px');
+		expect(getCardLayer(card).style.transform).toContain('translate3d(140.00px');
 
 		dispatchPointer(window, 'pointerup', { clientX: 840, clientY: 400 });
 
@@ -266,12 +318,12 @@ describe('DetailModal continuum', () => {
 		await settle();
 
 		expect(modalStore.activeGame?.id).toBe('3');
-		expect(getActiveCard().style.transform).toContain('translate3d(0px');
+		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
 
 		dispatchPointer(window, 'pointermove', { clientX: 200, clientY: 400, buttons: 0 });
 		await tick();
 
-		expect(getActiveCard().style.transform).toContain('translate3d(0px');
+		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
 	});
 
 	it('commits a drag whose release was missed', async () => {
@@ -300,7 +352,7 @@ describe('DetailModal continuum', () => {
 		await settle();
 
 		expect(modalStore.activeGame?.id).toBe('3');
-		expect(getActiveCard().style.transform).toContain('translate3d(0px');
+		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
 	});
 
 	it('centres the incoming card when reduced motion skips the turn', async () => {
@@ -326,7 +378,7 @@ describe('DetailModal continuum', () => {
 		await tick();
 
 		expect(modalStore.activeGame?.id).toBe('4');
-		expect(getActiveCard().style.transform).toContain('translate3d(0px');
+		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
 	});
 
 	it('animates the incoming card from the side the turn came from', async () => {
@@ -334,44 +386,50 @@ describe('DetailModal continuum', () => {
 		const { container } = render(DetailModal);
 
 		const card = getActiveCard();
-		const cards = container.querySelectorAll<HTMLElement>('.modal-content');
-		const incomingCard = cards[2];
+		const activeLayer = getCardLayer(card);
+		const incomingCard = container.querySelectorAll<HTMLElement>('.modal-content')[2];
+		const incomingLayer = getCardLayer(incomingCard);
 
 		// At rest, the next neighbour card waits off to the right at opacity 0
 		// while remaining visibility: visible so Firefox pre-promotes its GPU layer.
-		expect(incomingCard.style.transform).toContain('translate3d(236.36px');
-		expect(incomingCard.style.opacity).toBe('0');
-		expect(incomingCard.parentElement?.style.visibility).toBe('visible');
+		expect(incomingLayer.style.transform).toContain('translate3d(260.00px');
+		expect(incomingLayer.style.opacity).toBe('0');
+		expect(incomingLayer.style.visibility).toBe('visible');
 		expect(incomingCard).not.toHaveClass('shadow-2xl');
 
 		dispatchPointer(card, 'pointerdown', { clientX: 700, clientY: 400 });
 		dispatchPointer(window, 'pointermove', { clientX: 570, clientY: 400 });
 		await tick();
 
-		// During the drag, the incoming card glides in proportionally with the pointer,
-		// while both cards keep scale(1) and the active card stays opaque to avoid
-		// non-Chromium compositor re-rasterization and group surface allocation.
-		expect(card.style.transform).toContain('scale(1)');
-		expect(card.style.opacity).toBe('1');
-		expect(incomingCard.style.transform).toContain('translate3d(163.2px, 0px, 0) scale(1)');
-		expect(Number(incomingCard.style.opacity)).toBeGreaterThan(0);
-		expect(incomingCard.parentElement?.style.visibility).toBe('visible');
+		// During the drag the active layer follows the pointer and the incoming
+		// layer glides in proportionally; both are fully opaque so neither card
+		// shows through the other.
+		expect(activeLayer.style.transform).toContain('translate3d(-130.00px');
+		expect(activeLayer.style.opacity).toBe('1');
+		expect(incomingLayer.style.transform).toContain('translate3d(179.52px');
+		expect(incomingLayer.style.opacity).toBe('1');
+		expect(incomingLayer.style.visibility).toBe('visible');
 
 		dispatchPointer(window, 'pointerup', { clientX: 570, clientY: 400 });
+		// One tick renders the exiting phase, the next lets the turn start its
+		// animations against the captured layers.
+		await tick();
 		await tick();
 
-		// On release, both cards transition simultaneously to their final positions.
-		expect(card).toHaveClass('continuum-exiting');
-		expect(incomingCard).toHaveClass('continuum-exiting');
-		expect(incomingCard.style.transform).toContain('translate3d(0px, 0px, 0) scale(1)');
-		expect(incomingCard.style.opacity).toBe('1');
+		// On release both layers animate simultaneously to their final frames:
+		// the outgoing card clears the viewport, the incoming card lands at 0.
+		// 1440 / 2 + 1056 / 2 + 16 = 1264px.
+		expect(activeLayer.style.transform).toContain('translate3d(-1264.00px');
+		expect(activeLayer.style.opacity).toBe('1');
+		expect(incomingLayer.style.transform).toContain('translate3d(0px, 0px, 0)');
+		expect(incomingLayer.style.opacity).toBe('1');
 
-		await vi.advanceTimersByTimeAsync(240);
+		await vi.advanceTimersByTimeAsync(260);
 		await tick();
 
 		expect(modalStore.activeGame?.id).toBe('4');
-		expect(getActiveCard().style.transform).toContain('translate3d(0px, 0px, 0) scale(1)');
-		expect(getActiveCard()).not.toHaveClass('continuum-exiting');
+		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
+		expect(getCardLayer(getActiveCard()).style.opacity).toBe('1');
 	});
 
 	it('continues moving the outgoing card forward when released past the exit distance', async () => {
@@ -384,13 +442,16 @@ describe('DetailModal continuum', () => {
 		dispatchPointer(window, 'pointermove', { clientX: 300, clientY: 400 });
 		await tick();
 
-		const draggedX = Number(card.style.transform.match(/translate3d\(([-\d.]+)px/)?.[1]);
+		const draggedX = Number(getCardLayer(card).style.transform.match(/translate3d\(([-\d.]+)px/)?.[1]);
 		expect(draggedX).toBeLessThan(-400);
 
 		dispatchPointer(window, 'pointerup', { clientX: 300, clientY: 400 });
+		// One tick renders the exiting phase, the next lets the turn start its
+		// animations against the captured layers.
+		await tick();
 		await tick();
 
-		const exitingX = Number(card.style.transform.match(/translate3d\(([-\d.]+)px/)?.[1]);
+		const exitingX = Number(getCardLayer(card).style.transform.match(/translate3d\(([-\d.]+)px/)?.[1]);
 		expect(exitingX).toBeLessThan(draggedX);
 
 		await settle();
@@ -426,7 +487,7 @@ describe('DetailModal continuum', () => {
 
 		await settle();
 		expect(modalStore.activeGame?.id).toBe('3');
-		expect(card.style.transform).toContain('translate3d(0px');
+		expect(getCardLayer(card).style.transform).toContain('translate3d(0.00px');
 	});
 
 	it('ignores a mostly vertical drag', async () => {
@@ -455,7 +516,7 @@ describe('DetailModal continuum', () => {
 
 		await settle();
 		expect(modalStore.activeGame?.id).toBe('1');
-		expect(card.style.transform).toContain('translate3d(0px');
+		expect(getCardLayer(card).style.transform).toContain('translate3d(0.00px');
 	});
 
 	it('does not start a drag from an interactive control', async () => {
