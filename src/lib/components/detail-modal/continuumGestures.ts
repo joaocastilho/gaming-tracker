@@ -1,16 +1,5 @@
 export type ContinuumDirection = -1 | 0 | 1;
 
-/** The desktop modal renders a 960px card at 1056px through CSS zoom. */
-export const CONTINUUM_CARD_ZOOM = 1.1;
-
-/**
- * Converts a pointer-space offset into the card's local transform space.
- * Without this the zoomed card runs 10% ahead of the cursor.
- */
-export function toContinuumCardOffset(visualOffset: number): number {
-	return visualOffset / CONTINUUM_CARD_ZOOM;
-}
-
 export interface ContinuumWheelOptions {
 	/** Horizontal distance that must accumulate before one navigation. */
 	threshold?: number;

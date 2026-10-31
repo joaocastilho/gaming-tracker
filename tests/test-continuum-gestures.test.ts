@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-	CONTINUUM_CARD_ZOOM,
 	ContinuumDragTracker,
 	ContinuumWheelNavigator,
 	constrainContinuumOffset,
-	toContinuumCardOffset,
 } from '#lib/components/detail-modal/continuumGestures.js';
 
 describe('ContinuumWheelNavigator', () => {
@@ -228,13 +226,5 @@ describe('constrainContinuumOffset', () => {
 	it('only tightens the direction that has no game', () => {
 		expect(constrainContinuumOffset(620, nextIsEnd)).toBeCloseTo(531.05, 1);
 		expect(constrainContinuumOffset(-620, nextIsEnd)).toBeCloseTo(-303.58, 1);
-	});
-});
-
-describe('toContinuumCardOffset', () => {
-	it('cancels the desktop card zoom so drags track the pointer', () => {
-		expect(CONTINUUM_CARD_ZOOM).toBe(1.1);
-		expect(toContinuumCardOffset(-110)).toBeCloseTo(-100);
-		expect(toContinuumCardOffset(0)).toBe(0);
 	});
 });
