@@ -63,7 +63,7 @@ Manually assigned tiers to games based on overall assessment:
 
 ### 📊 Stats & Backlog Journey
 
-- **Home** — Now Playing shelf plus recent completions
+- **Home** — Now Playing poster showcase plus recent completions
 - **Backlog Journey** — Dual segmented bars (Hours + Games) showing Completed (indigo), Playing (amber) and Planned (slate) with counts and hours inside the bars, tracing conversion from backlog to fully played
 - Tier, genre, playtime, score and year-over-year charts plus top-rated lists and a monthly completion heatmap
 
@@ -102,15 +102,15 @@ Updates apply on the next natural page load — no forced reloads mid-session. I
 
 | Category             | Technology                                     | Version   |
 | -------------------- | ---------------------------------------------- | --------- |
-| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v3.1.0`  |
+| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v3.2.0`  |
 | **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.57.3` |
-| **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.3`  |
-| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.6.3`  |
-| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.3.5`  |
+| **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.5`  |
+| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.6.7`  |
+| **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.3.8`  |
 | **TypeScript**       | [TypeScript](https://www.typescriptlang.org/)  | `v6.0.3`  |
-| **Test Runner**      | [Vitest](https://vitest.dev/)                  | `v5.0.5`  |
+| **Test Runner**      | [Vitest](https://vitest.dev/)                  | `v5.1.0`  |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v1.0.0`  |
-| **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.62.0` |
+| **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.72.0` |
 | **Runtime**          | [Bun](https://bun.sh/)                         | `v1.4.4`  |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)           | `v4.6.1`  |
 | **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.7`  |
@@ -162,6 +162,7 @@ gaming-tracker/
 │   ├── app.html             # HTML template (preloads)
 │   └── service-worker.source.js
 ├── functions/               # Cloudflare Pages Functions (editor API)
+├── scripts/                 # Cover and favicon asset pipelines (Bun)
 ├── static/
 │   ├── _headers             # Cloudflare Pages cache headers
 │   ├── fonts/               # Self-hosted woff2 fonts
