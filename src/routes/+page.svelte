@@ -7,7 +7,7 @@ import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
 import { getGenreClasses, getPlatformClasses } from '#lib/utils/colorConstants.js';
 import GameCard from '#lib/components/GameCard.svelte';
 import type { Game } from '#lib/types/game.js';
-import { Sparkles, ChevronRight, Gamepad2 } from '@lucide/svelte';
+import { Sparkles, ChevronRight, Gamepad2, Clock } from '@lucide/svelte';
 
 let games = $derived(gamesStore.games);
 
@@ -81,29 +81,31 @@ function viewAllCompleted() {
 						Now Playing
 					</span>
 				</div>
-				<div class="np-scroll-container">
-					<div class="np-scroll-row">
-						{#each playingGames as game (game.id)}
-							{@const npCover = coverSource(game.coverImage)}
-							<button type="button" class="np-card" onclick={() => handlePlayingOpen(game)}>
-								<img class="np-cover" src={npCover} alt="" onerror={handleCoverError} />
-								<div class="np-info">
-									<h2 class="np-title">{game.title}</h2>
-									<div class="np-meta">
-										<span class="chip {getPlatformClasses(game.platform)}">{game.platform}</span>
-										<span class="chip {getGenreClasses(game.genre)}">{game.genre}</span>
-										<span class="chip chip-neutral">{game.year}</span>
-									</div>
-									<div class="np-playtime">
-										<span class="np-playtime-label">Time to Beat</span>
-										<div class="np-playtime-value">
-											<span>{game.playtime}</span>
-										</div>
-									</div>
+				<div class="np-grid">
+					{#each playingGames as game (game.id)}
+						{@const npCover = coverSource(game.coverImage)}
+						<button type="button" class="np-card" onclick={() => handlePlayingOpen(game)}>
+							<img class="np-cover" src={npCover} alt="" onerror={handleCoverError} />
+							<div class="np-shade" aria-hidden="true"></div>
+							<span class="np-live">
+								<span class="np-live-dot"></span>
+								Playing
+							</span>
+							<div class="np-overlay">
+								<h2 class="np-title">{game.title}</h2>
+								<div class="np-meta">
+									<span class="chip {getPlatformClasses(game.platform)}">{game.platform}</span>
+									<span class="chip {getGenreClasses(game.genre)}">{game.genre}</span>
+									<span class="chip chip-neutral">{game.year}</span>
 								</div>
-							</button>
-						{/each}
-					</div>
+								<div class="np-playtime">
+									<Clock size={14} />
+									<span class="np-playtime-label">Time to Beat</span>
+									<span class="np-playtime-value">{game.playtime}</span>
+								</div>
+							</div>
+						</button>
+					{/each}
 				</div>
 			</section>
 		{:else}
@@ -176,47 +178,53 @@ function viewAllCompleted() {
 		align-items: center;
 	}
 
-	.np-scroll-container {
+	/* Poster showcase: cards are centered and width-capped so they read big
+	   without stretching to the full 1600px container when only one is playing. */
+	.np-grid {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 16px;
 		width: 100%;
-	}
-
-	.np-scroll-row {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 12px;
-	}
-
-	.np-scroll-row .np-card {
-		width: 100%;
-		min-width: 0;
-	}
-
-	@media (max-width: 767px) {
-		.np-scroll-row {
-			grid-template-columns: 1fr;
-		}
 	}
 
 	.np-card {
-		display: flex;
-		gap: 0;
-		border-radius: 16px;
+		position: relative;
+		flex: 1 1 340px;
+		max-width: 460px;
+		min-width: 0;
+		aspect-ratio: 4 / 5;
+		border-radius: 20px;
 		overflow: hidden;
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		box-shadow: var(--shadow-lg);
+		background: var(--color-surface-elevated);
+		border: 1px solid var(--color-status-playing-border);
+		box-shadow: var(--shadow-lg), 0 12px 40px -16px rgba(16, 185, 129, 0.3);
 		cursor: pointer;
 		padding: 0;
 		font-family: inherit;
 		text-align: left;
-		transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+		transition:
+			box-shadow var(--transition-normal),
+			transform var(--transition-normal);
+	}
+
+	:global(.light) .np-card {
+		box-shadow: var(--shadow-lg), 0 12px 40px -16px rgba(16, 185, 129, 0.18);
 	}
 
 	@media (hover: hover) {
 		.np-card:hover {
-			box-shadow: var(--shadow-xl);
-			transform: translateY(-2px);
+			box-shadow: var(--shadow-xl), 0 16px 48px -12px rgba(16, 185, 129, 0.4);
+			transform: translateY(-4px);
 		}
+
+		.np-card:hover .np-cover {
+			transform: scale(1.05);
+		}
+	}
+
+	:global(.light) .np-card:hover {
+		box-shadow: var(--shadow-xl), 0 16px 48px -12px rgba(16, 185, 129, 0.25);
 	}
 
 	.np-card:focus-visible {
@@ -230,7 +238,7 @@ function viewAllCompleted() {
 		gap: 1rem;
 		width: 100%;
 		padding: 1.5rem 2rem;
-		border-radius: 16px;
+		border-radius: 20px;
 		background: var(--color-surface);
 		border: 1px dashed var(--color-border);
 		color: var(--color-text-secondary);
@@ -253,22 +261,91 @@ function viewAllCompleted() {
 		color: var(--color-text-secondary);
 	}
 
+	/* Cover art fills the whole card; the poster crop is intentional. */
 	.np-cover {
-		width: 130px;
-		height: 180px;
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 		object-fit: cover;
-		flex-shrink: 0;
 		background: var(--color-surface-elevated);
+		transition: transform var(--transition-slow);
 	}
 
-	.np-info {
+	/* Fade the bottom of the artwork into the themed surface so the overlay
+	   text keeps its contrast in both themes. Light mode uses a shorter,
+	   sharper fade — a long white wash reads as haze over dark art. */
+	.np-shade {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: linear-gradient(
+			to top,
+			var(--color-surface-solid) 0%,
+			color-mix(in srgb, var(--color-surface-solid) 90%, transparent) 22%,
+			color-mix(in srgb, var(--color-surface-solid) 45%, transparent) 44%,
+			transparent 62%
+		);
+	}
+
+	:global(.light) .np-shade {
+		background: linear-gradient(
+			to top,
+			var(--color-surface-solid) 0%,
+			color-mix(in srgb, var(--color-surface-solid) 88%, transparent) 14%,
+			color-mix(in srgb, var(--color-surface-solid) 40%, transparent) 30%,
+			transparent 50%
+		);
+	}
+
+	.np-live {
+		position: absolute;
+		top: 14px;
+		left: 14px;
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		padding: 5px 11px 5px 9px;
+		border-radius: 999px;
+		background: rgba(8, 10, 14, 0.62);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border: 1px solid var(--color-status-playing-border);
+		color: var(--color-status-playing-text);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.np-live-dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--color-status-playing-text);
+		animation: np-live-pulse 2s ease-in-out infinite;
+	}
+
+	@keyframes np-live-pulse {
+		0%,
+		100% {
+			box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45);
+		}
+		50% {
+			box-shadow: 0 0 0 5px rgba(52, 211, 153, 0);
+		}
+	}
+
+	.np-overlay {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		display: flex;
 		flex-direction: column;
-		justify-content: flex-start;
-		gap: 8px;
-		padding: 16px;
-		flex: 1;
-		min-width: 0;
+		align-items: flex-start;
+		gap: 10px;
+		padding: 18px 20px 20px;
 	}
 
 	.np-badge {
@@ -282,22 +359,44 @@ function viewAllCompleted() {
 		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.02em;
-		box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+		animation: np-badge-glow 2.4s ease-in-out infinite;
+	}
+
+	@keyframes np-badge-glow {
+		0%,
+		100% {
+			box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+		}
+		50% {
+			box-shadow: 0 0 28px rgba(99, 102, 241, 0.45);
+		}
 	}
 
 	:global(.light) .np-badge {
-		box-shadow: 0 0 20px rgba(194, 65, 12, 0.25);
+		animation-name: np-badge-glow-light;
+	}
+
+	@keyframes np-badge-glow-light {
+		0%,
+		100% {
+			box-shadow: 0 0 20px rgba(194, 65, 12, 0.25);
+		}
+		50% {
+			box-shadow: 0 0 26px rgba(194, 65, 12, 0.38);
+		}
 	}
 
 	.np-title {
 		margin: 0;
-		font-size: 1.1rem;
-		font-weight: 700;
+		font-size: 1.35rem;
+		font-weight: 800;
 		color: var(--color-text-primary);
-		line-height: 1.25;
-		white-space: nowrap;
+		line-height: 1.2;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		overflow: hidden;
-		text-overflow: ellipsis;
 	}
 
 	.np-meta {
@@ -322,28 +421,57 @@ function viewAllCompleted() {
 		border-color: var(--color-border);
 	}
 
+	/* Color the Clock icon (svg uses currentColor). */
 	.np-playtime {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		color: var(--color-accent);
 	}
 
 	.np-playtime-label {
-		font-size: 0.7rem;
+		font-size: 0.68rem;
 		font-weight: 700;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		opacity: 0.7;
 		color: var(--color-text-tertiary);
 	}
 
 	.np-playtime-value {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 0.85rem;
-		font-weight: 600;
+		font-size: 0.9rem;
+		font-weight: 700;
 		color: var(--color-text-secondary);
+	}
+
+	@media (max-width: 767px) {
+		.np-grid {
+			gap: 12px;
+		}
+
+		.np-live {
+			top: 12px;
+			left: 12px;
+		}
+
+		.np-overlay {
+			padding: 14px 16px 16px;
+		}
+
+		.np-title {
+			font-size: 1.2rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.np-badge,
+		.np-live-dot {
+			animation: none;
+		}
+
+		.np-card,
+		.np-cover {
+			transition: none;
+		}
 	}
 
 	.recent-section {
