@@ -27,6 +27,7 @@ import TierListView from '#lib/views/TierListView.svelte';
 
 import { extractFilterOptions } from '#lib/utils/filterOptions.js';
 import { tabEmptyState } from '#lib/utils/emptyState.js';
+import { isGamesRoute, routeKeyFromPath } from '#lib/utils/routeUtils.js';
 import { registerServiceWorker } from '#lib/utils/serviceWorker.js';
 import { createGlobalKeydownHandler } from '#lib/utils/keyboardShortcuts.js';
 import { buildOgDescription } from '#lib/utils/ogDescription.js';
@@ -80,16 +81,7 @@ let filterOptions = $derived.by(() => {
 	return extractFilterOptions(games);
 });
 
-let currentPage = $derived.by(() => {
-	const path = page.url.pathname;
-	if (path === '/') return 'home';
-	if (path === '/stats') return 'stats';
-	if (path === '/library') return 'all';
-	if (path === '/completed') return 'completed';
-	if (path === '/planned') return 'planned';
-	if (path === '/tierlist') return 'tierlist';
-	return 'all';
-});
+let currentPage = $derived(routeKeyFromPath(page.url.pathname));
 
 let currentFilteredGames = $derived(filteredGamesStore.games);
 
@@ -97,13 +89,12 @@ let canonicalUrl = $derived(page.url.origin + page.url.pathname);
 
 let isHomePage = $derived(currentPage === 'home');
 
-let isGamesPage = $derived(currentPage === 'all' || currentPage === 'completed' || currentPage === 'planned');
+let isGamesPage = $derived(isGamesRoute(currentPage));
 
 let isPlannedPage = $derived(currentPage === 'planned');
 
 let isTierlistPage = $derived(currentPage === 'tierlist');
-let isStatsPage = $derived(currentPage === 'stats');
-let showFilterSection = $derived(!isHomePage && !isTierlistPage && !isStatsPage);
+let showFilterSection = $derived(isGamesPage);
 
 let pageTitle = $derived.by(() => {
 	const path = page.url.pathname;
