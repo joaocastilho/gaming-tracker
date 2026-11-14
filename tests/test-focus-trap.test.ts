@@ -68,4 +68,47 @@ describe('focusTrap', () => {
 		expect(document.activeElement).toBe(last);
 		expect(document.activeElement).not.toBe(first);
 	});
+
+	it('can focus the container itself instead of the first control', () => {
+		const { container, first } = setup();
+		container.tabIndex = -1;
+		focusTrap(container, { initialFocus: 'container' });
+
+		expect(document.activeElement).toBe(container);
+		expect(document.activeElement).not.toBe(first);
+	});
+
+	it('wraps Shift+Tab from the container to the last control', () => {
+		const { container, last } = setup();
+		container.tabIndex = -1;
+		focusTrap(container, { initialFocus: 'container' });
+
+		pressTab(container, true);
+		expect(document.activeElement).toBe(last);
+	});
+
+	it('restores focus to the trigger on destroy', () => {
+		const { container } = setup();
+		const trigger = document.createElement('button');
+		document.body.appendChild(trigger);
+		trigger.focus();
+
+		const trap = focusTrap(container);
+		expect(document.activeElement).not.toBe(trigger);
+
+		trap.destroy();
+		expect(document.activeElement).toBe(trigger);
+	});
+
+	it('does not restore focus to a trigger that left the document', () => {
+		const { container } = setup();
+		const trigger = document.createElement('button');
+		document.body.appendChild(trigger);
+		trigger.focus();
+
+		const trap = focusTrap(container);
+		trigger.remove();
+
+		expect(() => trap.destroy()).not.toThrow();
+	});
 });

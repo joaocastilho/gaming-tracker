@@ -10,6 +10,7 @@ import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
 import { windowSize } from '#lib/stores/window.svelte.js';
 import { preloadImage } from '#lib/utils/imagePreload.js';
 import { prefersReducedMotion } from '#lib/utils/motion.js';
+import { focusTrap } from '#lib/utils/focusTrap.js';
 import type { Game } from '#lib/types/game.js';
 import { ChevronLeft, ChevronRight, X } from '@lucide/svelte';
 
@@ -808,8 +809,9 @@ $effect(() => {
 		}}
 		role="dialog"
 		aria-modal="true"
-		aria-labelledby="modal-title"
+		aria-label="Game details: {modalState.activeGame.title}"
 		tabindex="-1"
+		use:focusTrap={{ initialFocus: 'container' }}
 	>
 		<p class="sr-only" aria-live="polite" aria-atomic="true">
 			Now viewing {modalState.activeGame?.title ?? ''}

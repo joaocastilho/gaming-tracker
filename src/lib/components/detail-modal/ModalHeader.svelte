@@ -14,6 +14,10 @@ interface Props {
 
 let { game, onClose, onShare, linkCopied = '' }: Props = $props();
 
+// Every continuum layer renders a header, so a fixed id would be duplicated
+// three times and break the dialog's accessible name.
+const titleId = $props.id();
+
 let containerWidth = $state(0);
 let titleFontSize = $state('');
 
@@ -53,9 +57,9 @@ $effect(() => {
 
 <div class="mb-2 flex items-start gap-2 pt-4 md:pt-4">
 	<h1
-		id="modal-title"
+		id={titleId}
 		bind:clientWidth={containerWidth}
-		class="flex min-w-0 flex-1 flex-col items-center justify-start text-center md:overflow-hidden md:items-start md:text-left"
+		class="modal-title flex min-w-0 flex-1 flex-col items-center justify-start text-center md:overflow-hidden md:items-start md:text-left"
 		style="color: var(--color-text-primary);"
 	>
 		<span
@@ -104,35 +108,35 @@ $effect(() => {
 </div>
 
 <style>
-	#modal-title {
+	.modal-title {
 		min-height: 80px;
 	}
 
 	@media (min-width: 768px) {
-		#modal-title {
+		.modal-title {
 			min-height: 72px;
 		}
 	}
 
 	@media (max-width: 767px) and (orientation: portrait) {
-		#modal-title {
+		.modal-title {
 			min-height: 60px;
 			line-height: 25px;
 		}
 
 		/* The subtitle carries an inline line-height; the tighter rhythm must win. */
-		#modal-title span {
+		.modal-title span {
 			line-height: 25px !important;
 		}
 	}
 
 	@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
-		#modal-title {
+		.modal-title {
 			min-height: auto !important;
 			margin-bottom: 1rem !important;
 		}
 
-		#modal-title :global(.modal-title-text) {
+		.modal-title :global(.modal-title-text) {
 			line-height: 1.1 !important;
 		}
 	}
