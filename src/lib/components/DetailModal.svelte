@@ -122,8 +122,6 @@ $effect(() => {
 const wheelNavigator = new ContinuumWheelNavigator();
 const dragTracker = new ContinuumDragTracker();
 
-/** Pointer travel that brings the incoming card all the way to the centre. */
-const CONTINUUM_REVEAL_DISTANCE = 420;
 const CONTINUUM_ENTER_OFFSET = 260;
 /** The 960px card renders 1056px wide through the 1.1 zoom. */
 const CONTINUUM_CARD_WIDTH = 1056;
@@ -161,9 +159,19 @@ function conditionalFly(node: HTMLElement, { condition, ...config }: FlyParams &
 	return fly(node, config);
 }
 
+/** True while a drag, turn, or snap-back owns the cards. */
+function isContinuumCardMotionActive(): boolean {
+	return (
+		isContinuumDragging || continuumPhase === 'exiting' || continuumPhase === 'settling' || continuumDragOffset !== 0
+	);
+}
+
+/**
+ * The incoming card waits at the centre while a gesture is active, so the drag
+ * uncovers it instead of sliding it. At rest it waits offscreen.
+ */
 function getIncomingVisualOffset(direction: 1 | -1): number {
-	const dragged = Math.max(0, -direction * continuumDragOffset);
-	return direction * CONTINUUM_ENTER_OFFSET * (1 - Math.min(1, dragged / CONTINUUM_REVEAL_DISTANCE));
+	return isContinuumCardMotionActive() ? 0 : direction * CONTINUUM_ENTER_OFFSET;
 }
 
 /**
@@ -214,16 +222,20 @@ function getCardTransform(pos: number, isCurrent: boolean): string {
 	}
 
 	if (!isCurrent) {
-		return `translate3d(${getIncomingVisualOffset(pos === 1 ? 1 : -1).toFixed(2)}px, 0px, 0)`;
+		const incoming = pos === continuumTurnDirection;
+		const offset = incoming ? getIncomingVisualOffset(pos === 1 ? 1 : -1) : pos * CONTINUUM_ENTER_OFFSET;
+		return `translate3d(${offset.toFixed(2)}px, 0px, 0)`;
 	}
 
 	return `translate3d(${continuumDragOffset.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
 }
 
-function getCardOpacity(isCurrent: boolean): number {
+function getCardOpacity(isCurrent: boolean, pos: number): number {
 	if (isContinuum && !isTouchSwipeActive()) {
 		if (!isCurrent) {
-			return isContinuumDragging || continuumPhase === 'exiting' || continuumPhase === 'settling' ? 1 : 0;
+			// Only the card being turned to is revealed; the opposite neighbour
+			// stays hidden so it cannot peek past the focused card's edge.
+			return pos === continuumTurnDirection && isContinuumCardMotionActive() ? 1 : 0;
 		}
 		// The turn animation owns the active card's opacity; keeping it at 1
 		// here stops Svelte from fighting the WAAPI animation.
@@ -322,8 +334,8 @@ function commitNavigation(direction: 1 | -1): void {
 }
 
 /**
- * Springs both the active card and the peeked neighbour back to their resting
- * positions when a drag ends without turning the page.
+ * Springs the active card back over the centred incoming card when a drag ends
+ * without turning the page.
  */
 async function settleContinuumDrag(): Promise<void> {
 	if (continuumDragOffset === 0) {
@@ -341,11 +353,7 @@ async function settleContinuumDrag(): Promise<void> {
 	const token = ++transitionToken;
 	const direction = continuumDragOffset < 0 ? 1 : -1;
 	const activeLayer = getContinuumLayer(modalState.activeGame?.id ?? '');
-	const neighborGame = direction === 1 ? nextGamePreview : prevGamePreview;
-	const neighborLayer = getContinuumLayer(neighborGame?.id ?? '');
 	const activeStartX = continuumDragOffset;
-	const neighborStartX = getIncomingVisualOffset(direction);
-	const neighborRestX = direction * CONTINUUM_ENTER_OFFSET;
 
 	continuumTurnDirection = direction;
 	continuumPhase = 'settling';
@@ -360,15 +368,6 @@ async function settleContinuumDrag(): Promise<void> {
 			],
 		});
 	}
-	if (neighborLayer) {
-		animations.push({
-			layer: neighborLayer,
-			keyframes: [
-				{ transform: `translate3d(${neighborStartX.toFixed(2)}px, 0px, 0)`, opacity: 1 },
-				{ transform: `translate3d(${neighborRestX.toFixed(2)}px, 0px, 0)`, opacity: 0 },
-			],
-		});
-	}
 
 	await animateLayers(animations, CONTINUUM_SETTLE_MS, CONTINUUM_SETTLE_EASING);
 	if (token !== transitionToken) return;
@@ -379,9 +378,8 @@ async function settleContinuumDrag(): Promise<void> {
 }
 
 /**
- * Slides the current card out while simultaneously gliding the incoming
- * neighbour card into the centre, then commits the active game swap once the
- * incoming card is already resting at translate3d(0px, 0px, 0).
+ * Slides the focused card clear of the centred incoming card, then commits the
+ * active game swap once the incoming card is the only one left on screen.
  */
 async function runContinuumTurn(direction: 1 | -1, commit: () => void, targetGame?: Game): Promise<void> {
 	if (continuumPhase === 'exiting') return;
@@ -398,19 +396,16 @@ async function runContinuumTurn(direction: 1 | -1, commit: () => void, targetGam
 
 	const exitDistance = getTurnExitDistance();
 	const activeStartX = continuumDragOffset;
-	const incomingStartX = getIncomingVisualOffset(direction);
-	const incomingGame = turnTargetGame ?? adjacentGame;
 
 	continuumTurnDirection = direction;
 	continuumPhase = 'exiting';
 
 	// A preview click can introduce a new target card, so let the each block
-	// render it before capturing its layer.
+	// render it before capturing the active layer.
 	await tick();
 	if (token !== transitionToken) return;
 
 	const activeLayer = getContinuumLayer(modalState.activeGame?.id ?? '');
-	const incomingLayer = getContinuumLayer(incomingGame?.id ?? '');
 	const animations: LayerAnimation[] = [];
 
 	if (activeLayer) {
@@ -419,15 +414,6 @@ async function runContinuumTurn(direction: 1 | -1, commit: () => void, targetGam
 			keyframes: [
 				{ transform: `translate3d(${activeStartX.toFixed(2)}px, 0px, 0)`, opacity: 1 },
 				{ transform: `translate3d(${(-direction * exitDistance).toFixed(2)}px, 0px, 0)`, opacity: 1 },
-			],
-		});
-	}
-	if (incomingLayer) {
-		animations.push({
-			layer: incomingLayer,
-			keyframes: [
-				{ transform: `translate3d(${incomingStartX.toFixed(2)}px, 0px, 0)`, opacity: 1 },
-				{ transform: 'translate3d(0px, 0px, 0)', opacity: 1 },
 			],
 		});
 	}
@@ -881,7 +867,7 @@ $effect(() => {
 						e.stopPropagation();
 						navigateBy(-1);
 					}}
-					class="nav-arrow-btn absolute top-1/2 left-[calc(50%-568px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
+					class="nav-arrow-btn absolute top-1/2 left-[calc(50%-600px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
 					aria-label="Previous game"
 				>
 					<ChevronLeft size={28} />
@@ -893,7 +879,7 @@ $effect(() => {
 						e.stopPropagation();
 						navigateBy(1);
 					}}
-					class="nav-arrow-btn absolute top-1/2 right-[calc(50%-568px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
+					class="nav-arrow-btn absolute top-1/2 right-[calc(50%-600px)] z-[70] hidden h-14 w-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white/90 transition-all hover:scale-110 hover:bg-black/40 xl:flex"
 					aria-label="Next game"
 				>
 					<ChevronRight size={28} />
@@ -942,7 +928,7 @@ $effect(() => {
 				class:continuum-neighbor={isContinuum && !isCurrent}
 				style="visibility: {isVisible ? 'visible' : 'hidden'};"
 				style:transform={getCardTransform(pos, isCurrent)}
-				style:opacity={getCardOpacity(isCurrent)}
+				style:opacity={getCardOpacity(isCurrent, pos)}
 				data-continuum-layer={game.id}
 				data-continuum-pos={pos}
 				aria-hidden={!isCurrent ? 'true' : undefined}
@@ -1108,14 +1094,10 @@ $effect(() => {
 		will-change: transform, opacity;
 	}
 
+	/* Neighbour opacity must snap: the incoming card has to be solid before the
+	   focused card uncovers it, and it must vanish before jumping back offscreen
+	   when a snap-back finishes. */
 	.continuum-neighbor {
-		transition: opacity 140ms ease-out;
-	}
-
-	/* Once a gesture owns the cards, neighbours snap to their target opacity:
-	   the incoming card must be solid before the outgoing one uncovers it. */
-	.continuum-dragging .continuum-neighbor,
-	.continuum-turning .continuum-neighbor {
 		transition: none;
 	}
 
@@ -1148,12 +1130,6 @@ $effect(() => {
 		   hundredth of a pixel and leaves text rendering unchanged. */
 		.continuum-overlay .modal-card-layer {
 			rotate: 0.001deg;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.continuum-neighbor {
-			transition: none;
 		}
 	}
 

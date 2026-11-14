@@ -50,7 +50,7 @@ describe('ContinuumPreview', () => {
 		});
 
 		const wrapper = container.firstElementChild;
-		expect(wrapper).toHaveClass('left-[calc(50%-760px)]');
+		expect(wrapper).toHaveClass('left-[calc(50%-824px)]');
 
 		expect(screen.getByText('Left')).toHaveClass('text-right');
 	});
@@ -66,7 +66,7 @@ describe('ContinuumPreview', () => {
 		});
 
 		const wrapper = container.firstElementChild;
-		expect(wrapper).toHaveClass('left-[calc(50%+552px)]');
+		expect(wrapper).toHaveClass('left-[calc(50%+616px)]');
 
 		expect(screen.getByText('Right')).toHaveClass('text-left');
 	});
@@ -80,7 +80,7 @@ describe('ContinuumPreview', () => {
 				onSelect: vi.fn(),
 			},
 		});
-		expect(previous.container.firstElementChild).toHaveClass('left-[calc(50%-984px)]');
+		expect(previous.container.firstElementChild).toHaveClass('left-[calc(50%-1048px)]');
 
 		const next = render(ContinuumPreview, {
 			props: {
@@ -90,7 +90,7 @@ describe('ContinuumPreview', () => {
 				onSelect: vi.fn(),
 			},
 		});
-		expect(next.container.firstElementChild).toHaveClass('left-[calc(50%+776px)]');
+		expect(next.container.firstElementChild).toHaveClass('left-[calc(50%+840px)]');
 	});
 
 	it('shows how strongly the drag is leaning toward this preview', () => {

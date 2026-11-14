@@ -87,6 +87,14 @@ describe('ModalRatings tier verdict', () => {
 		expect(normalize(strip?.querySelector('.score-badge')?.textContent)).toContain('17');
 	});
 
+	it('keeps the verdict badges spaced apart from the rating cards', () => {
+		const game = createCompletedGame({ tier: 'A - Amazing', score: 17 });
+
+		const { container } = render(ModalRatings, { props: { game } });
+
+		expect(container.querySelector('.verdict-strip')).toHaveClass('mt-4');
+	});
+
 	it('splits the S tier into its letter and name', () => {
 		const game = createCompletedGame({ tier: 'S - Masterpiece', score: 19 });
 

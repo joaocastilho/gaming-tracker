@@ -34,11 +34,12 @@ let {
 const PLACEHOLDER_SRC = '/covers/placeholder_cover.webp';
 const PLACEHOLDER_SRCSET = `${PLACEHOLDER_SRC} 300w`;
 
-// The active card renders 1056px wide at the current zoom. The previews sit
-// 24px from its edge, and the ultrawide pair starts 16px further out.
+// The active card renders 1056px wide at the current zoom. The nav arrows
+// occupy a 56px lane 16px outside its edge, so the previews start 88px from
+// the card, and the ultrawide pair starts 16px further out.
 const POSITION_CLASSES: Record<'previous' | 'next', [string, string]> = {
-	previous: ['left-[calc(50%-760px)]', 'left-[calc(50%-984px)]'],
-	next: ['left-[calc(50%+552px)]', 'left-[calc(50%+776px)]'],
+	previous: ['left-[calc(50%-824px)]', 'left-[calc(50%-1048px)]'],
+	next: ['left-[calc(50%+616px)]', 'left-[calc(50%+840px)]'],
 };
 
 const isPrevious = $derived(direction === 'previous');

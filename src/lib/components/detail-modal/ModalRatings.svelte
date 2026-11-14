@@ -102,7 +102,7 @@ function fillPercent(value: number | null): number {
 		</div>
 	</div>
 
-	<div class="score-result verdict-strip mt-2">
+	<div class="score-result verdict-strip mt-4">
 		{@render tierBadge(false)}
 		{@render scoreBadge(false)}
 	</div>

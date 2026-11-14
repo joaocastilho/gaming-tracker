@@ -89,6 +89,16 @@ describe('DetailModal continuum', () => {
 		expect(screen.getByRole('button', { name: 'Next game' })).toBeInTheDocument();
 	});
 
+	it('keeps the nav arrows clear of the card instead of sitting on it', () => {
+		openAt(2);
+		render(DetailModal);
+
+		// The zoomed card spans 50% ± 528px, so a 56px arrow whose outer edge is
+		// 600px from the centre ends 16px clear of the card edge.
+		expect(screen.getByRole('button', { name: 'Previous game' })).toHaveClass('left-[calc(50%-600px)]');
+		expect(screen.getByRole('button', { name: 'Next game' })).toHaveClass('right-[calc(50%-600px)]');
+	});
+
 	it('keeps the existing modal below 1280px', () => {
 		windowSize.width = 1279;
 		openAt(2);
@@ -381,12 +391,13 @@ describe('DetailModal continuum', () => {
 		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
 	});
 
-	it('animates the incoming card from the side the turn came from', async () => {
+	it('keeps the incoming card centred while the active card is dragged away', async () => {
 		openAt(2);
 		const { container } = render(DetailModal);
 
 		const card = getActiveCard();
 		const activeLayer = getCardLayer(card);
+		const previousLayer = getCardLayer(container.querySelectorAll<HTMLElement>('.modal-content')[0]);
 		const incomingCard = container.querySelectorAll<HTMLElement>('.modal-content')[2];
 		const incomingLayer = getCardLayer(incomingCard);
 
@@ -401,14 +412,15 @@ describe('DetailModal continuum', () => {
 		dispatchPointer(window, 'pointermove', { clientX: 570, clientY: 400 });
 		await tick();
 
-		// During the drag the active layer follows the pointer and the incoming
-		// layer glides in proportionally; both are fully opaque so neither card
-		// shows through the other.
+		// Only the focused card follows the pointer. The incoming card is already
+		// centred underneath it, so the drag uncovers it instead of sliding it.
 		expect(activeLayer.style.transform).toContain('translate3d(-130.00px');
 		expect(activeLayer.style.opacity).toBe('1');
-		expect(incomingLayer.style.transform).toContain('translate3d(179.52px');
+		expect(incomingLayer.style.transform).toContain('translate3d(0.00px');
 		expect(incomingLayer.style.opacity).toBe('1');
 		expect(incomingLayer.style.visibility).toBe('visible');
+		expect(previousLayer.style.transform).toContain('translate3d(-260.00px');
+		expect(previousLayer.style.opacity).toBe('0');
 
 		dispatchPointer(window, 'pointerup', { clientX: 570, clientY: 400 });
 		// One tick renders the exiting phase, the next lets the turn start its
@@ -416,12 +428,12 @@ describe('DetailModal continuum', () => {
 		await tick();
 		await tick();
 
-		// On release both layers animate simultaneously to their final frames:
-		// the outgoing card clears the viewport, the incoming card lands at 0.
+		// The turn only slides the outgoing card clear; the incoming card has
+		// not moved and is fully revealed when the outgoing card leaves.
 		// 1440 / 2 + 1056 / 2 + 16 = 1264px.
 		expect(activeLayer.style.transform).toContain('translate3d(-1264.00px');
 		expect(activeLayer.style.opacity).toBe('1');
-		expect(incomingLayer.style.transform).toContain('translate3d(0px, 0px, 0)');
+		expect(incomingLayer.style.transform).toContain('translate3d(0.00px');
 		expect(incomingLayer.style.opacity).toBe('1');
 
 		await vi.advanceTimersByTimeAsync(260);
