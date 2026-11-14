@@ -1,37 +1,34 @@
 <script lang="ts">
-import {
-	Chart,
-	BarController,
-	BarElement,
-	CategoryScale,
-	LinearScale,
-	Tooltip,
-	Legend,
-	LineController,
-	LineElement,
-	PointElement,
-	Filler,
-	type ChartType,
-	type ChartData,
-	type ChartOptions,
-} from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import type { Chart, ChartData, ChartOptions, ChartType } from 'chart.js';
 import { untrack } from 'svelte';
 import { appStore } from '#lib/stores/app.svelte.js';
 
-Chart.register(
-	BarController,
-	BarElement,
-	CategoryScale,
-	LinearScale,
-	Tooltip,
-	Legend,
-	LineController,
-	LineElement,
-	PointElement,
-	Filler,
-	ChartDataLabels
-);
+// Chart.js and its datalabels plugin are a ~207 KB chunk that only this
+// component needs. Importing them dynamically keeps them out of the layout's
+// modulepreload graph, so every other route skips the download.
+let chartLoader: Promise<typeof import('chart.js')> | null = null;
+
+function loadChart(): Promise<typeof import('chart.js')> {
+	chartLoader ??= Promise.all([import('chart.js'), import('chartjs-plugin-datalabels')]).then(
+		([chartJs, dataLabels]) => {
+			chartJs.Chart.register(
+				chartJs.BarController,
+				chartJs.BarElement,
+				chartJs.CategoryScale,
+				chartJs.LinearScale,
+				chartJs.Tooltip,
+				chartJs.Legend,
+				chartJs.LineController,
+				chartJs.LineElement,
+				chartJs.PointElement,
+				chartJs.Filler,
+				dataLabels.default
+			);
+			return chartJs;
+		}
+	);
+	return chartLoader;
+}
 
 interface Props {
 	type: ChartType;
@@ -90,23 +87,33 @@ function applyThemeColors(theme: string): void {
 }
 
 $effect(() => {
-	if (!canvasElement) return;
+	const canvas = canvasElement;
+	if (!canvas) return;
 
-	if (chartInstance) {
-		chartInstance.destroy();
-	}
+	// Snapshot the props before awaiting so the effect still tracks them.
+	const chartType = type;
+	const chartData = data;
+	const chartOptions = buildOptions();
+	let cancelled = false;
 
-	chartInstance = new Chart(canvasElement, {
-		type,
-		data,
-		options: buildOptions(),
-	});
+	void (async () => {
+		const chartJs = await loadChart();
+		if (cancelled || !canvas.isConnected) return;
 
-	// Read the theme untracked so theme changes repaint via the effect below
-	// instead of tearing down and rebuilding the whole chart.
-	applyThemeColors(untrack(() => appStore.theme));
+		chartInstance?.destroy();
+		chartInstance = new chartJs.Chart(canvas, {
+			type: chartType,
+			data: chartData,
+			options: chartOptions,
+		});
+
+		// Read the theme untracked so theme changes repaint via the effect below
+		// instead of tearing down and rebuilding the whole chart.
+		applyThemeColors(untrack(() => appStore.theme));
+	})();
 
 	return () => {
+		cancelled = true;
 		chartInstance?.destroy();
 		chartInstance = null;
 	};

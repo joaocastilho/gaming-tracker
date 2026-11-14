@@ -188,6 +188,14 @@ export default defineConfig({
 						// imported via {#await import(...)} anyway, so they get their
 						// own chunks from the dynamic imports themselves.
 						{
+							// Rolldown's shared helper module is imported by both the Svelte
+							// runtime and chart.js. Left ungrouped it gets merged into the
+							// chart group, and the runtime's static import then drags the
+							// whole chart chunk into every page's modulepreload graph.
+							name: 'vendor-runtime',
+							test: (id) => id.includes('rolldown') && id.includes('runtime'),
+						},
+						{
 							name: 'vendor-charts',
 							test: /node_modules[\\/](chart\.js|chartjs-plugin-datalabels)/,
 						},
