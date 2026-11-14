@@ -31,6 +31,7 @@ import { isGamesRoute, routeKeyFromPath } from '#lib/utils/routeUtils.js';
 import { registerServiceWorker } from '#lib/utils/serviceWorker.js';
 import { createGlobalKeydownHandler } from '#lib/utils/keyboardShortcuts.js';
 import { buildOgDescription } from '#lib/utils/ogDescription.js';
+import { liveSearchParams } from '#lib/utils/pageUrl.js';
 
 import type { Game } from '#lib/types/game.js';
 
@@ -419,7 +420,9 @@ async function installApp() {
 	}
 }
 
-let sharedGame = $derived(browser ? (gamesStore.findByUrlSlug(page.url.searchParams.get('game') ?? '') ?? null) : null);
+let sharedGame = $derived(
+	browser ? (gamesStore.findByUrlSlug(liveSearchParams(page).get('game') ?? '') ?? null) : null
+);
 
 let shareDescription = $derived.by(() => {
 	const g = sharedGame;
