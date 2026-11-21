@@ -7,9 +7,3 @@ GH_REPO_OWNER = "joaocastilho"
 GH_REPO_NAME = "gaming-tracker"
 GH_FILE_PATH = "static/games.json"
 GH_BRANCH = "main"
-
-[env.preview.vars]
-GH_REPO_OWNER = "joaocastilho"
-GH_REPO_NAME = "gaming-tracker"
-GH_FILE_PATH = "static/games.json"
-GH_BRANCH = "feat/solid-2-migration"
