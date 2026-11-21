@@ -102,24 +102,25 @@ Updates apply on the next natural page load — no forced reloads mid-session. I
 
 | Category             | Technology                                     | Version   |
 | -------------------- | ---------------------------------------------- | --------- |
-| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v3.2.0`  |
-| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.57.3` |
+| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v3.4.0`  |
+| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.59.1` |
 | **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.5`  |
-| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.6.7`  |
+| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.6.8`  |
 | **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.3.8`  |
 | **TypeScript**       | [TypeScript](https://www.typescriptlang.org/)  | `v6.0.3`  |
 | **Test Runner**      | [Vitest](https://vitest.dev/)                  | `v5.1.0`  |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v1.0.0`  |
-| **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.72.0` |
+| **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.77.0` |
 | **Runtime**          | [Bun](https://bun.sh/)                         | `v1.4.4`  |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)           | `v4.6.1`  |
 | **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.7`  |
 | **Validation**       | [Zod](https://zod.dev/)                        | `v4.6.7`  |
 
-Two dependencies are intentionally held back; `bun outdated` will list them:
+Three dependencies are intentionally held back; `bun outdated` will list them:
 
 - **`jsdom` 30.0.1** — 30.1+ requires `this === globalThis` inside its vm context, which Bun's `vm` does not provide ([oven-sh/bun#43671](https://github.com/oven-sh/bun/issues/43671)).
 - **TypeScript 6.0.3** — TypeScript 7's native compiler has no `ts.sys.readFile`, so `svelte-kit sync` crashes. Bump once SvelteKit supports it.
+- **`vitest` / `@vitest/coverage-v8` 5.1.0** — 5.1.1 fails to terminate forks workers under Bun (`setMaxListeners` out of range). Bump once the pool teardown works again.
 
 ## 🚀 Running Locally
 

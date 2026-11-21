@@ -59,10 +59,11 @@ Layer direction: `types` ← `utils` ← `stores` ← `components`/`routes`. Nev
 
 ## Dependency pins
 
-`bun outdated` will flag both of these. That is expected:
+`bun outdated` will flag these. That is expected:
 
 - **`jsdom` 30.0.1** — see above.
 - **`typescript` 6.0.3** — TypeScript 7 ships the native compiler without `ts.sys.readFile`, so `svelte-kit sync` crashes with `undefined is not an object`. Bump only after SvelteKit supports it.
+- **`vitest` / `@vitest/coverage-v8` 5.1.0** — 5.1.1 fails to terminate forks workers under Bun (`setMaxListeners` out of range). Bump once pool teardown works again.
 
 ## Known traps
 
