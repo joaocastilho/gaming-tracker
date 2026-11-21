@@ -3,22 +3,14 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 function readHomeSource(): string {
-	return readFileSync(resolve(process.cwd(), 'src/routes/+page.svelte'), 'utf8');
+	return readFileSync(resolve(process.cwd(), 'src/pages/HomePage.css'), 'utf8');
 }
 
 function cssRule(source: string, selector: string): string {
 	const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-	// Anchor at line start so a descendant rule like `.np-card:hover .np-cover`
-	// cannot win over the base `.np-cover` rule.
 	return source.match(new RegExp(`^\\s*${escaped}\\s*\\{([^}]*)\\}`, 'm'))?.[1] ?? '';
 }
 
-/**
- * The showcase row: poster-sized cards that fill themselves with cover art,
- * left-aligned and width-capped near the recent-completion card width so a
- * lone card cannot stretch to the full 1600px container and the row lines up
- * with the section heading.
- */
 describe('Now Playing poster cards', () => {
 	it('left-aligns the row and caps card width near the recent-completion cards', () => {
 		const source = readHomeSource();
@@ -63,7 +55,7 @@ describe('Now Playing poster cards', () => {
 
 	it('respects reduced motion for the looping animations', () => {
 		const source = readHomeSource();
-		const reduced = source.match(/@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\t\}/)?.[1] ?? '';
+		const reduced = source.match(/@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\}/)?.[1] ?? '';
 
 		expect(reduced).toContain('.np-badge');
 		expect(reduced).toContain('.np-live-dot');

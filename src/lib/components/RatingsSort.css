@@ -1,0 +1,48 @@
+.ratings-sort {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.ratings-sort .sort-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.35rem 0.6rem;
+	border-radius: 0.375rem;
+	border: 1px solid transparent;
+	background-color: transparent;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	color: var(--color-text-secondary);
+}
+
+.ratings-sort .sort-button:hover {
+	background-color: rgba(99, 102, 241, 0.04);
+	color: var(--color-text-primary);
+}
+
+.light .ratings-sort .sort-button:hover {
+	background-color: var(--color-hover);
+}
+
+.ratings-sort .sort-button.active {
+	background-color: var(--color-surface);
+	border-color: var(--color-border);
+	color: var(--color-text-primary);
+	font-weight: 500;
+}
+
+.ratings-sort .sort-field-label {
+	font-size: 0.9rem;
+}
+
+.sort-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.sort-direction-icon {
+	opacity: 0.7;
+}

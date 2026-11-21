@@ -1,0 +1,74 @@
+.delete-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.7);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 70;
+}
+
+.delete-modal {
+	background: #020817;
+	color: #e5e7eb;
+	border-radius: 16px;
+	padding: 1.5rem;
+	max-width: 400px;
+	width: 90%;
+	box-shadow: 0 24px 60px rgba(15, 23, 42, 0.9);
+	border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.delete-modal h2 {
+	margin: 0 0 0.75rem;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: var(--color-danger);
+}
+
+.delete-modal p {
+	margin: 0 0 1.25rem;
+	font-size: 0.9rem;
+	line-height: 1.5;
+	color: var(--color-text-secondary);
+}
+
+.delete-modal strong {
+	color: #e5e7eb;
+}
+
+.delete-modal .actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}
+
+.delete-modal button {
+	border-radius: 999px;
+	padding: 0.4rem 1rem;
+	border: none;
+	font-size: 0.85rem;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.delete-modal .secondary {
+	background: transparent;
+	color: var(--color-text-secondary);
+}
+
+.delete-modal .secondary:hover {
+	color: #e5e7eb;
+	background: rgba(148, 163, 253, 0.08);
+}
+
+.delete-modal .danger {
+	background: #dc2626;
+	color: #fff;
+}
+
+.delete-modal .danger:hover {
+	background: #b91c1c;
+}

@@ -218,9 +218,7 @@ class FiltersStore {
 		const current = this._state.get();
 		if (!current) return;
 		this.startInternalUpdate();
-		const tiers = current.tiers.includes(tier)
-			? current.tiers.filter((t) => t !== tier)
-			: [...current.tiers, tier];
+		const tiers = current.tiers.includes(tier) ? current.tiers.filter((t) => t !== tier) : [...current.tiers, tier];
 		this.state = { ...current, tiers };
 	}
 

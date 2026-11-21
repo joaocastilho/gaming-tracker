@@ -1,0 +1,46 @@
+.mobile-filter-section {
+	margin-bottom: 16px;
+}
+
+.mobile-filter-section:last-child {
+	margin-bottom: 0;
+	padding-bottom: 80px;
+}
+
+.mobile-filter-section-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--color-text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: 12px;
+}
+
+.mobile-filter-section-title .section-icon {
+	color: var(--color-text-secondary);
+}
+
+.mobile-filter-categories-compact {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 6px;
+	justify-content: flex-start;
+	padding-bottom: 4px;
+	overflow-x: auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.mobile-filter-categories-compact::-webkit-scrollbar {
+	display: none;
+}
+
+.mobile-sort-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	justify-content: center;
+}

@@ -1,0 +1,130 @@
+import { render, screen } from '@solidjs/testing-library';
+import { describe, expect, it, vi } from 'vitest';
+import ContinuumPreview from '#lib/components/detail-modal/ContinuumPreview.js';
+import { createCompletedGame, createTestGame } from './helpers/factories';
+
+describe('ContinuumPreview', () => {
+	it('renders the cover, title, year, score, and tier letter', () => {
+		const game = createCompletedGame({
+			title: 'Hades',
+			year: 2020,
+			score: 18,
+			tier: 'S - Masterpiece',
+		});
+
+		const { container } = render(() => (
+			<ContinuumPreview game={game} direction="previous" depth={0} onSelect={vi.fn()} />
+		));
+
+		expect(screen.getByRole('button', { name: 'View Hades, previous game' })).toBeInTheDocument();
+		expect(screen.getByText('Hades')).toBeInTheDocument();
+		expect(screen.getByText('2020')).toBeInTheDocument();
+		expect(screen.getByText('18/20')).toBeInTheDocument();
+		expect(screen.getByText('S')).toHaveClass('tier-s');
+
+		const image = container.querySelector('img');
+		expect(image).toHaveAttribute('src', '/covers/test.webp');
+	});
+
+	it.each([
+		['Planned', 'PLANNED'],
+		['Playing', 'PLAYING'],
+	] as const)('shows the %s status when there is no score', (status, label) => {
+		const game = createTestGame({ title: 'Silksong', status });
+
+		render(() => <ContinuumPreview game={game} direction="next" depth={0} onSelect={vi.fn()} />);
+
+		expect(screen.getByText(label)).toBeInTheDocument();
+	});
+
+	it('aligns previous previews to their inner (right) edge', () => {
+		const { container } = render(() => (
+			<ContinuumPreview game={createTestGame({ title: 'Left' })} direction="previous" depth={0} onSelect={vi.fn()} />
+		));
+
+		const wrapper = container.firstElementChild;
+		expect(wrapper).toHaveClass('left-[calc(50%-824px)]');
+
+		expect(screen.getByText('Left')).toHaveClass('text-right');
+	});
+
+	it('aligns next previews to their inner (left) edge', () => {
+		const { container } = render(() => (
+			<ContinuumPreview game={createTestGame({ title: 'Right' })} direction="next" depth={0} onSelect={vi.fn()} />
+		));
+
+		const wrapper = container.firstElementChild;
+		expect(wrapper).toHaveClass('left-[calc(50%+616px)]');
+
+		expect(screen.getByText('Right')).toHaveClass('text-left');
+	});
+
+	it('places the outer preview one card further out', () => {
+		const previous = render(() => (
+			<ContinuumPreview
+				game={createTestGame({ title: 'Far left' })}
+				direction="previous"
+				depth={1}
+				onSelect={vi.fn()}
+			/>
+		));
+		expect(previous.container.firstElementChild).toHaveClass('left-[calc(50%-1048px)]');
+
+		const next = render(() => (
+			<ContinuumPreview game={createTestGame({ title: 'Far right' })} direction="next" depth={1} onSelect={vi.fn()} />
+		));
+		expect(next.container.firstElementChild).toHaveClass('left-[calc(50%+840px)]');
+	});
+
+	it('shows how strongly the drag is leaning toward this preview', () => {
+		const { container } = render(() => (
+			<ContinuumPreview
+				game={createTestGame({ title: 'Focused' })}
+				direction="next"
+				depth={0}
+				emphasis={0.6}
+				onSelect={vi.fn()}
+			/>
+		));
+
+		const slot = container.firstElementChild;
+		expect(slot).toBeInstanceOf(HTMLElement);
+		if (!(slot instanceof HTMLElement)) throw new Error('Expected a preview slot');
+		expect(slot.style.getPropertyValue('--preview-emphasis')).toBe('0.6');
+	});
+
+	it('fades out and disables interaction while its full card takes over', () => {
+		const { container } = render(() => (
+			<ContinuumPreview
+				game={createTestGame({ title: 'Taking over' })}
+				direction="next"
+				depth={0}
+				suppressed={true}
+				onSelect={vi.fn()}
+			/>
+		));
+
+		const slot = container.firstElementChild;
+		expect(slot).toBeInstanceOf(HTMLElement);
+		if (!(slot instanceof HTMLElement)) throw new Error('Expected a preview slot');
+		expect(slot.style.getPropertyValue('--preview-visibility')).toBe('0');
+
+		const preview = container.querySelector<HTMLButtonElement>('.continuum-preview');
+		expect(preview).toBeInstanceOf(HTMLButtonElement);
+		if (!preview) throw new Error('Expected a preview button');
+		expect(preview).toHaveClass('suppressed');
+		expect(preview).toHaveAttribute('aria-hidden', 'true');
+		expect(preview).toHaveAttribute('tabindex', '-1');
+	});
+
+	it('calls onSelect with the previewed game', async () => {
+		const game = createTestGame({ title: 'Click me' });
+		const onSelect = vi.fn();
+
+		render(() => <ContinuumPreview game={game} direction="next" depth={0} onSelect={onSelect} />);
+
+		screen.getByRole('button', { name: 'View Click me, next game' }).click();
+
+		expect(onSelect).toHaveBeenCalledWith(game);
+	});
+});

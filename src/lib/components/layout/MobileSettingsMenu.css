@@ -1,0 +1,276 @@
+.mobile-settings-container {
+	position: fixed;
+	right: 16px;
+	bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+	z-index: 45;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+}
+
+@media (min-width: 768px) {
+	.mobile-settings-container {
+		display: none;
+	}
+}
+
+.mobile-settings-container .floating-action-button {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	transition: all 0.2s ease;
+	outline: none;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+	.mobile-settings-container .floating-action-button:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+	}
+}
+
+.mobile-settings-container .floating-action-button:active {
+	transform: translateY(0);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mobile-settings-container .floating-action-button:focus {
+	outline: none;
+}
+
+.settings-fab {
+	background: rgba(75, 85, 99, 0.4);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: white;
+	opacity: 0.8;
+}
+
+@media (hover: hover) {
+	.settings-fab:hover {
+		background: rgba(75, 85, 99, 0.6);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+		opacity: 1;
+	}
+}
+
+.settings-fab.active {
+	background: rgba(75, 85, 99, 0.7);
+	opacity: 1;
+}
+
+.light .settings-fab {
+	background: rgba(184, 169, 154, 0.4);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	box-shadow: 0 4px 12px rgba(61, 53, 48, 0.1);
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	color: #1c1917;
+	opacity: 0.8;
+}
+
+@media (hover: hover) {
+	.light .settings-fab:hover {
+		background: rgba(184, 169, 154, 0.6);
+		box-shadow: 0 6px 16px rgba(61, 53, 48, 0.2);
+		opacity: 1;
+	}
+}
+
+.light .settings-fab.active {
+	background: rgba(184, 169, 154, 0.7);
+}
+
+.settings-fab .settings-icon {
+	transition: transform 0.2s ease;
+}
+
+.settings-fab.active .settings-icon {
+	transform: rotate(90deg);
+}
+
+.filter-fab {
+	background: rgba(99, 102, 241, 0.4);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: white;
+	opacity: 0.8;
+}
+
+@media (hover: hover) {
+	.filter-fab:hover {
+		background: rgba(99, 102, 241, 0.6);
+		box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+		opacity: 1;
+	}
+}
+
+.reset-fab {
+	background: rgba(239, 68, 68, 0.4);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: white;
+	opacity: 0.8;
+}
+
+@media (hover: hover) {
+	.reset-fab:hover {
+		background: rgba(239, 68, 68, 0.6);
+		box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+		opacity: 1;
+	}
+}
+
+.settings-bottom-sheet-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 60;
+	background: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(4px);
+	animation: settings-fadeIn 0.15s ease-out;
+}
+
+.settings-bottom-sheet {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: var(--color-background);
+	border-radius: 20px 20px 0 0;
+	padding: 8px 16px 24px;
+	padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+	animation: settings-slideUp 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+	z-index: 61;
+	box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.settings-bottom-sheet .sheet-handle {
+	width: 36px;
+	height: 4px;
+	background-color: var(--color-border);
+	border-radius: 2px;
+	margin: 8px auto 16px;
+}
+
+.settings-bottom-sheet .sheet-content {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.settings-bottom-sheet .sheet-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 16px;
+	border-radius: 12px;
+	border: none;
+	background-color: var(--color-surface);
+	color: var(--color-text-primary);
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.12s ease-out;
+	text-align: left;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+	.settings-bottom-sheet .sheet-item:hover {
+		background-color: rgba(99, 102, 241, 0.03);
+	}
+
+	.light .settings-bottom-sheet .sheet-item:hover {
+		background-color: var(--color-hover);
+	}
+}
+
+.settings-bottom-sheet .sheet-item:active {
+	transform: scale(0.98);
+}
+
+.settings-bottom-sheet .sheet-item-green {
+	color: #22c55e;
+}
+
+@media (hover: hover) {
+	.settings-bottom-sheet .sheet-item-green:hover {
+		background-color: rgba(34, 197, 94, 0.04);
+	}
+}
+
+.settings-bottom-sheet .sheet-item-red {
+	color: #ef4444;
+}
+
+@media (hover: hover) {
+	.settings-bottom-sheet .sheet-item-red:hover {
+		background-color: rgba(239, 68, 68, 0.04);
+	}
+}
+
+.settings-bottom-sheet .sheet-item-blue {
+	color: var(--color-accent);
+}
+
+@media (hover: hover) {
+	.settings-bottom-sheet .sheet-item-blue:hover {
+		background-color: rgba(99, 102, 241, 0.03);
+	}
+
+	.light .settings-bottom-sheet .sheet-item-blue:hover {
+		background-color: var(--color-hover);
+	}
+}
+
+@keyframes settings-fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes settings-slideUp {
+	from {
+		transform: translateY(100%);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+@media (max-width: 480px) {
+	.mobile-settings-container {
+		right: 16px;
+		bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+	}
+
+	.mobile-settings-container .floating-action-button {
+		width: 44px;
+		height: 44px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mobile-settings-container .floating-action-button,
+	.settings-bottom-sheet,
+	.settings-bottom-sheet-overlay {
+		transition: none;
+		animation: none;
+	}
+}

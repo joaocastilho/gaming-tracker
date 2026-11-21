@@ -1,0 +1,41 @@
+@media (max-width: 767px) and (orientation: portrait) {
+	.metadata-badge-row {
+		margin-bottom: 1rem;
+	}
+
+	.metadata-grid {
+		margin-bottom: 0.75rem;
+	}
+}
+
+@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
+	.metadata-grid {
+		display: grid !important;
+		grid-template-columns: repeat(3, 1fr) !important;
+		gap: 1.5rem !important;
+		margin-bottom: 2rem !important;
+		align-items: start !important;
+	}
+
+	.metadata-item {
+		display: block !important;
+	}
+
+	.metadata-label {
+		display: block !important;
+		margin-bottom: 0.5rem !important;
+		font-size: 0.75rem !important;
+		font-weight: 700 !important;
+		letter-spacing: 0.05em !important;
+		text-transform: uppercase !important;
+		opacity: 0.7 !important;
+	}
+
+	.metadata-value {
+		font-size: 1rem !important;
+	}
+
+	.landscape-icon {
+		display: none !important;
+	}
+}

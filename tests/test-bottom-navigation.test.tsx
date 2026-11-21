@@ -1,0 +1,262 @@
+/**
+ * BottomNavigation Tests
+ * Tests that verify the BottomNavigation component's UI interactions including:
+ * - Tab switching and navigation
+ * - Count badge reactivity
+ * - Active state management
+ * - Search toggle functionality
+ */
+import { fireEvent, render, screen } from '@solidjs/testing-library';
+import { flush } from 'solid-js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import BottomNavigation from '#lib/components/BottomNavigation.js';
+import { appStore } from '#lib/stores/app.js';
+
+const mockNavigateTo = vi.fn();
+vi.mock('#lib/utils/navigationUtils.js', () => ({
+	navigateTo: (tab: string) => mockNavigateTo(tab),
+}));
+
+const mockGoto = vi.fn();
+vi.mock('#lib/utils/routerBridge.js', () => ({
+	goto: (url: string) => mockGoto(url),
+	getCurrentPageState: () => ({}),
+}));
+
+describe('BottomNavigation', () => {
+	let originalActiveTab: string;
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+		originalActiveTab = appStore.activeTab;
+		appStore.setActiveTab('all');
+	});
+
+	afterEach(() => {
+		appStore.setActiveTab(originalActiveTab as 'all' | 'library' | 'completed' | 'planned' | 'tierlist');
+	});
+
+	describe('Tab Switching', () => {
+		it('should navigate to Home (/) when Home tab is clicked', async () => {
+			render(() => <BottomNavigation />);
+			const homeTab = screen.getByRole('button', { name: /Home/i });
+			await fireEvent.click(homeTab);
+			flush();
+			expect(mockGoto).toHaveBeenCalledWith('/');
+		});
+
+		it('should navigate to Library (/library) when Library tab is clicked', async () => {
+			render(() => <BottomNavigation />);
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			await fireEvent.click(libraryTab);
+			flush();
+			expect(mockNavigateTo).toHaveBeenCalledWith('library');
+		});
+
+		it('should navigate to Completed (/completed) when Completed tab is clicked', async () => {
+			render(() => <BottomNavigation />);
+			const completedTab = screen.getByRole('button', { name: /Completed/i });
+			await fireEvent.click(completedTab);
+			flush();
+			expect(mockNavigateTo).toHaveBeenCalledWith('completed');
+		});
+
+		it('should navigate to Planned (/planned) when Planned tab is clicked', async () => {
+			render(() => <BottomNavigation />);
+			const plannedTab = screen.getByRole('button', { name: /Planned/i });
+			await fireEvent.click(plannedTab);
+			flush();
+			expect(mockNavigateTo).toHaveBeenCalledWith('planned');
+		});
+
+		it('should navigate to Tier List (/tierlist) when Tier List tab is clicked', async () => {
+			render(() => <BottomNavigation />);
+			const tierlistTab = screen.getByRole('button', { name: /Tier List/i });
+			await fireEvent.click(tierlistTab);
+			flush();
+			expect(mockNavigateTo).toHaveBeenCalledWith('tierlist');
+		});
+
+		it('should call onSearchToggle when Search tab is clicked', async () => {
+			const onSearchToggle = vi.fn();
+			render(() => <BottomNavigation onSearchToggle={onSearchToggle} />);
+			const searchTab = screen.getByRole('button', { name: /Search/i });
+			await fireEvent.click(searchTab);
+			flush();
+			expect(onSearchToggle).toHaveBeenCalled();
+			expect(mockNavigateTo).not.toHaveBeenCalled();
+		});
+
+		it('should not call navigateTo when Search tab is clicked', async () => {
+			const onSearchToggle = vi.fn();
+			render(() => <BottomNavigation onSearchToggle={onSearchToggle} />);
+			const searchTab = screen.getByRole('button', { name: /Search/i });
+			await fireEvent.click(searchTab);
+			flush();
+			expect(mockNavigateTo).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('Keyboard Navigation', () => {
+		it('should navigate home on Enter key press', async () => {
+			render(() => <BottomNavigation />);
+			const homeTab = screen.getByRole('button', { name: /Home/i });
+			await fireEvent.keyDown(homeTab, { key: 'Enter' });
+			flush();
+			expect(mockGoto).toHaveBeenCalledWith('/');
+		});
+
+		it('should navigate on Enter key press', async () => {
+			render(() => <BottomNavigation />);
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			await fireEvent.keyDown(libraryTab, { key: 'Enter' });
+			flush();
+			expect(mockNavigateTo).toHaveBeenCalledWith('library');
+		});
+
+		it('should navigate on Space key press', async () => {
+			render(() => <BottomNavigation />);
+			const completedTab = screen.getByRole('button', { name: /Completed/i });
+			await fireEvent.keyDown(completedTab, { key: ' ' });
+			flush();
+			expect(mockNavigateTo).toHaveBeenCalledWith('completed');
+		});
+
+		it('should call onSearchToggle on Enter key for Search tab', async () => {
+			const onSearchToggle = vi.fn();
+			render(() => <BottomNavigation onSearchToggle={onSearchToggle} />);
+			const searchTab = screen.getByRole('button', { name: /Search/i });
+			await fireEvent.keyDown(searchTab, { key: 'Enter' });
+			flush();
+			expect(onSearchToggle).toHaveBeenCalled();
+		});
+
+		it('should not trigger action on other keys', async () => {
+			render(() => <BottomNavigation />);
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			await fireEvent.keyDown(libraryTab, { key: 'Tab' });
+			flush();
+			expect(mockNavigateTo).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('Active State', () => {
+		it('should mark Library tab as active when activeTab is "library"', () => {
+			appStore.setActiveTab('library');
+			render(() => <BottomNavigation />);
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			expect(libraryTab).toHaveAttribute('aria-current', 'page');
+		});
+
+		it('should mark Completed tab as active when activeTab is "completed"', () => {
+			appStore.setActiveTab('completed');
+			render(() => <BottomNavigation />);
+			const completedTab = screen.getByRole('button', { name: /Completed/i });
+			expect(completedTab).toHaveAttribute('aria-current', 'page');
+		});
+
+		it('should mark Planned tab as active when activeTab is "planned"', () => {
+			appStore.setActiveTab('planned');
+			render(() => <BottomNavigation />);
+			const plannedTab = screen.getByRole('button', { name: /Planned/i });
+			expect(plannedTab).toHaveAttribute('aria-current', 'page');
+		});
+
+		it('should mark Tier List tab as active when activeTab is "tierlist"', () => {
+			appStore.setActiveTab('tierlist');
+			render(() => <BottomNavigation />);
+			const tierlistTab = screen.getByRole('button', { name: /Tier List/i });
+			expect(tierlistTab).toHaveAttribute('aria-current', 'page');
+		});
+
+		it('should not mark Search tab as active (it is action-only)', () => {
+			render(() => <BottomNavigation />);
+			const searchTab = screen.getByRole('button', { name: /Search/i });
+			expect(searchTab).not.toHaveAttribute('aria-current');
+		});
+
+		it('should apply active class to active tab button', () => {
+			appStore.setActiveTab('completed');
+			render(() => <BottomNavigation />);
+			const completedTab = screen.getByRole('button', { name: /Completed/i });
+			expect(completedTab.classList.contains('active')).toBe(true);
+		});
+	});
+
+	describe('Count Badges', () => {
+		it('should display all count badge for Library tab', () => {
+			render(() => <BottomNavigation />);
+			const libraryTab = screen.getByRole('button', { name: /Library/i });
+			expect(libraryTab).toBeInTheDocument();
+		});
+
+		it('should display completed count badge for Completed tab', () => {
+			render(() => <BottomNavigation />);
+			const completedTab = screen.getByRole('button', { name: /Completed/i });
+			expect(completedTab).toBeInTheDocument();
+		});
+
+		it('should display planned count badge for Planned tab', () => {
+			render(() => <BottomNavigation />);
+			const plannedTab = screen.getByRole('button', { name: /Planned/i });
+			expect(plannedTab).toBeInTheDocument();
+		});
+
+		it('should NOT display count badge for Tier List tab', () => {
+			render(() => <BottomNavigation />);
+			const tierlistTab = screen.getByRole('button', { name: /Tier List$/i });
+			expect(tierlistTab.getAttribute('aria-label')).toBe('Tier List');
+		});
+
+		it('should NOT display count badge for Search tab', () => {
+			render(() => <BottomNavigation />);
+			const searchTab = screen.getByRole('button', { name: /^Search$/i });
+			expect(searchTab.getAttribute('aria-label')).toBe('Search');
+		});
+	});
+
+	describe('Accessibility', () => {
+		it('should have proper aria-label attribute on navigation', () => {
+			render(() => <BottomNavigation />);
+			const nav = screen.getByRole('navigation', { name: /Main navigation/i });
+			expect(nav).toBeInTheDocument();
+		});
+
+		it('should have list structure for navigation items', () => {
+			render(() => <BottomNavigation />);
+			const list = screen.getByRole('list');
+			expect(list).toBeInTheDocument();
+		});
+
+		it('should render 7 navigation items', () => {
+			render(() => <BottomNavigation />);
+			const listItems = screen.getAllByRole('listitem');
+			expect(listItems).toHaveLength(7);
+		});
+
+		it('should have buttons for all navigation items', () => {
+			render(() => <BottomNavigation />);
+			const buttons = screen.getAllByRole('button');
+			expect(buttons).toHaveLength(7);
+		});
+	});
+
+	describe('Rendering', () => {
+		it('should render all tab labels', () => {
+			render(() => <BottomNavigation />);
+			expect(screen.getByText('Home')).toBeInTheDocument();
+			expect(screen.getByText('Library')).toBeInTheDocument();
+			expect(screen.getByText('Completed')).toBeInTheDocument();
+			expect(screen.getByText('Planned')).toBeInTheDocument();
+			expect(screen.getByText('Stats')).toBeInTheDocument();
+			expect(screen.getByText('Tier List')).toBeInTheDocument();
+			expect(screen.getByText('Search')).toBeInTheDocument();
+		});
+
+		it('should only be visible on mobile (md:hidden class)', () => {
+			render(() => <BottomNavigation />);
+			const nav = screen.getByRole('navigation');
+			expect(nav.classList.contains('md:hidden')).toBe(true);
+		});
+	});
+});

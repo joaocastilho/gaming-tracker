@@ -1,0 +1,111 @@
+.mobile-search-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 40;
+	background-color: var(--color-background);
+	padding: 6px 16px 6px;
+	padding-top: calc(6px + env(safe-area-inset-top, 0px));
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-search-bar-container {
+	width: 100%;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.mobile-search-bar {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	border-radius: 12px;
+	padding: 12px 16px;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	transition: all var(--transition-fast);
+	gap: 8px;
+}
+
+.mobile-search-bar:focus-within {
+	border-color: var(--color-accent);
+	box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.mobile-search-icon {
+	font-size: 1.1rem;
+	flex-shrink: 0;
+}
+
+.mobile-search-input {
+	flex: 1;
+	background: transparent;
+	border: none;
+	outline: none;
+	color: var(--color-text-primary);
+	font-size: 1rem;
+	line-height: 1.5;
+	min-width: 0;
+}
+
+.mobile-search-input::placeholder {
+	color: var(--color-text-muted);
+}
+
+.mobile-clear-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	border: none;
+	background: var(--color-surface-elevated);
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	border-radius: 6px;
+	transition: all var(--transition-fast);
+	flex-shrink: 0;
+	font-size: 0.9rem;
+}
+
+.mobile-clear-button:hover {
+	background: rgba(99, 102, 241, 0.04);
+	color: var(--color-text-primary);
+}
+
+.light .mobile-clear-button:hover {
+	background: var(--color-hover);
+}
+
+.mobile-close-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px 12px;
+	border: none;
+	background: rgba(99, 102, 241, 0.06);
+	color: var(--color-accent);
+	cursor: pointer;
+	border-radius: 6px;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
+	flex-shrink: 0;
+	font-size: 0.85rem;
+	font-weight: 500;
+}
+
+.light .mobile-close-button {
+	background: rgba(59, 130, 246, 0.08);
+	color: var(--color-accent);
+}
+
+.mobile-close-button:hover {
+	background-color: rgba(99, 102, 241, 0.1);
+}
+
+.light .mobile-close-button:hover {
+	background-color: rgba(59, 130, 246, 0.12);
+}

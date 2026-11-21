@@ -1,0 +1,43 @@
+.virtual-list-container {
+	width: 100%;
+	overflow-anchor: none;
+}
+
+.virtual-spacer {
+	pointer-events: none;
+}
+
+.virtual-items {
+	width: 100%;
+}
+
+.virtual-item {
+	width: 100%;
+	overflow: hidden;
+}
+
+@media (min-width: 768px) {
+	@supports (scrollbar-width: thin) {
+		.virtual-list-container {
+			scrollbar-width: thin;
+			scrollbar-color: var(--color-accent) transparent;
+		}
+	}
+
+	.virtual-list-container::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.virtual-list-container::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.virtual-list-container::-webkit-scrollbar-thumb {
+		background-color: var(--color-accent);
+		border-radius: 3px;
+	}
+
+	.virtual-list-container::-webkit-scrollbar-thumb:hover {
+		background-color: var(--color-accent-foreground);
+	}
+}

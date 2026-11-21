@@ -1,0 +1,136 @@
+.login-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.65);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 50;
+}
+
+.login-modal {
+	background: #020817;
+	border-radius: 16px;
+	padding: 1.75rem 1.75rem 1.5rem;
+	min-width: 260px;
+	max-width: 360px;
+	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.7);
+	border: 1px solid rgba(148, 163, 253, 0.2);
+	color: #e5e7eb;
+}
+
+.login-modal h2 {
+	margin: 0 0 0.35rem;
+	font-size: 1.2rem;
+	font-weight: 600;
+}
+
+.login-modal .hint {
+	margin: 0 0 1rem;
+	font-size: 0.8rem;
+	color: var(--color-text-secondary);
+}
+
+.login-modal form {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8rem;
+}
+
+.login-modal label {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	font-size: 0.8rem;
+	color: var(--color-text-secondary);
+}
+
+.login-modal input {
+	padding: 0.4rem 0.6rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgba(75, 85, 99, 0.9);
+	background: #020817;
+	color: #e5e7eb;
+	font-size: 1rem;
+}
+
+.login-modal input:focus-visible {
+	outline: 2px solid rgba(129, 140, 248, 0.8);
+	outline-offset: 1px;
+	border-color: transparent;
+}
+
+.login-modal .error {
+	margin-top: 0.2rem;
+	font-size: 0.75rem;
+	color: var(--color-danger);
+}
+
+.login-modal .actions {
+	margin-top: 0.8rem;
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}
+
+.login-modal button {
+	border-radius: 999px;
+	padding: 0.35rem 0.9rem;
+	border: none;
+	font-size: 0.8rem;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+}
+
+.login-modal button.primary {
+	background: #4f46e5;
+	color: #e5e7eb;
+}
+
+@media (hover: hover) {
+	.login-modal button.primary:hover {
+		background: #4338ca;
+	}
+}
+
+.login-modal button.secondary {
+	background: transparent;
+	color: var(--color-text-secondary);
+}
+
+@media (hover: hover) {
+	.login-modal button.secondary:hover {
+		color: #e5e7eb;
+		background: rgba(148, 163, 253, 0.06);
+	}
+}
+
+.login-modal button:disabled {
+	opacity: 0.6;
+	cursor: default;
+}
+
+.login-modal .dev-mode-btn {
+	width: 100%;
+	margin-top: 1rem;
+	padding: 0.6rem;
+	border: 1px dashed #f59e0b;
+	background: rgba(245, 158, 11, 0.1);
+	color: #f59e0b;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	transition:
+		background 0.2s,
+		border-color 0.2s;
+}
+
+@media (hover: hover) {
+	.login-modal .dev-mode-btn:hover {
+		background: rgba(245, 158, 11, 0.2);
+		border-style: solid;
+	}
+}

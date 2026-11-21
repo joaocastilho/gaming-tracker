@@ -1,0 +1,106 @@
+.metadata-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+}
+
+.badges-left {
+	display: flex;
+	gap: 8px;
+	flex-wrap: nowrap;
+	align-items: center;
+	min-width: 0;
+	padding-top: 2px;
+}
+
+.year-right {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 2px;
+}
+
+.game-year {
+	font-size: clamp(0.85rem, 0.65rem + 1cqw, 0.9rem);
+	font-weight: 600;
+	color: var(--color-text-secondary);
+	line-height: 1.1;
+}
+
+.metadata-row .badge {
+	font-size: clamp(0.65rem, 5.5cqi, 0.75rem);
+	font-weight: 500;
+	padding: 4px 8px;
+	border-radius: 4px;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	border: 1px solid transparent;
+	max-width: 140px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.metadata-row .badge:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.coop-badge {
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: opacity 0.2s;
+	margin-left: 0;
+}
+
+@media (max-width: 768px) {
+	.metadata-row .badge,
+	.coop-badge {
+		pointer-events: none;
+	}
+}
+
+@container game-card (max-width: 300px) {
+	.metadata-row {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		grid-template-areas:
+			"platform year"
+			"genre coop";
+		gap: 8px 4px;
+		align-items: flex-start;
+	}
+	.badges-left {
+		display: contents;
+	}
+	.platform-badge {
+		grid-area: platform;
+		max-width: 100%;
+		justify-self: start;
+	}
+	.coop-badge {
+		grid-area: coop;
+		justify-self: end;
+	}
+	.genre-badge {
+		grid-area: genre;
+		justify-self: start;
+		max-width: 100%;
+	}
+	.year-right {
+		display: contents;
+	}
+	.game-year {
+		grid-area: year;
+		padding-top: 6px;
+	}
+	.metadata-row .badge {
+		padding: 2px 6px;
+	}
+}

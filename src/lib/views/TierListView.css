@@ -1,0 +1,30 @@
+.tier-list-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding-top: 0;
+	padding-bottom: 60px;
+}
+
+@media (max-width: 768px) {
+	.tier-list-container {
+		padding-top: 0.25rem;
+		padding-bottom: 60px;
+	}
+}
+
+.tier-list-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 400px;
+	text-align: center;
+	color: var(--color-text-tertiary);
+}
+
+.tier-list-empty-state h2 {
+	font-size: 1.5rem;
+	margin-bottom: 0.5rem;
+	color: var(--color-text-primary);
+}

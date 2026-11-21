@@ -1,0 +1,67 @@
+.game-form-basic .form-col {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.game-form-basic .form-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 1rem;
+	align-items: flex-start;
+}
+
+.game-form-basic .form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	flex: 1;
+	min-width: 120px;
+}
+
+.game-form-basic .form-field.narrow {
+	flex: 0 0 80px;
+	max-width: 80px;
+}
+
+.game-form-basic label {
+	font-size: 0.8rem;
+	color: #94a3b8;
+	font-weight: 500;
+}
+
+.game-form-basic input,
+.game-form-basic select {
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgba(75, 85, 99, 0.4);
+	background: #0f172a;
+	color: #e5e7eb;
+	font-size: 0.9rem;
+	width: 100%;
+	box-sizing: border-box;
+	height: 38px;
+	font-family: inherit;
+	line-height: normal;
+	transition:
+		border-color 0.2s,
+		background-color 0.2s;
+}
+
+.game-form-basic input:focus,
+.game-form-basic select:focus {
+	outline: none;
+	border-color: #6366f1;
+	background: #1e293b;
+}
+
+.game-form-basic input[type="number"]::-webkit-inner-spin-button,
+.game-form-basic input[type="number"]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.game-form-basic input[type="number"] {
+	-moz-appearance: textfield;
+	appearance: textfield;
+}

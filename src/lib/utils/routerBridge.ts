@@ -1,3 +1,4 @@
+import { createSignal, flush } from 'solid-js';
 import type { PageState } from '#lib/types/pageState.js';
 
 export interface GotoOptions {
@@ -12,6 +13,24 @@ export type NavigateHandler = (url: string, options?: GotoOptions) => void | Pro
 
 let activeNavigator: NavigateHandler | null = null;
 const urlChangeListeners = new Set<() => void>();
+const [currentPathname, setRawPathname] = createSignal<string>(
+	typeof window !== 'undefined' ? window.location.pathname : '/'
+);
+
+export function setCurrentPathname(pathname: string): void {
+	setRawPathname(pathname);
+	flush();
+}
+
+export function getCurrentPathname(): string {
+	return currentPathname();
+}
+
+export function getCurrentPageState(): PageState {
+	if (typeof window === 'undefined') return {};
+	const state = window.history.state;
+	return state && typeof state === 'object' ? (state as PageState) : {};
+}
 
 export function registerNavigator(handler: NavigateHandler | null): void {
 	activeNavigator = handler;

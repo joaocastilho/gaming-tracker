@@ -1,0 +1,50 @@
+.game-card .title-section {
+	margin-bottom: clamp(4px, 2cqi, 8px);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	overflow: hidden;
+	padding: clamp(2px, 1cqi, 4px) 0;
+	min-height: calc(2.4 * clamp(1.15rem, 8cqi, 1.4rem));
+}
+
+.game-card .game-title {
+	font-family: "Inter", sans-serif;
+	font-size: var(--title-font-size);
+	font-weight: 700;
+	margin: 0;
+	line-height: 1.2;
+	width: 100%;
+	color: var(--color-text-primary);
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.game-card .game-subtitle {
+	font-family: "Inter", sans-serif;
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	font-size: var(--subtitle-font-size);
+	display: block;
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 1.2;
+}
+
+@container game-card (max-width: 300px) {
+	.game-card .title-section {
+		padding: clamp(1px, 0.5cqi, 2px) 0;
+	}
+	.game-card .game-title {
+		--container-scale: 0.95;
+		font-size: calc(var(--title-font-size) * var(--container-scale));
+	}
+}

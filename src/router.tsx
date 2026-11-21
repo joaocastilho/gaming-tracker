@@ -1,30 +1,32 @@
-import { Gamepad2 } from '@lucide/solid';
-import { Title } from '@solidjs/meta';
 import { createRouter, defineRoutes } from '@solidjs/router';
 import type { JSX } from '@solidjs/web';
-import { createMemo, createSignal } from 'solid-js';
+import { lazy } from 'solid-js';
+import HomePage from './pages/HomePage.js';
+import Layout from './pages/Layout.js';
 
-function ToolchainSmokePage(): JSX.Element {
-	const [count, setCount] = createSignal(0);
-	const doubled = createMemo(() => count() * 2);
+const StatsPage = lazy(() => import('./pages/StatsPage.js'));
+const LoginPage = lazy(() => import('./pages/LoginPage.js'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage.js'));
 
-	return (
-		<main class="p-6">
-			<Title>Gaming Tracker — Solid 2.0</Title>
-			<h1 class="flex items-center gap-2 text-xl font-bold">
-				<Gamepad2 size={20} />
-				<span>Gaming Tracker</span>
-			</h1>
-			<button type="button" onClick={() => setCount((c) => c + 1)}>
-				Count: {count()} (x2: {doubled()})
-			</button>
-		</main>
-	);
+function EmptyRoute(): JSX.Element {
+	return null;
 }
 
 const routes = defineRoutes([
-	{ path: '/', component: ToolchainSmokePage },
-	{ path: '*404', component: ToolchainSmokePage },
+	{
+		path: '/',
+		component: Layout,
+		children: [
+			{ path: '/', component: HomePage },
+			{ path: '/library', component: EmptyRoute },
+			{ path: '/completed', component: EmptyRoute },
+			{ path: '/planned', component: EmptyRoute },
+			{ path: '/tierlist', component: EmptyRoute },
+			{ path: '/stats', component: StatsPage },
+			{ path: '/login', component: LoginPage },
+			{ path: '*404', component: NotFoundPage },
+		],
+	},
 ]);
 
 export const Router = createRouter({ routes });

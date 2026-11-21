@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { appStore } from '../src/lib/stores/app.svelte';
-import { filtersStore } from '../src/lib/stores/filters.svelte';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { appStore } from '#lib/stores/app.js';
+import { filtersStore } from '#lib/stores/filters.js';
 
 describe('AppStore Tab Filter Behavior', () => {
 	beforeEach(() => {
@@ -14,7 +14,6 @@ describe('AppStore Tab Filter Behavior', () => {
 
 		appStore.setActiveTab('tierlist');
 
-		// Wait for potential effects
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		expect(filtersStore.isAnyFilterApplied()).toBe(true);

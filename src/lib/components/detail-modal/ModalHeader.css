@@ -1,0 +1,31 @@
+.modal-title {
+	min-height: 80px;
+}
+
+@media (min-width: 768px) {
+	.modal-title {
+		min-height: 72px;
+	}
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+	.modal-title {
+		min-height: 60px;
+		line-height: 25px;
+	}
+
+	.modal-title span {
+		line-height: 25px !important;
+	}
+}
+
+@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
+	.modal-title {
+		min-height: auto !important;
+		margin-bottom: 1rem !important;
+	}
+
+	.modal-title .modal-title-text {
+		line-height: 1.1 !important;
+	}
+}

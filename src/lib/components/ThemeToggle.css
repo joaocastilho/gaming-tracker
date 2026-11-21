@@ -1,0 +1,109 @@
+.theme-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border: 1px solid var(--color-border);
+	border-radius: 12px;
+	background: var(--color-surface);
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	position: relative;
+	overflow: hidden;
+	outline: none;
+}
+
+.theme-toggle:hover {
+	border-color: var(--color-accent);
+	background-color: var(--color-hover);
+	color: var(--color-accent);
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-md);
+}
+
+.theme-toggle.dark:hover {
+	color: #fbbf24;
+	border-color: #fbbf24;
+	background-color: rgba(251, 191, 36, 0.1);
+}
+
+.theme-toggle:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+.theme-toggle:active {
+	transform: translateY(0);
+}
+
+.theme-toggle .icon-container {
+	position: relative;
+	width: 18px;
+	height: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.theme-toggle .sun-icon,
+.theme-toggle .moon-icon {
+	position: absolute;
+	inset: 0;
+	width: 18px;
+	height: 18px;
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	transform-origin: center;
+	opacity: 0;
+	transform: scale(0.5) rotate(-90deg);
+}
+
+.theme-toggle .sun-icon.visible,
+.theme-toggle .moon-icon.visible {
+	opacity: 1;
+	transform: scale(1) rotate(0deg);
+}
+
+.theme-toggle .sun-icon {
+	color: #d4a030;
+}
+
+.theme-toggle .moon-icon {
+	color: #6366f1;
+}
+
+.theme-toggle .glow-effect {
+	position: absolute;
+	inset: -2px;
+	border-radius: 14px;
+	background: linear-gradient(135deg, var(--color-accent), transparent);
+	opacity: 0;
+	transition: opacity var(--transition-fast);
+	z-index: -1;
+	filter: blur(8px);
+}
+
+.theme-toggle:hover .glow-effect {
+	opacity: 0.3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.theme-toggle,
+	.theme-toggle .sun-icon,
+	.theme-toggle .moon-icon {
+		transition: none;
+	}
+
+	.theme-toggle:hover {
+		transform: none;
+	}
+}
+
+@media (max-width: 765px) {
+	.theme-toggle {
+		width: 36px;
+		height: 36px;
+		border-radius: 10px;
+	}
+}

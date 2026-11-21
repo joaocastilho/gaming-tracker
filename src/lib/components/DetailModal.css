@@ -1,0 +1,144 @@
+.swipe-hint-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 70;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(2px);
+}
+
+.swipe-hint-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: white;
+	animation: pulse-hint 2s infinite;
+}
+
+.swipe-hint-svg {
+	width: 100px;
+	height: 80px;
+	margin-bottom: 16px;
+}
+
+.swipe-arrow {
+	transform-origin: center;
+	animation: swipe-hint-anim 2s infinite;
+}
+
+.swipe-arrow-left {
+	animation-delay: 0s;
+}
+
+.swipe-arrow-right {
+	animation-delay: 1s;
+}
+
+.swipe-arrow-down {
+	animation-name: swipe-down-anim;
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+}
+
+@keyframes swipe-hint-anim {
+	0%,
+	100% {
+		transform: translateX(0);
+		opacity: 0.3;
+	}
+	50% {
+		transform: translateX(10px);
+		opacity: 1;
+	}
+}
+
+@keyframes swipe-down-anim {
+	0%,
+	100% {
+		transform: translateY(0);
+		opacity: 0.3;
+	}
+	50% {
+		transform: translateY(10px);
+		opacity: 1;
+	}
+}
+
+@media (min-width: 768px) {
+	.modal-content {
+		zoom: 1.1;
+	}
+}
+
+.modal-card-layer {
+	backface-visibility: hidden;
+}
+
+.continuum-scroll-layer {
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: none;
+	overscroll-behavior-x: none;
+}
+
+.continuum-scroll-layer::-webkit-scrollbar {
+	display: none;
+}
+
+.modal-card-track {
+	transition: none !important;
+}
+
+.continuum-scroll-layer.continuum-scroll-ready .modal-card-track {
+	width: calc(100% + 1600px);
+}
+
+.modal-card-layer[data-continuum-pos="0"] {
+	will-change: transform;
+}
+
+.continuum-overlay .continuum-neighbor {
+	will-change: transform, opacity;
+}
+
+.continuum-neighbor {
+	transition: none;
+}
+
+.continuum-card {
+	user-select: none;
+	backface-visibility: hidden;
+}
+
+.continuum-dragging,
+.continuum-dragging .modal-content,
+.continuum-dragging .modal-cover-image {
+	user-select: none;
+	cursor: grabbing;
+}
+
+@supports (-moz-appearance: none) {
+	.continuum-overlay {
+		backdrop-filter: none !important;
+		background-color: rgba(0, 0, 0, 0.85);
+	}
+}
+
+@media (min-width: 768px) and (max-width: 899px) and (orientation: portrait) {
+	.modal-content {
+		max-height: min(660px, calc((100dvh - 32px) / 1.1)) !important;
+	}
+}
+
+@media (orientation: landscape) and (max-height: 1000px) and (max-width: 1200px) {
+	.modal-content {
+		height: 100% !important;
+		max-height: none !important;
+		max-width: none !important;
+		width: 100% !important;
+		zoom: 1 !important;
+		border-radius: 0 !important;
+	}
+}

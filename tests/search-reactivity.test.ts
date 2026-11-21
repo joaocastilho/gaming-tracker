@@ -1,8 +1,8 @@
-import { test, expect, describe, beforeEach } from 'vitest';
-import { filteredGames } from '../src/lib/stores/filteredGamesStore.svelte';
-import { filtersStore } from '../src/lib/stores/filters.svelte';
-import { gamesStore } from '../src/lib/stores/games.svelte';
-import type { Game } from '../src/lib/types/game';
+import { beforeEach, describe, expect, test } from 'vitest';
+import { filteredGames } from '#lib/stores/filteredGamesStore.js';
+import { filtersStore } from '#lib/stores/filters.js';
+import { gamesStore } from '#lib/stores/games.js';
+import type { Game } from '#lib/types/game.js';
 
 describe('Search Reactivity Integration', () => {
 	const mockGames: Partial<Game>[] = [
@@ -66,41 +66,33 @@ describe('Search Reactivity Integration', () => {
 	];
 
 	beforeEach(() => {
-		// Initialize stores
 		gamesStore.initializeGames(mockGames);
 		filtersStore.resetAllFilters();
 		filtersStore.setSearchTerm('');
 	});
 
 	test('filteredGames subscription updates when search term changes', () => {
-		// Initial state
 		expect(filteredGames.games).toHaveLength(3);
 
-		// Search for Zelda
 		filtersStore.setSearchTerm('zelda');
 		expect(filteredGames.games).toHaveLength(1);
 		expect(filteredGames.games[0].title).toContain('Zelda');
 
-		// Search for Mario
 		filtersStore.setSearchTerm('mario');
 		expect(filteredGames.games).toHaveLength(1);
 		expect(filteredGames.games[0].title).toContain('Mario');
 
-		// Clear search
 		filtersStore.setSearchTerm('');
 		expect(filteredGames.games).toHaveLength(3);
 	});
 
 	test('search term filtering works on tierlist tab', () => {
-		// Only Zelda and Mario have tiers (S)
-		// Set search to Mario
 		filtersStore.setSearchTerm('mario');
 
 		const tierlistGames = filteredGames.getFilteredGames('tierlist');
 		expect(tierlistGames).toHaveLength(1);
 		expect(tierlistGames[0].title).toContain('Mario');
 
-		// Search for something not in tierlist
 		filtersStore.setSearchTerm('hollow');
 		const tierlistGamesEmpty = filteredGames.getFilteredGames('tierlist');
 		expect(tierlistGamesEmpty).toHaveLength(0);
