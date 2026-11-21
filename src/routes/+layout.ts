@@ -5,7 +5,9 @@ import { gamesStore } from '#lib/stores/games.svelte.js';
 import { decideGamesRefresh, readPayloadLastUpdated } from '#lib/utils/gamesRefreshPolicy.js';
 import type { Game } from '#lib/types/game.js';
 
-const GAMES_MARKER_KEY = 'games-last-updated';
+// Bumped to v2 so browsers whose IndexedDB was seeded from a stale SW v7
+// /games.json response automatically re-sync against the fresh payload once.
+const GAMES_MARKER_KEY = 'games-last-updated-v2';
 const DB_SEEDED_KEY = 'gaming-tracker-db-seeded';
 
 // Required by @sveltejs/adapter-static: every route prerenders at build time.

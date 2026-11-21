@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const CACHE_NAME = `gaming-tracker-${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `gaming-tracker-static-${CACHE_VERSION}`;
 const IMAGE_CACHE_NAME = `gaming-tracker-images-${CACHE_VERSION}`;
@@ -220,8 +220,43 @@ self.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	// STRATEGY 4: Cache-first for static assets (games.json, manifest, etc.)
-	if (STATIC_ASSETS.includes(url.pathname) || url.pathname.endsWith('.json')) {
+	// STRATEGY 4a: Network-first for JSON data (games.json) so edits are never
+	// served stale from cache while online; fall back to cache when offline.
+	if (url.pathname === '/games.json' || url.pathname.endsWith('.json')) {
+		event.respondWith(
+			fetch(request)
+				.then((response) => {
+					if (response && response.status === 200 && url.pathname === '/games.json') {
+						const cacheKey = new Request(url.origin + '/games.json');
+						caches
+							.open(STATIC_CACHE_NAME)
+							.then((cache) => cache.put(cacheKey, response.clone()))
+							.catch(() => {});
+					}
+					return response;
+				})
+				.catch(() =>
+					caches.open(STATIC_CACHE_NAME).then((cache) =>
+						cache.match(new Request(url.origin + url.pathname)).then(
+							(cached) =>
+								cached ||
+								cache.match(request).then(
+									(exact) =>
+										exact ||
+										new Response('Offline - Data unavailable', {
+											status: 503,
+											statusText: 'Service Unavailable',
+										})
+								)
+						)
+					)
+				)
+		);
+		return;
+	}
+
+	// STRATEGY 4b: Cache-first for static assets (manifest, icons, etc.)
+	if (STATIC_ASSETS.includes(url.pathname)) {
 		event.respondWith(
 			caches.open(STATIC_CACHE_NAME).then((cache) => {
 				return cache.match(request).then((cachedResponse) => {
