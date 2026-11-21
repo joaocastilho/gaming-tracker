@@ -1,9 +1,15 @@
 name = "gaming-tracker"
 compatibility_date = "2026-02-15"
-pages_build_output_dir = "dist/client"
+pages_build_output_dir = "build/"
 
 [vars]
 GH_REPO_OWNER = "joaocastilho"
 GH_REPO_NAME = "gaming-tracker"
 GH_FILE_PATH = "static/games.json"
 GH_BRANCH = "main"
+
+[env.preview.vars]
+GH_REPO_OWNER = "joaocastilho"
+GH_REPO_NAME = "gaming-tracker"
+GH_FILE_PATH = "static/games.json"
+GH_BRANCH = "feat/solid-2-migration"

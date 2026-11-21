@@ -26,7 +26,7 @@
 		"test:watch": "vitest",
 		"check:functions": "bunx wrangler@3.114.17 pages functions build --outdir .wrangler/functions-build",
 		"validate": "bun run lint:fix && bun run format && bun run check && bun run test",
-		"clean": "bun -e \"const fs = require('fs'); ['node_modules', 'dist', '.wrangler', 'bun.lock'].forEach(f => fs.rmSync(f, { recursive: true, force: true }));\" && bun install"
+		"clean": "bun -e \"const fs = require('fs'); ['node_modules', 'dist', 'build', '.wrangler', 'bun.lock'].forEach(f => fs.rmSync(f, { recursive: true, force: true }));\" && bun install"
 	},
 	"dependencies": {
 		"@chenglou/pretext": "1.0.0",

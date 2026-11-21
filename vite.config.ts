@@ -47,6 +47,11 @@ function postProcessStaticShell(): Plugin {
 					fs.writeFileSync(`${targetPath}.gz`, gzipSync(processed));
 					fs.writeFileSync(`${targetPath}.br`, brotliCompressSync(processed));
 				}
+
+				// Mirror dist/client -> build/ so Cloudflare Pages uses the same output directory as main.
+				const pagesOutDir = path.resolve('build');
+				fs.rmSync(pagesOutDir, { recursive: true, force: true });
+				fs.cpSync(outDir, pagesOutDir, { recursive: true });
 			},
 		},
 	};

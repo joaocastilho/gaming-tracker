@@ -1,6 +1,6 @@
 # AI Agent Instructions (AGENTS.md)
 
-**Project**: Gaming Tracker — a single-user game collection tracker. SolidJS 2.0, Solid Router 2, TypeScript 7, Tailwind 4, Dexie, Chart.js. Vite 8 (Rolldown) builds the static SPA to `dist/client/`; Bun runs scripts and tests. Deployed to Cloudflare Pages: static site + Pages Functions behind the editor and OG metadata middleware.
+**Project**: Gaming Tracker — a single-user game collection tracker. SolidJS 2.0, Solid Router 2, TypeScript 7, Tailwind 4, Dexie, Chart.js. Vite 8 (Rolldown) builds the static SPA to `dist/client/` and mirrors it to `build/`; Bun runs scripts and tests. Deployed to Cloudflare Pages: static site + Pages Functions behind the editor and OG metadata middleware.
 
 ---
 

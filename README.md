@@ -133,7 +133,7 @@ bun install
 # Start development server
 bun run dev
 
-# Build for production (outputs static site to dist/client/)
+# Build for production (outputs static site to build/)
 bun run build
 
 # Preview production build
