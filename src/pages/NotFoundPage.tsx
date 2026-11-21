@@ -1,5 +1,6 @@
 import { Title } from '@solidjs/meta';
 import type { JSX } from '@solidjs/web';
+import { goto } from '#lib/utils/routerBridge.js';
 import './NotFoundPage.css';
 
 export interface NotFoundPageProps {
@@ -23,7 +24,14 @@ export default function NotFoundPage(props: NotFoundPageProps): JSX.Element {
 							? "The page you're looking for doesn't exist or has been moved."
 							: 'An unexpected error occurred. Please try again later.'}
 					</p>
-					<a href="/" class="error-link">
+					<a
+						href="/"
+						class="error-link"
+						onClick={(e) => {
+							e.preventDefault();
+							void goto('/');
+						}}
+					>
 						← Back to Home
 					</a>
 				</div>

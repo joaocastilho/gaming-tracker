@@ -4,6 +4,9 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [solid()],
+	define: {
+		__BUILD_DATE__: Date.now(),
+	},
 	test: {
 		environment: 'jsdom',
 		globals: true,

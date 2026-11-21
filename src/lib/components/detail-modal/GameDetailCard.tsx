@@ -1,6 +1,6 @@
 import { Pencil, Share2, Trash2, X } from '@lucide/solid';
 import type { JSX } from '@solidjs/web';
-import { createMemo, createSignal, Show } from 'solid-js';
+import { createMemo, createSignal, onSettled, Show } from 'solid-js';
 import { editorStore } from '#lib/stores/editor.js';
 import { imageErrorStore } from '#lib/stores/imageErrors.js';
 import { modalStore } from '#lib/stores/modal.js';
@@ -34,6 +34,20 @@ const DETAIL_IMAGE_SIZES = generateSizes('modal');
 export default function GameDetailCard(props: GameDetailCardProps): JSX.Element {
 	const [linkCopied, setLinkCopied] = createSignal('');
 	let modalImageElement: HTMLImageElement | undefined;
+	let copiedTimer: ReturnType<typeof setTimeout> | null = null;
+
+	onSettled(() => () => {
+		if (copiedTimer) clearTimeout(copiedTimer);
+	});
+
+	function showCopiedFeedback(label: string): void {
+		setLinkCopied(label);
+		if (copiedTimer) clearTimeout(copiedTimer);
+		copiedTimer = setTimeout(() => {
+			setLinkCopied('');
+			copiedTimer = null;
+		}, 2000);
+	}
 
 	const isOffline = createMemo(() => !offlineStore.isOnline);
 
@@ -68,12 +82,11 @@ export default function GameDetailCard(props: GameDetailCardProps): JSX.Element 
 				await navigator.share(shareData);
 			} else {
 				await navigator.clipboard.writeText(shareUrl);
-				setLinkCopied('Copied');
-				setTimeout(() => setLinkCopied(''), 2000);
+				showCopiedFeedback('Copied');
 			}
-		} catch {
-			setLinkCopied('Failed');
-			setTimeout(() => setLinkCopied(''), 2000);
+		} catch (error: unknown) {
+			if (error instanceof DOMException && error.name === 'AbortError') return;
+			showCopiedFeedback('Failed');
 		}
 	}
 

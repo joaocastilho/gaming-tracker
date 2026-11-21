@@ -40,6 +40,7 @@ export default function RatingsSort(): JSX.Element {
 				type="button"
 				class={['sort-button', { active: activeKey() === 'alphabetical' }]}
 				onClick={() => handleSort('alphabetical')}
+				aria-pressed={activeKey() === 'alphabetical' ? 'true' : 'false'}
 				aria-label="Sort Alphabetically"
 			>
 				<AArrowDown class="sort-icon text-gray-500" aria-hidden="true" />
@@ -56,6 +57,7 @@ export default function RatingsSort(): JSX.Element {
 					type="button"
 					class={['sort-button', { active: activeKey() === 'presentation' }]}
 					onClick={() => handleSort('presentation')}
+					aria-pressed={activeKey() === 'presentation' ? 'true' : 'false'}
 					aria-label="Sort by Presentation"
 				>
 					<Presentation class="sort-icon text-rose-500" aria-hidden="true" />
@@ -71,6 +73,7 @@ export default function RatingsSort(): JSX.Element {
 					type="button"
 					class={['sort-button', { active: activeKey() === 'story' }]}
 					onClick={() => handleSort('story')}
+					aria-pressed={activeKey() === 'story' ? 'true' : 'false'}
 					aria-label="Sort by Story"
 				>
 					<NotebookPen class="sort-icon text-sky-500" aria-hidden="true" />
@@ -86,6 +89,7 @@ export default function RatingsSort(): JSX.Element {
 					type="button"
 					class={['sort-button', { active: activeKey() === 'gameplay' }]}
 					onClick={() => handleSort('gameplay')}
+					aria-pressed={activeKey() === 'gameplay' ? 'true' : 'false'}
 					aria-label="Sort by Gameplay"
 				>
 					<Gamepad2 class="sort-icon text-emerald-500" aria-hidden="true" />
@@ -101,6 +105,7 @@ export default function RatingsSort(): JSX.Element {
 					type="button"
 					class={['sort-button', { active: activeKey() === 'score' }]}
 					onClick={() => handleSort('score')}
+					aria-pressed={activeKey() === 'score' ? 'true' : 'false'}
 					aria-label="Sort by Score"
 				>
 					<Award class="sort-icon text-yellow-400" aria-hidden="true" />
@@ -116,6 +121,7 @@ export default function RatingsSort(): JSX.Element {
 					type="button"
 					class={['sort-button', { active: activeKey() === 'finishedDate' }]}
 					onClick={() => handleSort('finishedDate')}
+					aria-pressed={activeKey() === 'finishedDate' ? 'true' : 'false'}
 					aria-label="Sort by Finishing Date"
 				>
 					<Calendar class="sort-icon text-green-500" aria-hidden="true" />
@@ -133,6 +139,7 @@ export default function RatingsSort(): JSX.Element {
 					type="button"
 					class={['sort-button', { active: activeKey() === 'playtime' }]}
 					onClick={() => handleSort('playtime')}
+					aria-pressed={activeKey() === 'playtime' ? 'true' : 'false'}
 					aria-label={`Sort by ${currentTab() === 'completed' ? 'Hours Played' : 'Time to Beat'}`}
 				>
 					<Show
