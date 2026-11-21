@@ -151,6 +151,12 @@ describe('DetailModal continuum', () => {
 		expect(layer.style.transform).toContain('translate3d(0px');
 
 		dispatchPointer(card, 'pointerdown', { clientX: 700, clientY: 400 });
+		await tick();
+
+		// Pressing and holding without moving must not widen the scroll track.
+		expect(layer).not.toHaveClass('continuum-scroll-ready');
+		expect(layer.scrollLeft).toBe(0);
+
 		dispatchPointer(window, 'pointermove', { clientX: 570, clientY: 400 });
 		await tick();
 

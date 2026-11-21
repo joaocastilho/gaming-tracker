@@ -260,6 +260,8 @@ function enableContinuumScrollTrack(layer: HTMLElement | null): void {
 	if (!layer || !isContinuum) return;
 	if (!layer.classList.contains('continuum-scroll-ready')) {
 		layer.classList.add('continuum-scroll-ready');
+		const track = layer.firstElementChild;
+		if (track instanceof HTMLElement) void track.offsetWidth;
 		void layer.scrollWidth;
 	}
 	layer.scrollLeft = CONTINUUM_SCROLL_CENTER - continuumDragOffset;
@@ -605,7 +607,6 @@ function handleContinuumPointerDown(event: PointerEvent): void {
 
 	dragOriginOffset = continuumDragOffset;
 	activePointerId = event.pointerId;
-	enableContinuumScrollTrack(getContinuumLayer(modalState.activeGame?.id ?? ''));
 	dragTracker.start(event.clientX, event.clientY, performance.now());
 
 	window.addEventListener('pointermove', handleContinuumPointerMove);
@@ -1176,6 +1177,14 @@ $effect(() => {
 
 	.continuum-scroll-layer::-webkit-scrollbar {
 		display: none;
+	}
+
+	/* Prevent the global prefers-reduced-motion `transition-duration: 0.01ms`
+	   rule from turning width changes into a 1-frame transition that clamps
+	   scrollLeft to 0 before the track finishes widening. */
+	.modal-card-track {
+		/* biome-ignore lint/complexity/noImportantStyles: Overrides global reduced-motion * transition-duration */
+		transition: none !important;
 	}
 
 	.continuum-scroll-layer:global(.continuum-scroll-ready) .modal-card-track {
