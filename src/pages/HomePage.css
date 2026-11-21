@@ -188,10 +188,12 @@
 @keyframes np-live-pulse {
 	0%,
 	100% {
-		box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45);
+		opacity: 1;
+		transform: scale(1);
 	}
 	50% {
-		box-shadow: 0 0 0 5px rgba(52, 211, 153, 0);
+		opacity: 0.45;
+		transform: scale(0.85);
 	}
 }
 
@@ -218,31 +220,22 @@
 	font-size: 0.75rem;
 	font-weight: 700;
 	letter-spacing: 0.02em;
+	box-shadow: 0 0 22px rgba(99, 102, 241, 0.35);
 	animation: np-badge-glow 2.4s ease-in-out infinite;
 }
 
 @keyframes np-badge-glow {
 	0%,
 	100% {
-		box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+		opacity: 0.92;
 	}
 	50% {
-		box-shadow: 0 0 28px rgba(99, 102, 241, 0.45);
+		opacity: 1;
 	}
 }
 
 .light .np-badge {
-	animation-name: np-badge-glow-light;
-}
-
-@keyframes np-badge-glow-light {
-	0%,
-	100% {
-		box-shadow: 0 0 20px rgba(194, 65, 12, 0.25);
-	}
-	50% {
-		box-shadow: 0 0 26px rgba(194, 65, 12, 0.38);
-	}
+	box-shadow: 0 0 22px rgba(194, 65, 12, 0.3);
 }
 
 .np-title {

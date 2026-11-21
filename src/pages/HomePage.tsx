@@ -126,7 +126,7 @@ export default function HomePage(): JSX.Element {
 												alt=""
 												width={310}
 												height={388}
-												fetchpriority={index() === 0 ? 'high' : undefined}
+												fetchpriority={index() < 2 ? 'high' : undefined}
 												decoding={index() === 0 ? 'sync' : 'async'}
 												onError={handleCoverError}
 											/>

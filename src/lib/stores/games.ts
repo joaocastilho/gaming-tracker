@@ -126,7 +126,7 @@ class GamesStore {
 			this.scheduleCardHeights();
 
 			if (persist && browser && typeof indexedDB !== 'undefined') {
-				this.persistGamesToDb(normalized);
+				this.schedulePersistGamesToDb(normalized);
 			}
 
 			if (normalized.length === 0) {
@@ -210,7 +210,18 @@ class GamesStore {
 			void this.updateCardHeights();
 		};
 		if (typeof requestIdleCallback === 'function') {
-			requestIdleCallback(run, { timeout: 500 });
+			requestIdleCallback(run, { timeout: 2000 });
+		} else {
+			setTimeout(run, 0);
+		}
+	}
+
+	private schedulePersistGamesToDb(games: Game[]): void {
+		const run = () => {
+			this.persistGamesToDb(games);
+		};
+		if (typeof requestIdleCallback === 'function') {
+			requestIdleCallback(run, { timeout: 2000 });
 		} else {
 			setTimeout(run, 0);
 		}
