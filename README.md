@@ -22,9 +22,9 @@ Games are organized into three statuses:
 
 Completed games are rated across three dimensions (0-10 scale):
 
-- **Presentation** - Visuals, art style, sound design, and music. How the game looks, feels, and immerses the player.
-- **Story** - Narrative, characters, and world-building. How the plot, dialogue, and themes create a compelling story.
-- **Gameplay** - Mechanics, progression systems, and interactivity. How engaging the game's systems and challenges are.
+- **Presentation** — Visuals, art style, sound design, and music. How the game looks, feels, and immerses the player.
+- **Story** — Narrative, characters, and world-building. How the plot, dialogue, and themes create a compelling story.
+- **Gameplay** — Mechanics, progression systems, and interactivity. How engaging the game's systems and challenges are.
 
 The total score is automatically calculated using the formula: `(Presentation + Story + Gameplay) / 3 × 2` resulting in a **0-20 score**.
 
@@ -44,8 +44,7 @@ Manually assigned tiers to games based on overall assessment:
 ### 🔍 Search & Filter
 
 - Real-time title search with a precomputed lowercase index (no re-lowercasing per keystroke)
-- Filter by platform, genre, status, or tier
-- Filter by co-op
+- Browse by status tab (Library, Completed, Planned) and filter by platform, genre, tier, or co-op
 - Sort by score, ratings, finished date, playtime, or title — all persisted in the URL
 
 ### 🎨 UI
@@ -69,22 +68,21 @@ Manually assigned tiers to games based on overall assessment:
 
 ### 📦 Offline
 
-- Data stored locally in the browser via IndexedDB (Dexie), with `games.json` as the seeded source
-- JSON export/import for backup
+- Data cached locally in the browser via IndexedDB (Dexie), seeded from `games.json` and refreshed in the background
 - Works without internet after initial load
 
 ### 🌐 PWA Service Worker
 
 The worker source is `src/service-worker.source.js`; the build minifies it to `/service-worker.js`. Registration is production-only.
 
-| Resource                | Strategy                           | Rationale                                                                                                                |
-| ----------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| HTML navigations        | **Network-first**                  | Built HTML references hashed `/assets/` chunks that change on every deployment; serving stale HTML would break hydration |
-| `/assets/*` bundles     | Cache-first                        | Content-hashed filenames are safe to cache indefinitely                                                                  |
-| Cover images            | Cache-first                        | Immutable (`max-age=1y`), never revalidated                                                                              |
-| `games.json`            | **Network-first** + cache fallback | Keeps edits fresh while online, with offline fallback                                                                    |
-| Manifest & static icons | Cache-first + background refresh   | Fresh metadata arrives on the next request                                                                               |
-| Other same-origin GETs  | Network-first + cache fallback     | Keeps non-versioned responses usable offline                                                                             |
+| Resource                | Strategy                           | Rationale                                                                                                                    |
+| ----------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| HTML navigations        | **Network-first**                  | Built HTML references hashed `/assets/` chunks that change on every deployment; serving stale HTML would reference old files |
+| `/assets/*` bundles     | Cache-first                        | Content-hashed filenames are safe to cache indefinitely                                                                      |
+| Cover images            | Cache-first                        | Immutable (`max-age=1y`), never revalidated                                                                                  |
+| `games.json`            | **Network-first** + cache fallback | Keeps edits fresh while online, with offline fallback                                                                        |
+| Manifest & static icons | Cache-first + background refresh   | Fresh metadata arrives on the next request                                                                                   |
+| Other same-origin GETs  | Network-first + cache fallback     | Keeps non-versioned responses usable offline                                                                                 |
 
 Updates apply on the next natural page load — no forced reloads mid-session. In dev the worker is never registered, and any stale dev registration is removed automatically.
 
@@ -96,7 +94,7 @@ Updates apply on the next natural page load — no forced reloads mid-session. I
 - **Deduped Preloads:** Detail-cover preloads fire at most once per image, on card hover/focus and modal navigation.
 - **Lazy Loading:** Modals, charts, filters, and secondary UI components are dynamically imported with `lazy()`; text measurement (`@chenglou/pretext`) is deferred to idle time.
 - **Font Self-hosting:** Self-hosted Inter font with `preload` to eliminate render-blocking external requests.
-- **Deferred Data:** `games.json` hydrates from IndexedDB on the client and refreshes in the background.
+- **Deferred Data:** Cold visits fetch `games.json` directly (keeping Dexie off the critical path); repeat visits hydrate from IndexedDB and refresh in the background.
 - **Chunk Splitting:** Rolldown `codeSplitting` groups keep Solid, charts, Dexie, text measurement, icons, and editor validation in dedicated chunks.
 
 ## 🛠️ Tech Stack
@@ -116,61 +114,3 @@ Updates apply on the next natural page load — no forced reloads mid-session. I
 | **Charts**           | [Chart.js](https://www.chartjs.org/)           | `v4.6.1`  |
 | **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.7`  |
 | **Validation**       | [Zod](https://zod.dev/)                        | `v4.6.7`  |
-
-Two test dependencies are intentionally pinned; `bun outdated` will list them:
-
-- **`jsdom` 30.0.1** — 30.1+ requires `this === globalThis` inside its vm context, which Bun's `vm` does not provide ([oven-sh/bun#43671](https://github.com/oven-sh/bun/issues/43671)).
-- **`vitest` / `@vitest/coverage-v8` 5.1.0** — 5.1.1 fails to terminate forks workers under Bun (`setMaxListeners` out of range). Bump once pool teardown works again.
-
-## 🚀 Running Locally
-
-Requires [Bun](https://bun.sh/) 1.4+.
-
-```bash
-# Install dependencies
-bun install
-
-# Start development server
-bun run dev
-
-# Build for production (outputs static site to build/)
-bun run build
-
-# Preview production build
-bun run preview
-
-# Run the full gate (lint, format, typecheck, tests)
-bun run validate
-
-# Verify the Cloudflare Pages Functions bundle
-bun run check:functions
-```
-
-## 📁 Project Structure
-
-```
-gaming-tracker/
-├── src/
-│   ├── lib/
-│   │   ├── components/      # UI components (.tsx + colocated .css)
-│   │   ├── stores/          # Solid 2.0 signal stores
-│   │   ├── styles/          # fonts.css, critical.css
-│   │   ├── utils/           # Framework-free helpers
-│   │   ├── views/           # Page-level compositions (GamesView, TierListView)
-│   │   └── types/           # TypeScript types
-│   ├── pages/               # Route pages (Layout, HomePage, StatsPage, LoginPage, NotFoundPage)
-│   ├── App.tsx              # App root & Solid Router entry
-│   ├── Document.tsx         # HTML document shell (preloads, theme bootstrap, meta)
-│   ├── router.tsx           # Route definitions
-│   ├── app.css              # Global Tailwind & design token styles
-│   └── service-worker.source.js
-├── functions/               # Cloudflare Pages Functions (editor API + OG meta middleware)
-├── scripts/                 # Dev API plugin, cover and favicon asset pipelines (Bun)
-├── static/
-│   ├── _headers             # Cloudflare Pages cache headers
-│   ├── fonts/               # Self-hosted woff2 fonts
-│   ├── games.json           # Game data
-│   └── covers/              # Game cover images (WebP)
-├── tests/                   # Vitest + @solidjs/testing-library suites
-└── vite.config.ts           # Solid 2.0, Tailwind 4, service worker, and static shell build pipeline
-```

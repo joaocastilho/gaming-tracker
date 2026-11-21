@@ -9,7 +9,7 @@
 | Path                                                | Contents                                                                                                                                                                                                                                       |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `vite.config.ts`                                    | `@solidjs/vite-plugin`, `@tailwindcss/vite`, `devApiPlugin` (local `/api/games` & `/api/games-local`), service-worker asset emission, static shell post-processing (`index.html`, `404.html`, `.gz`, `.br`), Rolldown chunk groups.            |
-| `src/Document.tsx`, `src/App.tsx`, `src/router.tsx` | HTML document shell (theme bootstrap, font preloads, manifest/icons), router root, and route definitions.                                                                                                                                      |
+| `src/Document.tsx`, `src/App.tsx`, `src/router.tsx` | HTML document shell (theme bootstrap, font preloads, manifest/icons), root `<Errored>` boundary + router entry, and route definitions.                                                                                                         |
 | `src/pages/`                                        | Route pages: `Layout.tsx` (shell, filters, URL sync, modal wiring), `HomePage.tsx`, `StatsPage.tsx`, `LoginPage.tsx`, `NotFoundPage.tsx`, each with colocated `.css`.                                                                          |
 | `src/lib/stores/*.ts`                               | Class-based Solid 2.0 signal stores exported as singletons: games, filters/filtered lists, modal/navigation, editor, offline, app/window, image errors. Uses `createSyncSignal` (`signalHelpers.ts`) so imperative writes flush synchronously. |
 | `src/lib/views/`                                    | Page-level views (`GamesView`, `TierListView`) composed from stores + components.                                                                                                                                                              |
@@ -25,7 +25,7 @@ Layer direction: `types` ← `utils` ← `stores` ← `components`/`pages`. Neve
 
 ## Data flow (read before touching the store)
 
-1. `src/lib/utils/gamesLoader.ts` (`loadGamesData()`) hydrates from IndexedDB when cached, otherwise fetches `/games.json`.
+1. `src/lib/utils/gamesLoader.ts` (`loadInitialGames()`) hydrates from IndexedDB on repeat visits, or fetches `/games.json` directly on cold visits (keeping the Dexie chunk off the initial critical path).
 2. A background fetch compares `meta.lastUpdated`; unchanged data skips the Dexie rewrite.
 3. `gamesStore.initializeGames(games, { persist })` transforms raw data once. `persist: false` for cache hits.
 4. Views derive from stores with `createMemo` — do not duplicate derived state locally.
@@ -55,22 +55,25 @@ Layer direction: `types` ← `utils` ← `stores` ← `components`/`pages`. Neve
 
 - Component tests use `@solidjs/testing-library`: `render(() => <Component ... />)`; query roles/text/classes the component owns.
 - Solid 2.0 signals flush asynchronously by default: call `flush()` from `solid-js` after user events or signal writes before synchronous DOM assertions.
+- `vitest.config.ts` resolves Solid's `development` condition and defines `__BUILD_DATE__`: treat any Solid 2.0 dev diagnostic (`[STRICT_READ_UNTRACKED]`, `[REACTIVE_WRITE_IN_OWNED_SCOPE]`, `[EFFECT_RELAY_TEAR]`, `[UNSTABLE_LIST_IDENTITY]`) in test stderr as a bug to fix.
 - Use `createTestGame` / `createCompletedGame` factories instead of hand-writing `Game` objects.
 - Default environment is `jsdom`; opt into `happy-dom` with `// @vitest-environment happy-dom` when a test needs `window.location` mocking.
-- `jsdom` is pinned to **30.0.1**: 30.1+ requires `this === globalThis` inside its vm context, which Bun's vm does not provide (oven-sh/bun#43671). Do not bump it until that lands.
 
 ## Dependency pins
 
 `bun outdated` will flag these. That is expected:
 
-- **`jsdom` 30.0.1** — see above.
+- **`jsdom` 30.0.1** — 30.1+ requires `this === globalThis` inside its vm context, which Bun's `vm` does not provide (`oven-sh/bun#43671`). Do not bump until that lands.
 - **`vitest` / `@vitest/coverage-v8` 5.1.0** — 5.1.1 fails to terminate forks workers under Bun (`setMaxListeners` out of range). Bump once pool teardown works again.
 
 ## Known traps
 
-- **Solid 2.0 `createEffect` signature**: `createEffect` takes two arguments: `createEffect(() => tracked, (value) => { ... return () => cleanup; })`. Use `onSettled(() => { ... return () => cleanup; })` for mount/cleanup effects.
+- **Solid 2.0 `createEffect` signature**: `createEffect` takes two arguments: `createEffect(() => tracked, (value) => { ... return () => cleanup; })`. Never read reactive signals inside the apply callback — move reads into the compute phase or wrap intentional non-tracking reads in `untrack()`. Use `onSettled(() => { ... return () => cleanup; })` for mount/cleanup effects.
+- **Solid 2.0 keyed `<For>`**: Whenever a `<For>` iterates over a `createMemo` returning fresh objects (e.g. virtual rows, nav items, mapped options), pass `keyed={(item) => item.id}` to prevent DOM teardown (`UNSTABLE_LIST_IDENTITY`). Note that a keyed `<For>` passes an **accessor** (`item()`) to its child callback, unlike unkeyed `<For>`.
 - **Solid 2.0 ARIA boolean attributes**: `@solidjs/web` 2.0 types require `'true' | 'false'` strings for `aria-expanded`, `aria-selected`, `aria-pressed`, etc.
 - **Solid 2.0 HTML attributes & events**: HTML attributes are lowercase (`tabindex`, `readonly`, `autocomplete`); events are camelCase (`onClick`, `onInput`, `onKeyDown`).
+- **Timer & listener cleanup**: Always clear `setTimeout`, `setInterval`, `ResizeObserver`, `IntersectionObserver`, and DOM event listeners in `onSettled` or `createEffect` cleanup returns.
+- **`navigator.platform` safety**: Always guard `(navigator.platform ?? '')` — it can be `undefined` in jsdom and modern UAs.
 - **Windows case-insensitive `.d.ts` collision**: Do not create `src/app.d.ts` alongside `src/App.tsx`; ambient declarations live in `src/env.d.ts`.
 - **Rolldown chunking**: Configure vendor groups under `build.rolldownOptions.output.codeSplitting` (Rolldown ignores `manualChunks` when `codeSplitting` is set).
 - **Themed colors**: use CSS variables (`var(--color-text-primary)`, `--color-rating-*`, `--color-status-*`). Never hard-code dark-theme hexes — `.light` shares the components.
@@ -97,7 +100,7 @@ Don't ask for: typos, formatting, following existing patterns, or work the task 
 
 ### SolidJS 2.0 (required)
 
-- `createSignal`, `createMemo`, `createEffect(compute, effect)`, `onSettled`, `Show`, `For`, `Switch`/`Match`, `lazy`, `Loading`, `Errored`.
+- `createSignal`, `createMemo`, `createEffect(compute, effect)`, `onSettled`, `Show`, `For` (`keyed` for derived arrays), `Repeat`, `Switch`/`Match`, `lazy`, `Loading`, `Errored`.
 - Never destructure `props` — read `props.foo` inside reactive scopes.
 - Class-based stores use `createSyncSignal` from `#lib/stores/signalHelpers.js`.
 - Conditional classes use array/object form: `class={['base', { active: isActive() }]}`.
