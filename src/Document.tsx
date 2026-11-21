@@ -20,6 +20,7 @@ export default function Document(props: DocumentProps): JSX.Element {
 			<head>
 				<meta charset="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+				<title>Gaming Tracker</title>
 				<meta name="mobile-web-app-capable" content="yes" />
 				<meta name="apple-mobile-web-app-title" content="Gaming Tracker" />
 				<meta

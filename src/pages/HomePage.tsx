@@ -124,6 +124,8 @@ export default function HomePage(): JSX.Element {
 												class="np-cover"
 												src={coverSource(game.coverImage)}
 												alt=""
+												width={310}
+												height={388}
 												fetchpriority={index() === 0 ? 'high' : undefined}
 												decoding={index() === 0 ? 'sync' : 'async'}
 												onError={handleCoverError}
@@ -179,11 +181,12 @@ export default function HomePage(): JSX.Element {
 					</div>
 					<div class="recent-grid" ref={setRecentGridEl}>
 						<For each={recentCompletions()}>
-							{(game) => (
+							{(game, index) => (
 								<GameCard
 									game={game}
 									size="small"
 									showTierBadge={true}
+									isAboveFold={index() < 4}
 									onOpenModal={handleRecentOpen}
 									displayedGames={recentCompletions()}
 								/>

@@ -35,11 +35,22 @@ function postProcessStaticShell(): Plugin {
 				const indexPath = path.join(outDir, 'index.html');
 				if (!fs.existsSync(indexPath)) return;
 
-				const criticalCss = fs.readFileSync(path.resolve('src/lib/styles/critical.css'), 'utf-8');
+				const criticalCss = fs
+					.readFileSync(path.resolve('src/lib/styles/critical.css'), 'utf-8')
+					.replace(/\/\*[\s\S]*?\*\//g, '')
+					.replace(/\s+/g, ' ')
+					.replace(/\s*([{}:;,])\s*/g, '$1')
+					.trim();
 				const original = fs.readFileSync(indexPath, 'utf-8');
-				const processed = original.includes(criticalCss)
-					? original
-					: original.replace('</head>', `    <style>${criticalCss}</style>\n    </head>`);
+				const criticalTag = `<style>${criticalCss}</style>`;
+				let processed = original;
+				if (!original.includes(criticalCss)) {
+					const firstStylesheet = original.indexOf('<link rel="stylesheet"');
+					processed =
+						firstStylesheet >= 0
+							? `${original.slice(0, firstStylesheet)}${criticalTag}${original.slice(firstStylesheet)}`
+							: original.replace('</head>', `${criticalTag}</head>`);
+				}
 
 				for (const fileName of ['index.html', '404.html']) {
 					const targetPath = path.join(outDir, fileName);
@@ -78,18 +89,44 @@ export default defineConfig({
 					groups: [
 						{
 							name: 'vendor-runtime',
+							priority: 30,
 							test: (id) => id.includes('rolldown') && id.includes('runtime'),
 						},
 						{
-							name: 'vendor-charts',
-							test: /node_modules[\\/](chart\.js|chartjs-plugin-datalabels)/,
+							name: 'vendor-solid',
+							priority: 25,
+							test: /node_modules[\\/](solid-js|@solidjs)[\\/]/,
 						},
-						{ name: 'vendor-db', test: /node_modules[\\/]dexie/ },
-						{ name: 'vendor-text', test: /node_modules[\\/]@chenglou[\\/]pretext/ },
-						{ name: 'vendor-icons', test: /node_modules[\\/]@lucide[\\/]solid/ },
-						{ name: 'editor', test: /node_modules[\\/]zod/ },
-						{ name: 'vendor-solid', test: /node_modules[\\/](solid-js|@solidjs)/ },
-						{ name: 'vendor', test: /node_modules/ },
+						{
+							name: 'vendor-icons',
+							priority: 20,
+							test: /node_modules[\\/]@lucide[\\/]solid[\\/]/,
+						},
+						{
+							name: 'vendor-charts',
+							priority: 15,
+							test: /node_modules[\\/](chart\.js|chartjs-plugin-datalabels)[\\/]/,
+						},
+						{
+							name: 'vendor-db',
+							priority: 15,
+							test: /node_modules[\\/]dexie[\\/]/,
+						},
+						{
+							name: 'vendor-text',
+							priority: 15,
+							test: /node_modules[\\/]@chenglou[\\/]pretext[\\/]/,
+						},
+						{
+							name: 'editor',
+							priority: 15,
+							test: /node_modules[\\/]zod[\\/]/,
+						},
+						{
+							name: 'vendor',
+							priority: 5,
+							test: /node_modules[\\/]/,
+						},
 					],
 				},
 			},

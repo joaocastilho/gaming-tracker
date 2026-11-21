@@ -44,10 +44,10 @@ import {
 } from '#lib/utils/routerBridge.js';
 import { isGamesRoute, routeKeyFromPath } from '#lib/utils/routeUtils.js';
 import { registerServiceWorker } from '#lib/utils/serviceWorker.js';
-import GamesView from '#lib/views/GamesView.js';
-import TierListView from '#lib/views/TierListView.js';
 import './Layout.css';
 
+const GamesView = lazy(() => import('#lib/views/GamesView.js'));
+const TierListView = lazy(() => import('#lib/views/TierListView.js'));
 const FilterDropdown = lazy(() => import('#lib/components/FilterDropdown.js'));
 const RatingsSort = lazy(() => import('#lib/components/RatingsSort.js'));
 const SearchBar = lazy(() => import('#lib/components/SearchBar.js'));
@@ -531,45 +531,49 @@ export default function Layout(props: LayoutProps): JSX.Element {
 						<Switch fallback={props.children}>
 							<Match when={isHomePage()}>{props.children}</Match>
 							<Match when={isGamesPage()}>
-								<Switch
-									fallback={
-										<GamesView
-											filteredGames={currentFilteredGames()}
-											onOpenModal={openModalWithFilterContext}
-											onEditGame={(g) => editorModalState.handleEditGame(g)}
-											onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
-											loading={false}
-										/>
-									}
-								>
-									<Match when={!gamesInitialized()}>
-										<GamesView
-											filteredGames={[]}
-											onOpenModal={openModalWithFilterContext}
-											onEditGame={(g) => editorModalState.handleEditGame(g)}
-											onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
-											loading={true}
-										/>
-									</Match>
-									<Match when={gamesStore.games.length === 0}>
-										<div class="empty-database">
-											<p>No games in your collection yet.</p>
-											<p class="sub">Add your first game to get started.</p>
-										</div>
-									</Match>
-									<Match when={hasActiveFilters() && currentFilteredGames().length === 0}>
-										<NoResults onReset={resetFilters} />
-									</Match>
-									<Match when={currentFilteredGames().length === 0}>
-										<NoResults
-											message={tabEmptyState(currentPage()).message}
-											description={tabEmptyState(currentPage()).description}
-										/>
-									</Match>
-								</Switch>
+								<Loading>
+									<Switch
+										fallback={
+											<GamesView
+												filteredGames={currentFilteredGames()}
+												onOpenModal={openModalWithFilterContext}
+												onEditGame={(g) => editorModalState.handleEditGame(g)}
+												onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
+												loading={false}
+											/>
+										}
+									>
+										<Match when={!gamesInitialized()}>
+											<GamesView
+												filteredGames={[]}
+												onOpenModal={openModalWithFilterContext}
+												onEditGame={(g) => editorModalState.handleEditGame(g)}
+												onDeleteGame={(g) => editorModalState.handleDeleteGame(g)}
+												loading={true}
+											/>
+										</Match>
+										<Match when={gamesStore.games.length === 0}>
+											<div class="empty-database">
+												<p>No games in your collection yet.</p>
+												<p class="sub">Add your first game to get started.</p>
+											</div>
+										</Match>
+										<Match when={hasActiveFilters() && currentFilteredGames().length === 0}>
+											<NoResults onReset={resetFilters} />
+										</Match>
+										<Match when={currentFilteredGames().length === 0}>
+											<NoResults
+												message={tabEmptyState(currentPage()).message}
+												description={tabEmptyState(currentPage()).description}
+											/>
+										</Match>
+									</Switch>
+								</Loading>
 							</Match>
 							<Match when={isTierlistPage()}>
-								<TierListView filteredGames={currentFilteredGames()} onOpenModal={openModalWithFilterContext} />
+								<Loading>
+									<TierListView filteredGames={currentFilteredGames()} onOpenModal={openModalWithFilterContext} />
+								</Loading>
 							</Match>
 						</Switch>
 					</div>
