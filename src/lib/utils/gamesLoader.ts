@@ -44,14 +44,26 @@ export async function loadInitialGames(
 
 	if (browser && games.length === 0) {
 		try {
-			const res = await fetchFn('/games.json', {
-				headers: { accept: 'application/json' },
-			});
+			const earlyPromise = typeof window !== 'undefined' ? window.__INITIAL_GAMES_PROMISE__ : undefined;
+			if (earlyPromise && fetchFn === fetch) {
+				delete window.__INITIAL_GAMES_PROMISE__;
+				const earlyData = (await earlyPromise) as { games?: Game[] } | null;
+				if (earlyData?.games && earlyData.games.length > 0) {
+					games = earlyData.games;
+					gamesSource = 'network';
+				}
+			}
 
-			if (res.ok) {
-				const data = (await res.json()) as { games?: Game[] };
-				games = data.games || [];
-				if (games.length > 0) gamesSource = 'network';
+			if (games.length === 0) {
+				const res = await fetchFn('/games.json', {
+					headers: { accept: 'application/json' },
+				});
+
+				if (res.ok) {
+					const data = (await res.json()) as { games?: Game[] };
+					games = data.games || [];
+					if (games.length > 0) gamesSource = 'network';
+				}
 			}
 		} catch {
 			try {

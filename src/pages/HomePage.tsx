@@ -127,7 +127,7 @@ export default function HomePage(): JSX.Element {
 												width={310}
 												height={388}
 												fetchpriority={index() < 2 ? 'high' : undefined}
-												decoding={index() === 0 ? 'sync' : 'async'}
+												decoding="async"
 												onError={handleCoverError}
 											/>
 											<div class="np-shade" aria-hidden="true" />

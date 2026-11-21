@@ -205,26 +205,31 @@ class GamesStore {
 	// Full-array measurement blocks the main thread (canvas text shaping for every
 	// game), so defer it to idle time. The dynamic import keeps @chenglou/pretext
 	// out of the initial bundle. Per-game updates stay fire-and-forget.
-	private scheduleCardHeights(): void {
-		const run = () => {
-			void this.updateCardHeights();
-		};
-		if (typeof requestIdleCallback === 'function') {
-			requestIdleCallback(run, { timeout: 2000 });
-		} else {
+	private scheduleIdleBackgroundTask(run: () => void): void {
+		if (import.meta.env.MODE === 'test') {
 			setTimeout(run, 0);
+			return;
 		}
+		// Wait until after initial LCP/paint settles before pulling in Dexie or Pretext.
+		setTimeout(() => {
+			if (typeof requestIdleCallback === 'function') {
+				requestIdleCallback(run, { timeout: 2000 });
+			} else {
+				run();
+			}
+		}, 2500);
+	}
+
+	private scheduleCardHeights(): void {
+		this.scheduleIdleBackgroundTask(() => {
+			void this.updateCardHeights();
+		});
 	}
 
 	private schedulePersistGamesToDb(games: Game[]): void {
-		const run = () => {
+		this.scheduleIdleBackgroundTask(() => {
 			this.persistGamesToDb(games);
-		};
-		if (typeof requestIdleCallback === 'function') {
-			requestIdleCallback(run, { timeout: 2000 });
-		} else {
-			setTimeout(run, 0);
-		}
+		});
 	}
 
 	updateGame(id: string, updatedGame: Partial<Game>): void {

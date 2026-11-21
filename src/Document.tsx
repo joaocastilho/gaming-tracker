@@ -12,6 +12,11 @@ const THEME_INIT_SCRIPT = `if (typeof window !== "undefined" && typeof localStor
 	} else {
 		document.documentElement.classList.add("dark");
 	}
+	if (localStorage.getItem("gaming-tracker-db-seeded") !== "1") {
+		window.__INITIAL_GAMES_PROMISE__ = fetch("/games.json", { headers: { accept: "application/json" } })
+			.then(function(r) { return r.ok ? r.json() : null; })
+			.catch(function() { return null; });
+	}
 }`;
 
 export default function Document(props: DocumentProps): JSX.Element {
