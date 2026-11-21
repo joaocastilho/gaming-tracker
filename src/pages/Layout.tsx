@@ -635,19 +635,21 @@ export default function Layout(props: LayoutProps): JSX.Element {
 					</Loading>
 				</Show>
 
-				<Loading>
-					<MobileSettingsMenu
-						isOpen={isSettingsMenuOpen()}
-						isTierlistPage={isTierlistPage()}
-						onToggle={() => setIsSettingsMenuOpen((v) => !v)}
-						onClose={() => setIsSettingsMenuOpen(false)}
-						onFiltersToggle={onFiltersToggle}
-						onAddGame={() => editorModalState.handleAddGame()}
-						onOpenLogin={() => setLoginModalOpen(true)}
-						canInstall={canInstall()}
-						onInstall={() => void installApp()}
-					/>
-				</Loading>
+				<Show when={windowSize.width < 768}>
+					<Loading>
+						<MobileSettingsMenu
+							isOpen={isSettingsMenuOpen()}
+							isTierlistPage={isTierlistPage()}
+							onToggle={() => setIsSettingsMenuOpen((v) => !v)}
+							onClose={() => setIsSettingsMenuOpen(false)}
+							onFiltersToggle={onFiltersToggle}
+							onAddGame={() => editorModalState.handleAddGame()}
+							onOpenLogin={() => setLoginModalOpen(true)}
+							canInstall={canInstall()}
+							onInstall={() => void installApp()}
+						/>
+					</Loading>
+				</Show>
 
 				<BottomNavigation onSearchToggle={onSearchToggle} />
 				<ScrollToTopButton hideWhenFiltersOpen={isFiltersOpen()} />

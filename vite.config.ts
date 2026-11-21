@@ -52,7 +52,17 @@ function postProcessStaticShell(): Plugin {
 							: original.replace('</head>', `${criticalTag}</head>`);
 				}
 
-				for (const fileName of ['index.html', '404.html']) {
+				const routeShells = [
+					'index.html',
+					'404.html',
+					'library.html',
+					'completed.html',
+					'planned.html',
+					'tierlist.html',
+					'stats.html',
+					'login.html',
+				];
+				for (const fileName of routeShells) {
 					const targetPath = path.join(outDir, fileName);
 					fs.writeFileSync(targetPath, processed);
 					fs.writeFileSync(`${targetPath}.gz`, gzipSync(processed));

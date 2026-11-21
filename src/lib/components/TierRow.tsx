@@ -62,7 +62,7 @@ export default function TierRow(props: TierRowProps): JSX.Element {
 	return (
 		<div class="tier-section" style={{ 'contain-intrinsic-size': `1px ${estimatedRowHeight()}px` }}>
 			<h3 class={['tier-header', getTierClass(props.tierName)]}>
-				{getTierDisplayName(props.tierName)}
+				{getTierDisplayName(props.tierName)}{' '}
 				<span class="tier-count">
 					{props.games.length} {props.games.length === 1 ? 'game' : 'games'}
 				</span>
