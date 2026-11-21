@@ -1,92 +1,16 @@
-import type { Plugin } from 'vite';
-import type { Adapter } from '@sveltejs/kit';
-import { sveltekit } from '@sveltejs/kit/vite';
-import adapter from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
 import fs from 'node:fs';
 import path from 'node:path';
-import { brotliCompressSync, gzipSync } from 'node:zlib';
+import solid from '@solidjs/vite-plugin';
+import tailwindcss from '@tailwindcss/vite';
 import { minifySync } from 'rolldown/experimental';
+import { defineConfig, type Plugin } from 'vite';
 
-// Stylesheets for components that are only ever dynamically imported (the
-// layout's {#await import(...)} modals and menus) must not block first paint.
-// SvelteKit already defers most of them with `disabled media="(max-width: 0)`,
-// but occasionally one still ships in the critical path — so anything left
-// render-blocking is switched to print media and flipped on by a tiny inline
-// script once it arrives. Inline handlers are not an option: _headers sets
-// script-src-attr to a hash allowlist, which blocks them.
-const LAZY_COMPONENT_CSS = [
-	'DetailModal',
-	'GameEditorModal',
-	'DeleteConfirmModal',
-	'LoginModal',
-	'MobileSearch',
-	'MobileFilters',
-	'MobileSettingsMenu',
-];
-
-const DEFER_SCRIPT = `    <script>
-// Deferred sheets load in print media, which the browser fetches but does not
-// apply. Flip to 'all' once the file arrives. The domContentLoaded guard covers
-// the case where the sheet is still in flight when the parser reaches this
-// point: 'load' alone would be missed if the document had already finished.
-(function () {
-	var nodeList = document.querySelectorAll('link[data-deferred-css]');
-	var pending = [];
-	for (var i = 0; i < nodeList.length; i++) {
-		var l = nodeList[i];
-		if (l.sheet) l.media = 'all';
-		else pending.push(l);
-	}
-	function flush() {
-		for (var j = 0; j < pending.length; j++) {
-			if (pending[j].sheet) pending[j].media = 'all';
-		}
-	}
-	for (var k = 0; k < pending.length; k++) {
-		pending[k].addEventListener('load', function (e) { e.target.media = 'all'; }, { once: true });
-	}
-	if (document.readyState === 'complete') flush();
-	else window.addEventListener('DOMContentLoaded', flush, { once: true });
-})();
-</script>
-`;
-
-// SvelteKit resolves the browser runtime by following a dynamic import from
-// entry.js to client-entry.js. Capturing either module in a vendor group makes
-// that import intra-chunk, so Kit cannot find the runtime and the build fails.
-function isSvelteKitClientEntry(id: string): boolean {
-	return (
-		id.includes('@sveltejs/kit/src/runtime/client/entry.js') ||
-		id.includes('@sveltejs/kit/src/runtime/client/client-entry.js')
-	);
-}
-
-function deferLazyCss(html: string): string {
-	let deferred = 0;
-	const withMedia = html.replace(/<link([^>]*rel="stylesheet"[^>]*)>/g, (tag: string, attrs: string) => {
-		if (!LAZY_COMPONENT_CSS.some((name) => attrs.includes(name))) return tag;
-		// Already non-blocking (SvelteKit's own deferral) - leave it alone.
-		if (attrs.includes('disabled') || attrs.includes('media=')) return tag;
-		deferred += 1;
-		return `<link${attrs} media="print" data-deferred-css>`;
-	});
-	return deferred === 0 ? withMedia : withMedia.replace('</head>', `${DEFER_SCRIPT}    </head>`);
-}
-
-// The service worker is source-controlled with its comments, but should be
-// served minified. static/ is copied verbatim by Vite, so build it from src/
-// and emit it as a plain asset instead. The `.source` suffix keeps Vite from
-// treating `service-worker.js` as its own service-worker entry, which builds
-// with code splitting disabled and rejects the manualChunks config below.
-// minifySync comes from Rolldown (Vite's own bundler) so it runs on Node too -
-// a Bun-only minifier silently shipped the unminified file on Cloudflare.
+// Emit src/service-worker.source.js as minified /service-worker.js.
 function emitServiceWorker(): Plugin {
 	return {
 		name: 'emit-service-worker',
 		generateBundle() {
+			if (this.environment?.name && this.environment.name !== 'client') return;
 			const source = fs.readFileSync(path.resolve('src/service-worker.source.js'), 'utf-8');
 			const minified = minifySync('service-worker.js', source).code;
 			this.emitFile({ type: 'asset', fileName: 'service-worker.js', source: minified });
@@ -94,128 +18,14 @@ function emitServiceWorker(): Plugin {
 	};
 }
 
-// SvelteKit 3 no longer supports transformIndexHtml (it renders HTML itself),
-// and every bundling hook runs before adapter-static writes the prerendered
-// pages, so the HTML has to be rewritten on disk after the adapter finishes.
-// Only safe transforms are applied - SvelteKit's hydration markers must be
-// preserved, so comments are intentionally left untouched. Precompressed
-// variants are regenerated so the served copies match the edited HTML.
-const PAGES_DIR = 'build';
-
-function postProcessAdapter(inner: Adapter): Adapter {
-	return {
-		...inner,
-		name: `${inner.name}-post-processed`,
-		async adapt(builder) {
-			await inner.adapt(builder);
-
-			const outDir = path.resolve(PAGES_DIR);
-			if (!fs.existsSync(outDir)) return;
-
-			const criticalCss = fs.readFileSync(path.resolve('src/lib/styles/critical.css'), 'utf-8');
-			for (const entry of fs.readdirSync(outDir)) {
-				if (!entry.endsWith('.html')) continue;
-
-				const filePath = path.join(outDir, entry);
-				const original = fs.readFileSync(filePath, 'utf-8');
-				const processed = deferLazyCss(original.replace('</head>', `    <style>${criticalCss}</style>\n    </head>`));
-				if (processed === original) continue;
-
-				fs.writeFileSync(filePath, processed);
-				const variants = [
-					['gz', gzipSync(processed)],
-					['br', brotliCompressSync(processed)],
-				] as const;
-				for (const [ext, data] of variants) {
-					const compressedPath = `${filePath}.${ext}`;
-					if (fs.existsSync(compressedPath)) fs.writeFileSync(compressedPath, data);
-				}
-			}
-		},
-	};
-}
 export default defineConfig({
+	publicDir: 'static',
 	define: {
 		__BUILD_DATE__: Date.now(),
 	},
-	plugins: [
-		tailwindcss(),
-		emitServiceWorker(),
-		sveltekit({
-			preprocess: vitePreprocess(),
-			inlineStyleThreshold: 8192,
-			adapter: postProcessAdapter(
-				adapter({
-					pages: PAGES_DIR,
-					assets: PAGES_DIR,
-					fallback: '404.html',
-					precompress: true,
-					strict: true,
-				})
-			),
-		}),
-		{
-			name: 'fix-mjs-content-type',
-			configureServer(server) {
-				server.middlewares.use((req, res, next) => {
-					const url = req.url;
-					if (url?.endsWith('.mjs') || url?.endsWith('.js')) {
-						res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-					} else if (url?.endsWith('.ts')) {
-						res.setHeader('Content-Type', 'text/x-typescript; charset=utf-8');
-					}
-					next();
-				});
-			},
-		},
-	],
+	plugins: [tailwindcss(), emitServiceWorker(), solid({ start: true })],
 	build: {
-		rolldownOptions: {
-			output: {
-				// SvelteKit 3.1 sets output.codeSplitting for its manifest group, and
-				// Rolldown ignores manualChunks whenever codeSplitting is present.
-				// Keep the vendor split in the same API, repeating Kit's group so the
-				// manifest keeps its stable filename.
-				codeSplitting: {
-					groups: [
-						{
-							name: 'sveltekit-manifest',
-							test: '<sveltekit:generated>/app-manifest.js',
-						},
-						// Vendor splitting only. Component-level rules that matched on
-						// '#lib/...' specifiers never fired (Vite passes resolved file
-						// paths here), and the components they targeted are lazily
-						// imported via {#await import(...)} anyway, so they get their
-						// own chunks from the dynamic imports themselves.
-						{
-							// Rolldown's shared runtime/babel/preload helpers are imported by
-							// both the Svelte runtime and chart.js. Left ungrouped they get
-							// merged into the chart group, dragging the 218 kB chart.js chunk
-							// into every page's modulepreload graph.
-							name: 'vendor-runtime',
-							test: (id) =>
-								(id.includes('rolldown') && id.includes('runtime')) ||
-								id.includes('preload-helper') ||
-								id.includes('babel') ||
-								id.startsWith('\0'),
-						},
-						{
-							name: 'vendor-charts',
-							test: /node_modules[\\/](chart\.js|chartjs-plugin-datalabels)/,
-						},
-						{ name: 'vendor-db', test: /node_modules[\\/]dexie/ },
-						{ name: 'vendor-text', test: /node_modules[\\/]@chenglou[\\/]pretext/ },
-						{ name: 'vendor-icons', test: /node_modules[\\/](@lucide[\\/]svelte|lucide-svelte)/ },
-						{ name: 'editor', test: /node_modules[\\/]zod/ },
-						{
-							name: 'vendor-svelte',
-							test: (id) => /node_modules[\\/](svelte|@sveltejs)/.test(id) && !isSvelteKitClientEntry(id),
-						},
-						{ name: 'vendor', test: (id) => /node_modules/.test(id) && !isSvelteKitClientEntry(id) },
-					],
-				},
-			},
-		},
+		outDir: 'build',
 		target: 'es2020',
 		minify: true,
 		sourcemap: false,
@@ -224,9 +34,31 @@ export default defineConfig({
 		modulePreload: {
 			polyfill: false,
 		},
+		rolldownOptions: {
+			output: {
+				codeSplitting: {
+					groups: [
+						{
+							name: 'vendor-runtime',
+							test: (id) => id.includes('rolldown') && id.includes('runtime'),
+						},
+						{
+							name: 'vendor-charts',
+							test: /node_modules[\\/](chart\.js|chartjs-plugin-datalabels)/,
+						},
+						{ name: 'vendor-db', test: /node_modules[\\/]dexie/ },
+						{ name: 'vendor-text', test: /node_modules[\\/]@chenglou[\\/]pretext/ },
+						{ name: 'vendor-icons', test: /node_modules[\\/]@lucide[\\/]solid/ },
+						{ name: 'editor', test: /node_modules[\\/]zod/ },
+						{ name: 'vendor-solid', test: /node_modules[\\/](solid-js|@solidjs)/ },
+						{ name: 'vendor', test: /node_modules/ },
+					],
+				},
+			},
+		},
 	},
 	optimizeDeps: {
-		include: ['@lucide/svelte', 'zod', 'dexie'],
+		include: ['@lucide/solid', 'zod', 'dexie'],
 	},
 	server: {
 		fs: {
