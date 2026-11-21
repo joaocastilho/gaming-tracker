@@ -1,6 +1,7 @@
 import type { LayoutLoad } from './$types';
 import { browser, dev } from '$app/env';
 import type { GamingTrackerDB } from '#lib/db.js';
+import { gamesStore } from '#lib/stores/games.svelte.js';
 import { decideGamesRefresh, readPayloadLastUpdated } from '#lib/utils/gamesRefreshPolicy.js';
 import type { Game } from '#lib/types/game.js';
 
@@ -98,6 +99,7 @@ async function refreshGamesInBackground(
 					await db.meta.put({ key: GAMES_MARKER_KEY, value: nextMarker }, GAMES_MARKER_KEY);
 				}
 			});
+			gamesStore.initializeGames(data.games, { persist: false });
 		}
 	} catch (e) {
 		if (dev) console.warn('Background refresh failed:', e);

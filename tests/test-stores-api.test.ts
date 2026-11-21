@@ -480,6 +480,21 @@ describe('GamesStore API', () => {
 			}
 		});
 
+		it('initializeGames clears stale records before persisting new games', async () => {
+			const clearSpy = vi.spyOn(db.games, 'clear');
+			const putSpy = vi.spyOn(db.games, 'bulkPut');
+			try {
+				gamesStore.initializeGames(mockGames);
+				await vi.waitFor(() => {
+					expect(clearSpy).toHaveBeenCalled();
+					expect(putSpy).toHaveBeenCalled();
+				});
+			} finally {
+				clearSpy.mockRestore();
+				putSpy.mockRestore();
+			}
+		});
+
 		it('initializeGames skips the IndexedDB write-back when persist is false', async () => {
 			const spy = vi.spyOn(db.games, 'bulkPut');
 			try {

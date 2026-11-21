@@ -204,7 +204,12 @@ class GamesStore {
 	private persistGamesToDb(games: Game[]): void {
 		const plainGames = structuredClone(games);
 		void import('#lib/db.js')
-			.then(({ db }) => db.games.bulkPut(plainGames))
+			.then(({ db }) =>
+				db.transaction('rw', db.games, async () => {
+					await db.games.clear();
+					await db.games.bulkPut(plainGames);
+				})
+			)
 			.then(() => {
 				try {
 					localStorage.setItem(DB_SEEDED_KEY, '1');
