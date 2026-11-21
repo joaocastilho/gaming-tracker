@@ -18,12 +18,18 @@
 		"sourceMap": true
 	},
 	"include": [
+		"src/app.d.ts",
 		"src/Document.tsx",
 		"src/App.tsx",
 		"src/router.tsx",
 		"src/lib/types/**/*.ts",
 		"src/lib/constants/**/*.ts",
 		"src/lib/db.ts",
+		"src/lib/stores/**/*.ts",
+		"src/lib/utils/**/*.ts",
+		"src/lib/components/detail-modal/SwipeController.ts",
+		"src/lib/components/detail-modal/continuumGestures.ts",
+		"src/lib/components/detail-modal/continuumNeighbors.ts",
 		"functions/**/*.ts",
 		"tests/setup.ts",
 		"tests/solid-toolchain-smoke.test.tsx",

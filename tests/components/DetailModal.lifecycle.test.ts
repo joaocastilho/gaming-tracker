@@ -19,8 +19,8 @@ vi.mock('$app/navigation', () => ({
 }));
 
 // Now import the component module to test its internal logic
-import { modalStore } from '#lib/stores/modal.svelte.js';
-import { gamesStore } from '#lib/stores/games.svelte.js';
+import { modalStore } from '#lib/stores/modal.js';
+import { gamesStore } from '#lib/stores/games.js';
 import type { Game } from '#lib/types/game.js';
 
 // Mock game data

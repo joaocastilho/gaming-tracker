@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { filteredGames } from '#lib/stores/filteredGamesStore.svelte.js';
-import { filtersStore } from '#lib/stores/filters.svelte.js';
-import { gamesStore } from '#lib/stores/games.svelte.js';
-import { modalStore } from '#lib/stores/modal.svelte.js';
+import { filteredGames } from '#lib/stores/filteredGamesStore.js';
+import { filtersStore } from '#lib/stores/filters.js';
+import { gamesStore } from '#lib/stores/games.js';
+import { modalStore } from '#lib/stores/modal.js';
 import type { Game } from '#lib/types/game.js';
 
 describe('UI Integration Reproduction', () => {

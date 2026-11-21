@@ -1,4 +1,5 @@
 import type { ChartData, ChartOptions, TooltipItem } from 'chart.js';
+import type {} from 'chartjs-plugin-datalabels';
 
 import type { Game } from '#lib/types/game.js';
 import { getGenreChartColor, type ColorTheme } from '#lib/utils/colorConstants.js';

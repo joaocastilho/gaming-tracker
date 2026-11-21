@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { appStore } from '#lib/stores/app.svelte.js';
-import { gamesStore } from '#lib/stores/games.svelte.js';
+import { appStore } from '#lib/stores/app.js';
+import { gamesStore } from '#lib/stores/games.js';
 import { createTestGame } from './helpers/factories';
 
 describe('Game Management Flows', () => {

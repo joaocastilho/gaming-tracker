@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { imageErrorStore } from '#lib/stores/imageErrors.svelte.js';
+import { imageErrorStore } from '#lib/stores/imageErrors.js';
 
 describe('imageErrorStore', () => {
 	beforeEach(() => {

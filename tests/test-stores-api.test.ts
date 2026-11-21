@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { appStore } from '#lib/stores/app.svelte.js';
-import { filtersStore } from '#lib/stores/filters.svelte.js';
-import { gamesStore } from '#lib/stores/games.svelte.js';
+import { appStore } from '#lib/stores/app.js';
+import { filtersStore } from '#lib/stores/filters.js';
+import { gamesStore } from '#lib/stores/games.js';
 import { db } from '#lib/db.js';
 import { toSlug } from '#lib/utils/slugUtils.js';
 

@@ -13,15 +13,15 @@ const mocks = vi.hoisted(() => ({
 	},
 }));
 
-vi.mock('#lib/stores/editor.svelte.js', () => ({
+vi.mock('#lib/stores/editor.js', () => ({
 	editorStore: mocks.editorStore,
 }));
 
-vi.mock('#lib/stores/games.svelte.js', () => ({
+vi.mock('#lib/stores/games.js', () => ({
 	gamesStore: mocks.gamesStore,
 }));
 
-import { editorModalState } from '#lib/stores/editorModalState.svelte.js';
+import { editorModalState } from '#lib/stores/editorModalState.js';
 
 describe('editorModalState', () => {
 	beforeEach(() => {

@@ -31,7 +31,7 @@ vi.mock('$app/environment', () => ({
 	dev: false,
 }));
 
-vi.mock('#lib/stores/editor.svelte.js', () => ({
+vi.mock('#lib/stores/editor.js', () => ({
 	editorStore: {
 		editorMode: true,
 		applyAllChanges: vi.fn(),
@@ -41,15 +41,15 @@ vi.mock('#lib/stores/editor.svelte.js', () => ({
 	},
 }));
 
-vi.mock('#lib/stores/games.svelte.js', () => ({
+vi.mock('#lib/stores/games.js', () => ({
 	gamesStore: {
 		setAllGames: vi.fn(),
 	},
 }));
 
 import { db } from '#lib/db.js';
-import { editorStore } from '#lib/stores/editor.svelte.js';
-import { offlineStore } from '#lib/stores/offline.svelte.js';
+import { editorStore } from '#lib/stores/editor.js';
+import { offlineStore } from '#lib/stores/offline.js';
 
 // Cast to Record to avoid complex type mocking issues
 const mockDb = db as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>;

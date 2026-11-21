@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { editorStore } from '#lib/stores/editor.svelte.js';
+import { editorStore } from '#lib/stores/editor.js';
 import type { Game } from '#lib/types/game.js';
 
 // Mock File

@@ -1,34 +1,41 @@
-import { browser } from '$app/env';
-import { editorStore } from './editor.svelte';
-import { gamesStore } from './games.svelte';
+import { createEffect, createRoot, runWithOwner } from 'solid-js';
+import { browser } from '#lib/utils/env.js';
+import { editorStore } from './editor.js';
+import { gamesStore } from './games.js';
+import { createSyncSignal } from './signalHelpers.js';
 
 const DB_SEEDED_KEY = 'gaming-tracker-db-seeded';
 const EDITOR_SESSION_KEY = 'gaming-tracker-editor-mode';
 
 class OfflineStore {
-	isOnline = $state(true);
-	hasPendingSync = $state(false);
-	isSyncing = $state(false);
+	private _isOnline = createSyncSignal<boolean>(true);
+	private _hasPendingSync = createSyncSignal<boolean>(false);
+	private _isSyncing = createSyncSignal<boolean>(false);
 
 	constructor() {
 		if (browser) {
 			this.isOnline = navigator.onLine;
 
-			$effect.root(() => {
-				$effect(() => {
-					const onOnline = () => {
-						this.isOnline = true;
-						this.trySync();
-					};
-					const onOffline = () => {
-						this.isOnline = false;
-					};
-					window.addEventListener('online', onOnline);
-					window.addEventListener('offline', onOffline);
-					return () => {
-						window.removeEventListener('online', onOnline);
-						window.removeEventListener('offline', onOffline);
-					};
+			runWithOwner(null, () => {
+				createRoot(() => {
+					createEffect(
+						() => browser,
+						() => {
+							const onOnline = () => {
+								this.isOnline = true;
+								void this.trySync();
+							};
+							const onOffline = () => {
+								this.isOnline = false;
+							};
+							window.addEventListener('online', onOnline);
+							window.addEventListener('offline', onOffline);
+							return () => {
+								window.removeEventListener('online', onOnline);
+								window.removeEventListener('offline', onOffline);
+							};
+						}
+					);
 				});
 			});
 
@@ -48,17 +55,41 @@ class OfflineStore {
 		}
 	}
 
-	async checkPendingSync() {
+	get isOnline(): boolean {
+		return this._isOnline.get();
+	}
+
+	set isOnline(value: boolean) {
+		this._isOnline.set(value);
+	}
+
+	get hasPendingSync(): boolean {
+		return this._hasPendingSync.get();
+	}
+
+	set hasPendingSync(value: boolean) {
+		this._hasPendingSync.set(value);
+	}
+
+	get isSyncing(): boolean {
+		return this._isSyncing.get();
+	}
+
+	set isSyncing(value: boolean) {
+		this._isSyncing.set(value);
+	}
+
+	async checkPendingSync(): Promise<void> {
 		const { db } = await import('#lib/db.js');
 		const pending = await db.sync_queue.get('pending');
 		this.hasPendingSync = !!pending;
 
 		if (this.hasPendingSync && this.isOnline) {
-			this.trySync();
+			void this.trySync();
 		}
 	}
 
-	async trySync() {
+	async trySync(): Promise<void> {
 		if (this.isSyncing || !this.isOnline) return;
 
 		const { db } = await import('#lib/db.js');
@@ -90,7 +121,7 @@ class OfflineStore {
 		}
 	}
 
-	setHasPendingSync(value: boolean) {
+	setHasPendingSync(value: boolean): void {
 		this.hasPendingSync = value;
 	}
 }

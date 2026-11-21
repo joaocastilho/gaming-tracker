@@ -1,11 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { brotliCompressSync, gzipSync } from 'node:zlib';
 import solid from '@solidjs/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { minifySync } from 'rolldown/experimental';
 import { defineConfig, type Plugin } from 'vite';
+import { devApiPlugin } from './scripts/devApiPlugin.js';
 
-// Emit src/service-worker.source.js as minified /service-worker.js.
+// Emit src/service-worker.source.js as minified /service-worker.js in the client build.
 function emitServiceWorker(): Plugin {
 	return {
 		name: 'emit-service-worker',
@@ -18,14 +20,45 @@ function emitServiceWorker(): Plugin {
 	};
 }
 
+// Post-process dist/client/index.html after the Solid Start static shell is
+// written: inject critical.css, stamp SPA fallback 404.html, and write
+// precompressed .gz / .br variants.
+function postProcessStaticShell(): Plugin {
+	return {
+		name: 'post-process-static-shell',
+		apply: 'build',
+		enforce: 'post',
+		buildApp: {
+			order: 'post',
+			async handler() {
+				const outDir = path.resolve('dist/client');
+				const indexPath = path.join(outDir, 'index.html');
+				if (!fs.existsSync(indexPath)) return;
+
+				const criticalCss = fs.readFileSync(path.resolve('src/lib/styles/critical.css'), 'utf-8');
+				const original = fs.readFileSync(indexPath, 'utf-8');
+				const processed = original.includes(criticalCss)
+					? original
+					: original.replace('</head>', `    <style>${criticalCss}</style>\n    </head>`);
+
+				for (const fileName of ['index.html', '404.html']) {
+					const targetPath = path.join(outDir, fileName);
+					fs.writeFileSync(targetPath, processed);
+					fs.writeFileSync(`${targetPath}.gz`, gzipSync(processed));
+					fs.writeFileSync(`${targetPath}.br`, brotliCompressSync(processed));
+				}
+			},
+		},
+	};
+}
+
 export default defineConfig({
 	publicDir: 'static',
 	define: {
 		__BUILD_DATE__: Date.now(),
 	},
-	plugins: [tailwindcss(), emitServiceWorker(), solid({ start: true })],
+	plugins: [tailwindcss(), devApiPlugin(), emitServiceWorker(), solid({ start: true }), postProcessStaticShell()],
 	build: {
-		outDir: 'build',
 		target: 'es2020',
 		minify: true,
 		sourcemap: false,

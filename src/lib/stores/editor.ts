@@ -1,8 +1,9 @@
-import { browser, dev } from '$app/env';
 import type { Game } from '#lib/types/game.js';
-import { transformGameData, type RawGameData } from '#lib/utils/dataTransformer.js';
-import { gamesStore } from './games.svelte';
-import { offlineStore } from './offline.svelte';
+import { type RawGameData, transformGameData } from '#lib/utils/dataTransformer.js';
+import { browser, dev } from '#lib/utils/env.js';
+import { gamesStore } from './games.js';
+import { offlineStore } from './offline.js';
+import { createSyncSignal } from './signalHelpers.js';
 
 const SESSION_STORAGE_KEY = 'gaming-tracker-editor-mode';
 
@@ -35,8 +36,8 @@ const initialState: EditorState = {
 };
 
 class EditorStore {
-	private _state = $state<EditorState>({ ...initialState });
-	private _pending = $state<PendingChanges>({
+	private _state = createSyncSignal<EditorState>({ ...initialState });
+	private _pending = createSyncSignal<PendingChanges>({
 		adds: [],
 		edits: new Map(),
 		deletes: new Set(),
@@ -45,197 +46,180 @@ class EditorStore {
 	});
 
 	private patchState(partial: Partial<EditorState>): void {
-		this._state = { ...this._state, ...partial };
+		this._state.set({ ...this._state.get(), ...partial });
 	}
 
-	// Direct property getters
 	get editorMode(): boolean {
-		return this._state.editorMode;
+		return this._state.get().editorMode;
 	}
 
 	get loginPending(): boolean {
-		return this._state.loginPending;
+		return this._state.get().loginPending;
 	}
 
 	get loginError(): string | null {
-		return this._state.loginError;
+		return this._state.get().loginError;
 	}
 
 	get savePending(): boolean {
-		return this._state.savePending;
+		return this._state.get().savePending;
 	}
 
 	get saveSuccess(): boolean {
-		return this._state.saveSuccess;
+		return this._state.get().saveSuccess;
 	}
 
 	get saveError(): string | null {
-		return this._state.saveError;
+		return this._state.get().saveError;
 	}
 
-	// Derived properties
 	get hasSaveError(): boolean {
-		return Boolean(this._state.saveError);
+		return Boolean(this._state.get().saveError);
 	}
 
 	get hasLoginError(): boolean {
-		return Boolean(this._state.loginError);
+		return Boolean(this._state.get().loginError);
 	}
 
-	// Environment check
 	get isDevMode(): boolean {
 		return dev;
 	}
 
-	// Pending changes getters
 	get pendingAdds(): Game[] {
-		return this._pending.adds;
+		return this._pending.get().adds;
 	}
 
 	get pendingEdits(): Map<string, Game> {
-		return this._pending.edits;
+		return this._pending.get().edits;
 	}
 
 	get pendingDeletes(): Set<string> {
-		return this._pending.deletes;
+		return this._pending.get().deletes;
 	}
 
 	get hasPendingChanges(): boolean {
-		return this._pending.adds.length > 0 || this._pending.edits.size > 0 || this._pending.deletes.size > 0;
+		const pending = this._pending.get();
+		return pending.adds.length > 0 || pending.edits.size > 0 || pending.deletes.size > 0;
 	}
 
 	get pendingChangesCount(): number {
-		return this._pending.adds.length + this._pending.edits.size + this._pending.deletes.size;
+		const pending = this._pending.get();
+		return pending.adds.length + pending.edits.size + pending.deletes.size;
 	}
 
-	// Pending changes methods
 	addPendingGame(game: Game, file?: File | null, url?: string | null): void {
-		const newFiles = new Map(this._pending.files);
+		const current = this._pending.get();
+		const newFiles = new Map(current.files);
 		if (file) {
 			newFiles.set(game.id, file);
 		}
 
-		const newUrls = new Map(this._pending.urls);
+		const newUrls = new Map(current.urls);
 		if (url && !file) {
 			newUrls.set(game.id, url);
 		}
 
-		const existingAddIndex = this._pending.adds.findIndex((g) => g.id === game.id);
-		const newAdds = [...this._pending.adds];
+		const existingAddIndex = current.adds.findIndex((g) => g.id === game.id);
+		const newAdds = [...current.adds];
 
 		if (existingAddIndex !== -1) {
-			// Replace the existing pending add
 			newAdds[existingAddIndex] = game;
 		} else {
-			// Push new add
 			newAdds.push(game);
 		}
 
-		this._pending = {
-			...this._pending,
+		this._pending.set({
+			...current,
 			adds: newAdds,
 			files: newFiles,
 			urls: newUrls,
-		};
+		});
 	}
 
 	editPendingGame(id: string, game: Game, file?: File | null, url?: string | null): void {
-		const newEdits = new Map(this._pending.edits);
+		const current = this._pending.get();
+		const newEdits = new Map(current.edits);
 		newEdits.set(id, game);
 
-		const newFiles = new Map(this._pending.files);
+		const newFiles = new Map(current.files);
 		if (file) {
 			newFiles.set(id, file);
 		}
 
-		const newUrls = new Map(this._pending.urls);
+		const newUrls = new Map(current.urls);
 		if (url && !file) {
 			newUrls.set(id, url);
 		}
 
-		this._pending = {
-			...this._pending,
+		this._pending.set({
+			...current,
 			edits: newEdits,
 			files: newFiles,
 			urls: newUrls,
-		};
+		});
 	}
 
 	deletePendingGame(id: string): void {
-		const newFiles = new Map(this._pending.files);
-		if (newFiles.has(id)) {
-			newFiles.delete(id);
-		}
+		const current = this._pending.get();
+		const newFiles = new Map(current.files);
+		newFiles.delete(id);
 
-		const newUrls = new Map(this._pending.urls);
-		if (newUrls.has(id)) {
-			newUrls.delete(id);
-		}
+		const newUrls = new Map(current.urls);
+		newUrls.delete(id);
 
-		const addIndex = this._pending.adds.findIndex((g) => g.id === id);
+		const addIndex = current.adds.findIndex((g) => g.id === id);
 		if (addIndex !== -1) {
-			const newAdds = [...this._pending.adds];
+			const newAdds = [...current.adds];
 			newAdds.splice(addIndex, 1);
-			this._pending = {
-				...this._pending,
+			this._pending.set({
+				...current,
 				adds: newAdds,
 				files: newFiles,
 				urls: newUrls,
-			};
+			});
 			return;
 		}
 
-		// If it's a pending edit, remove from edits and add to deletes
-		const newEdits = new Map(this._pending.edits);
+		const newEdits = new Map(current.edits);
 		newEdits.delete(id);
 
-		const newDeletes = new Set(this._pending.deletes);
+		const newDeletes = new Set(current.deletes);
 		newDeletes.add(id);
 
-		this._pending = {
-			...this._pending,
+		this._pending.set({
+			...current,
 			edits: newEdits,
 			deletes: newDeletes,
 			files: newFiles,
 			urls: newUrls,
-		};
+		});
 	}
 
 	discardAllChanges(): void {
-		this._pending = {
+		this._pending.set({
 			adds: [],
 			edits: new Map(),
 			deletes: new Set(),
 			files: new Map(),
 			urls: new Map(),
-		};
+		});
 	}
 
 	buildFinalGames(currentGames: Game[]): Game[] {
+		const pending = this._pending.get();
 		let result = [...currentGames];
-		result = result.filter((g) => !this._pending.deletes.has(g.id));
+		result = result.filter((g) => !pending.deletes.has(g.id));
 
 		result = result.map((g) => {
-			const edited = this._pending.edits.get(g.id);
+			const edited = pending.edits.get(g.id);
 			return edited ? edited : g;
 		});
 
-		result = [...result, ...this._pending.adds];
+		result = [...result, ...pending.adds];
 
 		return result;
 	}
 
-	/**
-	 * Fetch the latest games.json from the server, bypassing HTTP cache.
-	 * Returns null when the fetch fails so callers can fall back to stale data
-	 * (offline-safe). This prevents full-file overwrites from stale
-	 * IndexedDB/cache state clobbering unrelated server-side changes.
-	 *
-	 * Server storage omits computed fields (mainTitle/subtitle) and uses
-	 * DD/MM/YYYY dates, so the raw payload is run through transformGameData
-	 * (same as initial load) before use, otherwise server validation
-	 * rejects the save with 400.
-	 */
 	async fetchLatestGames(): Promise<Game[] | null> {
 		try {
 			const res = await fetch(`/games.json?t=${Date.now()}`, {
@@ -303,15 +287,16 @@ class EditorStore {
 	}
 
 	private buildSaveFormData(payload: { games: Game[] }): FormData {
+		const pending = this._pending.get();
 		const formData = new FormData();
 		const blob = new Blob([JSON.stringify(payload)], { type: 'application/json; charset=utf-8' });
 		formData.append('games', blob, 'games.json');
 
-		for (const [id, file] of this._pending.files.entries()) {
+		for (const [id, file] of pending.files.entries()) {
 			formData.append(`cover_${id}`, file);
 		}
 
-		for (const [id, url] of this._pending.urls.entries()) {
+		for (const [id, url] of pending.urls.entries()) {
 			formData.append(`cover_url_${id}`, url);
 		}
 
@@ -435,10 +420,9 @@ class EditorStore {
 	}
 
 	async logout(): Promise<void> {
-		this._state = { ...initialState, editorMode: false };
+		this._state.set({ ...initialState, editorMode: false });
 		this.discardAllChanges();
 
-		// Clear session storage
 		if (browser) {
 			try {
 				sessionStorage.removeItem(SESSION_STORAGE_KEY);
@@ -446,8 +430,6 @@ class EditorStore {
 				// Ignore storage errors
 			}
 
-			// Call logout API to clear the server-side cookie (production only)
-			// In dev mode there's no /api/auth/logout endpoint
 			if (!dev) {
 				try {
 					await fetch('/api/auth/logout', {
@@ -464,7 +446,6 @@ class EditorStore {
 	setEditorModeFromSessionCheck(enabled: boolean): void {
 		this.patchState({ editorMode: enabled });
 
-		// Sync with session storage
 		if (browser) {
 			try {
 				if (enabled) {

@@ -1,20 +1,69 @@
-import { modalStore } from '#lib/stores/modal.svelte.js';
-import { windowSize } from '#lib/stores/window.svelte.js';
+import { modalStore } from '#lib/stores/modal.js';
+import { createSyncSignal } from '#lib/stores/signalHelpers.js';
+import { windowSize } from '#lib/stores/window.js';
 import type { Game } from '#lib/types/game.js';
 
 export class SwipeController {
-	swipeOffsetX = $state(0);
-	swipeOffsetY = $state(0);
-	isSwipeTransitioning = $state(false);
-	swipeDirection = $state<'left' | 'right' | null>(null);
-	isClosingGesture = $state(false);
-	parallaxOffset = $state(0);
+	private _swipeOffsetX = createSyncSignal<number>(0);
+	private _swipeOffsetY = createSyncSignal<number>(0);
+	private _isSwipeTransitioning = createSyncSignal<boolean>(false);
+	private _swipeDirection = createSyncSignal<'left' | 'right' | null>(null);
+	private _isClosingGesture = createSyncSignal<boolean>(false);
+	private _parallaxOffset = createSyncSignal<number>(0);
 
 	// Cache dimensions to avoid layout thrashing during animations
 	private cachedWidth = 300;
 	private cachedHeight = 600;
 
-	get offsetMagnitude() {
+	get swipeOffsetX(): number {
+		return this._swipeOffsetX.get();
+	}
+
+	set swipeOffsetX(value: number) {
+		this._swipeOffsetX.set(value);
+	}
+
+	get swipeOffsetY(): number {
+		return this._swipeOffsetY.get();
+	}
+
+	set swipeOffsetY(value: number) {
+		this._swipeOffsetY.set(value);
+	}
+
+	get isSwipeTransitioning(): boolean {
+		return this._isSwipeTransitioning.get();
+	}
+
+	set isSwipeTransitioning(value: boolean) {
+		this._isSwipeTransitioning.set(value);
+	}
+
+	get swipeDirection(): 'left' | 'right' | null {
+		return this._swipeDirection.get();
+	}
+
+	set swipeDirection(value: 'left' | 'right' | null) {
+		this._swipeDirection.set(value);
+	}
+
+	get isClosingGesture(): boolean {
+		return this._isClosingGesture.get();
+	}
+
+	set isClosingGesture(value: boolean) {
+		this._isClosingGesture.set(value);
+	}
+
+	get parallaxOffset(): number {
+		return this._parallaxOffset.get();
+	}
+
+	set parallaxOffset(value: number) {
+		this._parallaxOffset.set(value);
+	}
+
+	get offsetMagnitude(): number {
 		return this.cachedWidth + 20;
 	}
 
@@ -55,7 +104,7 @@ export class SwipeController {
 		this.cachedHeight = windowSize.height;
 	}
 
-	handleTouchStart(e: TouchEvent) {
+	handleTouchStart(e: TouchEvent): void {
 		if (this.isSwipeTransitioning) return;
 
 		this.onSwipeStart?.();
@@ -77,7 +126,7 @@ export class SwipeController {
 		this.parallaxOffset = 0;
 	}
 
-	handleTouchMove(e: TouchEvent) {
+	handleTouchMove(e: TouchEvent): void {
 		if (this.isSwipeTransitioning) return;
 
 		const touch = e.touches[0];
@@ -128,7 +177,7 @@ export class SwipeController {
 		});
 	}
 
-	handleTouchEnd() {
+	handleTouchEnd(): void {
 		const touchEndTime = Date.now();
 		const duration = touchEndTime - this.touchStartTime;
 		const velocity = Math.abs(this.touchCurrentX - this.touchStartX) / duration;
@@ -163,7 +212,7 @@ export class SwipeController {
 		this.isClosingGesture = false;
 	}
 
-	private animateClose() {
+	private animateClose(): void {
 		this.isSwipeTransitioning = true;
 		const startOffset = this.swipeOffsetY;
 		const targetOffset = this.cachedHeight;
@@ -189,7 +238,7 @@ export class SwipeController {
 		requestAnimationFrame(animate);
 	}
 
-	private resetVerticalPosition() {
+	private resetVerticalPosition(): void {
 		const startOffset = this.swipeOffsetY;
 		const startTime = performance.now();
 		const duration = 200;
@@ -211,7 +260,7 @@ export class SwipeController {
 		requestAnimationFrame(animate);
 	}
 
-	private animateSwipeTransition(direction: 'left' | 'right') {
+	private animateSwipeTransition(direction: 'left' | 'right'): void {
 		this.isSwipeTransitioning = true;
 		const targetOffset = direction === 'left' ? -this.offsetMagnitude : this.offsetMagnitude;
 		const startOffset = this.swipeOffsetX;
@@ -251,7 +300,7 @@ export class SwipeController {
 		requestAnimationFrame(animate);
 	}
 
-	private resetSwipePosition() {
+	private resetSwipePosition(): void {
 		this.isSwipeTransitioning = true;
 		const startOffset = this.swipeOffsetX;
 		const startParallax = this.parallaxOffset;

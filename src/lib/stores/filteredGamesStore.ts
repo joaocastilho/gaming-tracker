@@ -1,14 +1,15 @@
+import { createMemo, createRoot, runWithOwner } from 'solid-js';
 import type { Game } from '#lib/types/game.js';
-import { appStore, type TabValue } from './app.svelte';
-import { filtersStore } from './filters.svelte';
-import { gamesStore } from './games.svelte';
 import {
+	type FilterTab,
 	filterGamesByTab,
 	filterGamesWithBaseFilters,
-	sortGames,
-	type FilterTab,
 	type SortOption,
+	sortGames,
 } from '#lib/utils/filtering.js';
+import { appStore, type TabValue } from './app.js';
+import { filtersStore } from './filters.js';
+import { gamesStore } from './games.js';
 
 function toFilterTab(tab: TabValue): FilterTab {
 	if (tab === 'all' || tab === 'completed' || tab === 'planned' || tab === 'tierlist') return tab;
@@ -17,6 +18,34 @@ function toFilterTab(tab: TabValue): FilterTab {
 
 class FilteredGamesStore {
 	private sortedMasters = new Map<string, { games: Game[]; sorted: Game[] }>();
+	private _filteredGames: () => Game[];
+
+	constructor() {
+		this._filteredGames = runWithOwner(null, () =>
+			createRoot(() =>
+				createMemo((): Game[] => {
+					const allGames = gamesStore.games;
+					const filters = filtersStore.state;
+					const activeTab = appStore.activeTab;
+
+					if (!allGames || allGames.length === 0 || !filters) {
+						return [];
+					}
+
+					const tab = toFilterTab(activeTab);
+					const effectiveSort = tab === 'tierlist' ? null : (filters.sortOption ?? null);
+
+					// The sort comparator only depends on each game's own fields, so sorting the
+					// master array once and then filtering (order-preserving) yields the same
+					// result as filtering then sorting — but skips the O(n log n) sort on every
+					// keystroke. The sorted master is cached per tab/sort configuration.
+					const sortedMaster = this.getSortedMaster(allGames, tab, effectiveSort);
+					const baseFiltered = filterGamesWithBaseFilters(sortedMaster, filters);
+					return filterGamesByTab(baseFiltered, tab);
+				})
+			)
+		);
+	}
 
 	private getSortedMaster(games: Game[], tab: FilterTab, sort: SortOption | null): Game[] {
 		const key = `${tab}|${sort?.key ?? ''}|${sort?.direction ?? ''}`;
@@ -28,36 +57,15 @@ class FilteredGamesStore {
 		return sorted;
 	}
 
-	private _filteredGames = $derived.by(() => {
-		const allGames = gamesStore.games;
-		const filters = filtersStore.state;
-		const activeTab = appStore.activeTab;
-
-		if (!allGames || allGames.length === 0 || !filters) {
-			return [];
-		}
-
-		const tab = toFilterTab(activeTab);
-		const effectiveSort = tab === 'tierlist' ? null : (filters.sortOption ?? null);
-
-		// The sort comparator only depends on each game's own fields, so sorting the
-		// master array once and then filtering (order-preserving) yields the same
-		// result as filtering then sorting — but skips the O(n log n) sort on every
-		// keystroke. The sorted master is cached per tab/sort configuration.
-		const sortedMaster = this.getSortedMaster(allGames, tab, effectiveSort);
-		const baseFiltered = filterGamesWithBaseFilters(sortedMaster, filters);
-		return filterGamesByTab(baseFiltered, tab);
-	});
-
 	get games(): Game[] {
-		return this._filteredGames;
+		return this._filteredGames();
 	}
 
 	getFilteredGames(tab?: string): Game[] {
 		const activeTab = typeof tab === 'string' ? toFilterTab(tab as TabValue) : toFilterTab(appStore.activeTab);
 
 		if (activeTab === toFilterTab(appStore.activeTab)) {
-			return this._filteredGames;
+			return this._filteredGames();
 		}
 
 		const allGames = gamesStore.games;

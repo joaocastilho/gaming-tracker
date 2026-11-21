@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { modalStore } from '#lib/stores/modal.svelte.js';
-import { gamesStore } from '#lib/stores/games.svelte.js';
+import { modalStore } from '#lib/stores/modal.js';
+import { gamesStore } from '#lib/stores/games.js';
 import type { Game } from '#lib/types/game.js';
 
 // Mock game data

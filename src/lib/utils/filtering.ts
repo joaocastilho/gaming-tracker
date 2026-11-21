@@ -1,5 +1,5 @@
 import type { Game } from '#lib/types/game.js';
-import type { SortKey, SortDirection } from '#lib/stores/filters.svelte.js';
+import type { SortDirection, SortKey } from '#lib/stores/filters.js';
 import { parseDate } from '#lib/utils/dateUtils.js';
 import { parsePlaytimeToMinutes } from '#lib/utils/playtimeUtils.js';
 import { getTierDisplayName, getTierWeight } from '#lib/utils/tierUtils.js';

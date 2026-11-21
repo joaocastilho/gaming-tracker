@@ -4,7 +4,7 @@
  * which could cause infinite effect loops in Svelte components
  */
 import { beforeEach, describe, expect, it } from 'vitest';
-import { filtersStore, createInitialFilters } from '#lib/stores/filters.svelte.js';
+import { filtersStore, createInitialFilters } from '#lib/stores/filters.js';
 
 describe('Filter Store Idempotency', () => {
 	beforeEach(() => {

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, afterEach } from 'vitest';
-import { appStore } from '#lib/stores/app.svelte.js';
-import { filteredGamesStore } from '#lib/stores/filteredGamesStore.svelte.js';
-import { filtersStore } from '#lib/stores/filters.svelte.js';
-import { gamesStore } from '#lib/stores/games.svelte.js';
+import { appStore } from '#lib/stores/app.js';
+import { filteredGamesStore } from '#lib/stores/filteredGamesStore.js';
+import { filtersStore } from '#lib/stores/filters.js';
+import { gamesStore } from '#lib/stores/games.js';
 import { db } from '#lib/db.js';
 import type { Game } from '#lib/types/game.js';
 

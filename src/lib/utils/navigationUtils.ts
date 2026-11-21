@@ -1,7 +1,8 @@
-import { goto } from '$app/navigation';
-import { appStore } from '#lib/stores/app.svelte.js';
-import { filtersStore } from '#lib/stores/filters.svelte.js';
-import { toSlug } from './slugUtils';
+import { appStore } from '#lib/stores/app.js';
+import { filtersStore } from '#lib/stores/filters.js';
+import type { PageState } from '#lib/types/pageState.js';
+import { goto } from './routerBridge.js';
+import { toSlug } from './slugUtils.js';
 
 export type NavTarget = 'all' | 'completed' | 'planned' | 'tierlist' | 'stats' | 'library';
 
@@ -10,7 +11,7 @@ export interface NavigationOptions {
 	preserveFilters?: boolean;
 	replaceState?: boolean;
 	noScroll?: boolean;
-	state?: App.PageState;
+	state?: PageState;
 }
 
 const DEFAULT_OPTIONS: NavigationOptions = {
@@ -20,7 +21,7 @@ const DEFAULT_OPTIONS: NavigationOptions = {
 	noScroll: false,
 };
 
-export async function navigateTo(target: NavTarget, options: NavigationOptions = {}) {
+export async function navigateTo(target: NavTarget, options: NavigationOptions = {}): Promise<void> {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
 	const route = getRoutePath(target);
@@ -57,7 +58,10 @@ export async function navigateTo(target: NavTarget, options: NavigationOptions =
 	}
 }
 
-export async function navigateToAndReset(target: NavTarget, options: Omit<NavigationOptions, 'preserveFilters'> = {}) {
+export async function navigateToAndReset(
+	target: NavTarget,
+	options: Omit<NavigationOptions, 'preserveFilters'> = {}
+): Promise<void> {
 	const opts = { ...DEFAULT_OPTIONS, ...options, preserveFilters: false };
 
 	appStore.setActiveTab(target, true);
@@ -73,7 +77,7 @@ export async function navigateToAndReset(target: NavTarget, options: Omit<Naviga
 	}
 }
 
-export function scrollToTop() {
+export function scrollToTop(): void {
 	if (typeof window !== 'undefined') {
 		window.scrollTo({
 			top: 0,

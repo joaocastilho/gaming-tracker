@@ -1,9 +1,10 @@
-import { browser } from '$app/env';
+import { CARD_WIDTHS } from '#lib/constants/fonts.js';
 import type { Game } from '#lib/types/game.js';
-import { transformGameData, type RawGameData } from '#lib/utils/dataTransformer.js';
+import { type RawGameData, transformGameData } from '#lib/utils/dataTransformer.js';
+import { browser } from '#lib/utils/env.js';
 import { createGameSlug } from '#lib/utils/slugUtils.js';
 import type { CardHeights } from '#lib/utils/textMeasure.js';
-import { CARD_WIDTHS } from '#lib/constants/fonts.js';
+import { createSyncSignal } from './signalHelpers.js';
 
 const DB_SEEDED_KEY = 'gaming-tracker-db-seeded';
 
@@ -12,11 +13,10 @@ const DB_SEEDED_KEY = 'gaming-tracker-db-seeded';
 const MEASURED_WIDTHS = [CARD_WIDTHS.small];
 
 class GamesStore {
-	private _games = $state<Game[]>([]);
-	loading = $state<boolean>(true);
-	error = $state<string | null>(null);
-
-	private _cardHeights = $state<Map<string, Record<number, CardHeights>>>(new Map());
+	private _games = createSyncSignal<Game[]>([]);
+	private _loading = createSyncSignal<boolean>(true);
+	private _error = createSyncSignal<string | null>(null);
+	private _cardHeights = createSyncSignal<Map<string, Record<number, CardHeights>>>(new Map());
 
 	// Slug/id lookup index, rebuilt only when the games array identity
 	// changes. Modal URL parsing and the lookup helpers used to scan the
@@ -25,10 +25,11 @@ class GamesStore {
 	private lookupIndexSource: Game[] | null = null;
 
 	private buildLookupIndex(): Map<string, Game> {
-		if (this.lookupIndexSource === this._games) return this.lookupIndex;
+		const currentGames = this._games.get();
+		if (this.lookupIndexSource === currentGames) return this.lookupIndex;
 
 		const index = new Map<string, Game>();
-		for (const game of this._games) {
+		for (const game of currentGames) {
 			if (game.title) {
 				const slug = createGameSlug(game.title);
 				if (!index.has(slug)) index.set(slug, game);
@@ -38,31 +39,48 @@ class GamesStore {
 				if (!index.has(mainSlug)) index.set(mainSlug, game);
 			}
 		}
-		for (const game of this._games) {
+		for (const game of currentGames) {
 			if (game.id && !index.has(game.id)) index.set(game.id, game);
 		}
 
 		this.lookupIndex = index;
-		this.lookupIndexSource = this._games;
+		this.lookupIndexSource = currentGames;
 		return index;
 	}
 
+	get loading(): boolean {
+		return this._loading.get();
+	}
+
+	set loading(value: boolean) {
+		this._loading.set(value);
+	}
+
+	get error(): string | null {
+		return this._error.get();
+	}
+
+	set error(value: string | null) {
+		this._error.set(value);
+	}
+
 	get cardHeights(): Map<string, Record<number, CardHeights>> {
-		return this._cardHeights;
+		return this._cardHeights.get();
 	}
 
 	get games(): Game[] {
-		return this._games;
+		return this._games.get();
 	}
 
 	private set games(value: Game[]) {
-		this._games = value;
+		this._games.set(value);
 	}
 
 	get allPlatforms(): string[] {
-		if (!this._games || this._games.length === 0) return [];
+		const currentGames = this._games.get();
+		if (!currentGames || currentGames.length === 0) return [];
 		const optionsSet = new Set<string>();
-		for (const game of this._games) {
+		for (const game of currentGames) {
 			if (typeof game.platform === 'string' && game.platform) {
 				optionsSet.add(game.platform);
 			}
@@ -71,9 +89,10 @@ class GamesStore {
 	}
 
 	get allGenres(): string[] {
-		if (!this._games || this._games.length === 0) return [];
+		const currentGames = this._games.get();
+		if (!currentGames || currentGames.length === 0) return [];
 		const optionsSet = new Set<string>();
-		for (const game of this._games) {
+		for (const game of currentGames) {
 			if (typeof game.genre === 'string' && game.genre) {
 				optionsSet.add(game.genre);
 			}
@@ -140,7 +159,7 @@ class GamesStore {
 	}
 
 	addGame(newGame: Game): void {
-		this.games = [...this._games, newGame];
+		this.games = [...this._games.get(), newGame];
 		void this.updateCardHeights([newGame.id]);
 	}
 
@@ -164,10 +183,11 @@ class GamesStore {
 		const textMeasure = await this.loadTextMeasure();
 		if (!textMeasure) return;
 
+		const currentGames = this._games.get();
 		if (gameIds) {
-			const newHeights = new Map(this._cardHeights);
+			const newHeights = new Map(this._cardHeights.get());
 			for (const id of gameIds) {
-				const game = this._games.find((g) => g.id === id);
+				const game = currentGames.find((g) => g.id === id);
 				if (game) {
 					const heights: Record<number, CardHeights> = {};
 					for (const width of MEASURED_WIDTHS) {
@@ -176,9 +196,9 @@ class GamesStore {
 					newHeights.set(id, heights);
 				}
 			}
-			this._cardHeights = newHeights;
+			this._cardHeights.set(newHeights);
 		} else {
-			this._cardHeights = textMeasure.computeAllCardHeights(this._games, MEASURED_WIDTHS);
+			this._cardHeights.set(textMeasure.computeAllCardHeights(currentGames, MEASURED_WIDTHS));
 		}
 	}
 
@@ -197,7 +217,7 @@ class GamesStore {
 	}
 
 	updateGame(id: string, updatedGame: Partial<Game>): void {
-		this.games = this._games.map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
+		this.games = this._games.get().map((game) => (game.id === id ? { ...game, ...updatedGame } : game));
 		void this.updateCardHeights([id]);
 	}
 
@@ -227,6 +247,10 @@ class GamesStore {
 		if (browser && typeof indexedDB !== 'undefined') {
 			this.persistGamesToDb(games);
 		}
+	}
+
+	deleteGame(id: string): void {
+		this.games = this._games.get().filter((game) => game.id !== id);
 	}
 }
 

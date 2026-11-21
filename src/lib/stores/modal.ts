@@ -1,10 +1,10 @@
-import { goto } from '$app/navigation';
-import type { ReadonlyURLSearchParams } from '$app/state';
-import { createGameSlug, isValidSlug } from '#lib/utils/slugUtils.js';
+import type { SortOption } from '#lib/stores/filters.js';
+import { gamesStore } from '#lib/stores/games.js';
+import { filterGamesByContext } from '#lib/stores/modalNavigation.js';
 import type { Game } from '#lib/types/game.js';
-import type { SortOption } from '#lib/stores/filters.svelte.js';
-import { gamesStore } from '#lib/stores/games.svelte.js';
-import { filterGamesByContext } from '#lib/stores/modalNavigation.svelte.js';
+import { goto } from '#lib/utils/routerBridge.js';
+import { createGameSlug, isValidSlug } from '#lib/utils/slugUtils.js';
+import { createSyncSignal } from './signalHelpers.js';
 
 export interface CardRect {
 	x: number;
@@ -48,38 +48,36 @@ const initialState: ModalState = {
 };
 
 class ModalStore {
-	private _state = $state<ModalState>({ ...initialState });
+	private _state = createSyncSignal<ModalState>({ ...initialState });
 	private isProgrammaticUpdate = false;
 	private programmaticUpdateId = 0;
 
-	// Removed debouncedWriteToURL to prevent race conditions with readFromURL
-
 	get isOpen(): boolean {
-		return this._state.isOpen;
+		return this._state.get().isOpen;
 	}
 
 	get activeGame(): Game | null {
-		return this._state.activeGame;
+		return this._state.get().activeGame;
 	}
 
 	get mode(): 'view' {
-		return this._state.mode;
+		return this._state.get().mode;
 	}
 
 	get displayedGames(): Game[] {
-		return this._state.displayedGames;
+		return this._state.get().displayedGames;
 	}
 
 	get filterContext(): ModalState['filterContext'] {
-		return this._state.filterContext;
+		return this._state.get().filterContext;
 	}
 
 	get cardRect(): CardRect | null {
-		return this._state.cardRect;
+		return this._state.get().cardRect;
 	}
 
 	getState(): ModalState {
-		return this._state;
+		return this._state.get();
 	}
 
 	openViewModal(
@@ -88,50 +86,53 @@ class ModalStore {
 		filterContext?: Partial<ModalState['filterContext']>,
 		cardRect?: CardRect
 	): void {
+		const current = this._state.get();
 		let finalDisplayedGames = displayedGames;
 
 		if (displayedGames.length === 0 && !filterContext) {
-			finalDisplayedGames = this._state.displayedGames.length > 0 ? this._state.displayedGames : gamesStore.games;
+			finalDisplayedGames = current.displayedGames.length > 0 ? current.displayedGames : gamesStore.games;
 		}
 
-		this._state = {
-			...this._state,
+		this._state.set({
+			...current,
 			isOpen: true,
 			activeGame: game,
 			mode: 'view',
 			displayedGames: finalDisplayedGames,
 			cardRect: cardRect ?? null,
-			filterContext: filterContext ? { ...this._state.filterContext, ...filterContext } : this._state.filterContext,
-		};
+			filterContext: filterContext ? { ...current.filterContext, ...filterContext } : current.filterContext,
+		});
 
-		this.writeToURL();
+		void this.writeToURL();
 	}
 
 	closeModal(): void {
-		this._state = {
-			...this._state,
+		const current = this._state.get();
+		this._state.set({
+			...current,
 			isOpen: false,
 			activeGame: null,
 			mode: 'view',
 			displayedGames: [],
 			cardRect: null,
-		};
+		});
 
-		this.writeToURL();
+		void this.writeToURL();
 	}
 
 	reset(): void {
-		this._state = { ...initialState };
+		this._state.set({ ...initialState });
 		this.isProgrammaticUpdate = false;
 		this.programmaticUpdateId = 0;
 	}
 
 	getReactiveNavigationGames(allGames: Game[]): Game[] {
-		if (!this._state.filterContext) return allGames;
-		return filterGamesByContext(allGames, this._state.filterContext);
+		const current = this._state.get();
+		if (!current.filterContext) return allGames;
+		return filterGamesByContext(allGames, current.filterContext);
 	}
 
-	readFromURL(searchParams: ReadonlyURLSearchParams, displayedGames: Game[]): void {
+	readFromURL(searchParams: Pick<URLSearchParams, 'get'>, displayedGames: Game[]): void {
 		if (this.isProgrammaticUpdate) return;
 
 		const gameSlug = searchParams.get('game');
@@ -139,13 +140,13 @@ class ModalStore {
 			// Indexed lookup: title slug, main-title slug, then id.
 			const game = gamesStore.findByUrlSlug(gameSlug);
 			if (game) {
-				const state = this._state;
+				const state = this._state.get();
 				if (!state.isOpen || state.activeGame?.id !== game.id) {
 					this.openViewModal(game, displayedGames);
 				}
 			}
 		} else {
-			const state = this._state;
+			const state = this._state.get();
 			if (state.isOpen) {
 				this.closeModal();
 			}
@@ -159,7 +160,7 @@ class ModalStore {
 		const currentUpdateId = ++this.programmaticUpdateId;
 
 		try {
-			const state = this._state;
+			const state = this._state.get();
 			const url = new URL(window.location.href);
 			const currentSlug = url.searchParams.get('game');
 
@@ -173,11 +174,9 @@ class ModalStore {
 					url.searchParams.set('game', slug);
 					await goto(url.toString(), { shallow: true });
 				}
-			} else {
-				if (currentSlug) {
-					url.searchParams.delete('game');
-					await goto(url.toString(), { shallow: true, replace: true });
-				}
+			} else if (currentSlug) {
+				url.searchParams.delete('game');
+				await goto(url.toString(), { shallow: true, replace: true });
 			}
 		} catch {
 			// Ignore router initialization errors

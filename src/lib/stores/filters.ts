@@ -1,11 +1,12 @@
-import { goto } from '$app/navigation';
-import { browser } from '$app/env';
-import type { ReadonlyURLSearchParams } from '$app/state';
+import type { PageState } from '#lib/types/pageState.js';
 import { debounce } from '#lib/utils/debounce.js';
-import { toSlug, fromSlug } from '#lib/utils/slugUtils.js';
+import { browser } from '#lib/utils/env.js';
 import { extractFilterOptions } from '#lib/utils/filterOptions.js';
-import { gamesStore } from './games.svelte';
-import { getLastManualClearTime } from './searchClearCoordinator';
+import { goto } from '#lib/utils/routerBridge.js';
+import { fromSlug, toSlug } from '#lib/utils/slugUtils.js';
+import { gamesStore } from './games.js';
+import { getLastManualClearTime } from './searchClearCoordinator.js';
+import { createSyncSignal } from './signalHelpers.js';
 
 export type SortKey = 'presentation' | 'story' | 'gameplay' | 'score' | 'finishedDate' | 'alphabetical' | 'playtime';
 
@@ -72,13 +73,11 @@ const initialFilters: FilterState = {
 };
 
 class FiltersStore {
-	private _state = $state<FilterState | null>(null);
-	public isInternalUpdate = $state(false);
+	private _state = createSyncSignal<FilterState | null>(null);
+	private _isInternalUpdate = createSyncSignal<boolean>(false);
 	private internalUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
-
-	public isDesktopFiltersExpanded = $state(true);
-
-	public isDesktopSearchOpen = $state(false);
+	private _isDesktopFiltersExpanded = createSyncSignal<boolean>(true);
+	private _isDesktopSearchOpen = createSyncSignal<boolean>(false);
 
 	private static readonly FILTERS_EXPANDED_KEY = 'filtersExpanded';
 	private static readonly FILTERS_STATE_KEY = 'filtersState';
@@ -95,32 +94,56 @@ class FiltersStore {
 		}
 	}
 
+	get isInternalUpdate(): boolean {
+		return this._isInternalUpdate.get();
+	}
+
+	set isInternalUpdate(value: boolean) {
+		this._isInternalUpdate.set(value);
+	}
+
+	get isDesktopFiltersExpanded(): boolean {
+		return this._isDesktopFiltersExpanded.get();
+	}
+
+	set isDesktopFiltersExpanded(value: boolean) {
+		this._isDesktopFiltersExpanded.set(value);
+	}
+
+	get isDesktopSearchOpen(): boolean {
+		return this._isDesktopSearchOpen.get();
+	}
+
+	set isDesktopSearchOpen(value: boolean) {
+		this._isDesktopSearchOpen.set(value);
+	}
+
 	get state(): FilterState | null {
-		return this._state;
+		return this._state.get();
 	}
 
 	private set state(value: FilterState | null) {
-		this._state = value;
+		this._state.set(value);
 	}
 
 	get selectedPlatforms(): string[] {
-		return this._state?.platforms ?? [];
+		return this._state.get()?.platforms ?? [];
 	}
 
 	get selectedGenres(): string[] {
-		return this._state?.genres ?? [];
+		return this._state.get()?.genres ?? [];
 	}
 
 	get selectedTiers(): string[] {
-		return this._state?.tiers ?? [];
+		return this._state.get()?.tiers ?? [];
 	}
 
 	get selectedCoOp(): string[] {
-		return this._state?.coOp ?? [];
+		return this._state.get()?.coOp ?? [];
 	}
 
 	get searchQuery(): string {
-		return this._state?.searchTerm ?? '';
+		return this._state.get()?.searchTerm ?? '';
 	}
 
 	set searchQuery(value: string) {
@@ -128,7 +151,7 @@ class FiltersStore {
 	}
 
 	isAnyFilterApplied(): boolean {
-		const state = this._state;
+		const state = this._state.get();
 		if (!state) return false;
 
 		const defaultSearchTerm = baseFilters.searchTerm;
@@ -143,12 +166,13 @@ class FiltersStore {
 	}
 
 	isSortModified(): boolean {
-		return (this._state?.sortOption ?? null) !== null;
+		return (this._state.get()?.sortOption ?? null) !== null;
 	}
 
 	resetFilters(): void {
-		if (!this._state) return;
-		if (!this.isAnyFilterApplied() && this._state.sortOption === null) return;
+		const current = this._state.get();
+		if (!current) return;
+		if (!this.isAnyFilterApplied() && current.sortOption === null) return;
 		this.state = { ...initialFilters };
 	}
 
@@ -161,81 +185,91 @@ class FiltersStore {
 	}
 
 	togglePlatform(platform: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		const platforms = this._state.platforms.includes(platform)
-			? this._state.platforms.filter((p) => p !== platform)
-			: [...this._state.platforms, platform];
-		this.state = { ...this._state, platforms };
+		const platforms = current.platforms.includes(platform)
+			? current.platforms.filter((p) => p !== platform)
+			: [...current.platforms, platform];
+		this.state = { ...current, platforms };
 	}
 
 	toggleGenre(genre: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		const genres = this._state.genres.includes(genre)
-			? this._state.genres.filter((g) => g !== genre)
-			: [...this._state.genres, genre];
-		this.state = { ...this._state, genres };
+		const genres = current.genres.includes(genre)
+			? current.genres.filter((g) => g !== genre)
+			: [...current.genres, genre];
+		this.state = { ...current, genres };
 	}
 
 	toggleStatus(status: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		const statuses = this._state.statuses.includes(status)
-			? this._state.statuses.filter((s) => s !== status)
-			: [...this._state.statuses, status];
-		this.state = { ...this._state, statuses };
+		const statuses = current.statuses.includes(status)
+			? current.statuses.filter((s) => s !== status)
+			: [...current.statuses, status];
+		this.state = { ...current, statuses };
 	}
 
 	toggleTier(tier: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		const tiers = this._state.tiers.includes(tier)
-			? this._state.tiers.filter((t) => t !== tier)
-			: [...this._state.tiers, tier];
-		this.state = { ...this._state, tiers };
+		const tiers = current.tiers.includes(tier)
+			? current.tiers.filter((t) => t !== tier)
+			: [...current.tiers, tier];
+		this.state = { ...current, tiers };
 	}
 
 	toggleCoOp(coOpValue: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		const coOp = this._state.coOp.includes(coOpValue)
-			? this._state.coOp.filter((c) => c !== coOpValue)
-			: [...this._state.coOp, coOpValue];
-		this.state = { ...this._state, coOp };
+		const coOp = current.coOp.includes(coOpValue)
+			? current.coOp.filter((c) => c !== coOpValue)
+			: [...current.coOp, coOpValue];
+		this.state = { ...current, coOp };
 	}
 
 	removePlatform(platform: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
 		this.state = {
-			...this._state,
-			platforms: this._state.platforms.filter((p) => p !== platform),
+			...current,
+			platforms: current.platforms.filter((p) => p !== platform),
 		};
 	}
 
 	removeGenre(genre: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		this.state = { ...this._state, genres: this._state.genres.filter((g) => g !== genre) };
+		this.state = { ...current, genres: current.genres.filter((g) => g !== genre) };
 	}
 
 	removeTier(tier: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		this.state = { ...this._state, tiers: this._state.tiers.filter((t) => t !== tier) };
+		this.state = { ...current, tiers: current.tiers.filter((t) => t !== tier) };
 	}
 
 	removeCoOp(coOpValue: string): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		this.state = { ...this._state, coOp: this._state.coOp.filter((c) => c !== coOpValue) };
+		this.state = { ...current, coOp: current.coOp.filter((c) => c !== coOpValue) };
 	}
 
 	setFilters(filters: Partial<FilterState>): void {
-		if (!this._state) return;
+		const current = this._state.get();
+		if (!current) return;
 		this.startInternalUpdate();
-		this.state = { ...this._state, ...filters };
+		this.state = { ...current, ...filters };
 	}
 
 	resetAllFilters(): void {
@@ -244,19 +278,20 @@ class FiltersStore {
 	}
 
 	setSearchTerm(term: string): void {
-		if (!this._state) return;
-		if (this._state.searchTerm === term) {
+		const current = this._state.get();
+		if (!current) return;
+		if (current.searchTerm === term) {
 			return;
 		}
 
 		this.startInternalUpdate();
-
-		this.state = { ...this._state, searchTerm: term };
+		this.state = { ...current, searchTerm: term };
 	}
 
 	setSort(sortOption: SortOption | null): void {
-		if (!this._state) return;
-		const currentSort = this._state.sortOption;
+		const current = this._state.get();
+		if (!current) return;
+		const currentSort = current.sortOption;
 		if (currentSort === sortOption) return;
 		if (
 			currentSort &&
@@ -267,8 +302,7 @@ class FiltersStore {
 			return;
 
 		this.startInternalUpdate();
-
-		this.state = { ...this._state, sortOption };
+		this.state = { ...current, sortOption };
 	}
 
 	set(newState: FilterState | null): void {
@@ -276,7 +310,7 @@ class FiltersStore {
 	}
 
 	update(fn: (state: FilterState | null) => FilterState | null): void {
-		this.state = fn(this._state);
+		this.state = fn(this._state.get());
 	}
 
 	toggleDesktopFiltersExpanded(): void {
@@ -304,8 +338,9 @@ class FiltersStore {
 	}
 
 	saveToSession(): void {
-		if (!browser || !this._state) return;
-		sessionStorage.setItem(FiltersStore.FILTERS_STATE_KEY, JSON.stringify(this._state));
+		const current = this._state.get();
+		if (!browser || !current) return;
+		sessionStorage.setItem(FiltersStore.FILTERS_STATE_KEY, JSON.stringify(current));
 	}
 
 	loadFromSession(): void {
@@ -321,8 +356,9 @@ class FiltersStore {
 		}
 	}
 
-	readSearchFromURL(searchParams: ReadonlyURLSearchParams, _pathname?: string): void {
-		if (!this._state) return;
+	readSearchFromURL(searchParams: Pick<URLSearchParams, 'get' | 'getAll' | 'has'>, _pathname?: string): void {
+		const current = this._state.get();
+		if (!current) return;
 
 		// Skip if we just updated the URL ourselves to avoid race conditions
 		if (this.isInternalUpdate) {
@@ -347,10 +383,6 @@ class FiltersStore {
 			sortOption: null,
 		};
 
-		// For platforms, genres, and tiers:
-		// If they are in the URL but options are empty, preserve current state to avoid clearing
-		// filters while games are loading. If they are NOT in the URL, they should be empty.
-
 		if (searchParams.has('platform')) {
 			if (options.platforms.length > 0) {
 				newState.platforms = searchParams
@@ -358,7 +390,7 @@ class FiltersStore {
 					.map((slug) => fromSlug(slug, options.platforms))
 					.filter((v): v is string => !!v);
 			} else {
-				newState.platforms = this._state?.platforms ?? [];
+				newState.platforms = current.platforms ?? [];
 			}
 		}
 
@@ -369,7 +401,7 @@ class FiltersStore {
 					.map((slug) => fromSlug(slug, options.genres))
 					.filter((v): v is string => !!v);
 			} else {
-				newState.genres = this._state?.genres ?? [];
+				newState.genres = current.genres ?? [];
 			}
 		}
 
@@ -385,7 +417,7 @@ class FiltersStore {
 					.map((slug) => fromSlug(slug, options.tiers))
 					.filter((v): v is string => !!v);
 			} else {
-				newState.tiers = this._state?.tiers ?? [];
+				newState.tiers = current.tiers ?? [];
 			}
 		}
 
@@ -402,15 +434,15 @@ class FiltersStore {
 			newState.sortOption = { key: sortKey, direction: sortDir };
 		}
 
-		if (JSON.stringify(this._state) === JSON.stringify(newState)) return;
+		if (JSON.stringify(current) === JSON.stringify(newState)) return;
 
 		this.state = newState;
 	}
 
-	writeSearchToURL = debounce(async (pageState: App.PageState) => {
+	writeSearchToURL = debounce(async (pageState: PageState) => {
 		if (typeof window === 'undefined') return;
 		try {
-			const state = this._state;
+			const state = this._state.get();
 			if (!state) return;
 			this.saveToSession();
 			const url = new URL(window.location.href);
