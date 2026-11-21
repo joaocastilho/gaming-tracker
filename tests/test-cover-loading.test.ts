@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { generateSizes, generateSrcset, generateTinySrcset } from '#lib/utils/imageSrcset.js';
 import { preloadImage, resetPreloadedImages } from '#lib/utils/imagePreload.js';
 
-// Mock imageCache for testing without SvelteKit dependencies
+// Mock imageCache for isolated unit testing
 const mockImageCache = {
 	preload: (_src: string) => Promise.resolve(),
 	setLoaded: (_src: string) => {},

@@ -1,36 +1,37 @@
 # AI Agent Instructions (AGENTS.md)
 
-**Project**: Gaming Tracker — a single-user game collection tracker. SvelteKit 3.1 (static adapter), Svelte 5 runes, TypeScript, Tailwind 4, Dexie, Chart.js. Vite 8 (Rolldown) builds the site; Bun runs scripts and tests. Deployed to Cloudflare Pages: prerendered site + Pages Functions behind the editor.
+**Project**: Gaming Tracker — a single-user game collection tracker. SolidJS 2.0, Solid Router 2, TypeScript 7, Tailwind 4, Dexie, Chart.js. Vite 8 (Rolldown) builds the static SPA to `dist/client/`; Bun runs scripts and tests. Deployed to Cloudflare Pages: static site + Pages Functions behind the editor and OG metadata middleware.
 
 ---
 
 ## Project map
 
-| Path                             | Contents                                                                                                                                                                                                 |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `vite.config.ts`                 | SvelteKit 3 config (there is no `svelte.config.js`), Tailwind, service-worker asset emission, adapter post-processing, Rolldown chunk groups.                                                            |
-| `src/routes/`                    | `+layout.ts` loads/caches games; `+layout.svelte` owns the shell, filters, and modal wiring; `api/games` and `api/games-local` expose save endpoints; `stats/`, `login/`, and the list routes prerender. |
-| `src/lib/stores/*.svelte.ts`     | Class-based rune stores exported as singletons: games, filters/filtered lists, modal/navigation, editor, offline, app/window, image errors.                                                              |
-| `src/lib/views/`                 | Page-level views (`GamesView`) composed from stores + components.                                                                                                                                        |
-| `src/lib/components/`            | Reusable UI. `game-card/`, `detail-modal/`, `game-editor/`, `layout/`, and `mobile-filters/` are feature folders.                                                                                        |
-| `src/lib/utils/`                 | Framework-free helpers. No store imports; pure where possible.                                                                                                                                           |
-| `src/lib/styles/`, `src/app.css` | Theme tokens: dark on `:root`, light overrides under `.light`.                                                                                                                                           |
-| `src/service-worker.source.js`   | Production service worker source. Minified to `/service-worker.js` at build time; the `.source` suffix keeps Kit from treating it as its own entry.                                                      |
-| `functions/`                     | Cloudflare Pages Functions; editor saves commit `static/games.json` to GitHub.                                                                                                                           |
-| `static/`                        | `games.json`, covers, icons, manifest — user data, read-only for agents.                                                                                                                                 |
-| `tests/`                         | Vitest suites; shared factories in `tests/helpers/factories.ts`.                                                                                                                                         |
+| Path                                                | Contents                                                                                                                                                                                                                                       |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vite.config.ts`                                    | `@solidjs/vite-plugin`, `@tailwindcss/vite`, `devApiPlugin` (local `/api/games` & `/api/games-local`), service-worker asset emission, static shell post-processing (`index.html`, `404.html`, `.gz`, `.br`), Rolldown chunk groups.            |
+| `src/Document.tsx`, `src/App.tsx`, `src/router.tsx` | HTML document shell (theme bootstrap, font preloads, manifest/icons), router root, and route definitions.                                                                                                                                      |
+| `src/pages/`                                        | Route pages: `Layout.tsx` (shell, filters, URL sync, modal wiring), `HomePage.tsx`, `StatsPage.tsx`, `LoginPage.tsx`, `NotFoundPage.tsx`, each with colocated `.css`.                                                                          |
+| `src/lib/stores/*.ts`                               | Class-based Solid 2.0 signal stores exported as singletons: games, filters/filtered lists, modal/navigation, editor, offline, app/window, image errors. Uses `createSyncSignal` (`signalHelpers.ts`) so imperative writes flush synchronously. |
+| `src/lib/views/`                                    | Page-level views (`GamesView`, `TierListView`) composed from stores + components.                                                                                                                                                              |
+| `src/lib/components/`                               | Reusable UI (`.tsx` + colocated `.css`). `game-card/`, `detail-modal/`, `game-editor/`, `layout/`, and `mobile-filters/` are feature folders.                                                                                                  |
+| `src/lib/utils/`                                    | Framework-free helpers (`gamesLoader.ts`, `routerBridge.ts`, `env.ts`, `tierUtils.ts`, etc.). Pure where possible.                                                                                                                             |
+| `src/lib/styles/`, `src/app.css`                    | Theme tokens: dark on `:root`, light overrides under `.light`.                                                                                                                                                                                 |
+| `src/service-worker.source.js`                      | Production service worker source. Minified to `/service-worker.js` at build time.                                                                                                                                                              |
+| `functions/`                                        | Cloudflare Pages Functions; editor saves commit `static/games.json` to GitHub, `_middleware.ts` injects per-game OG tags.                                                                                                                      |
+| `static/`                                           | `games.json`, covers, icons, manifest — user data, read-only for agents.                                                                                                                                                                       |
+| `tests/`                                            | Vitest suites (`.test.ts` / `.test.tsx`); shared factories in `tests/helpers/factories.ts`.                                                                                                                                                    |
 
-Layer direction: `types` ← `utils` ← `stores` ← `components`/`routes`. Never import upward.
+Layer direction: `types` ← `utils` ← `stores` ← `components`/`pages`. Never import upward.
 
 ## Data flow (read before touching the store)
 
-1. `src/routes/+layout.ts` hydrates from IndexedDB when cached, otherwise fetches `/games.json`.
+1. `src/lib/utils/gamesLoader.ts` (`loadGamesData()`) hydrates from IndexedDB when cached, otherwise fetches `/games.json`.
 2. A background fetch compares `meta.lastUpdated`; unchanged data skips the Dexie rewrite.
 3. `gamesStore.initializeGames(games, { persist })` transforms raw data once. `persist: false` for cache hits.
-4. Views derive from stores — do not duplicate derived state locally.
+4. Views derive from stores with `createMemo` — do not duplicate derived state locally.
 5. `?game=<slug>` drives the detail modal. Resolution uses the prebuilt `gamesStore` slug/id index; never re-scan the games array.
-6. Editor saves go through `functions/api/games.ts` → GitHub Contents API. Offline saves queue in `db.sync_queue`.
-7. The service worker is registered only in production. Dev unregisters workers left behind by older setups (they request the removed `src/service-worker.js` and trigger reload spam).
+6. Editor saves go through `functions/api/games.ts` → GitHub Contents API (or `scripts/devApiPlugin.ts` in local dev). Offline saves queue in `db.sync_queue`.
+7. The service worker is registered only in production (`import.meta.env.PROD`). Dev unregisters any stale workers left behind.
 
 ## Commands
 
@@ -40,19 +41,20 @@ Layer direction: `types` ← `utils` ← `stores` ← `components`/`routes`. Nev
 | `bun run validate`                        | Gate: `lint:fix → format → check → test`               |
 | `bun run test` / `bunx vitest run <file>` | Full / focused tests                                   |
 | `bun run check:functions`                 | Real wrangler Functions build (pinned wrangler 3 line) |
-| `bun run build`                           | Static production build                                |
+| `bun run build`                           | Static production build to `dist/client/`              |
 
 ## Non-negotiables
 
 1. **`bun run validate`** is the gate. Run it after code changes and iterate until green; don't run its steps separately.
-2. **Anything reachable from `functions/`** must use extensionless relative imports (`../utils/tierUtils`), never `#lib/...` — wrangler does not do Vite's `.js` → `.ts` rewriting. This broke deploys once. Verify with `bun run check:functions` whenever the functions graph or routing changes.
+2. **Anything reachable from `functions/`** must use extensionless relative imports (`../utils/tierUtils`), never `#lib/...` — wrangler does not do Vite's `.js` → `.ts` rewriting. Verify with `bun run check:functions` whenever the functions graph or routing changes.
 3. **Test-first for refactors and bug fixes**: failing test → implement → full suite green → `validate`. No exceptions.
 4. **Never commit without user approval.** Present the plan and commits first.
 5. **`static/games.json` and `static/covers/` are read-only** unless the user explicitly authorizes changes.
 
 ## Testing
 
-- Component tests use `@testing-library/svelte`: `render(Component, { props })`; query roles/text/classes the component owns.
+- Component tests use `@solidjs/testing-library`: `render(() => <Component ... />)`; query roles/text/classes the component owns.
+- Solid 2.0 signals flush asynchronously by default: call `flush()` from `solid-js` after user events or signal writes before synchronous DOM assertions.
 - Use `createTestGame` / `createCompletedGame` factories instead of hand-writing `Game` objects.
 - Default environment is `jsdom`; opt into `happy-dom` with `// @vitest-environment happy-dom` when a test needs `window.location` mocking.
 - `jsdom` is pinned to **30.0.1**: 30.1+ requires `this === globalThis` inside its vm context, which Bun's vm does not provide (oven-sh/bun#43671). Do not bump it until that lands.
@@ -62,15 +64,16 @@ Layer direction: `types` ← `utils` ← `stores` ← `components`/`routes`. Nev
 `bun outdated` will flag these. That is expected:
 
 - **`jsdom` 30.0.1** — see above.
-- **`typescript` 6.0.3** — TypeScript 7 ships the native compiler without `ts.sys.readFile`, so `svelte-kit sync` crashes with `undefined is not an object`. Bump only after SvelteKit supports it.
 - **`vitest` / `@vitest/coverage-v8` 5.1.0** — 5.1.1 fails to terminate forks workers under Bun (`setMaxListeners` out of range). Bump once pool teardown works again.
 
 ## Known traps
 
-- **Rolldown chunking**: SvelteKit 3.1 always sets `output.codeSplitting`, and Rolldown ignores `manualChunks` whenever it is present. Configure vendor groups under `build.rolldownOptions.output.codeSplitting` and repeat Kit's `sveltekit-manifest` group unchanged. Never capture `@sveltejs/kit/src/runtime/client/entry.js` or `client-entry.js` in a group: Kit follows a dynamic import between them and fails with `Could not find the client runtime chunk`.
-- **Service worker source name**: keep it as `src/service-worker.source.js`. Naming it `src/service-worker.js` makes Kit treat it as its own dev entry; renaming it leaves stale dev registrations, which the dev cleanup in `src/lib/utils/serviceWorker.ts` now removes.
+- **Solid 2.0 `createEffect` signature**: `createEffect` takes two arguments: `createEffect(() => tracked, (value) => { ... return () => cleanup; })`. Use `onSettled(() => { ... return () => cleanup; })` for mount/cleanup effects.
+- **Solid 2.0 ARIA boolean attributes**: `@solidjs/web` 2.0 types require `'true' | 'false'` strings for `aria-expanded`, `aria-selected`, `aria-pressed`, etc.
+- **Solid 2.0 HTML attributes & events**: HTML attributes are lowercase (`tabindex`, `readonly`, `autocomplete`); events are camelCase (`onClick`, `onInput`, `onKeyDown`).
+- **Windows case-insensitive `.d.ts` collision**: Do not create `src/app.d.ts` alongside `src/App.tsx`; ambient declarations live in `src/env.d.ts`.
+- **Rolldown chunking**: Configure vendor groups under `build.rolldownOptions.output.codeSplitting` (Rolldown ignores `manualChunks` when `codeSplitting` is set).
 - **Themed colors**: use CSS variables (`var(--color-text-primary)`, `--color-rating-*`, `--color-status-*`). Never hard-code dark-theme hexes — `.light` shares the components.
-- **Scoped CSS**: a rule targeting an element rendered by a child component (e.g. a lucide icon given `class="rating-icon"`) needs `:global(...)`.
 - **Build hashes**: `__BUILD_DATE__: Date.now()` makes every bundle hash differ. Compare output sizes, not hashes.
 - **Modal ratings layout**: DOM order is metadata (Hours Played) → ratings → score/status. Keep it that way on portrait phones; do not use `margin-top: auto` to push the ratings block down.
 
@@ -86,20 +89,20 @@ Don't ask for: typos, formatting, following existing patterns, or work the task 
 ## Working style
 
 - One focused, verified change at a time; never stack three or more unverified changes.
-- No `console.log`, `debugger`, `$inspect()`, stray TODOs, or temp files.
+- No `console.log`, `debugger`, stray TODOs, or temp files.
 - Comments explain _why_, never _what_.
 - Read the surrounding code first; match its patterns instead of inventing new ones.
 
 ## Code standards
 
-### Svelte 5 runes (required)
+### SolidJS 2.0 (required)
 
-- `$props()`, `$state()`, `$derived()` / `$derived.by()`, `$effect()`.
-- No `export let`, `$:`, `on:`, or `onMount`.
-- Stores use `.svelte.ts` and class-based `$state`.
-- Events use `onclick` (lowercase).
+- `createSignal`, `createMemo`, `createEffect(compute, effect)`, `onSettled`, `Show`, `For`, `Switch`/`Match`, `lazy`, `Loading`, `Errored`.
+- Never destructure `props` — read `props.foo` inside reactive scopes.
+- Class-based stores use `createSyncSignal` from `#lib/stores/signalHelpers.js`.
+- Conditional classes use array/object form: `class={['base', { active: isActive() }]}`.
 
-### TypeScript (strict)
+### TypeScript 7 (strict)
 
 - No `any` — use `unknown` + type guards. No `as Type` assertions; fix types at the source.
 - No `@ts-ignore`. `@ts-expect-error` only with a comment explaining why.
@@ -108,7 +111,7 @@ Don't ask for: typos, formatting, following existing patterns, or work the task 
 ### Other
 
 - Deep-clone with `structuredClone()`, never `JSON.parse(JSON.stringify())`.
-- Import order: `$app/*` → external → `#lib/*` (stores, utils/types, components) → relative → styles.
+- Import order: external → `#lib/*` (stores, utils/types, components) → relative → styles.
 - Prefer existing utilities over new helpers; check `src/lib/utils/` first.
 
 ## Commits
@@ -131,7 +134,6 @@ Conventional commits, imperative, ≤ 72 chars, no trailing period:
 - **Lint/type errors**: fix and re-run; never disable a rule to get green.
 - **Failing tests**: check whether they failed before your change. Fix what you broke; report pre-existing failures instead of masking them.
 - **Cloudflare build errors**: assume a `#lib` import (or another wrangler-resolvability issue) in the functions graph. Confirm with `check:functions` before pushing.
-- **Dev log spam about `src/service-worker.js`**: a stale dev worker is still registered. The app unregisters it on the next load; hard-refresh once if the current tab is still controlled.
 - **Stuck**: state the problem and what you tried, then ask. Don't guess repeatedly.
 
 ## Definition of done

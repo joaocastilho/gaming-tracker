@@ -21,7 +21,7 @@ const SWIPE_HINT_KEY = 'gaming-tracker-swipe-hint-seen';
 
 /**
  * Helper function that determines if swipe hint should be shown.
- * This mirrors the logic in DetailModal.svelte for testability.
+ * This mirrors the logic in DetailModal.tsx for testability.
  */
 /* biome-ignore lint/suspicious/noExportsInTest: Function is exported for testing purposes */
 export function shouldShowSwipeHint(options: {

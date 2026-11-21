@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { editorStore } from '#lib/stores/editor.js';
 
 /**
- * Comprehensive tests for editorStore (Svelte 5 version)
+ * Comprehensive tests for editorStore
  * Tests login, logout, save, and snapshot functionality
  */
 

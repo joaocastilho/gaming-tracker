@@ -21,7 +21,7 @@ function resetStores() {
 	gamesStore.initializeGames(mockGames);
 }
 
-// Simulates the URL sync effect logic from +layout.svelte
+// Simulates the URL sync effect logic from Layout.tsx
 function simulateURLSyncEffect(urlSearchParam: string | null, currentSearchTerm: string): boolean {
 	const lastClearTime = getLastManualClearTime();
 	const timeSinceLastClear = Date.now() - lastClearTime;

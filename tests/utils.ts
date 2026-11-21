@@ -3,7 +3,7 @@ import type { Game } from '#lib/types/game.js';
 
 /**
  * Flushes all pending promises by queuing a new macrotask.
- * Useful for waiting for Svelte stores or async operations to settle.
+ * Useful for waiting for stores or async operations to settle.
  */
 export function flushPromises() {
 	return new Promise((resolve) => setTimeout(resolve, 0));

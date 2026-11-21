@@ -1,7 +1,7 @@
 /**
  * Filter Store Idempotency Tests
  * Ensures filter store methods don't trigger unnecessary state updates
- * which could cause infinite effect loops in Svelte components
+ * which could cause infinite effect loops in reactive components
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 import { filtersStore, createInitialFilters } from '#lib/stores/filters.js';

@@ -6,7 +6,7 @@ import { db } from '#lib/db.js';
 import { toSlug } from '#lib/utils/slugUtils.js';
 
 /**
- * Comprehensive tests for stores API (Svelte 5 version)
+ * Comprehensive tests for stores API
  * These tests ensure behavior is preserved during any store refactoring
  */
 describe('FiltersStore API', () => {

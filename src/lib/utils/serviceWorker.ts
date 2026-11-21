@@ -4,9 +4,7 @@ export function registerServiceWorker(): (() => void) | undefined {
 	// only exists in the built output. Registering it in dev would also cache
 	// stale hashed chunks across rebuilds.
 	if (!import.meta.env.PROD) {
-		// Older dev setups served a worker from src/service-worker.js. That
-		// registration outlives the rename, keeps requesting the missing module
-		// and reloads the page whenever svelte-kit sync rewrites its env file.
+		// Unregister any stale dev service workers left behind from previous setups.
 		void navigator.serviceWorker
 			.getRegistrations()
 			.then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))

@@ -1,6 +1,6 @@
 name = "gaming-tracker"
 compatibility_date = "2026-02-15"
-pages_build_output_dir = "build/"
+pages_build_output_dir = "dist/client"
 
 [vars]
 GH_REPO_OWNER = "joaocastilho"

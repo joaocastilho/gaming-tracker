@@ -6,7 +6,7 @@
  *
  * Solution: Use Page Visibility API to pause polling when tab is hidden.
  *
- * Location: src/routes/+layout.svelte (service worker registration)
+ * Location: src/pages/Layout.tsx (service worker registration)
  */
 
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';

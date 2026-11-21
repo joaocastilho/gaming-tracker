@@ -49,8 +49,7 @@ if (typeof window !== 'undefined') {
 	});
 }
 
-// jsdom has no Web Animations API, but Svelte's JS transitions use
-// element.animate() to sequence outro delays.
+// jsdom has no Web Animations API, which continuum layer transitions use.
 if (typeof Element !== 'undefined' && typeof Element.prototype.animate !== 'function') {
 	Object.defineProperty(Element.prototype, 'animate', {
 		writable: true,

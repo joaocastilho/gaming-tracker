@@ -2,7 +2,7 @@
 
 A personal project for tracking my own video game collection. Includes tier lists, ratings, search, filters, stats, and works offline.
 
-[![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
+[![SolidJS](https://img.shields.io/badge/SolidJS-2C4F7C?logo=solid&logoColor=white)](https://www.solidjs.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh/)
@@ -77,15 +77,16 @@ Manually assigned tiers to games based on overall assessment:
 
 The worker source is `src/service-worker.source.js`; the build minifies it to `/service-worker.js`. Registration is production-only.
 
-| Resource               | Strategy                         | Rationale                                                                                                                                   |
-| ---------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| HTML navigations       | **Network-first**                | Prerendered pages reference hashed `/_app/immutable/` chunks that are deleted on every deployment; serving stale HTML would break hydration |
-| `/_app/*` bundles      | Cache-first                      | Content-hashed filenames are safe to cache indefinitely                                                                                     |
-| Cover images           | Cache-first                      | Immutable (`max-age=1y`), never revalidated                                                                                                 |
-| `games.json`, manifest | Cache-first + background refresh | Fresh data arrives on the next request                                                                                                      |
-| Other same-origin GETs | Network-first + cache fallback   | Keeps non-versioned responses usable offline                                                                                                |
+| Resource                | Strategy                           | Rationale                                                                                                                |
+| ----------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| HTML navigations        | **Network-first**                  | Built HTML references hashed `/assets/` chunks that change on every deployment; serving stale HTML would break hydration |
+| `/assets/*` bundles     | Cache-first                        | Content-hashed filenames are safe to cache indefinitely                                                                  |
+| Cover images            | Cache-first                        | Immutable (`max-age=1y`), never revalidated                                                                              |
+| `games.json`            | **Network-first** + cache fallback | Keeps edits fresh while online, with offline fallback                                                                    |
+| Manifest & static icons | Cache-first + background refresh   | Fresh metadata arrives on the next request                                                                               |
+| Other same-origin GETs  | Network-first + cache fallback     | Keeps non-versioned responses usable offline                                                                             |
 
-Updates apply on the next natural page load — no forced reloads mid-session. In dev the worker is never registered, and any registration left over from older setups is removed automatically.
+Updates apply on the next natural page load — no forced reloads mid-session. In dev the worker is never registered, and any stale dev registration is removed automatically.
 
 ### ⚡ Performance Optimizations
 
@@ -93,34 +94,33 @@ Updates apply on the next natural page load — no forced reloads mid-session. I
 - **Virtualized Gallery:** Windowed rendering keeps scrolling smooth with 1000+ games.
 - **Single-Pass Filtering:** Search and all active filters evaluate in one array pass against a precomputed search key, and the sorted master list is cached per tab/sort configuration.
 - **Deduped Preloads:** Detail-cover preloads fire at most once per image, on card hover/focus and modal navigation.
-- **Lazy Loading:** Modals, charts, filters, and secondary UI components are dynamically imported using `{#await}`; text measurement (`@chenglou/pretext`) is deferred to idle time.
+- **Lazy Loading:** Modals, charts, filters, and secondary UI components are dynamically imported with `lazy()`; text measurement (`@chenglou/pretext`) is deferred to idle time.
 - **Font Self-hosting:** Self-hosted Inter font with `preload` to eliminate render-blocking external requests.
-- **Deferred Data:** Defer heavy `games.json` loading to the client side to minimize SSR payload.
-- **Chunk Splitting:** Rolldown groups keep charts, Dexie, text measurement, icons, and editor validation out of the initial bundle.
+- **Deferred Data:** `games.json` hydrates from IndexedDB on the client and refreshes in the background.
+- **Chunk Splitting:** Rolldown `codeSplitting` groups keep Solid, charts, Dexie, text measurement, icons, and editor validation in dedicated chunks.
 
 ## 🛠️ Tech Stack
 
 | Category             | Technology                                     | Version   |
 | -------------------- | ---------------------------------------------- | --------- |
-| **Framework**        | [SvelteKit](https://kit.svelte.dev/)           | `v3.4.0`  |
-| **UI Library**       | [Svelte](https://svelte.dev/)                  | `v5.59.1` |
+| **UI Library**       | [SolidJS](https://www.solidjs.com/)            | `v2.0.3`  |
+| **Router**           | [Solid Router](https://docs.solidjs.com/)      | `v2.0.1`  |
 | **Styling**          | [Tailwind CSS](https://tailwindcss.com/)       | `v4.3.5`  |
-| **Linter**           | [Biome](https://biomejs.dev/)                  | `v2.6.8`  |
+| **Linter / Format**  | [Biome](https://biomejs.dev/)                  | `v2.6.8`  |
 | **Build Tool**       | [Vite](https://vite.dev/)                      | `v8.3.8`  |
-| **TypeScript**       | [TypeScript](https://www.typescriptlang.org/)  | `v6.0.3`  |
+| **TypeScript**       | [TypeScript](https://www.typescriptlang.org/)  | `v7.0.2`  |
 | **Test Runner**      | [Vitest](https://vitest.dev/)                  | `v5.1.0`  |
 | **Text Measurement** | [Pretext](https://github.com/chenglou/pretext) | `v1.0.0`  |
-| **Icons**            | [Lucide Svelte](https://lucide.dev/)           | `v1.77.0` |
-| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.4.4`  |
+| **Icons**            | [Lucide Solid](https://lucide.dev/)            | `v1.77.0` |
+| **Runtime**          | [Bun](https://bun.sh/)                         | `v1.4+`   |
 | **Charts**           | [Chart.js](https://www.chartjs.org/)           | `v4.6.1`  |
 | **IndexedDB**        | [Dexie](https://dexie.org/)                    | `v4.4.7`  |
 | **Validation**       | [Zod](https://zod.dev/)                        | `v4.6.7`  |
 
-Three dependencies are intentionally held back; `bun outdated` will list them:
+Two test dependencies are intentionally pinned; `bun outdated` will list them:
 
 - **`jsdom` 30.0.1** — 30.1+ requires `this === globalThis` inside its vm context, which Bun's `vm` does not provide ([oven-sh/bun#43671](https://github.com/oven-sh/bun/issues/43671)).
-- **TypeScript 6.0.3** — TypeScript 7's native compiler has no `ts.sys.readFile`, so `svelte-kit sync` crashes. Bump once SvelteKit supports it.
-- **`vitest` / `@vitest/coverage-v8` 5.1.0** — 5.1.1 fails to terminate forks workers under Bun (`setMaxListeners` out of range). Bump once the pool teardown works again.
+- **`vitest` / `@vitest/coverage-v8` 5.1.0** — 5.1.1 fails to terminate forks workers under Bun (`setMaxListeners` out of range). Bump once pool teardown works again.
 
 ## 🚀 Running Locally
 
@@ -133,7 +133,7 @@ bun install
 # Start development server
 bun run dev
 
-# Build for production
+# Build for production (outputs static site to dist/client/)
 bun run build
 
 # Preview production build
@@ -152,23 +152,25 @@ bun run check:functions
 gaming-tracker/
 ├── src/
 │   ├── lib/
-│   │   ├── components/      # UI components (lazy-loaded modals)
-│   │   ├── stores/          # Svelte 5 rune stores
+│   │   ├── components/      # UI components (.tsx + colocated .css)
+│   │   ├── stores/          # Solid 2.0 signal stores
 │   │   ├── styles/          # fonts.css, critical.css
 │   │   ├── utils/           # Framework-free helpers
-│   │   ├── views/           # Page-level compositions
+│   │   ├── views/           # Page-level compositions (GamesView, TierListView)
 │   │   └── types/           # TypeScript types
-│   ├── routes/              # SvelteKit routes (+layout.svelte)
-│   ├── app.css              # Global Tailwind styles
-│   ├── app.html             # HTML template (preloads)
+│   ├── pages/               # Route pages (Layout, HomePage, StatsPage, LoginPage, NotFoundPage)
+│   ├── App.tsx              # App root & Solid Router entry
+│   ├── Document.tsx         # HTML document shell (preloads, theme bootstrap, meta)
+│   ├── router.tsx           # Route definitions
+│   ├── app.css              # Global Tailwind & design token styles
 │   └── service-worker.source.js
-├── functions/               # Cloudflare Pages Functions (editor API)
-├── scripts/                 # Cover and favicon asset pipelines (Bun)
+├── functions/               # Cloudflare Pages Functions (editor API + OG meta middleware)
+├── scripts/                 # Dev API plugin, cover and favicon asset pipelines (Bun)
 ├── static/
 │   ├── _headers             # Cloudflare Pages cache headers
 │   ├── fonts/               # Self-hosted woff2 fonts
 │   ├── games.json           # Game data
 │   └── covers/              # Game cover images (WebP)
-├── tests/                   # Vitest tests
-└── vite.config.ts           # SvelteKit, Tailwind, build pipeline
+├── tests/                   # Vitest + @solidjs/testing-library suites
+└── vite.config.ts           # Solid 2.0, Tailwind 4, service worker, and static shell build pipeline
 ```

@@ -184,7 +184,7 @@ describe('registerServiceWorker', () => {
 
 	test('removes stale workers outside production builds', async () => {
 		// An old dev worker keeps requesting the since-renamed
-		// src/service-worker.js and reloads the page whenever svelte-kit sync
+		// Unregister any stale dev service workers left behind from previous setups.
 		// rewrites the generated service-worker env module.
 		vi.stubEnv('PROD', false);
 		const swMock = createServiceWorkerMock();

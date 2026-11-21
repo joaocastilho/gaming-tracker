@@ -2,10 +2,10 @@ export type RouteKey = 'home' | 'stats' | 'all' | 'completed' | 'planned' | 'tie
 
 const GAMES_ROUTES: ReadonlySet<RouteKey> = new Set(['all', 'completed', 'planned']);
 
-// A route SvelteKit knows about but this map doesn't must never look like the
-// library: the layout would render the game grid instead of the page (login,
-// error pages, or future routes). Unknown paths get their own key so
-// `{@render children()}` still runs.
+// Any route not listed in GAMES_ROUTES must never look like the library:
+// the layout would render the game grid instead of the page (login, error
+// pages, or future routes). Unknown paths get their own key so route children
+// still render normally.
 export function routeKeyFromPath(pathname: string): RouteKey {
 	if (pathname === '/') return 'home';
 	if (pathname === '/library') return 'all';

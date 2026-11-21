@@ -43,9 +43,7 @@ export const onRequest = async (context: { request: Request; env: Env; next: () 
 	try {
 		const html = await response.text();
 		const origin = url.origin;
-
-		// Fix prerender placeholder URLs to use the real origin
-		let modifiedHtml = html.replace(/http:\/\/sveltekit-prerender/g, origin);
+		let modifiedHtml = html;
 
 		const gameSlug = url.searchParams.get('game');
 		if (gameSlug) {

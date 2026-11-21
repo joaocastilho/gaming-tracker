@@ -4,7 +4,7 @@
  * Issue: Scroll event listeners should use { passive: true } option
  * to improve scroll performance and prevent jank.
  *
- * Location: src/lib/components/ScrollToTopButton.svelte line 18
+ * Location: src/lib/components/ScrollToTopButton.tsx
  */
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';

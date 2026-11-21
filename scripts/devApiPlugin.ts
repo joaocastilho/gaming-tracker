@@ -80,7 +80,7 @@ async function optimizeCover(sanitizedGameId: string): Promise<void> {
 }
 
 /**
- * Dev-only middleware replacing SvelteKit's src/routes/api/games and
+ * Dev-only middleware exposing /api/games and /api/games-local locally.
  * src/routes/api/games-local endpoints. Production uses Cloudflare Pages
  * Functions under functions/api/.
  */

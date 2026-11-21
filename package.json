@@ -24,10 +24,9 @@
 		"test:cover-loading": "vitest run tests/test-cover-loading.test.ts",
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"test:bun": "bun run test --preload ./tests/bun-setup.ts",
 		"check:functions": "bunx wrangler@3.114.17 pages functions build --outdir .wrangler/functions-build",
 		"validate": "bun run lint:fix && bun run format && bun run check && bun run test",
-		"clean": "bun -e \"const fs = require('fs'); ['node_modules', 'dist', 'build', '.vercel', 'bun.lock'].forEach(f => fs.rmSync(f, { recursive: true, force: true }));\" && bun install"
+		"clean": "bun -e \"const fs = require('fs'); ['node_modules', 'dist', '.wrangler', 'bun.lock'].forEach(f => fs.rmSync(f, { recursive: true, force: true }));\" && bun install"
 	},
 	"dependencies": {
 		"@chenglou/pretext": "1.0.0",
@@ -45,8 +44,6 @@
 		"@biomejs/biome": "^2.6.8",
 		"@solidjs/testing-library": "1.0.0-rc.2",
 		"@solidjs/vite-plugin": "^3.0.1",
-		"@tailwindcss/forms": "^0.5.11",
-		"@tailwindcss/postcss": "^4.3.5",
 		"@tailwindcss/vite": "^4.3.5",
 		"@testing-library/dom": "^10.4.2",
 		"@testing-library/jest-dom": "^7.0.1",
@@ -54,10 +51,8 @@
 		"@types/node": "^26.6.6",
 		"@vitest/coverage-v8": "5.1.0",
 		"fake-indexeddb": "^6.2.8",
-		"globals": "^17.14.0",
 		"happy-dom": "21.0.4",
 		"jsdom": "30.0.1",
-		"postcss": "^8.5.33",
 		"sharp": "^0.35.5",
 		"tailwindcss": "^4.3.5",
 		"typescript": "^7.0.2",

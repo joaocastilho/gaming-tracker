@@ -1,21 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock SvelteKit modules before importing stores
-vi.mock('$app/environment', () => ({
+// Mock runtime environment and router bridge before importing stores
+vi.mock('#lib/utils/env.js', () => ({
 	browser: true,
 	dev: true,
-	building: false,
-	version: 'test-version',
 }));
 
-vi.mock('$app/navigation', () => ({
-	pushState: vi.fn(),
-	replaceState: vi.fn(),
+vi.mock('#lib/utils/routerBridge.js', () => ({
 	goto: vi.fn(),
-	beforeNavigate: vi.fn(),
-	afterNavigate: vi.fn(),
-	onNavigate: vi.fn(),
-	disableScrollHandling: vi.fn(),
+	getCurrentPageState: () => ({}),
+	getCurrentPathname: () => '/',
+	onUrlChange: () => () => {},
 }));
 
 // Now import the component module to test its internal logic

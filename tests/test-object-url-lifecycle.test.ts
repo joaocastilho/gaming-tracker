@@ -4,7 +4,7 @@
  * Issue: Blob URLs created with URL.createObjectURL() are not always revoked,
  * causing memory leaks when the modal closes without explicit cleanup.
  *
- * Location: src/lib/components/GameEditorModal.svelte lines 131-147
+ * Location: src/lib/components/GameEditorModal.tsx
  */
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';

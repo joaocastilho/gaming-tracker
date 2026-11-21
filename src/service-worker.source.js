@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const CACHE_NAME = `gaming-tracker-${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `gaming-tracker-static-${CACHE_VERSION}`;
 const IMAGE_CACHE_NAME = `gaming-tracker-images-${CACHE_VERSION}`;
@@ -92,9 +92,9 @@ function isNavigationRequest(request) {
 	return request.mode === 'navigate' || request.destination === 'document';
 }
 
-// Helper: Check if request is for SvelteKit app assets
-function isSvelteKitAsset(url) {
-	return url.pathname.startsWith('/_app/');
+// Helper: Check if request is for content-hashed build assets
+function isHashedAsset(url) {
+	return url.pathname.startsWith('/assets/');
 }
 
 // Fetch event - optimized caching strategies for different resource types
@@ -108,8 +108,8 @@ self.addEventListener('fetch', (event) => {
 	// Skip cross-origin requests
 	if (url.origin !== location.origin) return;
 
-	// Skip dev module paths - let Vite/SvelteKit handle
-	if (url.pathname.startsWith('/.svelte-kit/') || url.pathname.startsWith('/@vite/')) {
+	// Skip dev module paths - let Vite handle them
+	if (url.pathname.startsWith('/@vite/') || url.pathname.startsWith('/@fs/')) {
 		return;
 	}
 
@@ -121,8 +121,8 @@ self.addEventListener('fetch', (event) => {
 	// STRATEGY 1: Network-first for navigation requests (HTML pages)
 	//
 	// The HTML must never be served stale from cache: it references hashed
-	// /_app/immutable/ chunks that are deleted on every deployment. Cache-first
-	// here produced old-HTML/new-cache mismatches after deploys — broken CSS and
+	// /assets/ chunks that are replaced on every deployment. Cache-first
+	// here produces old-HTML/new-cache mismatches after deploys — broken CSS and
 	// hydration failures until a hard refresh. Network keeps HTML fresh while
 	// the cache only covers offline fallback.
 	if (isNavigationRequest(request)) {
@@ -159,9 +159,9 @@ self.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	// STRATEGY 2: Cache-first for SvelteKit generated assets (JS/CSS bundles)
+	// STRATEGY 2: Cache-first for Vite content-hashed assets (JS/CSS bundles)
 	// These have hashed filenames so they're safe to cache indefinitely
-	if (isSvelteKitAsset(url)) {
+	if (isHashedAsset(url)) {
 		event.respondWith(
 			caches.open(CACHE_NAME).then((cache) => {
 				return cache.match(request).then((cachedResponse) => {
@@ -181,7 +181,7 @@ self.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	// Skip app.css - bundled by SvelteKit, handled by browser
+	// Skip app.css - bundled by Vite, handled by browser
 	if (url.pathname.endsWith('/app.css')) {
 		return;
 	}

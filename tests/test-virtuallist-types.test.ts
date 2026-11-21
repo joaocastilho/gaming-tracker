@@ -4,7 +4,7 @@
  * Issue: VirtualList component uses Props<any> which loses type safety.
  * Should use proper generic Props<T> to maintain type information.
  *
- * Location: src/lib/components/VirtualList.svelte line 28
+ * Location: src/lib/components/VirtualList.tsx
  */
 
 import { describe, test, expect } from 'vitest';

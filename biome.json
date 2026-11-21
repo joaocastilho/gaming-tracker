@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["**", "!**/static/games.json", "!**/src/app.html"]
+		"includes": ["**", "!**/static/games.json"]
 	},
 	"linter": {
 		"enabled": true,

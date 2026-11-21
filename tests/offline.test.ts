@@ -26,7 +26,7 @@ vi.mock('#lib/db.js', () => ({
 	},
 }));
 
-vi.mock('$app/environment', () => ({
+vi.mock('#lib/utils/env.js', () => ({
 	browser: true,
 	dev: false,
 }));
