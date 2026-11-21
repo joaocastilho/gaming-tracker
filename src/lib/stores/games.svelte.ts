@@ -2,9 +2,10 @@ import { browser } from '$app/env';
 import type { Game } from '#lib/types/game.js';
 import { transformGameData, type RawGameData } from '#lib/utils/dataTransformer.js';
 import { createGameSlug } from '#lib/utils/slugUtils.js';
-import { db } from '#lib/db.js';
 import type { CardHeights } from '#lib/utils/textMeasure.js';
 import { CARD_WIDTHS } from '#lib/constants/fonts.js';
+
+const DB_SEEDED_KEY = 'gaming-tracker-db-seeded';
 
 // Only CARD_WIDTHS.small is consumed today (TierRow), so measuring any other
 // width is wasted work. Narrowing the list keeps the map shape compatible.
@@ -106,8 +107,7 @@ class GamesStore {
 			this.scheduleCardHeights();
 
 			if (persist && browser && typeof indexedDB !== 'undefined') {
-				const plainGames = structuredClone(normalized);
-				db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
+				this.persistGamesToDb(normalized);
 			}
 
 			if (normalized.length === 0) {
@@ -201,13 +201,26 @@ class GamesStore {
 		void this.updateCardHeights([id]);
 	}
 
+	private persistGamesToDb(games: Game[]): void {
+		const plainGames = structuredClone(games);
+		void import('#lib/db.js')
+			.then(({ db }) => db.games.bulkPut(plainGames))
+			.then(() => {
+				try {
+					localStorage.setItem(DB_SEEDED_KEY, '1');
+				} catch {
+					// Ignore storage quota / private-mode restrictions
+				}
+			})
+			.catch((err) => console.error('Failed to cache games to Dexie:', err));
+	}
+
 	setAllGames(games: Game[]): void {
 		this.games = games;
 		this.scheduleCardHeights();
 
 		if (browser && typeof indexedDB !== 'undefined') {
-			const plainGames = structuredClone(games);
-			db.games.bulkPut(plainGames).catch((err) => console.error('Failed to cache games to Dexie:', err));
+			this.persistGamesToDb(games);
 		}
 	}
 }

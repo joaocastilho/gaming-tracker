@@ -94,7 +94,7 @@ function handleKeyDown(event: KeyboardEvent, target: NavId) {
 					<div class="icon-wrapper relative">
 						<Icon size={26} strokeWidth={item.active ? 2.5 : 2} />
 						{#if item.count !== null && item.count > 0}
-							<span class="count-badge">
+							<span class="count-badge" aria-hidden="true">
 								{item.count}
 							</span>
 						{/if}
@@ -138,7 +138,7 @@ function handleKeyDown(event: KeyboardEvent, target: NavId) {
 	}
 
 	.nav-button.active {
-		color: var(--color-primary);
+		color: var(--color-accent-text);
 		background-color: transparent;
 	}
 

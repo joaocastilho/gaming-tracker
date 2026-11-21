@@ -5,15 +5,26 @@ import { decideGamesRefresh, readPayloadLastUpdated } from '#lib/utils/gamesRefr
 import type { Game } from '#lib/types/game.js';
 
 const GAMES_MARKER_KEY = 'games-last-updated';
+const DB_SEEDED_KEY = 'gaming-tracker-db-seeded';
 
 // Required by @sveltejs/adapter-static: every route prerenders at build time.
 export const prerender = true;
+
+function hasSeededLocalDb(): boolean {
+	try {
+		return typeof localStorage !== 'undefined' && localStorage.getItem(DB_SEEDED_KEY) === '1';
+	} catch {
+		return false;
+	}
+}
 
 export const load: LayoutLoad = async ({ fetch }) => {
 	let games: Game[] = [];
 	let gamesSource: 'cache' | 'network' | 'none' = 'none';
 
-	if (browser) {
+	// On a cold first visit, skip loading the 74 KiB Dexie chunk so /games.json
+	// can fetch and render immediately without waiting for IndexedDB setup.
+	if (browser && hasSeededLocalDb()) {
 		try {
 			const { db } = await import('#lib/db.js');
 			const cachedGames = await db.games.toArray();
@@ -40,7 +51,17 @@ export const load: LayoutLoad = async ({ fetch }) => {
 				if (games.length > 0) gamesSource = 'network';
 			}
 		} catch {
-			// Silently ignore fetch errors
+			// Offline fallback when localStorage marker was absent
+			try {
+				const { db } = await import('#lib/db.js');
+				const cachedGames = await db.games.toArray();
+				if (cachedGames.length > 0) {
+					games = cachedGames;
+					gamesSource = 'cache';
+				}
+			} catch {
+				// Silently ignore fallback errors
+			}
 		}
 	}
 

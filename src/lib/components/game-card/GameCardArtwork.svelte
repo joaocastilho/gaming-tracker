@@ -163,14 +163,14 @@ function getCompletionDay(dateStr: string | null): string {
 			aria-label="Filter by Tier {game.tier}"
 			title="Tier: {getTierDisplayName(game.tier)}"
 		>
-			<span class="tier-text">{getTierDisplayName(game.tier)}</span>
+			<span class="tier-text" aria-hidden="true">{getTierDisplayName(game.tier)}</span>
 		</button>
 	{/if}
 
 	{#if game.status === 'Completed' && game.finishedDate}
 		{@const completionDay = getCompletionDay(game.finishedDate)}
 		{#if completionDay}
-			<div class="completion-badge">
+			<div class="completion-badge" aria-hidden="true">
 				<span class="completion-day">{completionDay}</span>
 			</div>
 		{/if}

@@ -472,8 +472,9 @@ describe('GamesStore API', () => {
 			const spy = vi.spyOn(db.games, 'bulkPut');
 			try {
 				gamesStore.initializeGames(mockGames);
-				await Promise.resolve();
-				expect(spy).toHaveBeenCalled();
+				await vi.waitFor(() => {
+					expect(spy).toHaveBeenCalled();
+				});
 			} finally {
 				spy.mockRestore();
 			}

@@ -59,6 +59,8 @@ body {
 
 	/* Accent Colors - Indigo primary + Cyan secondary */
 	--color-accent: #6366f1;
+	--color-accent-solid: #4f46e5;
+	--color-accent-text: #818cf8;
 	--color-accent-hover: #818cf8;
 	--color-accent-secondary: #06b6d4;
 	--color-accent-secondary-hover: #22d3ee;
@@ -170,11 +172,11 @@ body {
 
 	/* Genres */
 	--color-genre-action-bg: rgba(230, 25, 75, 0.15);
-	--color-genre-action-text: #e6194b;
+	--color-genre-action-text: #ff6b8b;
 	--color-genre-action-border: rgba(230, 25, 75, 0.3);
 
 	--color-genre-action-adventure-bg: rgba(67, 99, 216, 0.15);
-	--color-genre-action-adventure-text: #4363d8;
+	--color-genre-action-adventure-text: #8ba4ff;
 	--color-genre-action-adventure-border: rgba(67, 99, 216, 0.3);
 
 	--color-genre-rpg-bg: rgba(255, 225, 25, 0.15);
@@ -182,19 +184,19 @@ body {
 	--color-genre-rpg-border: rgba(255, 225, 25, 0.3);
 
 	--color-genre-shooter-bg: rgba(60, 180, 75, 0.15);
-	--color-genre-shooter-text: #3cb44b;
+	--color-genre-shooter-text: #4ade80;
 	--color-genre-shooter-border: rgba(60, 180, 75, 0.3);
 
 	--color-genre-horror-bg: rgba(154, 99, 36, 0.18);
-	--color-genre-horror-text: #9a6324;
+	--color-genre-horror-text: #eab370;
 	--color-genre-horror-border: rgba(154, 99, 36, 0.35);
 
 	--color-genre-metroidvania-bg: rgba(145, 30, 180, 0.15);
-	--color-genre-metroidvania-text: #911eb4;
+	--color-genre-metroidvania-text: #d896ff;
 	--color-genre-metroidvania-border: rgba(145, 30, 180, 0.3);
 
 	--color-genre-platformer-bg: rgba(240, 50, 230, 0.15);
-	--color-genre-platformer-text: #f032e6;
+	--color-genre-platformer-text: #f472f0;
 	--color-genre-platformer-border: rgba(240, 50, 230, 0.3);
 
 	--color-genre-puzzle-bg: rgba(66, 212, 244, 0.15);
@@ -202,11 +204,11 @@ body {
 	--color-genre-puzzle-border: rgba(66, 212, 244, 0.3);
 
 	--color-genre-strategy-bg: rgba(0, 128, 128, 0.15);
-	--color-genre-strategy-text: #008080;
+	--color-genre-strategy-text: #4dd0e1;
 	--color-genre-strategy-border: rgba(0, 128, 128, 0.3);
 
 	--color-genre-survival-bg: rgba(245, 130, 49, 0.18);
-	--color-genre-survival-text: #f58231;
+	--color-genre-survival-text: #fb923c;
 	--color-genre-survival-border: rgba(245, 130, 49, 0.35);
 
 	/* Rating Colors - Enhanced visibility */
@@ -274,6 +276,8 @@ body {
 
 	/* Accent Colors - Indigo, deepened so hover lands darker not lighter */
 	--color-accent: #4f46e5;
+	--color-accent-solid: #4f46e5;
+	--color-accent-text: #4f46e5;
 	--color-accent-hover: #4338ca;
 	--color-accent-secondary: #0f766e;
 	--color-accent-secondary-hover: #115e59;

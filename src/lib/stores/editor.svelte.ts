@@ -1,6 +1,5 @@
 import { browser, dev } from '$app/env';
 import type { Game } from '#lib/types/game.js';
-import { db } from '#lib/db.js';
 import { transformGameData, type RawGameData } from '#lib/utils/dataTransformer.js';
 import { gamesStore } from './games.svelte';
 import { offlineStore } from './offline.svelte';
@@ -277,6 +276,7 @@ class EditorStore {
 		if (browser && !navigator.onLine) {
 			const finalGames = this.buildFinalGames(currentGames);
 			try {
+				const { db } = await import('#lib/db.js');
 				await db.sync_queue.put({ games: finalGames }, 'pending');
 				this.discardAllChanges();
 				offlineStore.setHasPendingSync(true);

@@ -112,10 +112,17 @@ function viewAllCompleted() {
 					</span>
 				</div>
 				<div class="np-grid">
-					{#each playingGames as game (game.id)}
+					{#each playingGames as game, index (game.id)}
 						{@const npCover = coverSource(game.coverImage)}
 						<button type="button" class="np-card" onclick={() => handlePlayingOpen(game)}>
-							<img class="np-cover" src={npCover} alt="" onerror={handleCoverError} />
+							<img
+								class="np-cover"
+								src={npCover}
+								alt=""
+								fetchpriority={index === 0 ? 'high' : undefined}
+								decoding={index === 0 ? 'sync' : 'async'}
+								onerror={handleCoverError}
+							/>
 							<div class="np-shade" aria-hidden="true"></div>
 							<span class="np-live">
 								<span class="np-live-dot"></span>
@@ -135,6 +142,18 @@ function viewAllCompleted() {
 							</div>
 						</button>
 					{/each}
+				</div>
+			</section>
+		{:else if games.length === 0}
+			<section class="now-playing-section" aria-hidden="true">
+				<div class="np-header">
+					<span class="np-badge">
+						<Sparkles size={14} />
+						Now Playing
+					</span>
+				</div>
+				<div class="np-grid">
+					<div class="np-card np-card-skeleton"></div>
 				</div>
 			</section>
 		{:else}
@@ -262,6 +281,13 @@ function viewAllCompleted() {
 		outline-offset: 2px;
 	}
 
+	.np-card-skeleton {
+		cursor: default;
+		pointer-events: none;
+		border-color: var(--color-border);
+		box-shadow: var(--shadow-md);
+	}
+
 	.np-card-empty {
 		display: flex;
 		align-items: center;
@@ -384,7 +410,7 @@ function viewAllCompleted() {
 		gap: 6px;
 		padding: 5px 14px;
 		border-radius: 20px;
-		background: var(--color-accent);
+		background: var(--color-accent-solid);
 		color: #ffffff;
 		font-size: 0.75rem;
 		font-weight: 700;
@@ -543,7 +569,7 @@ function viewAllCompleted() {
 		border: 1px solid var(--color-border);
 		border-radius: 8px;
 		background: var(--color-surface);
-		color: var(--color-accent);
+		color: var(--color-accent-text);
 		font-size: 0.85rem;
 		font-weight: 600;
 		cursor: pointer;

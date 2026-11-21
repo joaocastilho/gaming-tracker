@@ -204,7 +204,7 @@ async function handleLogout() {
 					: `Show search (${shortcutKey})`}
 			>
 				<Search size={18} />
-				<span class="filter-shortcut hidden md:inline">{shortcutKey}</span>
+				<span class="filter-shortcut hidden md:inline" aria-hidden="true">{shortcutKey}</span>
 			</button>
 		</div>
 
@@ -425,8 +425,8 @@ async function handleLogout() {
 		font-weight: 600;
 		padding: 1px 3px;
 		background: var(--color-surface-elevated);
+		color: var(--color-text-secondary);
 		border-radius: 2px;
-		opacity: 0.6;
 		white-space: nowrap;
 	}
 
