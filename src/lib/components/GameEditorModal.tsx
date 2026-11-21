@@ -178,6 +178,10 @@ export default function GameEditorModal(props: GameEditorModalProps): JSX.Elemen
 
 		return () => {
 			window.removeEventListener('keydown', onWinKeyDown);
+			if (copiedTimer) {
+				clearTimeout(copiedTimer);
+				copiedTimer = null;
+			}
 			blobUrls.forEach((url) => {
 				if (url.startsWith('blob:')) {
 					URL.revokeObjectURL(url);
@@ -216,12 +220,18 @@ export default function GameEditorModal(props: GameEditorModalProps): JSX.Elemen
 		}
 	}
 
+	let copiedTimer: ReturnType<typeof setTimeout> | null = null;
+
 	function copyGameId(): void {
 		const curr = working();
 		if (curr?.id) {
 			void navigator.clipboard.writeText(curr.id);
 			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
+			if (copiedTimer) clearTimeout(copiedTimer);
+			copiedTimer = setTimeout(() => {
+				setCopied(false);
+				copiedTimer = null;
+			}, 2000);
 		}
 	}
 
