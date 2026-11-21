@@ -591,16 +591,18 @@ export default function StatsPage(): JSX.Element {
 										<For each={MONTHS}>{(month) => <span class="mt-cell mt-header-cell">{month}</span>}</For>
 										<span class="mt-cell mt-header-cell mt-total">Total</span>
 									</div>
-									<For each={yearlyMonthData()}>
+									<For each={yearlyMonthData()} keyed={(yearData) => yearData.year}>
 										{(yearData) => (
 											<div class="mt-row">
-												<span class="mt-year">{yearData.year}</span>
-												<For each={yearData.data}>
+												<span class="mt-year">{yearData().year}</span>
+												<For each={yearData().data}>
 													{(value) => (
 														<span class={['mt-cell', getMonthlyHeatClass(value, maxMonthly())]}>{value}</span>
 													)}
 												</For>
-												<span class="mt-cell mt-total">{yearData.data.reduce((total, value) => total + value, 0)}</span>
+												<span class="mt-cell mt-total">
+													{yearData().data.reduce((total, value) => total + value, 0)}
+												</span>
 											</div>
 										)}
 									</For>

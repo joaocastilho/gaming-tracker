@@ -118,18 +118,18 @@ export default function FilterOptionsPopup(props: FilterOptionsPopupProps): JSX.
 					</div>
 				</div>
 				<div class="filter-popup-options">
-					<For each={props.options}>
+					<For each={props.options} keyed={(option) => option.value}>
 						{(option) => (
 							<button
 								type="button"
 								class={[
 									'themed-filter-pill',
-									colorFn()(option.value),
-									{ selected: props.selected.includes(option.value) },
+									colorFn()(option().value),
+									{ selected: props.selected.includes(option().value) },
 								]}
-								onClick={() => props.onToggle(option.value)}
+								onClick={() => props.onToggle(option().value)}
 							>
-								{option.value}
+								{option().value}
 							</button>
 						)}
 					</For>

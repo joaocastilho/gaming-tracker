@@ -248,8 +248,8 @@ export default function GameEditorModal(props: GameEditorModalProps): JSX.Elemen
 	}
 
 	function handleFileSelect(event: Event): void {
-		const target = event.target as HTMLInputElement;
-		const file = target.files?.[0];
+		if (!(event.target instanceof HTMLInputElement)) return;
+		const file = event.target.files?.[0];
 		setCoverError(null);
 
 		if (file) {
