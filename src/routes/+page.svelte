@@ -98,9 +98,8 @@ function viewAllCompleted() {
 									<span class="chip {getGenreClasses(game.genre)}">{game.genre}</span>
 									<span class="chip chip-neutral">{game.year}</span>
 								</div>
-								<div class="np-playtime">
+								<div class="np-playtime" title="Time to Beat">
 									<Clock size={14} />
-									<span class="np-playtime-label">Time to Beat</span>
 									<span class="np-playtime-value">{game.playtime}</span>
 								</div>
 							</div>
@@ -178,20 +177,21 @@ function viewAllCompleted() {
 		align-items: center;
 	}
 
-	/* Poster showcase: cards are centered and width-capped so they read big
-	   without stretching to the full 1600px container when only one is playing. */
+	/* Poster cards stay left-aligned and capped near the recent-completion card
+	   width (~310px in the 5-column desktop grid) so a lone card reads as a
+	   card rather than a banner and the row starts at the section heading. */
 	.np-grid {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
+		justify-content: flex-start;
 		gap: 16px;
 		width: 100%;
 	}
 
 	.np-card {
 		position: relative;
-		flex: 1 1 340px;
-		max-width: 460px;
+		flex: 0 1 310px;
+		max-width: 310px;
 		min-width: 0;
 		aspect-ratio: 4 / 5;
 		border-radius: 20px;
@@ -429,14 +429,6 @@ function viewAllCompleted() {
 		color: var(--color-accent);
 	}
 
-	.np-playtime-label {
-		font-size: 0.68rem;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--color-text-tertiary);
-	}
-
 	.np-playtime-value {
 		font-size: 0.9rem;
 		font-weight: 700;
@@ -446,6 +438,13 @@ function viewAllCompleted() {
 	@media (max-width: 767px) {
 		.np-grid {
 			gap: 12px;
+		}
+
+		/* Below the desktop cap the cards grow to fill the row again, so a single
+		   card is not left with dead space on the right at phone widths. */
+		.np-card {
+			flex: 1 1 280px;
+			max-width: none;
 		}
 
 		.np-live {

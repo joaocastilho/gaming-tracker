@@ -98,7 +98,6 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		align-items: center;
 		padding: 0;
 		min-width: 0;
-		margin-top: clamp(1px, 0.5cqi, 4px);
 	}
 
 	.time-item,
@@ -233,18 +232,11 @@ const hasGameplay = $derived(game.status === 'Completed' && game.ratingGameplay 
 		flex-direction: column;
 		gap: clamp(12px, 4cqi, 24px);
 		width: 100%;
-		margin-top: clamp(6px, 2cqi, 12px);
 		padding-bottom: 4px;
 	}
 
 	@container game-card (max-width: 300px) {
-		.time-date-row {
-			margin-top: 6px;
-			padding: 0;
-		}
-
 		.ratings-and-score-wrapper {
-			margin-top: 12px;
 			gap: 16px;
 		}
 

@@ -138,10 +138,12 @@ function handleKeyDown(event: KeyboardEvent) {
 		gap: clamp(2px, 1cqi, 4px);
 	}
 
+	/* Badges, time/date and ratings are siblings here: one gap spaces all three
+	   rows, so the card grows taller instead of squeezing them together. */
 	.card-content-bottom {
 		display: flex;
 		flex-direction: column;
-		gap: clamp(8px, 3cqi, 12px);
+		gap: clamp(16px, 6cqi, 24px);
 		margin-top: auto;
 		padding-left: clamp(4px, 2cqi, 8px);
 		padding-right: clamp(4px, 2cqi, 8px);
@@ -154,7 +156,7 @@ function handleKeyDown(event: KeyboardEvent) {
 		}
 
 		.card-content-bottom {
-			gap: clamp(6px, 2cqi, 10px);
+			gap: clamp(14px, 8cqi, 18px);
 		}
 	}
 </style>

@@ -15,20 +15,24 @@ function cssRule(source: string, selector: string): string {
 
 /**
  * The showcase row: poster-sized cards that fill themselves with cover art,
- * centered and width-capped so a lone card cannot stretch to the full
- * 1600px container and a row of them stays eye-catching but contained.
+ * left-aligned and width-capped near the recent-completion card width so a
+ * lone card cannot stretch to the full 1600px container and the row lines up
+ * with the section heading.
  */
 describe('Now Playing poster cards', () => {
-	it('centers the row and caps card width instead of stretching', () => {
+	it('left-aligns the row and caps card width near the recent-completion cards', () => {
 		const source = readHomeSource();
 		const grid = cssRule(source, '.np-grid');
 		const card = cssRule(source, '.np-card');
 
 		expect(grid).toMatch(/display:\s*flex/);
 		expect(grid).toMatch(/flex-wrap:\s*wrap/);
-		expect(grid).toMatch(/justify-content:\s*center/);
-		expect(card).toMatch(/flex:\s*1 1 \d+px/);
-		expect(card).toMatch(/max-width:\s*\d+px/);
+		expect(grid).toMatch(/justify-content:\s*flex-start/);
+		expect(card).toMatch(/flex:\s*0 1 \d+px/);
+
+		const maxWidth = Number(card.match(/max-width:\s*(\d+)px/)?.[1]);
+		expect(maxWidth).toBeGreaterThan(0);
+		expect(maxWidth).toBeLessThanOrEqual(340);
 	});
 
 	it('fills the card with cover art on a poster aspect ratio', () => {
