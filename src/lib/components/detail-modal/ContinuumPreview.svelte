@@ -168,13 +168,15 @@ function handleImageError(event: Event): void {
 	}
 
 	.continuum-preview {
-		opacity: calc((0.76 + var(--preview-emphasis, 0) * 0.24) * var(--preview-visibility, 1));
+		opacity: calc(0.76 + var(--preview-emphasis, 0) * 0.24);
+		will-change: opacity, transform;
 		transition:
 			opacity 140ms cubic-bezier(0.22, 1, 0.36, 1),
 			transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.continuum-preview.suppressed {
+		opacity: 0;
 		pointer-events: none;
 	}
 

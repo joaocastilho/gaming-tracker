@@ -55,12 +55,21 @@ function getActiveCard(): HTMLElement {
 	return screen.getByRole('document');
 }
 
+const SCROLL_CENTER = 800;
+
 function getCardLayer(card: HTMLElement): HTMLElement {
-	const layer = card.parentElement;
-	if (!layer?.classList.contains('modal-card-layer')) {
+	const layer = card.closest<HTMLElement>('.modal-card-layer');
+	if (!layer) {
 		throw new Error('Active card is not wrapped in a continuum layer');
 	}
 	return layer;
+}
+
+function getLayerVisualX(layer: HTMLElement): number {
+	const scrollOffset = layer.classList.contains('continuum-scroll-ready') ? SCROLL_CENTER - layer.scrollLeft : 0;
+	const match = layer.style.transform.match(/translate3d\(([-\d.]+)px/);
+	const transformX = match ? Number(match[1]) : 0;
+	return scrollOffset + transformX;
 }
 
 describe('DetailModal continuum', () => {
@@ -126,7 +135,7 @@ describe('DetailModal continuum', () => {
 		expect(getActiveCard()).toHaveClass('continuum-card');
 	});
 
-	it('moves the wrapper layer and leaves the zoomed card untransformed', async () => {
+	it('tracks continuum drag via APZ scrollLeft and leaves card and layer transforms untouched', async () => {
 		openAt(2);
 		render(DetailModal);
 
@@ -135,15 +144,21 @@ describe('DetailModal continuum', () => {
 
 		expect(layer).toHaveAttribute('data-continuum-layer', '3');
 		expect(layer).toHaveAttribute('data-continuum-pos', '0');
+		expect(layer).toHaveClass('continuum-scroll-layer');
+		expect(layer).not.toHaveClass('continuum-scroll-ready');
+		expect(layer.scrollLeft).toBe(0);
 		expect(card.style.transform).toBe('');
-		expect(layer.style.transform).toContain('translate3d(0.00px');
+		expect(layer.style.transform).toContain('translate3d(0px');
 
 		dispatchPointer(card, 'pointerdown', { clientX: 700, clientY: 400 });
 		dispatchPointer(window, 'pointermove', { clientX: 570, clientY: 400 });
 		await tick();
 
+		expect(layer).toHaveClass('continuum-scroll-ready');
 		expect(card.style.transform).toBe('');
-		expect(layer.style.transform).toContain('translate3d(-130.00px');
+		expect(layer.style.transform).toContain('translate3d(0px');
+		expect(layer.scrollLeft).toBeCloseTo(SCROLL_CENTER + 130, 1);
+		expect(getLayerVisualX(layer)).toBeCloseTo(-130, 1);
 	});
 
 	it('fades the incoming side preview out while its full card is dragged in', async () => {
@@ -282,9 +297,9 @@ describe('DetailModal continuum', () => {
 		dispatchPointer(window, 'pointermove', { clientX: 570, clientY: 400 });
 		await tick();
 
-		// The wrapper layer tracks the pointer 1:1; the zoomed card inside is
-		// never transformed, so it stays a cached compositor surface.
-		expect(getCardLayer(card).style.transform).toContain('translate3d(-130.00px');
+		// The wrapper layer tracks the pointer 1:1 via APZ scrollLeft; neither the
+		// zoomed card nor the layer transform mutates per frame during drag.
+		expect(getLayerVisualX(getCardLayer(card))).toBeCloseTo(-130, 1);
 
 		dispatchPointer(window, 'pointerup', { clientX: 570, clientY: 400 });
 
@@ -303,7 +318,7 @@ describe('DetailModal continuum', () => {
 		dispatchPointer(window, 'pointermove', { clientX: 840, clientY: 400 });
 		await tick();
 
-		expect(getCardLayer(card).style.transform).toContain('translate3d(140.00px');
+		expect(getLayerVisualX(getCardLayer(card))).toBeCloseTo(140, 1);
 
 		dispatchPointer(window, 'pointerup', { clientX: 840, clientY: 400 });
 
@@ -328,12 +343,12 @@ describe('DetailModal continuum', () => {
 		await settle();
 
 		expect(modalStore.activeGame?.id).toBe('3');
-		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
+		expect(getLayerVisualX(getCardLayer(getActiveCard()))).toBeCloseTo(0, 1);
 
 		dispatchPointer(window, 'pointermove', { clientX: 200, clientY: 400, buttons: 0 });
 		await tick();
 
-		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
+		expect(getLayerVisualX(getCardLayer(getActiveCard()))).toBeCloseTo(0, 1);
 	});
 
 	it('commits a drag whose release was missed', async () => {
@@ -362,7 +377,7 @@ describe('DetailModal continuum', () => {
 		await settle();
 
 		expect(modalStore.activeGame?.id).toBe('3');
-		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
+		expect(getLayerVisualX(getCardLayer(getActiveCard()))).toBeCloseTo(0, 1);
 	});
 
 	it('centres the incoming card when reduced motion skips the turn', async () => {
@@ -388,7 +403,32 @@ describe('DetailModal continuum', () => {
 		await tick();
 
 		expect(modalStore.activeGame?.id).toBe('4');
-		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
+		expect(getLayerVisualX(getCardLayer(getActiveCard()))).toBeCloseTo(0, 1);
+	});
+
+	it('keeps the new active scroll layer unshifted at rest after reduced-motion navigation', async () => {
+		vi.mocked(window.matchMedia).mockImplementation((query) => ({
+			matches: query === '(prefers-reduced-motion: reduce)',
+			media: query,
+			onchange: null,
+			addListener: vi.fn(),
+			removeListener: vi.fn(),
+			addEventListener: vi.fn(),
+			removeEventListener: vi.fn(),
+			dispatchEvent: vi.fn(() => false),
+		}));
+
+		openAt(2);
+		const { container } = render(DetailModal);
+
+		const nextLayer = container.querySelector<HTMLElement>('[data-continuum-pos="1"]')!;
+		await fireEvent.keyDown(document, { key: 'ArrowRight' });
+		await tick();
+
+		expect(modalStore.activeGame?.id).toBe('4');
+		expect(nextLayer).toHaveClass('continuum-scroll-layer');
+		expect(nextLayer).not.toHaveClass('continuum-scroll-ready');
+		expect(nextLayer.scrollLeft).toBe(0);
 	});
 
 	it('keeps the incoming card centred while the active card is dragged away', async () => {
@@ -414,7 +454,7 @@ describe('DetailModal continuum', () => {
 
 		// Only the focused card follows the pointer. The incoming card is already
 		// centred underneath it, so the drag uncovers it instead of sliding it.
-		expect(activeLayer.style.transform).toContain('translate3d(-130.00px');
+		expect(getLayerVisualX(activeLayer)).toBeCloseTo(-130, 1);
 		expect(activeLayer.style.opacity).toBe('1');
 		expect(incomingLayer.style.transform).toContain('translate3d(0.00px');
 		expect(incomingLayer.style.opacity).toBe('1');
@@ -430,8 +470,8 @@ describe('DetailModal continuum', () => {
 
 		// The turn only slides the outgoing card clear; the incoming card has
 		// not moved and is fully revealed when the outgoing card leaves.
-		// 1440 / 2 + 1056 / 2 + 16 = 1264px.
-		expect(activeLayer.style.transform).toContain('translate3d(-1264.00px');
+		// 1440 / 2 + 1056 / 2 + 16 = 1264px total visual offset from centre.
+		expect(getLayerVisualX(activeLayer)).toBeCloseTo(-1264, 1);
 		expect(activeLayer.style.opacity).toBe('1');
 		expect(incomingLayer.style.transform).toContain('translate3d(0.00px');
 		expect(incomingLayer.style.opacity).toBe('1');
@@ -440,7 +480,7 @@ describe('DetailModal continuum', () => {
 		await tick();
 
 		expect(modalStore.activeGame?.id).toBe('4');
-		expect(getCardLayer(getActiveCard()).style.transform).toContain('translate3d(0.00px');
+		expect(getLayerVisualX(getCardLayer(getActiveCard()))).toBeCloseTo(0, 1);
 		expect(getCardLayer(getActiveCard()).style.opacity).toBe('1');
 	});
 
@@ -454,7 +494,7 @@ describe('DetailModal continuum', () => {
 		dispatchPointer(window, 'pointermove', { clientX: 300, clientY: 400 });
 		await tick();
 
-		const draggedX = Number(getCardLayer(card).style.transform.match(/translate3d\(([-\d.]+)px/)?.[1]);
+		const draggedX = getLayerVisualX(getCardLayer(card));
 		expect(draggedX).toBeLessThan(-400);
 
 		dispatchPointer(window, 'pointerup', { clientX: 300, clientY: 400 });
@@ -463,7 +503,7 @@ describe('DetailModal continuum', () => {
 		await tick();
 		await tick();
 
-		const exitingX = Number(getCardLayer(card).style.transform.match(/translate3d\(([-\d.]+)px/)?.[1]);
+		const exitingX = getLayerVisualX(getCardLayer(card));
 		expect(exitingX).toBeLessThan(draggedX);
 
 		await settle();
@@ -499,7 +539,7 @@ describe('DetailModal continuum', () => {
 
 		await settle();
 		expect(modalStore.activeGame?.id).toBe('3');
-		expect(getCardLayer(card).style.transform).toContain('translate3d(0.00px');
+		expect(getLayerVisualX(getCardLayer(card))).toBeCloseTo(0, 1);
 	});
 
 	it('ignores a mostly vertical drag', async () => {
@@ -528,7 +568,7 @@ describe('DetailModal continuum', () => {
 
 		await settle();
 		expect(modalStore.activeGame?.id).toBe('1');
-		expect(getCardLayer(card).style.transform).toContain('translate3d(0.00px');
+		expect(getLayerVisualX(getCardLayer(card))).toBeCloseTo(0, 1);
 	});
 
 	it('does not start a drag from an interactive control', async () => {

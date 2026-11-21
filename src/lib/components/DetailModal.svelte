@@ -81,7 +81,8 @@ type ContinuumPhase = 'idle' | 'settling' | 'exiting';
 
 let continuumTurnDirection = $state<1 | -1>(1);
 let continuumPhase = $state<ContinuumPhase>('idle');
-let continuumDragOffset = $state(0);
+let hasContinuumDragOffset = $state(false);
+let continuumDragOffset = 0;
 let isContinuumDragging = $state(false);
 let turnTargetGame = $state<Game | null>(null);
 let overlayElement = $state<HTMLDivElement>();
@@ -90,6 +91,7 @@ let activePointerId: number | null = null;
 let transitionToken = 0;
 let dragOriginOffset = 0;
 let runningAnimations: Animation[] = [];
+let fallbackAnimatedLayers: HTMLElement[] = [];
 
 let prevCardGame = $derived(
 	continuumPhase === 'exiting' && continuumTurnDirection === -1 && turnTargetGame ? turnTargetGame : prevGamePreview
@@ -124,6 +126,11 @@ const wheelNavigator = new ContinuumWheelNavigator();
 const dragTracker = new ContinuumDragTracker();
 
 const CONTINUUM_ENTER_OFFSET = 260;
+/**
+ * Half the extra scroll-track width (`calc(100% + 1600px)`). Exceeds the 720px
+ * drag asymptote on both sides and stays independent of viewport width.
+ */
+const CONTINUUM_SCROLL_CENTER = 800;
 /** The 960px card renders 1056px wide through the 1.1 zoom. */
 const CONTINUUM_CARD_WIDTH = 1056;
 const CONTINUUM_TURN_MS = 260;
@@ -162,9 +169,7 @@ function conditionalFly(node: HTMLElement, { condition, ...config }: FlyParams &
 
 /** True while a drag, turn, or snap-back owns the cards. */
 function isContinuumCardMotionActive(): boolean {
-	return (
-		isContinuumDragging || continuumPhase === 'exiting' || continuumPhase === 'settling' || continuumDragOffset !== 0
-	);
+	return isContinuumDragging || continuumPhase === 'exiting' || continuumPhase === 'settling' || hasContinuumDragOffset;
 }
 
 /**
@@ -202,10 +207,7 @@ function getModalSurface(game: Game): string {
 }
 
 function isPreviewSuppressed(direction: 'previous' | 'next'): boolean {
-	if (isContinuumDragging) {
-		return (continuumDragOffset < 0 ? 'next' : 'previous') === direction;
-	}
-	if (continuumPhase === 'exiting' || continuumPhase === 'settling') {
+	if (isContinuumDragging || continuumPhase === 'exiting' || continuumPhase === 'settling') {
 		return (continuumTurnDirection === 1 ? 'next' : 'previous') === direction;
 	}
 	if (swipe.swipeDirection !== null) {
@@ -228,7 +230,7 @@ function getCardTransform(pos: number, isCurrent: boolean): string {
 		return `translate3d(${offset.toFixed(2)}px, 0px, 0)`;
 	}
 
-	return `translate3d(${continuumDragOffset.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
+	return `translate3d(0px, ${y.toFixed(2)}px, 0)`;
 }
 
 function getCardOpacity(isCurrent: boolean, pos: number): number {
@@ -246,6 +248,53 @@ function getCardOpacity(isCurrent: boolean, pos: number): number {
 	if (!isCurrent) return 1;
 
 	return 1 - (Math.abs(swipe.swipeOffsetX) * 0.0005 + Math.max(0, swipe.swipeOffsetY) * 0.0005);
+}
+
+/**
+ * Activates the wide APZ scroll track on the active layer just before a
+ * pointer drag begins. Keeping the track at 100% width at rest ensures the
+ * card can never land shifted off-centre if a browser clamps scrollLeft during
+ * a navigation swap.
+ */
+function enableContinuumScrollTrack(layer: HTMLElement | null): void {
+	if (!layer || !isContinuum) return;
+	if (!layer.classList.contains('continuum-scroll-ready')) {
+		layer.classList.add('continuum-scroll-ready');
+		void layer.scrollWidth;
+	}
+	layer.scrollLeft = CONTINUUM_SCROLL_CENTER - continuumDragOffset;
+}
+
+function resetAllContinuumScrolls(): void {
+	if (!overlayElement) return;
+	for (const layer of overlayElement.querySelectorAll<HTMLElement>('[data-continuum-layer]')) {
+		layer.classList.remove('continuum-scroll-ready');
+		if (layer.scrollLeft !== 0) {
+			layer.scrollLeft = 0;
+		}
+	}
+}
+
+/**
+ * Updates horizontal drag position via APZ `scrollLeft` rather than mutating
+ * `style.transform` per frame. In Gecko/WebRender, main-thread transform
+ * updates on a large card trigger ~50-75ms scene rebuilds, whereas `scrollLeft`
+ * on an `overflow-x: auto` container stays on the GPU APZ path at full refresh.
+ */
+function setContinuumDragOffset(offset: number): void {
+	continuumDragOffset = offset;
+	const active = offset !== 0;
+	if (hasContinuumDragOffset !== active) hasContinuumDragOffset = active;
+
+	const activeLayer = getContinuumLayer(modalState.activeGame?.id ?? '');
+	if (activeLayer && isContinuum) {
+		if (offset === 0 && !isContinuumDragging && continuumPhase === 'idle') {
+			activeLayer.classList.remove('continuum-scroll-ready');
+			activeLayer.scrollLeft = 0;
+		} else {
+			enableContinuumScrollTrack(activeLayer);
+		}
+	}
 }
 
 function getContinuumLayer(gameId: string): HTMLElement | null {
@@ -274,6 +323,11 @@ interface LayerAnimation {
 function cancelRunningAnimations(): void {
 	for (const animation of runningAnimations) animation.cancel();
 	runningAnimations = [];
+	for (const layer of fallbackAnimatedLayers) {
+		const pos = Number(layer.dataset.continuumPos ?? '0');
+		layer.style.transform = getCardTransform(pos, pos === 0);
+	}
+	fallbackAnimatedLayers = [];
 }
 
 function applyFinalKeyframes(animations: LayerAnimation[]): void {
@@ -282,6 +336,7 @@ function applyFinalKeyframes(animations: LayerAnimation[]): void {
 		if (!last) continue;
 		if (typeof last.transform === 'string') layer.style.transform = last.transform;
 		if (last.opacity !== undefined) layer.style.opacity = String(last.opacity);
+		fallbackAnimatedLayers.push(layer);
 	}
 }
 
@@ -341,13 +396,16 @@ function commitNavigation(direction: 1 | -1): void {
 async function settleContinuumDrag(): Promise<void> {
 	if (continuumDragOffset === 0) {
 		continuumPhase = 'idle';
+		resetAllContinuumScrolls();
 		return;
 	}
 
 	if (prefersReducedMotion()) {
 		transitionToken++;
 		continuumDragOffset = 0;
+		hasContinuumDragOffset = false;
 		continuumPhase = 'idle';
+		resetAllContinuumScrolls();
 		return;
 	}
 
@@ -361,11 +419,12 @@ async function settleContinuumDrag(): Promise<void> {
 
 	const animations: LayerAnimation[] = [];
 	if (activeLayer) {
+		// Animate relative to the current scrollLeft so we never jump on handoff.
 		animations.push({
 			layer: activeLayer,
 			keyframes: [
-				{ transform: `translate3d(${activeStartX.toFixed(2)}px, 0px, 0)`, opacity: 1 },
 				{ transform: 'translate3d(0px, 0px, 0)', opacity: 1 },
+				{ transform: `translate3d(${(-activeStartX).toFixed(2)}px, 0px, 0)`, opacity: 1 },
 			],
 		});
 	}
@@ -373,9 +432,11 @@ async function settleContinuumDrag(): Promise<void> {
 	await animateLayers(animations, CONTINUUM_SETTLE_MS, CONTINUUM_SETTLE_EASING);
 	if (token !== transitionToken) return;
 
-	cancelRunningAnimations();
 	continuumDragOffset = 0;
+	hasContinuumDragOffset = false;
 	continuumPhase = 'idle';
+	resetAllContinuumScrolls();
+	cancelRunningAnimations();
 }
 
 /**
@@ -410,11 +471,14 @@ async function runContinuumTurn(direction: 1 | -1, commit: () => void, targetGam
 	const animations: LayerAnimation[] = [];
 
 	if (activeLayer) {
+		// Scroll offset already places the card at activeStartX, so animate only
+		// the remaining delta to -direction * exitDistance.
+		const deltaX = -direction * exitDistance - activeStartX;
 		animations.push({
 			layer: activeLayer,
 			keyframes: [
-				{ transform: `translate3d(${activeStartX.toFixed(2)}px, 0px, 0)`, opacity: 1 },
-				{ transform: `translate3d(${(-direction * exitDistance).toFixed(2)}px, 0px, 0)`, opacity: 1 },
+				{ transform: 'translate3d(0px, 0px, 0)', opacity: 1 },
+				{ transform: `translate3d(${deltaX.toFixed(2)}px, 0px, 0)`, opacity: 1 },
 			],
 		});
 	}
@@ -426,11 +490,13 @@ async function runContinuumTurn(direction: 1 | -1, commit: () => void, targetGam
 	commit();
 	await tick();
 
-	// Reset the inline styles to the new resting state before dropping the
-	// fill-forwards animations, so cancelling them cannot flash the old offset.
+	// Reset scroll positions and state before dropping the fill-forwards
+	// animations, so cancelling them cannot flash the old offset.
 	continuumDragOffset = 0;
+	hasContinuumDragOffset = false;
 	continuumPhase = 'idle';
 	turnTargetGame = null;
+	resetAllContinuumScrolls();
 	await tick();
 	cancelRunningAnimations();
 }
@@ -447,7 +513,8 @@ function navigateBy(direction: 1 | -1, skipTransition = false): void {
 		cancelRunningAnimations();
 		continuumPhase = 'idle';
 		turnTargetGame = null;
-		continuumDragOffset = 0;
+		setContinuumDragOffset(0);
+		resetAllContinuumScrolls();
 		commitNavigation(direction);
 		return;
 	}
@@ -470,7 +537,8 @@ function selectContinuumGame(game: Game): void {
 		cancelRunningAnimations();
 		continuumPhase = 'idle';
 		turnTargetGame = null;
-		continuumDragOffset = 0;
+		setContinuumDragOffset(0);
+		resetAllContinuumScrolls();
 		continuumTurnDirection = direction;
 		modalStore.openViewModal(game, displayedGames, undefined, modalStore.cardRect ?? undefined);
 		focusDialog();
@@ -525,17 +593,19 @@ function handleContinuumPointerDown(event: PointerEvent): void {
 	}
 
 	if (continuumPhase === 'settling') {
-		// Read the animated position before cancelling, otherwise the layer
-		// snaps back to the stale inline transform the drag started from.
+		// Combine the scroll offset with the in-flight WAAPI transform before
+		// cancelling, so grabbing mid-settle resumes from the exact visual x.
 		const activeLayer = getContinuumLayer(modalState.activeGame?.id ?? '');
-		if (activeLayer) continuumDragOffset = readLayerTranslateX(activeLayer);
+		const currentOffset = activeLayer ? continuumDragOffset + readLayerTranslateX(activeLayer) : continuumDragOffset;
 		transitionToken++;
 		cancelRunningAnimations();
 		continuumPhase = 'idle';
+		setContinuumDragOffset(currentOffset);
 	}
 
 	dragOriginOffset = continuumDragOffset;
 	activePointerId = event.pointerId;
+	enableContinuumScrollTrack(getContinuumLayer(modalState.activeGame?.id ?? ''));
 	dragTracker.start(event.clientX, event.clientY, performance.now());
 
 	window.addEventListener('pointermove', handleContinuumPointerMove);
@@ -567,9 +637,10 @@ function handleContinuumPointerMove(event: PointerEvent): void {
 		canGoNext,
 	});
 	if (nextOffset !== continuumDragOffset) {
-		continuumDragOffset = nextOffset;
-		if (continuumDragOffset !== 0) {
-			continuumTurnDirection = continuumDragOffset < 0 ? 1 : -1;
+		setContinuumDragOffset(nextOffset);
+		if (nextOffset !== 0) {
+			const nextDirection: 1 | -1 = nextOffset < 0 ? 1 : -1;
+			if (continuumTurnDirection !== nextDirection) continuumTurnDirection = nextDirection;
 		}
 	}
 	event.preventDefault();
@@ -749,6 +820,7 @@ $effect(() => {
 	turnTargetGame = null;
 	isContinuumDragging = false;
 	continuumDragOffset = 0;
+	hasContinuumDragOffset = false;
 
 	if (activePointerId !== null) {
 		dragTracker.cancel();
@@ -924,9 +996,10 @@ $effect(() => {
 				(pos === -1 && swipe.swipeDirection === 'right') ||
 				(pos === 1 && swipe.swipeDirection === 'left')}
 			<div
-				class="modal-card-layer absolute inset-0 flex items-center justify-center pointer-events-none md:p-4 {isCurrent
-					? 'z-[60]'
-					: 'z-[59]'}"
+				class="modal-card-layer absolute inset-0 pointer-events-none"
+				class:z-[60]={isCurrent}
+				class:z-[59]={!isCurrent}
+				class:continuum-scroll-layer={isContinuum && isCurrent}
 				class:continuum-neighbor={isContinuum && !isCurrent}
 				style="visibility: {isVisible ? 'visible' : 'hidden'};"
 				style:transform={getCardTransform(pos, isCurrent)}
@@ -935,41 +1008,43 @@ $effect(() => {
 				data-continuum-pos={pos}
 				aria-hidden={!isCurrent ? 'true' : undefined}
 			>
-				<div
-					class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[960px] md:max-w-[calc(100%/1.1)] md:cursor-grab md:rounded-xl {isCurrent
-						? 'pointer-events-auto shadow-2xl md:shadow-2xl'
-						: ''} {isIOS
-						? 'ios-modal'
-						: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
-						? 'swiping-close'
-						: ''}"
-					class:continuum-card={isContinuum}
-					style:background-color={getModalSurface(game)}
-					style:border-radius="{isCurrent ? 12 + Math.max(0, swipe.swipeOffsetY) * 0.1 : 12}px"
-					role={isCurrent ? 'document' : undefined}
-					ontouchstart={isCurrent ? (e) => swipe.handleTouchStart(e) : undefined}
-					ontouchmove={isCurrent ? (e) => swipe.handleTouchMove(e) : undefined}
-					ontouchend={isCurrent ? () => swipe.handleTouchEnd() : undefined}
-					in:conditionalFly={{
-						condition: isCurrent,
-						y: isIOS ? 60 : 40,
-						duration: isIOS ? 400 : 250,
-						easing: isIOS ? backOut : cubicOut
-					}}
-					out:conditionalFly={{
-						condition: isCurrent,
-						y: isIOS ? 100 : 30,
-						duration: isIOS ? 300 : 200,
-						easing: cubicOut
-					}}
-				>
-					<GameDetailCard
-						game={game}
-						onEditGame={isCurrent ? onEditGame : undefined}
-						onDeleteGame={isCurrent ? onDeleteGame : undefined}
-						onClose={isCurrent ? () => modalStore.closeModal() : undefined}
-						onImageClick={isCurrent ? toggleImageExpansion : undefined}
-					/>
+				<div class="modal-card-track pointer-events-none flex h-full w-full items-center justify-center md:p-4">
+					<div
+						class="modal-content relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-neutral-900 md:h-auto md:max-h-[min(600px,calc((100dvh_-_32px)/1.1))] md:w-[960px] md:max-w-[calc(100%/1.1)] md:cursor-grab md:rounded-xl {isCurrent
+							? 'pointer-events-auto shadow-2xl md:shadow-2xl'
+							: ''} {isIOS
+							? 'ios-modal'
+							: ''} {isAndroid ? 'android-modal' : ''} {isCurrent && swipe.isClosingGesture
+							? 'swiping-close'
+							: ''}"
+						class:continuum-card={isContinuum}
+						style:background-color={getModalSurface(game)}
+						style:border-radius="{isCurrent ? 12 + Math.max(0, swipe.swipeOffsetY) * 0.1 : 12}px"
+						role={isCurrent ? 'document' : undefined}
+						ontouchstart={isCurrent ? (e) => swipe.handleTouchStart(e) : undefined}
+						ontouchmove={isCurrent ? (e) => swipe.handleTouchMove(e) : undefined}
+						ontouchend={isCurrent ? () => swipe.handleTouchEnd() : undefined}
+						in:conditionalFly={{
+							condition: isCurrent,
+							y: isIOS ? 60 : 40,
+							duration: isIOS ? 400 : 250,
+							easing: isIOS ? backOut : cubicOut
+						}}
+						out:conditionalFly={{
+							condition: isCurrent,
+							y: isIOS ? 100 : 30,
+							duration: isIOS ? 300 : 200,
+							easing: cubicOut
+						}}
+					>
+						<GameDetailCard
+							game={game}
+							onEditGame={isCurrent ? onEditGame : undefined}
+							onDeleteGame={isCurrent ? onDeleteGame : undefined}
+							onClose={isCurrent ? () => modalStore.closeModal() : undefined}
+							onImageClick={isCurrent ? toggleImageExpansion : undefined}
+						/>
+					</div>
 				</div>
 			</div>
 		{/each}
@@ -1082,17 +1157,40 @@ $effect(() => {
 		}
 	}
 
-	/* The gesture only ever transforms this wrapper. The zoomed card inside is
-	   rasterised once and slid as a cached layer, which keeps both Chromium and
-	   Gecko off the per-frame layout/paint path. */
+	/* The gesture scrolls this layer via APZ during drags and animates it via
+	   WAAPI on release/turns. The zoomed card inside never changes transform,
+	   keeping both Chromium and Gecko off the per-frame layout/paint path. */
 	.modal-card-layer {
 		backface-visibility: hidden;
 	}
 
+	/* overflow-x: auto creates a Gecko APZ scroll frame so horizontal drag
+	   updates via scrollLeft composite on the GPU without rebuilding the
+	   WebRender display list every frame. */
+	.continuum-scroll-layer {
+		overflow-x: auto;
+		overflow-y: hidden;
+		scrollbar-width: none;
+		overscroll-behavior-x: none;
+	}
+
+	.continuum-scroll-layer::-webkit-scrollbar {
+		display: none;
+	}
+
+	.continuum-scroll-layer:global(.continuum-scroll-ready) .modal-card-track {
+		width: calc(100% + 1600px);
+	}
+
 	/* Promote the active layer everywhere and all three in the continuum,
-	   where the offscreen neighbours must already be rasterised on drag start. */
-	.modal-card-layer[data-continuum-pos='0'],
-	.continuum-overlay .modal-card-layer {
+	   where the offscreen neighbours must already be rasterised on drag start.
+	   Keep will-change on transform only for the scroll layer so Gecko keeps it
+	   on the APZ scroll path without allocating an extra opacity surface. */
+	.modal-card-layer[data-continuum-pos='0'] {
+		will-change: transform;
+	}
+
+	.continuum-overlay .continuum-neighbor {
 		will-change: transform, opacity;
 	}
 
@@ -1123,15 +1221,6 @@ $effect(() => {
 		.continuum-overlay {
 			backdrop-filter: none !important;
 			background-color: rgba(0, 0, 0, 0.85);
-		}
-
-		/* WebRender snaps axis-aligned transform translations to whole device
-		   pixels, so a slow drag advances the card in visible 1px steps instead
-		   of tracking the pointer continuously. A 0.001deg rotation keeps the
-		   wrapper off the snapping path; it moves the card's corners by under a
-		   hundredth of a pixel and leaves text rendering unchanged. */
-		.continuum-overlay .modal-card-layer {
-			rotate: 0.001deg;
 		}
 	}
 
