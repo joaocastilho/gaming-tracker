@@ -181,12 +181,11 @@ export default function HomePage(): JSX.Element {
 					</div>
 					<div class="recent-grid" ref={setRecentGridEl}>
 						<For each={recentCompletions()}>
-							{(game, index) => (
+							{(game) => (
 								<GameCard
 									game={game}
 									size="small"
 									showTierBadge={true}
-									isAboveFold={index() < 4}
 									onOpenModal={handleRecentOpen}
 									displayedGames={recentCompletions()}
 								/>

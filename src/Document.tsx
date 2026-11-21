@@ -28,9 +28,9 @@ export default function Document(props: DocumentProps): JSX.Element {
 					content="My personal video game collection with ratings, tier lists, and progress tracking."
 				/>
 				<link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin="" />
+				<link rel="preload" href="/fonts/inter-500.woff2" as="font" type="font/woff2" crossorigin="" />
 				<link rel="preload" href="/fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin="" />
 				<link rel="preload" href="/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin="" />
-				<link rel="preload" href="/games.json" as="fetch" crossorigin="" />
 
 				<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 				<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
