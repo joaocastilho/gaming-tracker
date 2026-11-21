@@ -36,7 +36,13 @@ export default function GameFormBasicInfo(props: GameFormBasicInfoProps): JSX.El
 						required
 					>
 						<option value="">Select...</option>
-						<For each={uniquePlatforms()}>{(platform) => <option value={platform}>{platform}</option>}</For>
+						<For each={uniquePlatforms()}>
+							{(platform) => (
+								<option value={platform} selected={platform === props.working.platform}>
+									{platform}
+								</option>
+							)}
+						</For>
 					</select>
 				</div>
 
@@ -49,7 +55,13 @@ export default function GameFormBasicInfo(props: GameFormBasicInfoProps): JSX.El
 						required
 					>
 						<option value="">Select...</option>
-						<For each={uniqueGenres()}>{(genre) => <option value={genre}>{genre}</option>}</For>
+						<For each={uniqueGenres()}>
+							{(genre) => (
+								<option value={genre} selected={genre === props.working.genre}>
+									{genre}
+								</option>
+							)}
+						</For>
 					</select>
 				</div>
 

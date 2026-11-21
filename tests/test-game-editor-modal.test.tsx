@@ -118,6 +118,7 @@ describe('GameEditorModal Component', () => {
 			await fireEvent.change(statusSelect, { target: { value: 'Completed' } });
 			flush();
 			expect(screen.queryByText(/presentation/i)).toBeTruthy();
+			expect(screen.getByText('10')).toBeInTheDocument();
 
 			await fireEvent.change(statusSelect, { target: { value: 'Playing' } });
 			flush();

@@ -91,7 +91,7 @@ export default defineConfig({
 		},
 	},
 	optimizeDeps: {
-		include: ['@lucide/solid', 'zod', 'dexie'],
+		include: ['zod', 'dexie'],
 	},
 	server: {
 		fs: {

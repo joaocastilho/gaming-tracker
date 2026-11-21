@@ -137,12 +137,10 @@ export default function GameEditorModal(props: GameEditorModalProps): JSX.Elemen
 			}
 		}
 
-		if (
-			next.status === 'Completed' &&
-			next.ratingPresentation != null &&
-			next.ratingStory != null &&
-			next.ratingGameplay != null
-		) {
+		if (next.status === 'Completed') {
+			if (next.ratingPresentation == null) next.ratingPresentation = 5;
+			if (next.ratingStory == null) next.ratingStory = 5;
+			if (next.ratingGameplay == null) next.ratingGameplay = 5;
 			next.score = computeScore({
 				ratingPresentation: next.ratingPresentation,
 				ratingStory: next.ratingStory,

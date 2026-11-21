@@ -78,7 +78,13 @@ export default function GameFormRatings(props: GameFormRatingsProps): JSX.Elemen
 					required
 				>
 					<option value="">Select Tier...</option>
-					<For each={TIER_VALUES}>{(t) => <option value={t}>{t}</option>}</For>
+					<For each={TIER_VALUES}>
+						{(t) => (
+							<option value={t} selected={t === props.working.tier}>
+								{t}
+							</option>
+						)}
+					</For>
 				</select>
 			</label>
 		</div>
