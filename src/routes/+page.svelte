@@ -40,13 +40,43 @@ function handleCoverError(event: Event) {
 	target.src = PLACEHOLDER_SRC;
 }
 
+const RECENT_CARD_MIN_WIDTH = 300;
+const RECENT_GRID_GAP = 12;
+const HOME_MAX_WIDTH = 1600;
+const DESKTOP_MAIN_PADDING_X = 48;
+const MOBILE_BREAKPOINT = 768;
+
+let recentGridEl = $state<HTMLDivElement>();
+let recentGridWidth = $state(0);
+
+$effect(() => {
+	const el = recentGridEl;
+	if (!el || typeof ResizeObserver === 'undefined') return;
+	if (el.clientWidth > 0) recentGridWidth = el.clientWidth;
+	const observer = new ResizeObserver((entries) => {
+		const width = entries[0]?.contentRect.width;
+		if (typeof width === 'number' && width > 0) {
+			recentGridWidth = width;
+		}
+	});
+	observer.observe(el);
+	return () => observer.disconnect();
+});
+
+/**
+ * Matches `.recent-grid`'s `repeat(auto-fill, minmax(300px, 1fr))` with 12px
+ * gap (and fixed 2-column layout below 768px) so Recent Completions always
+ * renders two full rows with no trailing orphans.
+ */
+function getRecentGridColumns(containerWidth: number, viewportWidth: number): number {
+	if (viewportWidth < MOBILE_BREAKPOINT) return 2;
+	const effectiveWidth =
+		containerWidth > 0 ? containerWidth : Math.min(HOME_MAX_WIDTH, Math.max(0, viewportWidth - DESKTOP_MAIN_PADDING_X));
+	return Math.max(1, Math.floor((effectiveWidth + RECENT_GRID_GAP) / (RECENT_CARD_MIN_WIDTH + RECENT_GRID_GAP)));
+}
+
 let recentCompletions = $derived.by(() => {
-	const w = windowSize.width;
-	let cols = 1;
-	if (w >= 1200) cols = 5;
-	else if (w >= 900) cols = 4;
-	else if (w >= 768) cols = 3;
-	else if (w < 768) cols = 2;
+	const cols = getRecentGridColumns(recentGridWidth, windowSize.width);
 	const count = cols * 2;
 	const sorted = [...completedGames].toSorted((a, b) => {
 		if (!a.finishedDate && !b.finishedDate) return 0;
@@ -130,7 +160,7 @@ function viewAllCompleted() {
 					<ChevronRight size={16} />
 				</button>
 			</div>
-			<div class="recent-grid">
+			<div class="recent-grid" bind:this={recentGridEl}>
 				{#each recentCompletions as game (game.id)}
 					<GameCard
 						{game}
