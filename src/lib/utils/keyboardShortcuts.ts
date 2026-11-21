@@ -7,7 +7,7 @@ export function createGlobalKeydownHandler(getDeps: () => KeyboardShortcutDeps) 
 	return (event: KeyboardEvent) => {
 		const { onSearchToggle, onDesktopSearch } = getDeps();
 
-		const isMac = navigator.platform.toLowerCase().includes('mac');
+		const isMac = (navigator.platform ?? '').toLowerCase().includes('mac');
 		const modifierCheck = isMac ? event.metaKey || event.ctrlKey : event.ctrlKey || event.metaKey;
 
 		if (event.key === '/' && modifierCheck) {
@@ -16,9 +16,11 @@ export function createGlobalKeydownHandler(getDeps: () => KeyboardShortcutDeps) 
 			if (innerWidth < 768) {
 				onSearchToggle();
 				requestAnimationFrame(() => {
-					const input = document.querySelector('.mobile-search-input') as HTMLInputElement;
-					input?.focus();
-					input?.select();
+					const input = document.querySelector('.mobile-search-input');
+					if (input instanceof HTMLInputElement) {
+						input.focus();
+						input.select();
+					}
 				});
 			} else {
 				onDesktopSearch();

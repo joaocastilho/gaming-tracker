@@ -99,9 +99,9 @@ export class SwipeController {
 		this.getPrevGame = getPrevGame;
 		this.onSwipeStart = onSwipeStart;
 
-		// Initial cache
-		this.cachedWidth = windowSize.width;
-		this.cachedHeight = windowSize.height;
+		// Initial cache from plain window dimensions so constructing inside a component body does not read signals untracked
+		this.cachedWidth = typeof window !== 'undefined' ? window.innerWidth : 300;
+		this.cachedHeight = typeof window !== 'undefined' ? window.innerHeight : 600;
 	}
 
 	handleTouchStart(e: TouchEvent): void {

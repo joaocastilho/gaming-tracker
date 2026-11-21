@@ -90,29 +90,29 @@ export default function BottomNavigation(props: BottomNavigationProps): JSX.Elem
 			aria-label="Main navigation"
 		>
 			<ul class="flex h-full items-stretch">
-				<For each={navItems()}>
+				<For each={navItems()} keyed={(item) => item.id}>
 					{(item) => (
 						<li class="flex-1">
 							<button
 								type="button"
 								class={[
 									'nav-button flex h-full w-full flex-col items-center justify-center gap-1 px-1 transition-colors outline-none',
-									{ active: item.active },
+									{ active: item().active },
 								]}
-								onClick={() => handleNavClick(item.id)}
-								onKeyDown={(e) => handleKeyDown(e, item.id)}
-								aria-current={item.active ? 'page' : undefined}
-								aria-label={`${item.label}${item.count !== null ? ` (${item.count})` : ''}`}
+								onClick={() => handleNavClick(item().id)}
+								onKeyDown={(e) => handleKeyDown(e, item().id)}
+								aria-current={item().active ? 'page' : undefined}
+								aria-label={`${item().label}${item().count !== null ? ` (${item().count})` : ''}`}
 							>
 								<div class="icon-wrapper relative">
-									<Dynamic component={item.icon} size={26} strokeWidth={item.active ? 2.5 : 2} />
-									<Show when={item.count !== null && item.count > 0}>
+									<Dynamic component={item().icon} size={26} strokeWidth={item().active ? 2.5 : 2} />
+									<Show when={item().count !== null && (item().count ?? 0) > 0}>
 										<span class="count-badge" aria-hidden="true">
-											{item.count}
+											{item().count}
 										</span>
 									</Show>
 								</div>
-								<span class="label max-w-full truncate">{item.label}</span>
+								<span class="label max-w-full truncate">{item().label}</span>
 							</button>
 						</li>
 					)}

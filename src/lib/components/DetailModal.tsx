@@ -188,15 +188,23 @@ export default function DetailModal(props: DetailModalProps): JSX.Element {
 	);
 
 	createEffect(
-		() => ({ list: displayedGames(), idx: currentGameIndex() }),
-		({ list, idx }) => {
-			if (!browser) return;
+		() => {
+			if (!browser) return [];
+			const list = displayedGames();
+			const idx = currentGameIndex();
+			const urls: string[] = [];
 			for (let step = -2; step <= 2; step++) {
 				if (step === 0) continue;
 				const candidate = list[idx + step];
 				if (candidate?.coverImage) {
-					preloadImage(getPreviewImageSrc(candidate.coverImage));
+					urls.push(getPreviewImageSrc(candidate.coverImage));
 				}
+			}
+			return urls;
+		},
+		(urls) => {
+			for (const url of urls) {
+				preloadImage(url);
 			}
 		}
 	);

@@ -411,7 +411,12 @@ export default function GameEditorModal(props: GameEditorModalProps): JSX.Elemen
 										<select
 											id="status"
 											value={w().status}
-											onChange={(e) => patchWorking({ status: e.currentTarget.value as Game['status'] })}
+											onChange={(e) => {
+												const val = e.currentTarget.value;
+												if (val === 'Planned' || val === 'Playing' || val === 'Completed') {
+													patchWorking({ status: val });
+												}
+											}}
 										>
 											<option value="Planned">Planned</option>
 											<option value="Playing">Playing</option>

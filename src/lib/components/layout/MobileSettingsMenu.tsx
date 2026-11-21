@@ -1,6 +1,18 @@
-import { Download, LogIn, LogOut, Moon, Plus, RotateCcw, Settings, Share, SlidersHorizontal, Sun } from '@lucide/solid';
+import {
+	Check,
+	Download,
+	LogIn,
+	LogOut,
+	Moon,
+	Plus,
+	RotateCcw,
+	Settings,
+	Share,
+	SlidersHorizontal,
+	Sun,
+} from '@lucide/solid';
 import type { JSX } from '@solidjs/web';
-import { createEffect, createMemo, createSignal, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, onSettled, Show } from 'solid-js';
 import { appStore } from '#lib/stores/app.js';
 import { editorStore } from '#lib/stores/editor.js';
 import { filtersStore } from '#lib/stores/filters.js';
@@ -34,12 +46,26 @@ function isShareCancellation(error: unknown): boolean {
 
 export default function MobileSettingsMenu(props: MobileSettingsMenuProps): JSX.Element {
 	const [sheetEl, setSheetEl] = createSignal<HTMLDivElement | null>(null);
+	const [linkCopied, setLinkCopied] = createSignal(false);
+	let copiedTimer: ReturnType<typeof setTimeout> | null = null;
 	const hasActiveFilters = createMemo(() => filtersStore.isAnyFilterApplied() || filtersStore.isSortModified());
+
+	onSettled(() => () => {
+		if (copiedTimer) clearTimeout(copiedTimer);
+	});
 
 	createEffect(
 		() => ({ open: props.isOpen, el: sheetEl() }),
 		({ open, el }) => {
-			if (!open || !el) return;
+			if (!open) {
+				setLinkCopied(false);
+				if (copiedTimer) {
+					clearTimeout(copiedTimer);
+					copiedTimer = null;
+				}
+				return;
+			}
+			if (!el) return;
 			const trap = focusTrap(el);
 			return () => trap.destroy();
 		}
@@ -57,16 +83,20 @@ export default function MobileSettingsMenu(props: MobileSettingsMenuProps): JSX.
 		try {
 			if (navigator.share) {
 				await navigator.share(shareData);
+				props.onClose();
 			} else if (navigator.clipboard) {
 				await navigator.clipboard.writeText(shareData.url);
-				window.alert('Link copied to clipboard!');
+				setLinkCopied(true);
+				if (copiedTimer) clearTimeout(copiedTimer);
+				copiedTimer = setTimeout(() => {
+					setLinkCopied(false);
+					copiedTimer = null;
+					props.onClose();
+				}, 1200);
 			}
 		} catch (error: unknown) {
 			if (isShareCancellation(error)) return;
-			return;
 		}
-
-		props.onClose();
 	}
 
 	return (
@@ -142,8 +172,10 @@ export default function MobileSettingsMenu(props: MobileSettingsMenuProps): JSX.
 							</Show>
 
 							<button type="button" class="sheet-item" onClick={() => void handleShare()}>
-								<Share size={20} />
-								<span>Share</span>
+								<Show when={linkCopied()} fallback={<Share size={20} />}>
+									<Check size={20} />
+								</Show>
+								<span>{linkCopied() ? 'Link copied!' : 'Share'}</span>
 							</button>
 
 							<button

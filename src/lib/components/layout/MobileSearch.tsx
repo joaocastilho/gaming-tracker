@@ -1,5 +1,5 @@
 import type { JSX } from '@solidjs/web';
-import { createEffect, createSignal, Show } from 'solid-js';
+import { createEffect, createSignal, Show, untrack } from 'solid-js';
 import { filtersStore } from '#lib/stores/filters.js';
 import { markSearchCleared } from '#lib/stores/searchClearCoordinator.js';
 import { browser } from '#lib/utils/env.js';
@@ -13,8 +13,8 @@ export interface MobileSearchProps {
 
 export default function MobileSearch(props: MobileSearchProps): JSX.Element {
 	const [searchInput, setSearchInput] = createSignal<HTMLInputElement | null>(null);
-	const [localSearchTerm, setLocalSearchTerm] = createSignal(filtersStore.searchQuery);
-	let previousSearchTerm = filtersStore.searchQuery;
+	const [localSearchTerm, setLocalSearchTerm] = createSignal(untrack(() => filtersStore.searchQuery));
+	let previousSearchTerm = untrack(() => filtersStore.searchQuery);
 
 	createEffect(
 		() => ({ open: props.isOpen, el: searchInput() }),
@@ -32,7 +32,7 @@ export default function MobileSearch(props: MobileSearchProps): JSX.Element {
 			el: searchInput(),
 		}),
 		({ storeTerm, isInternal, el }) => {
-			if (storeTerm !== localSearchTerm() && !isInternal && document.activeElement !== el) {
+			if (storeTerm !== untrack(localSearchTerm) && !isInternal && document.activeElement !== el) {
 				setLocalSearchTerm(storeTerm);
 			}
 		}

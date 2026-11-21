@@ -172,18 +172,18 @@ export default function VirtualList<T>(props: VirtualListProps<T>): JSX.Element 
 					right: '0',
 				}}
 			>
-				<For each={visibleItems()}>
+				<For each={visibleItems()} keyed={(entry) => entry.key}>
 					{(entry) => (
 						<div
 							class="virtual-item"
-							data-key={String(entry.key)}
+							data-key={String(entry().key)}
 							style={
 								hasVariableHeights() && props.getItemHeight
-									? { height: `${props.getItemHeight(entry.index)}px` }
+									? { height: `${props.getItemHeight(entry().index)}px` }
 									: undefined
 							}
 						>
-							{props.renderItem(entry.item, entry.index < priorityCount())}
+							{props.renderItem(entry().item, entry().index < priorityCount())}
 						</div>
 					)}
 				</For>

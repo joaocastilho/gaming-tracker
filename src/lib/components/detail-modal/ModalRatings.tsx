@@ -79,24 +79,26 @@ export default function ModalRatings(props: ModalRatingsProps): JSX.Element {
 
 			<div class="ratings-row">
 				<dl class="ratings-container">
-					<For each={ratings()}>
+					<For each={ratings()} keyed={(rating) => rating.label}>
 						{(rating) => (
 							<div
-								class={['rating-card', { 'is-empty': rating.value === null }]}
-								data-tone={rating.tone}
-								style={{ '--rating-fill': `${fillPercent(rating.value)}%` }}
-								title={rating.value === null ? `${rating.label}: not rated` : `${rating.label}: ${rating.value}/10`}
+								class={['rating-card', { 'is-empty': rating().value === null }]}
+								data-tone={rating().tone}
+								style={{ '--rating-fill': `${fillPercent(rating().value)}%` }}
+								title={
+									rating().value === null ? `${rating().label}: not rated` : `${rating().label}: ${rating().value}/10`
+								}
 							>
-								<dt class="rating-label">{rating.label}</dt>
+								<dt class="rating-label">{rating().label}</dt>
 								<dd class="rating-value">
-									<Dynamic component={rating.icon} size={20} class="rating-icon" aria-hidden="true" />
+									<Dynamic component={rating().icon} size={20} class="rating-icon" aria-hidden="true" />
 									<span class="rating-number" aria-hidden="true">
-										{rating.value ?? '-'}
+										{rating().value ?? '-'}
 									</span>
 									<span class="rating-scale" aria-hidden="true">
 										/10
 									</span>
-									<span class="sr-only">{rating.value === null ? 'not rated' : `${rating.value} out of 10`}</span>
+									<span class="sr-only">{rating().value === null ? 'not rated' : `${rating().value} out of 10`}</span>
 								</dd>
 								<div class="rating-meter" aria-hidden="true">
 									<span class="rating-meter-fill" />

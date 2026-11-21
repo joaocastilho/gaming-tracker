@@ -9,6 +9,10 @@ export interface GameFormRatingsProps {
 	onUpdate: (patch: Partial<Game>) => void;
 }
 
+function isTierValue(value: string): value is TierValue {
+	return (TIER_VALUES as readonly string[]).includes(value);
+}
+
 export default function GameFormRatings(props: GameFormRatingsProps): JSX.Element {
 	return (
 		<div class="ratings-section">
@@ -73,7 +77,7 @@ export default function GameFormRatings(props: GameFormRatingsProps): JSX.Elemen
 					value={props.working.tier ?? ''}
 					onChange={(e) => {
 						const val = e.currentTarget.value;
-						props.onUpdate({ tier: (val || null) as TierValue | null });
+						props.onUpdate({ tier: isTierValue(val) ? val : null });
 					}}
 					required
 				>

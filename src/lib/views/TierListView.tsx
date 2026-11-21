@@ -53,12 +53,12 @@ export default function TierListView(props: TierListViewProps): JSX.Element {
 			}
 		>
 			<div class="tier-list-container max-w-none">
-				<For each={rows()}>
+				<For each={rows()} keyed={(row) => row.tierName}>
 					{(row) => (
 						<TierRow
-							tierName={row.tierName}
-							games={row.games}
-							allGames={row.allGames}
+							tierName={row().tierName}
+							games={row().games}
+							allGames={row().allGames}
 							onOpenModal={props.onOpenModal}
 						/>
 					)}

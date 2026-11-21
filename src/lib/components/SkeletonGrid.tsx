@@ -1,14 +1,12 @@
 import type { JSX } from '@solidjs/web';
-import { For } from 'solid-js';
+import { Repeat } from 'solid-js';
 import './SkeletonGrid.css';
-
-const SKELETON_INDICES = Array.from({ length: 20 }, (_, i) => i);
 
 export default function SkeletonGrid(): JSX.Element {
 	return (
 		<div class="skeleton-wrapper">
 			<div class="skeleton-grid">
-				<For each={SKELETON_INDICES}>
+				<Repeat count={20}>
 					{() => (
 						<div class="skeleton-card">
 							<div class="skeleton-cover" />
@@ -19,7 +17,7 @@ export default function SkeletonGrid(): JSX.Element {
 							</div>
 						</div>
 					)}
-				</For>
+				</Repeat>
 			</div>
 		</div>
 	);

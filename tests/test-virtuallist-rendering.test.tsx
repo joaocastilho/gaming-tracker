@@ -1,4 +1,5 @@
-import { render, screen } from '@solidjs/testing-library';
+import { fireEvent, render, screen } from '@solidjs/testing-library';
+import { flush } from 'solid-js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import VirtualListTestHelper from './mocks/VirtualListTestHelper.js';
 
@@ -34,5 +35,24 @@ describe('VirtualList Component Rendering', () => {
 		expect(screen.queryByText('Item Content 0')).toBeInTheDocument();
 		expect(screen.queryByText('Item Content 4')).toBeInTheDocument();
 		expect(screen.queryByText('Item Content 10')).toBeNull();
+	});
+
+	it('reuses existing row DOM nodes when scrolling by one item', async () => {
+		const { container } = render(() => (
+			<VirtualListTestHelper items={testItems} itemHeight={100} containerHeight={300} overscan={2} />
+		));
+
+		const scrollContainer = container.querySelector('.virtual-list-container') as HTMLElement;
+		const row2Before = container.querySelector('[data-key="item-2"]');
+		expect(row2Before).not.toBeNull();
+
+		scrollContainer.scrollTop = 300;
+		await fireEvent.scroll(scrollContainer);
+		vi.advanceTimersByTime(50);
+		flush();
+
+		const row2After = container.querySelector('[data-key="item-2"]');
+		expect(row2After).not.toBeNull();
+		expect(row2After).toBe(row2Before);
 	});
 });

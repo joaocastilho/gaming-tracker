@@ -44,8 +44,8 @@ interface NavItem {
 }
 
 export default function Header(props: HeaderProps): JSX.Element {
-	const isMac = createMemo(() => browser && navigator.platform.toLowerCase().includes('mac'));
-	const shortcutKey = createMemo(() => (isMac() ? 'Cmd + /' : 'Ctrl + /'));
+	const isMac = browser && (navigator.platform ?? '').toLowerCase().includes('mac');
+	const shortcutKey = isMac ? 'Cmd + /' : 'Ctrl + /';
 
 	const navItems = createMemo<NavItem[]>(() => {
 		const counts = filteredCountsStore.counts;
@@ -120,20 +120,20 @@ export default function Header(props: HeaderProps): JSX.Element {
 			<div class="header-inner container mx-auto">
 				<nav class="tabs-nav">
 					<ul class="tabs-list">
-						<For each={navItems()}>
+						<For each={navItems()} keyed={(item) => item.id}>
 							{(item) => (
 								<li>
 									<button
 										type="button"
-										class={{ active: item.active }}
-										aria-current={item.active ? 'page' : undefined}
-										onClick={() => void handleNavClick(item.id)}
+										class={{ active: item().active }}
+										aria-current={item().active ? 'page' : undefined}
+										onClick={() => void handleNavClick(item().id)}
 									>
-										<Dynamic component={item.icon} size={20} />
-										<span class="label">{item.label}</span>
+										<Dynamic component={item().icon} size={20} />
+										<span class="label">{item().label}</span>
 									</button>
-									<Show when={item.count !== null}>
-										<span class="count-badge">{item.count}</span>
+									<Show when={item().count !== null}>
+										<span class="count-badge">{item().count}</span>
 									</Show>
 								</li>
 							)}
@@ -187,13 +187,11 @@ export default function Header(props: HeaderProps): JSX.Element {
 							onClick={handleSearchToggle}
 							aria-expanded={filtersStore.isDesktopSearchOpen ? 'true' : 'false'}
 							aria-label={filtersStore.isDesktopSearchOpen ? 'Hide search' : 'Show search'}
-							title={
-								filtersStore.isDesktopSearchOpen ? `Hide search (${shortcutKey()})` : `Show search (${shortcutKey()})`
-							}
+							title={filtersStore.isDesktopSearchOpen ? `Hide search (${shortcutKey})` : `Show search (${shortcutKey})`}
 						>
 							<Search size={18} />
 							<span class="filter-shortcut hidden md:inline" aria-hidden="true">
-								{shortcutKey()}
+								{shortcutKey}
 							</span>
 						</button>
 					</div>
