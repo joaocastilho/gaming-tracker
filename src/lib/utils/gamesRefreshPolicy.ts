@@ -21,8 +21,15 @@ function hasUsableGames(payload: unknown): boolean {
 	return Array.isArray(games) && games.length > 0;
 }
 
-export function decideGamesRefresh(payload: unknown, cachedLastUpdated: string | null): GamesRefreshDecision {
+export function decideGamesRefresh(
+	payload: unknown,
+	cachedLastUpdated: string | null,
+	cachedCount?: number
+): GamesRefreshDecision {
 	if (!hasUsableGames(payload)) return 'ignore';
+
+	const payloadGames = (payload as { games: unknown[] }).games;
+	if (cachedCount !== undefined && cachedCount !== payloadGames.length) return 'apply';
 
 	const payloadMarker = readPayloadLastUpdated(payload);
 	if (payloadMarker === null || cachedLastUpdated === null) return 'apply';

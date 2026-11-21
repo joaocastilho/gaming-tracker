@@ -31,7 +31,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
 			const cachedGames = await db.games.toArray();
 
 			if (cachedGames.length > 0) {
-				refreshGamesInBackground(fetch, db);
+				refreshGamesInBackground(fetch, db, cachedGames.length);
 				games = cachedGames;
 				gamesSource = 'cache';
 			}
@@ -74,7 +74,8 @@ export const load: LayoutLoad = async ({ fetch }) => {
 
 async function refreshGamesInBackground(
 	fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
-	db: GamingTrackerDB
+	db: GamingTrackerDB,
+	cachedCount: number
 ) {
 	try {
 		const res = await fetch('/games.json?t=' + Date.now(), {
@@ -85,10 +86,10 @@ async function refreshGamesInBackground(
 			const data = await res.json();
 
 			// The payload's meta.lastUpdated is stamped on every write. Comparing
-			// it to the marker in IndexedDB skips the full clear + bulkPut
-			// rewrite on page loads where games.json has not changed.
+			// it (and the cached row count, to self-heal orphaned rows) against
+			// IndexedDB skips the full rewrite when nothing changed.
 			const cachedMarker = await db.meta.get(GAMES_MARKER_KEY);
-			const decision = decideGamesRefresh(data, cachedMarker?.value ?? null);
+			const decision = decideGamesRefresh(data, cachedMarker?.value ?? null, cachedCount);
 			if (decision !== 'apply') return;
 
 			const nextMarker = readPayloadLastUpdated(data);

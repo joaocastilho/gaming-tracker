@@ -12,6 +12,13 @@ describe('decideGamesRefresh', () => {
 		const payload = { games: [{ id: '1' }], meta: { lastUpdated: '2026-10-10T09:07:23.290Z' } };
 
 		expect(decideGamesRefresh(payload, '2026-10-10T09:07:23.290Z')).toBe('skip');
+		expect(decideGamesRefresh(payload, '2026-10-10T09:07:23.290Z', 1)).toBe('skip');
+	});
+
+	test('applies when cached count differs from payload count even if marker matches', () => {
+		const payload = { games: [{ id: '1' }], meta: { lastUpdated: '2026-10-10T09:07:23.290Z' } };
+
+		expect(decideGamesRefresh(payload, '2026-10-10T09:07:23.290Z', 2)).toBe('apply');
 	});
 
 	test('applies when the payload marker is newer than the cached marker', () => {
